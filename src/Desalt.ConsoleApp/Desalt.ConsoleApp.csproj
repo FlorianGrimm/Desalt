@@ -3,10 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <Description>Console application for the Desalt toolkit.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Desalt.Core\Desalt.Core.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\Desalt.CommonProps.targets" />
 </Project>
