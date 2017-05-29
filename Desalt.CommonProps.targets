@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+************************************************************************************************************************
+Desalt.CommonProps.targets
+
+Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+LICENSE.txt in the project root for license information.
+************************************************************************************************************************
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- This makes the project files a dependency of all targets so that things rebuild if they change -->
+  <!-- But not really - see bug http://connect.microsoft.com/VisualStudio/feedback/details/634450/visual-studio-should-understand-and-act-on-the-msbuildallprojects-property -->
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFile)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <!-- Root directories -->
+  <PropertyGroup>
+    <SrcRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</SrcRoot>
+  </PropertyGroup>
+
+  <!-- Default C# properties -->
+  <PropertyGroup>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyOriginatorKeyFile>$(SrcRoot)Desalt.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <UseDocumentationFile>true</UseDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <!-- CS1591: Warning as Error: Missing XML comment for publicly visible type or member 'X' -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <RunCodeAnalysis Condition=" '$(RunCodeAnalysis)' == '' ">false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet Condition=" '$(CodeAnalysisRuleSet)' == '' ">$(SrcRoot)Desalt.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <!-- Common NuGet package information -->
+  <PropertyGroup>
+    <Product>Desalt</Product>
+    <Authors>Justin Rockwood</Authors>
+    <Company>Justin Rockwood</Company>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.0</Version>
+    <Copyright>Copyright © Justin Rockwood. All rights reserved.</Copyright>
+    <RepositoryUrl>https://github.com/jrockwood/Desalt</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>C#, compiler, Saltarelle, TypeScript</PackageTags>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jrockwood/Desalt</PackageProjectUrl>
+  </PropertyGroup>
+</Project>
