@@ -7,7 +7,7 @@
 
 namespace Desalt.Core
 {
-    public class DummyClass
+    internal class DummyClass
     {
         public int Add(int x, int y)
         {
