@@ -5,8 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
+[assembly: AssemblyTitle("Desalt.Core")]
+[assembly: AssemblyDescription("Core libary for the Desalt toolset.")]
 [assembly: InternalsVisibleTo("Desalt.Core.Tests, " +
     "PublicKey=0024000004800000940000000602000000240000525341310004000001000100cf741486e6566f05de" +
     "9dab6707a1187a0e1ed97f287091f00397624b345d25cb55be71d3e2633b33c119057c69dbdbcfe5b165a539d5c9" +
