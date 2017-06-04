@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+
+  <!-- Defaults for the platform and flavor -->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+
+  <!-- Directories derived from the current platform and flavor -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+
+  <!-- Versioned tools directories -->
+  <PropertyGroup>
+    <SaltarelleAssemblyRefsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\SaltarelleBinaries\'))</SaltarelleAssemblyRefsDir>
+  </PropertyGroup>
+
+  <!-- Default C# properties -->
+  <PropertyGroup>
+    <AllowUnsafeBlocks Condition=" '$(AllowUnsafeBlocks)' == '' ">false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>$(DefineConstants);TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>4096</FileAlignment>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <SignAssembly>false</SignAssembly>
+    <TargetFrameworkVersion Condition=" '$(OS)' != 'Unix' And '$(TargetFrameworkVersion)' == '' ">v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(OS)' == 'Unix' And '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'CodeAnalysis' ">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <!-- Saltarelle specific settings. -->
+  <PropertyGroup>
+    <UsesSaltarelle Condition=" '$(SaltarelleProject)' == 'true' or '$(SaltarelleWrapperAssembly)' == 'true' ">true</UsesSaltarelle>
+    <!-- Prevent the C# compiler from automatically adding references -->
+    <NoStdLib Condition=" '$(UsesSaltarelle)' == 'true' ">True</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences Condition=" '$(UsesSaltarelle)' == 'true' ">false</AddAdditionalExplicitAssemblyReferences>
+  </PropertyGroup>
+
+  <!-- This must be included before the targets below -->
+  <Import Condition=" '$(UsesSaltarelle)' != 'true' " Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <!-- This is in a separate .targets file because there is a Visual Studio bug
+       where it will include <Reference> elements even when you have a condition
+       to not include them. The only way (I found) to get around it is to pull
+       it into a separate file and then conditionally include the file. -->
+  <Import Condition=" '$(UsesSaltarelle)' == 'true' " Project="Saltarelle.targets" />
+</Project>
