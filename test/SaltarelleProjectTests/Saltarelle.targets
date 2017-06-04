@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+
+  <!-- Saltarelle specific settings -->
+  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <AutoUnifyAssemblyReferences>false</AutoUnifyAssemblyReferences>
+    <BuildingProject>true</BuildingProject>
+    <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+    <DefineConstants>$(DefineConstants);SALTARELLE</DefineConstants>
+    <NoStdLib>True</NoStdLib>
+    <!-- CS1591 = Missing XML comment for publicly visible type or member 'Type_or_Member'-->
+    <!-- CS0626 = is marked as an external but has no DllImport attribute-->
+    <!-- CS0824 = Constructor is marked `external' but has no external implementation specified -->
+    <!-- CS1574 = XML comment has cref attribute that could not be resolved -->
+    <!-- CS0414 = The private field is assigned but its value is never used-->
+    <!-- CS0067 = A public event is never used -->
+    <!-- CS1635 = Cannot restore warning `CS0414' because it was disabled globally -->
+    <!-- CS0219 = The variable is assigned but its value is never used -->
+    <NoWarn Condition=" '$(OS)' != 'Unix' ">1591</NoWarn>
+    <NoWarn Condition=" '$(OS)' == 'Unix' ">1591, 0626, 0824, 1574, 0414, 0067, 1635, 0219</NoWarn>
+    <SaltarelleRunAjaxMinOnCompile Condition=" '$(SaltarelleRunAjaxMinOnCompile)' == '' ">false</SaltarelleRunAjaxMinOnCompile>
+    <ReferencePath>$(SaltarelleAssemblyRefsDir)</ReferencePath>
+    <DeploymentPath Condition=" '$(DeploymentPath)' == '' and '$(StandaloneDeployment)' == 'true'">$(JsDeploymentPath)</DeploymentPath>
+    <DeploymentPath Condition=" '$(DeploymentPath)' == '' and '$(NoSaltarelleDeploy)' != 'true' and '$(Configuration)' == 'Debug' ">$(JsDeploymentPath)</DeploymentPath>
+    <DeploymentPath Condition=" '$(DeploymentPath)' != '' and !HasTrailingSlash('$(DeploymentPath)') ">$(DeploymentPath)\</DeploymentPath>
+    <AdditionalDeploymentPath Condition=" '$(AdditionalDeploymentPath)' != '' and !HasTrailingSlash('$(AdditionalDeploymentPath)') ">$(AdditionalDeploymentPath)\</AdditionalDeploymentPath>
+    <SaltarelleEmitDebugInformation Condition=" '$(Configuration)' == 'Debug' ">true</SaltarelleEmitDebugInformation>
+    <SaltarelleEmitDebugInformation Condition=" '$(SaltarelleEmitDebugInformation)' == '' ">false</SaltarelleEmitDebugInformation>
+    <SaltarelleDocumentationFile Condition=" $(UseDocumentationFile) != false ">$(OutputPath)$(AssemblyName).doc.js</SaltarelleDocumentationFile>
+    <SaltarelleSuppressDocumentation Condition=" $(UseDocumentationFile) == true ">false</SaltarelleSuppressDocumentation>
+    <SaltarelleSuppressDocumentation Condition=" '$(SaltarelleSuppressDocumentation)' == '' ">true</SaltarelleSuppressDocumentation>
+    <SaltarelleOutputFileNameExtension Condition=" '$(SaltarelleOutputFileNameExtension)' == '' and '$(Configuration)' == 'Debug' ">.debug.js</SaltarelleOutputFileNameExtension>
+    <SaltarelleOutputFileNameExtension Condition=" '$(SaltarelleOutputFileNameExtension)' == '' and '$(Configuration)' == 'Release' ">.js</SaltarelleOutputFileNameExtension>
+    <SaltarelleMinimize Condition=" '$(Configuration)' == 'Debug' ">false</SaltarelleMinimize>
+    <SaltarelleMinimize Condition=" '$(Configuration)' == 'Release' ">true</SaltarelleMinimize>
+  </PropertyGroup>
+
+  <!-- This is the assembly that defines how to compile using Saltarelle -->
+  <UsingTask TaskName="SCTask"  AssemblyFile="$(SaltarelleAssemblyRefsDir)SCTask.dll" Condition=" '$(OS)' != 'Unix' " />
+
+  <!-- All of the Saltarelle metadata and script projects require these assemblies -->
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Saltarelle.Web">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Saltarelle.jQuery">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Get the standard C# build targets -->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <!-- This needs to be dinfed after including Microsoft.CSharp.targets -->
+  <PropertyGroup>
+    <AssemblySearchPaths>$(SaltarelleAssemblyRefsDir);$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SaltarelleAssemblyName Condition=" '$(SaltarelleAssemblyName)' == '' ">$(AssemblyName)</SaltarelleAssemblyName>
+    <SaltarelleMainOutputFile>$(OutputPath)$(SaltarelleAssemblyName)$(SaltarelleOutputFileNameExtension)</SaltarelleMainOutputFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Main outputs -->
+    <SaltarelleOutputFile Include="$(SaltarelleMainOutputFile)" />
+  </ItemGroup>
+
+  <!--
+  Compile using Saltarelle only if we're a Saltarelle project (vs. a metadata project). We also don't
+  need to compile to JavaScript if we're only doing code analysis, since FxCop uses the .dll and
+  not the built JavaScript.
+  -->
+  <Target Name="SaltarelleCompile" AfterTargets="AfterCompile"
+          Condition=" '$(SaltarelleProject)' == 'true' and '$(Configuration)' != 'CodeAnalysis' "
+          Inputs="@(Compile);@(IntermediateAssembly);$(TemplateFile);@(TemplateFileDependency)"
+          Outputs="@(SaltarelleOutputFile)">
+
+    <SCTask
+      AdditionalLibPaths="$(AdditionalLibPaths)"
+      AlreadyCompiled="true"
+      DefineConstants="$(DefineConstants)"
+      DisabledWarnings="$(NoWarn)"
+      DocumentationFile="$(SaltarelleDocumentationFile)"
+      EmitDebugInformation="$(SaltarelleEmitDebugInformation)"
+      KeyContainer="$(KeyContainerName)"
+      KeyFile="$(KeyOriginatorFile)"
+      MainEntryPoint="$(StartupObject)"
+      OutputAssembly="@(IntermediateAssembly)"
+      OutputScript="$(SaltarelleMainOutputFile)"
+      References="@(ReferencePath);@(ReferenceDependencyPaths)"
+      Resources="@(EmbeddedResource)"
+      Sources="@(Compile)"
+      TargetType="$(OutputType)"
+      TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
+      WarningLevel="$(WarningLevel)"
+      WarningsAsErrors="$(WarningsAsErrors)"
+      WarningsNotAsErrors="$(WarningsNotAsErrors)">
+    </SCTask>
+  </Target>
+
+  <!--
+  The main Saltarelle output will be cleaned up by the main build, but we need to clean
+  up some other stuff left behind by custom targets defined here.
+  -->
+  <Target Name="CleanSaltarelleFiles" AfterTargets="CoreClean" Condition=" '$(Configuration)' != 'CodeAnalysis' ">
+    <Message Importance="low" Text="Cleaning up Saltarelle compilation detritus" />
+    <Delete  ContinueOnError="true" TreatErrorsAsWarnings="true" Files="@(SaltarelleOutputFile)" />
+  </Target>
+</Project>

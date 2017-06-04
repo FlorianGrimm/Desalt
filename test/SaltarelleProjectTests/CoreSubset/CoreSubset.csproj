@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D84BCCE0-8709-4710-9CEB-FE5CEFE558E1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SaltarelleProject</RootNamespace>
+    <AssemblyName>SaltarelleProject</AssemblyName>
+    <SaltarelleProject>True</SaltarelleProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Bootstrap\LayoutMetrics.cs" />
+    <Compile Include="Bootstrap\MetricsController.cs" />
+    <Compile Include="Core\Utility\BrowserSupport.cs" />
+    <Compile Include="Core\Utility\CssDictionary.cs" />
+    <Compile Include="Core\Utility\DomUtil.cs" />
+    <Compile Include="Core\Logging\BaseLogAppender.cs" />
+    <Compile Include="Core\Logging\ConsoleLogAppender.cs" />
+    <Compile Include="Core\Logging\ErrorTrace.cs" />
+    <Compile Include="Core\Logging\ILogAppender.cs" />
+    <Compile Include="Core\Logging\Logger.cs" />
+    <Compile Include="Core\Logging\MetricsLogger.cs" />
+    <Compile Include="Core\Logging\NavigationMetricsCollector.cs" />
+    <Compile Include="Core\Logging\WindowAppender.cs" />
+    <Compile Include="Core\Utility\DoubleUtil.cs" />
+    <Compile Include="Core\Utility\IBrowserViewport.cs" />
+    <Compile Include="Core\Utility\MiscUtil.cs" />
+    <Compile Include="CoreSlim\WindowHelper.cs" />
+    <Compile Include="CoreSlim\ScriptEx.cs" />
+    <Compile Include="Core\Utility\Param.cs" />
+    <Compile Include="Core\Utility\Point.cs" />
+    <Compile Include="Core\Utility\PointUtil.cs" />
+    <Compile Include="Core\Utility\RecordCast.cs" />
+    <Compile Include="Core\Utility\Rect.cs" />
+    <Compile Include="Core\Utility\Size.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Bootstrap\Utility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NativeJsTypeDefs, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SaltarelleBinaries\NativeJsTypeDefs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TypeDefs, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SaltarelleBinaries\TypeDefs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Underscore, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SaltarelleBinaries\Underscore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <Import Project="..\SaltarelleProject.targets" />
+</Project>
