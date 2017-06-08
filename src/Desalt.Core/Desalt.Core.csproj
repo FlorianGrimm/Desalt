@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeModels\CodeModel.cs" />
+    <Compile Include="CodeModels\CodeModelExtensions.cs" />
     <Compile Include="CodeModels\CodeModelVisitor.cs" />
     <Compile Include="CodeModels\ICodeModel.cs" />
     <Compile Include="CodeModels\ICodeModelVisitor.cs" />
