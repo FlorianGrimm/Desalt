@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Emit\Es5EmitterTests.cs" />
+    <Compile Include="Emit\Es5EmitterTests.LeftHandSideExpressions.cs" />
     <Compile Include="Emit\Es5EmitterTests.PrimaryExpressions.cs" />
     <Compile Include="Emit\Es5EmitterTests.Statements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
