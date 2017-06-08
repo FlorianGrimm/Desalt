@@ -21,5 +21,13 @@ namespace Desalt.TypeScript.CodeModels
         {
             return model != null ? model.Accept(this) : default(TResult);
         }
+
+        /// <summary>
+        /// Visits a TypeScript implementation (.ts) source file.
+        /// </summary>
+        public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile model)
+        {
+            return DefaultVisit(model);
+        }
     }
 }

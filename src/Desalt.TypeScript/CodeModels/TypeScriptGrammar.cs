@@ -426,8 +426,11 @@ namespace Desalt.TypeScript.CodeModels
      * ImplementationScriptElement:
      *  ImplementationElement
      *  AmbientModuleDeclaration
-     *
-     * ImplementationElement:
+     */
+
+    public interface IImplementationScriptElement : ITypeScriptCodeModel { }
+
+    /* ImplementationElement:
      *  Statement
      *  LexicalDeclaration
      *  FunctionDeclaration
@@ -439,8 +442,11 @@ namespace Desalt.TypeScript.CodeModels
      *  NamespaceDeclaration
      *  AmbientDeclaration
      *  ImportAliasDeclaration
-     *
-     * DeclarationScript:
+     */
+
+    public interface IImplementationElement : ITypeScriptCodeModel { }
+
+    /* DeclarationScript:
      *  DeclarationScriptElementsOpt
      *
      * DeclarationScriptElements:
