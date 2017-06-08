@@ -9,14 +9,35 @@ namespace Desalt.JavaScript.Tests.Emit
 {
     using System;
     using System.IO;
+    using Desalt.Core.Emit;
     using Desalt.JavaScript.CodeModels;
     using Desalt.JavaScript.Emit;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Factory = Desalt.JavaScript.CodeModels.Es5ModelFactory;
 
     [TestClass]
-    public class Es5EmitterTests
+    public partial class Es5EmitterTests
     {
+        private static readonly Es5Identifier s_x = Factory.Identifier("x");
+        private static readonly Es5Identifier s_y = Factory.Identifier("y");
+        private static readonly Es5Identifier s_z = Factory.Identifier("z");
+        private static readonly EmitOptions s_compact = EmitOptions.Compact;
+
+        private static void VerifyOutput(IEs5CodeModel model, string expected, EmitOptions options = null)
+        {
+            var emitter = new Es5Emitter();
+            using (var stream = new MemoryStream())
+            {
+                emitter.Emit(model, stream, options: options ?? EmitOptions.Default);
+
+                byte[] bytes = stream.ToArray();
+                string actual = Es5Emitter.DefaultEncoding.GetString(bytes);
+
+                actual.Should().Be(expected);
+            }
+        }
+
         [TestMethod]
         public void Emit_should_throw_on_null_args()
         {
