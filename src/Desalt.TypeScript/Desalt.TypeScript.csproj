@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Include="CodeModels\ITypeScriptCodeModel.cs" />
     <Compile Include="CodeModels\TypeScriptCodeModel.cs" />
+    <Compile Include="CodeModels\TypeScriptGrammar.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
