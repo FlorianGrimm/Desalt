@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeModels\Es5CodeModel.cs" />
+    <Compile Include="CodeModels\Es5FunctionDeclaration.cs" />
     <Compile Include="CodeModels\Es5GrammarInterfaces.cs" />
     <Compile Include="CodeModels\Es5Identifier.cs" />
     <Compile Include="CodeModels\Es5Visitor.cs" />

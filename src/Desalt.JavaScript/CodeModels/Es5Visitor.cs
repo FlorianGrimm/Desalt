@@ -22,6 +22,14 @@ namespace Desalt.JavaScript.CodeModels
             return model != null ? model.Accept(this) : default(TResult);
         }
 
+        /// <summary>
+        /// Visits a function declaration of the form 'function name?(parameters) { body }'.
+        /// </summary>
+        public virtual TResult VisitFunctionDeclaration(Es5FunctionDeclaration model)
+        {
+            return DefaultVisit(model);
+        }
+
         public virtual TResult VisitIdentifier(Es5Identifier model) => DefaultVisit(model);
     }
 }
