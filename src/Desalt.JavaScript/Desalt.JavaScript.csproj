@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C5D789ED-FB40-4353-A736-ACD366E101D8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Desalt.JavaScript</RootNamespace>
+    <AssemblyName>Desalt.JavaScript</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeModels\Es5CodeModel.cs" />
+    <Compile Include="CodeModels\Es5FunctionDeclaration.cs" />
+    <Compile Include="CodeModels\Es5GrammarInterfaces.cs" />
+    <Compile Include="CodeModels\Es5Identifier.cs" />
+    <Compile Include="CodeModels\Es5ModelFactory.cs" />
+    <Compile Include="CodeModels\Es5Program.cs" />
+    <Compile Include="CodeModels\Es5Visitor.cs" />
+    <Compile Include="CodeModels\Es5Visitor.Expressions.cs" />
+    <Compile Include="CodeModels\Es5Visitor.IterationStatements.cs" />
+    <Compile Include="CodeModels\Es5Visitor.Statements.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ArrayLiteralExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5AssignmentExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5BinaryExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5CallExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ConditionalExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ExpressionExtensions.cs" />
+    <Compile Include="CodeModels\Expressions\Es5FunctionExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5LiteralExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5LiteralKind.cs" />
+    <Compile Include="CodeModels\Expressions\Es5MemberExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ObjectLiteralExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ParenthesizedExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5PropertyGetAssignment.cs" />
+    <Compile Include="CodeModels\Expressions\Es5PropertySetAssignment.cs" />
+    <Compile Include="CodeModels\Expressions\Es5PropertyValueAssignment.cs" />
+    <Compile Include="CodeModels\Expressions\Es5ThisExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5UnaryExpression.cs" />
+    <Compile Include="CodeModels\Expressions\Es5AssignmentOperator.cs" />
+    <Compile Include="CodeModels\Expressions\Es5BinaryOperator.cs" />
+    <Compile Include="CodeModels\Expressions\Es5UnaryOperator.cs" />
+    <Compile Include="CodeModels\IEs5CodeModel.cs" />
+    <Compile Include="CodeModels\Statements\Es5BlockStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5BreakStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5CaseClause.cs" />
+    <Compile Include="CodeModels\Statements\Es5ContinueStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5DebuggerStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5DoStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5EmptyStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ExpressionStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ForInStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ForStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5IfStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5LabelledStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ReturnStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5SwitchStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ThrowStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5TryStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5VariableDeclaration.cs" />
+    <Compile Include="CodeModels\Statements\Es5VariableStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5WhileStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5WithStatement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Desalt.Core\Desalt.Core.csproj">
+      <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
+      <Name>Desalt.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="..\..\Desalt.CommonProps.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
