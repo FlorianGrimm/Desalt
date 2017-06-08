@@ -20,7 +20,7 @@ namespace Desalt.JavaScript.Emit
     /// <summary>
     /// Takes an <see cref="IEs5CodeModel"/> and converts it to text.
     /// </summary>
-    public class Es5Emitter : Es5Visitor<bool>, IEmitter<IEs5CodeModel>
+    public partial class Es5Emitter : Es5Visitor, IEmitter<IEs5CodeModel>
     {
         //// ===========================================================================================================
         //// Member Variables
