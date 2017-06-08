@@ -66,6 +66,14 @@ namespace Desalt.JavaScript.Emit
             Dispose(disposing: true);
         }
 
+        public override void VisitProgram(Es5Program model)
+        {
+            foreach (IEs5SourceElement sourceElement in model.SourceElements)
+            {
+                Visit(sourceElement);
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing)
