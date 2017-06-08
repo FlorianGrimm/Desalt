@@ -25,19 +25,16 @@ namespace Desalt.JavaScript.CodeModels
         /// <summary>
         /// Visits a function declaration of the form 'function name?(parameters) { body }'.
         /// </summary>
-        public virtual TResult VisitFunctionDeclaration(Es5FunctionDeclaration model)
-        {
-            return DefaultVisit(model);
-        }
+        public virtual TResult VisitFunctionDeclaration(Es5FunctionDeclaration model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a JavaScript program.
         /// </summary>
-        public virtual TResult VisitProgram(Es5Program model)
-        {
-            return DefaultVisit(model);
-        }
+        public virtual TResult VisitProgram(Es5Program model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a JavaScript identifier.
+        /// </summary>
         public virtual TResult VisitIdentifier(Es5Identifier model) => DefaultVisit(model);
     }
 }
