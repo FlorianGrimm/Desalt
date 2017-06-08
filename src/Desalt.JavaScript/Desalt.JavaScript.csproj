@@ -19,6 +19,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeModels\Es5CodeModel.cs" />
+    <Compile Include="CodeModels\Es5Visitor.cs" />
+    <Compile Include="CodeModels\IEs5CodeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
