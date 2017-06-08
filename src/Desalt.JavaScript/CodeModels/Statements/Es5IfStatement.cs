@@ -44,6 +44,11 @@ namespace Desalt.JavaScript.CodeModels.Statements
             return new Es5IfStatement(IfExpression, IfStatement, statement);
         }
 
+        public override void Accept(Es5Visitor visitor)
+        {
+            visitor.VisitIfStatement(this);
+        }
+
         public override T Accept<T>(Es5Visitor<T> visitor)
         {
             return visitor.VisitIfStatement(this);

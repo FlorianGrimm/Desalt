@@ -9,6 +9,29 @@ namespace Desalt.JavaScript.CodeModels
 {
     using Desalt.JavaScript.CodeModels.Statements;
 
+    public abstract partial class Es5Visitor
+    {
+        /// <summary>
+        /// Visits a 'do-while' iteration statement.
+        /// </summary>
+        public virtual void VisitDoStatement(Es5DoStatement model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a 'while' iteration statement.
+        /// </summary>
+        public virtual void VisitWhileStatement(Es5WhileStatement model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a 'for' iteration statement.
+        /// </summary>
+        public virtual void VisitForStatement(Es5ForStatement model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a 'for-in' iteration statement.
+        /// </summary>
+        public virtual void VisitForInStatement(Es5ForInStatement model) => DefaultVisit(model);
+    }
+
     public abstract partial class Es5Visitor<TResult>
     {
         /// <summary>

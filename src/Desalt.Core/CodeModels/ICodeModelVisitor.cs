@@ -8,6 +8,17 @@
 namespace Desalt.Core.CodeModels
 {
     /// <summary>
+    /// Service contract for a class that visits nodes in a code model tree.
+    /// </summary>
+    /// <typeparam name="TModel">The type of nodes in the tree.</typeparam>
+    public interface ICodeModelVisitor<in TModel> where TModel : ICodeModel
+    {
+        void DefaultVisit(TModel model);
+
+        void Visit(TModel model);
+    }
+
+    /// <summary>
     /// Service contract for a class that visits nodes in a code model tree and returns a result
     /// after visiting the node.
     /// </summary>

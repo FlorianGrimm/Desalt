@@ -62,6 +62,11 @@ namespace Desalt.JavaScript.CodeModels
             return identifier;
         }
 
+        public override void Accept(Es5Visitor visitor)
+        {
+            visitor.VisitIdentifier(this);
+        }
+
         public override T Accept<T>(Es5Visitor<T> visitor)
         {
             return visitor.VisitIdentifier(this);

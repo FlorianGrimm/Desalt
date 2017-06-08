@@ -11,6 +11,33 @@ namespace Desalt.JavaScript.CodeModels
 
     /// <summary>
     /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed
+    /// into its Visit method.
+    /// </summary>
+    public abstract partial class Es5Visitor : CodeModelVisitor<IEs5CodeModel>
+    {
+        public override void Visit(IEs5CodeModel model)
+        {
+            model?.Accept(this);
+        }
+
+        /// <summary>
+        /// Visits a function declaration of the form 'function name?(parameters) { body }'.
+        /// </summary>
+        public virtual void VisitFunctionDeclaration(Es5FunctionDeclaration model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a JavaScript program.
+        /// </summary>
+        public virtual void VisitProgram(Es5Program model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a JavaScript identifier.
+        /// </summary>
+        public virtual void VisitIdentifier(Es5Identifier model) => DefaultVisit(model);
+    }
+
+    /// <summary>
+    /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>

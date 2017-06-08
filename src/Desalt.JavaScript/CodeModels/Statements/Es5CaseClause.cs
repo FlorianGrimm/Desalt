@@ -39,6 +39,16 @@ namespace Desalt.JavaScript.CodeModels.Statements
         //// Methods
         //// ===========================================================================================================
 
+        public override void Accept(Es5Visitor visitor)
+        {
+            visitor.VisitCaseClause(this);
+        }
+
+        public override T Accept<T>(Es5Visitor<T> visitor)
+        {
+            return visitor.VisitCaseClause(this);
+        }
+
         public override string ToCodeDisplay()
         {
             return $"case {Expression}: {Statements.ToElidedList()}";
@@ -50,11 +60,6 @@ namespace Desalt.JavaScript.CodeModels.Statements
             Expression.WriteFullCodeDisplay(writer);
             writer.Write(": ");
             WriteItems(writer, Statements, indent: true, itemDelimiter: Environment.NewLine);
-        }
-
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitCaseClause(this);
         }
     }
 }
