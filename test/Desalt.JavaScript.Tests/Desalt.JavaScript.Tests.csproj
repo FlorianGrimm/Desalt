@@ -42,6 +42,7 @@
     <Compile Include="Emit\Es5EmitterTests.IterationStatements.cs" />
     <Compile Include="Emit\Es5EmitterTests.LeftHandSideExpressions.cs" />
     <Compile Include="Emit\Es5EmitterTests.PrimaryExpressions.cs" />
+    <Compile Include="Emit\Es5EmitterTests.Program.cs" />
     <Compile Include="Emit\Es5EmitterTests.Statements.cs" />
     <Compile Include="Emit\Es5EmitterTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
