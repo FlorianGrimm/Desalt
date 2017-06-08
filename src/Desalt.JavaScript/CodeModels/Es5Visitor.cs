@@ -30,6 +30,14 @@ namespace Desalt.JavaScript.CodeModels
             return DefaultVisit(model);
         }
 
+        /// <summary>
+        /// Visits a JavaScript program.
+        /// </summary>
+        public virtual TResult VisitProgram(Es5Program model)
+        {
+            return DefaultVisit(model);
+        }
+
         public virtual TResult VisitIdentifier(Es5Identifier model) => DefaultVisit(model);
     }
 }
