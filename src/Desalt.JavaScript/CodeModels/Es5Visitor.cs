@@ -21,5 +21,7 @@ namespace Desalt.JavaScript.CodeModels
         {
             return model != null ? model.Accept(this) : default(TResult);
         }
+
+        public virtual TResult VisitIdentifier(Es5Identifier model) => DefaultVisit(model);
     }
 }

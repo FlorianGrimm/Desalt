@@ -25,8 +25,31 @@
   <ItemGroup>
     <Compile Include="CodeModels\Es5CodeModel.cs" />
     <Compile Include="CodeModels\Es5GrammarInterfaces.cs" />
+    <Compile Include="CodeModels\Es5Identifier.cs" />
     <Compile Include="CodeModels\Es5Visitor.cs" />
+    <Compile Include="CodeModels\Es5Visitor.IterationStatements.cs" />
+    <Compile Include="CodeModels\Es5Visitor.Statements.cs" />
     <Compile Include="CodeModels\IEs5CodeModel.cs" />
+    <Compile Include="CodeModels\Statements\Es5BlockStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5BreakStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5CaseClause.cs" />
+    <Compile Include="CodeModels\Statements\Es5ContinueStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5DebuggerStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5DoStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5EmptyStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ExpressionStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ForInStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ForStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5IfStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5LabelledStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ReturnStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5SwitchStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5ThrowStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5TryStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5VariableDeclaration.cs" />
+    <Compile Include="CodeModels\Statements\Es5VariableStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5WhileStatement.cs" />
+    <Compile Include="CodeModels\Statements\Es5WithStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
