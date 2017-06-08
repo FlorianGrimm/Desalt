@@ -38,6 +38,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Emit\Es5EmitterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +46,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj">
+      <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
+      <Name>Desalt.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Desalt.JavaScript\Desalt.JavaScript.csproj">
       <Project>{c5d789ed-fb40-4353-a736-acd366e101d8}</Project>
       <Name>Desalt.JavaScript</Name>
