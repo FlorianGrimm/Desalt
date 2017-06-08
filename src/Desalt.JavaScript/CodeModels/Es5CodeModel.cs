@@ -14,6 +14,8 @@ namespace Desalt.JavaScript.CodeModels
     /// </summary>
     public abstract class Es5CodeModel : CodeModel, IEs5CodeModel
     {
+        public abstract void Accept(Es5Visitor visitor);
+
         public abstract T Accept<T>(Es5Visitor<T> visitor);
     }
 }

@@ -14,6 +14,8 @@ namespace Desalt.JavaScript.CodeModels
     /// </summary>
     public interface IEs5CodeModel : ICodeModel
     {
+        void Accept(Es5Visitor visitor);
+
         T Accept<T>(Es5Visitor<T> visitor);
     }
 }

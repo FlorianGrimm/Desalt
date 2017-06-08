@@ -32,6 +32,11 @@ namespace Desalt.JavaScript.CodeModels.Statements
         //// Methods
         //// ===========================================================================================================
 
+        public override void Accept(Es5Visitor visitor)
+        {
+            visitor.VisitEmptyStatement(this);
+        }
+
         public override T Accept<T>(Es5Visitor<T> visitor)
         {
             return visitor.VisitEmptyStatement(this);

@@ -11,6 +11,22 @@ namespace Desalt.Core.CodeModels
 
     /// <summary>
     /// Abstract base class for an <see cref="ICodeModelVisitor{TModel, TResult}"/> visitor that
+    /// visits only the single model passed into its Visit method.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the model to visit.</typeparam>
+    public abstract class CodeModelVisitor<TModel> : ICodeModelVisitor<TModel>
+        where TModel : ICodeModel
+    {
+        public abstract void Visit(TModel model);
+
+        public virtual void DefaultVisit(TModel model)
+        {
+            throw new InvalidOperationException($"{GetType().Name}: Model not supported: {model.GetType().Name}");
+        }
+    }
+
+    /// <summary>
+    /// Abstract base class for an <see cref="ICodeModelVisitor{TModel, TResult}"/> visitor that
     /// visits only the single model passed into its Visit method and produces a value of the type
     /// specified by the <typeparamref name="TResult"/> parameter.
     /// </summary>

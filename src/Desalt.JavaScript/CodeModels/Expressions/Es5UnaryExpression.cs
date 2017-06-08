@@ -36,6 +36,11 @@ namespace Desalt.JavaScript.CodeModels.Expressions
         //// Methods
         //// ===========================================================================================================
 
+        public override void Accept(Es5Visitor visitor)
+        {
+            visitor.VisitUnaryExpression(this);
+        }
+
         public override T Accept<T>(Es5Visitor<T> visitor)
         {
             return visitor.VisitUnaryExpression(this);

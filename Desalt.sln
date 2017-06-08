@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.Core.Tests", "test\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.JavaScript", "src\Desalt.JavaScript\Desalt.JavaScript.csproj", "{C5D789ED-FB40-4353-A736-ACD366E101D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.JavaScript.Tests", "test\Desalt.JavaScript.Tests\Desalt.JavaScript.Tests.csproj", "{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{C5D789ED-FB40-4353-A736-ACD366E101D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5D789ED-FB40-4353-A736-ACD366E101D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5D789ED-FB40-4353-A736-ACD366E101D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,5 +63,6 @@ Global
 		{987796C8-EE76-4FFD-B2EB-1B3A0767920B} = {9928D2C9-38FC-4C38-99FD-36F33F1EA481}
 		{03DA60E1-EF57-4220-9F48-8B26E9C8988B} = {7EA7B6C1-208D-4757-A053-5904E414A951}
 		{C5D789ED-FB40-4353-A736-ACD366E101D8} = {9928D2C9-38FC-4C38-99FD-36F33F1EA481}
+		{C6C5B8F9-A76F-48EB-BCC8-BAD34F632041} = {7EA7B6C1-208D-4757-A053-5904E414A951}
 	EndGlobalSection
 EndGlobal
