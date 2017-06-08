@@ -4,3 +4,5 @@
 /src/**/obj/
 /test/**/bin/
 /test/**/obj/
+
+*.DotSettings.user
