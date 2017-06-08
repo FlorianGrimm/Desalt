@@ -76,6 +76,7 @@
     <Compile Include="CodeModels\Statements\Es5WithStatement.cs" />
     <Compile Include="Emit\Es5Emitter.cs" />
     <Compile Include="Emit\Es5Emitter.Expressions.cs" />
+    <Compile Include="Emit\Es5Emitter.Statements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
