@@ -118,6 +118,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeModels\CodeModel.cs" />
+    <Compile Include="CodeModels\CodeModelExtensions.cs" />
+    <Compile Include="CodeModels\CodeModelVisitor.cs" />
+    <Compile Include="CodeModels\ICodeModel.cs" />
+    <Compile Include="CodeModels\ICodeModelVisitor.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
