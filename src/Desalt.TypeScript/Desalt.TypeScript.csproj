@@ -21,7 +21,15 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeModels\ITypeScriptCodeModel.cs" />
+    <Compile Include="CodeModels\TypeScriptCodeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Desalt.Core\Desalt.Core.csproj">
+      <Project>{987796C8-EE76-4FFD-B2EB-1B3A0767920B}</Project>
+      <Name>Desalt.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
