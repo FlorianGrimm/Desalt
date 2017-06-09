@@ -11,6 +11,20 @@ namespace Desalt.TypeScript.CodeModels
 
     /// <summary>
     /// Represents an <see cref="ITypeScriptCodeModel"/> visitor that visits only the single model passed
+    /// into its Visit method.
+    /// </summary>
+    public abstract partial class TypeScriptVisitor : CodeModelVisitor<ITypeScriptCodeModel>
+    {
+        public override void Visit(ITypeScriptCodeModel model) => model?.Accept(this);
+
+        /// <summary>
+        /// Visits a TypeScript implementation (.ts) source file.
+        /// </summary>
+        public virtual void VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
+    }
+
+    /// <summary>
+    /// Represents an <see cref="ITypeScriptCodeModel"/> visitor that visits only the single model passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>
@@ -25,9 +39,6 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
-        public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile model)
-        {
-            return DefaultVisit(model);
-        }
+        public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
     }
 }

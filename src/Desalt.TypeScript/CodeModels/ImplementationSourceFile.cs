@@ -37,7 +37,9 @@ namespace Desalt.TypeScript.CodeModels
         //// Methods
         //// ===========================================================================================================
 
-        public override T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
 
         public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 

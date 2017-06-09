@@ -14,6 +14,8 @@ namespace Desalt.TypeScript.CodeModels
     /// </summary>
     public interface ITypeScriptCodeModel : ICodeModel
     {
+        void Accept(TypeScriptVisitor visitor);
+
         T Accept<T>(TypeScriptVisitor<T> visitor);
     }
 }
