@@ -10,7 +10,7 @@ namespace Desalt.TypeScript.CodeModels
     using Desalt.Core.CodeModels;
 
     /// <summary>
-    /// Represents an <see cref="TypeScriptCodeModel"/> visitor that visits only the single model passed
+    /// Represents an <see cref="ITypeScriptCodeModel"/> visitor that visits only the single model passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>

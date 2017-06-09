@@ -10,12 +10,13 @@ namespace Desalt.TypeScript.CodeModels
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    public class ImplementationSourceFile : TypeScriptCodeModel
+    public class ImplementationSourceFile : CodeModel, ITypeScriptCodeModel
     {
         //// ===========================================================================================================
         //// Constructors
