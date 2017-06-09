@@ -5,4 +5,5 @@
 /test/**/bin/
 /test/**/obj/
 
+*.csproj.user
 *.DotSettings.user
