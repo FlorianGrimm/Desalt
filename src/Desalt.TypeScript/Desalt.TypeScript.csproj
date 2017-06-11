@@ -21,6 +21,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeModels\Es2015GrammarInterfaces.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITypeScriptCodeModel.cs" />
     <Compile Include="CodeModels\TypeScriptGrammarInterfaces.cs" />
