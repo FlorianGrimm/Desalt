@@ -7,10 +7,21 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
+    using System.Collections.Immutable;
+
     /***********************************************************************************************
      * TypeScript Grammar, version 1.8 (Jan 2016)
      * ---------------------------------------------------------------------------------------------
      * See https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md
+     *
+     * The TypeScript grammar is a superset of the grammar defined in the ECMAScript 2015 Language
+     * Specification (specifically, the ECMA-262 Standard, 6th Edition) and this appendix lists only
+     * productions that are new or modified from the ECMAScript grammar.
+     *
+     * See http://www.ecma-international.org/ecma-262/6.0/ for the ES2015 grammar.
+     *
+     * Many of these interface names and shapes are taken from the TypeScript source code at:
+     * https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts.
      **********************************************************************************************/
 
     /* A.1 Types
@@ -415,8 +426,14 @@ namespace Desalt.TypeScript.CodeModels
      * DeclarationSourceFile:
      *  DeclarationScript
      *  DeclarationModule
-     *
-     * ImplementationScript:
+     */
+
+    public interface IImplementationSourceFile : ITypeScriptCodeModel
+    {
+        bool IsModule { get; }
+    }
+
+    /* ImplementationScript:
      *  ImplementationScriptElementsOpt
      *
      * ImplementationScriptElements:
@@ -427,6 +444,11 @@ namespace Desalt.TypeScript.CodeModels
      *  ImplementationElement
      *  AmbientModuleDeclaration
      */
+
+    public interface IImplementationScript : IImplementationSourceFile
+    {
+        ImmutableArray<IImplementationScriptElement> Elements { get; }
+    }
 
     public interface IImplementationScriptElement : ITypeScriptCodeModel { }
 
@@ -444,7 +466,7 @@ namespace Desalt.TypeScript.CodeModels
      *  ImportAliasDeclaration
      */
 
-    public interface IImplementationElement : ITypeScriptCodeModel { }
+    public interface IImplementationElement : IImplementationScriptElement { }
 
     /* DeclarationScript:
      *  DeclarationScriptElementsOpt
