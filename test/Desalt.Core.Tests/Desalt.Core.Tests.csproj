@@ -137,6 +137,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Emit\EmitterTests.cs" />
     <Compile Include="Extensions\StreamExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />

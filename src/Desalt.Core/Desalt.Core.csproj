@@ -124,6 +124,7 @@
     <Compile Include="CodeModels\ICodeModel.cs" />
     <Compile Include="CodeModels\ICodeModelVisitor.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
+    <Compile Include="Emit\Emitter.cs" />
     <Compile Include="Emit\IEmitter.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
