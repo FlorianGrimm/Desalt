@@ -18,14 +18,11 @@ namespace Desalt.Core.Emit
     /// <summary>
     /// General-purpose emitter for serializing code models into code.
     /// </summary>
-    public class Emitter : IDisposable
+    public class Emitter<T> : IDisposable where T : ICodeModel
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
-
-        public static readonly Encoding DefaultEncoding = new UTF8Encoding(
-            encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
         private readonly StreamWriter _streamWriter;
         private readonly IndentedTextWriter _writer;
@@ -41,7 +38,7 @@ namespace Desalt.Core.Emit
                 throw new ArgumentNullException(nameof(outputStream));
             }
 
-            Encoding = encoding ?? DefaultEncoding;
+            Encoding = encoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
             Options = options ?? EmitOptions.Default;
 
             _streamWriter = new StreamWriter(outputStream, Encoding, bufferSize: 1024, leaveOpen: true)
@@ -77,21 +74,31 @@ namespace Desalt.Core.Emit
         /// <typeparam name="TElement">The type of <see cref="ICodeModel"/> to emit.</typeparam>
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
+        /// <param name="isFunctionBlock">
+        /// Indicates whether this block is a function block, which means that <see
+        /// cref="EmitOptions.SpaceWithinEmptyFunctionBody"/> will be used instead of
+        /// <see cref="EmitOptions.SpaceWithinSimpleBlockBraces"/>.
+        /// </param>
         public void WriteBlock<TElement>(
             IEnumerable<TElement> blockElements,
-            Action<TElement> elementAction) where TElement : ICodeModel
+            Action<TElement> elementAction,
+            bool isFunctionBlock = false)
+            where TElement : T
         {
-            if (blockElements == null)
-            {
-                throw new ArgumentNullException(nameof(blockElements));
-            }
-
-            if (elementAction == null)
-            {
-                throw new ArgumentNullException(nameof(elementAction));
-            }
+            if (blockElements == null) { throw new ArgumentNullException(nameof(blockElements)); }
+            if (elementAction == null) { throw new ArgumentNullException(nameof(elementAction)); }
 
             TElement[] array = blockElements.ToSafeArray();
+
+            // check empty blocks
+            if (array.Length == 0 && !Options.SimpleBlockOnNewLine)
+            {
+                bool includeSpace = isFunctionBlock && Options.SpaceWithinEmptyFunctionBody ||
+                    !isFunctionBlock && Options.SpaceWithinSimpleBlockBraces;
+                _writer.Write(includeSpace ? "{ }" : "{}");
+                return;
+            }
+
             bool isSimpleBlock = array.Length < 2;
 
             WriteBlock(isSimpleBlock: isSimpleBlock, writeBodyAction: () =>
@@ -166,7 +173,7 @@ namespace Desalt.Core.Emit
         /// </summary>
         /// <param name="elements">The list of elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        public void WriteCommaList(IEnumerable<ICodeModel> elements, Action<ICodeModel> elementAction)
+        public void WriteCommaList<TElem>(IEnumerable<TElem> elements, Action<TElem> elementAction)
         {
             string delimiter = Options.SpaceAfterComma ? ", " : ",";
             WriteList(elements, delimiter, elementAction);
@@ -179,7 +186,7 @@ namespace Desalt.Core.Emit
         /// <param name="elements">The list of elements to visit.</param>
         /// <param name="delimiter">The delimiter to use between elements.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        public void WriteList(IEnumerable<ICodeModel> elements, string delimiter, Action<ICodeModel> elementAction)
+        public void WriteList<TElem>(IEnumerable<TElem> elements, string delimiter, Action<TElem> elementAction)
         {
             if (elements == null) { throw new ArgumentNullException(nameof(elements)); }
             if (delimiter == null) { throw new ArgumentNullException(nameof(delimiter)); }
@@ -189,10 +196,10 @@ namespace Desalt.Core.Emit
                 throw new ArgumentException($"{nameof(delimiter)} can't be empty", nameof(delimiter));
             }
 
-            ICodeModel[] array = elements.ToSafeArray();
+            TElem[] array = elements.ToSafeArray();
             for (int i = 0; i < array.Length; i++)
             {
-                ICodeModel element = array[i];
+                TElem element = array[i];
                 if (element != null)
                 {
                     elementAction(element);
