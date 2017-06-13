@@ -59,6 +59,12 @@ namespace Desalt.Core.Emit
 
         public EmitOptions Options { get; }
 
+        public int IndentLevel
+        {
+            get => _writer.IndentLevel;
+            set => _writer.IndentLevel = value;
+        }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -66,6 +72,21 @@ namespace Desalt.Core.Emit
         public void Write(string text)
         {
             _writer.Write(text);
+        }
+
+        public void WriteLine()
+        {
+            _writer.WriteLine();
+        }
+
+        public void WriteLine(string text)
+        {
+            _writer.WriteLine(text);
+        }
+
+        public void WriteBlankLine()
+        {
+            _writer.WriteBlankLine();
         }
 
         /// <summary>
