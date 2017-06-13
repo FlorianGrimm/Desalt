@@ -160,6 +160,39 @@ namespace Desalt.Core.Emit
             _writer.Write("}");
         }
 
+        /// <summary>
+        /// Writes a list of elements using the specified delimiter between elements. The delimiter
+        /// is not written on the last element.
+        /// </summary>
+        /// <param name="elements">The list of elements to visit.</param>
+        /// <param name="delimiter">The delimiter to use between elements.</param>
+        /// <param name="elementAction">The action to perform on each element.</param>
+        public void WriteList(IEnumerable<ICodeModel> elements, string delimiter, Action<ICodeModel> elementAction)
+        {
+            if (elements == null) { throw new ArgumentNullException(nameof(elements)); }
+            if (delimiter == null) { throw new ArgumentNullException(nameof(delimiter)); }
+            if (elementAction == null) { throw new ArgumentNullException(nameof(elementAction)); }
+            if (delimiter.Length == 0)
+            {
+                throw new ArgumentException($"{nameof(delimiter)} can't be empty", nameof(delimiter));
+            }
+
+            ICodeModel[] array = elements.ToSafeArray();
+            for (int i = 0; i < array.Length; i++)
+            {
+                ICodeModel element = array[i];
+                if (element != null)
+                {
+                    elementAction(element);
+                }
+
+                if (i < array.Length - 1)
+                {
+                    _writer.Write(delimiter);
+                }
+            }
+        }
+
         public void Dispose()
         {
             Dispose(disposing: true);

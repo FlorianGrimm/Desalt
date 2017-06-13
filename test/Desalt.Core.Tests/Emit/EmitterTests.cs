@@ -9,6 +9,7 @@ namespace Desalt.Core.Tests.Emit
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Emit;
@@ -154,6 +155,48 @@ namespace Desalt.Core.Tests.Emit
                 var emitter = new Emitter(stream, options: s_testOptions);
                 emitter.WriteBlock(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
+            }
+        }
+
+        [TestMethod]
+        public void WriteList_should_throw_on_null_args()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream);
+                Action action = () => emitter.WriteList(null, "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
+
+                action = () => emitter.WriteList(s_mockStatements, null, elem => emitter.Write(elem.ToCodeDisplay()));
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("delimiter");
+
+                action = () => emitter.WriteList(s_mockStatements, "", elem => emitter.Write(elem.ToCodeDisplay()));
+                action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("delimiter");
+
+                action = () => emitter.WriteList(s_mockStatements, "-", elementAction: null);
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementAction");
+            }
+        }
+
+        [TestMethod]
+        public void WriteList_should_add_delimiters_between_elements()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream);
+                emitter.WriteList(s_mockStatements, "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                stream.ReadAllText().Should().Be("One-Two-Three");
+            }
+        }
+
+        [TestMethod]
+        public void WriteList_should_not_add_a_delimiter_when_there_is_only_one_element()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream);
+                emitter.WriteList(s_mockStatements.Take(1), "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                stream.ReadAllText().Should().Be("One");
             }
         }
     }
