@@ -161,6 +161,18 @@ namespace Desalt.Core.Emit
         }
 
         /// <summary>
+        /// Writes a list of elements using a comma between elements. The comma is not written on the
+        /// last element.
+        /// </summary>
+        /// <param name="elements">The list of elements to visit.</param>
+        /// <param name="elementAction">The action to perform on each element.</param>
+        public void WriteCommaList(IEnumerable<ICodeModel> elements, Action<ICodeModel> elementAction)
+        {
+            string delimiter = Options.SpaceAfterComma ? ", " : ",";
+            WriteList(elements, delimiter, elementAction);
+        }
+
+        /// <summary>
         /// Writes a list of elements using the specified delimiter between elements. The delimiter
         /// is not written on the last element.
         /// </summary>

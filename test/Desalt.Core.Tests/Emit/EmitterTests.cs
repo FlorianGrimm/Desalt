@@ -199,5 +199,41 @@ namespace Desalt.Core.Tests.Emit
                 stream.ReadAllText().Should().Be("One");
             }
         }
+
+        [TestMethod]
+        public void WriteCommaList_should_throw_on_null_args()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream);
+                Action action = () => emitter.WriteCommaList(null, elem => emitter.Write(elem.ToCodeDisplay()));
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
+
+                action = () => emitter.WriteCommaList(s_mockStatements, elementAction: null);
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementAction");
+            }
+        }
+
+        [TestMethod]
+        public void WriteCommaList_should_add_commas_without_spaces_between_elements()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream, options: s_testOptions.WithSpaceAfterComma(false));
+                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
+                stream.ReadAllText().Should().Be("One,Two,Three");
+            }
+        }
+
+        [TestMethod]
+        public void WriteCommaList_should_add_commas_with_spaces_between_elements()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream, options: s_testOptions.WithSpaceAfterComma(true));
+                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
+                stream.ReadAllText().Should().Be("One, Two, Three");
+            }
+        }
     }
 }
