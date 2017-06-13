@@ -10,10 +10,12 @@ namespace Desalt.Core.Tests.Emit
     using System;
     using System.IO;
     using System.Text;
+    using Desalt.Core.CodeModels;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
 
     [TestClass]
     public class EmitterTests
@@ -21,6 +23,20 @@ namespace Desalt.Core.Tests.Emit
         private static readonly EmitOptions s_testOptions = EmitOptions.Default
             .WithNewline("\n")
             .WithIndentationPrefix("\t");
+
+        private static readonly ICodeModel[] s_mockStatements = new[]
+        {
+            CreateMockStatement("One"),
+            CreateMockStatement("Two"),
+            CreateMockStatement("Three")
+        };
+
+        private static ICodeModel CreateMockStatement(string text)
+        {
+            var mock = new Mock<ICodeModel>();
+            mock.Setup(m => m.ToCodeDisplay()).Returns(text);
+            return mock.Object;
+        }
 
         [TestMethod]
         public void Ctor_should_throw_on_null_args()
@@ -52,6 +68,23 @@ namespace Desalt.Core.Tests.Emit
             var options = EmitOptions.Default.WithIndentationPrefix("\v");
             var emitter = new Emitter(new MemoryStream(), options: options);
             emitter.Options.Should().BeSameAs(options);
+        }
+
+        [TestMethod]
+        public void WriteBlock_should_throw_on_null_args()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream);
+                Action action = () => emitter.WriteBlock(writeBodyAction: null);
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writeBodyAction");
+
+                action = () => emitter.WriteBlock<ICodeModel>(blockElements: null, elementAction: _ => { });
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("blockElements");
+
+                action = () => emitter.WriteBlock(blockElements: new ICodeModel[0], elementAction: null);
+                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementAction");
+            }
         }
 
         [TestMethod]
@@ -110,6 +143,17 @@ namespace Desalt.Core.Tests.Emit
                 // ReSharper disable once AccessToDisposedClosure
                 emitter.WriteBlock(() => emitter.Write("text"));
                 stream.ReadAllText().Should().Be("{text}");
+            }
+        }
+
+        [TestMethod]
+        public void WriteBlock_should_write_all_of_the_statements_using_a_visitor()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var emitter = new Emitter(stream, options: s_testOptions);
+                emitter.WriteBlock(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
+                stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
             }
         }
     }

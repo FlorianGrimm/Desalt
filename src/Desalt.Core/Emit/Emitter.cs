@@ -8,8 +8,11 @@
 namespace Desalt.Core.Emit
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using Desalt.Core.CodeModels;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -68,8 +71,58 @@ namespace Desalt.Core.Emit
             _writer.Write(text);
         }
 
+        /// <summary>
+        /// Writes a block of elements, using the options to format the code.
+        /// </summary>
+        /// <typeparam name="TElement">The type of <see cref="ICodeModel"/> to emit.</typeparam>
+        /// <param name="blockElements">The elements to visit.</param>
+        /// <param name="elementAction">The action to perform on each element.</param>
+        public void WriteBlock<TElement>(
+            IEnumerable<TElement> blockElements,
+            Action<TElement> elementAction) where TElement : ICodeModel
+        {
+            if (blockElements == null)
+            {
+                throw new ArgumentNullException(nameof(blockElements));
+            }
+
+            if (elementAction == null)
+            {
+                throw new ArgumentNullException(nameof(elementAction));
+            }
+
+            TElement[] array = blockElements.ToSafeArray();
+            bool isSimpleBlock = array.Length < 2;
+
+            WriteBlock(isSimpleBlock: isSimpleBlock, writeBodyAction: () =>
+            {
+                for (int i = 0; i < array.Length; i++)
+                {
+                    elementAction(array[i]);
+
+                    // don't add a blank line after the last statement
+                    if (Options.NewlineBetweenStatements && i < array.Length - 1)
+                    {
+                        _writer.WriteLine();
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// Wraps the <paramref name="writeBodyAction"/> inside of an indented block.
+        /// </summary>
+        /// <param name="writeBodyAction">The action to wrap inside of an indented block.</param>
+        /// <param name="isSimpleBlock">
+        /// Indicates whether the block should be treated as a simple block, which has special formatting.
+        /// </param>
         public void WriteBlock(Action writeBodyAction, bool isSimpleBlock = false)
         {
+            if (writeBodyAction == null)
+            {
+                throw new ArgumentNullException(nameof(writeBodyAction));
+            }
+
             _writer.Write("{");
 
             bool indentBlock = (isSimpleBlock && Options.SimpleBlockOnNewLine) ||
