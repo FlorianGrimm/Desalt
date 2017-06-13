@@ -23,7 +23,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitVariableStatement(Es5VariableStatement model)
         {
             WriteVariableDeclarations(model.Declarations);
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitEmptyStatement(Es5EmptyStatement model)
         {
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitExpressionStatement(Es5ExpressionStatement model)
         {
             Visit(model.Expression);
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -49,10 +49,10 @@ namespace Desalt.JavaScript.Emit
         public override void VisitIfStatement(Es5IfStatement model)
         {
             // write the 'if' expression
-            _writer.Write("if");
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("if");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
             Visit(model.IfExpression);
-            _writer.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
 
             // write the 'if' statement
             Visit(model.IfStatement);
@@ -63,7 +63,7 @@ namespace Desalt.JavaScript.Emit
                 return;
             }
 
-            _writer.Write(_options.SpaceBeforeCompoundStatementKeyword ? " else " : "else ");
+            _emitter.Write(_options.SpaceBeforeCompoundStatementKeyword ? " else " : "else ");
             Visit(model.ElseStatement);
         }
 
@@ -72,14 +72,14 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitContinueStatement(Es5ContinueStatement model)
         {
-            _writer.Write("continue");
+            _emitter.Write("continue");
             if (model.Label != null)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
                 Visit(model.Label);
             }
 
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -87,14 +87,14 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitBreakStatement(Es5BreakStatement model)
         {
-            _writer.Write("break");
+            _emitter.Write("break");
             if (model.Label != null)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
                 Visit(model.Label);
             }
 
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -102,14 +102,14 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitReturnStatement(Es5ReturnStatement model)
         {
-            _writer.Write("return");
+            _emitter.Write("return");
             if (model.Expression != null)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
                 Visit(model.Expression);
             }
 
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -117,10 +117,10 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitWithStatement(Es5WithStatement model)
         {
-            _writer.Write("with");
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("with");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
             Visit(model.Expression);
-            _writer.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
             Visit(model.Statement);
         }
 
@@ -130,7 +130,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitLabelledStatement(Es5LabelledStatement model)
         {
             Visit(model.Identifier);
-            _writer.Write(_options.SpaceAfterColon ? ": " : ":");
+            _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
             Visit(model.Statement);
         }
 
@@ -139,12 +139,12 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitSwitchStatement(Es5SwitchStatement model)
         {
-            _writer.Write("switch");
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("switch");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
             Visit(model.Condition);
-            _writer.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
 
-            WriteBlock(() =>
+            _emitter.WriteBlock(() =>
             {
                 for (int i = 0; i < model.CaseClauses.Length; i++)
                 {
@@ -158,13 +158,13 @@ namespace Desalt.JavaScript.Emit
 
                     if (shouldWriteNewline)
                     {
-                        _writer.WriteBlankLine();
+                        _emitter.WriteBlankLine();
                     }
 
                     // we still need to decrease the indentation level if we wrote a new line above
                     if (_options.NewlineBetweenStatements)
                     {
-                        _writer.IndentLevel--;
+                        _emitter.IndentLevel--;
                     }
                 }
 
@@ -174,12 +174,12 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _writer.Write("default");
-                _writer.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
+                _emitter.Write("default");
+                _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
                 if (_options.NewlineBetweenStatements)
                 {
-                    _writer.WriteLine();
-                    _writer.IndentLevel++;
+                    _emitter.WriteLine();
+                    _emitter.IndentLevel++;
                 }
 
                 for (int i = 0; i < model.DefaultClauseStatements.Length; i++)
@@ -191,14 +191,14 @@ namespace Desalt.JavaScript.Emit
                     // don't write a new line if this is the last statement
                     if (_options.NewlineBetweenStatements && i < model.DefaultClauseStatements.Length - 1)
                     {
-                        _writer.WriteLine();
+                        _emitter.WriteLine();
                     }
                 }
 
                 // don't write a new line, but do decrease the indentation
                 if (_options.NewlineBetweenStatements)
                 {
-                    _writer.IndentLevel--;
+                    _emitter.IndentLevel--;
                 }
             });
         }
@@ -208,13 +208,13 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitCaseClause(Es5CaseClause model)
         {
-            _writer.Write("case ");
+            _emitter.Write("case ");
             Visit(model.Expression);
-            _writer.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
+            _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
             }
 
             foreach (IEs5Statement statement in model.Statements)
@@ -222,7 +222,7 @@ namespace Desalt.JavaScript.Emit
                 Visit(statement);
                 if (_options.NewlineBetweenStatements)
                 {
-                    _writer.WriteLine();
+                    _emitter.WriteLine();
                 }
             }
         }
@@ -232,9 +232,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitThrowStatement(Es5ThrowStatement model)
         {
-            _writer.Write("throw ");
+            _emitter.Write("throw ");
             Visit(model.Expression);
-            _writer.Write(";");
+            _emitter.Write(";");
         }
 
         /// <summary>
@@ -243,10 +243,10 @@ namespace Desalt.JavaScript.Emit
         public override void VisitTryStatement(Es5TryStatement model)
         {
             // write the try block
-            _writer.Write("try");
+            _emitter.Write("try");
             if (_options.SpaceBeforeOpeningBlockBrace)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
             WriteBlock(model.TryBlock);
@@ -256,13 +256,13 @@ namespace Desalt.JavaScript.Emit
             {
                 if (_options.SpaceAfterClosingBlockBrace)
                 {
-                    _writer.Write(" ");
+                    _emitter.Write(" ");
                 }
 
-                _writer.Write("catch");
-                _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+                _emitter.Write("catch");
+                _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
                 Visit(model.CatchIdentifier);
-                _writer.Write(_options.SpaceAfterClosingStatementParenthesis || _options.SpaceBeforeOpeningBlockBrace
+                _emitter.Write(_options.SpaceAfterClosingStatementParenthesis || _options.SpaceBeforeOpeningBlockBrace
                     ? ") "
                     : ")");
 
@@ -277,13 +277,13 @@ namespace Desalt.JavaScript.Emit
 
             if (_options.SpaceAfterClosingBlockBrace)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
-            _writer.Write("finally");
+            _emitter.Write("finally");
             if (_options.SpaceBeforeOpeningBlockBrace)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
             WriteBlock(model.FinallyBlock);
@@ -294,7 +294,7 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitDebuggerStatement(Es5DebuggerStatement model)
         {
-            _writer.Write("debugger;");
+            _emitter.Write("debugger;");
         }
     }
 }
