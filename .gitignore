@@ -4,6 +4,7 @@
 /src/**/obj/
 /test/**/bin/
 /test/**/obj/
+/TestResults/
 
 *.csproj.user
 *.DotSettings.user
