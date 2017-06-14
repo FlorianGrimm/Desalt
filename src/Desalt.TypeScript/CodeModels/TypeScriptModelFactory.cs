@@ -8,12 +8,23 @@
 namespace Desalt.TypeScript.CodeModels
 {
     using System.Collections.Generic;
+    using Desalt.TypeScript.CodeModels.Expressions;
 
     /// <summary>
     /// Provides factory methods for creating TypeScript code models.
     /// </summary>
     public static class TypeScriptModelFactory
     {
+        //// ===========================================================================================================
+        //// Singleton Properties
+        //// ===========================================================================================================
+
+        public static ITypeScriptThisExpression ThisExpression => TypeScriptThisExpression.Instance;
+
+        //// ===========================================================================================================
+        //// Literal Expressions
+        //// ===========================================================================================================
+
         public static ITypeScriptIdentifier Identifier(string name) => TypeScriptIdentifier.Get(name);
 
         //// ===========================================================================================================

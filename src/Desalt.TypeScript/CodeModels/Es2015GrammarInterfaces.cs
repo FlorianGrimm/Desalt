@@ -52,9 +52,7 @@ namespace Desalt.TypeScript.CodeModels
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITypeScriptExpression : ITypeScriptCodeModel
-    {
-    }
+    public interface ITypeScriptThisExpression : ITypeScriptExpression { }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:

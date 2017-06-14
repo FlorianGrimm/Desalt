@@ -22,12 +22,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeModels\Es2015GrammarInterfaces.cs" />
-    <Compile Include="CodeModels\TypeScriptIdentifier.cs" />
+    <Compile Include="CodeModels\Expressions\TypeScriptThisExpression.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITypeScriptCodeModel.cs" />
+    <Compile Include="CodeModels\TypeScriptIdentifier.cs" />
     <Compile Include="CodeModels\TypeScriptGrammarInterfaces.cs" />
     <Compile Include="CodeModels\TypeScriptModelFactory.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.cs" />
+    <Compile Include="CodeModels\TypeScriptVisitor.Expressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
