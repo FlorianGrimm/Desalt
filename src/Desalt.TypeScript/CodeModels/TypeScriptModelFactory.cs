@@ -14,6 +14,8 @@ namespace Desalt.TypeScript.CodeModels
     /// </summary>
     public static class TypeScriptModelFactory
     {
+        public static ITypeScriptIdentifier Identifier(string name) => TypeScriptIdentifier.Get(name);
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================

@@ -21,6 +21,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
         public virtual void VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript identifier.
+        /// </summary>
+        public virtual void VisitIdentifier(ITypeScriptIdentifier model) => DefaultVisit(model);
     }
 
     /// <summary>
@@ -40,5 +45,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
         public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript identifier.
+        /// </summary>
+        public virtual TResult VisitIdentifier(ITypeScriptIdentifier model) => DefaultVisit(model);
     }
 }

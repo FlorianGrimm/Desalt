@@ -31,6 +31,11 @@ namespace Desalt.TypeScript.CodeModels
      *   IdentifierName but not ReservedWord
      */
 
+    public interface ITypeScriptIdentifier : ITypeScriptExpression
+    {
+        string Text { get; }
+    }
+
     /* 12.2 Primary Expression
      * -----------------------
      * PrimaryExpression:
@@ -46,6 +51,10 @@ namespace Desalt.TypeScript.CodeModels
      *   TemplateLiteral
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
+
+    public interface ITypeScriptExpression : ITypeScriptCodeModel
+    {
+    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
