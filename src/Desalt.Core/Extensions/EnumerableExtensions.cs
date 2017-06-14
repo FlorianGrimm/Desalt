@@ -49,7 +49,7 @@ namespace Desalt.Core.Extensions
         /// </returns>
         public static T[] ToSafeArray<T>(this IEnumerable<T> item)
         {
-            return item?.ToArray() ?? new T[0];
+            return item as T[] ?? item?.ToArray() ?? new T[0];
         }
 
         /// <summary>

@@ -14,57 +14,57 @@ namespace Desalt.JavaScript.Emit
     {
         public override void VisitDoStatement(Es5DoStatement model)
         {
-            _writer.Write("do");
+            _emitter.Write("do");
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
             }
 
             Visit(model.Statement);
 
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel--;
+                _emitter.WriteLine();
+                _emitter.IndentLevel--;
             }
             else if (_options.SpaceBeforeCompoundStatementKeyword)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while");
             Visit(model.Condition);
-            _writer.Write(");");
+            _emitter.Write(");");
         }
 
         public override void VisitWhileStatement(Es5WhileStatement model)
         {
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while(");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while(");
             Visit(model.Condition);
-            _writer.Write(")");
+            _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
             }
             else if (_options.SpaceAfterClosingStatementParenthesis)
             {
-                _writer.WriteLine(" ");
+                _emitter.WriteLine(" ");
             }
 
             Visit(model.Statement);
 
             if (_options.NewlineBetweenStatements)
             {
-                _writer.IndentLevel--;
+                _emitter.IndentLevel--;
             }
         }
 
         public override void VisitForStatement(Es5ForStatement model)
         {
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
 
             // write declarations/initializers
             if (model.Declarations.Length > 0)
@@ -75,20 +75,20 @@ namespace Desalt.JavaScript.Emit
             {
                 Visit(model.Initializer);
             }
-            _writer.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
 
             // write condition
             Visit(model.Condition);
-            _writer.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
 
             // write incrementor
             Visit(model.Incrementor);
-            _writer.Write(")");
+            _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
             }
 
             // write the statement
@@ -97,7 +97,7 @@ namespace Desalt.JavaScript.Emit
 
         public override void VisitForInStatement(Es5ForInStatement model)
         {
-            _writer.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
 
             // write declarations/initializers
             if (model.Declaration != null)
@@ -109,14 +109,14 @@ namespace Desalt.JavaScript.Emit
                 Visit(model.LeftSide);
             }
 
-            _writer.Write(" in ");
+            _emitter.Write(" in ");
             Visit(model.RightSide);
-            _writer.Write(")");
+            _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
             {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
             }
 
             // write the statement

@@ -10,6 +10,7 @@ namespace Desalt.JavaScript.Tests.Emit
     using System;
     using System.IO;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
     using Desalt.JavaScript.CodeModels;
     using Desalt.JavaScript.Emit;
     using FluentAssertions;
@@ -26,26 +27,19 @@ namespace Desalt.JavaScript.Tests.Emit
 
         private static void VerifyOutput(IEs5CodeModel model, string expected, EmitOptions options = null)
         {
-            var emitter = new Es5Emitter();
             using (var stream = new MemoryStream())
+            using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default))
             {
-                emitter.Emit(model, stream, options: options ?? EmitOptions.Default);
-
-                byte[] bytes = stream.ToArray();
-                string actual = Es5Emitter.DefaultEncoding.GetString(bytes);
-
-                actual.Should().Be(expected);
+                emitter.Visit(model);
+                stream.ReadAllText(emitter.Encoding).Should().Be(expected);
             }
         }
 
         [TestMethod]
-        public void Emit_should_throw_on_null_args()
+        public void Ctor_should_throw_on_null_args()
         {
-            var emitter = new Es5Emitter();
-            Action action = () => emitter.Emit(model: null, outputStream: new MemoryStream());
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("model");
-
-            action = () => emitter.Emit(model: Es5ModelFactory.Identifier("id"), outputStream: null);
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new Es5Emitter(outputStream: null);
             action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
         }
     }

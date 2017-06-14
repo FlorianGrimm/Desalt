@@ -10,60 +10,47 @@ namespace Desalt.JavaScript.Emit
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
-    using Desalt.Core.Utility;
     using Desalt.JavaScript.CodeModels;
     using Desalt.JavaScript.CodeModels.Statements;
 
     /// <summary>
     /// Takes an <see cref="IEs5CodeModel"/> and converts it to text.
     /// </summary>
-    public partial class Es5Emitter : Es5Visitor, IEmitter<IEs5CodeModel>
+    public partial class Es5Emitter : Es5Visitor, IDisposable
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        public static readonly Encoding DefaultEncoding = new UTF8Encoding(
-            encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+        private readonly Emitter<IEs5CodeModel> _emitter;
+        private readonly EmitOptions _options;
 
-        private IndentedTextWriter _writer;
-        private EmitOptions _options;
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public Es5Emitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
+        {
+            _emitter = new Emitter<IEs5CodeModel>(outputStream, encoding, options);
+            _options = options;
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public Encoding Encoding => _emitter.Encoding;
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Emit(IEs5CodeModel model, Stream outputStream, Encoding encoding = null, EmitOptions options = null)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (outputStream == null)
-            {
-                throw new ArgumentNullException(nameof(outputStream));
-            }
-
-            _options = options ?? EmitOptions.Default;
-            encoding = encoding ?? DefaultEncoding;
-
-            using (var streamWriter = new StreamWriter(outputStream, encoding, bufferSize: 1024, leaveOpen: true))
-            using (_writer = new IndentedTextWriter(streamWriter, _options.IndentationPrefix))
-            {
-                streamWriter.AutoFlush = true;
-                _writer.NewLine = _options.Newline;
-
-                Visit(model);
-            }
-        }
-
         public void Dispose()
         {
-            Dispose(disposing: true);
+            _emitter.Dispose();
         }
 
         public override void VisitProgram(Es5Program model)
@@ -74,92 +61,9 @@ namespace Desalt.JavaScript.Emit
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void WriteBlock(Es5BlockStatement blockStatement)
         {
-            if (!disposing)
-            {
-                return;
-            }
-
-            _writer?.Dispose();
-            _writer = null;
-        }
-
-        private void WriteBlock(Es5BlockStatement blockStatement) => WriteBlock(blockStatement.Statements);
-
-        private void WriteBlock(IEnumerable<IEs5SourceElement> sourceElements)
-        {
-            IEs5SourceElement[] array = sourceElements.ToSafeArray();
-
-            // check empty blocks
-            if (array.Length == 0 && !_options.SimpleBlockOnNewLine)
-            {
-                _writer.Write(_options.SpaceWithinEmptyFunctionBody ? "{ }" : "{}");
-                return;
-            }
-
-            // check simple blocks and put them on one line
-            if (array.Length == 1 && !_options.SimpleBlockOnNewLine)
-            {
-                _writer.Write(_options.SpaceWithinSimpleBlockBraces ? "{ " : "{");
-                Visit(array[0]);
-                _writer.Write(_options.SpaceWithinSimpleBlockBraces ? " }" : "}");
-                return;
-            }
-
-            // write out a normal block with new lines and indentation
-            WriteBlock(() =>
-            {
-                for (int i = 0; i < array.Length; i++)
-                {
-                    Visit(array[i]);
-
-                    // don't add a blank line after the last statement
-                    if (_options.NewlineBetweenStatements && i < array.Length - 1)
-                    {
-                        _writer.WriteLine();
-                    }
-                }
-            });
-        }
-
-        private void WriteBlock(Action writeBodyAction, bool isSimpleBlock = false)
-        {
-            _writer.Write("{");
-
-            bool indentBlock = (isSimpleBlock && _options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && _options.NewlineAfterOpeningBrace);
-
-            if (indentBlock)
-            {
-                _writer.WriteLine();
-                _writer.IndentLevel++;
-            }
-            else if (_options.SpaceWithinSimpleBlockBraces)
-            {
-                _writer.Write(" ");
-            }
-
-            writeBodyAction();
-
-            if (indentBlock)
-            {
-                _writer.IndentLevel--;
-            }
-
-            // ReSharper disable ArrangeBraces_ifelse
-            if ((isSimpleBlock && _options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && _options.NewlineBeforeClosingBrace))
-            {
-                _writer.WriteLine();
-            }
-            else if (isSimpleBlock && _options.SpaceWithinSimpleBlockBraces)
-            {
-                _writer.Write(" ");
-            }
-            // ReSharper restore ArrangeBraces_ifelse
-
-            _writer.Write("}");
+            _emitter.WriteBlock(blockStatement.Statements, elem => elem.Accept(this));
         }
 
         /// <summary>
@@ -169,52 +73,7 @@ namespace Desalt.JavaScript.Emit
         /// <param name="elements">The list of elements to visit.</param>
         private void WriteCommaList(IEnumerable<IEs5CodeModel> elements)
         {
-            WriteList(elements, _options.SpaceAfterComma ? ", " : ",");
-        }
-
-        /// <summary>
-        /// Writes a list of elements using a comma between elements. The comma is not written on the
-        /// last element.
-        /// </summary>
-        /// <param name="elements">The list of elements to visit.</param>
-        /// <param name="writeElementAction">The action taken for each element.</param>
-        private void WriteCommaList<T>(IEnumerable<T> elements, Action<T> writeElementAction)
-        {
-            string delimiter = _options.SpaceAfterComma ? ", " : ",";
-            T[] array = elements.ToSafeArray();
-            for (int i = 0; i < array.Length; i++)
-            {
-                writeElementAction(array[i]);
-                if (i < array.Length - 1)
-                {
-                    _writer.Write(delimiter);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Writes a list of elements using the specified delimiter between elements. The delimiter
-        /// is not written on the last element.
-        /// </summary>
-        /// <param name="elements">The list of elements to visit.</param>
-        /// <param name="delimiter">The delimiter to use between elements.</param>
-        private void WriteList(IEnumerable<IEs5CodeModel> elements, string delimiter)
-        {
-            IEs5CodeModel[] array = elements as IEs5CodeModel[] ?? elements.ToSafeArray();
-            for (int i = 0; i < array.Length; i++)
-            {
-                IEs5CodeModel element = array[i];
-
-                if (element != null)
-                {
-                    Visit(element);
-                }
-
-                if (i < array.Length - 1)
-                {
-                    _writer.Write(delimiter);
-                }
-            }
+            _emitter.WriteList(elements, _options.SpaceAfterComma ? ", " : ",", elem => elem.Accept(this));
         }
 
         /// <summary>
@@ -235,31 +94,34 @@ namespace Desalt.JavaScript.Emit
             bool isUnnamed = string.IsNullOrEmpty(functionName);
 
             // write the keyword, which is typically one of the following: 'function', 'get', or 'set
-            _writer.Write(functionKeyword);
+            _emitter.Write(functionKeyword);
 
             // if there's a function name, write it
             if (isUnnamed)
             {
-                _writer.Write(_options.SpaceBeforeAnonymousFunctionDeclarationParentheses ? " (" : "(");
+                _emitter.Write(_options.SpaceBeforeAnonymousFunctionDeclarationParentheses ? " (" : "(");
             }
             else
             {
-                _writer.Write(" " + functionName);
-                _writer.Write(_options.SpaceBeforeNamedFunctionDeclarationParentheses ? " (" : "(");
+                _emitter.Write(" " + functionName);
+                _emitter.Write(_options.SpaceBeforeNamedFunctionDeclarationParentheses ? " (" : "(");
             }
 
             // write the parameters
-            WriteCommaList(parameters);
+            WriteCommaList(parameters ?? Enumerable.Empty<IEs5CodeModel>());
 
             // write the closing parenthesis
             bool spaceAfter = isUnnamed
                 ? _options.SpaceAfterAnonymousFunctionDeclarationParentheses
                 : _options.SpaceAfterNamedFunctionDeclarationParentheses;
 
-            _writer.Write(spaceAfter ? ") " : ")");
+            _emitter.Write(spaceAfter ? ") " : ")");
 
             // write the function body
-            WriteBlock(functionBody);
+            _emitter.WriteBlock(
+                functionBody ?? Enumerable.Empty<IEs5SourceElement>(),
+                elem => elem.Accept(this),
+                isFunctionBlock: true);
         }
 
         /// <summary>
@@ -268,8 +130,8 @@ namespace Desalt.JavaScript.Emit
         /// <param name="declarations">The declaratios to write.</param>
         private void WriteVariableDeclarations(IEnumerable<Es5VariableDeclaration> declarations)
         {
-            _writer.Write("var ");
-            WriteCommaList(declarations, (Es5VariableDeclaration d) =>
+            _emitter.Write("var ");
+            _emitter.WriteCommaList(declarations, (Es5VariableDeclaration d) =>
             {
                 Visit(d.Identifier);
 
@@ -278,7 +140,7 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _writer.Write(_options.SurroundOperatorsWithSpaces ? " = " : "=");
+                _emitter.Write(_options.SurroundOperatorsWithSpaces ? " = " : "=");
                 Visit(d.Initializer);
             });
         }

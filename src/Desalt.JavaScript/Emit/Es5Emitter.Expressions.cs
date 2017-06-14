@@ -16,12 +16,12 @@ namespace Desalt.JavaScript.Emit
     {
         public override void VisitIdentifier(Es5Identifier model)
         {
-            _writer.Write(model.Text);
+            _emitter.Write(model.Text);
         }
 
         public override void VisitThisExpresssion(Es5ThisExpression model)
         {
-            _writer.Write("this");
+            _emitter.Write("this");
         }
 
         public override void VisitLiteralExpression(Es5LiteralExpression model)
@@ -29,22 +29,22 @@ namespace Desalt.JavaScript.Emit
             switch (model.Kind)
             {
                 case Es5LiteralKind.Null:
-                    _writer.Write("null");
+                    _emitter.Write("null");
                     break;
 
                 case Es5LiteralKind.True:
-                    _writer.Write("true");
+                    _emitter.Write("true");
                     break;
 
                 case Es5LiteralKind.False:
-                    _writer.Write("false");
+                    _emitter.Write("false");
                     break;
 
                 case Es5LiteralKind.Decimal:
                 case Es5LiteralKind.HexInteger:
                 case Es5LiteralKind.String:
                 case Es5LiteralKind.RegExp:
-                    _writer.Write(model.Literal);
+                    _emitter.Write(model.Literal);
                     break;
 
                 default:
@@ -62,12 +62,12 @@ namespace Desalt.JavaScript.Emit
 
             if (_options.SurroundOperatorsWithSpaces)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
-            _writer.Write(model.Operator.ToCodeDisplay());
+            _emitter.Write(model.Operator.ToCodeDisplay());
             if (_options.SurroundOperatorsWithSpaces)
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
             Visit(model.RightSide);
@@ -80,13 +80,13 @@ namespace Desalt.JavaScript.Emit
         {
             if (model.Elements.Length == 0)
             {
-                _writer.Write(_options.SpaceWithinEmptyArrayBrackets ? "[ ]" : "[]");
+                _emitter.Write(_options.SpaceWithinEmptyArrayBrackets ? "[ ]" : "[]");
                 return;
             }
 
-            _writer.Write("[");
+            _emitter.Write("[");
             WriteCommaList(model.Elements);
-            _writer.Write("]");
+            _emitter.Write("]");
         }
 
         /// <summary>
@@ -97,11 +97,11 @@ namespace Desalt.JavaScript.Emit
             int propCount = model.PropertyAssignments.Length;
             if (propCount == 0)
             {
-                _writer.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
+                _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
                 return;
             }
 
-            WriteBlock(isSimpleBlock: propCount == 1, writeBodyAction: () =>
+            _emitter.WriteBlock(isSimpleBlock: propCount == 1, writeBodyAction: () =>
             {
                 for (int i = 0; i < propCount; i++)
                 {
@@ -116,11 +116,11 @@ namespace Desalt.JavaScript.Emit
 
                     if (_options.NewlineBetweenPropertyAssignments)
                     {
-                        _writer.WriteLine(",");
+                        _emitter.WriteLine(",");
                     }
                     else
                     {
-                        _writer.Write(",");
+                        _emitter.Write(",");
                     }
                 }
             });
@@ -155,8 +155,8 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitPropertyValueAssignment(Es5PropertyValueAssignment model)
         {
-            _writer.Write(model.PropertyName);
-            _writer.Write(_options.SpaceAfterColon ? ": " : ":");
+            _emitter.Write(model.PropertyName);
+            _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
             Visit(model.Value);
         }
 
@@ -165,9 +165,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitParenthesizedExpression(Es5ParenthesizedExpression model)
         {
-            _writer.Write("(");
+            _emitter.Write("(");
             Visit(model.Expression);
-            _writer.Write(")");
+            _emitter.Write(")");
         }
 
         /// <summary>
@@ -186,13 +186,13 @@ namespace Desalt.JavaScript.Emit
             Visit(model.MemberExpression);
             if (model.IsBracketNotation)
             {
-                _writer.Write("[");
+                _emitter.Write("[");
                 Visit(model.BracketExpression);
-                _writer.Write("]");
+                _emitter.Write("]");
             }
             else if (model.IsDotNotation)
             {
-                _writer.Write(".");
+                _emitter.Write(".");
                 Visit(model.DotName);
             }
         }
@@ -204,13 +204,13 @@ namespace Desalt.JavaScript.Emit
         {
             if (model.IsNewCall)
             {
-                _writer.Write("new ");
+                _emitter.Write("new ");
             }
 
             Visit(model.CallExpression);
-            _writer.Write("(");
+            _emitter.Write("(");
             WriteCommaList(model.Arguments);
-            _writer.Write(")");
+            _emitter.Write(")");
         }
 
         /// <summary>
@@ -223,20 +223,20 @@ namespace Desalt.JavaScript.Emit
 
             if (!isPostfix)
             {
-                _writer.Write(model.Operator.ToCodeDisplay());
+                _emitter.Write(model.Operator.ToCodeDisplay());
             }
 
             // some operators require a space after them
             if (model.Operator.IsOneOf(Es5UnaryOperator.Delete, Es5UnaryOperator.Void, Es5UnaryOperator.Typeof))
             {
-                _writer.Write(" ");
+                _emitter.Write(" ");
             }
 
             Visit(model.Operand);
 
             if (isPostfix)
             {
-                _writer.Write(model.Operator.ToCodeDisplay());
+                _emitter.Write(model.Operator.ToCodeDisplay());
             }
         }
 
@@ -250,7 +250,7 @@ namespace Desalt.JavaScript.Emit
             string operatorString = model.Operator.ToCodeDisplay();
             bool surround = _options.SurroundOperatorsWithSpaces ||
                 model.Operator.IsOneOf(Es5BinaryOperator.InstanceOf, Es5BinaryOperator.In);
-            _writer.Write(surround ? $" {operatorString} " : operatorString);
+            _emitter.Write(surround ? $" {operatorString} " : operatorString);
 
             Visit(model.RightSide);
         }
@@ -261,10 +261,10 @@ namespace Desalt.JavaScript.Emit
         public override void VisitConditionalExpression(Es5ConditionalExpression model)
         {
             Visit(model.Condition);
-            _writer.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
+            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
 
             Visit(model.WhenTrue);
-            _writer.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
+            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
 
             Visit(model.WhenFalse);
         }
