@@ -51,6 +51,11 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsLiteralExpression RegExpLiteral(string literal) =>
             TsLiteralExpression.CreateRegExp(literal);
 
+        public static ITsArrayLiteralExpression ArrayLiteral(params ITsExpression[] elements)
+        {
+            return new TsArrayLiteralExpression(elements);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================

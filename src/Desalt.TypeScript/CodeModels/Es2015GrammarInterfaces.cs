@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
+    using System.Collections.Immutable;
     using Desalt.TypeScript.CodeModels.Expressions;
 
     /***********************************************************************************************
@@ -60,6 +61,11 @@ namespace Desalt.TypeScript.CodeModels
     {
         TsLiteralKind Kind { get; }
         string Literal { get; }
+    }
+
+    public interface ITsArrayLiteralExpression : ITsExpression
+    {
+        ImmutableArray<ITsExpression> Elements { get; }
     }
 
     /*
