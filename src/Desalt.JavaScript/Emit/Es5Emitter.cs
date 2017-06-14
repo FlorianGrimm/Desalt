@@ -7,6 +7,7 @@
 
 namespace Desalt.JavaScript.Emit
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -18,7 +19,7 @@ namespace Desalt.JavaScript.Emit
     /// <summary>
     /// Takes an <see cref="IEs5CodeModel"/> and converts it to text.
     /// </summary>
-    public partial class Es5Emitter : Es5Visitor
+    public partial class Es5Emitter : Es5Visitor, IDisposable
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -46,6 +47,11 @@ namespace Desalt.JavaScript.Emit
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public void Dispose()
+        {
+            _emitter.Dispose();
+        }
 
         public override void VisitProgram(Es5Program model)
         {

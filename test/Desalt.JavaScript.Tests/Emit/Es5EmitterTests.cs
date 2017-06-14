@@ -28,8 +28,8 @@ namespace Desalt.JavaScript.Tests.Emit
         private static void VerifyOutput(IEs5CodeModel model, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
+            using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default))
             {
-                var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default);
                 emitter.Visit(model);
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);
             }
@@ -38,6 +38,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Ctor_should_throw_on_null_args()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new Es5Emitter(outputStream: null);
             action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
         }
