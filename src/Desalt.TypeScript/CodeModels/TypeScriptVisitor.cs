@@ -25,7 +25,7 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual void VisitIdentifier(ITypeScriptIdentifier model) => DefaultVisit(model);
+        public virtual void VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
     }
 
     /// <summary>
@@ -49,6 +49,6 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual TResult VisitIdentifier(ITypeScriptIdentifier model) => DefaultVisit(model);
+        public virtual TResult VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
     }
 }

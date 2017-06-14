@@ -12,13 +12,13 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
-        public virtual void VisitThisExpresssion(ITypeScriptThisExpression model) => DefaultVisit(model);
+        public virtual void VisitThisExpresssion(ITsThisExpression model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a literal expression, where a literal can be an identifier, keyword, string,
         /// number, or regular expression.
         /// </summary>
-        public virtual void VisitLiteralExpression(ITypeScriptLiteralExpression model) => DefaultVisit(model);
+        public virtual void VisitLiteralExpression(ITsLiteralExpression model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
@@ -93,13 +93,13 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
-        public virtual TResult VisitThisExpresssion(ITypeScriptThisExpression model) => DefaultVisit(model);
+        public virtual TResult VisitThisExpresssion(ITsThisExpression model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a literal expression, where a literal can be an identifier, keyword, string,
         /// number, or regular expression.
         /// </summary>
-        public virtual TResult VisitLiteralExpression(ITypeScriptLiteralExpression model) => DefaultVisit(model);
+        public virtual TResult VisitLiteralExpression(ITsLiteralExpression model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid

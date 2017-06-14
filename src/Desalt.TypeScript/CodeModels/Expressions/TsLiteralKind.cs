@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptLiteralKind.cs" company="Justin Rockwood">
+// <copyright file="TsLiteralKind.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,7 +10,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents the different kinds of literal tokens.
     /// </summary>
-    public enum TypeScriptLiteralKind
+    public enum TsLiteralKind
     {
         /// <summary>
         /// The 'null' literal.

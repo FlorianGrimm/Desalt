@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptThisExpression.cs" company="Justin Rockwood">
+// <copyright file="TsThisExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,19 +13,19 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TypeScriptThisExpression : CodeModel, ITypeScriptThisExpression
+    internal class TsThisExpression : CodeModel, ITsThisExpression
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        internal static readonly TypeScriptThisExpression Instance = new TypeScriptThisExpression();
+        internal static readonly TsThisExpression Instance = new TsThisExpression();
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TypeScriptThisExpression()
+        private TsThisExpression()
         {
         }
 

@@ -19,37 +19,37 @@ namespace Desalt.TypeScript.CodeModels
         //// Singleton Properties
         //// ===========================================================================================================
 
-        public static ITypeScriptThisExpression ThisExpression => TypeScriptThisExpression.Instance;
+        public static ITsThisExpression ThisExpression => TsThisExpression.Instance;
 
-        public static ITypeScriptLiteralExpression NullLiteral => TypeScriptLiteralExpression.Null;
+        public static ITsLiteralExpression NullLiteral => TsLiteralExpression.Null;
 
-        public static ITypeScriptLiteralExpression TrueLiteral => TypeScriptLiteralExpression.True;
+        public static ITsLiteralExpression TrueLiteral => TsLiteralExpression.True;
 
-        public static ITypeScriptLiteralExpression FalseLiteral => TypeScriptLiteralExpression.False;
+        public static ITsLiteralExpression FalseLiteral => TsLiteralExpression.False;
 
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================
 
-        public static ITypeScriptIdentifier Identifier(string name) => TypeScriptIdentifier.Get(name);
+        public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
 
-        public static ITypeScriptLiteralExpression StringLiteral(string literal) =>
-            TypeScriptLiteralExpression.CreateString(literal);
+        public static ITsLiteralExpression StringLiteral(string literal) =>
+            TsLiteralExpression.CreateString(literal);
 
-        public static ITypeScriptLiteralExpression DecimalLiteral(string literal) =>
-            TypeScriptLiteralExpression.CreateDecimal(literal);
+        public static ITsLiteralExpression DecimalLiteral(string literal) =>
+            TsLiteralExpression.CreateDecimal(literal);
 
-        public static ITypeScriptLiteralExpression BinaryInteger(string literal) =>
-            TypeScriptLiteralExpression.CreateBinaryInteger(literal);
+        public static ITsLiteralExpression BinaryInteger(string literal) =>
+            TsLiteralExpression.CreateBinaryInteger(literal);
 
-        public static ITypeScriptLiteralExpression OctalInteger(string literal) =>
-            TypeScriptLiteralExpression.CreateOctalInteger(literal);
+        public static ITsLiteralExpression OctalInteger(string literal) =>
+            TsLiteralExpression.CreateOctalInteger(literal);
 
-        public static ITypeScriptLiteralExpression HexIntegerLiteral(string literal) =>
-            TypeScriptLiteralExpression.CreateHexInteger(literal);
+        public static ITsLiteralExpression HexIntegerLiteral(string literal) =>
+            TsLiteralExpression.CreateHexInteger(literal);
 
-        public static ITypeScriptLiteralExpression RegExpLiteral(string literal) =>
-            TypeScriptLiteralExpression.CreateRegExp(literal);
+        public static ITsLiteralExpression RegExpLiteral(string literal) =>
+            TsLiteralExpression.CreateRegExp(literal);
 
         //// ===========================================================================================================
         //// Source Files

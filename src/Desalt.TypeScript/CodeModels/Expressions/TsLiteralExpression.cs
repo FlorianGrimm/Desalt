@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptLiteralExpression.cs" company="Justin Rockwood">
+// <copyright file="TsLiteralExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,26 +14,26 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an expression containing a literal value.
     /// </summary>
-    internal class TypeScriptLiteralExpression : CodeModel, ITypeScriptLiteralExpression
+    internal class TsLiteralExpression : CodeModel, ITsLiteralExpression
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        internal static readonly TypeScriptLiteralExpression Null =
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.Null, "null");
+        internal static readonly TsLiteralExpression Null =
+            new TsLiteralExpression(TsLiteralKind.Null, "null");
 
-        internal static readonly TypeScriptLiteralExpression True =
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.True, "true");
+        internal static readonly TsLiteralExpression True =
+            new TsLiteralExpression(TsLiteralKind.True, "true");
 
-        internal static readonly TypeScriptLiteralExpression False =
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.False, "false");
+        internal static readonly TsLiteralExpression False =
+            new TsLiteralExpression(TsLiteralKind.False, "false");
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TypeScriptLiteralExpression(TypeScriptLiteralKind kind, string literal)
+        private TsLiteralExpression(TsLiteralKind kind, string literal)
         {
             Kind = kind;
             Literal = literal;
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public TypeScriptLiteralKind Kind { get; }
+        public TsLiteralKind Kind { get; }
 
         public string Literal { get; }
 
@@ -65,21 +65,21 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         {
             switch (Kind)
             {
-                case TypeScriptLiteralKind.Null:
+                case TsLiteralKind.Null:
                     return "null";
 
-                case TypeScriptLiteralKind.True:
+                case TsLiteralKind.True:
                     return "true";
 
-                case TypeScriptLiteralKind.False:
+                case TsLiteralKind.False:
                     return "false";
 
-                case TypeScriptLiteralKind.Decimal:
-                case TypeScriptLiteralKind.BinaryInteger:
-                case TypeScriptLiteralKind.OctalInteger:
-                case TypeScriptLiteralKind.HexInteger:
-                case TypeScriptLiteralKind.String:
-                case TypeScriptLiteralKind.RegExp:
+                case TsLiteralKind.Decimal:
+                case TsLiteralKind.BinaryInteger:
+                case TsLiteralKind.OctalInteger:
+                case TsLiteralKind.HexInteger:
+                case TsLiteralKind.String:
+                case TsLiteralKind.RegExp:
                     return Literal;
 
                 default:
@@ -89,22 +89,22 @@ namespace Desalt.TypeScript.CodeModels.Expressions
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
 
-        internal static TypeScriptLiteralExpression CreateString(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.String, literal);
+        internal static TsLiteralExpression CreateString(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.String, literal);
 
-        internal static TypeScriptLiteralExpression CreateDecimal(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.Decimal, literal);
+        internal static TsLiteralExpression CreateDecimal(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.Decimal, literal);
 
-        internal static TypeScriptLiteralExpression CreateBinaryInteger(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.BinaryInteger, literal);
+        internal static TsLiteralExpression CreateBinaryInteger(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.BinaryInteger, literal);
 
-        internal static TypeScriptLiteralExpression CreateOctalInteger(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.OctalInteger, literal);
+        internal static TsLiteralExpression CreateOctalInteger(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.OctalInteger, literal);
 
-        internal static TypeScriptLiteralExpression CreateHexInteger(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.HexInteger, literal);
+        internal static TsLiteralExpression CreateHexInteger(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.HexInteger, literal);
 
-        internal static TypeScriptLiteralExpression CreateRegExp(string literal) =>
-            new TypeScriptLiteralExpression(TypeScriptLiteralKind.RegExp, literal);
+        internal static TsLiteralExpression CreateRegExp(string literal) =>
+            new TsLiteralExpression(TsLiteralKind.RegExp, literal);
     }
 }
