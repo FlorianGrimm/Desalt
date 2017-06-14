@@ -7,6 +7,8 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
+    using Desalt.TypeScript.CodeModels.Expressions;
+
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar
      * -------------------------------------------------------------------------
@@ -53,6 +55,12 @@ namespace Desalt.TypeScript.CodeModels
      */
 
     public interface ITypeScriptThisExpression : ITypeScriptExpression { }
+
+    public interface ITypeScriptLiteralExpression : ITypeScriptExpression
+    {
+        TypeScriptLiteralKind Kind { get; }
+        string Literal { get; }
+    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
