@@ -13,409 +13,780 @@ namespace Desalt.TypeScript.CodeModels
      * See http://www.ecma-international.org/ecma-262/6.0/
      **********************************************************************************************/
 
-    // Since the grammar is mainly the same as the ES5 predecessor, differences are marked with a +
-    // symbol for additions and a - symbol for deletions. Where there are no differences, the
-    // productions may not be shown in this document and you should refer to the
-    // Es5GrammarInterfaces.cs file.
-
     /* 12.1 Identifiers
      * ----------------
-     * +IdentifierReference:
-     *     Identifier
-     *     [~Yield] yield
+     * IdentifierReference:
+     *   Identifier
+     *   [~Yield] yield
      *
-     * +BindingIdentifier:
-     *     Identifier
-     *     [~Yield] yield
+     * BindingIdentifier:
+     *   Identifier
+     *   [~Yield] yield
      *
-     * +LabelIdentifier:
-     *     Identifier
-     *     [~Yield] yield
+     * LabelIdentifier:
+     *   Identifier
+     *   [~Yield] yield
+     *
+     * Identifier:
+     *   IdentifierName but not ReservedWord
      */
 
-    public interface IEntityName { }
-
-    public interface IIdentifier : IEntityName, IPrimaryExpression
-    {
-        string Text { get; }
-    }
-
-    public interface IQualifiedName : IEntityName, ITypeScriptCodeModel
-    {
-        IEntityName Left { get; }
-        IIdentifier Right { get; }
-    }
-
-    /* 12.2 Primary Expressions
-     * ------------------------
+    /* 12.2 Primary Expression
+     * -----------------------
      * PrimaryExpression:
-     *     this
-     *     -Identifier
-     *     +IdentifierReference
-     *     Literal
-     *     ArrayLiteral
-     *     ObjectLiteral
-     *     -( Expression )
-     *     +FunctionExpression
-     *     +ClassExpression
-     *     +GeneratorExpression
-     *     +RegularExpressionLiteral
-     *     +TemplateLiteral
-     *     +CoverParenthesizedExpressionAndArrowParameterList
+     *   this
+     *   IdentifierReference
+     *   Literal
+     *   ArrayLiteral
+     *   ObjectLiteral
+     *   FunctionExpression
+     *   ClassExpression
+     *   GeneratorExpression
+     *   RegularExpressionLiteral
+     *   TemplateLiteral
+     *   CoverParenthesizedExpressionAndArrowParameterList
      */
-
-    public interface IPrimaryExpression : ITypeScriptCodeModel
-    {
-    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
-     *     ( Expression )
-     *     ( )
-     *     ( ... BindingIdentifier )
-     *     ( Expression , ... BindingIdentifier )
+     *   ( Expression )
+     *   ( )
+     *   ( ... BindingIdentifier )
+     *   ( Expression , ... BindingIdentifier )
+     *
+     * When processing the production
+     * PrimaryExpression: CoverParenthesizedExpressionAndArrowParameterList the interpretation of
+     * CoverParenthesizedExpressionAndArrowParameterList is refined using the following grammar:
+     *
+     * ParenthesizedExpression:
+     *   ( Expression )
      */
 
-    /* ArrayLiteral:
-     *     [ ElisionOpt ]
-     *     [ ElementList ]
-     *     [ ElementList , ElisionOpt ]
+    /* 12.2.4 Literals
+     * ---------------
+     * Literal:
+     *   NullLiteral
+     *   BooleanLiteral
+     *   NumericLiteral
+     *   StringLiteral
+     *
+     * NullLiteral: null
+     * BooleanLiteral: true | false
+     * NumericLiteral:
+     *   DecimalLiteral
+     *   BinaryIntegerLiteral
+     *   OctalIntegerLiteral
+     *   HexIntegerLiteral
+     *
+     * StringLiteral:
+     *   " DoubleStringCharacters "
+     *   ' SingleStringCharacters '
+     */
+
+    /* 12.2.5 Array Initializer
+     * ------------------------
+     * ArrayLiteral:
+     *   [ ElisionOpt ]
+     *   [ ElementList ]
+     *   [ ElementList , ElisionOpt ]
      *
      * ElementList:
-     *     ElisionOpt AssignmentExpression
-     *     ElementList , ElisionOpt AssignmentExpression
+     *   ElisionOpt AssignmentExpression
+     *   ElisionOpt SpreadElement
+     *   ElementList , ElisionOpt AssignmentExpression
+     *   ElementList , ElisionOpt SpreadElement
      *
      * Elision:
-     *     ,
-     *     Elision ,
+     *   ,
+     *   Elision ,
+     *
+     * SpreadElement:
+     *   ... AssignmentExpression
      */
 
-    /* ObjectLiteral:
-     *     { }
-     *     { PropertyNameAndValueList }
-     *     { PropertyNameAndValueList , }
+    /* 12.2.6 Object Initializer
+     * -------------------------
+     * ObjectLiteral:
+     *   { }
+     *   { PropertyDefinition }
+     *   { PropertyDefinitionList , PropertyDefinition }
      *
-     * PropertyNameAndValueList:
-     *     PropertyAssignment
-     *     PropertyNameAndValueList , PropertyAssignment
+     * PropertyDefinitionList:
+     *   PropertyDefinition
+     *   PropertyDefinitionList , PropertyDefinition
      *
-     * PropertyAssignment:
-     *     PropertyName : AssignmentExpression
-     *     get PropertyName ( ) { FunctionBody }
-     *     set PropertyName ( PropertySetParameterList ) { FunctionBody }
+     * PropertyDefinition:
+     *   IdentifierReference
+     *   CoverInitializedName
+     *   PropertyName : AssignmentExpression
+     *   MethodDefinition
      *
      * PropertyName:
-     *     IdentifierName
-     *     StringLiteral
-     *     NumericLiteral
+     *   LiteralPropertyName
+     *   ComputedPropertyName
      *
-     * PropertySetParameterList:
-     *     Identifier
+     * LiteralPropertyName:
+     *   IdentifierName
+     *   StringLiteral
+     *   NumericLiteral
+     *
+     * ComputedPropertyName:
+     *   [ AssignmentExpression ]
+     *
+     * CoverInitializedName:
+     *   IdentifierReference Initializer
+     *
+     * Initializer:
+     *   = AssignmentExpression
      */
 
-    /* 11.2 Left-Hand-Side Expressions
+    /* 12.2.9 Template Literals
+     * ------------------------
+     * TemplateLiteral:
+     *   NoSubstitutionTemplate
+     *   TemplateHead Expression TemplateSpans
+     *
+     * TemplateSpans:
+     *   TemplateTail
+     *   TemplateMiddleList TemplateTail
+     *
+     * TemplateMiddleList:
+     *   TemplateMiddle Expression
+     *   TemplateMiddleList TemplateMiddle Expression
+     */
+
+    /* 12.e Left-Hand-Side Expressions
      * -------------------------------
      * MemberExpression:
-     *     PrimaryExpression
-     *     FunctionExpression
-     *     MemberExpression [ Expression ]
-     *     MemberExpression . IdentifierName
-     *     new MemberExpression Arguments
+     *   PrimaryExpression
+     *   MemberExpression [ Expression ]
+     *   MemberExpression . IdentifierName
+     *   MemberExpression TemplateLiteral
+     *   SuperProperty
+     *   MetaProperty
+     *   new MemberExpression Arguments
+     *
+     * SuperProperty:
+     *   super [ Expression ]
+     *   super . IdentifierName
+     *
+     * MetaProperty:
+     *   NewTarget
+     *
+     * NewTarget:
+     *   new . target
      *
      * NewExpression:
-     *     MemberExpression
-     *     new NewExpression
+     *   MemberExpression
+     *   new NewExpression
      *
      * CallExpression:
-     *     MemberExpression Arguments
-     *     CallExpression Arguments
-     *     CallExpression [ Expression ]
-     *     CallExpression . IdentifierName
+     *   MemberExpression Arguments
+     *   SuperCall
+     *   CallExpression Arguments
+     *   CallExpression [ Expression ]
+     *   CallExpression . IdentifierName
+     *   CallExpression TemplateLiteral
+     *
+     * SuperCall:
+     *   super Arguments
      *
      * Arguments:
-     *     ( )
-     *     ( ArgumentList )
+     *   ( )
+     *   ( ArgumentList )
      *
      * ArgumentList:
-     *     AssignmentExpression
-     *     ArgumentList , AssignmentExpression
+     *   AssignmentExpression
+     *   ... AssignmentExpression
+     *   ArgumentList , AssignmentExpression
+     *   ArgumentList , ... AssignmentExpression
      *
      * LeftHandSideExpression:
-     *     NewExpression
-     *     CallExpression
+     *   NewExpression
+     *   CallExpression
      */
 
-    /* 11.3 Postfix Expressions
+    /* 12.4 Postfix Expressions
      * ------------------------
      * PostfixExpression:
-     *     LeftHandSideExpression
-     *     LeftHandSideExpression [no LineTerminator here] ++
-     *     LeftHandSideExpression [no LineTerminator here] --
+     *   LeftHandSideExpression
+     *   LeftHandSideExpression [no LineTerminator here] ++
+     *   LeftHandSideExpression [no LineTerminator here] --
      */
 
-    /* 11.4 Unary Operators
+    /* 12.5 Unary Operators
      * --------------------
      * UnaryExpression:
-     *     PostfixExpression
-     *     delete UnaryExpression
-     *     void UnaryExpression
-     *     typeof UnaryExpression
-     *     ++ UnaryExpression
-     *     EqualityExpressionNoIn
-     *     BitwiseANDExpressionNoIn & EqualityExpressionNoIn
+     *   PostfixExpression
+     *   delete UnaryExpression
+     *   void UnaryExpression
+     *   typeof UnaryExpression
+     *   ++ UnaryExpression
+     *   -- UnaryExpression
+     *   + UnaryExpression
+     *   - UnaryExpression
+     *   ~ UnaryExpression
+     *   ! UnaryExpression
+     */
+
+    /* 12.6 Multiplicative Operators
+     * -----------------------------
+     * MultiplicativeExpression:
+     *   UnaryExpression
+     *   MultiplicativeExpression MultiplicativeOperator UnaryExpression
+     *
+     * MultiplicativeOperator: one of
+     *   * / %
+     */
+
+    /* 12.7 Additive Operators
+     * -----------------------
+     * AdditiveExpression:
+     *   MultiplicativeExpression
+     *   AdditiveExpression + MultiplicativeExpression
+     *   AdditiveExpression - MultiplicativeExpression
+     */
+
+    /* 12.8 Bitwise Shift Operators
+     * ----------------------------
+     * ShiftExpression:
+     *   AdditiveExpression
+     *   ShiftExpression << AdditiveExpression
+     *   ShiftExpression >> AdditiveExpression
+     *   ShiftExpression >>> AdditiveExpression
+     */
+
+    /* 12.9 Relational Operators
+     * -------------------------
+     * RelationalExpression:
+     *   ShiftExpression
+     *   RelationalExpression < ShiftExpression
+     *   RelationalExpression > ShiftExpression
+     *   RelationalExpression <= ShiftExpression
+     *   RelationalExpression >= ShiftExpression
+     *   RelationalExpression instanceof ShiftExpression
+     *   RelationalExpression in ShiftExpression
+     */
+
+    /* 12.10 Equality Operators
+     * ------------------------
+     * EqualityExpression:
+     *   RelationalExpression
+     *   EqualityExpression == RelationalExpression
+     *   EqualityExpression != RelationalExpression
+     *   EqualityExpression === RelationalExpression
+     *   EqualityExpression !== RelationalExpression
+     */
+
+    /* 12.11 Binary Bitwise Operators
+     * ------------------------------
+     * BitwiseANDExpression:
+     *   EqualityExpression
+     *   BitwiseANDExpression & EqualityExpression
      *
      * BitwiseXORExpression:
-     *     BitwiseANDExpression
-     *     BitwiseXORExpression ^ BitwiseANDExpression
-     *
-     * BitwiseXORExpressionNoIn:
-     *     BitwiseANDExpressionNoIn
-     *     BitwiseXORExpressionNoIn ^ BitwiseANDExpressionNoIn
+     *   BitwiseANDExpression
+     *   BitwiseXORExpression ^ BitwiseANDExpression
      *
      * BitwiseORExpression:
-     *     BitwiseXORExpression
-     *     BitwiseORExpression | BitwiseXORExpression
-     *
-     * BitwiseORExpressionNoIn:
-     *     BitwiseXORExpressionNoIn
-     *     BitwiseORExpressionNoIn | BitwiseXORExpressionNoIn
-     *
-     * 11.11 Binary Logical Operators
+     *   BitwiseXORExpression
+     *   BitwiseORExpression | BitwiseXORExpression
+     */
+
+    /* 12.12 Binary Logical Operators
      * ------------------------------
      * LogicalANDExpression:
-     *     BitwiseORExpression
-     *     LogicalANDExpression && BitwiseORExpression
-     *
-     * LogicalANDExpressionNoIn:
-     *     BitwiseORExpressionNoIn
-     *     LogicalANDExpressionNoIn && BitwiseORExpressionNoIn
+     *   BitwiseORExpression
+     *   LogicalANDExpression && BitwiseORExpression
      *
      * LogicalORExpression:
-     *     LogicalANDExpression
-     *     LogicalORExpression || LogicalANDExpression
-     *
-     * LogicalORExpressionNoIn:
-     *     LogicalANDExpressionNoIn
-     *     LogicalORExpressionNoIn || LogicalANDExpressionNoIn
+     *   LogicalANDExpression
+     *   LogicalORExpression || LogicalANDExpression
      */
 
-    /* 11.12 Conditional Operator ( ? : )
+    /* 12.13 Conditional Operator ( ? : )
      * ----------------------------------
      * ConditionalExpression:
-     *     LogicalORExpression
-     *     LogicalORExpression ? AssignmentExpression : AssignmentExpression
-     *
-     * ConditionalExpressionNoIn:
-     *     LogicalORExpressionNoIn
-     *     LogicalORExpressionNoIn ? AssignmentExpression : AssignmentExpressionNoIn
+     *   LogicalORExpression
+     *   LogicalORExpression ? AssignmentExpression : AssignmentExpression
      */
 
-    /* 11.13 Assignment Operators
+    /* 12.14 Assignment Operators
      * --------------------------
      * AssignmentExpression:
-     *     ConditionalExpression
-     *     LeftHandSideExpression = AssignmentExpression
-     *     LeftHandSideExpression AssignmentOperator AssignmentExpression
-     *
-     * AssignmentExpressionNoIn:
-     *     ConditionalExpressionNoIn
-     *     LeftHandSideExpression = AssignmentExpressionNoIn
-     *     LeftHandSideExpression AssignmentOperator AssignmentExpressionNoIn
+     *   ConditionalExpression
+     *   YieldExpression
+     *   ArrowFunction
+     *   LeftHandSideExpression = AssignmentExpression
+     *   LeftHandSideExpression AssignmentOperator AssignmentExpression
      *
      * AssignmentOperator: one of
-     *     *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
+     *   *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
      */
 
-    /* 11.14 Comma Operator ( , )
+    /* 12.15 Comma Operator ( , )
      * --------------------------
      * Expression:
-     *     AssignmentExpression
-     *     Expression , AssignmentExpression
-     *
-     * ExpressionNoIn:
-     *     AssignmentExpressionNoIn
-     *     ExpressionNoIn , AssignmentExpressionNoIn
+     *   AssignmentExpression
+     *   Expression , AssignmentExpression
      */
 
-    /* 12. Statements
+    public interface ITypeScriptExpression : ITypeScriptCodeModel
+    {
+    }
+
+    /* A.3 Statements
      * --------------
      * Statement:
-     *     Block
-     *     VariableStatement
-     *     EmptyStatement
-     *     ExpressionStatement
-     *     IfStatement
-     *     IterationStatement
-     *     ContinueStatement
-     *     BreakStatement
-     *     ReturnStatement
-     *     WithStatement
-     *     LabelledStatement
-     *     SwitchStatement
-     *     ThrowStatement
-     *     TryStatement
-     *     DebuggerStatement
+     *   BlockStatement
+     *   VariableStatement
+     *   EmptyStatement
+     *   ExpressionStatement
+     *   IfStatement
+     *   BreakableStatement
+     *   ContinueStatement
+     *   BreakStatement
+     *   ReturnStatement
+     *   WithStatement
+     *   LabelledStatement
+     *   ThrowStatement
+     *   TryStatement
+     *   DebuggerStatement
      *
-     * 12.1 Block
+     * Declaration:
+     *   HoistableDeclaration
+     *   ClassDeclaration
+     *   LexicalDeclaration
+     *
+     * HoistableDeclaration:
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *
+     * BreakableStatement:
+     *   IterationStatement
+     *   SwitchStatement
+     *
+     * 13.2 Block
      * ----------
+     * BlockStatement:
+     *   Block
+     *
      * Block:
-     *     { StatementListOpt }
+     *   { StatementListOpt }
      *
      * StatementList:
-     *     Statement
-     *     StatementList Statement
+     *   StatementListItem
+     *   StatementList StatementListItem
+     *
+     * StatementListItem:
+     *   Statement
+     *   Declaration
      */
 
-    /* 12.2 Variable Statement
-     * -----------------------
+    /* 13.3.1 Let and Const Declarations
+     * ---------------------------------
+     * LexicalDeclaration:
+     *   LetOrConst BindingList ;
+     *
+     * LetOrConst:
+     *   let
+     *   const
+     *
+     * BindingList:
+     *   LexicalBinding
+     *   BindingList , LexicalBinding
+     *
+     * LexicalBinding:
+     *   BindingIdentifier InitializerOpt
+     *   BindingPattern Initializer
+     */
+
+    /* 13.3.2 Variable Statement
+     * -------------------------
      * VariableStatement:
-     *     var VariableDeclarationList ;
+     *   var VariableDeclarationList ;
      *
      * VariableDeclarationList:
-     *     VariableDeclaration
-     *     VariableDeclarationList , VariableDeclaration
-     *
-     * VariableDeclarationListNoIn:
-     *     VariableDeclarationNoIn
-     *     VariableDeclarationListNoIn , VariableDeclarationNoIn
+     *   VariableDeclaration
+     *   VariableDeclarationList , VariableDeclaration
      *
      * VariableDeclaration:
-     *     Identifier InitialiserOpt
-     *
-     * VariableDeclarationNoIn:
-     *     Identifier InitialiserNoInOpt
-     *
-     * Initialiser:
-     *     = AssignmentExpression
-     *
-     * InitialiserNoIn:
-     *     = AssignmentExpressionNoIn
+     *   BindingIdentifier InitializerOpt
+     *   BindingPattern Initializer
      */
 
-    /* 12.3 Empty Statement
+    /* 13.3.3 Destructuring Binding Patterns
+     * -------------------------------------
+     * BindingPattern:
+     *   ObjectBindingPattern
+     *   ArrayBindingPattern
+     *
+     * ObjectBindingPattern:
+     *   { }
+     *   { BindingPropertyList }
+     *   { BindingPropertyList , }
+     *
+     * ArrayBindingPattern:
+     *   [ ElisionOpt BindingRestElementOpt ]
+     *   [ BindingElementList ]
+     *   [ BindingElementList , ElisionOpt BindingRestElementOpt ]
+     *
+     * BindingPropertyList:
+     *   BindingProperty
+     *   BindingPropertyList , BindingProperty
+     *
+     * BindingElementList:
+     *   BindingElisionElement
+     *   BindingElementList , BindingElisionElement
+     *
+     * BindingElisionElement:
+     *   ElisionOpt BindingElement
+     *
+     * BindingProperty:
+     *   SingleNameBinding
+     *   PropertyName : BindingElement
+     *
+     * BindingElement:
+     *   SingleNameBinding
+     *   BindingPattern InitializerOpt
+     *
+     * SingleNameBinding:
+     *   BindingIdentifier Initializer
+     *
+     * BindingRestElement:
+     *   ... BindingIdentifier
+     */
+
+    /* 13.4 Empty Statement
      * --------------------
      * EmptyStatement:
-     *     ;
+     *   ;
      *
-     * 12.4 Expression Statement
+     * 13.5 Expression Statement
      * -------------------------
      * ExpressionStatement:
-     *     [lookahead not { or function] Expression ;
+     *   [lookahead not { {, function, class, let [ }] Expression ;
      *
-     * 12.5 The if Statement
+     * 13.6 The if Statement
      * ---------------------
      * IfStatement:
-     *     if ( Expression ) Statement else Statement
-     *     if ( Expression ) Statement
+     *   if ( Expression ) Statement else Statement
+     *   if ( Expression ) Statement
      *
-     * 12.6 Iteration Statements
+     * 13.7 Iteration Statements
      * -------------------------
      * IterationStatement:
-     *     do Statement while ( Expression ) ;
-     *     while ( Expression ) Statement
-     *     for ( ExpressionNoInOpt ; ExpressionOpt ; ExpressionOpt ) Statement
-     *     for ( var VariableDeclarationListNoIn ; ExpressionOpt ; ExpressionOpt ) Statement
-     *     for ( LeftHandSideExpression in Expression ) Statement
-     *     for ( var VariableDeclarationNoIn in Expression ) Statement
+     *   do Statement while ( Expression ) ;
+     *   while ( Expression ) Statement
+     *   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
+     *   for ( var VariableDeclarationList ; ExpressionOpt ; ExpressionOpt ) Statement
+     *   for ( LexicalDeclaration ExpressionOpt ; ExpressionOpt ) Statement
+     *   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
+     *   for ( var ForBinding in Expression ) Statement
+     *   for ( ForDeclaration in Expression ) Statement
+     *   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
+     *   for ( var ForBinding of AssignmentExpression ) Statement
+     *   for ( ForDeclaration of AssignmentExpression ) Statement
      *
-     * 12.7 The continue Statement
+     * ForDeclaration:
+     *   LetOrConst ForBinding
+     *
+     * ForBinding:
+     *   BindingIdentifier
+     *   BindingPattern
+     *
+     * 13.8 The continue Statement
      * ---------------------------
      * ContinueStatement:
-     *     continue ;
-     *     continue [no LineTerminator here] Identifier ;
+     *   continue ;
+     *   continue [no LineTerminator here] LabelIdentifier ;
      *
-     * 12.8 The break Statement
+     * 13.9 The break Statement
      * ------------------------
      * BreakStatement:
-     *     break ;
-     *     break [no LineTerminator here] Identifier ;
+     *   break ;
+     *   break [no LineTerminator here] LabelIdentifier ;
      *
-     * 12.9 The return Statement
-     * -------------------------
+     * 13.10 The return Statement
+     * --------------------------
      * ReturnStatement:
-     *     return ;
-     *     return [no LineTerminator here] Expression ;
+     *   return ;
+     *   return [no LineTerminator here] Expression ;
      *
-     * 12.10 The with Statement
+     * 13.11 The with Statement
      * ------------------------
      * WithStatement:
-     *     with ( Expression ) Statement
+     *   with ( Expression ) Statement
      *
-     * 12.11 The switch Statement
+     * 13.12 The switch Statement
      * --------------------------
      * SwitchStatement:
-     *     switch ( Expression ) CaseBlock
+     *   switch ( Expression ) CaseBlock
      *
      * CaseBlock:
-     *     { CaseClausesOpt }
-     *     { CaseClausesOpt DefaultClause CaseClausesOpt }
+     *   { CaseClausesOpt }
+     *   { CaseClausesOpt DefaultClause CaseClausesOpt }
      *
      * CaseClauses:
-     *     CaseClause
-     *     CaseClauses CaseClause
+     *   CaseClause
+     *   CaseClauses CaseClause
      *
      * CaseClause:
-     *     case Expression : StatementListOpt
+     *   case Expression : StatementListOpt
      *
      * DefaultClause:
-     *     default : StatementListOpt
+     *   default : StatementListOpt
      *
-     * 12.12 Labelled Statements
+     * 13.13 Labelled Statements
      * -------------------------
      * LabelledStatement:
-     *     Identifier : Statement
+     *   LabelIdentifier : LabelledItem
      *
-     * 12.13 The throw Statement
+     * LabelledItem:
+     *   Statement
+     *   FunctionDeclaration
+     *
+     * 13.14 The throw Statement
      * -------------------------
      * ThrowStatement:
-     *     throw [no LineTerminator here] Expression ;
+     *   throw [no LineTerminator here] Expression ;
      *
      * 12.14 The try Statement
      * -----------------------
      * TryStatement:
-     *     try Block Catch
-     *     try Block Finally
-     *     try Block Catch Finally
+     *   try Block Catch
+     *   try Block Finally
+     *   try Block Catch Finally
      *
      * Catch:
-     *     catch ( Identifier ) Block
+     *   catch ( CatchParameter ) Block
      *
      * Finally:
-     *     finally Block
+     *   finally Block
      *
-     * 12.15 The debugger Statement
+     * CatchParameter:
+     *   BindingIdentifier
+     *   BindingPattern
+     *
+     * 13.16 The debugger Statement
      * ----------------------------
      * DebuggerStatement:
-     *     debugger ;
+     *   debugger ;
      */
 
-    /* 13. Function Definition
-     * -----------------------
+    /* A.4 Functions and Classes
+     *
+     * 14.1 Function Definitions
+     * ------------------------
      * FunctionDeclaration:
-     *     function Identifier ( FormalParameterListOpt ) { FunctionBody }
+     *   function BindingIdentifier ( FormalParameters ) { FunctionBody }
+     *   function ( FormalParameters ) { FunctionBody }
      *
      * FunctionExpression:
-     *     function IdentifierOpt ( FormalParameterListOpt ) { FunctionBody }
+     *   function BindingIdentifierOpt ( FormalParameters ) { FunctionBody }
+     *
+     * StrictFormalParameters:
+     *   FormalParameters
+     *
+     * FormalParameters:
+     *   [empty]
+     *   FormalParameterList
      *
      * FormalParameterList:
-     *     Identifier
-     *     FormalParameterList , Identifier
+     *   FunctionRestParameter
+     *   FormalsList
+     *   FormalsList , FunctionRestParameter
+     *
+     * FormalsList:
+     *   FormalParameter
+     *   FormalsList , FormalParameter
+     *
+     * FunctionRestParameter:
+     *   BindingRestElement
+     *
+     * FormalParameter:
+     *   BindingElement
      *
      * FunctionBody:
-     *     SourceElementsOpt
+     *   FunctionStatementList
+     *
+     * FunctionStatementList:
+     *   StatementListOpt
      */
 
-    /* 14. Program
+    /* 14.2 Arrow Function Definitions
+     * -------------------------------
+     * ArrowFunction:
+     *   ArrowParameters [no LineTerminator here] => ConciseBody
+     *
+     * ArrowParameters:
+     *   BindingIdentifier
+     *   CoverParenthesizedExpressionAndArrowParameterList
+     *
+     * ConciseBody:
+     *   [lookahead != { ] AssignmentExpression
+     *   { FunctionBody }
+     *
+     * When the production
+     * ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList is recognized the following
+     * grammar is used to refine the interpretation of CoverParenthesizedExpressionAndArrowParameterList:
+     *
+     * ArrowFormalParameters:
+     *   ( StrictFormalParameters )
+     */
+
+    /* 14.3 Method Definitions
+     * -----------------------
+     * MethodDefinition:
+     *   PropertyName ( StrictFormalParameters ) { FunctionBody }
+     *   GeneratorMethod
+     *   get PropertyName ( ) { FunctionBody }
+     *   set PropertyName ( PropertySetParameterList ) { FunctionBody }
+     *
+     * PropertySetParameterList:
+     *   FormalParameter
+     */
+
+    /* 14.4 Generator Function Definitions
+     * -----------------------------------
+     * GeneratorMethod:
+     *   * PropertyName ( StrictFormalParameters ) { GeneratorBody }
+     *
+     * GeneratorDeclaration:
+     *   function * BindingIdentifier ( FormalParameters ) { GeneratorBody }
+     *   function * ( FormalParameters ) { GeneratorBody }
+     *
+     * GeneratorExpression:
+     *   function * BindingIdentifierOpt ( FormalParameters ) { GeneratorBody }
+     *
+     * GeneratorBody:
+     *   FunctionBody
+     *
+     * YieldExpression:
+     *   yield
+     *   yield [no LineTerminator here] AssignmentExpression
+     *   yield [no LineTerminator here] * AssignmentExpression
+     */
+
+    /* 14.5 Class Definitions
+     * ----------------------
+     * ClassDeclaration:
+     *   class BindingIdentifier ClassTail
+     *   class ClassTail
+     *
+     * ClassExpression:
+     *   class BindingIdentifierOpt ClassTail
+     *
+     * ClassTail:
+     *   ClassHeritageOpt { ClassBodyOpt }
+     *
+     * ClassHeritage:
+     *   extends LeftHandSideExpression
+     *
+     * ClassBody:
+     *   ClassElementList
+     *
+     * ClassElementList:
+     *   ClassElement
+     *   ClassElementList ClassElement
+     *
+     * ClassElement:
+     *   MethodDefinition
+     *   static MethodDefinition
+     *   ;
+     */
+
+    /* A.5 Scripts and Modules
+     *
+     * 15.1 Scripts
      * ------------
-     * Program:
-     *     SourceElementsOpt
+     * Script:
+     *   ScriptBodyOpt
      *
-     * SourceElements:
-     *     SourceElement
-     *     SourceElements SourceElement
+     * ScriptBody:
+     *   StatementList
      *
-     * SourceElement:
-     *     Statement
-     *     FunctionDeclaration
+     * 15.2 Modules
+     * ------------
+     * Module:
+     *   ModuleBodyOpt
+     *
+     * ModuleBody:
+     *   ModuleItemList
+     *
+     * ModuleItemList:
+     *   ModuleItem
+     *   ModuleItemList ModuleItem
+     *
+     * ModuleItem:
+     *   ImportDeclaration
+     *   ExportDeclaration
+     *   StatementListItem
+     *
+     * 15.2.2 Imports
+     * --------------
+     * ImportDeclaration:
+     *   import ImportClause FromClause ;
+     *   import ModuleSpecifier ;
+     *
+     * ImportClause:
+     *   ImportedDefaultBinding
+     *   NameSpaceImport
+     *   NamedImports
+     *   ImportedDefaultBinding , NameSpaceImport
+     *   ImportedDefaultBinding , NamedImports
+     *
+     * ImportedDefaultBinding:
+     *   ImportedBinding
+     *
+     * NameSpaceImport:
+     *   * as ImportedBinding
+     *
+     * NamedImports:
+     *   { }
+     *   { ImportsList }
+     *   { ImportsList , }
+     *
+     * FromClause:
+     *   from ModuleSpecifier
+     *
+     * ImportsList:
+     *   ImportSpecifier
+     *   ImportsList , ImportSpecifier
+     *
+     * ImportSpecifier:
+     *   ImportedBinding
+     *   IdentifierName as ImportedBinding
+     *
+     * ModuleSpecifier:
+     *   StringLiteral
+     *
+     * ImportedBinding:
+     *   BindingIdentifier
+     *
+     * 15.2.3 Exports
+     * --------------
+     * ExportDeclaration:
+     *   export * FromClause ;
+     *   export ExportClause FromClause ;
+     *   export ExportClause ;
+     *   export VariableStatement
+     *   export Declaration
+     *   export default HoistableDeclaration
+     *   export default ClassDeclaration
+     *   export default [lookahead not in 'function', 'class'] AssignmentExpression ;
+     *
+     * ExportClause:
+     *   { }
+     *   { ExportsList }
+     *   { ExportsList , }
+     *
+     * ExportsList:
+     *   ExportSpecifier
+     *   ExportsList , ExportSpecifier
+     *
+     * ExportSpecifier:
+     *   IdentifierName
+     *   IdentifierName as IdentifierName
      */
 }
