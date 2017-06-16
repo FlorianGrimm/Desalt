@@ -124,7 +124,17 @@ namespace Desalt.TypeScript.CodeModels
 
     public interface ITsArrayLiteral : ITsPrimaryExpression
     {
-        ImmutableArray<ITsExpression> Elements { get; }
+        ImmutableArray<ITsArrayElement> Elements { get; }
+    }
+
+    public interface ITsArrayElement : ITsCodeModel
+    {
+        ITsAssignmentExpression Element { get; }
+
+        /// <summary>
+        /// Indicates whether the <see cref="Element"/> is preceded by a spread operator '...'.
+        /// </summary>
+        bool IsSpreadElement { get; }
     }
 
     /* 12.2.6 Object Initializer

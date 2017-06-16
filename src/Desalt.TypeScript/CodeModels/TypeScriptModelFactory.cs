@@ -51,10 +51,10 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsLiteralExpression RegExpLiteral(string literal) =>
             TsLiteralExpression.CreateRegExp(literal);
 
-        public static ITsArrayLiteral ArrayLiteral(params ITsExpression[] elements)
-        {
-            return new TsArrayLiteral(elements);
-        }
+        public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
+
+        public static ITsArrayElement ArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false) =>
+            new TsArrayElement(element, isSpreadElement);
 
         //// ===========================================================================================================
         //// Source Files

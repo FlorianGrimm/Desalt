@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsArrayElement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,43 +7,54 @@
 
 namespace Desalt.TypeScript.CodeModels.Expressions
 {
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents an array literal of the form '[element...]'.
+    /// Represents an element in an array.
     /// </summary>
-    internal class TsArrayLiteral : CodeModel, ITsArrayLiteral
+    internal class TsArrayElement : CodeModel, ITsArrayElement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(params ITsArrayElement[] elements)
+        public TsArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
+            Element = element ?? throw new ArgumentNullException(nameof(element));
+            IsSpreadElement = isSpreadElement;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsArrayElement> Elements { get; }
+        public ITsAssignmentExpression Element { get; }
+
+        /// <summary>
+        /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
+        /// </summary>
+        public bool IsSpreadElement { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitArrayElement(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitArrayLiteral(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitArrayElement(this);
 
-        public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
+        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            if (IsSpreadElement)
+            {
+                writer.Write("... ");
+            }
+
+            Element.WriteFullCodeDisplay(writer);
         }
     }
 }
