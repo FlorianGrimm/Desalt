@@ -33,7 +33,7 @@ namespace Desalt.TypeScript.CodeModels
      *   IdentifierName but not ReservedWord
      */
 
-    public interface ITsIdentifier : ITsPrimaryExpression
+    public interface ITsIdentifier : ITsPrimaryExpression, ITsPropertyDefinition, ITsLiteralPropertyName
     {
         string Text { get; }
     }
