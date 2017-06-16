@@ -117,6 +117,18 @@ namespace Desalt.TypeScript.CodeModels
         double Value { get; }
     }
 
+    public enum StringLiteralQuoteKind
+    {
+        DoubleQuote,
+        SingleQuote
+    }
+
+    public interface ITsStringLiteral : ITsLiteral, ITsLiteralPropertyName
+    {
+        StringLiteralQuoteKind QuoteKind { get; }
+        string Value { get; }
+    }
+
     /* 12.2.5 Array Initializer
      * ------------------------
      * ArrayLiteral:

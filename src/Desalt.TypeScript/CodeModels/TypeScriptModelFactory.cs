@@ -33,6 +33,9 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
 
+        public static ITsStringLiteral StringLiteral(string value, StringLiteralQuoteKind quoteKind) =>
+            new TsStringLiteral(value, quoteKind);
+
         public static ITsNumericLiteral DecimalLiteral(double value) =>
             new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
 
