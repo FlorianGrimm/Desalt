@@ -55,10 +55,10 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitArrayElement(ITsArrayElement model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits an object literal of the form '{ propertyAssignment, propertyAssignment... }'.
-        ///// </summary>
-        //public virtual void VisitObjectLiteralExpression(TypeScriptObjectLiteralExpression model) => DefaultVisit(model);
+        /// <summary>
+        /// Visits an object literal of the form '{ PropertDefinition, ... }'.
+        /// </summary>
+        public virtual void VisitObjectLiteral(ITsObjectLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
@@ -160,10 +160,10 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual TResult VisitArrayElement(ITsArrayElement model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits an object literal of the form '{ propertyAssignment, propertyAssignment... }'.
-        ///// </summary>
-        //public virtual TResult VisitObjectLiteralExpression(TypeScriptObjectLiteralExpression model) => DefaultVisit(model);
+        /// <summary>
+        /// Visits an object literal of the form '{ PropertDefinition, ... }'.
+        /// </summary>
+        public virtual TResult VisitObjectLiteral(ITsObjectLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.

@@ -192,7 +192,8 @@ namespace Desalt.TypeScript.CodeModels
      *   IdentifierReference
      *   CoverInitializedName
      *   PropertyName : AssignmentExpression
-     *   MethodDefinition
+     *   xx MethodDefinition xx (not in TypeScript)
+     *   (see TypeScript extensions for more)
      *
      * PropertyName:
      *   LiteralPropertyName
@@ -212,6 +213,13 @@ namespace Desalt.TypeScript.CodeModels
      * Initializer:
      *   = AssignmentExpression
      */
+
+    public interface ITsObjectLiteral : ITsPrimaryExpression
+    {
+        ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
+    }
+
+    public interface ITsPropertyDefinition : ITsCodeModel { }
 
     public interface ITsPropertyName : ITsCodeModel { }
 

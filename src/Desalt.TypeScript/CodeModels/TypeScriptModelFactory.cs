@@ -27,6 +27,8 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
 
+        public static readonly ITsObjectLiteral EmptyObjectLiteral = new TsObjectLiteral(null);
+
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================
@@ -57,6 +59,15 @@ namespace Desalt.TypeScript.CodeModels
             new TsArrayElement(element, isSpreadElement);
 
         //// ===========================================================================================================
+        //// Object Literal Expressions
+        //// ===========================================================================================================
+
+        public static ITsObjectLiteral ObjectLiteral(IEnumerable<ITsPropertyDefinition> propertyDefinitions) =>
+            new TsObjectLiteral(propertyDefinitions);
+
+        public static ITsObjectLiteral ObjectLiteral(params ITsPropertyDefinition[] propertyDefinitions) =>
+            new TsObjectLiteral(propertyDefinitions);
+
         //// Source Files
         //// ===========================================================================================================
 
