@@ -65,11 +65,6 @@ namespace Desalt.TypeScript.CodeModels
         string Literal { get; }
     }
 
-    public interface ITsArrayLiteralExpression : ITsPrimaryExpression
-    {
-        ImmutableArray<ITsExpression> Elements { get; }
-    }
-
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
      *   ( Expression )
@@ -126,6 +121,11 @@ namespace Desalt.TypeScript.CodeModels
      * SpreadElement:
      *   ... AssignmentExpression
      */
+
+    public interface ITsArrayLiteral : ITsPrimaryExpression
+    {
+        ImmutableArray<ITsExpression> Elements { get; }
+    }
 
     /* 12.2.6 Object Initializer
      * -------------------------

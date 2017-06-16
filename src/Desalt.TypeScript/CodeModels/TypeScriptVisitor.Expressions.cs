@@ -29,7 +29,7 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an array literal of the form '[element, element...]'.
         /// </summary>
-        public virtual void VisitArrayLiteralExpression(ITsArrayLiteralExpression model) => DefaultVisit(model);
+        public virtual void VisitArrayLiteral(ITsArrayLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an object literal of the form '{ propertyAssignment, propertyAssignment... }'.
@@ -110,7 +110,7 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an array literal of the form '[element, element...]'.
         /// </summary>
-        public virtual TResult VisitArrayLiteralExpression(ITsArrayLiteralExpression model) => DefaultVisit(model);
+        public virtual TResult VisitArrayLiteral(ITsArrayLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an object literal of the form '{ propertyAssignment, propertyAssignment... }'.

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayLiteralExpression.cs" company="Justin Rockwood">
+// <copyright file="TsArrayLiteral.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,13 +14,13 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteralExpression : CodeModel, ITsArrayLiteralExpression
+    internal class TsArrayLiteral : CodeModel, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteralExpression(params ITsExpression[] elements)
+        internal TsArrayLiteral(params ITsExpression[] elements)
         {
             Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsExpression>.Empty;
         }
@@ -35,15 +35,9 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor)
-        {
-            visitor.VisitArrayLiteralExpression(this);
-        }
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitArrayLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor)
-        {
-            return visitor.VisitArrayLiteralExpression(this);
-        }
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitArrayLiteral(this);
 
         public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
 
