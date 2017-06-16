@@ -41,6 +41,8 @@
     <Compile Include="CodeModels\TypeScriptModelFactory.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.Expressions.cs" />
+    <Compile Include="CodeModels\TypeScriptVisitor.Types.cs" />
+    <Compile Include="CodeModels\Types\TsTypeParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

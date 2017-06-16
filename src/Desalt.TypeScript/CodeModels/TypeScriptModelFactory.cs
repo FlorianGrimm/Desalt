@@ -9,6 +9,7 @@ namespace Desalt.TypeScript.CodeModels
 {
     using System.Collections.Generic;
     using Desalt.TypeScript.CodeModels.Expressions;
+    using Desalt.TypeScript.CodeModels.Types;
 
     /// <summary>
     /// Provides factory methods for creating TypeScript code models.
@@ -84,6 +85,13 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsComputedPropertyName ComputedPropertyName(ITsAssignmentExpression expression) =>
             new TsComputedPropertyName(expression);
+
+        //// ===========================================================================================================
+        //// Types
+        //// ===========================================================================================================
+
+        public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
+            new TsTypeParameter(typeName, constraint);
 
         //// ===========================================================================================================
         //// Source Files

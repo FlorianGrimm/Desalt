@@ -40,6 +40,12 @@ namespace Desalt.TypeScript.CodeModels
      *   extends Type
      */
 
+    public interface ITsTypeParameter : ITsCodeModel
+    {
+        ITsIdentifier TypeName { get; }
+        ITsType Constraint { get; }
+    }
+
     /* TypeArguments:
      *   < TypeArgumentList >
      *
@@ -56,6 +62,8 @@ namespace Desalt.TypeScript.CodeModels
      *   FunctionType
      *   ConstructorType
      */
+
+    public interface ITsType : ITsCodeModel { }
 
     /* UnionOrIntersectionOrPrimaryType:
      *   UnionType
