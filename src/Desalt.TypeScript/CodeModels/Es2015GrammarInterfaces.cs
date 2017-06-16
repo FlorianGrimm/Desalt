@@ -103,6 +103,20 @@ namespace Desalt.TypeScript.CodeModels
         bool Value { get; }
     }
 
+    public enum TsNumericLiteralKind
+    {
+        Decimal,
+        BinaryInteger,
+        OctalInteger,
+        HexInteger,
+    }
+
+    public interface ITsNumericLiteral : ITsLiteral, ITsLiteralPropertyName
+    {
+        TsNumericLiteralKind Kind { get; }
+        double Value { get; }
+    }
+
     /* 12.2.5 Array Initializer
      * ------------------------
      * ArrayLiteral:
@@ -174,6 +188,10 @@ namespace Desalt.TypeScript.CodeModels
      * Initializer:
      *   = AssignmentExpression
      */
+
+    public interface ITsPropertyName : ITsCodeModel { }
+
+    public interface ITsLiteralPropertyName : ITsPropertyName { }
 
     /* 12.2.9 Template Literals
      * ------------------------

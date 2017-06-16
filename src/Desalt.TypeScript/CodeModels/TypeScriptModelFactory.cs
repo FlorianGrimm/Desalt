@@ -33,6 +33,18 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
 
+        public static ITsNumericLiteral DecimalLiteral(double value) =>
+            new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
+
+        public static ITsNumericLiteral BinaryIntegerLiteral(long value) =>
+            new TsNumericLiteral(TsNumericLiteralKind.BinaryInteger, value);
+
+        public static ITsNumericLiteral OctalIntegerLiteral(long value) =>
+            new TsNumericLiteral(TsNumericLiteralKind.OctalInteger, value);
+
+        public static ITsNumericLiteral HexIntegerLiteral(long value) =>
+            new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
+
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
         public static ITsArrayElement ArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false) =>

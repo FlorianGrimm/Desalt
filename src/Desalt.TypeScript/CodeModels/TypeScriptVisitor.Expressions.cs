@@ -24,6 +24,11 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitBooleanLiteral(ITsBooleanLiteral model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a numeric literal.
+        /// </summary>
+        public virtual void VisitNumericLiteral(ITsNumericLiteral model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
         ///// assignment expression operator.
@@ -113,6 +118,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a boolean literal.
         /// </summary>
         public virtual TResult VisitBooleanLiteral(ITsBooleanLiteral model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a numeric literal.
+        /// </summary>
+        public virtual TResult VisitNumericLiteral(ITsNumericLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid

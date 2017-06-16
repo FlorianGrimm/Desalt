@@ -26,6 +26,7 @@
     <Compile Include="CodeModels\Expressions\TsArrayLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsBooleanLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsNullLiteral.cs" />
+    <Compile Include="CodeModels\Expressions\TsNumericLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsThis.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITsCodeModel.cs" />
