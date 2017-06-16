@@ -221,6 +221,12 @@ namespace Desalt.TypeScript.CodeModels
 
     public interface ITsPropertyDefinition : ITsCodeModel { }
 
+    public interface ITsCoverInitializedName : ITsPropertyDefinition
+    {
+        ITsIdentifier Identifier { get; }
+        ITsAssignmentExpression Initializer { get; }
+    }
+
     public interface ITsPropertyName : ITsCodeModel { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }

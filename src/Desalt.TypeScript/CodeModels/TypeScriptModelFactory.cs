@@ -68,6 +68,13 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsObjectLiteral ObjectLiteral(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
+        public static ITsCoverInitializedName CoverInitializedName(
+            ITsIdentifier identifier,
+            ITsAssignmentExpression initializer)
+        {
+            return new TsCoverInitializedName(identifier, initializer);
+        }
+
         //// Source Files
         //// ===========================================================================================================
 

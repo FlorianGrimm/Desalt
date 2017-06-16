@@ -60,6 +60,12 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitObjectLiteral(ITsObjectLiteral model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits an element in an object initializer of the form 'identifer = expression'.
+        /// </summary>
+        /// <param name="model"></param>
+        public virtual void VisitCoverInitializedName(ITsCoverInitializedName model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
         ///// </summary>
@@ -164,6 +170,12 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits an object literal of the form '{ PropertDefinition, ... }'.
         /// </summary>
         public virtual TResult VisitObjectLiteral(ITsObjectLiteral model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits an element in an object initializer of the form 'identifer = expression'.
+        /// </summary>
+        /// <param name="model"></param>
+        public virtual TResult VisitCoverInitializedName(ITsCoverInitializedName model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
