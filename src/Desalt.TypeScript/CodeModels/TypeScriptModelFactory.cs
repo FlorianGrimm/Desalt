@@ -25,10 +25,16 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
 
         public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
-
         public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
 
         public static readonly ITsObjectLiteral EmptyObjectLiteral = new TsObjectLiteral(null);
+
+        public static readonly ITsPredefinedType Any = TsPredefinedType.Any;
+        public static readonly ITsPredefinedType Number = TsPredefinedType.Number;
+        public static readonly ITsPredefinedType Boolean = TsPredefinedType.Boolean;
+        public static readonly ITsPredefinedType String = TsPredefinedType.String;
+        public static readonly ITsPredefinedType Symbol = TsPredefinedType.Symbol;
+        public static readonly ITsPredefinedType Void = TsPredefinedType.Void;
 
         //// ===========================================================================================================
         //// Literal Expressions

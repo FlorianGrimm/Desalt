@@ -109,6 +109,8 @@ namespace Desalt.TypeScript.CodeModels
      *   void
      */
 
+    public interface ITsPredefinedType : ITsPrimaryType { }
+
     /* TypeReference:
      *   TypeName [no LineTerminator here] TypeArgumentsOpt
      *
