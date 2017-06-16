@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsThisExpression.cs" company="Justin Rockwood">
+// <copyright file="TsThis.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,19 +13,19 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TsThisExpression : CodeModel, ITsThisExpression
+    internal class TsThis : CodeModel, ITsThis
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        internal static readonly TsThisExpression Instance = new TsThisExpression();
+        internal static readonly TsThis Instance = new TsThis();
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TsThisExpression()
+        private TsThis()
         {
         }
 
@@ -33,15 +33,9 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor)
-        {
-            visitor.VisitThisExpresssion(this);
-        }
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitThis(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor)
-        {
-            return visitor.VisitThisExpresssion(this);
-        }
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitThis(this);
 
         public override string ToCodeDisplay() => "this";
 

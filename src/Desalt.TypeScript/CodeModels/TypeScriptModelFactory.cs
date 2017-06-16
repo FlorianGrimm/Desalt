@@ -19,7 +19,7 @@ namespace Desalt.TypeScript.CodeModels
         //// Singleton Properties
         //// ===========================================================================================================
 
-        public static ITsThisExpression ThisExpression => TsThisExpression.Instance;
+        public static ITsThis This => TsThis.Instance;
 
         public static ITsLiteralExpression NullLiteral => TsLiteralExpression.Null;
 

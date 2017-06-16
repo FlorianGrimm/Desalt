@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
-        public virtual void VisitThisExpresssion(ITsThisExpression model) => DefaultVisit(model);
+        public virtual void VisitThis(ITsThis model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a literal expression, where a literal can be an identifier, keyword, string,
@@ -93,7 +93,7 @@ namespace Desalt.TypeScript.CodeModels
         /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
-        public virtual TResult VisitThisExpresssion(ITsThisExpression model) => DefaultVisit(model);
+        public virtual TResult VisitThis(ITsThis model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a literal expression, where a literal can be an identifier, keyword, string,

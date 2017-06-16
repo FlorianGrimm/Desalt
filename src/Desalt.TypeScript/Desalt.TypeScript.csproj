@@ -25,7 +25,7 @@
     <Compile Include="CodeModels\Expressions\TsArrayLiteralExpression.cs" />
     <Compile Include="CodeModels\Expressions\TsLiteralExpression.cs" />
     <Compile Include="CodeModels\Expressions\TsLiteralKind.cs" />
-    <Compile Include="CodeModels\Expressions\TsThisExpression.cs" />
+    <Compile Include="CodeModels\Expressions\TsThis.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITsCodeModel.cs" />
     <Compile Include="CodeModels\TsIdentifier.cs" />

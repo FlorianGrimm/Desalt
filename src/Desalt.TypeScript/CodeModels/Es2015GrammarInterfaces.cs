@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.CodeModels
 
     public interface ITsPrimaryExpression : ITsCodeModel { }
 
-    public interface ITsThisExpression : ITsPrimaryExpression { }
+    public interface ITsThis : ITsPrimaryExpression { }
 
     public interface ITsLiteralExpression : ITsPrimaryExpression
     {
