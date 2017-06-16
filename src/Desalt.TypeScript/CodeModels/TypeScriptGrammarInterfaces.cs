@@ -74,6 +74,10 @@ namespace Desalt.TypeScript.CodeModels
      *   PrimaryType
      */
 
+    public interface IUnionOrIntersectionOrPrimaryType : ITsType { }
+
+    public interface ITsIntersectionOrPrimaryType : IUnionOrIntersectionOrPrimaryType { }
+
     /* PrimaryType:
      *   PredefinedType
      *   TypeReference
@@ -85,9 +89,16 @@ namespace Desalt.TypeScript.CodeModels
      *   ThisType
      */
 
+    public interface ITsPrimaryType : ITsIntersectionOrPrimaryType { }
+
     /* ParenthesizedType:
      *   ( Type )
      */
+
+    public interface ITsParenthesizedType : ITsPrimaryType
+    {
+        ITsType Type { get; }
+    }
 
     /* PredefinedType:
      *   any
