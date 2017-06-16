@@ -94,6 +94,10 @@ namespace Desalt.TypeScript.CodeModels
      *   ' SingleStringCharacters '
      */
 
+    public interface ITsLiteral : ITsPrimaryExpression { }
+
+    public interface ITsNullLiteral : ITsLiteral { }
+
     /* 12.2.5 Array Initializer
      * ------------------------
      * ArrayLiteral:

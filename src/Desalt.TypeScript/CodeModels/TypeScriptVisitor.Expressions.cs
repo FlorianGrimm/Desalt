@@ -14,6 +14,11 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitThis(ITsThis model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a null literal.
+        /// </summary>
+        public virtual void VisitNullLiteral(ITsNullLiteral model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
         ///// assignment expression operator.
@@ -93,6 +98,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits an expression representing the literal 'this'.
         /// </summary>
         public virtual TResult VisitThis(ITsThis model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a null literal.
+        /// </summary>
+        public virtual TResult VisitNullLiteral(ITsNullLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
