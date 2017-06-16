@@ -227,6 +227,12 @@ namespace Desalt.TypeScript.CodeModels
         ITsAssignmentExpression Initializer { get; }
     }
 
+    public interface ITsPropertyAssignment : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsAssignmentExpression Initializer { get; }
+    }
+
     public interface ITsPropertyName : ITsCodeModel { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }

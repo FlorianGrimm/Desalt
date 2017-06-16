@@ -75,6 +75,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsCoverInitializedName(identifier, initializer);
         }
 
+        public static ITsPropertyAssignment PropertyAssignment(
+            ITsPropertyName propertyName,
+            ITsAssignmentExpression initializer)
+        {
+            return new TsPropertyAssignment(propertyName, initializer);
+        }
+
+        //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================
 

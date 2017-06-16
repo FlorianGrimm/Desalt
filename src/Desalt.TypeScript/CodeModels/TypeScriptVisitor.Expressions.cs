@@ -66,6 +66,11 @@ namespace Desalt.TypeScript.CodeModels
         /// <param name="model"></param>
         public virtual void VisitCoverInitializedName(ITsCoverInitializedName model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a property value assignment within an object literal of the form 'property: value'.
+        /// </summary>
+        public virtual void VisitPropertyAssignment(ITsPropertyAssignment model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
         ///// </summary>
@@ -75,11 +80,6 @@ namespace Desalt.TypeScript.CodeModels
         ///// Visits a property set assignment within an object literal of the form 'set property(value) {}'.
         ///// </summary>
         //public virtual void VisitPropertySetAssignment(TypeScriptPropertySetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a property value assignment within an object literal of the form 'property: value'.
-        ///// </summary>
-        //public virtual void VisitPropertyValueAssignment(TypeScriptPropertyValueAssignment model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an expression surrounded by parentheses.
@@ -177,6 +177,11 @@ namespace Desalt.TypeScript.CodeModels
         /// <param name="model"></param>
         public virtual TResult VisitCoverInitializedName(ITsCoverInitializedName model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a property value assignment within an object literal of the form 'property: value'.
+        /// </summary>
+        public virtual TResult VisitPropertyAssignment(ITsPropertyAssignment model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
         ///// </summary>
@@ -186,11 +191,6 @@ namespace Desalt.TypeScript.CodeModels
         ///// Visits a property set assignment within an object literal of the form 'set property(value) {}'.
         ///// </summary>
         //public virtual TResult VisitPropertySetAssignment(TypeScriptPropertySetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a property value assignment within an object literal of the form 'property: value'.
-        ///// </summary>
-        //public virtual TResult VisitPropertyValueAssignment(TypeScriptPropertyValueAssignment model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an expression surrounded by parentheses.
