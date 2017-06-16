@@ -21,35 +21,11 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsThis This => TsThis.Instance;
 
-        public static ITsLiteralExpression NullLiteral => TsLiteralExpression.Null;
-
-        public static ITsLiteralExpression TrueLiteral => TsLiteralExpression.True;
-
-        public static ITsLiteralExpression FalseLiteral => TsLiteralExpression.False;
-
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================
 
         public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
-
-        public static ITsLiteralExpression StringLiteral(string literal) =>
-            TsLiteralExpression.CreateString(literal);
-
-        public static ITsLiteralExpression DecimalLiteral(string literal) =>
-            TsLiteralExpression.CreateDecimal(literal);
-
-        public static ITsLiteralExpression BinaryInteger(string literal) =>
-            TsLiteralExpression.CreateBinaryInteger(literal);
-
-        public static ITsLiteralExpression OctalInteger(string literal) =>
-            TsLiteralExpression.CreateOctalInteger(literal);
-
-        public static ITsLiteralExpression HexIntegerLiteral(string literal) =>
-            TsLiteralExpression.CreateHexInteger(literal);
-
-        public static ITsLiteralExpression RegExpLiteral(string literal) =>
-            TsLiteralExpression.CreateRegExp(literal);
 
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 

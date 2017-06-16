@@ -24,8 +24,6 @@
     <Compile Include="CodeModels\Es2015GrammarInterfaces.cs" />
     <Compile Include="CodeModels\Expressions\TsArrayElement.cs" />
     <Compile Include="CodeModels\Expressions\TsArrayLiteral.cs" />
-    <Compile Include="CodeModels\Expressions\TsLiteralExpression.cs" />
-    <Compile Include="CodeModels\Expressions\TsLiteralKind.cs" />
     <Compile Include="CodeModels\Expressions\TsThis.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITsCodeModel.cs" />

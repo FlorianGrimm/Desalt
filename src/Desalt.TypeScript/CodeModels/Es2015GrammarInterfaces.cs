@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.CodeModels
 {
     using System.Collections.Immutable;
-    using Desalt.TypeScript.CodeModels.Expressions;
 
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar
@@ -58,12 +57,6 @@ namespace Desalt.TypeScript.CodeModels
     public interface ITsPrimaryExpression : ITsCodeModel { }
 
     public interface ITsThis : ITsPrimaryExpression { }
-
-    public interface ITsLiteralExpression : ITsPrimaryExpression
-    {
-        TsLiteralKind Kind { get; }
-        string Literal { get; }
-    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
