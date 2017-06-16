@@ -82,6 +82,9 @@ namespace Desalt.TypeScript.CodeModels
             return new TsPropertyAssignment(propertyName, initializer);
         }
 
+        public static ITsComputedPropertyName ComputedPropertyName(ITsAssignmentExpression expression) =>
+            new TsComputedPropertyName(expression);
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================

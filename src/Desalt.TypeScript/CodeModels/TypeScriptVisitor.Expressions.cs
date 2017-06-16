@@ -71,6 +71,11 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitPropertyAssignment(ITsPropertyAssignment model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a computed property name within an object literal of the form '[expression]'.
+        /// </summary>
+        public virtual void VisitComputedPropertyName(ITsComputedPropertyName model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
         ///// </summary>
@@ -181,6 +186,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a property value assignment within an object literal of the form 'property: value'.
         /// </summary>
         public virtual TResult VisitPropertyAssignment(ITsPropertyAssignment model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a computed property name within an object literal of the form '[expression]'.
+        /// </summary>
+        public virtual TResult VisitComputedPropertyName(ITsComputedPropertyName model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits a property get assignment within an object literal of the form 'get property() {}'.

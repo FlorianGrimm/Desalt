@@ -237,6 +237,11 @@ namespace Desalt.TypeScript.CodeModels
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }
 
+    public interface ITsComputedPropertyName : ITsPropertyName
+    {
+        ITsAssignmentExpression Expression { get; }
+    }
+
     /* 12.2.9 Template Literals
      * ------------------------
      * TemplateLiteral:
