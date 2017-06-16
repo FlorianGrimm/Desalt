@@ -352,7 +352,7 @@ namespace Desalt.TypeScript.CodeModels
      *   Expression , AssignmentExpression
      */
 
-    public interface ITsExpression : ITypeScriptCodeModel
+    public interface ITsExpression : ITsCodeModel
     {
     }
 

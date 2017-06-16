@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ITypeScriptCodeModel.cs" company="Justin Rockwood">
+// <copyright file="ITsCodeModel.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Root interface for all TypeScript code models.
     /// </summary>
-    public interface ITypeScriptCodeModel : ICodeModel
+    public interface ITsCodeModel : ICodeModel
     {
         void Accept(TypeScriptVisitor visitor);
 

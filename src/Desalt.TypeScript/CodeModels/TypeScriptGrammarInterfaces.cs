@@ -428,7 +428,7 @@ namespace Desalt.TypeScript.CodeModels
      *  DeclarationModule
      */
 
-    public interface IImplementationSourceFile : ITypeScriptCodeModel
+    public interface IImplementationSourceFile : ITsCodeModel
     {
         bool IsModule { get; }
     }
@@ -450,7 +450,7 @@ namespace Desalt.TypeScript.CodeModels
         ImmutableArray<IImplementationScriptElement> Elements { get; }
     }
 
-    public interface IImplementationScriptElement : ITypeScriptCodeModel { }
+    public interface IImplementationScriptElement : ITsCodeModel { }
 
     /* ImplementationElement:
      *  Statement
