@@ -347,6 +347,10 @@ namespace Desalt.TypeScript.CodeModels
      *   *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
      */
 
+    public interface ITsAssignmentExpression : ITsPrimaryExpression
+    {
+    }
+
     /* 12.15 Comma Operator ( , )
      * --------------------------
      * Expression:
