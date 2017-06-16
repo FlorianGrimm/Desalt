@@ -27,405 +27,424 @@ namespace Desalt.TypeScript.CodeModels
     /* A.1 Types
      * ---------
      * TypeParameters:
-     *  < TypeParameterList >
+     *   < TypeParameterList >
      *
      * TypeParameterList:
-     *  TypeParameter
-     *  TypeParameterList , TypeParameter
+     *   TypeParameter
+     *   TypeParameterList , TypeParameter
      *
      * TypeParameter:
-     *  BindingIdentifier ConstraintOpt
+     *   BindingIdentifier ConstraintOpt
      *
      * Constraint:
-     *  extends Type
-     *
-     * TypeArguments:
-     *  < TypeArgumentList >
+     *   extends Type
+     */
+
+    /* TypeArguments:
+     *   < TypeArgumentList >
      *
      * TypeArgumentList:
-     *  TypeArgument
-     *  TypeArgumentList , TypeArgument
+     *   TypeArgument
+     *   TypeArgumentList , TypeArgument
      *
      * TypeArgument:
-     *  Type
-     *
-     * Type:
-     *  UnionOrIntersectionOrPrimaryType
-     *  FunctionType
-     *  ConstructorType
-     *
-     * UnionOrIntersectionOrPrimaryType:
-     *  UnionType
-     *  IntersectionOrPrimaryType
+     *   Type
+     */
+
+    /* Type:
+     *   UnionOrIntersectionOrPrimaryType
+     *   FunctionType
+     *   ConstructorType
+     */
+
+    /* UnionOrIntersectionOrPrimaryType:
+     *   UnionType
+     *   IntersectionOrPrimaryType
      *
      * IntersectionOrPrimaryType:
-     *  IntersectionType
-     *  PrimaryType
-     *
-     * PrimaryType:
-     *  ParenthesizedType
-     *  PredefinedType
-     *  TypeReference
-     *  ObjectType
-     *  ArrayType
-     *  TupleType
-     *  TypeQuery
-     *  ThisType
-     *
-     * ParenthesizedType:
-     *  ( Type )
-     *
-     * PredefinedType:
-     *  any
-     *  number
-     *  boolean
-     *  string
-     *  symbol
-     *  void
-     *
-     * TypeReference:
-     *  TypeName [no LineTerminator here] TypeArgumentsOpt
+     *   IntersectionType
+     *   PrimaryType
+     */
+
+    /* PrimaryType:
+     *   PredefinedType
+     *   TypeReference
+     *   ParenthesizedType
+     *   ObjectType
+     *   ArrayType
+     *   TupleType
+     *   TypeQuery
+     *   ThisType
+     */
+
+    /* ParenthesizedType:
+     *   ( Type )
+     */
+
+    /* PredefinedType:
+     *   any
+     *   number
+     *   boolean
+     *   string
+     *   symbol
+     *   void
+     */
+
+    /* TypeReference:
+     *   TypeName [no LineTerminator here] TypeArgumentsOpt
      *
      * TypeName:
-     *  IdentifierReference
-     *  NamespaceName . IdentifierReference
+     *   IdentifierReference
+     *   NamespaceName . IdentifierReference
      *
      * NamespaceName:
-     *  IdentifierReference
-     *  NamespaceName . IdentifierReference
-     *
-     * ObjectType:
-     *  { TypeBodyOpt }
+     *   IdentifierReference
+     *   NamespaceName . IdentifierReference
+     */
+
+    /* ObjectType:
+     *   { TypeBodyOpt }
      *
      * TypeBody:
-     *  TypeMemberList ;Opt
-     *  TypeMemberList ,Opt
+     *   TypeMemberList ;Opt
+     *   TypeMemberList ,Opt
      *
      * TypeMemberList:
-     *  TypeMember
-     *  TypeMemberList ; TypeMember
-     *  TypeMemberList , TypeMember
+     *   TypeMember
+     *   TypeMemberList ; TypeMember
+     *   TypeMemberList , TypeMember
      *
      * TypeMember:
-     *  PropertySignature
-     *  CallSignature
-     *  ConstructSignature
-     *  IndexSignature
-     *  MethodSignature
-     *
-     * ArrayType:
-     *  PrimaryType [no LineTerminator here] [ ]
-     *
-     * TupleType:
-     *  [ TupleElementTypes ]
+     *   PropertySignature
+     *   CallSignature
+     *   ConstructSignature
+     *   IndexSignature
+     *   MethodSignature
+     */
+
+    /* ArrayType:
+     *   PrimaryType [no LineTerminator here] [ ]
+     */
+
+    /* TupleType:
+     *   [ TupleElementTypes ]
      *
      * TupleElementTypes:
-     *  TupleElementType
-     *  TupleElementTypes , TupleElementType
+     *   TupleElementType
+     *   TupleElementTypes , TupleElementType
      *
      * TupleElementType:
-     *  Type
-     *
-     * UnionType:
-     *  UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
-     *
-     * IntersectionType:
-     *  IntersectionOrPrimaryType & PrimaryType
-     *
-     * FunctionType:
-     *  TypeParametersOpt ( ParameterListOpt ) => Type
-     *
-     * ConstructorType:
-     *  new TypeParametersOpt ( ParameterListOpt ) => Type
+     *   Type
+     */
+
+    /* UnionType:
+     *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
+     */
+
+    /* IntersectionType:
+     *   IntersectionOrPrimaryType & PrimaryType
+     */
+
+    /* FunctionType:
+     *   TypeParametersOpt ( ParameterListOpt ) => Type
+     */
+
+    /* ConstructorType:
+     *   new TypeParametersOpt ( ParameterListOpt ) => Type
      *
      * TypeQuery:
-     *  typeof TypeQueryExpression
+     *   typeof TypeQueryExpression
      *
      * TypeQueryExpression:
-     *  IdentifierReference
-     *  TypeQueryExpression . IdentifierName
-     *
-     * ThisType:
-     *  this
-     *
-     * PropertySignature:
-     *  PropertyName ?Opt TypeAnnotationOpt
+     *   IdentifierReference
+     *   TypeQueryExpression . IdentifierName
+     */
+
+    /* ThisType:
+     *   this
+     */
+
+    /* PropertySignature:
+     *   PropertyName ?Opt TypeAnnotationOpt
      *
      * PropertyName:
-     *  IdentifierName
-     *  StringLiteral
-     *  NumericLiteral
+     *   IdentifierName
+     *   StringLiteral
+     *   NumericLiteral
      *
      * TypeAnnotation:
-     *  : Type
-     *
-     * CallSignature:
-     *  TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
+     *   : Type
+     */
+
+    /* CallSignature:
+     *   TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
      *
      * ParameterList:
-     *  RequiredParameterList
-     *  OptionalParameterList
-     *  RestParameter
-     *  RequiredParameterList , OptionalParameterList
-     *  RequiredParameterList , RestParameter
-     *  OptionalParameterList , RestParameter
-     *  RequiredParameterList , OptionalParameterList , RestParameter
+     *   RequiredParameterList
+     *   OptionalParameterList
+     *   RestParameter
+     *   RequiredParameterList , OptionalParameterList
+     *   RequiredParameterList , RestParameter
+     *   OptionalParameterList , RestParameter
+     *   RequiredParameterList , OptionalParameterList , RestParameter
      *
      * RequiredParameterList:
-     *  RequiredParameter
-     *  RequiredParameterList , RequiredParameter
+     *   RequiredParameter
+     *   RequiredParameterList , RequiredParameter
      *
      * RequiredParameter:
-     *  AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt
-     *  BindingIdentifier : StringLiteral
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt
+     *   BindingIdentifier : StringLiteral
      *
      * AccessibilityModifier:
-     *  public
-     *  private
-     *  protected
-     *
-     * BindingIdentifierOrPattern:
-     *  BindingIdentifier
-     *  BindingPattern
-     *
-     * OptionalParameterList:
-     *  OptionalParameter
-     *  OptionalParameterList , OptionalParameter
+     *   public
+     *   private
+     *   protected
+     */
+
+    /* BindingIdentifierOrPattern:
+     *   BindingIdentifier
+     *   BindingPattern
+     */
+
+    /* OptionalParameterList:
+     *   OptionalParameter
+     *   OptionalParameterList , OptionalParameter
      *
      * OptionalParameter:
-     *  AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
-     *  AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
-     *  BindingIdentifier ? : StringLiteral
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
+     *   BindingIdentifier ? : StringLiteral
      *
      * RestParameter:
-     *  ... BindingIdentifier TypeAnnotationOpt
+     *   ... BindingIdentifier TypeAnnotationOpt
      *
      * ConstructSignature:
-     *  new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
+     *   new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
      *
      * IndexSignature:
-     *  [ BindingIdentifier : string ] TypeAnnotation
-     *  [ BindingIdentifier : number ] TypeAnnotation
+     *   [ BindingIdentifier : string ] TypeAnnotation
+     *   [ BindingIdentifier : number ] TypeAnnotation
      *
      * MethodSignature:
-     *  PropertyName ?Opt CallSignature
+     *   PropertyName ?Opt CallSignature
      *
      * TypeAliasDeclaration:
-     *  type BindingIdentifier TypeParametersOpt = Type ;
+     *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
     /* A.2 Expressions
      * ---------------
      * PropertyDefinition: ( Modified )
-     *  IdentifierReference
-     *  CoverInitializedName
-     *  PropertyName : AssignmentExpression
-     *  PropertyName CallSignature { FunctionBody }
-     *  GetAccessor
-     *  SetAccessor
+     *   IdentifierReference
+     *   CoverInitializedName
+     *   PropertyName : AssignmentExpression
+     *   PropertyName CallSignature { FunctionBody }
+     *   GetAccessor
+     *   SetAccessor
      *
      * GetAccessor:
-     *  get PropertyName ( ) TypeAnnotationOpt { FunctionBody }
+     *   get PropertyName ( ) TypeAnnotationOpt { FunctionBody }
      *
      * SetAccessor:
-     *  set PropertyName ( BindingIdentifierOrPattern TypeAnnotationOpt ) { FunctionBody }
+     *   set PropertyName ( BindingIdentifierOrPattern TypeAnnotationOpt ) { FunctionBody }
      *
      * FunctionExpression: ( Modified )
-     *  function BindingIdentifierOpt CallSignature { FunctionBody }
+     *   function BindingIdentifierOpt CallSignature { FunctionBody }
      *
      * ArrowFormalParameters: ( Modified )
-     *  CallSignature
+     *   CallSignature
      *
      * Arguments: ( Modified )
-     *  TypeArgumentsOpt ( ArgumentListOpt )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
      *
      * UnaryExpression: ( Modified )
-     *  …
-     *  < Type > UnaryExpression
+     *   …
+     *   < Type > UnaryExpression
      */
 
     /* A.3 Statements
      * --------------
      * Declaration: ( Modified )
-     *  …
-     *  InterfaceDeclaration
-     *  TypeAliasDeclaration
-     *  EnumDeclaration
+     *   …
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
      *
      * VariableDeclaration: ( Modified )
-     *  SimpleVariableDeclaration
-     *  DestructuringVariableDeclaration
+     *   SimpleVariableDeclaration
+     *   DestructuringVariableDeclaration
      *
      * SimpleVariableDeclaration:
-     *  BindingIdentifier TypeAnnotationOpt InitializerOpt
+     *   BindingIdentifier TypeAnnotationOpt InitializerOpt
      *
      * DestructuringVariableDeclaration:
-     *  BindingPattern TypeAnnotationOpt Initializer
+     *   BindingPattern TypeAnnotationOpt Initializer
      *
      * LexicalBinding: ( Modified )
-     *  SimpleLexicalBinding
-     *  DestructuringLexicalBinding
+     *   SimpleLexicalBinding
+     *   DestructuringLexicalBinding
      *
      * SimpleLexicalBinding:
-     *  BindingIdentifier TypeAnnotationOpt InitializerOpt
+     *   BindingIdentifier TypeAnnotationOpt InitializerOpt
      *
      * DestructuringLexicalBinding:
-     *  BindingPattern TypeAnnotationOpt InitializerOpt
+     *   BindingPattern TypeAnnotationOpt InitializerOpt
      */
 
     /* A.4 Functions
      * -------------
      * FunctionDeclaration: ( Modified )
-     *  function BindingIdentifierOpt CallSignature { FunctionBody }
-     *  function BindingIdentifierOpt CallSignature ;
+     *   function BindingIdentifierOpt CallSignature { FunctionBody }
+     *   function BindingIdentifierOpt CallSignature ;
      */
 
     /* A.5 Interfaces
      * --------------
      * InterfaceDeclaration:
-     *  interface BindingIdentifier TypeParametersOpt InterfaceExtendsClauseOpt ObjectType
+     *   interface BindingIdentifier TypeParametersOpt InterfaceExtendsClauseOpt ObjectType
      *
      * InterfaceExtendsClause:
-     *  extends ClassOrInterfaceTypeList
+     *   extends ClassOrInterfaceTypeList
      *
      * ClassOrInterfaceTypeList:
-     *  ClassOrInterfaceType
-     *  ClassOrInterfaceTypeList , ClassOrInterfaceType
+     *   ClassOrInterfaceType
+     *   ClassOrInterfaceTypeList , ClassOrInterfaceType
      *
      * ClassOrInterfaceType:
-     *  TypeReference
+     *   TypeReference
      */
 
     /* A.6 Classes
      * -----------
      * ClassDeclaration: ( Modified )
-     *  class BindingIdentifierOpt TypeParametersOpt ClassHeritage { ClassBody }
+     *   class BindingIdentifierOpt TypeParametersOpt ClassHeritage { ClassBody }
      *
      * ClassHeritage: ( Modified )
-     *  ClassExtendsClauseOpt ImplementsClauseOpt
+     *   ClassExtendsClauseOpt ImplementsClauseOpt
      *
      * ClassExtendsClause:
-     *  extends  ClassType
+     *   extends  ClassType
      *
      * ClassType:
-     *  TypeReference
+     *   TypeReference
      *
      * ImplementsClause:
-     *  implements ClassOrInterfaceTypeList
+     *   implements ClassOrInterfaceTypeList
      *
      * ClassElement: ( Modified )
-     *  ConstructorDeclaration
-     *  PropertyMemberDeclaration
-     *  IndexMemberDeclaration
+     *   ConstructorDeclaration
+     *   PropertyMemberDeclaration
+     *   IndexMemberDeclaration
      *
      * ConstructorDeclaration:
-     *  AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
-     *  AccessibilityModifierOpt constructor ( ParameterListOpt ) ;
+     *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
+     *   AccessibilityModifierOpt constructor ( ParameterListOpt ) ;
      *
      * PropertyMemberDeclaration:
-     *  MemberVariableDeclaration
-     *  MemberFunctionDeclaration
-     *  MemberAccessorDeclaration
+     *   MemberVariableDeclaration
+     *   MemberFunctionDeclaration
+     *   MemberAccessorDeclaration
      *
      * MemberVariableDeclaration:
-     *  AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt InitializerOpt ;
+     *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt InitializerOpt ;
      *
      * MemberFunctionDeclaration:
-     *  AccessibilityModifierOpt staticOpt PropertyName CallSignature { FunctionBody }
-     *  AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature { FunctionBody }
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
      *
      * MemberAccessorDeclaration:
-     *  AccessibilityModifierOpt staticOpt GetAccessor
-     *  AccessibilityModifierOpt staticOpt SetAccessor
+     *   AccessibilityModifierOpt staticOpt GetAccessor
+     *   AccessibilityModifierOpt staticOpt SetAccessor
      *
      * IndexMemberDeclaration:
-     *  IndexSignature ;
+     *   IndexSignature ;
      */
 
     /* A.7 Enums
      * ---------
      * EnumDeclaration:
-     *  constOpt enum BindingIdentifier { EnumBodyOpt }
+     *   constOpt enum BindingIdentifier { EnumBodyOpt }
      *
      * EnumBody:
-     *  EnumMemberList ,Opt
+     *   EnumMemberList ,Opt
      *
      * EnumMemberList:
-     *  EnumMember
-     *  EnumMemberList , EnumMember
+     *   EnumMember
+     *   EnumMemberList , EnumMember
      *
      * EnumMember:
-     *  PropertyName
-     *  PropertyName = EnumValue
+     *   PropertyName
+     *   PropertyName = EnumValue
      *
      * EnumValue:
-     *  AssignmentExpression
+     *   AssignmentExpression
      */
 
     /* A.8 Namespaces
      * --------------
      * NamespaceDeclaration:
-     *  namespace IdentifierPath { NamespaceBody }
+     *   namespace IdentifierPath { NamespaceBody }
      *
      * IdentifierPath:
-     *  BindingIdentifier
-     *  IdentifierPath . BindingIdentifier
+     *   BindingIdentifier
+     *   IdentifierPath . BindingIdentifier
      *
      * NamespaceBody:
-     *  NamespaceElementsOpt
+     *   NamespaceElementsOpt
      *
      * NamespaceElements:
-     *  NamespaceElement
-     *  NamespaceElements NamespaceElement
+     *   NamespaceElement
+     *   NamespaceElements NamespaceElement
      *
      * NamespaceElement:
-     *  Statement
-     *  LexicalDeclaration
-     *  FunctionDeclaration
-     *  GeneratorDeclaration
-     *  ClassDeclaration
-     *  InterfaceDeclaration
-     *  TypeAliasDeclaration
-     *  EnumDeclaration
-     *  NamespaceDeclaration
-     *  AmbientDeclaration
-     *  ImportAliasDeclaration
-     *  ExportNamespaceElement
+     *   Statement
+     *   LexicalDeclaration
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *   ClassDeclaration
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
+     *   ExportNamespaceElement
      *
      * ExportNamespaceElement:
-     *  export VariableStatement
-     *  export LexicalDeclaration
-     *  export FunctionDeclaration
-     *  export GeneratorDeclaration
-     *  export ClassDeclaration
-     *  export InterfaceDeclaration
-     *  export TypeAliasDeclaration
-     *  export EnumDeclaration
-     *  export NamespaceDeclaration
-     *  export AmbientDeclaration
-     *  export ImportAliasDeclaration
+     *   export VariableStatement
+     *   export LexicalDeclaration
+     *   export FunctionDeclaration
+     *   export GeneratorDeclaration
+     *   export ClassDeclaration
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export EnumDeclaration
+     *   export NamespaceDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
      *
      * ImportAliasDeclaration:
-     *  import BindingIdentifier = EntityName ;
+     *   import BindingIdentifier = EntityName ;
      *
      * EntityName:
-     *  NamespaceName
-     *  NamespaceName . IdentifierReference
+     *   NamespaceName
+     *   NamespaceName . IdentifierReference
      */
 
     /* A.9 Scripts and Modules
      * -----------------------
      * SourceFile:
-     *  ImplementationSourceFile
-     *  DeclarationSourceFile
+     *   ImplementationSourceFile
+     *   DeclarationSourceFile
      *
      * ImplementationSourceFile:
-     *  ImplementationScript
-     *  ImplementationModule
+     *   ImplementationScript
+     *   ImplementationModule
      *
      * DeclarationSourceFile:
-     *  DeclarationScript
-     *  DeclarationModule
+     *   DeclarationScript
+     *   DeclarationModule
      */
 
     public interface IImplementationSourceFile : ITsCodeModel
@@ -434,15 +453,15 @@ namespace Desalt.TypeScript.CodeModels
     }
 
     /* ImplementationScript:
-     *  ImplementationScriptElementsOpt
+     *   ImplementationScriptElementsOpt
      *
      * ImplementationScriptElements:
-     *  ImplementationScriptElement
-     *  ImplementationScriptElements ImplementationScriptElement
+     *   ImplementationScriptElement
+     *   ImplementationScriptElements ImplementationScriptElement
      *
      * ImplementationScriptElement:
-     *  ImplementationElement
-     *  AmbientModuleDeclaration
+     *   ImplementationElement
+     *   AmbientModuleDeclaration
      */
 
     public interface IImplementationScript : IImplementationSourceFile
@@ -453,184 +472,184 @@ namespace Desalt.TypeScript.CodeModels
     public interface IImplementationScriptElement : ITsCodeModel { }
 
     /* ImplementationElement:
-     *  Statement
-     *  LexicalDeclaration
-     *  FunctionDeclaration
-     *  GeneratorDeclaration
-     *  ClassDeclaration
-     *  InterfaceDeclaration
-     *  TypeAliasDeclaration
-     *  EnumDeclaration
-     *  NamespaceDeclaration
-     *  AmbientDeclaration
-     *  ImportAliasDeclaration
+     *   Statement
+     *   LexicalDeclaration
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *   ClassDeclaration
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
      */
 
     public interface IImplementationElement : IImplementationScriptElement { }
 
     /* DeclarationScript:
-     *  DeclarationScriptElementsOpt
+     *   DeclarationScriptElementsOpt
      *
      * DeclarationScriptElements:
-     *  DeclarationScriptElement
-     *  DeclarationScriptElements DeclarationScriptElement
+     *   DeclarationScriptElement
+     *   DeclarationScriptElements DeclarationScriptElement
      *
      * DeclarationScriptElement:
-     *  DeclarationElement
-     *  AmbientModuleDeclaration
+     *   DeclarationElement
+     *   AmbientModuleDeclaration
      *
      * DeclarationElement:
-     *  InterfaceDeclaration
-     *  TypeAliasDeclaration
-     *  NamespaceDeclaration
-     *  AmbientDeclaration
-     *  ImportAliasDeclaration
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
      *
      * ImplementationModule:
-     *  ImplementationModuleElementsOpt
+     *   ImplementationModuleElementsOpt
      *
      * ImplementationModuleElements:
-     *  ImplementationModuleElement
-     *  ImplementationModuleElements ImplementationModuleElement
+     *   ImplementationModuleElement
+     *   ImplementationModuleElements ImplementationModuleElement
      *
      * ImplementationModuleElement:
-     *  ImplementationElement
-     *  ImportDeclaration
-     *  ImportAliasDeclaration
-     *  ImportRequireDeclaration
-     *  ExportImplementationElement
-     *  ExportDefaultImplementationElement
-     *  ExportListDeclaration
-     *  ExportAssignment
+     *   ImplementationElement
+     *   ImportDeclaration
+     *   ImportAliasDeclaration
+     *   ImportRequireDeclaration
+     *   ExportImplementationElement
+     *   ExportDefaultImplementationElement
+     *   ExportListDeclaration
+     *   ExportAssignment
      *
      * DeclarationModule:
-     *  DeclarationModuleElementsOpt
+     *   DeclarationModuleElementsOpt
      *
      * DeclarationModuleElements:
-     *  DeclarationModuleElement
-     *  DeclarationModuleElements DeclarationModuleElement
+     *   DeclarationModuleElement
+     *   DeclarationModuleElements DeclarationModuleElement
      *
      * DeclarationModuleElement:
-     *  DeclarationElement
-     *  ImportDeclaration
-     *  ImportAliasDeclaration
-     *  ExportDeclarationElement
-     *  ExportDefaultDeclarationElement
-     *  ExportListDeclaration
-     *  ExportAssignment
+     *   DeclarationElement
+     *   ImportDeclaration
+     *   ImportAliasDeclaration
+     *   ExportDeclarationElement
+     *   ExportDefaultDeclarationElement
+     *   ExportListDeclaration
+     *   ExportAssignment
      *
      * ImportRequireDeclaration:
-     *  import BindingIdentifier = require ( StringLiteral ) ;
+     *   import BindingIdentifier = require ( StringLiteral ) ;
      *
      * ExportImplementationElement:
-     *  export VariableStatement
-     *  export LexicalDeclaration
-     *  export FunctionDeclaration
-     *  export GeneratorDeclaration
-     *  export ClassDeclaration
-     *  export InterfaceDeclaration
-     *  export TypeAliasDeclaration
-     *  export EnumDeclaration
-     *  export NamespaceDeclaration
-     *  export AmbientDeclaration
-     *  export ImportAliasDeclaration
+     *   export VariableStatement
+     *   export LexicalDeclaration
+     *   export FunctionDeclaration
+     *   export GeneratorDeclaration
+     *   export ClassDeclaration
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export EnumDeclaration
+     *   export NamespaceDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
      *
      * ExportDeclarationElement:
-     *  export InterfaceDeclaration
-     *  export TypeAliasDeclaration
-     *  export AmbientDeclaration
-     *  export ImportAliasDeclaration
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
      *
      * ExportDefaultImplementationElement:
-     *  export default FunctionDeclaration
-     *  export default GeneratorDeclaration
-     *  export default ClassDeclaration
-     *  export default AssignmentExpression ;
+     *   export default FunctionDeclaration
+     *   export default GeneratorDeclaration
+     *   export default ClassDeclaration
+     *   export default AssignmentExpression ;
      *
      * ExportDefaultDeclarationElement:
-     *  export default AmbientFunctionDeclaration
-     *  export default AmbientClassDeclaration
-     *  export default IdentifierReference ;
+     *   export default AmbientFunctionDeclaration
+     *   export default AmbientClassDeclaration
+     *   export default IdentifierReference ;
      *
      * ExportListDeclaration:
-     *  export * FromClause ;
-     *  export ExportClause FromClause ;
-     *  export ExportClause ;
+     *   export * FromClause ;
+     *   export ExportClause FromClause ;
+     *   export ExportClause ;
      *
      * ExportAssignment:
-     *  export = IdentifierReference ;
+     *   export = IdentifierReference ;
      */
 
     /* A.10 Ambients
      * -------------
      * AmbientDeclaration:
-     *  declare AmbientVariableDeclaration
-     *  declare AmbientFunctionDeclaration
-     *  declare AmbientClassDeclaration
-     *  declare AmbientEnumDeclaration
-     *  declare AmbientNamespaceDeclaration
+     *   declare AmbientVariableDeclaration
+     *   declare AmbientFunctionDeclaration
+     *   declare AmbientClassDeclaration
+     *   declare AmbientEnumDeclaration
+     *   declare AmbientNamespaceDeclaration
      *
      * AmbientVariableDeclaration:
-     *  var AmbientBindingList ;
-     *  let AmbientBindingList ;
-     *  const AmbientBindingList ;
+     *   var AmbientBindingList ;
+     *   let AmbientBindingList ;
+     *   const AmbientBindingList ;
      *
      * AmbientBindingList:
-     *  AmbientBinding
-     *  AmbientBindingList , AmbientBinding
+     *   AmbientBinding
+     *   AmbientBindingList , AmbientBinding
      *
      * AmbientBinding:
-     *  BindingIdentifier TypeAnnotationOpt
+     *   BindingIdentifier TypeAnnotationOpt
      *
      * AmbientFunctionDeclaration:
-     *  function BindingIdentifier CallSignature ;
+     *   function BindingIdentifier CallSignature ;
      *
      * AmbientClassDeclaration:
-     *  class BindingIdentifier TypeParametersOpt ClassHeritage { AmbientClassBody }
+     *   class BindingIdentifier TypeParametersOpt ClassHeritage { AmbientClassBody }
      *
      * AmbientClassBody:
-     *  AmbientClassBodyElementsOpt
+     *   AmbientClassBodyElementsOpt
      *
      * AmbientClassBodyElements:
-     *  AmbientClassBodyElement
-     *  AmbientClassBodyElements AmbientClassBodyElement
+     *   AmbientClassBodyElement
+     *   AmbientClassBodyElements AmbientClassBodyElement
      *
      * AmbientClassBodyElement:
-     *  AmbientConstructorDeclaration
-     *  AmbientPropertyMemberDeclaration
-     *  IndexSignature
+     *   AmbientConstructorDeclaration
+     *   AmbientPropertyMemberDeclaration
+     *   IndexSignature
      *
      * AmbientConstructorDeclaration:
-     *  constructor ( ParameterListOpt ) ;
+     *   constructor ( ParameterListOpt ) ;
      *
      * AmbientPropertyMemberDeclaration:
-     *  AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt ;
-     *  AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
+     *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt ;
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
      *
      * AmbientEnumDeclaration:
-     *  EnumDeclaration
+     *   EnumDeclaration
      *
      * AmbientNamespaceDeclaration:
-     *  namespace IdentifierPath { AmbientNamespaceBody }
+     *   namespace IdentifierPath { AmbientNamespaceBody }
      *
      * AmbientNamespaceBody:
-     *  AmbientNamespaceElementsOpt
+     *   AmbientNamespaceElementsOpt
      *
      * AmbientNamespaceElements:
-     *  AmbientNamespaceElement
-     *  AmbientNamespaceElements AmbientNamespaceElement
+     *   AmbientNamespaceElement
+     *   AmbientNamespaceElements AmbientNamespaceElement
      *
      * AmbientNamespaceElement:
-     *  exportOpt AmbientVariableDeclaration
-     *  exportOpt AmbientLexicalDeclaration
-     *  exportOpt AmbientFunctionDeclaration
-     *  exportOpt AmbientClassDeclaration
-     *  exportOpt InterfaceDeclaration
-     *  exportOpt AmbientEnumDeclaration
-     *  exportOpt AmbientNamespaceDeclaration
-     *  exportOpt ImportAliasDeclaration
+     *   exportOpt AmbientVariableDeclaration
+     *   exportOpt AmbientLexicalDeclaration
+     *   exportOpt AmbientFunctionDeclaration
+     *   exportOpt AmbientClassDeclaration
+     *   exportOpt InterfaceDeclaration
+     *   exportOpt AmbientEnumDeclaration
+     *   exportOpt AmbientNamespaceDeclaration
+     *   exportOpt ImportAliasDeclaration
      *
      * AmbientModuleDeclaration:
-     *  declare module StringLiteral {  DeclarationModule }
+     *   declare module StringLiteral {  DeclarationModule }
      */
 }
