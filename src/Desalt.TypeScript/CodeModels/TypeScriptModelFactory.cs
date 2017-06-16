@@ -23,6 +23,10 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
 
+        public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
+
+        public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
+
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================

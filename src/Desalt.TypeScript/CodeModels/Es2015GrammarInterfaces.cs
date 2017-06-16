@@ -98,6 +98,11 @@ namespace Desalt.TypeScript.CodeModels
 
     public interface ITsNullLiteral : ITsLiteral { }
 
+    public interface ITsBooleanLiteral : ITsLiteral
+    {
+        bool Value { get; }
+    }
+
     /* 12.2.5 Array Initializer
      * ------------------------
      * ArrayLiteral:
