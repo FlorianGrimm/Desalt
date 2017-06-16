@@ -129,6 +129,18 @@ namespace Desalt.TypeScript.CodeModels
         string Value { get; }
     }
 
+    /* 11.8.5 - Regular Expression Literal
+     * -----------------------------------
+     * RegularExpressionLiteral:
+     *   / RegularExpressionBody / RegularExpressionFlags
+     */
+
+    public interface ITsRegularExpressionLiteral : ITsPrimaryExpression
+    {
+        string Body { get; }
+        string Flags { get; }
+    }
+
     /* 12.2.5 Array Initializer
      * ------------------------
      * ArrayLiteral:

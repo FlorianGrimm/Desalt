@@ -34,6 +34,11 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitStringLiteral(ITsStringLiteral model) => DefaultVisit(model);
 
+        /// <summary>
+        /// Visits a regular expression literal.
+        /// </summary>
+        public virtual void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral model) => DefaultVisit(model);
+
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
         ///// assignment expression operator.
@@ -133,6 +138,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a string literal.
         /// </summary>
         public virtual TResult VisitStringLiteral(ITsStringLiteral model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a regular expression literal.
+        /// </summary>
+        public virtual TResult VisitRegularExpressionLiteral(ITsRegularExpressionLiteral model) => DefaultVisit(model);
 
         ///// <summary>
         ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid

@@ -48,6 +48,9 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsNumericLiteral HexIntegerLiteral(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
 
+        public static ITsRegularExpressionLiteral RegularExpressionLiteral(string body, string flags) =>
+            new TsRegularExpressionLiteral(body, flags);
+
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
         public static ITsArrayElement ArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false) =>
