@@ -70,6 +70,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitCallSignature(ITsCallSignature model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a parameter list of the form '(parameter: type)'..
+        /// </summary>
+        public virtual void VisitParameterList(ITsParameterList model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -136,6 +141,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a a call signature of the form '&gt;T&lt;(parameter: type): type'..
         /// </summary>
         public virtual TResult VisitCallSignature(ITsCallSignature model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a parameter list of the form '(parameter: type)'..
+        /// </summary>
+        public virtual TResult VisitParameterList(ITsParameterList model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.

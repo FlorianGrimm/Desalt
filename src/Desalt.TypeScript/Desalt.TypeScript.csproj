@@ -48,6 +48,7 @@
     <Compile Include="CodeModels\Types\TsCallSignature.cs" />
     <Compile Include="CodeModels\Types\TsFunctionOrConstructorType.cs" />
     <Compile Include="CodeModels\Types\TsObjectType.cs" />
+    <Compile Include="CodeModels\Types\TsParameterList.cs" />
     <Compile Include="CodeModels\Types\TsParenthesizedType.cs" />
     <Compile Include="CodeModels\Types\TsPredefinedType.cs" />
     <Compile Include="CodeModels\Types\TsPropertySignature.cs" />

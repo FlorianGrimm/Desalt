@@ -181,6 +181,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsCallSignature(typeParameters, parameters, typeAnnotation);
         }
 
+        public static ITsParameterList ParameterList(
+            IEnumerable<ITsRequiredParameter> requiredParameters = null,
+            IEnumerable<ITsOptionalParameter> optionalParameters = null,
+            ITsRestParameter restParameter = null)
+        {
+            return new TsParameterList(requiredParameters, optionalParameters, restParameter);
+        }
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

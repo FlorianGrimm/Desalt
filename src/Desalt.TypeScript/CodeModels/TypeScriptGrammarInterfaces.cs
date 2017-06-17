@@ -284,8 +284,16 @@ namespace Desalt.TypeScript.CodeModels
      *   RequiredParameterList , RestParameter
      *   OptionalParameterList , RestParameter
      *   RequiredParameterList , OptionalParameterList , RestParameter
-     *
-     * RequiredParameterList:
+     */
+
+    public interface ITsParameterList : ITsCodeModel
+    {
+        ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
+        ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
+        ITsRestParameter RestParameter { get; }
+    }
+
+    /* RequiredParameterList:
      *   RequiredParameter
      *   RequiredParameterList , RequiredParameter
      *
