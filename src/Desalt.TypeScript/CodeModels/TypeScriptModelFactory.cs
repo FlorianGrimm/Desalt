@@ -134,6 +134,19 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>
             new TsTupleType(elementType, elementTypes);
 
+        public static ITsFunctionType FunctionType(
+            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsParameterList parameters,
+            ITsType returnType)
+        {
+            return new TsFunctionType(typeParameters, parameters, returnType);
+        }
+
+        public static ITsFunctionType FunctionType(ITsParameterList parameters, ITsType returnType) =>
+            new TsFunctionType(parameters, returnType);
+
+        public static ITsFunctionType FunctionType(ITsType returnType) => new TsFunctionType(returnType);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

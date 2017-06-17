@@ -40,6 +40,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitTupleType(ITsTupleType model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a TypeScript function type.
+        /// </summary>
+        public virtual void VisitFunctionType(ITsFunctionType model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -76,6 +81,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript tuple type.
         /// </summary>
         public virtual TResult VisitTupleType(ITsTupleType model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript function type.
+        /// </summary>
+        public virtual TResult VisitFunctionType(ITsFunctionType model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.

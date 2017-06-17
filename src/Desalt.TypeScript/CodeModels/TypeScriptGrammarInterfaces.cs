@@ -195,13 +195,24 @@ namespace Desalt.TypeScript.CodeModels
      *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
      */
 
+    public interface ITsUnionType : IUnionOrIntersectionOrPrimaryType { }
+
     /* IntersectionType:
      *   IntersectionOrPrimaryType & PrimaryType
      */
 
+    public interface ITsIntersectionType : ITsIntersectionOrPrimaryType { }
+
     /* FunctionType:
      *   TypeParametersOpt ( ParameterListOpt ) => Type
      */
+
+    public interface ITsFunctionType : ITsType
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsParameterList Parameters { get; }
+        ITsType ReturnType { get; }
+    }
 
     /* ConstructorType:
      *   new TypeParametersOpt ( ParameterListOpt ) => Type
