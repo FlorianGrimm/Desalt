@@ -258,6 +258,13 @@ namespace Desalt.TypeScript.CodeModels
      *   : Type
      */
 
+    public interface ITsPropertySignature : ITsTypeMember
+    {
+        ITsLiteralPropertyName PropertyName { get; }
+        bool IsNullable { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
     /* CallSignature:
      *   TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
      *

@@ -165,6 +165,14 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsTypeQuery TypeQuery(ITsTypeQueryExpression query) => new TsTypeQuery(query);
 
+        public static ITsPropertySignature PropertySignature(
+            ITsLiteralPropertyName propertyName,
+            bool isNullable = false,
+            ITsType typeAnnotation = null)
+        {
+            return new TsPropertySignature(propertyName, isNullable, typeAnnotation);
+        }
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

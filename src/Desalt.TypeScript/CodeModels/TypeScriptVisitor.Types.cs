@@ -60,6 +60,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitThisType(ITsThisType model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a property signature.
+        /// </summary>
+        public virtual void VisitPropertySignature(ITsPropertySignature model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -116,6 +121,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a 'this' type.
         /// </summary>
         public virtual TResult VisitThisType(ITsThisType model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a property signature.
+        /// </summary>
+        public virtual TResult VisitPropertySignature(ITsPropertySignature model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
