@@ -216,8 +216,16 @@ namespace Desalt.TypeScript.CodeModels
 
     /* ConstructorType:
      *   new TypeParametersOpt ( ParameterListOpt ) => Type
-     *
-     * TypeQuery:
+     */
+
+    public interface ITsConstructorType : ITsType
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsParameterList Parameters { get; }
+        ITsType ReturnType { get; }
+    }
+
+    /* TypeQuery:
      *   typeof TypeQueryExpression
      *
      * TypeQueryExpression:

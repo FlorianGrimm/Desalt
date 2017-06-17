@@ -45,7 +45,7 @@
     <Compile Include="CodeModels\TypeScriptVisitor.Expressions.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.Types.cs" />
     <Compile Include="CodeModels\Types\TsArrayType.cs" />
-    <Compile Include="CodeModels\Types\TsFunctionType.cs" />
+    <Compile Include="CodeModels\Types\TsFunctionOrConstructorType.cs" />
     <Compile Include="CodeModels\Types\TsObjectType.cs" />
     <Compile Include="CodeModels\Types\TsParenthesizedType.cs" />
     <Compile Include="CodeModels\Types\TsPredefinedType.cs" />

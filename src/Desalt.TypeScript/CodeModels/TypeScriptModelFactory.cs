@@ -139,13 +139,28 @@ namespace Desalt.TypeScript.CodeModels
             ITsParameterList parameters,
             ITsType returnType)
         {
-            return new TsFunctionType(typeParameters, parameters, returnType);
+            return new TsFunctionOrConstructorType(typeParameters, parameters, returnType, isConstructorType: false);
         }
 
         public static ITsFunctionType FunctionType(ITsParameterList parameters, ITsType returnType) =>
-            new TsFunctionType(parameters, returnType);
+            new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: false);
 
-        public static ITsFunctionType FunctionType(ITsType returnType) => new TsFunctionType(returnType);
+        public static ITsFunctionType FunctionType(ITsType returnType) =>
+            new TsFunctionOrConstructorType(returnType, isConstructorType: false);
+
+        public static ITsConstructorType ConstructorType(
+            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsParameterList parameters,
+            ITsType returnType)
+        {
+            return new TsFunctionOrConstructorType(typeParameters, parameters, returnType, isConstructorType: true);
+        }
+
+        public static ITsConstructorType ConstructorType(ITsParameterList parameters, ITsType returnType) =>
+            new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: true);
+
+        public static ITsConstructorType ConstructorType(ITsType returnType) =>
+            new TsFunctionOrConstructorType(returnType, isConstructorType: true);
 
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
