@@ -131,6 +131,9 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsArrayType ArrayType(ITsPrimaryType type) => new TsArrayType(type);
 
+        public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>
+            new TsTupleType(elementType, elementTypes);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

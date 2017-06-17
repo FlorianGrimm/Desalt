@@ -186,6 +186,11 @@ namespace Desalt.TypeScript.CodeModels
      *   Type
      */
 
+    public interface ITsTupleType : ITsPrimaryType
+    {
+        ImmutableArray<ITsType> ElementTypes { get; }
+    }
+
     /* UnionType:
      *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
      */
