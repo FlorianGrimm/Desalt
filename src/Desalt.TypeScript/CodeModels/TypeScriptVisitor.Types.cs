@@ -30,6 +30,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitObjectType(ITsObjectType model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a TypeScript array type.
+        /// </summary>
+        public virtual void VisitArrayType(ITsArrayType model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -56,6 +61,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript object type.
         /// </summary>
         public virtual TResult VisitObjectType(ITsObjectType model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript array type.
+        /// </summary>
+        public virtual TResult VisitArrayType(ITsArrayType model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.

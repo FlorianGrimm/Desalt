@@ -170,6 +170,11 @@ namespace Desalt.TypeScript.CodeModels
      *   PrimaryType [no LineTerminator here] [ ]
      */
 
+    public interface ITsArrayType : ITsPrimaryType
+    {
+        ITsPrimaryType Type { get; }
+    }
+
     /* TupleType:
      *   [ TupleElementTypes ]
      *

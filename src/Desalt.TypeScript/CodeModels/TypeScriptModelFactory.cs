@@ -129,6 +129,8 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
 
+        public static ITsArrayType ArrayType(ITsPrimaryType type) => new TsArrayType(type);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 
