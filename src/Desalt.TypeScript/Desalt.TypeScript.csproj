@@ -51,6 +51,7 @@
     <Compile Include="CodeModels\Types\TsPredefinedType.cs" />
     <Compile Include="CodeModels\Types\TsTupleType.cs" />
     <Compile Include="CodeModels\Types\TsTypeParameter.cs" />
+    <Compile Include="CodeModels\Types\TsTypeQuery.cs" />
     <Compile Include="CodeModels\Types\TsTypeReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

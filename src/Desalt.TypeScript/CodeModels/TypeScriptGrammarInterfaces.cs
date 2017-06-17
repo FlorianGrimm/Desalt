@@ -233,6 +233,13 @@ namespace Desalt.TypeScript.CodeModels
      *   TypeQueryExpression . IdentifierName
      */
 
+    public interface ITsTypeQuery : ITsPrimaryType
+    {
+        ITsTypeQueryExpression Query { get; }
+    }
+
+    public interface ITsTypeQueryExpression : ITsQualifiedName { }
+
     /* ThisType:
      *   this
      */

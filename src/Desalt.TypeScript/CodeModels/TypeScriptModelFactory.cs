@@ -162,6 +162,8 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsConstructorType ConstructorType(ITsType returnType) =>
             new TsFunctionOrConstructorType(returnType, isConstructorType: true);
 
+        public static ITsTypeQuery TypeQuery(ITsTypeQueryExpression query) => new TsTypeQuery(query);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

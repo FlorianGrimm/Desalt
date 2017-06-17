@@ -50,6 +50,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitConstructorType(ITsFunctionType model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a typeof query.
+        /// </summary>
+        public virtual void VisitTypeQuery(ITsTypeQuery model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -96,6 +101,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript constructor type.
         /// </summary>
         public virtual TResult VisitConstructorType(ITsFunctionType model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a typeof query.
+        /// </summary>
+        public virtual TResult VisitTypeQuery(ITsTypeQuery model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
