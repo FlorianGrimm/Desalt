@@ -55,6 +55,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitTypeQuery(ITsTypeQuery model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a 'this' type.
+        /// </summary>
+        public virtual void VisitThisType(ITsThisType model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -106,6 +111,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a typeof query.
         /// </summary>
         public virtual TResult VisitTypeQuery(ITsTypeQuery model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a 'this' type.
+        /// </summary>
+        public virtual TResult VisitThisType(ITsThisType model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.

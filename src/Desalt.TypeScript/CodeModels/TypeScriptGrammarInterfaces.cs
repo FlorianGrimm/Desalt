@@ -244,6 +244,8 @@ namespace Desalt.TypeScript.CodeModels
      *   this
      */
 
+    public interface ITsThisType : ITsPrimaryType { }
+
     /* PropertySignature:
      *   PropertyName ?Opt TypeAnnotationOpt
      *

@@ -22,6 +22,7 @@ namespace Desalt.TypeScript.CodeModels
         //// ===========================================================================================================
 
         public static ITsThis This => TsThis.Instance;
+        public static ITsThisType ThisType => TsThisType.Instance;
 
         public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
 
