@@ -159,6 +159,13 @@ namespace Desalt.TypeScript.CodeModels
      *   MethodSignature
      */
 
+    public interface ITsObjectType : ITsPrimaryType
+    {
+        ImmutableArray<ITsTypeMember> TypeMembers { get; }
+    }
+
+    public interface ITsTypeMember : ITsCodeModel { }
+
     /* ArrayType:
      *   PrimaryType [no LineTerminator here] [ ]
      */

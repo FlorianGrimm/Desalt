@@ -127,6 +127,8 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsTypeReference TypeReference(ITsTypeName typeName, params ITsType[] typeArguments) =>
             new TsTypeReference(typeName, typeArguments);
 
+        public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 
