@@ -173,6 +173,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsPropertySignature(propertyName, isNullable, typeAnnotation);
         }
 
+        public static ITsCallSignature CallSignature(
+            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsParameterList parameters = null,
+            ITsType typeAnnotation = null)
+        {
+            return new TsCallSignature(typeParameters, parameters, typeAnnotation);
+        }
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

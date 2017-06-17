@@ -267,8 +267,16 @@ namespace Desalt.TypeScript.CodeModels
 
     /* CallSignature:
      *   TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
-     *
-     * ParameterList:
+     */
+
+    public interface ITsCallSignature : ITsTypeMember
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsParameterList Parameters { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
+    /* ParameterList:
      *   RequiredParameterList
      *   OptionalParameterList
      *   RestParameter
