@@ -123,6 +123,12 @@ namespace Desalt.TypeScript.CodeModels
      *   NamespaceName . IdentifierReference
      */
 
+    public interface ITsTypeReference : ITsPrimaryType
+    {
+        ITsTypeName TypeName { get; }
+        ImmutableArray<ITsType> TypeArguments { get; }
+    }
+
     public interface ITsTypeName : ITsQualifiedName { }
 
     public interface ITsNamespaceName : ITsQualifiedName { }

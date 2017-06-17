@@ -20,6 +20,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitPredefinedType(ITsPredefinedType model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a TypeScript type reference.
+        /// </summary>
+        public virtual void VisitTypeReference(ITsTypeReference model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
@@ -36,6 +41,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a predefined type, which is one of any, number, boolean, string, symbol, or void.
         /// </summary>
         public virtual TResult VisitPredefinedType(ITsPredefinedType model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript type reference.
+        /// </summary>
+        public virtual TResult VisitTypeReference(ITsTypeReference model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
