@@ -123,6 +123,16 @@ namespace Desalt.TypeScript.CodeModels
      *   NamespaceName . IdentifierReference
      */
 
+    public interface ITsTypeName : ITsQualifiedName { }
+
+    public interface ITsNamespaceName : ITsQualifiedName { }
+
+    public interface ITsQualifiedName : ITsCodeModel
+    {
+        ImmutableArray<ITsIdentifier> Left { get; }
+        ITsIdentifier Right { get; }
+    }
+
     /* ObjectType:
      *   { TypeBodyOpt }
      *

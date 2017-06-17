@@ -26,6 +26,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript identifier.
         /// </summary>
         public virtual void VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript qualified name, which is a full name with dots separating components.
+        /// </summary>
+        public virtual void VisitQualifiedName(ITsQualifiedName model) => DefaultVisit(model);
     }
 
     /// <summary>
@@ -50,5 +55,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a TypeScript identifier.
         /// </summary>
         public virtual TResult VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a TypeScript qualified name, which is a full name with dots separating components.
+        /// </summary>
+        public virtual TResult VisitQualifiedName(ITsQualifiedName model) => DefaultVisit(model);
     }
 }

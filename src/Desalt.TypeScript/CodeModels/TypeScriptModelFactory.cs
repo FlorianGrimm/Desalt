@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.CodeModels
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Desalt.TypeScript.CodeModels.Expressions;
     using Desalt.TypeScript.CodeModels.Types;
 
@@ -37,10 +38,37 @@ namespace Desalt.TypeScript.CodeModels
         public static readonly ITsPredefinedType Void = TsPredefinedType.Void;
 
         //// ===========================================================================================================
-        //// Literal Expressions
+        //// Identifiers
         //// ===========================================================================================================
 
         public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
+
+        public static ITsQualifiedName QualifiedName(string dottedName)
+        {
+            string[] parts = dottedName.Split('.');
+            if (parts.Length > 1)
+            {
+                return QualifiedName(parts[0], parts.Skip(1).ToArray());
+            }
+
+            return new TsQualifiedName(TsIdentifier.Get(parts[0]));
+        }
+
+        public static ITsQualifiedName QualifiedName(string name, params string[] names)
+        {
+            if (names == null || names.Length == 0)
+            {
+                return new TsQualifiedName(TsIdentifier.Get(name));
+            }
+
+            var right = TsIdentifier.Get(names.Last());
+            IEnumerable<TsIdentifier> left = new[] { name }.Concat(names.Take(names.Length - 1)).Select(TsIdentifier.Get);
+            return new TsQualifiedName(right, left);
+        }
+
+        //// ===========================================================================================================
+        //// Literal Expressions
+        //// ===========================================================================================================
 
         public static ITsStringLiteral StringLiteral(string value, StringLiteralQuoteKind quoteKind) =>
             new TsStringLiteral(value, quoteKind);
