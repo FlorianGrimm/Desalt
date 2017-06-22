@@ -33,7 +33,11 @@ namespace Desalt.TypeScript.CodeModels
      *   IdentifierName but not ReservedWord
      */
 
-    public interface ITsIdentifier : ITsPrimaryExpression, ITsPropertyDefinition, ITsLiteralPropertyName
+    public interface ITsIdentifier :
+        ITsPrimaryExpression,
+        ITsPropertyDefinition,
+        ITsLiteralPropertyName,
+        ITsBindingIdentifierOrPattern
     {
         string Text { get; }
     }
@@ -562,6 +566,8 @@ namespace Desalt.TypeScript.CodeModels
      * BindingRestElement:
      *   ... BindingIdentifier
      */
+
+    public interface ITsBindingPattern : ITsCodeModel, ITsBindingIdentifierOrPattern { }
 
     /* 13.4 Empty Statement
      * --------------------

@@ -78,6 +78,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a bound required parameter in a parameter list for a function.
+        /// </summary>
+        public virtual void VisitBoundRequiredParameter(ITsBoundRequiredParameter model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -151,5 +156,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual TResult VisitTypeParameter(ITsTypeParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a bound required parameter in a parameter list for a function.
+        /// </summary>
+        public virtual TResult VisitBoundRequiredParameter(ITsBoundRequiredParameter model) => DefaultVisit(model);
     }
 }

@@ -189,6 +189,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsParameterList(requiredParameters, optionalParameters, restParameter);
         }
 
+        public static ITsBoundRequiredParameter BoundRequiredParameter(
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType typeAnnotation,
+            TsAccessibilityModifier? modifier = null)
+        {
+            return new TsBoundRequiredParameter(parameterName, typeAnnotation, modifier);
+        }
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 

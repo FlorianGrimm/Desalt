@@ -307,10 +307,28 @@ namespace Desalt.TypeScript.CodeModels
      *   protected
      */
 
+    public interface ITsRequiredParameter : ITsCodeModel { }
+
+    public interface ITsBoundRequiredParameter : ITsRequiredParameter
+    {
+        TsAccessibilityModifier? Modifier { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
+    public enum TsAccessibilityModifier
+    {
+        Public,
+        Private,
+        Protected,
+    }
+
     /* BindingIdentifierOrPattern:
      *   BindingIdentifier
      *   BindingPattern
      */
+
+    public interface ITsBindingIdentifierOrPattern : ITsCodeModel { }
 
     /* OptionalParameterList:
      *   OptionalParameter
