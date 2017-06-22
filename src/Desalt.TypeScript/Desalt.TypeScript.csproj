@@ -54,6 +54,7 @@
     <Compile Include="CodeModels\Types\TsParenthesizedType.cs" />
     <Compile Include="CodeModels\Types\TsPredefinedType.cs" />
     <Compile Include="CodeModels\Types\TsPropertySignature.cs" />
+    <Compile Include="CodeModels\Types\TsRestParameter.cs" />
     <Compile Include="CodeModels\Types\TsStringParameter.cs" />
     <Compile Include="CodeModels\Types\TsThisType.cs" />
     <Compile Include="CodeModels\Types\TsTupleType.cs" />

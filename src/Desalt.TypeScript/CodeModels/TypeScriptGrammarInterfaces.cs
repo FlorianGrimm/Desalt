@@ -362,9 +362,16 @@ namespace Desalt.TypeScript.CodeModels
         ITsStringLiteral StringLiteral { get; }
     }
 
+    /* RestParameter:
      *   ... BindingIdentifier TypeAnnotationOpt
-     *
-     * ConstructSignature:
+     */
+
+    public interface ITsRestParameter : ITsCodeModel
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
      *   new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
      *
      * IndexSignature:

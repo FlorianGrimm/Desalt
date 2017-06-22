@@ -98,6 +98,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
         /// </summary>
         public virtual void VisitStringOptionalParameter(ITsStringOptionalParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a a function parameter of the form '... parameterName: type'.
+        /// </summary>
+        public virtual void VisitRestParameter(ITsRestParameter model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -191,5 +196,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
         /// </summary>
         public virtual TResult VisitStringOptionalParameter(ITsStringOptionalParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a a function parameter of the form '... parameterName: type'.
+        /// </summary>
+        public virtual TResult VisitRestParameter(ITsRestParameter model) => DefaultVisit(model);
     }
 }

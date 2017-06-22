@@ -223,6 +223,9 @@ namespace Desalt.TypeScript.CodeModels
             return new TsStringParameter(parameterName, stringLiteral, isOptional: true);
         }
 
+        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType typeAnnotation = null) =>
+            new TsRestParameter(parameterName, typeAnnotation);
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================
