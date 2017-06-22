@@ -74,6 +74,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits an object literal property function.
         /// </summary>
         public virtual void VisitPropertyFunction(ITsPropertyFunction model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a property get accessor of the form 'get name (): type { body }'.
+        /// </summary>
+        public virtual void VisitGetAccessor(ITsGetAccessor model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -143,5 +148,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits an object literal property function.
         /// </summary>
         public virtual TResult VisitPropertyFunction(ITsPropertyFunction model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a property get accessor of the form 'get name (): type { body }'.
+        /// </summary>
+        public virtual TResult VisitGetAccessor(ITsGetAccessor model) => DefaultVisit(model);
     }
 }

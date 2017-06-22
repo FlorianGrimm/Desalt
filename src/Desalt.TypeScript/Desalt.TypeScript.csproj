@@ -27,6 +27,7 @@
     <Compile Include="CodeModels\Expressions\TsBooleanLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="CodeModels\Expressions\TsCoverInitializedName.cs" />
+    <Compile Include="CodeModels\Expressions\TsGetAccessor.cs" />
     <Compile Include="CodeModels\Expressions\TsNullLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsNumericLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsObjectLiteral.cs" />
