@@ -83,6 +83,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a bound required parameter in a parameter list for a function.
         /// </summary>
         public virtual void VisitBoundRequiredParameter(ITsBoundRequiredParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+        /// </summary>
+        public virtual void VisitStringRequiredParameter(ITsStringRequiredParameter model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -161,5 +166,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a bound required parameter in a parameter list for a function.
         /// </summary>
         public virtual TResult VisitBoundRequiredParameter(ITsBoundRequiredParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+        /// </summary>
+        public virtual TResult VisitStringRequiredParameter(ITsStringRequiredParameter model) => DefaultVisit(model);
     }
 }

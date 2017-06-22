@@ -316,6 +316,12 @@ namespace Desalt.TypeScript.CodeModels
         ITsType TypeAnnotation { get; }
     }
 
+    public interface ITsStringRequiredParameter : ITsRequiredParameter
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsStringLiteral StringLiteral { get; }
+    }
+
     public enum TsAccessibilityModifier
     {
         Public,

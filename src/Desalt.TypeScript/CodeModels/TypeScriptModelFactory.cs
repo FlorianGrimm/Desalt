@@ -200,6 +200,13 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 
+        public static ITsStringRequiredParameter StringRequiredParameter(
+            ITsIdentifier parameterName,
+            ITsStringLiteral stringLiteral)
+        {
+            return new TsStringRequiredParameter(parameterName, stringLiteral);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================
