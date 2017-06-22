@@ -22,11 +22,11 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public TsPropertySignature(
             ITsLiteralPropertyName propertyName,
-            bool isNullable = false,
+            bool isOptional = false,
             ITsType typeAnnotation = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            IsNullable = isNullable;
+            IsOptional = isOptional;
             TypeAnnotation = typeAnnotation;
         }
 
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.CodeModels.Types
         //// ===========================================================================================================
 
         public ITsLiteralPropertyName PropertyName { get; }
-        public bool IsNullable { get; }
+        public bool IsOptional { get; }
         public ITsType TypeAnnotation { get; }
 
         //// ===========================================================================================================
@@ -46,17 +46,13 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitPropertySignature(this);
 
-        public override string ToCodeDisplay()
-        {
-            return PropertyName.ToCodeDisplay() +
-                (IsNullable ? "?" : "") +
-                (TypeAnnotation != null ? $": {TypeAnnotation.ToCodeDisplay()}" : "");
-        }
+        public override string ToCodeDisplay() =>
+            PropertyName + (IsOptional ? "?" : "") + TypeAnnotation.TypeAnnotationCodeDisplay();
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
             PropertyName.WriteFullCodeDisplay(writer);
-            if (IsNullable)
+            if (IsOptional)
             {
                 writer.Write("?");
             }

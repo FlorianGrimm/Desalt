@@ -175,10 +175,10 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,
-            bool isNullable = false,
+            bool isOptional = false,
             ITsType typeAnnotation = null)
         {
-            return new TsPropertySignature(propertyName, isNullable, typeAnnotation);
+            return new TsPropertySignature(propertyName, isOptional, typeAnnotation);
         }
 
         public static ITsCallSignature CallSignature(
