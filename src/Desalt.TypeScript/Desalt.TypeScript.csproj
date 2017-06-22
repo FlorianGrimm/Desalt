@@ -45,6 +45,7 @@
     <Compile Include="CodeModels\TypeScriptVisitor.Expressions.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.Types.cs" />
     <Compile Include="CodeModels\Types\TsArrayType.cs" />
+    <Compile Include="CodeModels\Types\TsBoundOptionalParameter.cs" />
     <Compile Include="CodeModels\Types\TsBoundRequiredParameter.cs" />
     <Compile Include="CodeModels\Types\TsCallSignature.cs" />
     <Compile Include="CodeModels\Types\TsFunctionOrConstructorType.cs" />

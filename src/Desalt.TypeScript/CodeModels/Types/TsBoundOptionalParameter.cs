@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsBoundRequiredParameter.cs" company="Justin Rockwood">
+// <copyright file="TsBoundOptionalParameter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,20 +12,22 @@ namespace Desalt.TypeScript.CodeModels.Types
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a bound required parameter in a parameter list for a function.
+    /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundRequiredParameter : CodeModel, ITsBoundRequiredParameter
+    internal class TsBoundOptionalParameter : CodeModel, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsBoundRequiredParameter(
+        public TsBoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
+            ITsAssignmentExpression initializer,
             ITsType typeAnnotation = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
+            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
             TypeAnnotation = typeAnnotation;
             Modifier = modifier;
         }
@@ -37,14 +39,15 @@ namespace Desalt.TypeScript.CodeModels.Types
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
         public ITsType TypeAnnotation { get; }
+        public ITsAssignmentExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitBoundRequiredParameter(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitBoundRequiredParameter(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitBoundOptionalParameter(this);
 
         public override string ToCodeDisplay()
         {
@@ -60,6 +63,8 @@ namespace Desalt.TypeScript.CodeModels.Types
             {
                 display += $": {TypeAnnotation.ToCodeDisplay()}";
             }
+
+            display += $" = {Initializer.ToCodeDisplay()}";
 
             return display;
         }
@@ -78,6 +83,9 @@ namespace Desalt.TypeScript.CodeModels.Types
                 writer.Write(": ");
                 TypeAnnotation.WriteFullCodeDisplay(writer);
             }
+
+            writer.Write(" = ");
+            Initializer.WriteFullCodeDisplay(writer);
         }
     }
 }

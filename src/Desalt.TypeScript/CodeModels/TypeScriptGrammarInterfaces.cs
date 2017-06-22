@@ -344,8 +344,18 @@ namespace Desalt.TypeScript.CodeModels
      *   AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
      *   AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
      *   BindingIdentifier ? : StringLiteral
-     *
-     * RestParameter:
+     */
+
+    public interface ITsOptionalParameter : ITsCodeModel { }
+
+    public interface ITsBoundOptionalParameter : ITsOptionalParameter
+    {
+        TsAccessibilityModifier? Modifier { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType TypeAnnotation { get; }
+        ITsAssignmentExpression Initializer { get; }
+    }
+
      *   ... BindingIdentifier TypeAnnotationOpt
      *
      * ConstructSignature:
