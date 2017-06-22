@@ -226,6 +226,14 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType typeAnnotation = null) =>
             new TsRestParameter(parameterName, typeAnnotation);
 
+        public static ITsConstructSignature ConstructSignature(
+            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsParameterList parameterList = null,
+            ITsType typeAnnotation = null)
+        {
+            return new TsConstructSignature(typeParameters, parameterList, typeAnnotation);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================

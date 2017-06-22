@@ -103,6 +103,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a a function parameter of the form '... parameterName: type'.
         /// </summary>
         public virtual void VisitRestParameter(ITsRestParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
+        /// </summary>
+        public virtual void VisitConstructSignature(ITsConstructSignature model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -201,5 +206,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a a function parameter of the form '... parameterName: type'.
         /// </summary>
         public virtual TResult VisitRestParameter(ITsRestParameter model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
+        /// </summary>
+        public virtual TResult VisitConstructSignature(ITsConstructSignature model) => DefaultVisit(model);
     }
 }

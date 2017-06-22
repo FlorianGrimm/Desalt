@@ -48,6 +48,7 @@
     <Compile Include="CodeModels\Types\TsBoundOptionalParameter.cs" />
     <Compile Include="CodeModels\Types\TsBoundRequiredParameter.cs" />
     <Compile Include="CodeModels\Types\TsCallSignature.cs" />
+    <Compile Include="CodeModels\Types\TsConstructSignature.cs" />
     <Compile Include="CodeModels\Types\TsFunctionOrConstructorType.cs" />
     <Compile Include="CodeModels\Types\TsObjectType.cs" />
     <Compile Include="CodeModels\Types\TsParameterList.cs" />

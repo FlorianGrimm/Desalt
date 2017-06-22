@@ -372,9 +372,17 @@ namespace Desalt.TypeScript.CodeModels
         ITsType TypeAnnotation { get; }
     }
 
+    /* ConstructSignature:
      *   new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
-     *
-     * IndexSignature:
+     */
+
+    public interface ITsConstructSignature : ITsTypeMember
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsParameterList ParameterList { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
      *   [ BindingIdentifier : string ] TypeAnnotation
      *   [ BindingIdentifier : number ] TypeAnnotation
      *
