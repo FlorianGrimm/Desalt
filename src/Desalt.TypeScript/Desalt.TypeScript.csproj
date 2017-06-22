@@ -34,6 +34,7 @@
     <Compile Include="CodeModels\Expressions\TsPropertyAssignment.cs" />
     <Compile Include="CodeModels\Expressions\TsPropertyFunction.cs" />
     <Compile Include="CodeModels\Expressions\TsRegularExpressionLiteral.cs" />
+    <Compile Include="CodeModels\Expressions\TsSetAccessor.cs" />
     <Compile Include="CodeModels\Expressions\TsStringLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsThis.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />

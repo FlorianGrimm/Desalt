@@ -137,6 +137,15 @@ namespace Desalt.TypeScript.CodeModels
             return new TsGetAccessor(propertyName, propertyType, functionBody);
         }
 
+        public static ITsSetAccessor SetAccessor(
+            ITsPropertyName propertyName,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType parameterType = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
+        }
+
         //// ===========================================================================================================
         //// Types
         //// ===========================================================================================================

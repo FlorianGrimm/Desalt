@@ -461,6 +461,14 @@ namespace Desalt.TypeScript.CodeModels
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
+    public interface ITsSetAccessor : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType ParameterType { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
     /* A.3 Statements
      * --------------
      * Declaration: ( Modified )
