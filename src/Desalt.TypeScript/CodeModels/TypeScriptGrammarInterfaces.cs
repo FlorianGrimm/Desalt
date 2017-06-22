@@ -395,9 +395,17 @@ namespace Desalt.TypeScript.CodeModels
         ITsType TypeAnnotation { get; }
     }
 
+    /* MethodSignature:
      *   PropertyName ?Opt CallSignature
-     *
-     * TypeAliasDeclaration:
+     */
+
+    public interface ITsMethodSignature : ITsTypeMember
+    {
+        ITsPropertyName PropertyName { get; }
+        bool IsOptional { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 

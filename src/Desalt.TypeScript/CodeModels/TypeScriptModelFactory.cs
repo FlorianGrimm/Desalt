@@ -242,6 +242,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsIndexSignature(parameterName, isParameterNumberType, typeAnnotation);
         }
 
+        public static ITsMethodSignature MethodSignature(
+            ITsPropertyName propertyName,
+            bool isOptional,
+            ITsCallSignature callSignature)
+        {
+            return new TsMethodSignature(propertyName, isOptional, callSignature);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================
