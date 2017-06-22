@@ -406,8 +406,16 @@ namespace Desalt.TypeScript.CodeModels
         ITsCallSignature CallSignature { get; }
     }
 
+    /* TypeAliasDeclaration:
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
+
+    public interface ITsTypeAliasDeclaration : ITsCodeModel
+    {
+        ITsIdentifier AliasName { get; }
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsType Type { get; }
+    }
 
     /* A.2 Expressions
      * ---------------

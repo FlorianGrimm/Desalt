@@ -118,6 +118,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a method signature, which is a shorthand for declaring a property of a function type.
         /// </summary>
         public virtual void VisitMethodSignature(ITsMethodSignature model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -231,5 +236,10 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a method signature, which is a shorthand for declaring a property of a function type.
         /// </summary>
         public virtual TResult VisitMethodSignature(ITsMethodSignature model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public virtual TResult VisitTypeAliasDeclaration(ITsTypeAliasDeclaration model) => DefaultVisit(model);
     }
 }

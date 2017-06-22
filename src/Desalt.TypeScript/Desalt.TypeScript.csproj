@@ -61,6 +61,7 @@
     <Compile Include="CodeModels\Types\TsStringParameter.cs" />
     <Compile Include="CodeModels\Types\TsThisType.cs" />
     <Compile Include="CodeModels\Types\TsTupleType.cs" />
+    <Compile Include="CodeModels\Types\TsTypeAliasDeclaration.cs" />
     <Compile Include="CodeModels\Types\TsTypeParameter.cs" />
     <Compile Include="CodeModels\Types\TsTypeQuery.cs" />
     <Compile Include="CodeModels\Types\TsTypeReference.cs" />

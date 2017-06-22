@@ -250,6 +250,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsMethodSignature(propertyName, isOptional, callSignature);
         }
 
+        public static ITsTypeAliasDeclaration TypeAliasDeclaration(
+            ITsIdentifier aliasName,
+            ITsType type,
+            params ITsTypeParameter[] typeParameters)
+        {
+            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================
