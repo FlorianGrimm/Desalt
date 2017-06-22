@@ -234,6 +234,14 @@ namespace Desalt.TypeScript.CodeModels
             return new TsConstructSignature(typeParameters, parameterList, typeAnnotation);
         }
 
+        public static ITsIndexSignature IndexSignature(
+            ITsIdentifier parameterName,
+            bool isParameterNumberType,
+            ITsType typeAnnotation)
+        {
+            return new TsIndexSignature(parameterName, isParameterNumberType, typeAnnotation);
+        }
+
         //// ===========================================================================================================
         //// Source Files
         //// ===========================================================================================================

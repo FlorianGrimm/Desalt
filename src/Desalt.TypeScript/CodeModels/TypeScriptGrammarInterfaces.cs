@@ -383,10 +383,18 @@ namespace Desalt.TypeScript.CodeModels
         ITsType TypeAnnotation { get; }
     }
 
+    /* IndexSignature:
      *   [ BindingIdentifier : string ] TypeAnnotation
      *   [ BindingIdentifier : number ] TypeAnnotation
-     *
-     * MethodSignature:
+     */
+
+    public interface ITsIndexSignature : ITsTypeMember
+    {
+        ITsIdentifier ParameterName { get; }
+        bool IsParameterNumberType { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
      *   PropertyName ?Opt CallSignature
      *
      * TypeAliasDeclaration:
