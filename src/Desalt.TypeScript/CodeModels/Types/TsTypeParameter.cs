@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.CodeModels.Types
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitTypeParameter(this);
 
         public override string ToCodeDisplay() =>
-            TypeName.ToCodeDisplay() + (Constraint != null ? $" extends {Constraint.ToCodeDisplay()}" : "");
+            TypeName.ToCodeDisplay() + (Constraint != null ? $" extends {Constraint}" : "");
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

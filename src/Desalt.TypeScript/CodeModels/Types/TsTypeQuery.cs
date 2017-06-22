@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitTypeQuery(this);
 
-        public override string ToCodeDisplay() => $"typeof {Query.ToCodeDisplay()}";
+        public override string ToCodeDisplay() => $"typeof {Query}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

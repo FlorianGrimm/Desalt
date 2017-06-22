@@ -47,7 +47,7 @@ namespace Desalt.TypeScript.CodeModels.Types
         {
             string display = $"[{ParameterName.ToCodeDisplay()}: ";
             display += IsParameterNumberType ? "number" : "string";
-            display += $"]: {TypeAnnotation.ToCodeDisplay()}";
+            display += $"]: {TypeAnnotation}";
             return display;
         }
 

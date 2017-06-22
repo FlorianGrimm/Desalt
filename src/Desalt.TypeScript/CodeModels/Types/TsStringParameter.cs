@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 display += "?";
             }
 
-            display += $": {StringLiteral.ToCodeDisplay()}";
+            display += $": {StringLiteral}";
 
             return display;
         }

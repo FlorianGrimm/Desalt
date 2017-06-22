@@ -50,13 +50,13 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public override string ToCodeDisplay()
         {
-            string display = $"type {AliasName.ToCodeDisplay()}";
+            string display = $"type {AliasName}";
             if (TypeParameters.Length > 0)
             {
                 display += $"<{TypeParameters.ToElidedList()}>";
             }
 
-            display += $" = {Type.ToCodeDisplay()}";
+            display += $" = {Type}";
             return display;
         }
 

@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 code += $"<{TypeParameters.ToElidedList()}>";
             }
 
-            code += $"{Parameters?.ToCodeDisplay()}: {TypeAnnotation.ToCodeDisplay()}";
+            code += $"{Parameters?.ToCodeDisplay()}: {TypeAnnotation}";
 
             return code;
         }
@@ -69,12 +69,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             }
 
             Parameters?.WriteFullCodeDisplay(writer);
-
-            if (TypeAnnotation != null)
-            {
-                writer.Write(": ");
-                TypeAnnotation.WriteFullCodeDisplay(writer);
-            }
+            TypeAnnotation.WriteTypeAnnotation(writer);
         }
     }
 }

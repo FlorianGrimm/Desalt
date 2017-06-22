@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
+    using Desalt.Core.Utility;
     using Desalt.TypeScript.CodeModels.Types;
 
     /// <summary>
@@ -22,6 +23,24 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsParenthesizedType WithParentheses(this ITsType type)
         {
             return new TsParenthesizedType(type);
+        }
+
+        /// <summary>
+        /// Writes out a ": type" type annotation if the type is not null.
+        /// </summary>
+        /// <param name="type">The type annotation to write.</param>
+        public static string TypeAnnotationCodeDisplay(this ITsType type)
+        {
+            return type != null ? $": {type.ToCodeDisplay()}" : string.Empty;
+        }
+
+        public static void WriteTypeAnnotation(this ITsType type, IndentedTextWriter writer)
+        {
+            if (type != null)
+            {
+                writer.Write(": ");
+                type.WriteFullCodeDisplay(writer);
+            }
         }
     }
 }

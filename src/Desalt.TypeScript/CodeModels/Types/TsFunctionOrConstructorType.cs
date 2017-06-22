@@ -86,7 +86,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 code += $"<{TypeParameters.ToElidedList()}>";
             }
 
-            code += $"{Parameters?.ToCodeDisplay()} => {ReturnType.ToCodeDisplay()}";
+            code += $"{Parameters?.ToCodeDisplay()} => {ReturnType}";
 
             return code;
         }

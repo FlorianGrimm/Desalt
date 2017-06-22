@@ -57,14 +57,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
             }
 
-            display += ParameterName.ToCodeDisplay();
-
-            if (TypeAnnotation != null)
-            {
-                display += $": {TypeAnnotation.ToCodeDisplay()}";
-            }
-
-            display += $" = {Initializer.ToCodeDisplay()}";
+            display += $"{ParameterName}${TypeAnnotation.TypeAnnotationCodeDisplay()} = {Initializer}";
 
             return display;
         }
@@ -77,12 +70,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             }
 
             ParameterName.WriteFullCodeDisplay(writer);
-
-            if (TypeAnnotation != null)
-            {
-                writer.Write(": ");
-                TypeAnnotation.WriteFullCodeDisplay(writer);
-            }
+            TypeAnnotation.WriteTypeAnnotation(writer);
 
             writer.Write(" = ");
             Initializer.WriteFullCodeDisplay(writer);

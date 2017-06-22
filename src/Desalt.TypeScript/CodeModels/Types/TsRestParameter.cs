@@ -41,27 +41,13 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitRestParameter(this);
 
-        public override string ToCodeDisplay()
-        {
-            string display = $"... {ParameterName.ToCodeDisplay()}";
-            if (TypeAnnotation != null)
-            {
-                display += $": {TypeAnnotation.ToCodeDisplay()}";
-            }
-
-            return display;
-        }
+        public override string ToCodeDisplay() => $"... {ParameterName}{TypeAnnotation.TypeAnnotationCodeDisplay()}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
             writer.Write("... ");
             ParameterName.WriteFullCodeDisplay(writer);
-
-            if (TypeAnnotation != null)
-            {
-                writer.Write(": ");
-                TypeAnnotation.WriteFullCodeDisplay(writer);
-            }
+            TypeAnnotation.WriteTypeAnnotation(writer);
         }
     }
 }

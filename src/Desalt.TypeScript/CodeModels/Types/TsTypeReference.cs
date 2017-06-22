@@ -50,7 +50,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 return TypeName.ToCodeDisplay();
             }
 
-            return $"{TypeName.ToCodeDisplay()}<{TypeArguments.ToElidedList()}>";
+            return $"{TypeName}<{TypeArguments.ToElidedList()}>";
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -61,11 +61,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 writer.Write("?");
             }
 
-            if (TypeAnnotation != null)
-            {
-                writer.Write(": ");
-                TypeAnnotation.WriteFullCodeDisplay(writer);
-            }
+            TypeAnnotation.WriteTypeAnnotation(writer);
         }
     }
 }
