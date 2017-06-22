@@ -24,11 +24,11 @@ namespace Desalt.TypeScript.CodeModels.Types
         public TsCallSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
             ITsParameterList parameters = null,
-            ITsType typeAnnotation = null)
+            ITsType returnType = null)
         {
             TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
             Parameters = parameters;
-            TypeAnnotation = typeAnnotation;
+            ReturnType = returnType;
         }
 
         //// ===========================================================================================================
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
         public ITsParameterList Parameters { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType ReturnType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 code += $"<{TypeParameters.ToElidedList()}>";
             }
 
-            code += $"{Parameters?.ToCodeDisplay()}: {TypeAnnotation}";
+            code += $"{Parameters?.ToCodeDisplay()}: {ReturnType}";
 
             return code;
         }
@@ -69,7 +69,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             }
 
             Parameters?.WriteFullCodeDisplay(writer);
-            TypeAnnotation.WriteTypeAnnotation(writer);
+            ReturnType.WriteTypeAnnotation(writer);
         }
     }
 }

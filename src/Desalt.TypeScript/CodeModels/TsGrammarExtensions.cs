@@ -29,7 +29,7 @@ namespace Desalt.TypeScript.CodeModels
         /// Writes out a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
-        public static string TypeAnnotationCodeDisplay(this ITsType type)
+        public static string ToTypeAnnotationCodeDisplay(this ITsType type)
         {
             return type != null ? $": {type.ToCodeDisplay()}" : string.Empty;
         }

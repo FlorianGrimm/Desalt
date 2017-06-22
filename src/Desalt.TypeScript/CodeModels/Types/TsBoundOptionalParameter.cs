@@ -23,12 +23,12 @@ namespace Desalt.TypeScript.CodeModels.Types
         public TsBoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
             ITsAssignmentExpression initializer,
-            ITsType typeAnnotation = null,
+            ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
             Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
-            TypeAnnotation = typeAnnotation;
+            ParameterType = parameterType;
             Modifier = modifier;
         }
 
@@ -38,7 +38,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType ParameterType { get; }
         public ITsAssignmentExpression Initializer { get; }
 
         //// ===========================================================================================================
@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
             }
 
-            display += $"{ParameterName}${TypeAnnotation.TypeAnnotationCodeDisplay()} = {Initializer}";
+            display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
 
             return display;
         }
@@ -70,7 +70,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             }
 
             ParameterName.WriteFullCodeDisplay(writer);
-            TypeAnnotation.WriteTypeAnnotation(writer);
+            ParameterType.WriteTypeAnnotation(writer);
 
             writer.Write(" = ");
             Initializer.WriteFullCodeDisplay(writer);

@@ -262,7 +262,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         ITsLiteralPropertyName PropertyName { get; }
         bool IsOptional { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType PropertyType { get; }
     }
 
     /* CallSignature:
@@ -273,7 +273,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }
         ITsParameterList Parameters { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ReturnType { get; }
     }
 
     /* ParameterList:
@@ -313,7 +313,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         TsAccessibilityModifier? Modifier { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ParameterType { get; }
     }
 
     public interface ITsStringRequiredParameter : ITsRequiredParameter
@@ -352,7 +352,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         TsAccessibilityModifier? Modifier { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ParameterType { get; }
         ITsAssignmentExpression Initializer { get; }
     }
 
@@ -369,7 +369,7 @@ namespace Desalt.TypeScript.CodeModels
     public interface ITsRestParameter : ITsCodeModel
     {
         ITsIdentifier ParameterName { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ParameterType { get; }
     }
 
     /* ConstructSignature:
@@ -380,7 +380,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }
         ITsParameterList ParameterList { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ReturnType { get; }
     }
 
     /* IndexSignature:
@@ -392,7 +392,7 @@ namespace Desalt.TypeScript.CodeModels
     {
         ITsIdentifier ParameterName { get; }
         bool IsParameterNumberType { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType ParameterType { get; }
     }
 
     /* MethodSignature:
@@ -457,7 +457,7 @@ namespace Desalt.TypeScript.CodeModels
     public interface ITsGetAccessor : ITsPropertyDefinition
     {
         ITsPropertyName PropertyName { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType PropertyType { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 

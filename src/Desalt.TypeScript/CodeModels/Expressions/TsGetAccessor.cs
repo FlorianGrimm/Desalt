@@ -24,11 +24,11 @@ namespace Desalt.TypeScript.CodeModels.Expressions
 
         public TsGetAccessor(
             ITsPropertyName propertyName,
-            ITsType typeAnnotation = null,
+            ITsType propertyType = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            TypeAnnotation = typeAnnotation;
+            PropertyType = propertyType;
             FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
         }
 
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         //// ===========================================================================================================
 
         public ITsPropertyName PropertyName { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType PropertyType { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
         //// ===========================================================================================================
@@ -49,14 +49,14 @@ namespace Desalt.TypeScript.CodeModels.Expressions
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitGetAccessor(this);
 
         public override string ToCodeDisplay() =>
-            $"get {PropertyName}(){TypeAnnotation.TypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
+            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
             writer.Write("get ");
             PropertyName.WriteFullCodeDisplay(writer);
             writer.Write("()");
-            TypeAnnotation.WriteTypeAnnotation(writer);
+            PropertyType.WriteTypeAnnotation(writer);
             WriteBlock(writer, FunctionBody);
         }
     }

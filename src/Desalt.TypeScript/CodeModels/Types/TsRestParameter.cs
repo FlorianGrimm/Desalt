@@ -20,10 +20,10 @@ namespace Desalt.TypeScript.CodeModels.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsRestParameter(ITsIdentifier parameterName, ITsType typeAnnotation = null)
+        public TsRestParameter(ITsIdentifier parameterName, ITsType parameterType = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            TypeAnnotation = typeAnnotation;
+            ParameterType = parameterType;
         }
 
         //// ===========================================================================================================
@@ -31,7 +31,7 @@ namespace Desalt.TypeScript.CodeModels.Types
         //// ===========================================================================================================
 
         public ITsIdentifier ParameterName { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,13 +41,13 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitRestParameter(this);
 
-        public override string ToCodeDisplay() => $"... {ParameterName}{TypeAnnotation.TypeAnnotationCodeDisplay()}";
+        public override string ToCodeDisplay() => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
             writer.Write("... ");
             ParameterName.WriteFullCodeDisplay(writer);
-            TypeAnnotation.WriteTypeAnnotation(writer);
+            ParameterType.WriteTypeAnnotation(writer);
         }
     }
 }

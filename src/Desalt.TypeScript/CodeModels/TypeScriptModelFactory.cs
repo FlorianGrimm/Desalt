@@ -131,10 +131,10 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsGetAccessor GetAccessor(
             ITsPropertyName propertyName,
-            ITsType typeAnnotation = null,
+            ITsType propertyType = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsGetAccessor(propertyName, typeAnnotation, functionBody);
+            return new TsGetAccessor(propertyName, propertyType, functionBody);
         }
 
         //// ===========================================================================================================
@@ -184,17 +184,17 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,
             bool isOptional = false,
-            ITsType typeAnnotation = null)
+            ITsType propertyType = null)
         {
-            return new TsPropertySignature(propertyName, isOptional, typeAnnotation);
+            return new TsPropertySignature(propertyName, isOptional, propertyType);
         }
 
         public static ITsCallSignature CallSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
             ITsParameterList parameters = null,
-            ITsType typeAnnotation = null)
+            ITsType returnType = null)
         {
-            return new TsCallSignature(typeParameters, parameters, typeAnnotation);
+            return new TsCallSignature(typeParameters, parameters, returnType);
         }
 
         public static ITsParameterList ParameterList(
@@ -210,10 +210,10 @@ namespace Desalt.TypeScript.CodeModels
 
         public static ITsBoundRequiredParameter BoundRequiredParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType typeAnnotation = null,
+            ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
-            return new TsBoundRequiredParameter(parameterName, typeAnnotation, modifier);
+            return new TsBoundRequiredParameter(parameterName, parameterType, modifier);
         }
 
         public static ITsStringRequiredParameter StringRequiredParameter(
@@ -226,10 +226,10 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsBoundOptionalParameter BoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
             ITsAssignmentExpression initializer,
-            ITsType typeAnnotation = null,
+            ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
-            return new TsBoundOptionalParameter(parameterName, initializer, typeAnnotation, modifier);
+            return new TsBoundOptionalParameter(parameterName, initializer, parameterType, modifier);
         }
 
         public static ITsStringOptionalParameter StringOptionalParameter(
@@ -239,23 +239,23 @@ namespace Desalt.TypeScript.CodeModels
             return new TsStringParameter(parameterName, stringLiteral, isOptional: true);
         }
 
-        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType typeAnnotation = null) =>
-            new TsRestParameter(parameterName, typeAnnotation);
+        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType parameterType = null) =>
+            new TsRestParameter(parameterName, parameterType);
 
         public static ITsConstructSignature ConstructSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
             ITsParameterList parameterList = null,
-            ITsType typeAnnotation = null)
+            ITsType returnType = null)
         {
-            return new TsConstructSignature(typeParameters, parameterList, typeAnnotation);
+            return new TsConstructSignature(typeParameters, parameterList, returnType);
         }
 
         public static ITsIndexSignature IndexSignature(
             ITsIdentifier parameterName,
             bool isParameterNumberType,
-            ITsType typeAnnotation)
+            ITsType parameterType)
         {
-            return new TsIndexSignature(parameterName, isParameterNumberType, typeAnnotation);
+            return new TsIndexSignature(parameterName, isParameterNumberType, parameterType);
         }
 
         public static ITsMethodSignature MethodSignature(

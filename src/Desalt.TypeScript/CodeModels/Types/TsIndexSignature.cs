@@ -20,11 +20,11 @@ namespace Desalt.TypeScript.CodeModels.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsIndexSignature(ITsIdentifier parameterName, bool isParameterNumberType, ITsType typeAnnotation)
+        public TsIndexSignature(ITsIdentifier parameterName, bool isParameterNumberType, ITsType parameterType)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
             IsParameterNumberType = isParameterNumberType;
-            TypeAnnotation = typeAnnotation ?? throw new ArgumentNullException(nameof(typeAnnotation));
+            ParameterType = parameterType ?? throw new ArgumentNullException(nameof(parameterType));
         }
 
         //// ===========================================================================================================
@@ -33,7 +33,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public ITsIdentifier ParameterName { get; }
         public bool IsParameterNumberType { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -47,7 +47,7 @@ namespace Desalt.TypeScript.CodeModels.Types
         {
             string display = $"[{ParameterName.ToCodeDisplay()}: ";
             display += IsParameterNumberType ? "number" : "string";
-            display += $"]: {TypeAnnotation}";
+            display += $"]: {ParameterType}";
             return display;
         }
 
@@ -58,7 +58,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             writer.Write(": ");
             writer.Write(IsParameterNumberType ? "number" : "string");
             writer.Write("]: ");
-            TypeAnnotation.WriteFullCodeDisplay(writer);
+            ParameterType.WriteFullCodeDisplay(writer);
         }
     }
 }

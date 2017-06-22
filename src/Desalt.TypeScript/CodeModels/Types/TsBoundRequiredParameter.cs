@@ -22,11 +22,11 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public TsBoundRequiredParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType typeAnnotation = null,
+            ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            TypeAnnotation = typeAnnotation;
+            ParameterType = parameterType;
             Modifier = modifier;
         }
 
@@ -36,7 +36,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType TypeAnnotation { get; }
+        public ITsType ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.CodeModels.Types
                 display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
             }
 
-            display += $"{ParameterName}{TypeAnnotation.TypeAnnotationCodeDisplay()}";
+            display += $"{ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
             return display;
         }
 
@@ -66,7 +66,7 @@ namespace Desalt.TypeScript.CodeModels.Types
             }
 
             ParameterName.WriteFullCodeDisplay(writer);
-            TypeAnnotation.WriteTypeAnnotation(writer);
+            ParameterType.WriteTypeAnnotation(writer);
         }
     }
 }
