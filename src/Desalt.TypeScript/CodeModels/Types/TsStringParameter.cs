@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsStringRequiredParameter.cs" company="Justin Rockwood">
+// <copyright file="TsStringParameter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,18 +12,19 @@ namespace Desalt.TypeScript.CodeModels.Types
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+    /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringRequiredParameter : CodeModel, ITsStringRequiredParameter
+    internal class TsStringParameter : CodeModel, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsStringRequiredParameter(ITsIdentifier parameterName, ITsStringLiteral stringLiteral)
+        public TsStringParameter(ITsIdentifier parameterName, ITsStringLiteral stringLiteral, bool isOptional)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
             StringLiteral = stringLiteral ?? throw new ArgumentNullException(nameof(stringLiteral));
+            IsOptional = isOptional;
         }
 
         //// ===========================================================================================================
@@ -32,6 +33,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public ITsIdentifier ParameterName { get; }
         public ITsStringLiteral StringLiteral { get; }
+        public bool IsOptional { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,11 +43,27 @@ namespace Desalt.TypeScript.CodeModels.Types
 
         public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitStringRequiredParameter(this);
 
-        public override string ToCodeDisplay() => $"{ParameterName.ToCodeDisplay()}: {StringLiteral.ToCodeDisplay()}";
+        public override string ToCodeDisplay()
+        {
+            string display = ParameterName.ToCodeDisplay();
+            if (IsOptional)
+            {
+                display += "?";
+            }
+
+            display += $": {StringLiteral.ToCodeDisplay()}";
+
+            return display;
+        }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
             ParameterName.WriteFullCodeDisplay(writer);
+            if (IsOptional)
+            {
+                writer.Write("?");
+            }
+
             writer.Write(": ");
             StringLiteral.WriteFullCodeDisplay(writer);
         }

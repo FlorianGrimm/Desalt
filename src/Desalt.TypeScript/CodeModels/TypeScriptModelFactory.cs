@@ -204,7 +204,23 @@ namespace Desalt.TypeScript.CodeModels
             ITsIdentifier parameterName,
             ITsStringLiteral stringLiteral)
         {
-            return new TsStringRequiredParameter(parameterName, stringLiteral);
+            return new TsStringParameter(parameterName, stringLiteral, isOptional: false);
+        }
+
+        public static ITsBoundOptionalParameter BoundOptionalParameter(
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsAssignmentExpression initializer,
+            ITsType typeAnnotation = null,
+            TsAccessibilityModifier? modifier = null)
+        {
+            return new TsBoundOptionalParameter(parameterName, initializer, typeAnnotation, modifier);
+        }
+
+        public static ITsStringOptionalParameter StringOptionalParameter(
+            ITsIdentifier parameterName,
+            ITsStringLiteral stringLiteral)
+        {
+            return new TsStringParameter(parameterName, stringLiteral, isOptional: true);
         }
 
         //// ===========================================================================================================

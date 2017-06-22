@@ -356,6 +356,12 @@ namespace Desalt.TypeScript.CodeModels
         ITsAssignmentExpression Initializer { get; }
     }
 
+    public interface ITsStringOptionalParameter : ITsOptionalParameter
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsStringLiteral StringLiteral { get; }
+    }
+
      *   ... BindingIdentifier TypeAnnotationOpt
      *
      * ConstructSignature:
