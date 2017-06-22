@@ -121,6 +121,14 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsComputedPropertyName ComputedPropertyName(ITsAssignmentExpression expression) =>
             new TsComputedPropertyName(expression);
 
+        public static ITsPropertyFunction PropertyFunction(
+            ITsPropertyName propertyName,
+            ITsCallSignature callSignature,
+            params ITsStatementListItem[] functionBody)
+        {
+            return new TsPropertyFunction(propertyName, callSignature, functionBody);
+        }
+
         //// ===========================================================================================================
         //// Types
         //// ===========================================================================================================

@@ -447,6 +447,13 @@ namespace Desalt.TypeScript.CodeModels
      *   < Type > UnaryExpression
      */
 
+    public interface ITsPropertyFunction : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
     /* A.3 Statements
      * --------------
      * Declaration: ( Modified )

@@ -493,6 +493,8 @@ namespace Desalt.TypeScript.CodeModels
      *   Declaration
      */
 
+    public interface ITsStatementListItem : ITsCodeModel { }
+
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
      * LexicalDeclaration:

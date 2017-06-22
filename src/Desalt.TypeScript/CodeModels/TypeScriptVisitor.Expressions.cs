@@ -39,12 +39,6 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
-        ///// assignment expression operator.
-        ///// </summary>
-        //public virtual void VisitAssignmentExpression(TypeScriptAssignmentExpression model) => DefaultVisit(model);
-
         /// <summary>
         /// Visits an array literal of the form '[element, element...]'.
         /// </summary>
@@ -76,51 +70,10 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual void VisitComputedPropertyName(ITsComputedPropertyName model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
-        ///// </summary>
-        //public virtual void VisitPropertyGetAssignment(TypeScriptPropertyGetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a property set assignment within an object literal of the form 'set property(value) {}'.
-        ///// </summary>
-        //public virtual void VisitPropertySetAssignment(TypeScriptPropertySetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits an expression surrounded by parentheses.
-        ///// </summary>
-        //public virtual void VisitParenthesizedExpression(TypeScriptParenthesizedExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits an expression that is a function declaration.
-        ///// </summary>
-        //public virtual void VisitFunctionExpression(TypeScriptFunctionExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a member expression of the form 'expression[member]', 'expression.member', or 'new expression(args)'.
-        ///// </summary>
-        //public virtual void VisitMemberExpression(TypeScriptMemberExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a call expression of the form 'expression(args)'.
-        ///// </summary>
-        //public virtual void VisitCallExpression(TypeScriptCallExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a unary expression.
-        ///// </summary>
-        //public virtual void VisitUnaryExpression(TypeScriptUnaryExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a binary expression of the form 'x ? y' where ? represents any of the enum values
-        ///// from <see cref="TypeScriptBinaryOperator"/>.
-        ///// </summary>
-        //public virtual void VisitBinaryExpression(TypeScriptBinaryExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a conditional expression of the form 'x ? y : z'.
-        ///// </summary>
-        //public virtual void VisitConditionalExpression(TypeScriptConditionalExpression model) => DefaultVisit(model);
+        /// <summary>
+        /// Visits an object literal property function.
+        /// </summary>
+        public virtual void VisitPropertyFunction(ITsPropertyFunction model) => DefaultVisit(model);
     }
 
     public abstract partial class TypeScriptVisitor<TResult>
@@ -155,12 +108,6 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual TResult VisitRegularExpressionLiteral(ITsRegularExpressionLiteral model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits an assignment expression of the form 'x = y', where '=' can be any valid
-        ///// assignment expression operator.
-        ///// </summary>
-        //public virtual TResult VisitAssignmentExpression(TypeScriptAssignmentExpression model) => DefaultVisit(model);
-
         /// <summary>
         /// Visits an array literal of the form '[element, element...]'.
         /// </summary>
@@ -192,50 +139,9 @@ namespace Desalt.TypeScript.CodeModels
         /// </summary>
         public virtual TResult VisitComputedPropertyName(ITsComputedPropertyName model) => DefaultVisit(model);
 
-        ///// <summary>
-        ///// Visits a property get assignment within an object literal of the form 'get property() {}'.
-        ///// </summary>
-        //public virtual TResult VisitPropertyGetAssignment(TypeScriptPropertyGetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a property set assignment within an object literal of the form 'set property(value) {}'.
-        ///// </summary>
-        //public virtual TResult VisitPropertySetAssignment(TypeScriptPropertySetAssignment model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits an expression surrounded by parentheses.
-        ///// </summary>
-        //public virtual TResult VisitParenthesizedExpression(TypeScriptParenthesizedExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits an expression that is a function declaration.
-        ///// </summary>
-        //public virtual TResult VisitFunctionExpression(TypeScriptFunctionExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a member expression of the form 'expression[member]', 'expression.member', or 'new expression(args)'.
-        ///// </summary>
-        //public virtual TResult VisitMemberExpression(TypeScriptMemberExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a call expression of the form 'expression(args)'.
-        ///// </summary>
-        //public virtual TResult VisitCallExpression(TypeScriptCallExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a unary expression.
-        ///// </summary>
-        //public virtual TResult VisitUnaryExpression(TypeScriptUnaryExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a binary expression of the form 'x ? y' where ? represents any of the enum values
-        ///// from <see cref="TypeScriptBinaryOperator"/>.
-        ///// </summary>
-        //public virtual TResult VisitBinaryExpression(TypeScriptBinaryExpression model) => DefaultVisit(model);
-
-        ///// <summary>
-        ///// Visits a conditional expression of the form 'x ? y : z'.
-        ///// </summary>
-        //public virtual TResult VisitConditionalExpression(TypeScriptConditionalExpression model) => DefaultVisit(model);
+        /// <summary>
+        /// Visits an object literal property function.
+        /// </summary>
+        public virtual TResult VisitPropertyFunction(ITsPropertyFunction model) => DefaultVisit(model);
     }
 }
