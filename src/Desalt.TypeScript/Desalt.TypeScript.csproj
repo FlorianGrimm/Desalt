@@ -43,6 +43,8 @@
     <Compile Include="CodeModels\ITsCodeModel.cs" />
     <Compile Include="CodeModels\TsGrammarExtensions.cs" />
     <Compile Include="CodeModels\TsIdentifier.cs" />
+    <Compile Include="CodeModels\TsModelFactory.Expressions.cs" />
+    <Compile Include="CodeModels\TsModelFactory.Types.cs" />
     <Compile Include="CodeModels\TsQualifiedName.cs" />
     <Compile Include="CodeModels\TypeScriptGrammarInterfaces.cs" />
     <Compile Include="CodeModels\TsModelFactory.cs" />
