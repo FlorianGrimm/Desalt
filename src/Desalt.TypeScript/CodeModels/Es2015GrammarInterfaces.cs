@@ -736,7 +736,8 @@ namespace Desalt.TypeScript.CodeModels
      *   function ( FormalParameters ) { FunctionBody }
      *
      * FunctionExpression:
-     *   function BindingIdentifierOpt ( FormalParameters ) { FunctionBody }
+     *   xxfunction BindingIdentifierOpt ( FormalParameters ) { FunctionBody }xx
+     *   (See the definition in the TypeScript grammar)
      *
      * StrictFormalParameters:
      *   FormalParameters

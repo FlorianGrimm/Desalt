@@ -149,6 +149,18 @@ namespace Desalt.TypeScript.CodeModels
         }
 
         //// ===========================================================================================================
+        //// Expressions
+        //// ===========================================================================================================
+
+        public static ITsFunctionExpression FunctionExpression(
+            ITsCallSignature callSignature,
+            ITsIdentifier functionName = null,
+            params ITsStatementListItem[] functionBody)
+        {
+            return new TsFunctionExpression(callSignature, functionName, functionBody);
+        }
+
+        //// ===========================================================================================================
         //// Types
         //// ===========================================================================================================
 

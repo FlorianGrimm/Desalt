@@ -86,6 +86,11 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitSetAccessor(ITsSetAccessor model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits a function declaration acting as an expression.
+        /// </summary>
+        public virtual void VisitFunctionExpression(ITsFunctionExpression model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral model) => DefaultVisit(model);
@@ -168,6 +173,11 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a property set accessor of the form 'set name(value: type) { body }'.
         /// </summary>
         public virtual TResult VisitSetAccessor(ITsSetAccessor model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a function declaration acting as an expression.
+        /// </summary>
+        public virtual TResult VisitFunctionExpression(ITsFunctionExpression model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a template literal of the form `string${Expression}`.

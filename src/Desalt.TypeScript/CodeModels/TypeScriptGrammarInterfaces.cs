@@ -432,19 +432,6 @@ namespace Desalt.TypeScript.CodeModels
      *
      * SetAccessor:
      *   set PropertyName ( BindingIdentifierOrPattern TypeAnnotationOpt ) { FunctionBody }
-     *
-     * FunctionExpression: ( Modified )
-     *   function BindingIdentifierOpt CallSignature { FunctionBody }
-     *
-     * ArrowFormalParameters: ( Modified )
-     *   CallSignature
-     *
-     * Arguments: ( Modified )
-     *   TypeArgumentsOpt ( ArgumentListOpt )
-     *
-     * UnaryExpression: ( Modified )
-     *   …
-     *   < Type > UnaryExpression
      */
 
     public interface ITsPropertyFunction : ITsPropertyDefinition
@@ -468,6 +455,28 @@ namespace Desalt.TypeScript.CodeModels
         ITsType ParameterType { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
+
+    /* FunctionExpression: ( Modified )
+     *   function BindingIdentifierOpt CallSignature { FunctionBody }
+     */
+
+    public interface ITsFunctionExpression : ITsPrimaryExpression
+    {
+        ITsIdentifier FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /* ArrowFormalParameters: ( Modified )
+     *   CallSignature
+     *
+     * Arguments: ( Modified )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
+     *
+     * UnaryExpression: ( Modified )
+     *   …
+     *   < Type > UnaryExpression
+     */
 
     /* A.3 Statements
      * --------------
