@@ -45,7 +45,7 @@
     <Compile Include="CodeModels\TsIdentifier.cs" />
     <Compile Include="CodeModels\TsQualifiedName.cs" />
     <Compile Include="CodeModels\TypeScriptGrammarInterfaces.cs" />
-    <Compile Include="CodeModels\TypeScriptModelFactory.cs" />
+    <Compile Include="CodeModels\TsModelFactory.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.Expressions.cs" />
     <Compile Include="CodeModels\TypeScriptVisitor.Types.cs" />

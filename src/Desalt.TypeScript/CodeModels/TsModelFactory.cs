@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptModelFactory.cs" company="Justin Rockwood">
+// <copyright file="TsModelFactory.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Provides factory methods for creating TypeScript code models.
     /// </summary>
-    public static class TypeScriptModelFactory
+    public static class TsModelFactory
     {
         //// ===========================================================================================================
         //// Singleton Properties
