@@ -91,6 +91,16 @@ namespace Desalt.TypeScript.CodeModels
         public virtual void VisitFunctionExpression(ITsFunctionExpression model) => DefaultVisit(model);
 
         /// <summary>
+        /// Visits an element within a class.
+        /// </summary>
+        public virtual void VisitClassElement(ITsClassElement model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a class declaration acting as an expression.
+        /// </summary>
+        public virtual void VisitClassExpression(ITsClassExpression model) => DefaultVisit(model);
+
+        /// <summary>
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral model) => DefaultVisit(model);
@@ -178,6 +188,16 @@ namespace Desalt.TypeScript.CodeModels
         /// Visits a function declaration acting as an expression.
         /// </summary>
         public virtual TResult VisitFunctionExpression(ITsFunctionExpression model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits an element within a class.
+        /// </summary>
+        public virtual TResult VisitClassElement(ITsClassElement model) => DefaultVisit(model);
+
+        /// <summary>
+        /// Visits a class declaration acting as an expression.
+        /// </summary>
+        public virtual TResult VisitClassExpression(ITsClassExpression model) => DefaultVisit(model);
 
         /// <summary>
         /// Visits a template literal of the form `string${Expression}`.

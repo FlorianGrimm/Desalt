@@ -351,6 +351,8 @@ namespace Desalt.TypeScript.CodeModels
      *   CallExpression
      */
 
+    public interface ITsLeftHandSideExpression : ITsCodeModel { }
+
     /* 12.4 Postfix Expressions
      * ------------------------
      * PostfixExpression:
@@ -608,7 +610,7 @@ namespace Desalt.TypeScript.CodeModels
      *   ... BindingIdentifier
      */
 
-    public interface ITsBindingPattern : ITsCodeModel, ITsBindingIdentifierOrPattern { }
+    public interface ITsBindingPattern : ITsBindingIdentifierOrPattern { }
 
     /* 13.4 Empty Statement
      * --------------------
@@ -801,6 +803,8 @@ namespace Desalt.TypeScript.CodeModels
      *   FormalParameter
      */
 
+    public interface ITsMethodDefinition : ITsCodeModel { }
+
     /* 14.4 Generator Function Definitions
      * -----------------------------------
      * GeneratorMethod:
@@ -849,6 +853,19 @@ namespace Desalt.TypeScript.CodeModels
      *   static MethodDefinition
      *   ;
      */
+
+    public interface ITsClassExpression : ITsPrimaryExpression
+    {
+        ITsIdentifier ClassName { get; }
+        ITsLeftHandSideExpression Heritage { get; }
+        ImmutableArray<ITsClassElement> ClassBody { get; }
+    }
+
+    public interface ITsClassElement : ITsCodeModel
+    {
+        bool IsStatic { get; }
+        ITsMethodDefinition MethodDefinition { get; }
+    }
 
     /* A.5 Scripts and Modules
      *

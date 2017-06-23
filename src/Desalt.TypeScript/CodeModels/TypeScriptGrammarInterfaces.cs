@@ -474,7 +474,7 @@ namespace Desalt.TypeScript.CodeModels
      *   TypeArgumentsOpt ( ArgumentListOpt )
      *
      * UnaryExpression: ( Modified )
-     *   …
+     *   ...
      *   < Type > UnaryExpression
      */
 

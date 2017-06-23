@@ -25,6 +25,8 @@
     <Compile Include="CodeModels\Expressions\TsArrayElement.cs" />
     <Compile Include="CodeModels\Expressions\TsArrayLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsBooleanLiteral.cs" />
+    <Compile Include="CodeModels\Expressions\TsClassElement.cs" />
+    <Compile Include="CodeModels\Expressions\TsClassExpression.cs" />
     <Compile Include="CodeModels\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="CodeModels\Expressions\TsCoverInitializedName.cs" />
     <Compile Include="CodeModels\Expressions\TsFunctionExpression.cs" />
