@@ -94,6 +94,8 @@ namespace Desalt.TypeScript.CodeModels
         public static ITsArrayElement ArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
 
+        public static ITsTemplateLiteral TemplateLiteral(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+
         //// ===========================================================================================================
         //// Object Literal Expressions
         //// ===========================================================================================================

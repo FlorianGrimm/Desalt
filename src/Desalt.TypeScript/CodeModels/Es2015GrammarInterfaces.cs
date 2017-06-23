@@ -246,8 +246,8 @@ namespace Desalt.TypeScript.CodeModels
         ITsAssignmentExpression Expression { get; }
     }
 
-    /* 12.2.9 Template Literals
-     * ------------------------
+    /* 12.2.9 Template Literals (and 11.8.6 Template Literal Lexical Components)
+     * -------------------------------------------------------------------------
      * TemplateLiteral:
      *   NoSubstitutionTemplate
      *   TemplateHead Expression TemplateSpans
@@ -259,7 +259,46 @@ namespace Desalt.TypeScript.CodeModels
      * TemplateMiddleList:
      *   TemplateMiddle Expression
      *   TemplateMiddleList TemplateMiddle Expression
+     *
+     * NoSubstitutionTemplate:
+     *   ` TemplateCharactersOpt `
+     *
+     * TemplateHead:
+     *   ` TemplateCharactersOpt ${
+     *
+     * TemplateMiddle:
+     *   } TemplateCharactersOpt ${
+     *
+     * TemplateTail:
+     *   } TemplateCharactersOpt `
+     *
+     * TemplateCharacters:
+     *   TemplateCharacter TemplateCharactersOpt
+     *
+     * TemplateCharacter:
+     *   $ [lookahead != {]
+     *   \ EscapeSequence
+     *   LineContinuation
+     *   LineTerminatorSequence
+     *   SourceCharacter but not one of ` or \ or $ or LineTerminator
      */
+
+    public sealed class TsTemplatePart
+    {
+        public TsTemplatePart(string template = null, ITsExpression expression = null)
+        {
+            Template = template;
+            Expression = expression;
+        }
+
+        public string Template { get; }
+        public ITsExpression Expression { get; }
+    }
+
+    public interface ITsTemplateLiteral : ITsPrimaryExpression
+    {
+        ImmutableArray<TsTemplatePart> Parts { get; }
+    }
 
     /* 12.e Left-Hand-Side Expressions
      * -------------------------------

@@ -36,6 +36,7 @@
     <Compile Include="CodeModels\Expressions\TsRegularExpressionLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsSetAccessor.cs" />
     <Compile Include="CodeModels\Expressions\TsStringLiteral.cs" />
+    <Compile Include="CodeModels\Expressions\TsTemplateLiteral.cs" />
     <Compile Include="CodeModels\Expressions\TsThis.cs" />
     <Compile Include="CodeModels\ImplementationSourceFile.cs" />
     <Compile Include="CodeModels\ITsCodeModel.cs" />
