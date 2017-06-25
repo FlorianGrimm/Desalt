@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.Ast
 {
     using Desalt.Core.Utility;
-    using Desalt.TypeScript.CodeModels.Types;
+    using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
     /// Contains static extension methods for <see cref="ITsCodeModel"/> objects.

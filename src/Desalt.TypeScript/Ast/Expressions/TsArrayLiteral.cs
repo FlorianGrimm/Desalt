@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels.Expressions
+namespace Desalt.TypeScript.Ast.Expressions
 {
     using System.Collections.Immutable;
     using Desalt.Core.Ast;

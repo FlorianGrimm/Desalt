@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
-    using Desalt.TypeScript.CodeModels.Types;
+    using Desalt.TypeScript.Ast.Types;
 
     public static partial class TsModelFactory
     {

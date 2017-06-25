@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels.Types
+namespace Desalt.TypeScript.Ast.Types
 {
     using Desalt.Core.Ast;
     using Desalt.Core.Utility;
