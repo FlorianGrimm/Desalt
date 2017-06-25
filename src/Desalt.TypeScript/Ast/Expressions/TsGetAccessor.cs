@@ -44,9 +44,9 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitGetAccessor(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitGetAccessor(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitGetAccessor(this);
 
         public override string ToCodeDisplay() =>
             $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";

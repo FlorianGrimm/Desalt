@@ -14,8 +14,8 @@ namespace Desalt.TypeScript.Ast
     /// </summary>
     public interface ITsAstNode : IAstNode
     {
-        void Accept(TypeScriptVisitor visitor);
+        void Accept(TsVisitor visitor);
 
-        T Accept<T>(TypeScriptVisitor<T> visitor);
+        T Accept<T>(TsVisitor<T> visitor);
     }
 }

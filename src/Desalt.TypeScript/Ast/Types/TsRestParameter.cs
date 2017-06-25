@@ -37,9 +37,9 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitRestParameter(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitRestParameter(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitRestParameter(this);
 
         public override string ToCodeDisplay() => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 

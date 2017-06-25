@@ -35,9 +35,9 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitArrayLiteral(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayLiteral(this);
 
         public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
 

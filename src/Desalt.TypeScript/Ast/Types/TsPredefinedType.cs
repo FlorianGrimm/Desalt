@@ -46,9 +46,9 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitPredefinedType(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitPredefinedType(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPredefinedType(this);
 
         public override string ToCodeDisplay() => Name;
 

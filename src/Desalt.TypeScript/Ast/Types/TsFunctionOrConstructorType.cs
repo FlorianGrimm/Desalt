@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor)
+        public void Accept(TsVisitor visitor)
         {
             if (IsConstructorType)
             {
@@ -69,7 +69,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) =>
+        public T Accept<T>(TsVisitor<T> visitor) =>
             IsConstructorType ? visitor.VisitConstructorType(this) : visitor.VisitFunctionType(this);
 
         public override string ToCodeDisplay()

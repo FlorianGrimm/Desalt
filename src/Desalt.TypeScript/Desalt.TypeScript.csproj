@@ -49,9 +49,9 @@
     <Compile Include="Ast\TsModelFactory.Expressions.cs" />
     <Compile Include="Ast\TsModelFactory.Types.cs" />
     <Compile Include="Ast\TsQualifiedName.cs" />
-    <Compile Include="Ast\TypeScriptVisitor.cs" />
-    <Compile Include="Ast\TypeScriptVisitor.Expressions.cs" />
-    <Compile Include="Ast\TypeScriptVisitor.Types.cs" />
+    <Compile Include="Ast\TsVisitor.cs" />
+    <Compile Include="Ast\TsVisitor.Expressions.cs" />
+    <Compile Include="Ast\TsVisitor.Types.cs" />
     <Compile Include="Ast\Types\TsArrayType.cs" />
     <Compile Include="Ast\Types\TsBoundOptionalParameter.cs" />
     <Compile Include="Ast\Types\TsBoundRequiredParameter.cs" />

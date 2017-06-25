@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptVisitor.cs" company="Justin Rockwood">
+// <copyright file="TsVisitor.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.Ast
     /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single model passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class TypeScriptVisitor : AstVisitor<ITsAstNode>
+    public abstract partial class TsVisitor : AstVisitor<ITsAstNode>
     {
         public override void Visit(ITsAstNode model) => model?.Accept(this);
 
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast
     /// name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
-    public abstract partial class TypeScriptVisitor<TResult> : AstVisitor<ITsAstNode, TResult>
+    public abstract partial class TsVisitor<TResult> : AstVisitor<ITsAstNode, TResult>
     {
         public override TResult Visit(ITsAstNode model)
         {

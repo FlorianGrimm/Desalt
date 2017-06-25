@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TypeScriptVisitor.Expressions.cs" company="Justin Rockwood">
+// <copyright file="TsVisitor.Expressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,7 +7,7 @@
 
 namespace Desalt.TypeScript.Ast
 {
-    public abstract partial class TypeScriptVisitor
+    public abstract partial class TsVisitor
     {
         /// <summary>
         /// Visits an expression representing the literal 'this'.
@@ -106,7 +106,7 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral model) => DefaultVisit(model);
     }
 
-    public abstract partial class TypeScriptVisitor<TResult>
+    public abstract partial class TsVisitor<TResult>
     {
         /// <summary>
         /// Visits an expression representing the literal 'this'.

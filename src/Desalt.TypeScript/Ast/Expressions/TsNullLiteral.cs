@@ -33,9 +33,9 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitNullLiteral(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitNullLiteral(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitNullLiteral(this);
 
         public override string ToCodeDisplay() => "null";
 

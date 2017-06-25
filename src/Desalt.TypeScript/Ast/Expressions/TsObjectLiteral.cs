@@ -37,9 +37,9 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitObjectLiteral(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitObjectLiteral(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitObjectLiteral(this);
 
         public override string ToCodeDisplay() => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
 

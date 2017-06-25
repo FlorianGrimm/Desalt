@@ -42,9 +42,9 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitBooleanLiteral(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
 
         public override string ToCodeDisplay() => Value ? "true" : "false";
 

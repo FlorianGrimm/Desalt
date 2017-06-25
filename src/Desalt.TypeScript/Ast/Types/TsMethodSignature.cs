@@ -39,9 +39,9 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitMethodSignature(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitMethodSignature(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitMethodSignature(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMethodSignature(this);
 
         public override string ToCodeDisplay()
         {

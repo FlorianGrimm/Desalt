@@ -62,12 +62,12 @@ namespace Desalt.TypeScript.Ast
             return identifier;
         }
 
-        public void Accept(TypeScriptVisitor visitor)
+        public void Accept(TsVisitor visitor)
         {
             visitor.VisitIdentifier(this);
         }
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor)
+        public T Accept<T>(TsVisitor<T> visitor)
         {
             return visitor.VisitIdentifier(this);
         }
