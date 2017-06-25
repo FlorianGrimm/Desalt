@@ -481,7 +481,7 @@ namespace Desalt.TypeScript.CodeModels
     /* A.3 Statements
      * --------------
      * Declaration: ( Modified )
-     *   …
+     *   ...
      *   InterfaceDeclaration
      *   TypeAliasDeclaration
      *   EnumDeclaration
@@ -539,7 +539,7 @@ namespace Desalt.TypeScript.CodeModels
      *   ClassExtendsClauseOpt ImplementsClauseOpt
      *
      * ClassExtendsClause:
-     *   extends  ClassType
+     *   extends ClassType
      *
      * ClassType:
      *   TypeReference
@@ -551,8 +551,11 @@ namespace Desalt.TypeScript.CodeModels
      *   ConstructorDeclaration
      *   PropertyMemberDeclaration
      *   IndexMemberDeclaration
-     *
-     * ConstructorDeclaration:
+     */
+
+    public interface ITsClassElement : ITsCodeModel { }
+
+    /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) ;
      *

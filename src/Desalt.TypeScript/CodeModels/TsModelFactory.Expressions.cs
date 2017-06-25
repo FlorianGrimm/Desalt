@@ -112,9 +112,6 @@ namespace Desalt.TypeScript.CodeModels
             return new TsFunctionExpression(callSignature, functionName, functionBody);
         }
 
-        public static ITsClassElement ClassElement(ITsMethodDefinition methodDefinition, bool isStatic) =>
-            new TsClassElement(methodDefinition, isStatic);
-
         public static ITsClassExpression ClassExpression(
             ITsIdentifier className = null,
             ITsLeftHandSideExpression heritage = null,

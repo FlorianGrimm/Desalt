@@ -793,7 +793,7 @@ namespace Desalt.TypeScript.CodeModels
 
     /* 14.3 Method Definitions
      * -----------------------
-     * MethodDefinition:
+     * MethodDefinition: (not present in TypeScript grammar)
      *   PropertyName ( StrictFormalParameters ) { FunctionBody }
      *   GeneratorMethod
      *   get PropertyName ( ) { FunctionBody }
@@ -802,8 +802,6 @@ namespace Desalt.TypeScript.CodeModels
      * PropertySetParameterList:
      *   FormalParameter
      */
-
-    public interface ITsMethodDefinition : ITsCodeModel { }
 
     /* 14.4 Generator Function Definitions
      * -----------------------------------
@@ -828,7 +826,7 @@ namespace Desalt.TypeScript.CodeModels
 
     /* 14.5 Class Definitions
      * ----------------------
-     * ClassDeclaration:
+     * ClassDeclaration: (see TypeScript override)
      *   class BindingIdentifier ClassTail
      *   class ClassTail
      *
@@ -838,7 +836,7 @@ namespace Desalt.TypeScript.CodeModels
      * ClassTail:
      *   ClassHeritageOpt { ClassBodyOpt }
      *
-     * ClassHeritage:
+     * ClassHeritage: (see TypeScript override)
      *   extends LeftHandSideExpression
      *
      * ClassBody:
@@ -848,7 +846,7 @@ namespace Desalt.TypeScript.CodeModels
      *   ClassElement
      *   ClassElementList ClassElement
      *
-     * ClassElement:
+     * ClassElement: (see TypeScript override)
      *   MethodDefinition
      *   static MethodDefinition
      *   ;
@@ -859,12 +857,6 @@ namespace Desalt.TypeScript.CodeModels
         ITsIdentifier ClassName { get; }
         ITsLeftHandSideExpression Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
-    }
-
-    public interface ITsClassElement : ITsCodeModel
-    {
-        bool IsStatic { get; }
-        ITsMethodDefinition MethodDefinition { get; }
     }
 
     /* A.5 Scripts and Modules
