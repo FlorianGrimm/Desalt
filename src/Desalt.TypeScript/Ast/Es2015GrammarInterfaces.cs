@@ -36,7 +36,6 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsIdentifier :
         ITsExpression,
-        ITsPrimaryExpression,
         ITsPropertyDefinition,
         ITsLiteralPropertyName,
         ITsBindingIdentifierOrPattern
@@ -60,9 +59,7 @@ namespace Desalt.TypeScript.Ast
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITsPrimaryExpression : ITsMemberExpression { }
-
-    public interface ITsThis : ITsPrimaryExpression { }
+    public interface ITsThis : ITsExpression { }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
@@ -100,11 +97,9 @@ namespace Desalt.TypeScript.Ast
      *   ' SingleStringCharacters '
      */
 
-    public interface ITsLiteral : ITsPrimaryExpression { }
+    public interface ITsNullLiteral : ITsExpression { }
 
-    public interface ITsNullLiteral : ITsLiteral { }
-
-    public interface ITsBooleanLiteral : ITsLiteral
+    public interface ITsBooleanLiteral : ITsExpression
     {
         bool Value { get; }
     }
@@ -117,7 +112,7 @@ namespace Desalt.TypeScript.Ast
         HexInteger,
     }
 
-    public interface ITsNumericLiteral : ITsLiteral, ITsLiteralPropertyName
+    public interface ITsNumericLiteral : ITsExpression, ITsLiteralPropertyName
     {
         TsNumericLiteralKind Kind { get; }
         double Value { get; }
@@ -129,7 +124,7 @@ namespace Desalt.TypeScript.Ast
         SingleQuote
     }
 
-    public interface ITsStringLiteral : ITsLiteral, ITsLiteralPropertyName
+    public interface ITsStringLiteral : ITsExpression, ITsLiteralPropertyName
     {
         StringLiteralQuoteKind QuoteKind { get; }
         string Value { get; }
@@ -141,7 +136,7 @@ namespace Desalt.TypeScript.Ast
      *   / RegularExpressionBody / RegularExpressionFlags
      */
 
-    public interface ITsRegularExpressionLiteral : ITsPrimaryExpression
+    public interface ITsRegularExpressionLiteral : ITsExpression
     {
         string Body { get; }
         string Flags { get; }
@@ -168,7 +163,7 @@ namespace Desalt.TypeScript.Ast
      *   ... AssignmentExpression
      */
 
-    public interface ITsArrayLiteral : ITsPrimaryExpression
+    public interface ITsArrayLiteral : ITsExpression
     {
         ImmutableArray<ITsArrayElement> Elements { get; }
     }
@@ -220,7 +215,7 @@ namespace Desalt.TypeScript.Ast
      *   = AssignmentExpression
      */
 
-    public interface ITsObjectLiteral : ITsPrimaryExpression
+    public interface ITsObjectLiteral : ITsExpression
     {
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
@@ -297,7 +292,7 @@ namespace Desalt.TypeScript.Ast
         public ITsExpression Expression { get; }
     }
 
-    public interface ITsTemplateLiteral : ITsPrimaryExpression
+    public interface ITsTemplateLiteral : ITsExpression
     {
         ImmutableArray<TsTemplatePart> Parts { get; }
     }
@@ -496,7 +491,7 @@ namespace Desalt.TypeScript.Ast
      *   *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
      */
 
-    public interface ITsAssignmentExpression : ITsPrimaryExpression
+    public interface ITsAssignmentExpression : ITsExpression
     {
         ITsExpression LeftSide { get; }
         ITsExpression RightSide { get; }
@@ -880,7 +875,7 @@ namespace Desalt.TypeScript.Ast
      *   ;
      */
 
-    public interface ITsClassExpression : ITsPrimaryExpression
+    public interface ITsClassExpression : ITsExpression
     {
         ITsIdentifier ClassName { get; }
         ITsLeftHandSideExpression Heritage { get; }

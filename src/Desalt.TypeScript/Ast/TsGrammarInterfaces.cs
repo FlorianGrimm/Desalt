@@ -460,7 +460,7 @@ namespace Desalt.TypeScript.Ast
      *   function BindingIdentifierOpt CallSignature { FunctionBody }
      */
 
-    public interface ITsFunctionExpression : ITsPrimaryExpression
+    public interface ITsFunctionExpression : ITsExpression
     {
         ITsIdentifier FunctionName { get; }
         ITsCallSignature CallSignature { get; }
