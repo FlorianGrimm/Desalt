@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Immutable;
+    using Desalt.TypeScript.Ast.Expressions;
 
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar
@@ -34,6 +35,7 @@ namespace Desalt.TypeScript.Ast
      */
 
     public interface ITsIdentifier :
+        ITsExpression,
         ITsPrimaryExpression,
         ITsPropertyDefinition,
         ITsLiteralPropertyName,
@@ -381,6 +383,8 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsUnaryExpression : ITsExpression
     {
+        ITsExpression Operand { get; }
+        TsUnaryOperator Operator { get; }
     }
 
     /* 12.6 Multiplicative Operators

@@ -15,10 +15,16 @@ namespace Desalt.TypeScript.Tests.Emit
     using Desalt.TypeScript.Emit;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
     [TestClass]
     public partial class TsEmitterTests
     {
+        private static readonly ITsIdentifier s_x = Factory.Identifier("x");
+        private static readonly ITsIdentifier s_y = Factory.Identifier("y");
+        private static readonly ITsIdentifier s_z = Factory.Identifier("z");
+        private static readonly EmitOptions s_compact = EmitOptions.Compact;
+
         private static void VerifyOutput(ITsAstNode model, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())

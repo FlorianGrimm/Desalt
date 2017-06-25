@@ -104,6 +104,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a unary expression
+        /// </summary>
+        public virtual void VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -203,5 +208,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual TResult VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a unary expression
+        /// </summary>
+        public virtual TResult VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
     }
 }

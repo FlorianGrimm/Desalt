@@ -7,7 +7,9 @@
 
 namespace Desalt.TypeScript.Ast
 {
+    using System;
     using Desalt.Core.Utility;
+    using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
@@ -23,6 +25,35 @@ namespace Desalt.TypeScript.Ast
         public static ITsParenthesizedType WithParentheses(this ITsType type)
         {
             return new TsParenthesizedType(type);
+        }
+
+        /// <summary>
+        /// Converts a unary operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsUnaryOperator unaryOperator)
+        {
+            switch (unaryOperator)
+            {
+                case TsUnaryOperator.Delete: return "delete";
+                case TsUnaryOperator.Void: return "void";
+                case TsUnaryOperator.Typeof: return "typeof";
+
+                case TsUnaryOperator.PrefixIncrement:
+                case TsUnaryOperator.PostfixIncrement:
+                    return "++";
+
+                case TsUnaryOperator.PrefixDecrement:
+                case TsUnaryOperator.PostfixDecrement:
+                    return "--";
+
+                case TsUnaryOperator.Plus: return "+";
+                case TsUnaryOperator.Minus: return "-";
+                case TsUnaryOperator.BitwiseNot: return "~";
+                case TsUnaryOperator.LogicalNot: return "!";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null);
+            }
         }
 
         /// <summary>

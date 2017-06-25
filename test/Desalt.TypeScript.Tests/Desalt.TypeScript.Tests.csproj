@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Emit\TsEmitterTests.cs" />
     <Compile Include="Emit\TsEmitterTests.SourceFile.cs" />
+    <Compile Include="Emit\TsEmitterTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

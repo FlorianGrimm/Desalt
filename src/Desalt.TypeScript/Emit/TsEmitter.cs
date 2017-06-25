@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Emit
     /// <summary>
     /// Takes an <see cref="ITsAstNode"/> and converts it to text.
     /// </summary>
-    public class TsEmitter : TsVisitor, IDisposable
+    public partial class TsEmitter : TsVisitor, IDisposable
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -48,6 +48,11 @@ namespace Desalt.TypeScript.Emit
         public void Dispose()
         {
             _emitter.Dispose();
+        }
+
+        public override void VisitIdentifier(ITsIdentifier model)
+        {
+            _emitter.Write(model.Text);
         }
     }
 }

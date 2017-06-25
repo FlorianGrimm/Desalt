@@ -101,7 +101,14 @@ namespace Desalt.TypeScript.Ast
         }
 
         //// ===========================================================================================================
-        //// Expressions
+        //// Unary and Binary Expressions
+        //// ===========================================================================================================
+
+        public static ITsUnaryExpression UnaryExpression(ITsExpression operand, TsUnaryOperator @operator) =>
+            new TsUnaryExpression(operand, @operator);
+
+        //// ===========================================================================================================
+        //// Function and Class Expressions
         //// ===========================================================================================================
 
         public static ITsFunctionExpression FunctionExpression(

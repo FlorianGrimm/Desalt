@@ -40,6 +40,8 @@
     <Compile Include="Ast\Expressions\TsStringLiteral.cs" />
     <Compile Include="Ast\Expressions\TsTemplateLiteral.cs" />
     <Compile Include="Ast\Expressions\TsThis.cs" />
+    <Compile Include="Ast\Expressions\TsUnaryExpression.cs" />
+    <Compile Include="Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="Ast\ImplementationSourceFile.cs" />
     <Compile Include="Ast\ITsAstNode.cs" />
     <Compile Include="Ast\TsAstFactory.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
     <Compile Include="Emit\TsEmitter.cs" />
+    <Compile Include="Emit\TsEmitter.Expressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
