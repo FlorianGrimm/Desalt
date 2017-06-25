@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'while' loop statement.
     /// </summary>
-    public sealed class Es5WhileStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5WhileStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

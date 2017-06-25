@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents a property assignment in the following form: 'get propertyName() { }'.
     /// </summary>
-    public class Es5PropertyGetAssignment : Es5CodeModel, IEs5PropertyAssignment
+    public class Es5PropertyGetAssignment : Es5AstNode, IEs5PropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

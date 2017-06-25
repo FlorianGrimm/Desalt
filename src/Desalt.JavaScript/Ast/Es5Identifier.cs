@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast
     /// <summary>
     /// Represents a JavaScript identifier.
     /// </summary>
-    public class Es5Identifier : Es5CodeModel, IEs5Expression
+    public class Es5Identifier : Es5AstNode, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables

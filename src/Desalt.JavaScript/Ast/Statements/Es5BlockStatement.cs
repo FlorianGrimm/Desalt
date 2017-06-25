@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a block, containing other statements.
     /// </summary>
-    public sealed class Es5BlockStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5BlockStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

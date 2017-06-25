@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast
     using Desalt.Core.Ast;
 
     /// <summary>
-    /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed
+    /// Represents an <see cref="Es5AstNode"/> visitor that visits only the single model passed
     /// into its Visit method.
     /// </summary>
     public abstract partial class Es5Visitor : AstVisitor<IEs5AstNode>
@@ -37,7 +37,7 @@ namespace Desalt.JavaScript.Ast
     }
 
     /// <summary>
-    /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed
+    /// Represents an <see cref="Es5AstNode"/> visitor that visits only the single model passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>

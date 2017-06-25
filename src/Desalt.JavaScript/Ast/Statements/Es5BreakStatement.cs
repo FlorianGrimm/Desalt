@@ -12,7 +12,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'break' or 'break Identifier' statement.
     /// </summary>
-    public sealed class Es5BreakStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5BreakStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables

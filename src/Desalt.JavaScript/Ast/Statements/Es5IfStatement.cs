@@ -11,7 +11,7 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Text;
     using Desalt.Core.Utility;
 
-    public sealed class Es5IfStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5IfStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

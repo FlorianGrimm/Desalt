@@ -15,7 +15,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x' or 'var x = y, z'.
     /// </summary>
-    public sealed class Es5VariableStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5VariableStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

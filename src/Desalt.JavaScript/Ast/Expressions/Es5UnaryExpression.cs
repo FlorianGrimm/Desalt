@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    public sealed class Es5UnaryExpression : Es5CodeModel, IEs5Expression
+    public sealed class Es5UnaryExpression : Es5AstNode, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

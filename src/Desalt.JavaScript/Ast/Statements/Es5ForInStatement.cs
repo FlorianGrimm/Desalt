@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'for-in' loop.
     /// </summary>
-    public sealed class Es5ForInStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5ForInStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

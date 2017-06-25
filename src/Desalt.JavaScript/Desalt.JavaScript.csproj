@@ -23,7 +23,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\Es5CodeModel.cs" />
+    <Compile Include="Ast\Es5AstNode.cs" />
     <Compile Include="Ast\Es5FunctionDeclaration.cs" />
     <Compile Include="Ast\Es5GrammarInterfaces.cs" />
     <Compile Include="Ast\Es5Identifier.cs" />

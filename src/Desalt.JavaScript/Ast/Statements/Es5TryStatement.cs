@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'try/catch/finally' statement.
     /// </summary>
-    public class Es5TryStatement : Es5CodeModel, IEs5Statement
+    public class Es5TryStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

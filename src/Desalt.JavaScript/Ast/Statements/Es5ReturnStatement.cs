@@ -12,7 +12,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a JavaScript 'return' statement.
     /// </summary>
-    public sealed class Es5ReturnStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5ReturnStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

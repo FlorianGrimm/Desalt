@@ -15,7 +15,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'switch' statement.
     /// </summary>
-    public sealed class Es5SwitchStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5SwitchStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

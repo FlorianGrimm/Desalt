@@ -15,7 +15,7 @@ namespace Desalt.JavaScript.Ast
     /// <summary>
     /// Represents a top-level JavaScript program, consisting of a collection of source elements.
     /// </summary>
-    public class Es5Program : Es5CodeModel
+    public class Es5Program : Es5AstNode
     {
         //// ===========================================================================================================
         //// Constructors

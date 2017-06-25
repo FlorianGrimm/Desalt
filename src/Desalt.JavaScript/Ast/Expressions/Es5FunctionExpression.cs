@@ -15,7 +15,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents a function expression of the form 'function name?(parameters) { body }'.
     /// </summary>
-    public sealed class Es5FunctionExpression : Es5CodeModel, IEs5Expression
+    public sealed class Es5FunctionExpression : Es5AstNode, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

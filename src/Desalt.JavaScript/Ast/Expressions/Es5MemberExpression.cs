@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System;
     using Desalt.Core.Utility;
 
-    public sealed class Es5MemberExpression : Es5CodeModel, IEs5Expression
+    public sealed class Es5MemberExpression : Es5AstNode, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

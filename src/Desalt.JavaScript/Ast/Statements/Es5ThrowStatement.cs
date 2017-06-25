@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'throw' statement.
     /// </summary>
-    public sealed class Es5ThrowStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5ThrowStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

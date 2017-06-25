@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents on object literal of the form '{ propertyAssignment... }'.
     /// </summary>
-    public sealed class Es5ObjectLiteralExpression : Es5CodeModel, IEs5Expression
+    public sealed class Es5ObjectLiteralExpression : Es5AstNode, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

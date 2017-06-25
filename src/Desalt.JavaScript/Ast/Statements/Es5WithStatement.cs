@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'with (Expression) Statement' statement.
     /// </summary>
-    public sealed class Es5WithStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5WithStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

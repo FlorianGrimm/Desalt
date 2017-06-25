@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a do-while statement.
     /// </summary>
-    public sealed class Es5DoStatement : Es5CodeModel, IEs5Statement
+    public sealed class Es5DoStatement : Es5AstNode, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
