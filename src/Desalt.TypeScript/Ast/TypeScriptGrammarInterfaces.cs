@@ -40,7 +40,7 @@ namespace Desalt.TypeScript.Ast
      *   extends Type
      */
 
-    public interface ITsTypeParameter : ITsCodeModel
+    public interface ITsTypeParameter : ITsAstNode
     {
         ITsIdentifier TypeName { get; }
         ITsType Constraint { get; }
@@ -63,7 +63,7 @@ namespace Desalt.TypeScript.Ast
      *   ConstructorType
      */
 
-    public interface ITsType : ITsCodeModel { }
+    public interface ITsType : ITsAstNode { }
 
     /* UnionOrIntersectionOrPrimaryType:
      *   UnionType
@@ -133,7 +133,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsNamespaceName : ITsQualifiedName { }
 
-    public interface ITsQualifiedName : ITsCodeModel
+    public interface ITsQualifiedName : ITsAstNode
     {
         ImmutableArray<ITsIdentifier> Left { get; }
         ITsIdentifier Right { get; }
@@ -164,7 +164,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsTypeMember> TypeMembers { get; }
     }
 
-    public interface ITsTypeMember : ITsCodeModel { }
+    public interface ITsTypeMember : ITsAstNode { }
 
     /* ArrayType:
      *   PrimaryType [no LineTerminator here] [ ]
@@ -286,7 +286,7 @@ namespace Desalt.TypeScript.Ast
      *   RequiredParameterList , OptionalParameterList , RestParameter
      */
 
-    public interface ITsParameterList : ITsCodeModel
+    public interface ITsParameterList : ITsAstNode
     {
         ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
         ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
@@ -307,7 +307,7 @@ namespace Desalt.TypeScript.Ast
      *   protected
      */
 
-    public interface ITsRequiredParameter : ITsCodeModel { }
+    public interface ITsRequiredParameter : ITsAstNode { }
 
     public interface ITsBoundRequiredParameter : ITsRequiredParameter
     {
@@ -334,7 +334,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern
      */
 
-    public interface ITsBindingIdentifierOrPattern : ITsCodeModel { }
+    public interface ITsBindingIdentifierOrPattern : ITsAstNode { }
 
     /* OptionalParameterList:
      *   OptionalParameter
@@ -346,7 +346,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier ? : StringLiteral
      */
 
-    public interface ITsOptionalParameter : ITsCodeModel { }
+    public interface ITsOptionalParameter : ITsAstNode { }
 
     public interface ITsBoundOptionalParameter : ITsOptionalParameter
     {
@@ -366,7 +366,7 @@ namespace Desalt.TypeScript.Ast
      *   ... BindingIdentifier TypeAnnotationOpt
      */
 
-    public interface ITsRestParameter : ITsCodeModel
+    public interface ITsRestParameter : ITsAstNode
     {
         ITsIdentifier ParameterName { get; }
         ITsType ParameterType { get; }
@@ -410,7 +410,7 @@ namespace Desalt.TypeScript.Ast
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
-    public interface ITsTypeAliasDeclaration : ITsCodeModel
+    public interface ITsTypeAliasDeclaration : ITsAstNode
     {
         ITsIdentifier AliasName { get; }
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }
@@ -553,7 +553,7 @@ namespace Desalt.TypeScript.Ast
      *   IndexMemberDeclaration
      */
 
-    public interface ITsClassElement : ITsCodeModel { }
+    public interface ITsClassElement : ITsAstNode { }
 
     /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
@@ -665,7 +665,7 @@ namespace Desalt.TypeScript.Ast
      *   DeclarationModule
      */
 
-    public interface IImplementationSourceFile : ITsCodeModel
+    public interface IImplementationSourceFile : ITsAstNode
     {
         bool IsModule { get; }
     }
@@ -687,7 +687,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<IImplementationScriptElement> Elements { get; }
     }
 
-    public interface IImplementationScriptElement : ITsCodeModel { }
+    public interface IImplementationScriptElement : ITsAstNode { }
 
     /* ImplementationElement:
      *   Statement

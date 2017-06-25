@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    public class ImplementationSourceFile : AstNode, ITsCodeModel
+    public class ImplementationSourceFile : AstNode, ITsAstNode
     {
         //// ===========================================================================================================
         //// Constructors

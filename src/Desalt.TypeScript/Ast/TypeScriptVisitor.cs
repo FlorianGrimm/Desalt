@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast
     using Desalt.Core.Ast;
 
     /// <summary>
-    /// Represents an <see cref="ITsCodeModel"/> visitor that visits only the single model passed
+    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single model passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class TypeScriptVisitor : AstVisitor<ITsCodeModel>
+    public abstract partial class TypeScriptVisitor : AstVisitor<ITsAstNode>
     {
-        public override void Visit(ITsCodeModel model) => model?.Accept(this);
+        public override void Visit(ITsAstNode model) => model?.Accept(this);
 
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
@@ -34,14 +34,14 @@ namespace Desalt.TypeScript.Ast
     }
 
     /// <summary>
-    /// Represents an <see cref="ITsCodeModel"/> visitor that visits only the single model passed
+    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single model passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
-    public abstract partial class TypeScriptVisitor<TResult> : AstVisitor<ITsCodeModel, TResult>
+    public abstract partial class TypeScriptVisitor<TResult> : AstVisitor<ITsAstNode, TResult>
     {
-        public override TResult Visit(ITsCodeModel model)
+        public override TResult Visit(ITsAstNode model)
         {
             return model != null ? model.Accept(this) : default(TResult);
         }

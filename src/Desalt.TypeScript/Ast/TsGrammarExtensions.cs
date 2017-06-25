@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
-    /// Contains static extension methods for <see cref="ITsCodeModel"/> objects.
+    /// Contains static extension methods for <see cref="ITsAstNode"/> objects.
     /// </summary>
     public static class TsGrammarExtensions
     {
