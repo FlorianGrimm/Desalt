@@ -68,5 +68,26 @@ namespace Desalt.TypeScript.Emit
 
             Visit(node.WhenFalse);
         }
+
+        /// <summary>
+        /// Writes expressions of the form 'x = y', where the assignment operator can be any of the
+        /// standard JavaScript assignment operators.
+        /// </summary>
+        public override void VisitAssignmentExpression(ITsAssignmentExpression node)
+        {
+            Visit(node.LeftSide);
+
+            if (_options.SurroundOperatorsWithSpaces)
+            {
+                _emitter.Write(" ");
+            }
+            _emitter.Write(node.Operator.ToCodeDisplay());
+            if (_options.SurroundOperatorsWithSpaces)
+            {
+                _emitter.Write(" ");
+            }
+
+            Visit(node.RightSide);
+        }
     }
 }

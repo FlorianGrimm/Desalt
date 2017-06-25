@@ -92,6 +92,30 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Converts an assignment operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsAssignmentOperator assignmentOperator)
+        {
+            switch (assignmentOperator)
+            {
+                case TsAssignmentOperator.SimpleAssign: return "=";
+                case TsAssignmentOperator.MultiplyAssign: return "*=";
+                case TsAssignmentOperator.DivideAssign: return "/=";
+                case TsAssignmentOperator.ModuloAssign: return "%=";
+                case TsAssignmentOperator.AddAssign: return "+=";
+                case TsAssignmentOperator.SubtractAssign: return "-=";
+                case TsAssignmentOperator.LeftShiftAssign: return "<<=";
+                case TsAssignmentOperator.SignedRightShiftAssign: return ">>=";
+                case TsAssignmentOperator.UnsignedRightShiftAssign: return ">>>=";
+                case TsAssignmentOperator.BitwiseAndAssign: return "&=";
+                case TsAssignmentOperator.BitwiseXorAssign: return "^=";
+                case TsAssignmentOperator.BitwiseOrAssign: return "|=";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(assignmentOperator), assignmentOperator, message: null);
+            }
+        }
+
+        /// <summary>
         /// Writes out a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>

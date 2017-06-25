@@ -498,6 +498,9 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsAssignmentExpression : ITsPrimaryExpression
     {
+        ITsExpression LeftSide { get; }
+        ITsExpression RightSide { get; }
+        TsAssignmentOperator Operator { get; }
     }
 
     /* 12.15 Comma Operator ( , )
