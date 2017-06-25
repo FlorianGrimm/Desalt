@@ -11,11 +11,11 @@ namespace Desalt.JavaScript.Tests.Emit
     using System.IO;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
-    using Desalt.JavaScript.CodeModels;
+    using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Emit;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.JavaScript.CodeModels.Es5ModelFactory;
+    using Factory = Desalt.JavaScript.Ast.Es5ModelFactory;
 
     [TestClass]
     public partial class Es5EmitterTests

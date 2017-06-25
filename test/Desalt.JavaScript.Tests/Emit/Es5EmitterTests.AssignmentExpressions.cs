@@ -8,8 +8,8 @@
 namespace Desalt.JavaScript.Tests.Emit
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.JavaScript.CodeModels.Es5ModelFactory;
-    using Op = Desalt.JavaScript.CodeModels.Expressions.Es5AssignmentOperator;
+    using Factory = Desalt.JavaScript.Ast.Es5ModelFactory;
+    using Op = Desalt.JavaScript.Ast.Expressions.Es5AssignmentOperator;
 
     public partial class Es5EmitterTests
     {

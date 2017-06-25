@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Expressions
+namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Utility;

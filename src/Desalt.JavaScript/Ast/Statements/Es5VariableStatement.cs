@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Statements
+namespace Desalt.JavaScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;

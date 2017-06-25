@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Expressions
+namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.JavaScript.CodeModels.Statements;
+    using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
     /// Contains static extension methods for <see cref="IEs5Expression"/> objects.

@@ -13,8 +13,8 @@ namespace Desalt.JavaScript.Emit
     using System.Linq;
     using System.Text;
     using Desalt.Core.Emit;
-    using Desalt.JavaScript.CodeModels;
-    using Desalt.JavaScript.CodeModels.Statements;
+    using Desalt.JavaScript.Ast;
+    using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
     /// Takes an <see cref="IEs5CodeModel"/> and converts it to text.

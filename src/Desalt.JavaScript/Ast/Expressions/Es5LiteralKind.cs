@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Expressions
+namespace Desalt.JavaScript.Ast.Expressions
 {
     /// <summary>
     /// Represents the different kinds of literal tokens.

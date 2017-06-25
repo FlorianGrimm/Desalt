@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels
+namespace Desalt.JavaScript.Ast
 {
     using System;
     using System.Collections.Generic;

@@ -5,13 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels
+namespace Desalt.JavaScript.Ast
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Desalt.JavaScript.CodeModels.Expressions;
-    using Desalt.JavaScript.CodeModels.Statements;
+    using Desalt.JavaScript.Ast.Expressions;
+    using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
     /// Provides factory methods for creating ES5 code models.

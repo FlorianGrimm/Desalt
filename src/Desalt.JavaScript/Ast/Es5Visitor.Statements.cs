@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels
+namespace Desalt.JavaScript.Ast
 {
-    using Desalt.JavaScript.CodeModels.Statements;
+    using Desalt.JavaScript.Ast.Statements;
 
     public abstract partial class Es5Visitor
     {

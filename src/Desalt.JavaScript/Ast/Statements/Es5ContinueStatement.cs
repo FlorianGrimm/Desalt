@@ -5,10 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Statements
+namespace Desalt.JavaScript.Ast.Statements
 {
     using Desalt.Core.Utility;
-    using Desalt.JavaScript.CodeModels;
 
     /// <summary>
     /// Represents a 'continue' or 'continue Identifier' statement.

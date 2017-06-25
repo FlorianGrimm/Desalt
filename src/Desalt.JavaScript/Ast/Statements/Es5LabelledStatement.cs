@@ -5,11 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Statements
+namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Utility;
-    using Desalt.JavaScript.CodeModels;
 
     /// <summary>
     /// Returns a labelled statement of the form 'Identifier: Statement'.

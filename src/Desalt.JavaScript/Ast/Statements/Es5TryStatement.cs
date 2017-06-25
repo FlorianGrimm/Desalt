@@ -5,12 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Statements
+namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
     using Desalt.Core.Utility;
-    using Desalt.JavaScript.CodeModels;
 
     /// <summary>
     /// Represents a 'try/catch/finally' statement.

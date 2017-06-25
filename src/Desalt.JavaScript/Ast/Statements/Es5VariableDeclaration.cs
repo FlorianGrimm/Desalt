@@ -5,12 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.CodeModels.Statements
+namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Utility;
-    using Desalt.JavaScript.CodeModels;
 
     /// <summary>
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'

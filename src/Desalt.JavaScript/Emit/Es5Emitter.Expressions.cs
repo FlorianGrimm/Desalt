@@ -9,8 +9,8 @@ namespace Desalt.JavaScript.Emit
 {
     using System;
     using Desalt.Core.Extensions;
-    using Desalt.JavaScript.CodeModels;
-    using Desalt.JavaScript.CodeModels.Expressions;
+    using Desalt.JavaScript.Ast;
+    using Desalt.JavaScript.Ast.Expressions;
 
     public partial class Es5Emitter
     {
