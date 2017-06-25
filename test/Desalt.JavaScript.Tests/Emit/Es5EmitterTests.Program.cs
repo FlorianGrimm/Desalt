@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Tests.Emit
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using AssignOp = Desalt.JavaScript.Ast.Expressions.Es5AssignmentOperator;
     using BinaryOp = Desalt.JavaScript.Ast.Expressions.Es5BinaryOperator;
-    using Factory = Desalt.JavaScript.Ast.Es5ModelFactory;
+    using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
     public partial class Es5EmitterTests
     {

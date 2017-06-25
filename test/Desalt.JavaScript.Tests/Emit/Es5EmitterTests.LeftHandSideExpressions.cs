@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Tests.Emit
     using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.JavaScript.Ast.Es5ModelFactory;
+    using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
     public partial class Es5EmitterTests
     {

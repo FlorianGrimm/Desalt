@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5ModelFactory.cs" company="Justin Rockwood">
+// <copyright file="Es5AstFactory.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,9 +14,9 @@ namespace Desalt.JavaScript.Ast
     using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
-    /// Provides factory methods for creating ES5 code models.
+    /// Provides factory methods for creating ES5 abstract syntax tree nodes.
     /// </summary>
-    public static class Es5ModelFactory
+    public static class Es5AstFactory
     {
         //// ===========================================================================================================
         //// Singleton Properties
