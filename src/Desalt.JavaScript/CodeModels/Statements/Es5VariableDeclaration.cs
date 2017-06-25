@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.CodeModels.Statements
 {
     using System;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Utility;
     using Desalt.JavaScript.CodeModels;
 

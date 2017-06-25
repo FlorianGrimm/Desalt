@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.CodeModels.Types
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Utility;
 
     /// <summary>

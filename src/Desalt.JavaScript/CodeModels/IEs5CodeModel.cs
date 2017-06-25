@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.CodeModels
 {
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
 
     /// <summary>
     /// Root interface for all ES5 code models.

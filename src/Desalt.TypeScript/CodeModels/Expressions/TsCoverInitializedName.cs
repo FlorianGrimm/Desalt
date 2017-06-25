@@ -8,7 +8,7 @@
 namespace Desalt.TypeScript.CodeModels.Expressions
 {
     using System;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Utility;
 
     /// <summary>

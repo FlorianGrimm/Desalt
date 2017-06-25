@@ -10,7 +10,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Utility;
 
     /// <summary>

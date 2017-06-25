@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.CodeModels
 {
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
 
     /// <summary>
     /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed

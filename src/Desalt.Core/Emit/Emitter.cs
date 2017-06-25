@@ -11,7 +11,7 @@ namespace Desalt.Core.Emit
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 

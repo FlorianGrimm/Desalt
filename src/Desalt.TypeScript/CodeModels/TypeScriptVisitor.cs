@@ -7,7 +7,7 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
 
     /// <summary>
     /// Represents an <see cref="ITsCodeModel"/> visitor that visits only the single model passed

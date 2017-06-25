@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.CodeModels
+namespace Desalt.Core.Ast
 {
     /// <summary>
     /// Service contract for a class that visits nodes in an abstract syntax tree (AST).

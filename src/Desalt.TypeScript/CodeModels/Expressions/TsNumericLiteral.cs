@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
 {
     using System;
     using System.Globalization;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 

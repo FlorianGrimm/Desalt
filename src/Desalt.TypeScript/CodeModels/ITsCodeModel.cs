@@ -7,7 +7,7 @@
 
 namespace Desalt.TypeScript.CodeModels
 {
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
 
     /// <summary>
     /// Root interface for all TypeScript code models.

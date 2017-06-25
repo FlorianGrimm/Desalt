@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.CodeModels
+namespace Desalt.Core.Ast
 {
     using System.Collections.Generic;
     using System.Text;

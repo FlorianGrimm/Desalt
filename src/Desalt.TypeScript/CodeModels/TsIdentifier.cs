@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.CodeModels
 {
     using System;
     using System.Collections.Generic;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Utility;
 
     /// <summary>
