@@ -15,7 +15,7 @@ namespace Desalt.Core.CodeModels
     /// </summary>
     /// <typeparam name="TModel">The type of the model to visit.</typeparam>
     public abstract class CodeModelVisitor<TModel> : ICodeModelVisitor<TModel>
-        where TModel : ICodeModel
+        where TModel : IAstNode
     {
         public abstract void Visit(TModel model);
 
@@ -33,7 +33,7 @@ namespace Desalt.Core.CodeModels
     /// <typeparam name="TModel">The type of the model to visit.</typeparam>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
     public abstract class CodeModelVisitor<TModel, TResult> : ICodeModelVisitor<TModel, TResult>
-        where TModel : ICodeModel
+        where TModel : IAstNode
     {
         public abstract TResult Visit(TModel model);
 

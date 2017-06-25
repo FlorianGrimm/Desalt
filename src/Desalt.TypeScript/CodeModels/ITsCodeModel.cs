@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Root interface for all TypeScript code models.
     /// </summary>
-    public interface ITsCodeModel : ICodeModel
+    public interface ITsCodeModel : IAstNode
     {
         void Accept(TypeScriptVisitor visitor);
 

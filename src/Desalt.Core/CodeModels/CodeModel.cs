@@ -17,7 +17,7 @@ namespace Desalt.Core.CodeModels
     /// Abstract base class for all code model classes.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public abstract class CodeModel : ICodeModel
+    public abstract class CodeModel : IAstNode
     {
         //// ===========================================================================================================
         //// Properties
@@ -73,7 +73,7 @@ namespace Desalt.Core.CodeModels
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteBlock(IndentedTextWriter writer, IReadOnlyList<ICodeModel> items)
+        protected void WriteBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
         {
             WriteItems(
                 writer,
@@ -93,7 +93,7 @@ namespace Desalt.Core.CodeModels
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteCommaNewlineSeparatedBlock(IndentedTextWriter writer, IReadOnlyList<ICodeModel> items)
+        protected void WriteCommaNewlineSeparatedBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
         {
             WriteItems(
                 writer,
@@ -111,7 +111,7 @@ namespace Desalt.Core.CodeModels
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteParameterList(IndentedTextWriter writer, IReadOnlyList<ICodeModel> items)
+        protected void WriteParameterList(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
         {
             WriteItems(writer, items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
         }
@@ -138,7 +138,7 @@ namespace Desalt.Core.CodeModels
         /// </param>
         protected void WriteItems(
             IndentedTextWriter writer,
-            IReadOnlyList<ICodeModel> items,
+            IReadOnlyList<IAstNode> items,
             bool indent,
             string prefix = null,
             string suffix = null,
@@ -185,7 +185,7 @@ namespace Desalt.Core.CodeModels
 
                 for (int i = 0; i < items.Count; i++)
                 {
-                    ICodeModel item = items[i];
+                    IAstNode item = items[i];
                     item.WriteFullCodeDisplay(writer);
 
                     // write the delimiter

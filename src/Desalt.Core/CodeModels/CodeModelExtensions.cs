@@ -12,7 +12,7 @@ namespace Desalt.Core.CodeModels
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Contains extension methods for working with <see cref="ICodeModel"/> objects.
+    /// Contains extension methods for working with <see cref="IAstNode"/> objects.
     /// </summary>
     public static class CodeModelExtensions
     {
@@ -35,7 +35,7 @@ namespace Desalt.Core.CodeModels
             this IEnumerable<T> list,
             string delimiter = ", ",
             int maxStringLength = 32)
-            where T : ICodeModel
+            where T : IAstNode
         {
             Param.VerifyGreaterThanOrEqualTo(maxStringLength, nameof(maxStringLength), 0);
 

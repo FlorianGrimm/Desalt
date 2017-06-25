@@ -12,7 +12,7 @@ namespace Desalt.JavaScript.CodeModels
     /// <summary>
     /// Root interface for all ES5 code models.
     /// </summary>
-    public interface IEs5CodeModel : ICodeModel
+    public interface IEs5CodeModel : IAstNode
     {
         void Accept(Es5Visitor visitor);
 
