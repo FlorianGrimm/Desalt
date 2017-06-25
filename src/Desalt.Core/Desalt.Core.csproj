@@ -122,7 +122,7 @@
     <Compile Include="CodeModels\CodeModelExtensions.cs" />
     <Compile Include="CodeModels\CodeModelVisitor.cs" />
     <Compile Include="CodeModels\IAstNode.cs" />
-    <Compile Include="CodeModels\ICodeModelVisitor.cs" />
+    <Compile Include="CodeModels\IAstVisitor.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
