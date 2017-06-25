@@ -109,6 +109,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits a unary expression
         /// </summary>
         public virtual void VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a binary expression
+        /// </summary>
+        public virtual void VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -213,5 +218,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a unary expression
         /// </summary>
         public virtual TResult VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a binary expression
+        /// </summary>
+        public virtual TResult VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
     }
 }

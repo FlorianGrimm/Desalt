@@ -24,6 +24,8 @@
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
     <Compile Include="Ast\Expressions\TsArrayElement.cs" />
     <Compile Include="Ast\Expressions\TsArrayLiteral.cs" />
+    <Compile Include="Ast\Expressions\TsBinaryExpression.cs" />
+    <Compile Include="Ast\Expressions\TsBinaryOperator.cs" />
     <Compile Include="Ast\Expressions\TsBooleanLiteral.cs" />
     <Compile Include="Ast\Expressions\TsClassExpression.cs" />
     <Compile Include="Ast\Expressions\TsComputedPropertyName.cs" />

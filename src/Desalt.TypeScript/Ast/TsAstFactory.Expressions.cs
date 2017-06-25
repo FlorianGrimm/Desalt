@@ -107,6 +107,14 @@ namespace Desalt.TypeScript.Ast
         public static ITsUnaryExpression UnaryExpression(ITsExpression operand, TsUnaryOperator @operator) =>
             new TsUnaryExpression(operand, @operator);
 
+        public static ITsBinaryExpression BinaryExpression(
+            ITsExpression leftSide,
+            TsBinaryOperator @operator,
+            ITsExpression rightSide)
+        {
+            return new TsBinaryExpression(leftSide, @operator, rightSide);
+        }
+
         //// ===========================================================================================================
         //// Function and Class Expressions
         //// ===========================================================================================================

@@ -462,6 +462,13 @@ namespace Desalt.TypeScript.Ast
      *   LogicalORExpression || LogicalANDExpression
      */
 
+    public interface ITsBinaryExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        TsBinaryOperator Operator { get; }
+        ITsExpression RightSide { get; }
+    }
+
     /* 12.13 Conditional Operator ( ? : )
      * ----------------------------------
      * ConditionalExpression:

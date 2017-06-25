@@ -39,5 +39,20 @@ namespace Desalt.TypeScript.Emit
                 _emitter.Write(model.Operator.ToCodeDisplay());
             }
         }
+
+        /// <summary>
+        /// Writes a binary expression.
+        /// </summary>
+        public override void VisitBinaryExpression(ITsBinaryExpression node)
+        {
+            Visit(node.LeftSide);
+
+            string operatorString = node.Operator.ToCodeDisplay();
+            bool surround = _options.SurroundOperatorsWithSpaces ||
+                node.Operator.IsOneOf(TsBinaryOperator.InstanceOf, TsBinaryOperator.In);
+            _emitter.Write(surround ? $" {operatorString} " : operatorString);
+
+            Visit(node.RightSide);
+        }
     }
 }

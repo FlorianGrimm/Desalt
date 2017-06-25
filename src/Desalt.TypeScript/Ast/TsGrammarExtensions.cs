@@ -57,6 +57,41 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Converts a binary operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsBinaryOperator binaryOperator)
+        {
+            switch (binaryOperator)
+            {
+                case TsBinaryOperator.Multiply: return "*";
+                case TsBinaryOperator.Divide: return "/";
+                case TsBinaryOperator.Modulo: return "%";
+                case TsBinaryOperator.Add: return "+";
+                case TsBinaryOperator.Subtract: return "-";
+                case TsBinaryOperator.LeftShift: return "<<";
+                case TsBinaryOperator.SignedRightShift: return ">>";
+                case TsBinaryOperator.UnsignedRightShift: return ">>>";
+                case TsBinaryOperator.LessThan: return "<";
+                case TsBinaryOperator.GreaterThan: return ">";
+                case TsBinaryOperator.LessThanEqual: return "<=";
+                case TsBinaryOperator.GreaterThanEqual: return ">=";
+                case TsBinaryOperator.InstanceOf: return "instanceof";
+                case TsBinaryOperator.In: return "in";
+                case TsBinaryOperator.Equals: return "==";
+                case TsBinaryOperator.NotEquals: return "!=";
+                case TsBinaryOperator.StrictEquals: return "===";
+                case TsBinaryOperator.StrictNotEquals: return "!==";
+                case TsBinaryOperator.BitwiseAnd: return "&";
+                case TsBinaryOperator.BitwiseXor: return "^";
+                case TsBinaryOperator.BitwiseOr: return "|";
+                case TsBinaryOperator.LogicalAnd: return "&&";
+                case TsBinaryOperator.LogicalOr: return "||";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null);
+            }
+        }
+
+        /// <summary>
         /// Writes out a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
