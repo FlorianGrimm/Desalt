@@ -29,6 +29,7 @@
     <Compile Include="Ast\Expressions\TsBooleanLiteral.cs" />
     <Compile Include="Ast\Expressions\TsClassExpression.cs" />
     <Compile Include="Ast\Expressions\TsComputedPropertyName.cs" />
+    <Compile Include="Ast\Expressions\TsConditionalExpression.cs" />
     <Compile Include="Ast\Expressions\TsCoverInitializedName.cs" />
     <Compile Include="Ast\Expressions\TsFunctionExpression.cs" />
     <Compile Include="Ast\Expressions\TsGetAccessor.cs" />

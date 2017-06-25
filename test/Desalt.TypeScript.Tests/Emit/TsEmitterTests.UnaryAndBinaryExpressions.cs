@@ -120,5 +120,17 @@ namespace Desalt.TypeScript.Tests.Emit
             VerifyOutput(Factory.BinaryExpression(s_x, TsBinaryOperator.LogicalAnd, s_y), "x&&y", s_compact);
             VerifyOutput(Factory.BinaryExpression(s_x, TsBinaryOperator.LogicalOr, s_y), "x||y", s_compact);
         }
+
+        [TestMethod]
+        public void Emit_conditional_expressions()
+        {
+            VerifyOutput(Factory.ConditionalExpression(s_x, s_y, s_z), "x ? y : z");
+        }
+
+        [TestMethod]
+        public void Emit_conditional_expressions_compact()
+        {
+            VerifyOutput(Factory.ConditionalExpression(s_x, s_y, s_z), "x?y:z", s_compact);
+        }
     }
 }

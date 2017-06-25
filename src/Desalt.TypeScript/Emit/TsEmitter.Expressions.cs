@@ -54,5 +54,19 @@ namespace Desalt.TypeScript.Emit
 
             Visit(node.RightSide);
         }
+
+        /// <summary>
+        /// Writes a conditional expression of the form 'x ? y : z'.
+        /// </summary>
+        public override void VisitConditionalExpression(ITsConditionalExpression node)
+        {
+            Visit(node.Condition);
+            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
+
+            Visit(node.WhenTrue);
+            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
+
+            Visit(node.WhenFalse);
+        }
     }
 }

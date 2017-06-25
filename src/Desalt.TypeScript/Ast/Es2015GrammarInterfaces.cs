@@ -476,6 +476,13 @@ namespace Desalt.TypeScript.Ast
      *   LogicalORExpression ? AssignmentExpression : AssignmentExpression
      */
 
+    public interface ITsConditionalExpression : ITsExpression
+    {
+        ITsExpression Condition { get; }
+        ITsExpression WhenTrue { get; }
+        ITsExpression WhenFalse { get; }
+    }
+
     /* 12.14 Assignment Operators
      * --------------------------
      * AssignmentExpression:

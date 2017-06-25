@@ -115,6 +115,14 @@ namespace Desalt.TypeScript.Ast
             return new TsBinaryExpression(leftSide, @operator, rightSide);
         }
 
+        public static ITsConditionalExpression ConditionalExpression(
+            ITsExpression condition,
+            ITsExpression whenTrue,
+            ITsExpression whenFalse)
+        {
+            return new TsConditionalExpression(condition, whenTrue, whenFalse);
+        }
+
         //// ===========================================================================================================
         //// Function and Class Expressions
         //// ===========================================================================================================

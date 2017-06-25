@@ -114,6 +114,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits a binary expression
         /// </summary>
         public virtual void VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a conditional expression of the form 'x ? y : z'.
+        /// </summary>
+        public virtual void VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -223,5 +228,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a binary expression
         /// </summary>
         public virtual TResult VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a conditional expression of the form 'x ? y : z'.
+        /// </summary>
+        public virtual TResult VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
     }
 }
