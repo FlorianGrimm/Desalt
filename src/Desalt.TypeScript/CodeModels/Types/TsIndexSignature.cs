@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : CodeModel, ITsIndexSignature
+    internal class TsIndexSignature : AstNode, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a method signature, which is a shorthand for declaring a property of a function type.
     /// </summary>
-    internal class TsMethodSignature : CodeModel, ITsMethodSignature
+    internal class TsMethodSignature : AstNode, ITsMethodSignature
     {
         //// ===========================================================================================================
         //// Constructors

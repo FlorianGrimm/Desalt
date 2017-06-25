@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents the 'this' type.
     /// </summary>
-    internal class TsThisType : CodeModel, ITsThisType
+    internal class TsThisType : AstNode, ITsThisType
     {
         //// ===========================================================================================================
         //// Member Variables

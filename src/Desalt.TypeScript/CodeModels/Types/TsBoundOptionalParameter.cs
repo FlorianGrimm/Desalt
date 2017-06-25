@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : CodeModel, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors

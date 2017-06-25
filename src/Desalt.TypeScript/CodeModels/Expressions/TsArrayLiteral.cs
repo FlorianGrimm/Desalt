@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteral : CodeModel, ITsArrayLiteral
+    internal class TsArrayLiteral : AstNode, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : CodeModel, ITsPropertyAssignment
+    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

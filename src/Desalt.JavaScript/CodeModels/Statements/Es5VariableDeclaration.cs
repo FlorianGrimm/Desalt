@@ -16,7 +16,7 @@ namespace Desalt.JavaScript.CodeModels.Statements
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'
     /// keyword - that's the <see cref="Es5VariableStatement"/>).
     /// </summary>
-    public sealed class Es5VariableDeclaration : CodeModel
+    public sealed class Es5VariableDeclaration : AstNode
     {
         //// ===========================================================================================================
         //// Constructors

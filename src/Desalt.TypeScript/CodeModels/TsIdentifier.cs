@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : CodeModel, ITsIdentifier
+    internal class TsIdentifier : AstNode, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables

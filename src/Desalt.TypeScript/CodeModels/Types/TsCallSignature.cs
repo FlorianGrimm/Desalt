@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.
     /// </summary>
-    internal class TsCallSignature : CodeModel, ITsCallSignature
+    internal class TsCallSignature : AstNode, ITsCallSignature
     {
         //// ===========================================================================================================
         //// Constructors

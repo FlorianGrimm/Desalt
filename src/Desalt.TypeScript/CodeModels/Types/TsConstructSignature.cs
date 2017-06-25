@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
     /// </summary>
-    internal class TsConstructSignature : CodeModel, ITsConstructSignature
+    internal class TsConstructSignature : AstNode, ITsConstructSignature
     {
         //// ===========================================================================================================
         //// Constructors

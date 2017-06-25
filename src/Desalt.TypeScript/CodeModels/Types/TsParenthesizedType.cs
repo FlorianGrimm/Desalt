@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : CodeModel, ITsParenthesizedType
+    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors

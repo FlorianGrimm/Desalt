@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a parameter list of the form '(parameter: type)'.
     /// </summary>
-    internal class TsParameterList : CodeModel, ITsParameterList
+    internal class TsParameterList : AstNode, ITsParameterList
     {
         //// ===========================================================================================================
         //// Constructors

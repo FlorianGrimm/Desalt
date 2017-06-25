@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CodeModel.cs" company="Justin Rockwood">
+// <copyright file="AstNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,17 +14,17 @@ namespace Desalt.Core.CodeModels
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Abstract base class for all code model classes.
+    /// Abstract base class for all abstract syntax tree (AST) nodes.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public abstract class CodeModel : IAstNode
+    public abstract class AstNode : IAstNode
     {
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
         /// <summary>
-        /// Gets a consise string representing the current code model to show in the debugger
+        /// Gets a consise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
         protected virtual string DebuggerDisplay => $"{GetType().Name}: {ToCodeDisplay()}";
@@ -34,16 +34,16 @@ namespace Desalt.Core.CodeModels
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns an abbreviated string representation of the code model, which is useful for debugging.
+        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
-        /// <returns>A string representation of this code model.</returns>
+        /// <returns>A string representation of this AST node.</returns>
         public abstract string ToCodeDisplay();
 
         /// <summary>
-        /// Returns a string representation of the full code model, which is useful for debugging and
+        /// Returns a string representation of the full AST node, which is useful for debugging and
         /// printing to logs. This should not be used to actually emit generated code.
         /// </summary>
-        /// <returns>A string representation of the full code model.</returns>
+        /// <returns>A string representation of the full AST node.</returns>
         public virtual string ToFullCodeDisplay()
         {
             using (var stringWriter = new StringWriter())
@@ -55,7 +55,7 @@ namespace Desalt.Core.CodeModels
         }
 
         /// <summary>
-        /// Writes a string representation of this code model to the specified <see
+        /// Writes a string representation of this AST node to the specified <see
         /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
         /// should not be used to actually emit generated code.
         /// </summary>

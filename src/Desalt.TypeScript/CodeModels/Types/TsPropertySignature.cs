@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : CodeModel, ITsPropertySignature
+    internal class TsPropertySignature : AstNode, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors

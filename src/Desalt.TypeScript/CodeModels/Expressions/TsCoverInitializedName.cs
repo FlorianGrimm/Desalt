@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an element in an object initializer of the form 'identifer = expression'.
     /// </summary>
-    internal class TsCoverInitializedName : CodeModel, ITsCoverInitializedName
+    internal class TsCoverInitializedName : AstNode, ITsCoverInitializedName
     {
         //// ===========================================================================================================
         //// Constructors

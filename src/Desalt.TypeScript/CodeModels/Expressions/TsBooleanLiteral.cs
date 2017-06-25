@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsBooleanLiteral : CodeModel, ITsBooleanLiteral
+    internal class TsBooleanLiteral : AstNode, ITsBooleanLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

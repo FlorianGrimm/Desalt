@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a property set accessor of the form 'set name(value: type) { body }'.
     /// </summary>
-    internal class TsSetAccessor : CodeModel, ITsSetAccessor
+    internal class TsSetAccessor : AstNode, ITsSetAccessor
     {
         //// ===========================================================================================================
         //// Constructors

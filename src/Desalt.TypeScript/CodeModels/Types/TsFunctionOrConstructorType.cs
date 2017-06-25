@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript function or constructor type.
     /// </summary>
-    internal class TsFunctionOrConstructorType : CodeModel, ITsFunctionType, ITsConstructorType
+    internal class TsFunctionOrConstructorType : AstNode, ITsFunctionType, ITsConstructorType
     {
         //// ===========================================================================================================
         //// Constructors

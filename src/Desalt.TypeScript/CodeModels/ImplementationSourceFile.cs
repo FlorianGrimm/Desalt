@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    public class ImplementationSourceFile : AstNode, ITsCodeModel
     {
         //// ===========================================================================================================
         //// Constructors

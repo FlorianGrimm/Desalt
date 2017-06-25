@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : CodeModel, ITsTypeReference
+    internal class TsTypeReference : AstNode, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors

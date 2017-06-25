@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a null literal.
     /// </summary>
-    internal class TsNullLiteral : CodeModel, ITsNullLiteral
+    internal class TsNullLiteral : AstNode, ITsNullLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

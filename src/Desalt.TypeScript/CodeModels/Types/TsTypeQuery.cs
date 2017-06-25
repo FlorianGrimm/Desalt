@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a 'typeof' query.
     /// </summary>
-    internal class TsTypeQuery : CodeModel, ITsTypeQuery
+    internal class TsTypeQuery : AstNode, ITsTypeQuery
     {
         //// ===========================================================================================================
         //// Constructors

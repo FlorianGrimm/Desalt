@@ -17,7 +17,7 @@ namespace Desalt.TypeScript.CodeModels
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
     /// </summary>
-    internal class TsQualifiedName : CodeModel, ITsQualifiedName
+    internal class TsQualifiedName : AstNode, ITsQualifiedName
     {
         //// ===========================================================================================================
         //// Constructors

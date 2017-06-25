@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
     /// </summary>
-    internal class TsTypeParameter : CodeModel, ITsTypeParameter
+    internal class TsTypeParameter : AstNode, ITsTypeParameter
     {
         //// ===========================================================================================================
         //// Constructors

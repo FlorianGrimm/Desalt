@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents an object literal property function.
     /// </summary>
-    internal class TsPropertyFunction : CodeModel, ITsPropertyFunction
+    internal class TsPropertyFunction : AstNode, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors

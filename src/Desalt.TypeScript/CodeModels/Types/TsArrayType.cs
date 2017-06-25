@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : CodeModel, ITsArrayType
+    internal class TsArrayType : AstNode, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors

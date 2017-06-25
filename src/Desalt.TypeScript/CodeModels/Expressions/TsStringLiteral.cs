@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : CodeModel, ITsStringLiteral
+    internal class TsStringLiteral : AstNode, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors

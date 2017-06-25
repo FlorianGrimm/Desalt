@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a class declaration acting as an expression.
     /// </summary>
-    internal class TsClassExpression : CodeModel, ITsClassExpression
+    internal class TsClassExpression : AstNode, ITsClassExpression
     {
         //// ===========================================================================================================
         //// Constructors

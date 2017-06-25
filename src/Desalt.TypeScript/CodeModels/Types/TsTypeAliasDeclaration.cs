@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
     /// </summary>
-    internal class TsTypeAliasDeclaration : CodeModel, ITsTypeAliasDeclaration
+    internal class TsTypeAliasDeclaration : AstNode, ITsTypeAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a bound required parameter in a parameter list for a function.
     /// </summary>
-    internal class TsBoundRequiredParameter : CodeModel, ITsBoundRequiredParameter
+    internal class TsBoundRequiredParameter : AstNode, ITsBoundRequiredParameter
     {
         //// ===========================================================================================================
         //// Constructors

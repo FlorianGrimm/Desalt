@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
     /// </summary>
-    internal class TsTemplateLiteral : CodeModel, ITsTemplateLiteral
+    internal class TsTemplateLiteral : AstNode, ITsTemplateLiteral
     {
         //// ===========================================================================================================
         //// Constructors

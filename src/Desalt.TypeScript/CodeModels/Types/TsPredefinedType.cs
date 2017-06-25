@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : CodeModel, ITsPredefinedType
+    internal class TsPredefinedType : AstNode, ITsPredefinedType
     {
         //// ===========================================================================================================
         //// Member Variables

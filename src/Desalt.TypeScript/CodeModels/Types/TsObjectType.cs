@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : CodeModel, ITsObjectType
+    internal class TsObjectType : AstNode, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors

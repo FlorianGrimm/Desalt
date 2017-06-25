@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TsThis : CodeModel, ITsThis
+    internal class TsThis : AstNode, ITsThis
     {
         //// ===========================================================================================================
         //// Member Variables

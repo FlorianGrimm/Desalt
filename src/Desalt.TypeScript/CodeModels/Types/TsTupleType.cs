@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.CodeModels.Types
     /// <summary>
     /// Represents a TypeScript tuple type.
     /// </summary>
-    internal class TsTupleType : CodeModel, ITsTupleType
+    internal class TsTupleType : AstNode, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors

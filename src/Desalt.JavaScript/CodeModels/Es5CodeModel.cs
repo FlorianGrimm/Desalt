@@ -12,7 +12,7 @@ namespace Desalt.JavaScript.CodeModels
     /// <summary>
     /// Abstract base class for all ES5 code models.
     /// </summary>
-    public abstract class Es5CodeModel : CodeModel, IEs5CodeModel
+    public abstract class Es5CodeModel : AstNode, IEs5CodeModel
     {
         public abstract void Accept(Es5Visitor visitor);
 

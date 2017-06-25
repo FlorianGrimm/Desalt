@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels.Expressions
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : CodeModel, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors
