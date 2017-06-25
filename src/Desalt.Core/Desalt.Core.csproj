@@ -120,7 +120,7 @@
   <ItemGroup>
     <Compile Include="CodeModels\AstNode.cs" />
     <Compile Include="CodeModels\CodeModelExtensions.cs" />
-    <Compile Include="CodeModels\CodeModelVisitor.cs" />
+    <Compile Include="CodeModels\AstVisitor.cs" />
     <Compile Include="CodeModels\IAstNode.cs" />
     <Compile Include="CodeModels\IAstVisitor.cs" />
     <Compile Include="Emit\EmitOptions.cs" />

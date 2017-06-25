@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.CodeModels
     /// Represents an <see cref="ITsCodeModel"/> visitor that visits only the single model passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class TypeScriptVisitor : CodeModelVisitor<ITsCodeModel>
+    public abstract partial class TypeScriptVisitor : AstVisitor<ITsCodeModel>
     {
         public override void Visit(ITsCodeModel model) => model?.Accept(this);
 
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.CodeModels
     /// name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
-    public abstract partial class TypeScriptVisitor<TResult> : CodeModelVisitor<ITsCodeModel, TResult>
+    public abstract partial class TypeScriptVisitor<TResult> : AstVisitor<ITsCodeModel, TResult>
     {
         public override TResult Visit(ITsCodeModel model)
         {
