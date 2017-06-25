@@ -16,7 +16,7 @@ namespace Desalt.Core.Emit
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// General-purpose emitter for serializing code models into code.
+    /// General-purpose emitter for serializing abstract syntax nodes into code.
     /// </summary>
     public class Emitter<T> : IDisposable where T : IAstNode
     {

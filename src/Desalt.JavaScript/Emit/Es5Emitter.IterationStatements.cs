@@ -12,7 +12,7 @@ namespace Desalt.JavaScript.Emit
 
     public partial class Es5Emitter
     {
-        public override void VisitDoStatement(Es5DoStatement model)
+        public override void VisitDoStatement(Es5DoStatement node)
         {
             _emitter.Write("do");
             if (_options.NewlineBetweenStatements)
@@ -21,7 +21,7 @@ namespace Desalt.JavaScript.Emit
                 _emitter.IndentLevel++;
             }
 
-            Visit(model.Statement);
+            Visit(node.Statement);
 
             if (_options.NewlineBetweenStatements)
             {
@@ -34,14 +34,14 @@ namespace Desalt.JavaScript.Emit
             }
 
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while");
-            Visit(model.Condition);
+            Visit(node.Condition);
             _emitter.Write(");");
         }
 
-        public override void VisitWhileStatement(Es5WhileStatement model)
+        public override void VisitWhileStatement(Es5WhileStatement node)
         {
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while(");
-            Visit(model.Condition);
+            Visit(node.Condition);
             _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
@@ -54,7 +54,7 @@ namespace Desalt.JavaScript.Emit
                 _emitter.WriteLine(" ");
             }
 
-            Visit(model.Statement);
+            Visit(node.Statement);
 
             if (_options.NewlineBetweenStatements)
             {
@@ -62,27 +62,27 @@ namespace Desalt.JavaScript.Emit
             }
         }
 
-        public override void VisitForStatement(Es5ForStatement model)
+        public override void VisitForStatement(Es5ForStatement node)
         {
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
 
             // write declarations/initializers
-            if (model.Declarations.Length > 0)
+            if (node.Declarations.Length > 0)
             {
-                WriteVariableDeclarations(model.Declarations);
+                WriteVariableDeclarations(node.Declarations);
             }
             else
             {
-                Visit(model.Initializer);
+                Visit(node.Initializer);
             }
             _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
 
             // write condition
-            Visit(model.Condition);
+            Visit(node.Condition);
             _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
 
             // write incrementor
-            Visit(model.Incrementor);
+            Visit(node.Incrementor);
             _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
@@ -92,25 +92,25 @@ namespace Desalt.JavaScript.Emit
             }
 
             // write the statement
-            Visit(model.Statement);
+            Visit(node.Statement);
         }
 
-        public override void VisitForInStatement(Es5ForInStatement model)
+        public override void VisitForInStatement(Es5ForInStatement node)
         {
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
 
             // write declarations/initializers
-            if (model.Declaration != null)
+            if (node.Declaration != null)
             {
-                WriteVariableDeclarations(model.Declaration.ToSafeArray());
+                WriteVariableDeclarations(node.Declaration.ToSafeArray());
             }
             else
             {
-                Visit(model.LeftSide);
+                Visit(node.LeftSide);
             }
 
             _emitter.Write(" in ");
-            Visit(model.RightSide);
+            Visit(node.RightSide);
             _emitter.Write(")");
 
             if (_options.NewlineBetweenStatements)
@@ -120,7 +120,7 @@ namespace Desalt.JavaScript.Emit
             }
 
             // write the statement
-            Visit(model.Statement);
+            Visit(node.Statement);
         }
     }
 }

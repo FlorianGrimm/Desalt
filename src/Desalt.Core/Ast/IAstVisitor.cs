@@ -15,7 +15,7 @@ namespace Desalt.Core.Ast
     {
         void DefaultVisit(TNode node);
 
-        void Visit(TNode model);
+        void Visit(TNode node);
     }
 
     /// <summary>
@@ -28,6 +28,6 @@ namespace Desalt.Core.Ast
     {
         TResult DefaultVisit(TNode node);
 
-        TResult Visit(TNode model);
+        TResult Visit(TNode node);
     }
 }

@@ -10,55 +10,55 @@ namespace Desalt.TypeScript.Ast
     using Desalt.Core.Ast;
 
     /// <summary>
-    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single model passed
+    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single node passed
     /// into its Visit method.
     /// </summary>
     public abstract partial class TsVisitor : AstVisitor<ITsAstNode>
     {
-        public override void Visit(ITsAstNode model) => model?.Accept(this);
+        public override void Visit(ITsAstNode node) => node?.Accept(this);
 
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
-        public virtual void VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
+        public virtual void VisitImplementationSourceFile(ImplementationSourceFile node) => DefaultVisit(node);
 
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual void VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
+        public virtual void VisitIdentifier(ITsIdentifier node) => DefaultVisit(node);
 
         /// <summary>
         /// Visits a TypeScript qualified name, which is a full name with dots separating components.
         /// </summary>
-        public virtual void VisitQualifiedName(ITsQualifiedName model) => DefaultVisit(model);
+        public virtual void VisitQualifiedName(ITsQualifiedName node) => DefaultVisit(node);
     }
 
     /// <summary>
-    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single model passed
+    /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single node passed
     /// into its Visit method and produces a value of the type specified by the <typeparamref
     /// name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
     public abstract partial class TsVisitor<TResult> : AstVisitor<ITsAstNode, TResult>
     {
-        public override TResult Visit(ITsAstNode model)
+        public override TResult Visit(ITsAstNode node)
         {
-            return model != null ? model.Accept(this) : default(TResult);
+            return node != null ? node.Accept(this) : default(TResult);
         }
 
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
-        public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile model) => DefaultVisit(model);
+        public virtual TResult VisitImplementationSourceFile(ImplementationSourceFile node) => DefaultVisit(node);
 
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual TResult VisitIdentifier(ITsIdentifier model) => DefaultVisit(model);
+        public virtual TResult VisitIdentifier(ITsIdentifier node) => DefaultVisit(node);
 
         /// <summary>
         /// Visits a TypeScript qualified name, which is a full name with dots separating components.
         /// </summary>
-        public virtual TResult VisitQualifiedName(ITsQualifiedName model) => DefaultVisit(model);
+        public virtual TResult VisitQualifiedName(ITsQualifiedName node) => DefaultVisit(node);
     }
 }

@@ -25,12 +25,12 @@ namespace Desalt.JavaScript.Tests.Emit
         private static readonly Es5Identifier s_z = Factory.Identifier("z");
         private static readonly EmitOptions s_compact = EmitOptions.Compact;
 
-        private static void VerifyOutput(IEs5AstNode model, string expected, EmitOptions options = null)
+        private static void VerifyOutput(IEs5AstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
             using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default))
             {
-                emitter.Visit(model);
+                emitter.Visit(node);
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);
             }
         }

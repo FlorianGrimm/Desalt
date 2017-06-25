@@ -14,19 +14,19 @@ namespace Desalt.JavaScript.Emit
 
     public partial class Es5Emitter
     {
-        public override void VisitIdentifier(Es5Identifier model)
+        public override void VisitIdentifier(Es5Identifier node)
         {
-            _emitter.Write(model.Text);
+            _emitter.Write(node.Text);
         }
 
-        public override void VisitThisExpresssion(Es5ThisExpression model)
+        public override void VisitThisExpresssion(Es5ThisExpression node)
         {
             _emitter.Write("this");
         }
 
-        public override void VisitLiteralExpression(Es5LiteralExpression model)
+        public override void VisitLiteralExpression(Es5LiteralExpression node)
         {
-            switch (model.Kind)
+            switch (node.Kind)
             {
                 case Es5LiteralKind.Null:
                     _emitter.Write("null");
@@ -44,11 +44,11 @@ namespace Desalt.JavaScript.Emit
                 case Es5LiteralKind.HexInteger:
                 case Es5LiteralKind.String:
                 case Es5LiteralKind.RegExp:
-                    _emitter.Write(model.Literal);
+                    _emitter.Write(node.Literal);
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(model));
+                    throw new ArgumentOutOfRangeException(nameof(node));
             }
         }
 
@@ -56,45 +56,45 @@ namespace Desalt.JavaScript.Emit
         /// Writes expressions of the form 'x = y', where the assignment operator can be any of the
         /// standard JavaScript assignment operators.
         /// </summary>
-        public override void VisitAssignmentExpression(Es5AssignmentExpression model)
+        public override void VisitAssignmentExpression(Es5AssignmentExpression node)
         {
-            Visit(model.LeftSide);
+            Visit(node.LeftSide);
 
             if (_options.SurroundOperatorsWithSpaces)
             {
                 _emitter.Write(" ");
             }
-            _emitter.Write(model.Operator.ToCodeDisplay());
+            _emitter.Write(node.Operator.ToCodeDisplay());
             if (_options.SurroundOperatorsWithSpaces)
             {
                 _emitter.Write(" ");
             }
 
-            Visit(model.RightSide);
+            Visit(node.RightSide);
         }
 
         /// <summary>
         /// Writes array literals of the form '[a, b, c]'.
         /// </summary>
-        public override void VisitArrayLiteralExpression(Es5ArrayLiteralExpression model)
+        public override void VisitArrayLiteralExpression(Es5ArrayLiteralExpression node)
         {
-            if (model.Elements.Length == 0)
+            if (node.Elements.Length == 0)
             {
                 _emitter.Write(_options.SpaceWithinEmptyArrayBrackets ? "[ ]" : "[]");
                 return;
             }
 
             _emitter.Write("[");
-            WriteCommaList(model.Elements);
+            WriteCommaList(node.Elements);
             _emitter.Write("]");
         }
 
         /// <summary>
         /// Writes object literals of the form '{ prop: value, get prop() {}, set prop(value) {} }'.
         /// </summary>
-        public override void VisitObjectLiteralExpression(Es5ObjectLiteralExpression model)
+        public override void VisitObjectLiteralExpression(Es5ObjectLiteralExpression node)
         {
-            int propCount = model.PropertyAssignments.Length;
+            int propCount = node.PropertyAssignments.Length;
             if (propCount == 0)
             {
                 _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
@@ -105,7 +105,7 @@ namespace Desalt.JavaScript.Emit
             {
                 for (int i = 0; i < propCount; i++)
                 {
-                    IEs5PropertyAssignment assignment = model.PropertyAssignments[i];
+                    IEs5PropertyAssignment assignment = node.PropertyAssignments[i];
                     assignment.Accept(this);
 
                     // write the comma if this isn't the last item in the list
@@ -129,144 +129,144 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a property get assignment within an object literal of the form 'get property() {}'.
         /// </summary>
-        public override void VisitPropertyGetAssignment(Es5PropertyGetAssignment model)
+        public override void VisitPropertyGetAssignment(Es5PropertyGetAssignment node)
         {
             WriteFunction(
                 "get",
-                model.PropertyName,
+                node.PropertyName,
                 parameters: null,
-                functionBody: model.FunctionBody);
+                functionBody: node.FunctionBody);
         }
 
         /// <summary>
         /// Visits a property set assignment within an object literal of the form 'set property(value) {}'.
         /// </summary>
-        public override void VisitPropertySetAssignment(Es5PropertySetAssignment model)
+        public override void VisitPropertySetAssignment(Es5PropertySetAssignment node)
         {
             WriteFunction(
                 "set",
-                model.PropertyName,
-                model.SetParameter.ToSafeArray(),
-                model.FunctionBody);
+                node.PropertyName,
+                node.SetParameter.ToSafeArray(),
+                node.FunctionBody);
         }
 
         /// <summary>
         /// Visits a property value assignment within an object literal of the form 'property: value'.
         /// </summary>
-        public override void VisitPropertyValueAssignment(Es5PropertyValueAssignment model)
+        public override void VisitPropertyValueAssignment(Es5PropertyValueAssignment node)
         {
-            _emitter.Write(model.PropertyName);
+            _emitter.Write(node.PropertyName);
             _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
-            Visit(model.Value);
+            Visit(node.Value);
         }
 
         /// <summary>
         /// Writes an expression surrounded by parentheses.
         /// </summary>
-        public override void VisitParenthesizedExpression(Es5ParenthesizedExpression model)
+        public override void VisitParenthesizedExpression(Es5ParenthesizedExpression node)
         {
             _emitter.Write("(");
-            Visit(model.Expression);
+            Visit(node.Expression);
             _emitter.Write(")");
         }
 
         /// <summary>
         /// Writes a function declaration expression of the form 'function name?(args) {}'.
         /// </summary>
-        public override void VisitFunctionExpression(Es5FunctionExpression model)
+        public override void VisitFunctionExpression(Es5FunctionExpression node)
         {
-            WriteFunction("function", model.FunctionName, model.Parameters, model.FunctionBody);
+            WriteFunction("function", node.FunctionName, node.Parameters, node.FunctionBody);
         }
 
         /// <summary>
         /// Writes a member access expression of the form 'obj.member' or 'obj[member]'.
         /// </summary>
-        public override void VisitMemberExpression(Es5MemberExpression model)
+        public override void VisitMemberExpression(Es5MemberExpression node)
         {
-            Visit(model.MemberExpression);
-            if (model.IsBracketNotation)
+            Visit(node.MemberExpression);
+            if (node.IsBracketNotation)
             {
                 _emitter.Write("[");
-                Visit(model.BracketExpression);
+                Visit(node.BracketExpression);
                 _emitter.Write("]");
             }
-            else if (model.IsDotNotation)
+            else if (node.IsDotNotation)
             {
                 _emitter.Write(".");
-                Visit(model.DotName);
+                Visit(node.DotName);
             }
         }
 
         /// <summary>
         /// Writes a function call expression of the form 'func(args)' or 'new func(args)'.
         /// </summary>
-        public override void VisitCallExpression(Es5CallExpression model)
+        public override void VisitCallExpression(Es5CallExpression node)
         {
-            if (model.IsNewCall)
+            if (node.IsNewCall)
             {
                 _emitter.Write("new ");
             }
 
-            Visit(model.CallExpression);
+            Visit(node.CallExpression);
             _emitter.Write("(");
-            WriteCommaList(model.Arguments);
+            WriteCommaList(node.Arguments);
             _emitter.Write(")");
         }
 
         /// <summary>
         /// Writes a unary expression.
         /// </summary>
-        public override void VisitUnaryExpression(Es5UnaryExpression model)
+        public override void VisitUnaryExpression(Es5UnaryExpression node)
         {
-            bool isPostfix = model.Operator.IsOneOf(
+            bool isPostfix = node.Operator.IsOneOf(
                 Es5UnaryOperator.PostfixIncrement, Es5UnaryOperator.PostfixDecrement);
 
             if (!isPostfix)
             {
-                _emitter.Write(model.Operator.ToCodeDisplay());
+                _emitter.Write(node.Operator.ToCodeDisplay());
             }
 
             // some operators require a space after them
-            if (model.Operator.IsOneOf(Es5UnaryOperator.Delete, Es5UnaryOperator.Void, Es5UnaryOperator.Typeof))
+            if (node.Operator.IsOneOf(Es5UnaryOperator.Delete, Es5UnaryOperator.Void, Es5UnaryOperator.Typeof))
             {
                 _emitter.Write(" ");
             }
 
-            Visit(model.Operand);
+            Visit(node.Operand);
 
             if (isPostfix)
             {
-                _emitter.Write(model.Operator.ToCodeDisplay());
+                _emitter.Write(node.Operator.ToCodeDisplay());
             }
         }
 
         /// <summary>
         /// Writes a binary expression.
         /// </summary>
-        public override void VisitBinaryExpression(Es5BinaryExpression model)
+        public override void VisitBinaryExpression(Es5BinaryExpression node)
         {
-            Visit(model.LeftSide);
+            Visit(node.LeftSide);
 
-            string operatorString = model.Operator.ToCodeDisplay();
+            string operatorString = node.Operator.ToCodeDisplay();
             bool surround = _options.SurroundOperatorsWithSpaces ||
-                model.Operator.IsOneOf(Es5BinaryOperator.InstanceOf, Es5BinaryOperator.In);
+                node.Operator.IsOneOf(Es5BinaryOperator.InstanceOf, Es5BinaryOperator.In);
             _emitter.Write(surround ? $" {operatorString} " : operatorString);
 
-            Visit(model.RightSide);
+            Visit(node.RightSide);
         }
 
         /// <summary>
         /// Writes a conditional expression of the form 'x ? y : z'.
         /// </summary>
-        public override void VisitConditionalExpression(Es5ConditionalExpression model)
+        public override void VisitConditionalExpression(Es5ConditionalExpression node)
         {
-            Visit(model.Condition);
+            Visit(node.Condition);
             _emitter.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
 
-            Visit(model.WhenTrue);
+            Visit(node.WhenTrue);
             _emitter.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
 
-            Visit(model.WhenFalse);
+            Visit(node.WhenFalse);
         }
     }
 }

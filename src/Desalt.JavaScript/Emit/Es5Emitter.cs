@@ -53,9 +53,9 @@ namespace Desalt.JavaScript.Emit
             _emitter.Dispose();
         }
 
-        public override void VisitProgram(Es5Program model)
+        public override void VisitProgram(Es5Program node)
         {
-            foreach (IEs5SourceElement sourceElement in model.SourceElements)
+            foreach (IEs5SourceElement sourceElement in node.SourceElements)
             {
                 Visit(sourceElement);
             }

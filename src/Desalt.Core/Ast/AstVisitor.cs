@@ -17,7 +17,7 @@ namespace Desalt.Core.Ast
     public abstract class AstVisitor<TNode> : IAstVisitor<TNode>
         where TNode : IAstNode
     {
-        public abstract void Visit(TNode model);
+        public abstract void Visit(TNode node);
 
         public virtual void DefaultVisit(TNode node)
         {
@@ -35,7 +35,7 @@ namespace Desalt.Core.Ast
     public abstract class AstVisitor<TNode, TResult> : IAstVisitor<TNode, TResult>
         where TNode : IAstNode
     {
-        public abstract TResult Visit(TNode model);
+        public abstract TResult Visit(TNode node);
 
         public virtual TResult DefaultVisit(TNode node)
         {
