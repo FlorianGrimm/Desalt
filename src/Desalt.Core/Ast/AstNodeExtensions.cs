@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CodeModelExtensions.cs" company="Justin Rockwood">
+// <copyright file="AstNodeExtensions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Desalt.Core.Ast
     /// <summary>
     /// Contains extension methods for working with <see cref="IAstNode"/> objects.
     /// </summary>
-    public static class CodeModelExtensions
+    public static class AstNodeExtensions
     {
         /// <summary>
         /// Creates a delimiter-separated list of elements, up to and not exceeding the specified

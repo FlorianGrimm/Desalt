@@ -119,7 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\AstNode.cs" />
-    <Compile Include="Ast\CodeModelExtensions.cs" />
+    <Compile Include="Ast\AstNodeExtensions.cs" />
     <Compile Include="Ast\AstVisitor.cs" />
     <Compile Include="Ast\IAstNode.cs" />
     <Compile Include="Ast\IAstVisitor.cs" />
