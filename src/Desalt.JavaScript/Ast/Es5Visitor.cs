@@ -13,9 +13,9 @@ namespace Desalt.JavaScript.Ast
     /// Represents an <see cref="Es5CodeModel"/> visitor that visits only the single model passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class Es5Visitor : AstVisitor<IEs5CodeModel>
+    public abstract partial class Es5Visitor : AstVisitor<IEs5AstNode>
     {
-        public override void Visit(IEs5CodeModel model)
+        public override void Visit(IEs5AstNode model)
         {
             model?.Accept(this);
         }
@@ -42,9 +42,9 @@ namespace Desalt.JavaScript.Ast
     /// name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
-    public abstract partial class Es5Visitor<TResult> : AstVisitor<IEs5CodeModel, TResult>
+    public abstract partial class Es5Visitor<TResult> : AstVisitor<IEs5AstNode, TResult>
     {
-        public override TResult Visit(IEs5CodeModel model)
+        public override TResult Visit(IEs5AstNode model)
         {
             return model != null ? model.Accept(this) : default(TResult);
         }

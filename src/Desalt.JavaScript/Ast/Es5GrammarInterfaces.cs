@@ -61,7 +61,7 @@ namespace Desalt.JavaScript.Ast
      *     Identifier
      */
 
-    public interface IEs5PropertyAssignment : IEs5CodeModel
+    public interface IEs5PropertyAssignment : IEs5AstNode
     {
     }
 
@@ -264,7 +264,7 @@ namespace Desalt.JavaScript.Ast
      *     ExpressionNoIn , AssignmentExpressionNoIn
      */
 
-    public interface IEs5Expression : IEs5CodeModel
+    public interface IEs5Expression : IEs5AstNode
     {
     }
 
@@ -454,7 +454,7 @@ namespace Desalt.JavaScript.Ast
      *     FunctionDeclaration
      */
 
-    public interface IEs5SourceElement : IEs5CodeModel
+    public interface IEs5SourceElement : IEs5AstNode
     {
     }
 }

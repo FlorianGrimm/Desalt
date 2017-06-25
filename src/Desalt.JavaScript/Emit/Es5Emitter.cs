@@ -17,7 +17,7 @@ namespace Desalt.JavaScript.Emit
     using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
-    /// Takes an <see cref="IEs5CodeModel"/> and converts it to text.
+    /// Takes an <see cref="IEs5AstNode"/> and converts it to text.
     /// </summary>
     public partial class Es5Emitter : Es5Visitor, IDisposable
     {
@@ -25,7 +25,7 @@ namespace Desalt.JavaScript.Emit
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly Emitter<IEs5CodeModel> _emitter;
+        private readonly Emitter<IEs5AstNode> _emitter;
         private readonly EmitOptions _options;
 
         //// ===========================================================================================================
@@ -34,7 +34,7 @@ namespace Desalt.JavaScript.Emit
 
         public Es5Emitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
         {
-            _emitter = new Emitter<IEs5CodeModel>(outputStream, encoding, options);
+            _emitter = new Emitter<IEs5AstNode>(outputStream, encoding, options);
             _options = options;
         }
 
@@ -71,7 +71,7 @@ namespace Desalt.JavaScript.Emit
         /// last element.
         /// </summary>
         /// <param name="elements">The list of elements to visit.</param>
-        private void WriteCommaList(IEnumerable<IEs5CodeModel> elements)
+        private void WriteCommaList(IEnumerable<IEs5AstNode> elements)
         {
             _emitter.WriteList(elements, _options.SpaceAfterComma ? ", " : ",", elem => elem.Accept(this));
         }
@@ -108,7 +108,7 @@ namespace Desalt.JavaScript.Emit
             }
 
             // write the parameters
-            WriteCommaList(parameters ?? Enumerable.Empty<IEs5CodeModel>());
+            WriteCommaList(parameters ?? Enumerable.Empty<IEs5AstNode>());
 
             // write the closing parenthesis
             bool spaceAfter = isUnnamed
