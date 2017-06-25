@@ -58,7 +58,7 @@ namespace Desalt.TypeScript.CodeModels
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITsPrimaryExpression : ITsCodeModel { }
+    public interface ITsPrimaryExpression : ITsMemberExpression { }
 
     public interface ITsThis : ITsPrimaryExpression { }
 
@@ -310,8 +310,11 @@ namespace Desalt.TypeScript.CodeModels
      *   SuperProperty
      *   MetaProperty
      *   new MemberExpression Arguments
-     *
-     * SuperProperty:
+     */
+
+    public interface ITsMemberExpression : ITsCodeModel { }
+
+    /* SuperProperty:
      *   super [ Expression ]
      *   super . IdentifierName
      *
@@ -375,6 +378,10 @@ namespace Desalt.TypeScript.CodeModels
      *   ~ UnaryExpression
      *   ! UnaryExpression
      */
+
+    public interface ITsUnaryExpression : ITsExpression
+    {
+    }
 
     /* 12.6 Multiplicative Operators
      * -----------------------------
