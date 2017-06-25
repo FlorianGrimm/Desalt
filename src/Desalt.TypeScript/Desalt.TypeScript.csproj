@@ -43,12 +43,12 @@
     <Compile Include="Ast\ImplementationSourceFile.cs" />
     <Compile Include="Ast\ITsAstNode.cs" />
     <Compile Include="Ast\TsGrammarExtensions.cs" />
+    <Compile Include="Ast\TsGrammarInterfaces.cs" />
     <Compile Include="Ast\TsIdentifier.cs" />
     <Compile Include="Ast\TsModelFactory.cs" />
     <Compile Include="Ast\TsModelFactory.Expressions.cs" />
     <Compile Include="Ast\TsModelFactory.Types.cs" />
     <Compile Include="Ast\TsQualifiedName.cs" />
-    <Compile Include="Ast\TypeScriptGrammarInterfaces.cs" />
     <Compile Include="Ast\TypeScriptVisitor.cs" />
     <Compile Include="Ast\TypeScriptVisitor.Expressions.cs" />
     <Compile Include="Ast\TypeScriptVisitor.Types.cs" />
