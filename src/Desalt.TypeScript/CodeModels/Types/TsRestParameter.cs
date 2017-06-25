@@ -1,51 +1,53 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsRestParameter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Types
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsRestParameter : CodeModel, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsRestParameter(ITsIdentifier parameterName, ITsType parameterType = null)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
+            ParameterType = parameterType;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ITsIdentifier ParameterName { get; }
+        public ITsType ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitRestParameter(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitRestParameter(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
+            writer.Write("... ");
+            ParameterName.WriteFullCodeDisplay(writer);
+            ParameterType.WriteTypeAnnotation(writer);
         }
     }
 }

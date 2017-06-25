@@ -1,51 +1,52 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsTupleType.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Types
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Linq;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents a TypeScript tuple type.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsTupleType : CodeModel, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsTupleType(ITsType elementType, params ITsType[] elementTypes)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            if (elementType == null) { throw new ArgumentNullException(nameof(elementType)); }
+            ElementTypes = new[] { elementType }.Concat(elementTypes ?? new ITsType[0]).ToImmutableArray();
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ImmutableArray<ITsType> ElementTypes { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitTupleType(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitTupleType(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() => $"[{ElementTypes.ToElidedList()}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
+            WriteItems(writer, ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
     }
 }

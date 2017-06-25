@@ -66,7 +66,7 @@ namespace Desalt.Core.CodeModels
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => ToFullCodeDisplay();
+        public override string ToString() => ToCodeDisplay();
 
         /// <summary>
         /// Writes a list of items wrapped in a {} block to the specified text writer.

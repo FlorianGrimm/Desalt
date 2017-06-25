@@ -1,51 +1,53 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Expressions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents an element in an object initializer of the form 'identifer = expression'.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsCoverInitializedName : CodeModel, ITsCoverInitializedName
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsCoverInitializedName(ITsIdentifier identifier, ITsAssignmentExpression initializer)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
+            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ITsIdentifier Identifier { get; }
+        public ITsAssignmentExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitCoverInitializedName(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitCoverInitializedName(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() => $"{Identifier.ToCodeDisplay()} = ${Initializer.ToCodeDisplay()}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
+            Identifier.WriteFullCodeDisplay(writer);
+            writer.Write(" = ");
+            Initializer.WriteFullCodeDisplay(writer);
         }
     }
 }

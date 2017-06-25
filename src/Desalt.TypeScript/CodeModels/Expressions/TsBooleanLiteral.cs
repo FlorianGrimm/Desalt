@@ -1,51 +1,53 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsBooleanLiteral.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Expressions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.CodeModels;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents an expression containing a numeric literal value.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsBooleanLiteral : CodeModel, ITsBooleanLiteral
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly TsBooleanLiteral True = new TsBooleanLiteral(true);
+
+        public static readonly TsBooleanLiteral False = new TsBooleanLiteral(false);
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        private TsBooleanLiteral(bool value)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            Value = value;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public bool Value { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitBooleanLiteral(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() => Value ? "true" : "false";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
-        }
+        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
     }
 }

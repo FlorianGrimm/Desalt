@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsFunctionExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Expressions
 {
     using System;
     using System.Collections.Generic;
@@ -14,38 +14,49 @@ namespace Desalt.TypeScript.CodeModels
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents a function declaration acting as an expression.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsFunctionExpression : CodeModel, ITsFunctionExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsFunctionExpression(
+            ITsCallSignature callSignature,
+            ITsIdentifier functionName = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
+            FunctionName = functionName;
+            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ITsIdentifier FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitFunctionExpression(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitFunctionExpression(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() =>
+            $"function {FunctionName?.ToCodeDisplay()}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
+            writer.Write("function ");
+            FunctionName?.WriteFullCodeDisplay(writer);
+            CallSignature.WriteFullCodeDisplay(writer);
+            WriteBlock(writer, FunctionBody);
         }
     }
 }

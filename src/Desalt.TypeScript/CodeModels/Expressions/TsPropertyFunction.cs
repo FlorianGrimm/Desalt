@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsPropertyFunction.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.CodeModels
+namespace Desalt.TypeScript.CodeModels.Expressions
 {
     using System;
     using System.Collections.Generic;
@@ -14,38 +14,50 @@ namespace Desalt.TypeScript.CodeModels
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents an object literal property function.
     /// </summary>
-    public class ImplementationSourceFile : CodeModel, ITsCodeModel
+    internal class TsPropertyFunction : CodeModel, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsPropertyFunction(
+            ITsPropertyName propertyName,
+            ITsCallSignature callSignature,
+            IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+            CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
+            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ITsPropertyName PropertyName { get; }
+        public ITsCallSignature CallSignature { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TypeScriptVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public void Accept(TypeScriptVisitor visitor) => visitor.VisitPropertyFunction(this);
 
-        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public T Accept<T>(TypeScriptVisitor<T> visitor) => visitor.VisitPropertyFunction(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string ToCodeDisplay() =>
+            $"{PropertyName.ToCodeDisplay()} {CallSignature.ToCodeDisplay()} {{ {FunctionBody.ToElidedList()} }}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
+            PropertyName.WriteFullCodeDisplay(writer);
+            writer.Write(" ");
+            CallSignature.WriteFullCodeDisplay(writer);
+            writer.Write(" ");
+            WriteBlock(writer, FunctionBody);
         }
     }
 }
