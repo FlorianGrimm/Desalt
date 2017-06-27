@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayElement.cs" company="Justin Rockwood">
+// <copyright file="TsConditionalExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,49 +12,49 @@ namespace Desalt.TypeScript.Ast.Expressions
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents an element in an array.
+    /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayElement(ITsExpression element, bool isSpreadElement = false)
+        public TsConditionalExpression(
+            ITsExpression condition,
+            ITsExpression whenTrue,
+            ITsExpression whenFalse)
         {
-            Element = element ?? throw new ArgumentNullException(nameof(element));
-            IsSpreadElement = isSpreadElement;
+            Condition = condition ?? throw new ArgumentNullException(nameof(condition));
+            WhenTrue = whenTrue ?? throw new ArgumentNullException(nameof(whenTrue));
+            WhenFalse = whenFalse ?? throw new ArgumentNullException(nameof(whenFalse));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Element { get; }
-
-        /// <summary>
-        /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
-        /// </summary>
-        public bool IsSpreadElement { get; }
+        public ITsExpression Condition { get; }
+        public ITsExpression WhenTrue { get; }
+        public ITsExpression WhenFalse { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitConditionalExpression(this);
 
-        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
+        public override string ToCodeDisplay() => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            if (IsSpreadElement)
-            {
-                writer.Write("... ");
-            }
-
-            Element.WriteFullCodeDisplay(writer);
+            Condition.WriteFullCodeDisplay(writer);
+            writer.Write(" ? ");
+            WhenTrue.WriteFullCodeDisplay(writer);
+            writer.Write(" : ");
+            WhenFalse.WriteFullCodeDisplay(writer);
         }
     }
 }

@@ -38,10 +38,26 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Emit\TsEmitterTests.AssignmentExpressions.cs" />
+    <Compile Include="Emit\TsEmitterTests.cs" />
+    <Compile Include="Emit\TsEmitterTests.LeftHandSideExpressions.cs" />
+    <Compile Include="Emit\TsEmitterTests.LiteralExpressions.cs" />
+    <Compile Include="Emit\TsEmitterTests.SourceFile.cs" />
+    <Compile Include="Emit\TsEmitterTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj">
+      <Project>{987796C8-EE76-4FFD-B2EB-1B3A0767920B}</Project>
+      <Name>Desalt.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Desalt.TypeScript\Desalt.TypeScript.csproj">
+      <Project>{292EC07B-62AD-444D-AAA5-25BB7856FAB1}</Project>
+      <Name>Desalt.TypeScript</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\Desalt.CommonProps.targets" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

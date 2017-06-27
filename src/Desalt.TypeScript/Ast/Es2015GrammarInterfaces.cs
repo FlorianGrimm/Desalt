@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Immutable;
+    using Desalt.TypeScript.Ast.Expressions;
 
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar
@@ -34,7 +35,7 @@ namespace Desalt.TypeScript.Ast
      */
 
     public interface ITsIdentifier :
-        ITsPrimaryExpression,
+        ITsExpression,
         ITsPropertyDefinition,
         ITsLiteralPropertyName,
         ITsBindingIdentifierOrPattern
@@ -58,9 +59,7 @@ namespace Desalt.TypeScript.Ast
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITsPrimaryExpression : ITsMemberExpression { }
-
-    public interface ITsThis : ITsPrimaryExpression { }
+    public interface ITsThis : ITsExpression { }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
@@ -98,11 +97,9 @@ namespace Desalt.TypeScript.Ast
      *   ' SingleStringCharacters '
      */
 
-    public interface ITsLiteral : ITsPrimaryExpression { }
+    public interface ITsNullLiteral : ITsExpression { }
 
-    public interface ITsNullLiteral : ITsLiteral { }
-
-    public interface ITsBooleanLiteral : ITsLiteral
+    public interface ITsBooleanLiteral : ITsExpression
     {
         bool Value { get; }
     }
@@ -115,7 +112,7 @@ namespace Desalt.TypeScript.Ast
         HexInteger,
     }
 
-    public interface ITsNumericLiteral : ITsLiteral, ITsLiteralPropertyName
+    public interface ITsNumericLiteral : ITsExpression, ITsLiteralPropertyName
     {
         TsNumericLiteralKind Kind { get; }
         double Value { get; }
@@ -127,7 +124,7 @@ namespace Desalt.TypeScript.Ast
         SingleQuote
     }
 
-    public interface ITsStringLiteral : ITsLiteral, ITsLiteralPropertyName
+    public interface ITsStringLiteral : ITsExpression, ITsLiteralPropertyName
     {
         StringLiteralQuoteKind QuoteKind { get; }
         string Value { get; }
@@ -139,7 +136,7 @@ namespace Desalt.TypeScript.Ast
      *   / RegularExpressionBody / RegularExpressionFlags
      */
 
-    public interface ITsRegularExpressionLiteral : ITsPrimaryExpression
+    public interface ITsRegularExpressionLiteral : ITsExpression
     {
         string Body { get; }
         string Flags { get; }
@@ -166,14 +163,14 @@ namespace Desalt.TypeScript.Ast
      *   ... AssignmentExpression
      */
 
-    public interface ITsArrayLiteral : ITsPrimaryExpression
+    public interface ITsArrayLiteral : ITsExpression
     {
         ImmutableArray<ITsArrayElement> Elements { get; }
     }
 
     public interface ITsArrayElement : ITsAstNode
     {
-        ITsAssignmentExpression Element { get; }
+        ITsExpression Element { get; }
 
         /// <summary>
         /// Indicates whether the <see cref="Element"/> is preceded by a spread operator '...'.
@@ -218,7 +215,7 @@ namespace Desalt.TypeScript.Ast
      *   = AssignmentExpression
      */
 
-    public interface ITsObjectLiteral : ITsPrimaryExpression
+    public interface ITsObjectLiteral : ITsExpression
     {
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
@@ -295,7 +292,7 @@ namespace Desalt.TypeScript.Ast
         public ITsExpression Expression { get; }
     }
 
-    public interface ITsTemplateLiteral : ITsPrimaryExpression
+    public interface ITsTemplateLiteral : ITsExpression
     {
         ImmutableArray<TsTemplatePart> Parts { get; }
     }
@@ -312,7 +309,17 @@ namespace Desalt.TypeScript.Ast
      *   new MemberExpression Arguments
      */
 
-    public interface ITsMemberExpression : ITsAstNode { }
+    public interface ITsMemberBracketExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        ITsExpression BracketContents { get; }
+    }
+
+    public interface ITsMemberDotExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        string DotName { get; }
+    }
 
     /* SuperProperty:
      *   super [ Expression ]
@@ -381,6 +388,8 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsUnaryExpression : ITsExpression
     {
+        ITsExpression Operand { get; }
+        TsUnaryOperator Operator { get; }
     }
 
     /* 12.6 Multiplicative Operators
@@ -458,12 +467,26 @@ namespace Desalt.TypeScript.Ast
      *   LogicalORExpression || LogicalANDExpression
      */
 
+    public interface ITsBinaryExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        TsBinaryOperator Operator { get; }
+        ITsExpression RightSide { get; }
+    }
+
     /* 12.13 Conditional Operator ( ? : )
      * ----------------------------------
      * ConditionalExpression:
      *   LogicalORExpression
      *   LogicalORExpression ? AssignmentExpression : AssignmentExpression
      */
+
+    public interface ITsConditionalExpression : ITsExpression
+    {
+        ITsExpression Condition { get; }
+        ITsExpression WhenTrue { get; }
+        ITsExpression WhenFalse { get; }
+    }
 
     /* 12.14 Assignment Operators
      * --------------------------
@@ -478,8 +501,11 @@ namespace Desalt.TypeScript.Ast
      *   *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
      */
 
-    public interface ITsAssignmentExpression : ITsPrimaryExpression
+    public interface ITsAssignmentExpression : ITsExpression
     {
+        ITsExpression LeftSide { get; }
+        ITsExpression RightSide { get; }
+        TsAssignmentOperator Operator { get; }
     }
 
     /* 12.15 Comma Operator ( , )
@@ -859,7 +885,7 @@ namespace Desalt.TypeScript.Ast
      *   ;
      */
 
-    public interface ITsClassExpression : ITsPrimaryExpression
+    public interface ITsClassExpression : ITsExpression
     {
         ITsIdentifier ClassName { get; }
         ITsLeftHandSideExpression Heritage { get; }

@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayElement.cs" company="Justin Rockwood">
+// <copyright file="TsMemberBracketExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,49 +12,43 @@ namespace Desalt.TypeScript.Ast.Expressions
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// Represents an element in an array.
+    /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayElement(ITsExpression element, bool isSpreadElement = false)
+        public TsMemberBracketExpression(ITsExpression leftSide, ITsExpression bracketContents)
         {
-            Element = element ?? throw new ArgumentNullException(nameof(element));
-            IsSpreadElement = isSpreadElement;
+            LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
+            BracketContents = bracketContents ?? throw new ArgumentNullException(nameof(bracketContents));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Element { get; }
-
-        /// <summary>
-        /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
-        /// </summary>
-        public bool IsSpreadElement { get; }
+        public ITsExpression LeftSide { get; }
+        public ITsExpression BracketContents { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
+        public void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
+        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberBracketExpression(this);
 
-        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
+        public override string ToCodeDisplay() => $"{LeftSide}[{BracketContents}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            if (IsSpreadElement)
-            {
-                writer.Write("... ");
-            }
-
-            Element.WriteFullCodeDisplay(writer);
+            LeftSide.WriteFullCodeDisplay(writer);
+            writer.Write("[");
+            BracketContents.WriteFullCodeDisplay(writer);
+            writer.Write("]");
         }
     }
 }

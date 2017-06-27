@@ -1,16 +1,16 @@
-// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5UnaryOperator.cs" company="Justin Rockwood">
+﻿// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="TsUnaryOperator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Expressions
 {
     /// <summary>
-    /// Represents the different types of JavaScript unary expression operators.
+    /// Represents the different types of TypeScript unary expression operators.
     /// </summary>
-    public enum Es5UnaryOperator
+    public enum TsUnaryOperator
     {
         /// <summary>
         /// The 'delete' operator.

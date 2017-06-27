@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
-        public static ITsArrayElement ArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false) =>
+        public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
 
         public static ITsTemplateLiteral TemplateLiteral(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
@@ -101,7 +101,52 @@ namespace Desalt.TypeScript.Ast
         }
 
         //// ===========================================================================================================
-        //// Expressions
+        //// Unary and Binary Expressions
+        //// ===========================================================================================================
+
+        public static ITsUnaryExpression UnaryExpression(ITsExpression operand, TsUnaryOperator @operator) =>
+            new TsUnaryExpression(operand, @operator);
+
+        public static ITsBinaryExpression BinaryExpression(
+            ITsExpression leftSide,
+            TsBinaryOperator @operator,
+            ITsExpression rightSide)
+        {
+            return new TsBinaryExpression(leftSide, @operator, rightSide);
+        }
+
+        public static ITsConditionalExpression ConditionalExpression(
+            ITsExpression condition,
+            ITsExpression whenTrue,
+            ITsExpression whenFalse)
+        {
+            return new TsConditionalExpression(condition, whenTrue, whenFalse);
+        }
+
+        public static ITsAssignmentExpression AssignmentExpression(
+            ITsExpression leftSide,
+            TsAssignmentOperator @operator,
+            ITsExpression rightSide)
+        {
+            return new TsAssignmentExpression(leftSide, @operator, rightSide);
+        }
+
+        //// ===========================================================================================================
+        //// Left-hand Side Expressions
+        //// ===========================================================================================================
+
+        public static ITsMemberBracketExpression MemberBracket(
+            ITsExpression leftSide,
+            ITsExpression bracketContents)
+        {
+            return new TsMemberBracketExpression(leftSide, bracketContents);
+        }
+
+        public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, string dotName) =>
+            new TsMemberDotExpression(leftSide, dotName);
+
+        //// ===========================================================================================================
+        //// Function and Class Expressions
         //// ===========================================================================================================
 
         public static ITsFunctionExpression FunctionExpression(

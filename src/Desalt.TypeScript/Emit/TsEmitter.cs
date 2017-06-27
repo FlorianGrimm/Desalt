@@ -1,60 +1,58 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayElement.cs" company="Justin Rockwood">
+// <copyright file="TsEmitter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Emit
 {
     using System;
-    using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using System.IO;
+    using System.Text;
+    using Desalt.Core.Emit;
+    using Desalt.TypeScript.Ast;
 
     /// <summary>
-    /// Represents an element in an array.
+    /// Takes an <see cref="ITsAstNode"/> and converts it to text.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    public partial class TsEmitter : TsVisitor, IDisposable
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private readonly Emitter<ITsAstNode> _emitter;
+        private readonly EmitOptions _options;
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayElement(ITsExpression element, bool isSpreadElement = false)
+        public TsEmitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
         {
-            Element = element ?? throw new ArgumentNullException(nameof(element));
-            IsSpreadElement = isSpreadElement;
+            _emitter = new Emitter<ITsAstNode>(outputStream, encoding, options);
+            _options = options;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Element { get; }
-
-        /// <summary>
-        /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
-        /// </summary>
-        public bool IsSpreadElement { get; }
+        public Encoding Encoding => _emitter.Encoding;
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
-
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
-
-        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public void Dispose()
         {
-            if (IsSpreadElement)
-            {
-                writer.Write("... ");
-            }
+            _emitter.Dispose();
+        }
 
-            Element.WriteFullCodeDisplay(writer);
+        public override void VisitIdentifier(ITsIdentifier model)
+        {
+            _emitter.Write(model.Text);
         }
     }
 }

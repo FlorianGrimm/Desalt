@@ -7,7 +7,9 @@
 
 namespace Desalt.TypeScript.Ast
 {
+    using System;
     using Desalt.Core.Utility;
+    using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
@@ -23,6 +25,94 @@ namespace Desalt.TypeScript.Ast
         public static ITsParenthesizedType WithParentheses(this ITsType type)
         {
             return new TsParenthesizedType(type);
+        }
+
+        /// <summary>
+        /// Converts a unary operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsUnaryOperator unaryOperator)
+        {
+            switch (unaryOperator)
+            {
+                case TsUnaryOperator.Delete: return "delete";
+                case TsUnaryOperator.Void: return "void";
+                case TsUnaryOperator.Typeof: return "typeof";
+
+                case TsUnaryOperator.PrefixIncrement:
+                case TsUnaryOperator.PostfixIncrement:
+                    return "++";
+
+                case TsUnaryOperator.PrefixDecrement:
+                case TsUnaryOperator.PostfixDecrement:
+                    return "--";
+
+                case TsUnaryOperator.Plus: return "+";
+                case TsUnaryOperator.Minus: return "-";
+                case TsUnaryOperator.BitwiseNot: return "~";
+                case TsUnaryOperator.LogicalNot: return "!";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null);
+            }
+        }
+
+        /// <summary>
+        /// Converts a binary operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsBinaryOperator binaryOperator)
+        {
+            switch (binaryOperator)
+            {
+                case TsBinaryOperator.Multiply: return "*";
+                case TsBinaryOperator.Divide: return "/";
+                case TsBinaryOperator.Modulo: return "%";
+                case TsBinaryOperator.Add: return "+";
+                case TsBinaryOperator.Subtract: return "-";
+                case TsBinaryOperator.LeftShift: return "<<";
+                case TsBinaryOperator.SignedRightShift: return ">>";
+                case TsBinaryOperator.UnsignedRightShift: return ">>>";
+                case TsBinaryOperator.LessThan: return "<";
+                case TsBinaryOperator.GreaterThan: return ">";
+                case TsBinaryOperator.LessThanEqual: return "<=";
+                case TsBinaryOperator.GreaterThanEqual: return ">=";
+                case TsBinaryOperator.InstanceOf: return "instanceof";
+                case TsBinaryOperator.In: return "in";
+                case TsBinaryOperator.Equals: return "==";
+                case TsBinaryOperator.NotEquals: return "!=";
+                case TsBinaryOperator.StrictEquals: return "===";
+                case TsBinaryOperator.StrictNotEquals: return "!==";
+                case TsBinaryOperator.BitwiseAnd: return "&";
+                case TsBinaryOperator.BitwiseXor: return "^";
+                case TsBinaryOperator.BitwiseOr: return "|";
+                case TsBinaryOperator.LogicalAnd: return "&&";
+                case TsBinaryOperator.LogicalOr: return "||";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null);
+            }
+        }
+
+        /// <summary>
+        /// Converts an assignment operator to its code representation.
+        /// </summary>
+        public static string ToCodeDisplay(this TsAssignmentOperator assignmentOperator)
+        {
+            switch (assignmentOperator)
+            {
+                case TsAssignmentOperator.SimpleAssign: return "=";
+                case TsAssignmentOperator.MultiplyAssign: return "*=";
+                case TsAssignmentOperator.DivideAssign: return "/=";
+                case TsAssignmentOperator.ModuloAssign: return "%=";
+                case TsAssignmentOperator.AddAssign: return "+=";
+                case TsAssignmentOperator.SubtractAssign: return "-=";
+                case TsAssignmentOperator.LeftShiftAssign: return "<<=";
+                case TsAssignmentOperator.SignedRightShiftAssign: return ">>=";
+                case TsAssignmentOperator.UnsignedRightShiftAssign: return ">>>=";
+                case TsAssignmentOperator.BitwiseAndAssign: return "&=";
+                case TsAssignmentOperator.BitwiseXorAssign: return "^=";
+                case TsAssignmentOperator.BitwiseOrAssign: return "|=";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(assignmentOperator), assignmentOperator, message: null);
+            }
         }
 
         /// <summary>

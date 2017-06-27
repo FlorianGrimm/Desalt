@@ -104,6 +104,36 @@ namespace Desalt.TypeScript.Ast
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a unary expression
+        /// </summary>
+        public virtual void VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a binary expression
+        /// </summary>
+        public virtual void VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a conditional expression of the form 'x ? y : z'.
+        /// </summary>
+        public virtual void VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits an expression that assigns one value to another.
+        /// </summary>
+        public virtual void VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression[expression]'.
+        /// </summary>
+        public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression.name'.
+        /// </summary>
+        public virtual void VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -203,5 +233,35 @@ namespace Desalt.TypeScript.Ast
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
         public virtual TResult VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a unary expression
+        /// </summary>
+        public virtual TResult VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a binary expression
+        /// </summary>
+        public virtual TResult VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a conditional expression of the form 'x ? y : z'.
+        /// </summary>
+        public virtual TResult VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits an expression that assigns one value to another.
+        /// </summary>
+        public virtual TResult VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression[expression]'.
+        /// </summary>
+        public virtual TResult VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression.name'.
+        /// </summary>
+        public virtual TResult VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
     }
 }
