@@ -24,8 +24,7 @@ namespace Desalt.Core.Emit
         public static readonly EmitOptions Default = new EmitOptions(
             newline: Environment.NewLine,
             indentationPrefix: "  ",
-            simpleBlockOnNewLine: true,
-            spaceWithinSimpleBlockBraces: true);
+            simpleBlockOnNewLine: true);
 
         /// <summary>
         /// Represents the set of options that produce compact code, with extraneous whitespace removed.
@@ -47,17 +46,13 @@ namespace Desalt.Core.Emit
             EmitOptions instanceToCopy = null,
             string newline = null,
             string indentationPrefix = null,
-            bool? simpleBlockOnNewLine = null,
-            bool? spaceWithinSimpleBlockBraces = null)
+            bool? simpleBlockOnNewLine = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
 
             SimpleBlockOnNewLine =
                 simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
-
-            SpaceWithinSimpleBlockBraces = spaceWithinSimpleBlockBraces ??
-                instanceToCopy?.SpaceWithinSimpleBlockBraces ?? false;
         }
 
         //// ===========================================================================================================
@@ -86,13 +81,5 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSimpleBlockOnNewLine(bool value) =>
             new EmitOptions(this, simpleBlockOnNewLine: value);
-
-        /// <summary>
-        /// Indicates whether a space should be between simple block braces and the content of the block.
-        /// </summary>
-        public bool SpaceWithinSimpleBlockBraces { get; }
-
-        public EmitOptions WithSpaceWithinSimpleBlockBraces(bool value) =>
-            new EmitOptions(this, spaceWithinSimpleBlockBraces: value);
     }
 }

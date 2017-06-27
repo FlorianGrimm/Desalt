@@ -108,8 +108,7 @@ namespace Desalt.Core.Emit
             // check empty blocks
             if (array.Length == 0 && !Options.SimpleBlockOnNewLine)
             {
-                bool includeSpace = Options.SpaceWithinSimpleBlockBraces;
-                _writer.Write(includeSpace ? "{ }" : "{}");
+                _writer.Write("{ }");
                 return;
             }
 
@@ -152,7 +151,7 @@ namespace Desalt.Core.Emit
                 _writer.WriteLine();
                 _writer.IndentLevel++;
             }
-            else if (Options.SpaceWithinSimpleBlockBraces)
+            else
             {
                 _writer.Write(" ");
             }
@@ -168,7 +167,7 @@ namespace Desalt.Core.Emit
             {
                 _writer.WriteLine();
             }
-            else if (Options.SpaceWithinSimpleBlockBraces)
+            else
             {
                 _writer.Write(" ");
             }
