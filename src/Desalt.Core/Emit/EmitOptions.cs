@@ -24,7 +24,6 @@ namespace Desalt.Core.Emit
         public static readonly EmitOptions Default = new EmitOptions(
             newline: Environment.NewLine,
             indentationPrefix: "  ",
-            surroundOperatorsWithSpaces: true,
             spaceWithinEmptyArrayBrackets: true,
             spaceWithinEmptyObjectInitializers: true,
             spaceWithinEmptyFunctionBody: true,
@@ -53,7 +52,6 @@ namespace Desalt.Core.Emit
             EmitOptions instanceToCopy = null,
             string newline = null,
             string indentationPrefix = null,
-            bool? surroundOperatorsWithSpaces = null,
             bool? spaceWithinEmptyArrayBrackets = null,
             bool? spaceWithinEmptyObjectInitializers = null,
             bool? spaceWithinEmptyFunctionBody = null,
@@ -64,9 +62,6 @@ namespace Desalt.Core.Emit
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
-
-            SurroundOperatorsWithSpaces =
-                surroundOperatorsWithSpaces ?? instanceToCopy?.SurroundOperatorsWithSpaces ?? false;
 
             SpaceWithinEmptyArrayBrackets =
                 spaceWithinEmptyArrayBrackets ?? instanceToCopy?.SpaceWithinEmptyArrayBrackets ?? false;
@@ -106,14 +101,6 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
-
-        /// <summary>
-        /// Indicates whether operators should be surrouded with spaces.
-        /// </summary>
-        public bool SurroundOperatorsWithSpaces { get; }
-
-        public EmitOptions WithSurroundOperatorsWithSpaces(bool value) =>
-            new EmitOptions(this, surroundOperatorsWithSpaces: value);
 
         /// <summary>
         /// Indicates whether to include a space between array brackets when the array is empty.

@@ -59,17 +59,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitAssignmentExpression(Es5AssignmentExpression node)
         {
             Visit(node.LeftSide);
-
-            if (_options.SurroundOperatorsWithSpaces)
-            {
-                _emitter.Write(" ");
-            }
-            _emitter.Write(node.Operator.ToCodeDisplay());
-            if (_options.SurroundOperatorsWithSpaces)
-            {
-                _emitter.Write(" ");
-            }
-
+            _emitter.Write($" {node.Operator.ToCodeDisplay()} ");
             Visit(node.RightSide);
         }
 
@@ -246,12 +236,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitBinaryExpression(Es5BinaryExpression node)
         {
             Visit(node.LeftSide);
-
-            string operatorString = node.Operator.ToCodeDisplay();
-            bool surround = _options.SurroundOperatorsWithSpaces ||
-                node.Operator.IsOneOf(Es5BinaryOperator.InstanceOf, Es5BinaryOperator.In);
-            _emitter.Write(surround ? $" {operatorString} " : operatorString);
-
+            _emitter.Write($" {node.Operator.ToCodeDisplay()} ");
             Visit(node.RightSide);
         }
 
@@ -261,10 +246,10 @@ namespace Desalt.JavaScript.Emit
         public override void VisitConditionalExpression(Es5ConditionalExpression node)
         {
             Visit(node.Condition);
-            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
+            _emitter.Write(" ? ");
 
             Visit(node.WhenTrue);
-            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
+            _emitter.Write(" : ");
 
             Visit(node.WhenFalse);
         }

@@ -87,50 +87,9 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_binary_expressions_compact()
-        {
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Multiply, s_y), "x*y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Divide, s_y), "x/y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Modulo, s_y), "x%y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Add, s_y), "x+y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Subtract, s_y), "x-y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.LeftShift, s_y), "x<<y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.SignedRightShift, s_y), "x>>y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.UnsignedRightShift, s_y), "x>>>y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.LessThan, s_y), "x<y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.GreaterThan, s_y), "x>y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.LessThanEqual, s_y), "x<=y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.GreaterThanEqual, s_y), "x>=y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.InstanceOf, s_y), "x instanceof y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.In, s_y), "x in y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Equals, s_y), "x==y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.NotEquals, s_y), "x!=y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.StrictEquals, s_y), "x===y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.StrictNotEquals, s_y), "x!==y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.BitwiseAnd, s_y), "x&y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.BitwiseXor, s_y), "x^y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.BitwiseOr, s_y), "x|y", s_compact);
-
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.LogicalAnd, s_y), "x&&y", s_compact);
-            VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.LogicalOr, s_y), "x||y", s_compact);
-        }
-
-        [TestMethod]
         public void Emit_conditional_expressions()
         {
             VerifyOutput(Factory.ConditionalExpression(s_x, s_y, s_z), "x ? y : z");
-        }
-
-        [TestMethod]
-        public void Emit_conditional_expressions_compact()
-        {
-            VerifyOutput(Factory.ConditionalExpression(s_x, s_y, s_z), "x?y:z", s_compact);
         }
     }
 }

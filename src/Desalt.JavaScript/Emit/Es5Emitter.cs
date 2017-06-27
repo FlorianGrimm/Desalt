@@ -128,7 +128,7 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _emitter.Write(_options.SurroundOperatorsWithSpaces ? " = " : "=");
+                _emitter.Write(" = ");
                 Visit(d.Initializer);
             });
         }
