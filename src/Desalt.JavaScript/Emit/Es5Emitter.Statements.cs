@@ -49,10 +49,9 @@ namespace Desalt.JavaScript.Emit
         public override void VisitIfStatement(Es5IfStatement node)
         {
             // write the 'if' expression
-            _emitter.Write("if");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("if (");
             Visit(node.IfExpression);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
 
             // write the 'if' statement
             Visit(node.IfStatement);
@@ -117,10 +116,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitWithStatement(Es5WithStatement node)
         {
-            _emitter.Write("with");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("with (");
             Visit(node.Expression);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
             Visit(node.Statement);
         }
 
@@ -139,10 +137,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitSwitchStatement(Es5SwitchStatement node)
         {
-            _emitter.Write("switch");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("switch (");
             Visit(node.Condition);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
 
             _emitter.WriteBlock(() =>
             {

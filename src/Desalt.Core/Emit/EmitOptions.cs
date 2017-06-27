@@ -39,8 +39,6 @@ namespace Desalt.Core.Emit
             spaceAfterComma: true,
             newlineBetweenPropertyAssignments: true,
             newlineBetweenStatements: true,
-            spaceBeforeOpeningStatementParenthesis: true,
-            spaceAfterClosingStatementParenthesis: true,
             spaceWithinSimpleBlockBraces: true);
 
         /// <summary>
@@ -78,8 +76,6 @@ namespace Desalt.Core.Emit
             bool? spaceAfterComma = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? newlineBetweenStatements = null,
-            bool? spaceBeforeOpeningStatementParenthesis = null,
-            bool? spaceAfterClosingStatementParenthesis = null,
             bool? spaceWithinSimpleBlockBraces = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
@@ -127,12 +123,6 @@ namespace Desalt.Core.Emit
                 instanceToCopy?.NewlineBetweenPropertyAssignments ?? false;
 
             NewlineBetweenStatements = newlineBetweenStatements ?? instanceToCopy?.NewlineBetweenStatements ?? false;
-
-            SpaceBeforeOpeningStatementParenthesis = spaceBeforeOpeningStatementParenthesis ??
-                instanceToCopy?.SpaceBeforeOpeningStatementParenthesis ?? false;
-
-            SpaceAfterClosingStatementParenthesis = spaceAfterClosingStatementParenthesis ??
-                instanceToCopy?.SpaceAfterClosingStatementParenthesis ?? false;
 
             SpaceWithinSimpleBlockBraces = spaceWithinSimpleBlockBraces ??
                 instanceToCopy?.SpaceWithinSimpleBlockBraces ?? false;
@@ -284,24 +274,6 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithNewlineBetweenStatements(bool value) =>
             new EmitOptions(this, newlineBetweenStatements: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed before the opening parenthesis in statements
-        /// that require parentheses, such as 'if', 'for', and other iteration statements.
-        /// </summary>
-        public bool SpaceBeforeOpeningStatementParenthesis { get; }
-
-        public EmitOptions WithSpaceBeforeOpeningStatementParenthesis(bool value) =>
-            new EmitOptions(this, spaceBeforeOpeningStatementParenthesis: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed after the closing parenthesis in statements
-        /// that require parentheses, such as 'if', 'for', and other iteration statements.
-        /// </summary>
-        public bool SpaceAfterClosingStatementParenthesis { get; }
-
-        public EmitOptions WithSpaceAfterClosingStatementParenthesis(bool value) =>
-            new EmitOptions(this, spaceAfterClosingStatementParenthesis: value);
 
         /// <summary>
         /// Indicates whether a space should be between simple block braces and the content of the block.

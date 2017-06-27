@@ -33,14 +33,14 @@ namespace Desalt.JavaScript.Emit
                 _emitter.Write(" ");
             }
 
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while");
+            _emitter.Write("while (");
             Visit(node.Condition);
             _emitter.Write(");");
         }
 
         public override void VisitWhileStatement(Es5WhileStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while(");
+            _emitter.Write("while (");
             Visit(node.Condition);
             _emitter.Write(")");
 
@@ -49,7 +49,7 @@ namespace Desalt.JavaScript.Emit
                 _emitter.WriteLine();
                 _emitter.IndentLevel++;
             }
-            else if (_options.SpaceAfterClosingStatementParenthesis)
+            else
             {
                 _emitter.WriteLine(" ");
             }
@@ -64,7 +64,7 @@ namespace Desalt.JavaScript.Emit
 
         public override void VisitForStatement(Es5ForStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write("for (");
 
             // write declarations/initializers
             if (node.Declarations.Length > 0)
@@ -97,7 +97,7 @@ namespace Desalt.JavaScript.Emit
 
         public override void VisitForInStatement(Es5ForInStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write("for (");
 
             // write declarations/initializers
             if (node.Declaration != null)

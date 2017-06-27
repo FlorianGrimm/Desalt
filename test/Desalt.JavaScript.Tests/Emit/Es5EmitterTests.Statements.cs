@@ -103,12 +103,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_with_statement_compact()
-        {
-            VerifyOutput(Factory.WithStatement(s_x, Factory.ReturnStatement(s_y)), "with(x)return y;", s_compact);
-        }
-
-        [TestMethod]
         public void Emit_labelled_statement()
         {
             VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x: debugger;");
@@ -147,25 +141,6 @@ namespace Desalt.JavaScript.Tests.Emit
                 defaultClauseStatements: Factory.BreakStatement.ToSafeArray());
 
             VerifyOutput(statement, expected);
-        }
-
-        [TestMethod]
-        public void Emit_switch_statement_compact()
-        {
-            const string expected = @"switch(x){case ""true"":x=y;break;case 4:return x;default:break;}";
-            Es5SwitchStatement statement = Factory.SwitchStatement(
-                condition: s_x,
-                caseClauses: Factory.CaseClauses(
-                    Factory.CaseClause(
-                        Factory.StringLiteral("\"true\""),
-                        Factory.AssignmentExpression(s_x, Es5AssignmentOperator.SimpleAssign, s_y).ToStatement(),
-                        Factory.BreakStatement),
-                    Factory.CaseClause(
-                        Factory.DecimalLiteral("4"),
-                        Factory.ReturnStatement(s_x))),
-                defaultClauseStatements: Factory.BreakStatement.ToSafeArray());
-
-            VerifyOutput(statement, expected, EmitOptions.Compact);
         }
 
         [TestMethod]
