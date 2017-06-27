@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Tests.Emit
 {
     using System;
-    using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -132,8 +131,7 @@ namespace Desalt.TypeScript.Tests.Emit
         [TestMethod]
         public void Emit_empty_object_literal()
         {
-            VerifyOutput(Factory.EmptyObjectLiteral, "{ }");
-            VerifyOutput(Factory.EmptyObjectLiteral, "{}", EmitOptions.Default.WithSpaceWithinEmptyObjectInitializers(false));
+            VerifyOutput(Factory.EmptyObjectLiteral, "{}");
         }
     }
 }

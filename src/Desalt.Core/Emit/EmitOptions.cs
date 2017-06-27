@@ -24,7 +24,6 @@ namespace Desalt.Core.Emit
         public static readonly EmitOptions Default = new EmitOptions(
             newline: Environment.NewLine,
             indentationPrefix: "  ",
-            spaceWithinEmptyObjectInitializers: true,
             spaceWithinEmptyFunctionBody: true,
             simpleBlockOnNewLine: true,
             newlineBetweenPropertyAssignments: true,
@@ -50,7 +49,6 @@ namespace Desalt.Core.Emit
             EmitOptions instanceToCopy = null,
             string newline = null,
             string indentationPrefix = null,
-            bool? spaceWithinEmptyObjectInitializers = null,
             bool? spaceWithinEmptyFunctionBody = null,
             bool? simpleBlockOnNewLine = null,
             bool? newlineBetweenPropertyAssignments = null,
@@ -58,9 +56,6 @@ namespace Desalt.Core.Emit
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
-
-            SpaceWithinEmptyObjectInitializers =
-                spaceWithinEmptyObjectInitializers ?? instanceToCopy?.SpaceWithinEmptyObjectInitializers ?? false;
 
             SpaceWithinEmptyFunctionBody = spaceWithinEmptyFunctionBody ??
                 instanceToCopy?.SpaceWithinEmptyFunctionBody ?? false;
@@ -92,15 +87,6 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
-
-        /// <summary>
-        /// Indicates whether to include a space between object initializer braces if the object
-        /// initializer is empty.
-        /// </summary>
-        public bool SpaceWithinEmptyObjectInitializers { get; }
-
-        public EmitOptions WithSpaceWithinEmptyObjectInitializers(bool value) =>
-            new EmitOptions(this, spaceWithinEmptyObjectInitializers: value);
 
         /// <summary>
         /// Indicates whether to include a space between empty function bodies.

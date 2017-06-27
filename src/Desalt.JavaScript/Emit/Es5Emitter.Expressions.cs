@@ -87,7 +87,7 @@ namespace Desalt.JavaScript.Emit
             int propCount = node.PropertyAssignments.Length;
             if (propCount == 0)
             {
-                _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
+                _emitter.Write("{}");
                 return;
             }
 

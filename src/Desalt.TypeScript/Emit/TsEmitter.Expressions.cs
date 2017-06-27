@@ -114,7 +114,7 @@ namespace Desalt.TypeScript.Emit
         {
             if (node.PropertyDefinitions.IsEmpty)
             {
-                _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
+                _emitter.Write("{}");
                 return;
             }
 

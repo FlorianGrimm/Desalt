@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Tests.Emit
 {
-    using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -112,9 +111,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_empty_object_literal()
         {
-            VerifyOutput(Factory.ObjectLiteral(null), "{}", EmitOptions.Compact);
-            VerifyOutput(Factory.ObjectLiteral(null), "{ }",
-                EmitOptions.Default.WithSpaceWithinEmptyObjectInitializers(true));
+            VerifyOutput(Factory.ObjectLiteral(null), "{}");
         }
 
         [TestMethod]
