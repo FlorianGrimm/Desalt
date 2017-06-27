@@ -118,26 +118,8 @@ namespace Desalt.TypeScript.Emit
                 return;
             }
 
-            if (_options.NewlineBetweenPropertyAssignments)
-            {
-                _emitter.WriteLine("{");
-            }
-            else
-            {
-                _emitter.Write("{");
-            }
-
-            string delimiter = ",";
-            if (_options.NewlineBetweenPropertyAssignments)
-            {
-                delimiter += _options.Newline;
-            }
-            else
-            {
-                delimiter += " ";
-            }
-
-            _emitter.WriteList(node.PropertyDefinitions, delimiter, Visit);
+            _emitter.WriteLine("{");
+            _emitter.WriteList(node.PropertyDefinitions, ",", Visit);
         }
 
         //// ===========================================================================================================

@@ -104,14 +104,7 @@ namespace Desalt.JavaScript.Emit
                         continue;
                     }
 
-                    if (_options.NewlineBetweenPropertyAssignments)
-                    {
-                        _emitter.WriteLine(",");
-                    }
-                    else
-                    {
-                        _emitter.Write(",");
-                    }
+                    _emitter.WriteLine(",");
                 }
             });
         }
