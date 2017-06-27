@@ -45,7 +45,8 @@ namespace Desalt.Core.Emit
             spaceBeforeCompoundStatementKeyword: true,
             spaceBeforeOpeningBlockBrace: true,
             spaceAfterClosingBlockBrace: true,
-            spaceAfterSemicolonInForLoop: true);
+            spaceAfterSemicolonInForLoop: true,
+            lowerCaseHexLetters: true);
 
         /// <summary>
         /// Represents the set of options that produce compact code, with extraneous whitespace removed.
@@ -88,7 +89,8 @@ namespace Desalt.Core.Emit
             bool? spaceBeforeCompoundStatementKeyword = null,
             bool? spaceBeforeOpeningBlockBrace = null,
             bool? spaceAfterClosingBlockBrace = null,
-            bool? spaceAfterSemicolonInForLoop = null)
+            bool? spaceAfterSemicolonInForLoop = null,
+            bool? lowerCaseHexLetters = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
@@ -156,6 +158,8 @@ namespace Desalt.Core.Emit
 
             SpaceAfterSemicolonInForLoop = spaceAfterSemicolonInForLoop ??
                 instanceToCopy?.SpaceAfterSemicolonInForLoop ?? false;
+
+            LowerCaseHexLetters = lowerCaseHexLetters ?? instanceToCopy?.LowerCaseHexLetters ?? false;
         }
 
         //// ===========================================================================================================
@@ -364,5 +368,13 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceAfterSemicolonInForLoop(bool value) =>
             new EmitOptions(this, spaceAfterSemicolonInForLoop: value);
+
+        /// <summary>
+        /// Indicates whether hex literals should use upper or lower case letters.
+        /// </summary>
+        public bool LowerCaseHexLetters { get; }
+
+        public EmitOptions WithLowerCaseHexLetters(bool value) =>
+            new EmitOptions(this, lowerCaseHexLetters: value);
     }
 }

@@ -25,7 +25,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         /// <summary>
         /// The maximum safe integer in JavaScript (2 ^ 53 - 1).
         /// </summary>
-        public const long MaxSafeInteger = (2 ^ 53) - 1;
+        public static readonly long MaxSafeInteger = (long)(Math.Pow(2, 53) - 1);
 
         //// ===========================================================================================================
         //// Constructors
