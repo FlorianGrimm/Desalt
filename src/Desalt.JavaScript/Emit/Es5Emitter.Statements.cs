@@ -150,7 +150,6 @@ namespace Desalt.JavaScript.Emit
 
                     // don't write a new line if this is the last clause and there aren't any default statements
                     bool shouldWriteNewline = i < node.CaseClauses.Length - 1 || node.DefaultClauseStatements.Length > 0;
-
                     if (shouldWriteNewline)
                     {
                         _emitter.WriteBlankLine();

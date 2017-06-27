@@ -21,9 +21,7 @@ namespace Desalt.Core.Tests.Emit
     [TestClass]
     public class EmitterTests
     {
-        private static readonly EmitOptions s_testOptions = EmitOptions.Default
-            .WithNewline("\n")
-            .WithIndentationPrefix("\t");
+        private static readonly EmitOptions s_testOptions = new EmitOptions(newline: "\n", indentationPrefix: "\t");
 
         private static readonly IAstNode[] s_mockStatements = new[]
         {
@@ -113,12 +111,12 @@ namespace Desalt.Core.Tests.Emit
         }
 
         [TestMethod]
-        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specifiy_it()
+        public void WriteBlock_should_add_a_space_between_empty_block_braces()
         {
             using (var stream = new MemoryStream())
             {
                 EmitOptions options = s_testOptions.WithSimpleBlockOnNewLine(false);
-                var emitter = new Emitter<IAstNode>(stream, options: options);
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
             }
@@ -141,7 +139,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(false));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
                 stream.ReadAllText().Should().Be("{ text }");
             }

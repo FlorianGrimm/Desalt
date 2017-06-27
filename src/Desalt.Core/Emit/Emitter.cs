@@ -95,9 +95,7 @@ namespace Desalt.Core.Emit
         /// <typeparam name="TElement">The type of <see cref="IAstNode"/> to emit.</typeparam>
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        public void WriteBlock<TElement>(
-            IEnumerable<TElement> blockElements,
-            Action<TElement> elementAction)
+        public void WriteBlock<TElement>(IEnumerable<TElement> blockElements, Action<TElement> elementAction)
             where TElement : T
         {
             if (blockElements == null) { throw new ArgumentNullException(nameof(blockElements)); }
@@ -121,7 +119,7 @@ namespace Desalt.Core.Emit
                     elementAction(array[i]);
 
                     // don't add a blank line after the last statement
-                    if (i < array.Length - 1)
+                    if (!isSimpleBlock && i < array.Length - 1)
                     {
                         _writer.WriteLine();
                     }
