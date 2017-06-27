@@ -315,6 +315,12 @@ namespace Desalt.TypeScript.Ast
         ITsExpression BracketContents { get; }
     }
 
+    public interface ITsMemberDotExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        string DotName { get; }
+    }
+
     /* SuperProperty:
      *   super [ Expression ]
      *   super . IdentifierName

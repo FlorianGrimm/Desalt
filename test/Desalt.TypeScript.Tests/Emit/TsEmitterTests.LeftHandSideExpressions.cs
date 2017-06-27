@@ -30,9 +30,15 @@ namespace Desalt.TypeScript.Tests.Emit
         {
             const string expected = @"x['throw']";
             ITsMemberBracketExpression expression =
-                Factory.MemberBracketExpression(s_x, Factory.StringLiteral("throw", StringLiteralQuoteKind.SingleQuote));
+                Factory.MemberBracket(s_x, Factory.StringLiteral("throw", StringLiteralQuoteKind.SingleQuote));
 
             VerifyOutput(expression, expected);
+        }
+
+        [TestMethod]
+        public void Emit_dot_notation_member_expression()
+        {
+            VerifyOutput(Factory.MemberDot(s_x, "y"), "x.y");
         }
     }
 }

@@ -135,12 +135,15 @@ namespace Desalt.TypeScript.Ast
         //// Left-hand Side Expressions
         //// ===========================================================================================================
 
-        public static ITsMemberBracketExpression MemberBracketExpression(
+        public static ITsMemberBracketExpression MemberBracket(
             ITsExpression leftSide,
             ITsExpression bracketContents)
         {
             return new TsMemberBracketExpression(leftSide, bracketContents);
         }
+
+        public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, string dotName) =>
+            new TsMemberDotExpression(leftSide, dotName);
 
         //// ===========================================================================================================
         //// Function and Class Expressions

@@ -106,5 +106,15 @@ namespace Desalt.TypeScript.Emit
             Visit(node.BracketContents);
             _emitter.Write("]");
         }
+
+        /// <summary>
+        /// Writes expressions of the form 'expression.name'.
+        /// </summary>
+        public override void VisitMemberDotExpression(ITsMemberDotExpression node)
+        {
+            Visit(node.LeftSide);
+            _emitter.Write(".");
+            _emitter.Write(node.DotName);
+        }
     }
 }

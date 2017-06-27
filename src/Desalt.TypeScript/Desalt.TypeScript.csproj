@@ -36,6 +36,7 @@
     <Compile Include="Ast\Expressions\TsFunctionExpression.cs" />
     <Compile Include="Ast\Expressions\TsGetAccessor.cs" />
     <Compile Include="Ast\Expressions\TsMemberBracketExpression.cs" />
+    <Compile Include="Ast\Expressions\TsMemberDotExpression.cs" />
     <Compile Include="Ast\Expressions\TsNullLiteral.cs" />
     <Compile Include="Ast\Expressions\TsNumericLiteral.cs" />
     <Compile Include="Ast\Expressions\TsObjectLiteral.cs" />

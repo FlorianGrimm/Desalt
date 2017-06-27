@@ -129,6 +129,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits a member expression of the form 'expression[expression]'.
         /// </summary>
         public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression.name'.
+        /// </summary>
+        public virtual void VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -253,5 +258,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a member expression of the form 'expression[expression]'.
         /// </summary>
         public virtual TResult VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression.name'.
+        /// </summary>
+        public virtual TResult VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
     }
 }
