@@ -95,15 +95,9 @@ namespace Desalt.Core.Emit
         /// <typeparam name="TElement">The type of <see cref="IAstNode"/> to emit.</typeparam>
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        /// <param name="isFunctionBlock">
-        /// Indicates whether this block is a function block, which means that <see
-        /// cref="EmitOptions.SpaceWithinEmptyFunctionBody"/> will be used instead of
-        /// <see cref="EmitOptions.SpaceWithinSimpleBlockBraces"/>.
-        /// </param>
         public void WriteBlock<TElement>(
             IEnumerable<TElement> blockElements,
-            Action<TElement> elementAction,
-            bool isFunctionBlock = false)
+            Action<TElement> elementAction)
             where TElement : T
         {
             if (blockElements == null) { throw new ArgumentNullException(nameof(blockElements)); }
@@ -114,8 +108,7 @@ namespace Desalt.Core.Emit
             // check empty blocks
             if (array.Length == 0 && !Options.SimpleBlockOnNewLine)
             {
-                bool includeSpace = isFunctionBlock && Options.SpaceWithinEmptyFunctionBody ||
-                    !isFunctionBlock && Options.SpaceWithinSimpleBlockBraces;
+                bool includeSpace = Options.SpaceWithinSimpleBlockBraces;
                 _writer.Write(includeSpace ? "{ }" : "{}");
                 return;
             }

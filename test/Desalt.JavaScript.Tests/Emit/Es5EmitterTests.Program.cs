@@ -25,7 +25,7 @@ namespace Desalt.JavaScript.Tests.Emit
   var $asm = {};
   global.TestNs = global.TestNs || {};
   ss.initAssembly($asm, 'Test');
-  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() {}, { add: function(x, y) { return x + y; } });
+  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() { }, { add: function(x, y) { return x + y; } });
   ss.initClass($TestNs_Expressions);
 })();";
 
@@ -89,9 +89,7 @@ namespace Desalt.JavaScript.Tests.Emit
 
             Es5Program program = Factory.Program(Factory.Call(topFunc.WithParentheses()).ToStatement());
 
-            EmitOptions options = EmitOptions.Default
-                .WithSimpleBlockOnNewLine(false)
-                .WithSpaceWithinEmptyFunctionBody(false);
+            EmitOptions options = EmitOptions.Default.WithSimpleBlockOnNewLine(false);
 
             VerifyOutput(program, expected, options);
         }

@@ -147,11 +147,9 @@ namespace Desalt.Core.Tests.Emit
             {
                 EmitOptions options = s_testOptions
                     .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(true)
-                    .WithSpaceWithinEmptyFunctionBody(true);
+                    .WithSpaceWithinSimpleBlockBraces(true);
                 var emitter = new Emitter<IAstNode>(stream, options: options);
-                emitter.WriteBlock(
-                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
+                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
             }
         }
@@ -163,11 +161,9 @@ namespace Desalt.Core.Tests.Emit
             {
                 EmitOptions options = s_testOptions
                     .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(true)
-                    .WithSpaceWithinEmptyFunctionBody(false);
+                    .WithSpaceWithinSimpleBlockBraces(false);
                 var emitter = new Emitter<IAstNode>(stream, options: options);
-                emitter.WriteBlock(
-                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
+                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{}");
             }
         }

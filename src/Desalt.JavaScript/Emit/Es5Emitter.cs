@@ -108,8 +108,7 @@ namespace Desalt.JavaScript.Emit
             // write the function body
             _emitter.WriteBlock(
                 functionBody ?? Enumerable.Empty<IEs5SourceElement>(),
-                elem => elem.Accept(this),
-                isFunctionBlock: true);
+                elem => elem.Accept(this));
         }
 
         /// <summary>

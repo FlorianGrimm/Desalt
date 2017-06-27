@@ -24,7 +24,6 @@ namespace Desalt.Core.Emit
         public static readonly EmitOptions Default = new EmitOptions(
             newline: Environment.NewLine,
             indentationPrefix: "  ",
-            spaceWithinEmptyFunctionBody: true,
             simpleBlockOnNewLine: true,
             newlineBetweenPropertyAssignments: true,
             spaceWithinSimpleBlockBraces: true);
@@ -49,16 +48,12 @@ namespace Desalt.Core.Emit
             EmitOptions instanceToCopy = null,
             string newline = null,
             string indentationPrefix = null,
-            bool? spaceWithinEmptyFunctionBody = null,
             bool? simpleBlockOnNewLine = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? spaceWithinSimpleBlockBraces = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
-
-            SpaceWithinEmptyFunctionBody = spaceWithinEmptyFunctionBody ??
-                instanceToCopy?.SpaceWithinEmptyFunctionBody ?? false;
 
             SimpleBlockOnNewLine =
                 simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
@@ -87,14 +82,6 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
-
-        /// <summary>
-        /// Indicates whether to include a space between empty function bodies.
-        /// </summary>
-        public bool SpaceWithinEmptyFunctionBody { get; }
-
-        public EmitOptions WithSpaceWithinEmptyFunctionBody(bool value) =>
-            new EmitOptions(this, spaceWithinEmptyFunctionBody: value);
 
         /// <summary>
         /// Indicates whether a block of one statement should be on the same line within the braces
