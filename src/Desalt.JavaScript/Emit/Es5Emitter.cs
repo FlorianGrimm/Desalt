@@ -103,18 +103,14 @@ namespace Desalt.JavaScript.Emit
             }
             else
             {
-                _emitter.Write(" " + functionName);
-                _emitter.Write(_options.SpaceBeforeNamedFunctionDeclarationParentheses ? " (" : "(");
+                _emitter.Write($" {functionName}(");
             }
 
             // write the parameters
             WriteCommaList(parameters ?? Enumerable.Empty<IEs5AstNode>());
 
             // write the closing parenthesis
-            bool spaceAfter = isUnnamed
-                ? _options.SpaceAfterAnonymousFunctionDeclarationParentheses
-                : _options.SpaceAfterNamedFunctionDeclarationParentheses;
-
+            bool spaceAfter = !isUnnamed || _options.SpaceAfterAnonymousFunctionDeclarationParentheses;
             _emitter.Write(spaceAfter ? ") " : ")");
 
             // write the function body

@@ -33,8 +33,6 @@ namespace Desalt.Core.Emit
             simpleBlockOnNewLine: true,
             spaceBeforeAnonymousFunctionDeclarationParentheses: true,
             spaceAfterAnonymousFunctionDeclarationParentheses: true,
-            spaceBeforeNamedFunctionDeclarationParentheses: false,
-            spaceAfterNamedFunctionDeclarationParentheses: true,
             newlineBetweenPropertyAssignments: true,
             newlineBetweenStatements: true,
             spaceWithinSimpleBlockBraces: true);
@@ -68,8 +66,6 @@ namespace Desalt.Core.Emit
             bool? simpleBlockOnNewLine = null,
             bool? spaceBeforeAnonymousFunctionDeclarationParentheses = null,
             bool? spaceAfterAnonymousFunctionDeclarationParentheses = null,
-            bool? spaceBeforeNamedFunctionDeclarationParentheses = null,
-            bool? spaceAfterNamedFunctionDeclarationParentheses = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? newlineBetweenStatements = null,
             bool? spaceWithinSimpleBlockBraces = null)
@@ -105,12 +101,6 @@ namespace Desalt.Core.Emit
             SpaceAfterAnonymousFunctionDeclarationParentheses =
                 spaceAfterAnonymousFunctionDeclarationParentheses ??
                 instanceToCopy?.SpaceAfterAnonymousFunctionDeclarationParentheses ?? false;
-
-            SpaceBeforeNamedFunctionDeclarationParentheses = spaceBeforeNamedFunctionDeclarationParentheses ??
-                instanceToCopy?.SpaceBeforeNamedFunctionDeclarationParentheses ?? false;
-
-            SpaceAfterNamedFunctionDeclarationParentheses = spaceAfterNamedFunctionDeclarationParentheses ??
-                instanceToCopy?.SpaceAfterNamedFunctionDeclarationParentheses ?? false;
 
             NewlineBetweenPropertyAssignments = newlineBetweenPropertyAssignments ??
                 instanceToCopy?.NewlineBetweenPropertyAssignments ?? false;
@@ -218,22 +208,6 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceAfterAnonymousFunctionDeclarationParentheses(bool value) =>
             new EmitOptions(this, spaceAfterAnonymousFunctionDeclarationParentheses: value);
-
-        /// <summary>
-        /// Indicates whether a space should be added before a named function declaration's opening parenthesis.
-        /// </summary>
-        public bool SpaceBeforeNamedFunctionDeclarationParentheses { get; }
-
-        public EmitOptions WithSpaceBeforeNamedFunctionDeclarationParentheses(bool value) =>
-            new EmitOptions(this, spaceBeforeNamedFunctionDeclarationParentheses: value);
-
-        /// <summary>
-        /// Indicates whether a space should be added after a named function declaration's closing parenthesis.
-        /// </summary>
-        public bool SpaceAfterNamedFunctionDeclarationParentheses { get; }
-
-        public EmitOptions WithSpaceAfterNamedFunctionDeclarationParentheses(bool value) =>
-            new EmitOptions(this, spaceAfterNamedFunctionDeclarationParentheses: value);
 
         /// <summary>
         /// Indicates whether a new line should be inserted between property assignments in an object initializer.

@@ -148,16 +148,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_object_literal_with_property_get_compact()
-        {
-            const string expected = @"{get getter(){return x;}}";
-            Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
-                Factory.PropertyGet("getter", Factory.ReturnStatement(s_x)));
-
-            VerifyOutput(expression, expected, EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_object_literal_with_property_set()
         {
             const string expected = @"{
@@ -173,20 +163,6 @@ namespace Desalt.JavaScript.Tests.Emit
                     Factory.AssignmentExpression(s_x, Op.SimpleAssign, valueId).ToStatement()));
 
             VerifyOutput(expression, expected);
-        }
-
-        [TestMethod]
-        public void Emit_object_literal_with_property_set_compact()
-        {
-            const string expected = @"{set setter(value){x=value;}}";
-            Es5Identifier valueId = Factory.Identifier("value");
-            Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
-                Factory.PropertySet(
-                    "setter",
-                    valueId,
-                    Factory.AssignmentExpression(s_x, Op.SimpleAssign, valueId).ToStatement()));
-
-            VerifyOutput(expression, expected, EmitOptions.Compact);
         }
     }
 }
