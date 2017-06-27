@@ -170,7 +170,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsArrayElement : ITsAstNode
     {
-        ITsAssignmentExpression Element { get; }
+        ITsExpression Element { get; }
 
         /// <summary>
         /// Indicates whether the <see cref="Element"/> is preceded by a spread operator '...'.

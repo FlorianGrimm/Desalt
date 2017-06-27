@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayElement(ITsAssignmentExpression element, bool isSpreadElement = false)
+        public TsArrayElement(ITsExpression element, bool isSpreadElement = false)
         {
             Element = element ?? throw new ArgumentNullException(nameof(element));
             IsSpreadElement = isSpreadElement;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsAssignmentExpression Element { get; }
+        public ITsExpression Element { get; }
 
         /// <summary>
         /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
