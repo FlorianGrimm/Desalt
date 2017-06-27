@@ -26,11 +26,6 @@ namespace Desalt.Core.Emit
             indentationPrefix: "  ",
             simpleBlockOnNewLine: true);
 
-        /// <summary>
-        /// Represents the set of options that produce compact code, with extraneous whitespace removed.
-        /// </summary>
-        public static readonly EmitOptions Compact = new EmitOptions();
-
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================

@@ -33,25 +33,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_unary_expressions_compact()
-        {
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixIncrement), "x++", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixDecrement), "x--", s_compact);
-
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.Delete), "delete x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.Void), "void x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.Typeof), "typeof x", s_compact);
-
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.PrefixIncrement), "++x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.PrefixDecrement), "--x", s_compact);
-
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.Plus), "+x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.Minus), "-x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.BitwiseNot), "~x", s_compact);
-            VerifyOutput(Factory.UnaryExpression(s_x, Es5UnaryOperator.LogicalNot), "!x", s_compact);
-        }
-
-        [TestMethod]
         public void Emit_binary_expressions()
         {
             VerifyOutput(Factory.BinaryExpression(s_x, Es5BinaryOperator.Multiply, s_y), "x * y");
