@@ -51,11 +51,11 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.BlockStatement(Factory.ReturnStatement(Factory.TrueLiteral)),
                 elseStatement: null);
 
-            VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}");
+            VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}",
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
-            VerifyOutput(statement, "if (x === y) { return true; } else return false;",
-                EmitOptions.Default.WithSimpleBlockOnNewLine(false));
+            VerifyOutput(statement, "if (x === y) { return true; } else return false;");
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.Identifier("err"),
                 Factory.ReturnStatement(s_y));
 
-            VerifyOutput(catchStatement, catchExpected);
+            VerifyOutput(catchStatement, catchExpected, EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             // set up the finally block
             const string finallyExpected = @" finally {
@@ -163,10 +163,16 @@ namespace Desalt.JavaScript.Tests.Emit
                     Factory.StringLiteral("'message'")).ToStatement());
 
             // try/finally block
-            VerifyOutput(tryStatement.WithFinally(finallyStatement), tryExpected + finallyExpected);
+            VerifyOutput(
+                tryStatement.WithFinally(finallyStatement),
+                tryExpected + finallyExpected,
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             // try/catch/finally block
-            VerifyOutput(catchStatement.WithFinally(finallyStatement), catchExpected + finallyExpected);
+            VerifyOutput(
+                catchStatement.WithFinally(finallyStatement),
+                catchExpected + finallyExpected,
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
         }
 
         [TestMethod]

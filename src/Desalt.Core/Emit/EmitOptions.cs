@@ -21,10 +21,7 @@ namespace Desalt.Core.Emit
         /// <summary>
         /// Represents the set of options that produce readable code.
         /// </summary>
-        public static readonly EmitOptions Default = new EmitOptions(
-            newline: Environment.NewLine,
-            indentationPrefix: "  ",
-            simpleBlockOnNewLine: true);
+        public static readonly EmitOptions Default = new EmitOptions();
 
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +32,7 @@ namespace Desalt.Core.Emit
         /// following precedence:
         /// * The named parameter, if specified
         /// * Otherwise, the value of <paramref name="instanceToCopy"/>, if specified
-        /// * Otherwise, the default value of the parameter for compact code generation
+        /// * Otherwise, the default value of the parameter's type
         /// </summary>
         private EmitOptions(
             EmitOptions instanceToCopy = null,
@@ -43,8 +40,8 @@ namespace Desalt.Core.Emit
             string indentationPrefix = null,
             bool? simpleBlockOnNewLine = null)
         {
-            Newline = newline ?? instanceToCopy?.Newline ?? "\n";
-            IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
+            Newline = newline ?? instanceToCopy?.Newline ?? Environment.NewLine;
+            IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "  ";
             SimpleBlockOnNewLine = simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
         }
 
@@ -72,7 +69,6 @@ namespace Desalt.Core.Emit
         /// </summary>
         public bool SimpleBlockOnNewLine { get; }
 
-        public EmitOptions WithSimpleBlockOnNewLine(bool value) =>
-            new EmitOptions(this, simpleBlockOnNewLine: value);
+        public EmitOptions WithSimpleBlockOnNewLine(bool value) => new EmitOptions(this, simpleBlockOnNewLine: value);
     }
 }
