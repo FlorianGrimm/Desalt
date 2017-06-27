@@ -309,7 +309,11 @@ namespace Desalt.TypeScript.Ast
      *   new MemberExpression Arguments
      */
 
-    public interface ITsMemberExpression : ITsAstNode { }
+    public interface ITsMemberBracketExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        ITsExpression BracketContents { get; }
+    }
 
     /* SuperProperty:
      *   super [ Expression ]

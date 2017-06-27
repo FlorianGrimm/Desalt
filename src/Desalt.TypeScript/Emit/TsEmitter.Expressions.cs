@@ -13,6 +13,11 @@ namespace Desalt.TypeScript.Emit
 
     public partial class TsEmitter
     {
+        public override void VisitStringLiteral(ITsStringLiteral node)
+        {
+            _emitter.Write(node.ToFullCodeDisplay());
+        }
+
         /// <summary>
         /// Writes a unary expression.
         /// </summary>
@@ -88,6 +93,18 @@ namespace Desalt.TypeScript.Emit
             }
 
             Visit(node.RightSide);
+        }
+
+        /// <summary>
+        /// Writes expressions of the form 'expression[expression]'.
+        /// </summary>
+        public override void VisitMemberBracketExpression(ITsMemberBracketExpression node)
+        {
+            Visit(node.LeftSide);
+
+            _emitter.Write("[");
+            Visit(node.BracketContents);
+            _emitter.Write("]");
         }
     }
 }

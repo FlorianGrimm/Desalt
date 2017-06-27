@@ -124,6 +124,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits an expression that assigns one value to another.
         /// </summary>
         public virtual void VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression[expression]'.
+        /// </summary>
+        public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
     }
 
     public abstract partial class TsVisitor<TResult>
@@ -243,5 +248,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an expression that assigns one value to another.
         /// </summary>
         public virtual TResult VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'expression[expression]'.
+        /// </summary>
+        public virtual TResult VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
     }
 }
