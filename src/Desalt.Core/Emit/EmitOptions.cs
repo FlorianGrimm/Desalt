@@ -42,9 +42,7 @@ namespace Desalt.Core.Emit
             spaceBeforeOpeningStatementParenthesis: true,
             spaceAfterClosingStatementParenthesis: true,
             spaceWithinSimpleBlockBraces: true,
-            spaceBeforeCompoundStatementKeyword: true,
-            spaceBeforeOpeningBlockBrace: true,
-            spaceAfterClosingBlockBrace: true);
+            spaceBeforeCompoundStatementKeyword: true);
 
         /// <summary>
         /// Represents the set of options that produce compact code, with extraneous whitespace removed.
@@ -84,9 +82,7 @@ namespace Desalt.Core.Emit
             bool? spaceBeforeOpeningStatementParenthesis = null,
             bool? spaceAfterClosingStatementParenthesis = null,
             bool? spaceWithinSimpleBlockBraces = null,
-            bool? spaceBeforeCompoundStatementKeyword = null,
-            bool? spaceBeforeOpeningBlockBrace = null,
-            bool? spaceAfterClosingBlockBrace = null)
+            bool? spaceBeforeCompoundStatementKeyword = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
@@ -145,12 +141,6 @@ namespace Desalt.Core.Emit
 
             SpaceBeforeCompoundStatementKeyword = spaceBeforeCompoundStatementKeyword ??
                 instanceToCopy?.SpaceBeforeCompoundStatementKeyword ?? false;
-
-            SpaceBeforeOpeningBlockBrace = spaceBeforeOpeningBlockBrace ??
-                instanceToCopy?.SpaceBeforeOpeningBlockBrace ?? false;
-
-            SpaceAfterClosingBlockBrace = spaceAfterClosingBlockBrace ??
-                instanceToCopy?.SpaceAfterClosingBlockBrace ?? false;
         }
 
         //// ===========================================================================================================
@@ -334,22 +324,5 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceBeforeCompoundStatementKeyword(bool value) =>
             new EmitOptions(this, spaceBeforeCompoundStatementKeyword: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed before the opening brace in a block.
-        /// </summary>
-        public bool SpaceBeforeOpeningBlockBrace { get; }
-
-        public EmitOptions WithSpaceBeforeOpeningBlockBrace(bool value) =>
-            new EmitOptions(this, spaceBeforeOpeningBlockBrace: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed after the closing brace in a block (unless the
-        /// closing braces is the last thing on the line).
-        /// </summary>
-        public bool SpaceAfterClosingBlockBrace { get; }
-
-        public EmitOptions WithSpaceAfterClosingBlockBrace(bool value) =>
-            new EmitOptions(this, spaceAfterClosingBlockBrace: value);
     }
 }

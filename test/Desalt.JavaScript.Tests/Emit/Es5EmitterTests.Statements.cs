@@ -221,39 +221,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_try_statements_compact()
-        {
-            // try block only
-            const string tryExpected = "try{x+=y;return x;}";
-            Es5TryStatement tryStatement = Factory.TryStatement(
-                Factory.AssignmentExpression(s_x, Es5AssignmentOperator.AddAssign, s_y).ToStatement(),
-                Factory.ReturnStatement(s_x));
-
-            VerifyOutput(tryStatement, tryExpected, EmitOptions.Compact);
-
-            // try/catch blocks
-            const string catchExpected = tryExpected + "catch(err){return y;}";
-            Es5TryStatement catchStatement = tryStatement.WithCatch(
-                Factory.Identifier("err"),
-                Factory.ReturnStatement(s_y));
-
-            VerifyOutput(catchStatement, catchExpected, EmitOptions.Compact);
-
-            // set up the finally block
-            const string finallyExpected = "finally{console.log('message');}";
-            Es5BlockStatement finallyStatement = Factory.BlockStatement(
-                Factory.Call(
-                    Factory.MemberDot(Factory.Identifier("console"), Factory.Identifier("log")),
-                    Factory.StringLiteral("'message'")).ToStatement());
-
-            // try/finally block
-            VerifyOutput(tryStatement.WithFinally(finallyStatement), tryExpected + finallyExpected, s_compact);
-
-            // try/catch/finally block
-            VerifyOutput(catchStatement.WithFinally(finallyStatement), catchExpected + finallyExpected, s_compact);
-        }
-
-        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.DebuggerStatement, "debugger;");

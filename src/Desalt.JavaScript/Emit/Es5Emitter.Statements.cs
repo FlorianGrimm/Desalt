@@ -243,29 +243,15 @@ namespace Desalt.JavaScript.Emit
         public override void VisitTryStatement(Es5TryStatement node)
         {
             // write the try block
-            _emitter.Write("try");
-            if (_options.SpaceBeforeOpeningBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
+            _emitter.Write("try ");
             WriteBlock(node.TryBlock);
 
             // write the catch block
             if (node.CatchBlock != null)
             {
-                if (_options.SpaceAfterClosingBlockBrace)
-                {
-                    _emitter.Write(" ");
-                }
-
-                _emitter.Write("catch");
-                _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+                _emitter.Write(" catch (");
                 Visit(node.CatchIdentifier);
-                _emitter.Write(_options.SpaceAfterClosingStatementParenthesis || _options.SpaceBeforeOpeningBlockBrace
-                    ? ") "
-                    : ")");
-
+                _emitter.Write(") ");
                 WriteBlock(node.CatchBlock);
             }
 
@@ -275,17 +261,7 @@ namespace Desalt.JavaScript.Emit
                 return;
             }
 
-            if (_options.SpaceAfterClosingBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
-            _emitter.Write("finally");
-            if (_options.SpaceBeforeOpeningBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
+            _emitter.Write(" finally ");
             WriteBlock(node.FinallyBlock);
         }
 
