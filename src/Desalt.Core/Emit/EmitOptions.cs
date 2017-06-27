@@ -50,9 +50,7 @@ namespace Desalt.Core.Emit
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
-
-            SimpleBlockOnNewLine =
-                simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
+            SimpleBlockOnNewLine = simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
         }
 
         //// ===========================================================================================================
