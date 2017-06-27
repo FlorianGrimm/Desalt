@@ -70,7 +70,7 @@ namespace Desalt.JavaScript.Emit
         {
             if (node.Elements.Length == 0)
             {
-                _emitter.Write(_options.SpaceWithinEmptyArrayBrackets ? "[ ]" : "[]");
+                _emitter.Write("[]");
                 return;
             }
 

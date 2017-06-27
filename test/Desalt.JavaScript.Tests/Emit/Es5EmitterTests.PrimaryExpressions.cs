@@ -75,9 +75,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_empty_array_literal()
         {
-            VerifyOutput(Factory.ArrayLiteral(null), "[]", EmitOptions.Compact);
-            VerifyOutput(Factory.ArrayLiteral(null), "[ ]",
-                EmitOptions.Default.WithSpaceWithinEmptyArrayBrackets(true));
+            VerifyOutput(Factory.ArrayLiteral(null), "[]");
         }
 
         [TestMethod]

@@ -24,7 +24,6 @@ namespace Desalt.Core.Emit
         public static readonly EmitOptions Default = new EmitOptions(
             newline: Environment.NewLine,
             indentationPrefix: "  ",
-            spaceWithinEmptyArrayBrackets: true,
             spaceWithinEmptyObjectInitializers: true,
             spaceWithinEmptyFunctionBody: true,
             simpleBlockOnNewLine: true,
@@ -51,7 +50,6 @@ namespace Desalt.Core.Emit
             EmitOptions instanceToCopy = null,
             string newline = null,
             string indentationPrefix = null,
-            bool? spaceWithinEmptyArrayBrackets = null,
             bool? spaceWithinEmptyObjectInitializers = null,
             bool? spaceWithinEmptyFunctionBody = null,
             bool? simpleBlockOnNewLine = null,
@@ -60,9 +58,6 @@ namespace Desalt.Core.Emit
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
-
-            SpaceWithinEmptyArrayBrackets =
-                spaceWithinEmptyArrayBrackets ?? instanceToCopy?.SpaceWithinEmptyArrayBrackets ?? false;
 
             SpaceWithinEmptyObjectInitializers =
                 spaceWithinEmptyObjectInitializers ?? instanceToCopy?.SpaceWithinEmptyObjectInitializers ?? false;
@@ -97,14 +92,6 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
-
-        /// <summary>
-        /// Indicates whether to include a space between array brackets when the array is empty.
-        /// </summary>
-        public bool SpaceWithinEmptyArrayBrackets { get; }
-
-        public EmitOptions WithSpaceWithinEmptyArrayBrackets(bool value) =>
-            new EmitOptions(this, spaceWithinEmptyArrayBrackets: value);
 
         /// <summary>
         /// Indicates whether to include a space between object initializer braces if the object

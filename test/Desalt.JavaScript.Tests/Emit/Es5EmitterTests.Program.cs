@@ -93,8 +93,7 @@ namespace Desalt.JavaScript.Tests.Emit
                 .WithSpaceWithinEmptyObjectInitializers(false)
                 .WithSimpleBlockOnNewLine(false)
                 .WithSpaceWithinEmptyObjectInitializers(false)
-                .WithSpaceWithinEmptyFunctionBody(false)
-                .WithSpaceWithinEmptyArrayBrackets(false);
+                .WithSpaceWithinEmptyFunctionBody(false);
 
             VerifyOutput(program, expected, options);
         }
