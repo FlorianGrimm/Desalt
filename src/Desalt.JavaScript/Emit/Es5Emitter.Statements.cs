@@ -63,7 +63,7 @@ namespace Desalt.JavaScript.Emit
                 return;
             }
 
-            _emitter.Write(_options.SpaceBeforeCompoundStatementKeyword ? " else " : "else ");
+            _emitter.Write(" else ");
             Visit(node.ElseStatement);
         }
 

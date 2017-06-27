@@ -28,7 +28,7 @@ namespace Desalt.JavaScript.Emit
                 _emitter.WriteLine();
                 _emitter.IndentLevel--;
             }
-            else if (_options.SpaceBeforeCompoundStatementKeyword)
+            else
             {
                 _emitter.Write(" ");
             }

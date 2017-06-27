@@ -41,8 +41,7 @@ namespace Desalt.Core.Emit
             newlineBetweenStatements: true,
             spaceBeforeOpeningStatementParenthesis: true,
             spaceAfterClosingStatementParenthesis: true,
-            spaceWithinSimpleBlockBraces: true,
-            spaceBeforeCompoundStatementKeyword: true);
+            spaceWithinSimpleBlockBraces: true);
 
         /// <summary>
         /// Represents the set of options that produce compact code, with extraneous whitespace removed.
@@ -81,8 +80,7 @@ namespace Desalt.Core.Emit
             bool? newlineBetweenStatements = null,
             bool? spaceBeforeOpeningStatementParenthesis = null,
             bool? spaceAfterClosingStatementParenthesis = null,
-            bool? spaceWithinSimpleBlockBraces = null,
-            bool? spaceBeforeCompoundStatementKeyword = null)
+            bool? spaceWithinSimpleBlockBraces = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
@@ -138,9 +136,6 @@ namespace Desalt.Core.Emit
 
             SpaceWithinSimpleBlockBraces = spaceWithinSimpleBlockBraces ??
                 instanceToCopy?.SpaceWithinSimpleBlockBraces ?? false;
-
-            SpaceBeforeCompoundStatementKeyword = spaceBeforeCompoundStatementKeyword ??
-                instanceToCopy?.SpaceBeforeCompoundStatementKeyword ?? false;
         }
 
         //// ===========================================================================================================
@@ -315,14 +310,5 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceWithinSimpleBlockBraces(bool value) =>
             new EmitOptions(this, spaceWithinSimpleBlockBraces: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed before an 'else', 'while', or other compound
-        /// statement keywords.
-        /// </summary>
-        public bool SpaceBeforeCompoundStatementKeyword { get; }
-
-        public EmitOptions WithSpaceBeforeCompoundStatementKeyword(bool value) =>
-            new EmitOptions(this, spaceBeforeCompoundStatementKeyword: value);
     }
 }

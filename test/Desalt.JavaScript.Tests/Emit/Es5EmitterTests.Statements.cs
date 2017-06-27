@@ -70,12 +70,10 @@ namespace Desalt.JavaScript.Tests.Emit
                 elseStatement: null);
 
             VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}");
-            VerifyOutput(statement, "if(x===y){return true;}", EmitOptions.Compact);
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
             VerifyOutput(statement, "if (x === y) { return true; } else return false;",
                 EmitOptions.Default.WithSimpleBlockOnNewLine(false));
-            VerifyOutput(statement, "if(x===y){return true;}else return false;", EmitOptions.Compact);
         }
 
         [TestMethod]
