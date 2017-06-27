@@ -27,13 +27,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_block_statements_compact()
-        {
-            Es5BlockStatement block = Factory.BlockStatement(Factory.DebuggerStatement, Factory.ReturnStatement(s_x));
-            VerifyOutput(block, "{debugger;return x;}", EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_variable_statements()
         {
             const string expected = @"var x = this, y, z = false;";
@@ -42,17 +35,6 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.VariableDeclaration(s_y),
                 Factory.VariableDeclaration(s_z, Factory.FalseLiteral));
             VerifyOutput(expression, expected);
-        }
-
-        [TestMethod]
-        public void Emit_variable_statements_compact()
-        {
-            const string expected = @"var x=this,y,z=false;";
-            Es5VariableStatement expression = Factory.VariableStatement(
-                Factory.VariableDeclaration(s_x, Factory.ThisExpression),
-                Factory.VariableDeclaration(s_y),
-                Factory.VariableDeclaration(s_z, Factory.FalseLiteral));
-            VerifyOutput(expression, expected, EmitOptions.Compact);
         }
 
         [TestMethod]
@@ -69,13 +51,11 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.BlockStatement(Factory.ReturnStatement(Factory.TrueLiteral)),
                 elseStatement: null);
 
-            VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}");
-            VerifyOutput(statement, "if(x===y){return true;}", EmitOptions.Compact);
+            VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}",
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
-            VerifyOutput(statement, "if (x === y) { return true; } else return false;",
-                EmitOptions.Default.WithSimpleBlockOnNewLine(false));
-            VerifyOutput(statement, "if(x===y){return true;}else return false;", EmitOptions.Compact);
+            VerifyOutput(statement, "if (x === y) { return true; } else return false;");
         }
 
         [TestMethod]
@@ -105,21 +85,9 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_with_statement_compact()
-        {
-            VerifyOutput(Factory.WithStatement(s_x, Factory.ReturnStatement(s_y)), "with(x)return y;", s_compact);
-        }
-
-        [TestMethod]
         public void Emit_labelled_statement()
         {
             VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x: debugger;");
-        }
-
-        [TestMethod]
-        public void Emit_labelled_statement_compact()
-        {
-            VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x:debugger;", s_compact);
         }
 
         [TestMethod]
@@ -149,25 +117,6 @@ namespace Desalt.JavaScript.Tests.Emit
                 defaultClauseStatements: Factory.BreakStatement.ToSafeArray());
 
             VerifyOutput(statement, expected);
-        }
-
-        [TestMethod]
-        public void Emit_switch_statement_compact()
-        {
-            const string expected = @"switch(x){case ""true"":x=y;break;case 4:return x;default:break;}";
-            Es5SwitchStatement statement = Factory.SwitchStatement(
-                condition: s_x,
-                caseClauses: Factory.CaseClauses(
-                    Factory.CaseClause(
-                        Factory.StringLiteral("\"true\""),
-                        Factory.AssignmentExpression(s_x, Es5AssignmentOperator.SimpleAssign, s_y).ToStatement(),
-                        Factory.BreakStatement),
-                    Factory.CaseClause(
-                        Factory.DecimalLiteral("4"),
-                        Factory.ReturnStatement(s_x))),
-                defaultClauseStatements: Factory.BreakStatement.ToSafeArray());
-
-            VerifyOutput(statement, expected, EmitOptions.Compact);
         }
 
         [TestMethod]
@@ -202,7 +151,7 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.Identifier("err"),
                 Factory.ReturnStatement(s_y));
 
-            VerifyOutput(catchStatement, catchExpected);
+            VerifyOutput(catchStatement, catchExpected, EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             // set up the finally block
             const string finallyExpected = @" finally {
@@ -214,43 +163,16 @@ namespace Desalt.JavaScript.Tests.Emit
                     Factory.StringLiteral("'message'")).ToStatement());
 
             // try/finally block
-            VerifyOutput(tryStatement.WithFinally(finallyStatement), tryExpected + finallyExpected);
+            VerifyOutput(
+                tryStatement.WithFinally(finallyStatement),
+                tryExpected + finallyExpected,
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
 
             // try/catch/finally block
-            VerifyOutput(catchStatement.WithFinally(finallyStatement), catchExpected + finallyExpected);
-        }
-
-        [TestMethod]
-        public void Emit_try_statements_compact()
-        {
-            // try block only
-            const string tryExpected = "try{x+=y;return x;}";
-            Es5TryStatement tryStatement = Factory.TryStatement(
-                Factory.AssignmentExpression(s_x, Es5AssignmentOperator.AddAssign, s_y).ToStatement(),
-                Factory.ReturnStatement(s_x));
-
-            VerifyOutput(tryStatement, tryExpected, EmitOptions.Compact);
-
-            // try/catch blocks
-            const string catchExpected = tryExpected + "catch(err){return y;}";
-            Es5TryStatement catchStatement = tryStatement.WithCatch(
-                Factory.Identifier("err"),
-                Factory.ReturnStatement(s_y));
-
-            VerifyOutput(catchStatement, catchExpected, EmitOptions.Compact);
-
-            // set up the finally block
-            const string finallyExpected = "finally{console.log('message');}";
-            Es5BlockStatement finallyStatement = Factory.BlockStatement(
-                Factory.Call(
-                    Factory.MemberDot(Factory.Identifier("console"), Factory.Identifier("log")),
-                    Factory.StringLiteral("'message'")).ToStatement());
-
-            // try/finally block
-            VerifyOutput(tryStatement.WithFinally(finallyStatement), tryExpected + finallyExpected, s_compact);
-
-            // try/catch/finally block
-            VerifyOutput(catchStatement.WithFinally(finallyStatement), catchExpected + finallyExpected, s_compact);
+            VerifyOutput(
+                catchStatement.WithFinally(finallyStatement),
+                catchExpected + finallyExpected,
+                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
         }
 
         [TestMethod]

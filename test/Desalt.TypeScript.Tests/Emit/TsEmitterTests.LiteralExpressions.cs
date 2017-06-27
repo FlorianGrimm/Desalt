@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Tests.Emit
 {
     using System;
-    using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,8 +80,7 @@ namespace Desalt.TypeScript.Tests.Emit
         public void Emit_hex_integer_literal()
         {
             VerifyOutput(Factory.HexIntegerLiteral(415), "0x19f");
-            VerifyOutput(
-                Factory.HexIntegerLiteral(48879), "0xBEEF", EmitOptions.Default.WithLowerCaseHexLetters(false));
+            VerifyOutput(Factory.HexIntegerLiteral(48879), "0xbeef");
         }
 
         [TestMethod]
@@ -106,8 +104,7 @@ namespace Desalt.TypeScript.Tests.Emit
                     Factory.ArrayElement(s_y),
                     Factory.ArrayElement(s_z),
                     Factory.ArrayElement(Factory.StringLiteral("str", StringLiteralQuoteKind.SingleQuote))),
-                "[y,z,'str']",
-                EmitOptions.Default.WithSpaceAfterComma(false));
+                "[y, z, 'str']");
         }
 
         [TestMethod]
@@ -134,8 +131,7 @@ namespace Desalt.TypeScript.Tests.Emit
         [TestMethod]
         public void Emit_empty_object_literal()
         {
-            VerifyOutput(Factory.EmptyObjectLiteral, "{ }");
-            VerifyOutput(Factory.EmptyObjectLiteral, "{}", EmitOptions.Default.WithSpaceWithinEmptyObjectInitializers(false));
+            VerifyOutput(Factory.EmptyObjectLiteral, "{}");
         }
     }
 }

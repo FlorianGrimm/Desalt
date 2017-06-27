@@ -95,15 +95,7 @@ namespace Desalt.Core.Emit
         /// <typeparam name="TElement">The type of <see cref="IAstNode"/> to emit.</typeparam>
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        /// <param name="isFunctionBlock">
-        /// Indicates whether this block is a function block, which means that <see
-        /// cref="EmitOptions.SpaceWithinEmptyFunctionBody"/> will be used instead of
-        /// <see cref="EmitOptions.SpaceWithinSimpleBlockBraces"/>.
-        /// </param>
-        public void WriteBlock<TElement>(
-            IEnumerable<TElement> blockElements,
-            Action<TElement> elementAction,
-            bool isFunctionBlock = false)
+        public void WriteBlock<TElement>(IEnumerable<TElement> blockElements, Action<TElement> elementAction)
             where TElement : T
         {
             if (blockElements == null) { throw new ArgumentNullException(nameof(blockElements)); }
@@ -114,9 +106,7 @@ namespace Desalt.Core.Emit
             // check empty blocks
             if (array.Length == 0 && !Options.SimpleBlockOnNewLine)
             {
-                bool includeSpace = isFunctionBlock && Options.SpaceWithinEmptyFunctionBody ||
-                    !isFunctionBlock && Options.SpaceWithinSimpleBlockBraces;
-                _writer.Write(includeSpace ? "{ }" : "{}");
+                _writer.Write("{ }");
                 return;
             }
 
@@ -129,7 +119,7 @@ namespace Desalt.Core.Emit
                     elementAction(array[i]);
 
                     // don't add a blank line after the last statement
-                    if (Options.NewlineBetweenStatements && i < array.Length - 1)
+                    if (!isSimpleBlock && i < array.Length - 1)
                     {
                         _writer.WriteLine();
                     }
@@ -153,15 +143,13 @@ namespace Desalt.Core.Emit
 
             _writer.Write("{");
 
-            bool indentBlock = (isSimpleBlock && Options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && Options.NewlineAfterOpeningBrace);
-
+            bool indentBlock = isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock;
             if (indentBlock)
             {
                 _writer.WriteLine();
                 _writer.IndentLevel++;
             }
-            else if (Options.SpaceWithinSimpleBlockBraces)
+            else
             {
                 _writer.Write(" ");
             }
@@ -173,17 +161,14 @@ namespace Desalt.Core.Emit
                 _writer.IndentLevel--;
             }
 
-            // ReSharper disable ArrangeBraces_ifelse
-            if ((isSimpleBlock && Options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && Options.NewlineBeforeClosingBrace))
+            if (isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock)
             {
                 _writer.WriteLine();
             }
-            else if (isSimpleBlock && Options.SpaceWithinSimpleBlockBraces)
+            else
             {
                 _writer.Write(" ");
             }
-            // ReSharper restore ArrangeBraces_ifelse
 
             _writer.Write("}");
         }
@@ -196,8 +181,7 @@ namespace Desalt.Core.Emit
         /// <param name="elementAction">The action to perform on each element.</param>
         public void WriteCommaList<TElem>(IEnumerable<TElem> elements, Action<TElem> elementAction)
         {
-            string delimiter = Options.SpaceAfterComma ? ", " : ",";
-            WriteList(elements, delimiter, elementAction);
+            WriteList(elements, ", ", elementAction);
         }
 
         /// <summary>
@@ -207,7 +191,15 @@ namespace Desalt.Core.Emit
         /// <param name="elements">The list of elements to visit.</param>
         /// <param name="delimiter">The delimiter to use between elements.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        public void WriteList<TElem>(IEnumerable<TElem> elements, string delimiter, Action<TElem> elementAction)
+        /// <param name="newlineBetweenElements">
+        /// Indicates whether to insert a new line between elements, after the delimiter. This is to
+        /// allow the indentation to be correct.
+        /// </param>
+        public void WriteList<TElem>(
+            IEnumerable<TElem> elements,
+            string delimiter,
+            Action<TElem> elementAction,
+            bool newlineBetweenElements = false)
         {
             if (elements == null) { throw new ArgumentNullException(nameof(elements)); }
             if (delimiter == null) { throw new ArgumentNullException(nameof(delimiter)); }
@@ -228,7 +220,14 @@ namespace Desalt.Core.Emit
 
                 if (i < array.Length - 1)
                 {
-                    _writer.Write(delimiter);
+                    if (newlineBetweenElements)
+                    {
+                        _writer.WriteLine(delimiter);
+                    }
+                    else
+                    {
+                        _writer.Write(delimiter);
+                    }
                 }
             }
         }

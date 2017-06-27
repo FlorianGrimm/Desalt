@@ -73,7 +73,7 @@ namespace Desalt.JavaScript.Emit
         /// <param name="elements">The list of elements to visit.</param>
         private void WriteCommaList(IEnumerable<IEs5AstNode> elements)
         {
-            _emitter.WriteList(elements, _options.SpaceAfterComma ? ", " : ",", elem => elem.Accept(this));
+            _emitter.WriteList(elements, ", ", elem => elem.Accept(this));
         }
 
         /// <summary>
@@ -97,31 +97,18 @@ namespace Desalt.JavaScript.Emit
             _emitter.Write(functionKeyword);
 
             // if there's a function name, write it
-            if (isUnnamed)
-            {
-                _emitter.Write(_options.SpaceBeforeAnonymousFunctionDeclarationParentheses ? " (" : "(");
-            }
-            else
-            {
-                _emitter.Write(" " + functionName);
-                _emitter.Write(_options.SpaceBeforeNamedFunctionDeclarationParentheses ? " (" : "(");
-            }
+            _emitter.Write(isUnnamed ? "(" : $" {functionName}(");
 
             // write the parameters
             WriteCommaList(parameters ?? Enumerable.Empty<IEs5AstNode>());
 
             // write the closing parenthesis
-            bool spaceAfter = isUnnamed
-                ? _options.SpaceAfterAnonymousFunctionDeclarationParentheses
-                : _options.SpaceAfterNamedFunctionDeclarationParentheses;
-
-            _emitter.Write(spaceAfter ? ") " : ")");
+            _emitter.Write(") ");
 
             // write the function body
             _emitter.WriteBlock(
                 functionBody ?? Enumerable.Empty<IEs5SourceElement>(),
-                elem => elem.Accept(this),
-                isFunctionBlock: true);
+                elem => elem.Accept(this));
         }
 
         /// <summary>
@@ -140,7 +127,7 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _emitter.Write(_options.SurroundOperatorsWithSpaces ? " = " : "=");
+                _emitter.Write(" = ");
                 Visit(d.Initializer);
             });
         }

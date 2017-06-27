@@ -15,56 +15,36 @@ namespace Desalt.JavaScript.Emit
         public override void VisitDoStatement(Es5DoStatement node)
         {
             _emitter.Write("do");
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             Visit(node.Statement);
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel--;
-            }
-            else if (_options.SpaceBeforeCompoundStatementKeyword)
-            {
-                _emitter.Write(" ");
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel--;
 
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while");
+            _emitter.Write("while (");
             Visit(node.Condition);
             _emitter.Write(");");
         }
 
         public override void VisitWhileStatement(Es5WhileStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "while (" : "while(");
+            _emitter.Write("while (");
             Visit(node.Condition);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
-            else if (_options.SpaceAfterClosingStatementParenthesis)
-            {
-                _emitter.WriteLine(" ");
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             Visit(node.Statement);
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.IndentLevel--;
-            }
+            _emitter.IndentLevel--;
         }
 
         public override void VisitForStatement(Es5ForStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write("for (");
 
             // write declarations/initializers
             if (node.Declarations.Length > 0)
@@ -75,29 +55,28 @@ namespace Desalt.JavaScript.Emit
             {
                 Visit(node.Initializer);
             }
-            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write("; ");
 
             // write condition
             Visit(node.Condition);
-            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write("; ");
 
             // write incrementor
             Visit(node.Incrementor);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             // write the statement
             Visit(node.Statement);
+
+            _emitter.IndentLevel--;
         }
 
         public override void VisitForInStatement(Es5ForInStatement node)
         {
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? "for (" : "for(");
+            _emitter.Write("for (");
 
             // write declarations/initializers
             if (node.Declaration != null)
@@ -113,14 +92,13 @@ namespace Desalt.JavaScript.Emit
             Visit(node.RightSide);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             // write the statement
             Visit(node.Statement);
+
+            _emitter.IndentLevel--;
         }
     }
 }

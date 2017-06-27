@@ -46,13 +46,7 @@ namespace Desalt.TypeScript.Emit
                     break;
 
                 case TsNumericLiteralKind.HexInteger:
-                    string hex = Convert.ToString((long)node.Value, 16);
-                    if (!_options.LowerCaseHexLetters)
-                    {
-                        hex = hex.ToUpperInvariant();
-                    }
-
-                    _emitter.Write("0x" + hex);
+                    _emitter.Write("0x" + Convert.ToString((long)node.Value, 16));
                     break;
 
                 default:
@@ -120,30 +114,12 @@ namespace Desalt.TypeScript.Emit
         {
             if (node.PropertyDefinitions.IsEmpty)
             {
-                _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
+                _emitter.Write("{}");
                 return;
             }
 
-            if (_options.NewlineBetweenPropertyAssignments)
-            {
-                _emitter.WriteLine("{");
-            }
-            else
-            {
-                _emitter.Write("{");
-            }
-
-            string delimiter = ",";
-            if (_options.NewlineBetweenPropertyAssignments)
-            {
-                delimiter += _options.Newline;
-            }
-            else if (_options.SpaceAfterComma)
-            {
-                delimiter += " ";
-            }
-
-            _emitter.WriteList(node.PropertyDefinitions, delimiter, Visit);
+            _emitter.WriteLine("{");
+            _emitter.WriteList(node.PropertyDefinitions, ",", Visit);
         }
 
         //// ===========================================================================================================
@@ -183,12 +159,7 @@ namespace Desalt.TypeScript.Emit
         public override void VisitBinaryExpression(ITsBinaryExpression node)
         {
             Visit(node.LeftSide);
-
-            string operatorString = node.Operator.ToCodeDisplay();
-            bool surround = _options.SurroundOperatorsWithSpaces ||
-                node.Operator.IsOneOf(TsBinaryOperator.InstanceOf, TsBinaryOperator.In);
-            _emitter.Write(surround ? $" {operatorString} " : operatorString);
-
+            _emitter.Write($" {node.Operator.ToCodeDisplay()} ");
             Visit(node.RightSide);
         }
 
@@ -198,10 +169,10 @@ namespace Desalt.TypeScript.Emit
         public override void VisitConditionalExpression(ITsConditionalExpression node)
         {
             Visit(node.Condition);
-            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " ? " : "?");
+            _emitter.Write(" ? ");
 
             Visit(node.WhenTrue);
-            _emitter.Write(_options.SurroundOperatorsWithSpaces ? " : " : ":");
+            _emitter.Write(" : ");
 
             Visit(node.WhenFalse);
         }
@@ -214,15 +185,9 @@ namespace Desalt.TypeScript.Emit
         {
             Visit(node.LeftSide);
 
-            if (_options.SurroundOperatorsWithSpaces)
-            {
-                _emitter.Write(" ");
-            }
+            _emitter.Write(" ");
             _emitter.Write(node.Operator.ToCodeDisplay());
-            if (_options.SurroundOperatorsWithSpaces)
-            {
-                _emitter.Write(" ");
-            }
+            _emitter.Write(" ");
 
             Visit(node.RightSide);
         }

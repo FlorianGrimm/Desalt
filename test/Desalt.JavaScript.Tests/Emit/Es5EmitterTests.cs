@@ -23,7 +23,6 @@ namespace Desalt.JavaScript.Tests.Emit
         private static readonly Es5Identifier s_x = Factory.Identifier("x");
         private static readonly Es5Identifier s_y = Factory.Identifier("y");
         private static readonly Es5Identifier s_z = Factory.Identifier("z");
-        private static readonly EmitOptions s_compact = EmitOptions.Compact;
 
         private static void VerifyOutput(IEs5AstNode node, string expected, EmitOptions options = null)
         {

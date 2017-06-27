@@ -21,9 +21,7 @@ namespace Desalt.Core.Tests.Emit
     [TestClass]
     public class EmitterTests
     {
-        private static readonly EmitOptions s_testOptions = EmitOptions.Default
-            .WithNewline("\n")
-            .WithIndentationPrefix("\t");
+        private static readonly EmitOptions s_testOptions = new EmitOptions(newline: "\n", indentationPrefix: "\t");
 
         private static readonly IAstNode[] s_mockStatements = new[]
         {
@@ -113,28 +111,12 @@ namespace Desalt.Core.Tests.Emit
         }
 
         [TestMethod]
-        public void WriteBlock_should_not_add_a_space_between_empty_block_braces_if_the_options_prohibit_it()
+        public void WriteBlock_should_add_a_space_between_empty_block_braces()
         {
             using (var stream = new MemoryStream())
             {
-                EmitOptions options = s_testOptions
-                    .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(false);
-                var emitter = new Emitter<IAstNode>(stream, options: options);
-                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
-                stream.ReadAllText().Should().Be("{}");
-            }
-        }
-
-        [TestMethod]
-        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specifiy_it()
-        {
-            using (var stream = new MemoryStream())
-            {
-                EmitOptions options = s_testOptions
-                    .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(true);
-                var emitter = new Emitter<IAstNode>(stream, options: options);
+                EmitOptions options = s_testOptions.WithSimpleBlockOnNewLine(false);
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
             }
@@ -145,30 +127,10 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                EmitOptions options = s_testOptions
-                    .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(true)
-                    .WithSpaceWithinEmptyFunctionBody(true);
+                EmitOptions options = s_testOptions.WithSimpleBlockOnNewLine(false);
                 var emitter = new Emitter<IAstNode>(stream, options: options);
-                emitter.WriteBlock(
-                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
+                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
-            }
-        }
-
-        [TestMethod]
-        public void WriteBlock_should_not_add_a_space_between_empty_function_block_braces_if_the_options_specifiy_it()
-        {
-            using (var stream = new MemoryStream())
-            {
-                EmitOptions options = s_testOptions
-                    .WithSimpleBlockOnNewLine(false)
-                    .WithSpaceWithinSimpleBlockBraces(true)
-                    .WithSpaceWithinEmptyFunctionBody(false);
-                var emitter = new Emitter<IAstNode>(stream, options: options);
-                emitter.WriteBlock(
-                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
-                stream.ReadAllText().Should().Be("{}");
             }
         }
 
@@ -177,7 +139,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(false));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
                 stream.ReadAllText().Should().Be("{ text }");
             }
@@ -187,23 +149,6 @@ namespace Desalt.Core.Tests.Emit
                 var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(true));
                 emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
                 stream.ReadAllText().Should().Be("{\n\ttext\n}");
-            }
-        }
-
-        [TestMethod]
-        public void WriteBlock_should_use_the_options_for_formatting_non_simple_blocks()
-        {
-            var options = s_testOptions
-                .WithNewlineBeforeClosingBrace(false)
-                .WithNewlineAfterOpeningBrace(false)
-                .WithSpaceWithinSimpleBlockBraces(false);
-
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter<IAstNode>(stream, options: options))
-            {
-                // ReSharper disable once AccessToDisposedClosure
-                emitter.WriteBlock(() => emitter.Write("text"));
-                stream.ReadAllText().Should().Be("{text}");
             }
         }
 
@@ -275,22 +220,11 @@ namespace Desalt.Core.Tests.Emit
         }
 
         [TestMethod]
-        public void WriteCommaList_should_add_commas_without_spaces_between_elements()
-        {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(false));
-                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
-                stream.ReadAllText().Should().Be("One,Two,Three");
-            }
-        }
-
-        [TestMethod]
         public void WriteCommaList_should_add_commas_with_spaces_between_elements()
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(true));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One, Two, Three");
             }

@@ -49,10 +49,9 @@ namespace Desalt.JavaScript.Emit
         public override void VisitIfStatement(Es5IfStatement node)
         {
             // write the 'if' expression
-            _emitter.Write("if");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("if (");
             Visit(node.IfExpression);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
 
             // write the 'if' statement
             Visit(node.IfStatement);
@@ -63,7 +62,7 @@ namespace Desalt.JavaScript.Emit
                 return;
             }
 
-            _emitter.Write(_options.SpaceBeforeCompoundStatementKeyword ? " else " : "else ");
+            _emitter.Write(" else ");
             Visit(node.ElseStatement);
         }
 
@@ -117,10 +116,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitWithStatement(Es5WithStatement node)
         {
-            _emitter.Write("with");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("with (");
             Visit(node.Expression);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
             Visit(node.Statement);
         }
 
@@ -130,7 +128,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitLabelledStatement(Es5LabelledStatement node)
         {
             Visit(node.Identifier);
-            _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
+            _emitter.Write(": ");
             Visit(node.Statement);
         }
 
@@ -139,10 +137,9 @@ namespace Desalt.JavaScript.Emit
         /// </summary>
         public override void VisitSwitchStatement(Es5SwitchStatement node)
         {
-            _emitter.Write("switch");
-            _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+            _emitter.Write("switch (");
             Visit(node.Condition);
-            _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
+            _emitter.Write(") ");
 
             _emitter.WriteBlock(() =>
             {
@@ -152,20 +149,14 @@ namespace Desalt.JavaScript.Emit
                     caseClause.Accept(this);
 
                     // don't write a new line if this is the last clause and there aren't any default statements
-                    bool shouldWriteNewline = _options.NewlineBetweenStatements &&
-                        (i < node.CaseClauses.Length - 1 ||
-                        node.DefaultClauseStatements.Length > 0);
-
+                    bool shouldWriteNewline = i < node.CaseClauses.Length - 1 || node.DefaultClauseStatements.Length > 0;
                     if (shouldWriteNewline)
                     {
                         _emitter.WriteBlankLine();
                     }
 
                     // we still need to decrease the indentation level if we wrote a new line above
-                    if (_options.NewlineBetweenStatements)
-                    {
-                        _emitter.IndentLevel--;
-                    }
+                    _emitter.IndentLevel--;
                 }
 
                 // do we need to write out any default clauses?
@@ -174,13 +165,9 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _emitter.Write("default");
-                _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.WriteLine();
-                    _emitter.IndentLevel++;
-                }
+                _emitter.Write("default:");
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
 
                 for (int i = 0; i < node.DefaultClauseStatements.Length; i++)
                 {
@@ -189,17 +176,14 @@ namespace Desalt.JavaScript.Emit
                     Visit(statement);
 
                     // don't write a new line if this is the last statement
-                    if (_options.NewlineBetweenStatements && i < node.DefaultClauseStatements.Length - 1)
+                    if (i < node.DefaultClauseStatements.Length - 1)
                     {
                         _emitter.WriteLine();
                     }
                 }
 
                 // don't write a new line, but do decrease the indentation
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.IndentLevel--;
-                }
+                _emitter.IndentLevel--;
             });
         }
 
@@ -210,20 +194,14 @@ namespace Desalt.JavaScript.Emit
         {
             _emitter.Write("case ");
             Visit(node.Expression);
-            _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.Write(":");
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             foreach (IEs5Statement statement in node.Statements)
             {
                 Visit(statement);
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.WriteLine();
-                }
+                _emitter.WriteLine();
             }
         }
 
@@ -243,29 +221,15 @@ namespace Desalt.JavaScript.Emit
         public override void VisitTryStatement(Es5TryStatement node)
         {
             // write the try block
-            _emitter.Write("try");
-            if (_options.SpaceBeforeOpeningBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
+            _emitter.Write("try ");
             WriteBlock(node.TryBlock);
 
             // write the catch block
             if (node.CatchBlock != null)
             {
-                if (_options.SpaceAfterClosingBlockBrace)
-                {
-                    _emitter.Write(" ");
-                }
-
-                _emitter.Write("catch");
-                _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
+                _emitter.Write(" catch (");
                 Visit(node.CatchIdentifier);
-                _emitter.Write(_options.SpaceAfterClosingStatementParenthesis || _options.SpaceBeforeOpeningBlockBrace
-                    ? ") "
-                    : ")");
-
+                _emitter.Write(") ");
                 WriteBlock(node.CatchBlock);
             }
 
@@ -275,17 +239,7 @@ namespace Desalt.JavaScript.Emit
                 return;
             }
 
-            if (_options.SpaceAfterClosingBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
-            _emitter.Write("finally");
-            if (_options.SpaceBeforeOpeningBlockBrace)
-            {
-                _emitter.Write(" ");
-            }
-
+            _emitter.Write(" finally ");
             WriteBlock(node.FinallyBlock);
         }
 
