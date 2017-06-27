@@ -15,23 +15,13 @@ namespace Desalt.JavaScript.Emit
         public override void VisitDoStatement(Es5DoStatement node)
         {
             _emitter.Write("do");
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             Visit(node.Statement);
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel--;
-            }
-            else
-            {
-                _emitter.Write(" ");
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel--;
 
             _emitter.Write("while (");
             Visit(node.Condition);
@@ -44,22 +34,12 @@ namespace Desalt.JavaScript.Emit
             Visit(node.Condition);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
-            else
-            {
-                _emitter.WriteLine(" ");
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             Visit(node.Statement);
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.IndentLevel--;
-            }
+            _emitter.IndentLevel--;
         }
 
         public override void VisitForStatement(Es5ForStatement node)
@@ -85,14 +65,13 @@ namespace Desalt.JavaScript.Emit
             Visit(node.Incrementor);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             // write the statement
             Visit(node.Statement);
+
+            _emitter.IndentLevel--;
         }
 
         public override void VisitForInStatement(Es5ForInStatement node)
@@ -113,14 +92,13 @@ namespace Desalt.JavaScript.Emit
             Visit(node.RightSide);
             _emitter.Write(")");
 
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             // write the statement
             Visit(node.Statement);
+
+            _emitter.IndentLevel--;
         }
     }
 }

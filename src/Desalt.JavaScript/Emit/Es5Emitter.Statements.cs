@@ -149,9 +149,7 @@ namespace Desalt.JavaScript.Emit
                     caseClause.Accept(this);
 
                     // don't write a new line if this is the last clause and there aren't any default statements
-                    bool shouldWriteNewline = _options.NewlineBetweenStatements &&
-                        (i < node.CaseClauses.Length - 1 ||
-                        node.DefaultClauseStatements.Length > 0);
+                    bool shouldWriteNewline = i < node.CaseClauses.Length - 1 || node.DefaultClauseStatements.Length > 0;
 
                     if (shouldWriteNewline)
                     {
@@ -159,10 +157,7 @@ namespace Desalt.JavaScript.Emit
                     }
 
                     // we still need to decrease the indentation level if we wrote a new line above
-                    if (_options.NewlineBetweenStatements)
-                    {
-                        _emitter.IndentLevel--;
-                    }
+                    _emitter.IndentLevel--;
                 }
 
                 // do we need to write out any default clauses?
@@ -171,13 +166,9 @@ namespace Desalt.JavaScript.Emit
                     return;
                 }
 
-                _emitter.Write("default");
-                _emitter.Write(!_options.NewlineBetweenStatements ? ": " : ":");
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.WriteLine();
-                    _emitter.IndentLevel++;
-                }
+                _emitter.Write("default:");
+                _emitter.WriteLine();
+                _emitter.IndentLevel++;
 
                 for (int i = 0; i < node.DefaultClauseStatements.Length; i++)
                 {
@@ -186,17 +177,14 @@ namespace Desalt.JavaScript.Emit
                     Visit(statement);
 
                     // don't write a new line if this is the last statement
-                    if (_options.NewlineBetweenStatements && i < node.DefaultClauseStatements.Length - 1)
+                    if (i < node.DefaultClauseStatements.Length - 1)
                     {
                         _emitter.WriteLine();
                     }
                 }
 
                 // don't write a new line, but do decrease the indentation
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.IndentLevel--;
-                }
+                _emitter.IndentLevel--;
             });
         }
 
@@ -207,20 +195,14 @@ namespace Desalt.JavaScript.Emit
         {
             _emitter.Write("case ");
             Visit(node.Expression);
-            _emitter.Write(!_options.NewlineBetweenStatements ? ": " : ":");
-            if (_options.NewlineBetweenStatements)
-            {
-                _emitter.WriteLine();
-                _emitter.IndentLevel++;
-            }
+            _emitter.Write(":");
+            _emitter.WriteLine();
+            _emitter.IndentLevel++;
 
             foreach (IEs5Statement statement in node.Statements)
             {
                 Visit(statement);
-                if (_options.NewlineBetweenStatements)
-                {
-                    _emitter.WriteLine();
-                }
+                _emitter.WriteLine();
             }
         }
 

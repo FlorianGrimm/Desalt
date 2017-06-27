@@ -29,7 +29,6 @@ namespace Desalt.Core.Emit
             spaceWithinEmptyFunctionBody: true,
             simpleBlockOnNewLine: true,
             newlineBetweenPropertyAssignments: true,
-            newlineBetweenStatements: true,
             spaceWithinSimpleBlockBraces: true);
 
         /// <summary>
@@ -57,7 +56,6 @@ namespace Desalt.Core.Emit
             bool? spaceWithinEmptyFunctionBody = null,
             bool? simpleBlockOnNewLine = null,
             bool? newlineBetweenPropertyAssignments = null,
-            bool? newlineBetweenStatements = null,
             bool? spaceWithinSimpleBlockBraces = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
@@ -77,8 +75,6 @@ namespace Desalt.Core.Emit
 
             NewlineBetweenPropertyAssignments = newlineBetweenPropertyAssignments ??
                 instanceToCopy?.NewlineBetweenPropertyAssignments ?? false;
-
-            NewlineBetweenStatements = newlineBetweenStatements ?? instanceToCopy?.NewlineBetweenStatements ?? false;
 
             SpaceWithinSimpleBlockBraces = spaceWithinSimpleBlockBraces ??
                 instanceToCopy?.SpaceWithinSimpleBlockBraces ?? false;
@@ -143,14 +139,6 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithNewlineBetweenPropertyAssignments(bool value) =>
             new EmitOptions(this, newlineBetweenPropertyAssignments: value);
-
-        /// <summary>
-        /// Indicates whether a new line should be placed between multiple statements.
-        /// </summary>
-        public bool NewlineBetweenStatements { get; }
-
-        public EmitOptions WithNewlineBetweenStatements(bool value) =>
-            new EmitOptions(this, newlineBetweenStatements: value);
 
         /// <summary>
         /// Indicates whether a space should be between simple block braces and the content of the block.

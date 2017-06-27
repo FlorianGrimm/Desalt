@@ -129,7 +129,7 @@ namespace Desalt.Core.Emit
                     elementAction(array[i]);
 
                     // don't add a blank line after the last statement
-                    if (Options.NewlineBetweenStatements && i < array.Length - 1)
+                    if (i < array.Length - 1)
                     {
                         _writer.WriteLine();
                     }
