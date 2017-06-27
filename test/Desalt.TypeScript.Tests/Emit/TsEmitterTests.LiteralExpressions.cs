@@ -81,8 +81,7 @@ namespace Desalt.TypeScript.Tests.Emit
         public void Emit_hex_integer_literal()
         {
             VerifyOutput(Factory.HexIntegerLiteral(415), "0x19f");
-            VerifyOutput(
-                Factory.HexIntegerLiteral(48879), "0xBEEF", EmitOptions.Default.WithLowerCaseHexLetters(false));
+            VerifyOutput(Factory.HexIntegerLiteral(48879), "0xbeef");
         }
 
         [TestMethod]

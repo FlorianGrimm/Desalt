@@ -46,13 +46,7 @@ namespace Desalt.TypeScript.Emit
                     break;
 
                 case TsNumericLiteralKind.HexInteger:
-                    string hex = Convert.ToString((long)node.Value, 16);
-                    if (!_options.LowerCaseHexLetters)
-                    {
-                        hex = hex.ToUpperInvariant();
-                    }
-
-                    _emitter.Write("0x" + hex);
+                    _emitter.Write("0x" + Convert.ToString((long)node.Value, 16));
                     break;
 
                 default:
