@@ -191,23 +191,6 @@ namespace Desalt.Core.Tests.Emit
         }
 
         [TestMethod]
-        public void WriteBlock_should_use_the_options_for_formatting_non_simple_blocks()
-        {
-            var options = s_testOptions
-                .WithNewlineBeforeClosingBrace(false)
-                .WithNewlineAfterOpeningBrace(false)
-                .WithSpaceWithinSimpleBlockBraces(false);
-
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter<IAstNode>(stream, options: options))
-            {
-                // ReSharper disable once AccessToDisposedClosure
-                emitter.WriteBlock(() => emitter.Write("text"));
-                stream.ReadAllText().Should().Be("{text}");
-            }
-        }
-
-        [TestMethod]
         public void WriteBlock_should_write_all_of_the_statements_using_an_action()
         {
             using (var stream = new MemoryStream())

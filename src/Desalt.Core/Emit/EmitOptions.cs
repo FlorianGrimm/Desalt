@@ -28,8 +28,6 @@ namespace Desalt.Core.Emit
             spaceWithinEmptyArrayBrackets: true,
             spaceWithinEmptyObjectInitializers: true,
             spaceWithinEmptyFunctionBody: true,
-            newlineAfterOpeningBrace: true,
-            newlineBeforeClosingBrace: true,
             simpleBlockOnNewLine: true,
             newlineBetweenPropertyAssignments: true,
             newlineBetweenStatements: true,
@@ -59,8 +57,6 @@ namespace Desalt.Core.Emit
             bool? spaceWithinEmptyArrayBrackets = null,
             bool? spaceWithinEmptyObjectInitializers = null,
             bool? spaceWithinEmptyFunctionBody = null,
-            bool? newlineAfterOpeningBrace = null,
-            bool? newlineBeforeClosingBrace = null,
             bool? simpleBlockOnNewLine = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? newlineBetweenStatements = null,
@@ -80,12 +76,6 @@ namespace Desalt.Core.Emit
 
             SpaceWithinEmptyFunctionBody = spaceWithinEmptyFunctionBody ??
                 instanceToCopy?.SpaceWithinEmptyFunctionBody ?? false;
-
-            NewlineAfterOpeningBrace =
-                newlineAfterOpeningBrace ?? instanceToCopy?.NewlineAfterOpeningBrace ?? false;
-
-            NewlineBeforeClosingBrace =
-                newlineBeforeClosingBrace ?? instanceToCopy?.NewlineBeforeClosingBrace ?? false;
 
             SimpleBlockOnNewLine =
                 simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
@@ -149,26 +139,6 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceWithinEmptyFunctionBody(bool value) =>
             new EmitOptions(this, spaceWithinEmptyFunctionBody: value);
-
-        /// <summary>
-        /// Indicates whether to insert a newline after an opening brace in a block statement.If
-        /// there is only a single line in the block, the <see cref="SimpleBlockOnNewLine"/> flag
-        /// takes precedence over this setting.
-        /// </summary>
-        public bool NewlineAfterOpeningBrace { get; }
-
-        public EmitOptions WithNewlineAfterOpeningBrace(bool value) =>
-            new EmitOptions(this, newlineAfterOpeningBrace: value);
-
-        /// <summary>
-        /// Indicates whether to insert a newline before the closing brace in a block statement. If
-        /// there is only a single line in the block, the <see cref="SimpleBlockOnNewLine"/> flag
-        /// takes precedence over this setting.
-        /// </summary>
-        public bool NewlineBeforeClosingBrace { get; }
-
-        public EmitOptions WithNewlineBeforeClosingBrace(bool value) =>
-            new EmitOptions(this, newlineBeforeClosingBrace: value);
 
         /// <summary>
         /// Indicates whether a block of one statement should be on the same line within the braces

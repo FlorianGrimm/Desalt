@@ -153,9 +153,7 @@ namespace Desalt.Core.Emit
 
             _writer.Write("{");
 
-            bool indentBlock = (isSimpleBlock && Options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && Options.NewlineAfterOpeningBrace);
-
+            bool indentBlock = isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock;
             if (indentBlock)
             {
                 _writer.WriteLine();
@@ -173,17 +171,14 @@ namespace Desalt.Core.Emit
                 _writer.IndentLevel--;
             }
 
-            // ReSharper disable ArrangeBraces_ifelse
-            if ((isSimpleBlock && Options.SimpleBlockOnNewLine) ||
-                (!isSimpleBlock && Options.NewlineBeforeClosingBrace))
+            if (isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock)
             {
                 _writer.WriteLine();
             }
-            else if (isSimpleBlock && Options.SpaceWithinSimpleBlockBraces)
+            else if (Options.SpaceWithinSimpleBlockBraces)
             {
                 _writer.Write(" ");
             }
-            // ReSharper restore ArrangeBraces_ifelse
 
             _writer.Write("}");
         }

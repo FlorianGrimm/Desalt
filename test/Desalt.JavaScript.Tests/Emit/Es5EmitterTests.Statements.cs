@@ -27,13 +27,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_block_statements_compact()
-        {
-            Es5BlockStatement block = Factory.BlockStatement(Factory.DebuggerStatement, Factory.ReturnStatement(s_x));
-            VerifyOutput(block, "{debugger;return x;}", EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_variable_statements()
         {
             const string expected = @"var x = this, y, z = false;";
