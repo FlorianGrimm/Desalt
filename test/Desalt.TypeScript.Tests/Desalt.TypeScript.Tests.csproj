@@ -41,6 +41,7 @@
     <Compile Include="Emit\TsEmitterTests.AssignmentExpressions.cs" />
     <Compile Include="Emit\TsEmitterTests.cs" />
     <Compile Include="Emit\TsEmitterTests.LeftHandSideExpressions.cs" />
+    <Compile Include="Emit\TsEmitterTests.LiteralExpressions.cs" />
     <Compile Include="Emit\TsEmitterTests.SourceFile.cs" />
     <Compile Include="Emit\TsEmitterTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
