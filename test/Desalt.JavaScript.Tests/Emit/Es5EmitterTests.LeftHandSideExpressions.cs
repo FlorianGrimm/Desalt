@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Tests.Emit
 {
-    using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
@@ -72,30 +71,12 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_function_call_expression_compact()
-        {
-            Es5CallExpression expression = Factory.Call(
-                Factory.MemberDot(s_x, s_y),
-                Factory.ParamList("p1", "p2", "p3"));
-            VerifyOutput(expression, "x.y(p1,p2,p3)", EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_new_call_expression()
         {
             Es5CallExpression expression = Factory.NewCall(
                 Factory.MemberDot(s_x, s_y),
                 Factory.ParamList("p1", "p2", "p3"));
             VerifyOutput(expression, "new x.y(p1, p2, p3)");
-        }
-
-        [TestMethod]
-        public void Emit_new_call_expression_compact()
-        {
-            Es5CallExpression expression = Factory.NewCall(
-                Factory.MemberDot(s_x, s_y),
-                Factory.ParamList("p1", "p2", "p3"));
-            VerifyOutput(expression, "new x.y(p1,p2,p3)", EmitOptions.Compact);
         }
 
         /*
@@ -118,18 +99,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_full_function_expression_compact()
-        {
-            const string expected = @"function funcName(param1,param2){return x;}";
-            Es5FunctionExpression expression = Factory.Function(
-                "funcName",
-                Factory.ParamList("param1", "param2"),
-                Factory.ReturnStatement(s_x));
-
-            VerifyOutput(expression, expected, EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_unnamed_function_expression()
         {
             const string expected = @"function (param1, param2) {
@@ -141,18 +110,6 @@ namespace Desalt.JavaScript.Tests.Emit
                 functionBody: Factory.ReturnStatement(s_x));
 
             VerifyOutput(expression, expected);
-        }
-
-        [TestMethod]
-        public void Emit_unnamed_function_expression_compact()
-        {
-            const string expected = @"function(param1,param2){return x;}";
-            Es5FunctionExpression expression = Factory.Function(
-                functionName: null,
-                parameters: Factory.ParamList("param1", "param2"),
-                functionBody: Factory.ReturnStatement(s_x));
-
-            VerifyOutput(expression, expected, EmitOptions.Compact);
         }
     }
 }

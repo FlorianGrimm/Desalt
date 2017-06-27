@@ -128,7 +128,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitLabelledStatement(Es5LabelledStatement node)
         {
             Visit(node.Identifier);
-            _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
+            _emitter.Write(": ");
             Visit(node.Statement);
         }
 
@@ -172,7 +172,7 @@ namespace Desalt.JavaScript.Emit
                 }
 
                 _emitter.Write("default");
-                _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
+                _emitter.Write(!_options.NewlineBetweenStatements ? ": " : ":");
                 if (_options.NewlineBetweenStatements)
                 {
                     _emitter.WriteLine();
@@ -207,7 +207,7 @@ namespace Desalt.JavaScript.Emit
         {
             _emitter.Write("case ");
             Visit(node.Expression);
-            _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
+            _emitter.Write(!_options.NewlineBetweenStatements ? ": " : ":");
             if (_options.NewlineBetweenStatements)
             {
                 _emitter.WriteLine();

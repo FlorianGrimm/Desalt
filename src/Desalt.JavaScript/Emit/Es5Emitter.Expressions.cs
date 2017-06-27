@@ -156,7 +156,7 @@ namespace Desalt.JavaScript.Emit
         public override void VisitPropertyValueAssignment(Es5PropertyValueAssignment node)
         {
             _emitter.Write(node.PropertyName);
-            _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
+            _emitter.Write(": ");
             Visit(node.Value);
         }
 

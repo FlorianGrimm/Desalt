@@ -45,17 +45,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_variable_statements_compact()
-        {
-            const string expected = @"var x=this,y,z=false;";
-            Es5VariableStatement expression = Factory.VariableStatement(
-                Factory.VariableDeclaration(s_x, Factory.ThisExpression),
-                Factory.VariableDeclaration(s_y),
-                Factory.VariableDeclaration(s_z, Factory.FalseLiteral));
-            VerifyOutput(expression, expected, EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_empty_statement()
         {
             VerifyOutput(Factory.EmptyStatement, ";");
@@ -106,12 +95,6 @@ namespace Desalt.JavaScript.Tests.Emit
         public void Emit_labelled_statement()
         {
             VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x: debugger;");
-        }
-
-        [TestMethod]
-        public void Emit_labelled_statement_compact()
-        {
-            VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x:debugger;", s_compact);
         }
 
         [TestMethod]

@@ -35,8 +35,6 @@ namespace Desalt.Core.Emit
             spaceAfterAnonymousFunctionDeclarationParentheses: true,
             spaceBeforeNamedFunctionDeclarationParentheses: false,
             spaceAfterNamedFunctionDeclarationParentheses: true,
-            spaceAfterPropertyColon: true,
-            spaceAfterComma: true,
             newlineBetweenPropertyAssignments: true,
             newlineBetweenStatements: true,
             spaceWithinSimpleBlockBraces: true);
@@ -72,8 +70,6 @@ namespace Desalt.Core.Emit
             bool? spaceAfterAnonymousFunctionDeclarationParentheses = null,
             bool? spaceBeforeNamedFunctionDeclarationParentheses = null,
             bool? spaceAfterNamedFunctionDeclarationParentheses = null,
-            bool? spaceAfterPropertyColon = null,
-            bool? spaceAfterComma = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? newlineBetweenStatements = null,
             bool? spaceWithinSimpleBlockBraces = null)
@@ -115,9 +111,6 @@ namespace Desalt.Core.Emit
 
             SpaceAfterNamedFunctionDeclarationParentheses = spaceAfterNamedFunctionDeclarationParentheses ??
                 instanceToCopy?.SpaceAfterNamedFunctionDeclarationParentheses ?? false;
-
-            SpaceAfterColon = spaceAfterPropertyColon ?? instanceToCopy?.SpaceAfterColon ?? false;
-            SpaceAfterComma = spaceAfterComma ?? instanceToCopy?.SpaceAfterComma ?? false;
 
             NewlineBetweenPropertyAssignments = newlineBetweenPropertyAssignments ??
                 instanceToCopy?.NewlineBetweenPropertyAssignments ?? false;
@@ -243,29 +236,12 @@ namespace Desalt.Core.Emit
             new EmitOptions(this, spaceAfterNamedFunctionDeclarationParentheses: value);
 
         /// <summary>
-        /// Indicates whether a space should be added after a colon in an object initializer property
-        /// assignment, a case statement, or a label.
-        /// </summary>
-        public bool SpaceAfterColon { get; }
-
-        public EmitOptions WithSpaceAfterPropertyColon(bool value) =>
-            new EmitOptions(this, spaceAfterPropertyColon: value);
-
-        /// <summary>
         /// Indicates whether a new line should be inserted between property assignments in an object initializer.
         /// </summary>
         public bool NewlineBetweenPropertyAssignments { get; }
 
         public EmitOptions WithNewlineBetweenPropertyAssignments(bool value) =>
             new EmitOptions(this, newlineBetweenPropertyAssignments: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed after the comma in a parameter or declaration list.
-        /// </summary>
-        public bool SpaceAfterComma { get; }
-
-        public EmitOptions WithSpaceAfterComma(bool value) =>
-            new EmitOptions(this, spaceAfterComma: value);
 
         /// <summary>
         /// Indicates whether a new line should be placed between multiple statements.

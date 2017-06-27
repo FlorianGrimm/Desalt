@@ -105,8 +105,7 @@ namespace Desalt.TypeScript.Tests.Emit
                     Factory.ArrayElement(s_y),
                     Factory.ArrayElement(s_z),
                     Factory.ArrayElement(Factory.StringLiteral("str", StringLiteralQuoteKind.SingleQuote))),
-                "[y,z,'str']",
-                EmitOptions.Default.WithSpaceAfterComma(false));
+                "[y, z, 'str']");
         }
 
         [TestMethod]

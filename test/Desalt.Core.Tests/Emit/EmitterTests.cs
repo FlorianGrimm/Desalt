@@ -275,22 +275,11 @@ namespace Desalt.Core.Tests.Emit
         }
 
         [TestMethod]
-        public void WriteCommaList_should_add_commas_without_spaces_between_elements()
-        {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(false));
-                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
-                stream.ReadAllText().Should().Be("One,Two,Three");
-            }
-        }
-
-        [TestMethod]
         public void WriteCommaList_should_add_commas_with_spaces_between_elements()
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(true));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One, Two, Three");
             }

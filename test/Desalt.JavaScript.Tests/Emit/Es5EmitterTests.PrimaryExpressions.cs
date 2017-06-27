@@ -134,17 +134,6 @@ namespace Desalt.JavaScript.Tests.Emit
         }
 
         [TestMethod]
-        public void Emit_simple_property_assignment_compact()
-        {
-            const string expected = @"{boolProp:true,intProp:4}";
-            Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
-                Factory.PropertyValueAssignment("boolProp", Factory.TrueLiteral),
-                Factory.PropertyValueAssignment("intProp", Factory.DecimalLiteral("4")));
-
-            VerifyOutput(expression, expected, EmitOptions.Compact);
-        }
-
-        [TestMethod]
         public void Emit_object_literal_with_property_get()
         {
             const string expected = @"{

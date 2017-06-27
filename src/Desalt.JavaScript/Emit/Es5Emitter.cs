@@ -73,7 +73,7 @@ namespace Desalt.JavaScript.Emit
         /// <param name="elements">The list of elements to visit.</param>
         private void WriteCommaList(IEnumerable<IEs5AstNode> elements)
         {
-            _emitter.WriteList(elements, _options.SpaceAfterComma ? ", " : ",", elem => elem.Accept(this));
+            _emitter.WriteList(elements, ", ", elem => elem.Accept(this));
         }
 
         /// <summary>

@@ -132,7 +132,7 @@ namespace Desalt.TypeScript.Emit
             {
                 delimiter += _options.Newline;
             }
-            else if (_options.SpaceAfterComma)
+            else
             {
                 delimiter += " ";
             }

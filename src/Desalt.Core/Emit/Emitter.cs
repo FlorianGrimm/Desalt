@@ -196,8 +196,7 @@ namespace Desalt.Core.Emit
         /// <param name="elementAction">The action to perform on each element.</param>
         public void WriteCommaList<TElem>(IEnumerable<TElem> elements, Action<TElem> elementAction)
         {
-            string delimiter = Options.SpaceAfterComma ? ", " : ",";
-            WriteList(elements, delimiter, elementAction);
+            WriteList(elements, ", ", elementAction);
         }
 
         /// <summary>
