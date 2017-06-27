@@ -126,5 +126,16 @@ namespace Desalt.TypeScript.Tests.Emit
                     new TsTemplatePart(expression: s_y)),
                 "`xy=${x}${y}`");
         }
+
+        //// ===========================================================================================================
+        //// Object Literal Expressions
+        //// ===========================================================================================================
+
+        [TestMethod]
+        public void Emit_empty_object_literal()
+        {
+            VerifyOutput(Factory.EmptyObjectLiteral, "{ }");
+            VerifyOutput(Factory.EmptyObjectLiteral, "{}", EmitOptions.Default.WithSpaceWithinEmptyObjectInitializers(false));
+        }
     }
 }

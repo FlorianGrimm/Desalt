@@ -118,7 +118,32 @@ namespace Desalt.TypeScript.Emit
 
         public override void VisitObjectLiteral(ITsObjectLiteral node)
         {
-            base.VisitObjectLiteral(node);
+            if (node.PropertyDefinitions.IsEmpty)
+            {
+                _emitter.Write(_options.SpaceWithinEmptyObjectInitializers ? "{ }" : "{}");
+                return;
+            }
+
+            if (_options.NewlineBetweenPropertyAssignments)
+            {
+                _emitter.WriteLine("{");
+            }
+            else
+            {
+                _emitter.Write("{");
+            }
+
+            string delimiter = ",";
+            if (_options.NewlineBetweenPropertyAssignments)
+            {
+                delimiter += _options.Newline;
+            }
+            else if (_options.SpaceAfterComma)
+            {
+                delimiter += " ";
+            }
+
+            _emitter.WriteList(node.PropertyDefinitions, delimiter, Visit);
         }
 
         //// ===========================================================================================================
