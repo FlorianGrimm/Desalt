@@ -191,7 +191,15 @@ namespace Desalt.Core.Emit
         /// <param name="elements">The list of elements to visit.</param>
         /// <param name="delimiter">The delimiter to use between elements.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
-        public void WriteList<TElem>(IEnumerable<TElem> elements, string delimiter, Action<TElem> elementAction)
+        /// <param name="newlineBetweenElements">
+        /// Indicates whether to insert a new line between elements, after the delimiter. This is to
+        /// allow the indentation to be correct.
+        /// </param>
+        public void WriteList<TElem>(
+            IEnumerable<TElem> elements,
+            string delimiter,
+            Action<TElem> elementAction,
+            bool newlineBetweenElements = false)
         {
             if (elements == null) { throw new ArgumentNullException(nameof(elements)); }
             if (delimiter == null) { throw new ArgumentNullException(nameof(delimiter)); }
@@ -212,7 +220,14 @@ namespace Desalt.Core.Emit
 
                 if (i < array.Length - 1)
                 {
-                    _writer.Write(delimiter);
+                    if (newlineBetweenElements)
+                    {
+                        _writer.WriteLine(delimiter);
+                    }
+                    else
+                    {
+                        _writer.Write(delimiter);
+                    }
                 }
             }
         }
