@@ -75,11 +75,11 @@ namespace Desalt.JavaScript.Emit
             {
                 Visit(node.Initializer);
             }
-            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write("; ");
 
             // write condition
             Visit(node.Condition);
-            _emitter.Write(_options.SpaceAfterSemicolonInForLoop ? "; " : ";");
+            _emitter.Write("; ");
 
             // write incrementor
             Visit(node.Incrementor);

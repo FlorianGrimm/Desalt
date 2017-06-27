@@ -44,8 +44,7 @@ namespace Desalt.Core.Emit
             spaceWithinSimpleBlockBraces: true,
             spaceBeforeCompoundStatementKeyword: true,
             spaceBeforeOpeningBlockBrace: true,
-            spaceAfterClosingBlockBrace: true,
-            spaceAfterSemicolonInForLoop: true);
+            spaceAfterClosingBlockBrace: true);
 
         /// <summary>
         /// Represents the set of options that produce compact code, with extraneous whitespace removed.
@@ -87,8 +86,7 @@ namespace Desalt.Core.Emit
             bool? spaceWithinSimpleBlockBraces = null,
             bool? spaceBeforeCompoundStatementKeyword = null,
             bool? spaceBeforeOpeningBlockBrace = null,
-            bool? spaceAfterClosingBlockBrace = null,
-            bool? spaceAfterSemicolonInForLoop = null)
+            bool? spaceAfterClosingBlockBrace = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? "\n";
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "\t";
@@ -153,9 +151,6 @@ namespace Desalt.Core.Emit
 
             SpaceAfterClosingBlockBrace = spaceAfterClosingBlockBrace ??
                 instanceToCopy?.SpaceAfterClosingBlockBrace ?? false;
-
-            SpaceAfterSemicolonInForLoop = spaceAfterSemicolonInForLoop ??
-                instanceToCopy?.SpaceAfterSemicolonInForLoop ?? false;
         }
 
         //// ===========================================================================================================
@@ -356,13 +351,5 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSpaceAfterClosingBlockBrace(bool value) =>
             new EmitOptions(this, spaceAfterClosingBlockBrace: value);
-
-        /// <summary>
-        /// Indicates whether a space should be placed after a semicolon in a 'for' loop.
-        /// </summary>
-        public bool SpaceAfterSemicolonInForLoop { get; }
-
-        public EmitOptions WithSpaceAfterSemicolonInForLoop(bool value) =>
-            new EmitOptions(this, spaceAfterSemicolonInForLoop: value);
     }
 }

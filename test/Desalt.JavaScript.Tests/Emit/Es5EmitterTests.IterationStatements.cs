@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Tests.Emit
 {
-    using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast.Expressions;
     using Desalt.JavaScript.Ast.Statements;
@@ -66,37 +65,6 @@ namespace Desalt.JavaScript.Tests.Emit
                 statement: Factory.EmptyStatement);
 
             VerifyOutput(statement, expected);
-        }
-
-        [TestMethod]
-        public void Emit_for_statements_compact()
-        {
-            string expected = "for(var x=0;x<y;x++)z--;";
-            Es5ForStatement statement = Factory.ForStatement(
-                declarations: Factory.VariableDeclaration(s_x, Factory.DecimalLiteral("0")).ToSafeArray(),
-                condition: Factory.BinaryExpression(s_x, Es5BinaryOperator.LessThan, s_y),
-                incrementor: Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixIncrement),
-                statement: Factory.UnaryExpression(s_z, Es5UnaryOperator.PostfixDecrement).ToStatement());
-
-            VerifyOutput(statement, expected, EmitOptions.Compact);
-
-            expected = "for(var x=0;;x++);";
-            statement = Factory.ForStatement(
-                declarations: Factory.VariableDeclaration(s_x, Factory.DecimalLiteral("0")).ToSafeArray(),
-                condition: null,
-                incrementor: Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixIncrement),
-                statement: Factory.EmptyStatement);
-
-            VerifyOutput(statement, expected, EmitOptions.Compact);
-
-            expected = "for(;;);";
-            statement = Factory.ForStatement(
-                declarations: null,
-                condition: null,
-                incrementor: null,
-                statement: Factory.EmptyStatement);
-
-            VerifyOutput(statement, expected, EmitOptions.Compact);
         }
 
         [TestMethod]
