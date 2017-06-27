@@ -92,7 +92,6 @@ namespace Desalt.JavaScript.Tests.Emit
             EmitOptions options = EmitOptions.Default
                 .WithSpaceWithinEmptyObjectInitializers(false)
                 .WithSimpleBlockOnNewLine(false)
-                .WithSpaceBeforeAnonymousFunctionDeclarationParentheses(false)
                 .WithSpaceWithinEmptyObjectInitializers(false)
                 .WithSpaceWithinEmptyFunctionBody(false)
                 .WithSpaceWithinEmptyArrayBrackets(false);

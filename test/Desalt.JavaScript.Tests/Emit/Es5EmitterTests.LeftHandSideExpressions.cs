@@ -101,7 +101,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_unnamed_function_expression()
         {
-            const string expected = @"function (param1, param2) {
+            const string expected = @"function(param1, param2) {
   return x;
 }";
             Es5FunctionExpression expression = Factory.Function(

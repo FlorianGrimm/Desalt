@@ -31,8 +31,6 @@ namespace Desalt.Core.Emit
             newlineAfterOpeningBrace: true,
             newlineBeforeClosingBrace: true,
             simpleBlockOnNewLine: true,
-            spaceBeforeAnonymousFunctionDeclarationParentheses: true,
-            spaceAfterAnonymousFunctionDeclarationParentheses: true,
             newlineBetweenPropertyAssignments: true,
             newlineBetweenStatements: true,
             spaceWithinSimpleBlockBraces: true);
@@ -64,8 +62,6 @@ namespace Desalt.Core.Emit
             bool? newlineAfterOpeningBrace = null,
             bool? newlineBeforeClosingBrace = null,
             bool? simpleBlockOnNewLine = null,
-            bool? spaceBeforeAnonymousFunctionDeclarationParentheses = null,
-            bool? spaceAfterAnonymousFunctionDeclarationParentheses = null,
             bool? newlineBetweenPropertyAssignments = null,
             bool? newlineBetweenStatements = null,
             bool? spaceWithinSimpleBlockBraces = null)
@@ -93,14 +89,6 @@ namespace Desalt.Core.Emit
 
             SimpleBlockOnNewLine =
                 simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
-
-            SpaceBeforeAnonymousFunctionDeclarationParentheses =
-                spaceBeforeAnonymousFunctionDeclarationParentheses ??
-                instanceToCopy?.SpaceBeforeAnonymousFunctionDeclarationParentheses ?? false;
-
-            SpaceAfterAnonymousFunctionDeclarationParentheses =
-                spaceAfterAnonymousFunctionDeclarationParentheses ??
-                instanceToCopy?.SpaceAfterAnonymousFunctionDeclarationParentheses ?? false;
 
             NewlineBetweenPropertyAssignments = newlineBetweenPropertyAssignments ??
                 instanceToCopy?.NewlineBetweenPropertyAssignments ?? false;
@@ -190,24 +178,6 @@ namespace Desalt.Core.Emit
 
         public EmitOptions WithSimpleBlockOnNewLine(bool value) =>
             new EmitOptions(this, simpleBlockOnNewLine: value);
-
-        /// <summary>
-        /// Indicates whether a space should be added before an anonymous (unnamed) function
-        /// declaration's opening parenthesis.
-        /// </summary>
-        public bool SpaceBeforeAnonymousFunctionDeclarationParentheses { get; }
-
-        public EmitOptions WithSpaceBeforeAnonymousFunctionDeclarationParentheses(bool value) =>
-            new EmitOptions(this, spaceBeforeAnonymousFunctionDeclarationParentheses: value);
-
-        /// <summary>
-        /// Indicates whether a space should be added after an anonymous (unnamed) function
-        /// declaration's closing parenthesis.
-        /// </summary>
-        public bool SpaceAfterAnonymousFunctionDeclarationParentheses { get; }
-
-        public EmitOptions WithSpaceAfterAnonymousFunctionDeclarationParentheses(bool value) =>
-            new EmitOptions(this, spaceAfterAnonymousFunctionDeclarationParentheses: value);
 
         /// <summary>
         /// Indicates whether a new line should be inserted between property assignments in an object initializer.
