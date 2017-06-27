@@ -11,14 +11,14 @@ namespace Desalt.Core.Emit
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 
     /// <summary>
-    /// General-purpose emitter for serializing code models into code.
+    /// General-purpose emitter for serializing abstract syntax nodes into code.
     /// </summary>
-    public class Emitter<T> : IDisposable where T : ICodeModel
+    public class Emitter<T> : IDisposable where T : IAstNode
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -92,7 +92,7 @@ namespace Desalt.Core.Emit
         /// <summary>
         /// Writes a block of elements, using the options to format the code.
         /// </summary>
-        /// <typeparam name="TElement">The type of <see cref="ICodeModel"/> to emit.</typeparam>
+        /// <typeparam name="TElement">The type of <see cref="IAstNode"/> to emit.</typeparam>
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
         /// <param name="isFunctionBlock">

@@ -7,29 +7,29 @@
 
 namespace Desalt.JavaScript.Emit
 {
-    using Desalt.JavaScript.CodeModels;
-    using Desalt.JavaScript.CodeModels.Statements;
+    using Desalt.JavaScript.Ast;
+    using Desalt.JavaScript.Ast.Statements;
 
     public partial class Es5Emitter
     {
-        public override void VisitBlockStatement(Es5BlockStatement model)
+        public override void VisitBlockStatement(Es5BlockStatement node)
         {
-            WriteBlock(model);
+            WriteBlock(node);
         }
 
         /// <summary>
         /// Visits a variable declaration statement of the form 'var x' or 'var x = y, z'.
         /// </summary>
-        public override void VisitVariableStatement(Es5VariableStatement model)
+        public override void VisitVariableStatement(Es5VariableStatement node)
         {
-            WriteVariableDeclarations(model.Declarations);
+            WriteVariableDeclarations(node.Declarations);
             _emitter.Write(";");
         }
 
         /// <summary>
         /// Visits an empty statement.
         /// </summary>
-        public override void VisitEmptyStatement(Es5EmptyStatement model)
+        public override void VisitEmptyStatement(Es5EmptyStatement node)
         {
             _emitter.Write(";");
         }
@@ -37,46 +37,46 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits an expression that is represented as a statement.
         /// </summary>
-        public override void VisitExpressionStatement(Es5ExpressionStatement model)
+        public override void VisitExpressionStatement(Es5ExpressionStatement node)
         {
-            Visit(model.Expression);
+            Visit(node.Expression);
             _emitter.Write(";");
         }
 
         /// <summary>
         /// Visits an 'if (x) statement; else statement;' statement.
         /// </summary>
-        public override void VisitIfStatement(Es5IfStatement model)
+        public override void VisitIfStatement(Es5IfStatement node)
         {
             // write the 'if' expression
             _emitter.Write("if");
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
-            Visit(model.IfExpression);
+            Visit(node.IfExpression);
             _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
 
             // write the 'if' statement
-            Visit(model.IfStatement);
+            Visit(node.IfStatement);
 
             // write the 'else' statement if necessary
-            if (model.ElseStatement == null)
+            if (node.ElseStatement == null)
             {
                 return;
             }
 
             _emitter.Write(_options.SpaceBeforeCompoundStatementKeyword ? " else " : "else ");
-            Visit(model.ElseStatement);
+            Visit(node.ElseStatement);
         }
 
         /// <summary>
         /// Visits a 'continue' or 'continue Identifier' statement.
         /// </summary>
-        public override void VisitContinueStatement(Es5ContinueStatement model)
+        public override void VisitContinueStatement(Es5ContinueStatement node)
         {
             _emitter.Write("continue");
-            if (model.Label != null)
+            if (node.Label != null)
             {
                 _emitter.Write(" ");
-                Visit(model.Label);
+                Visit(node.Label);
             }
 
             _emitter.Write(";");
@@ -85,13 +85,13 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a 'break' or 'break Identifier' statement.
         /// </summary>
-        public override void VisitBreakStatement(Es5BreakStatement model)
+        public override void VisitBreakStatement(Es5BreakStatement node)
         {
             _emitter.Write("break");
-            if (model.Label != null)
+            if (node.Label != null)
             {
                 _emitter.Write(" ");
-                Visit(model.Label);
+                Visit(node.Label);
             }
 
             _emitter.Write(";");
@@ -100,13 +100,13 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a return statement of the form 'return expression;'.
         /// </summary>
-        public override void VisitReturnStatement(Es5ReturnStatement model)
+        public override void VisitReturnStatement(Es5ReturnStatement node)
         {
             _emitter.Write("return");
-            if (model.Expression != null)
+            if (node.Expression != null)
             {
                 _emitter.Write(" ");
-                Visit(model.Expression);
+                Visit(node.Expression);
             }
 
             _emitter.Write(";");
@@ -115,46 +115,46 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a 'with (Expression) Statement' statement.
         /// </summary>
-        public override void VisitWithStatement(Es5WithStatement model)
+        public override void VisitWithStatement(Es5WithStatement node)
         {
             _emitter.Write("with");
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
-            Visit(model.Expression);
+            Visit(node.Expression);
             _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
-            Visit(model.Statement);
+            Visit(node.Statement);
         }
 
         /// <summary>
         /// Visits a labelled statement of the form 'Identifier: Statement'.
         /// </summary>
-        public override void VisitLabelledStatement(Es5LabelledStatement model)
+        public override void VisitLabelledStatement(Es5LabelledStatement node)
         {
-            Visit(model.Identifier);
+            Visit(node.Identifier);
             _emitter.Write(_options.SpaceAfterColon ? ": " : ":");
-            Visit(model.Statement);
+            Visit(node.Statement);
         }
 
         /// <summary>
         /// Visits a 'switch' statement.
         /// </summary>
-        public override void VisitSwitchStatement(Es5SwitchStatement model)
+        public override void VisitSwitchStatement(Es5SwitchStatement node)
         {
             _emitter.Write("switch");
             _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
-            Visit(model.Condition);
+            Visit(node.Condition);
             _emitter.Write(_options.SpaceAfterClosingStatementParenthesis ? ") " : ")");
 
             _emitter.WriteBlock(() =>
             {
-                for (int i = 0; i < model.CaseClauses.Length; i++)
+                for (int i = 0; i < node.CaseClauses.Length; i++)
                 {
-                    Es5CaseClause caseClause = model.CaseClauses[i];
+                    Es5CaseClause caseClause = node.CaseClauses[i];
                     caseClause.Accept(this);
 
                     // don't write a new line if this is the last clause and there aren't any default statements
                     bool shouldWriteNewline = _options.NewlineBetweenStatements &&
-                        (i < model.CaseClauses.Length - 1 ||
-                        model.DefaultClauseStatements.Length > 0);
+                        (i < node.CaseClauses.Length - 1 ||
+                        node.DefaultClauseStatements.Length > 0);
 
                     if (shouldWriteNewline)
                     {
@@ -169,7 +169,7 @@ namespace Desalt.JavaScript.Emit
                 }
 
                 // do we need to write out any default clauses?
-                if (model.DefaultClauseStatements.Length == 0)
+                if (node.DefaultClauseStatements.Length == 0)
                 {
                     return;
                 }
@@ -182,14 +182,14 @@ namespace Desalt.JavaScript.Emit
                     _emitter.IndentLevel++;
                 }
 
-                for (int i = 0; i < model.DefaultClauseStatements.Length; i++)
+                for (int i = 0; i < node.DefaultClauseStatements.Length; i++)
                 {
-                    IEs5Statement statement = model.DefaultClauseStatements[i];
+                    IEs5Statement statement = node.DefaultClauseStatements[i];
 
                     Visit(statement);
 
                     // don't write a new line if this is the last statement
-                    if (_options.NewlineBetweenStatements && i < model.DefaultClauseStatements.Length - 1)
+                    if (_options.NewlineBetweenStatements && i < node.DefaultClauseStatements.Length - 1)
                     {
                         _emitter.WriteLine();
                     }
@@ -206,10 +206,10 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a 'case' clause.
         /// </summary>
-        public override void VisitCaseClause(Es5CaseClause model)
+        public override void VisitCaseClause(Es5CaseClause node)
         {
             _emitter.Write("case ");
-            Visit(model.Expression);
+            Visit(node.Expression);
             _emitter.Write(_options.SpaceAfterColon && !_options.NewlineBetweenStatements ? ": " : ":");
             if (_options.NewlineBetweenStatements)
             {
@@ -217,7 +217,7 @@ namespace Desalt.JavaScript.Emit
                 _emitter.IndentLevel++;
             }
 
-            foreach (IEs5Statement statement in model.Statements)
+            foreach (IEs5Statement statement in node.Statements)
             {
                 Visit(statement);
                 if (_options.NewlineBetweenStatements)
@@ -230,17 +230,17 @@ namespace Desalt.JavaScript.Emit
         /// <summary>
         /// Visits a 'throw' statement.
         /// </summary>
-        public override void VisitThrowStatement(Es5ThrowStatement model)
+        public override void VisitThrowStatement(Es5ThrowStatement node)
         {
             _emitter.Write("throw ");
-            Visit(model.Expression);
+            Visit(node.Expression);
             _emitter.Write(";");
         }
 
         /// <summary>
         /// Visits a 'try/catch/finally' statement.
         /// </summary>
-        public override void VisitTryStatement(Es5TryStatement model)
+        public override void VisitTryStatement(Es5TryStatement node)
         {
             // write the try block
             _emitter.Write("try");
@@ -249,10 +249,10 @@ namespace Desalt.JavaScript.Emit
                 _emitter.Write(" ");
             }
 
-            WriteBlock(model.TryBlock);
+            WriteBlock(node.TryBlock);
 
             // write the catch block
-            if (model.CatchBlock != null)
+            if (node.CatchBlock != null)
             {
                 if (_options.SpaceAfterClosingBlockBrace)
                 {
@@ -261,16 +261,16 @@ namespace Desalt.JavaScript.Emit
 
                 _emitter.Write("catch");
                 _emitter.Write(_options.SpaceBeforeOpeningStatementParenthesis ? " (" : "(");
-                Visit(model.CatchIdentifier);
+                Visit(node.CatchIdentifier);
                 _emitter.Write(_options.SpaceAfterClosingStatementParenthesis || _options.SpaceBeforeOpeningBlockBrace
                     ? ") "
                     : ")");
 
-                WriteBlock(model.CatchBlock);
+                WriteBlock(node.CatchBlock);
             }
 
             // write the finally block
-            if (model.FinallyBlock == null)
+            if (node.FinallyBlock == null)
             {
                 return;
             }
@@ -286,13 +286,13 @@ namespace Desalt.JavaScript.Emit
                 _emitter.Write(" ");
             }
 
-            WriteBlock(model.FinallyBlock);
+            WriteBlock(node.FinallyBlock);
         }
 
         /// <summary>
         /// Visits a 'debugger' statement.
         /// </summary>
-        public override void VisitDebuggerStatement(Es5DebuggerStatement model)
+        public override void VisitDebuggerStatement(Es5DebuggerStatement node)
         {
             _emitter.Write("debugger;");
         }

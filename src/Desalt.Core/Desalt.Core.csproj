@@ -118,11 +118,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeModels\CodeModel.cs" />
-    <Compile Include="CodeModels\CodeModelExtensions.cs" />
-    <Compile Include="CodeModels\CodeModelVisitor.cs" />
-    <Compile Include="CodeModels\ICodeModel.cs" />
-    <Compile Include="CodeModels\ICodeModelVisitor.cs" />
+    <Compile Include="Ast\AstNode.cs" />
+    <Compile Include="Ast\AstNodeExtensions.cs" />
+    <Compile Include="Ast\AstVisitor.cs" />
+    <Compile Include="Ast\IAstNode.cs" />
+    <Compile Include="Ast\IAstVisitor.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

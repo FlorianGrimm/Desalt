@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests.Emit
     using System.IO;
     using System.Linq;
     using System.Text;
-    using Desalt.Core.CodeModels;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using FluentAssertions;
@@ -25,16 +25,16 @@ namespace Desalt.Core.Tests.Emit
             .WithNewline("\n")
             .WithIndentationPrefix("\t");
 
-        private static readonly ICodeModel[] s_mockStatements = new[]
+        private static readonly IAstNode[] s_mockStatements = new[]
         {
             CreateMockStatement("One"),
             CreateMockStatement("Two"),
             CreateMockStatement("Three")
         };
 
-        private static ICodeModel CreateMockStatement(string text)
+        private static IAstNode CreateMockStatement(string text)
         {
-            var mock = new Mock<ICodeModel>();
+            var mock = new Mock<IAstNode>();
             mock.Setup(m => m.ToCodeDisplay()).Returns(text);
             return mock.Object;
         }
@@ -43,7 +43,7 @@ namespace Desalt.Core.Tests.Emit
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable ObjectCreationAsStatement
-            Action action = () => new Emitter<ICodeModel>(outputStream: null);
+            Action action = () => new Emitter<IAstNode>(outputStream: null);
             action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -51,14 +51,14 @@ namespace Desalt.Core.Tests.Emit
         [TestMethod]
         public void Ctor_should_store_the_encoding_parameter_in_the_property()
         {
-            var emitter = new Emitter<ICodeModel>(new MemoryStream(), Encoding.ASCII);
+            var emitter = new Emitter<IAstNode>(new MemoryStream(), Encoding.ASCII);
             emitter.Encoding.Should().BeSameAs(Encoding.ASCII);
         }
 
         [TestMethod]
         public void Ctor_should_use_UTF8_no_BOM_encoding_if_not_supplied()
         {
-            var emitter = new Emitter<ICodeModel>(new MemoryStream());
+            var emitter = new Emitter<IAstNode>(new MemoryStream());
             emitter.Encoding.EncodingName.Should().Be(Encoding.UTF8.EncodingName);
             emitter.Encoding.GetPreamble().Should().BeEmpty();
         }
@@ -67,7 +67,7 @@ namespace Desalt.Core.Tests.Emit
         public void Ctor_should_store_the_options_parameter_in_the_property()
         {
             var options = EmitOptions.Default.WithIndentationPrefix("\v");
-            var emitter = new Emitter<ICodeModel>(new MemoryStream(), options: options);
+            var emitter = new Emitter<IAstNode>(new MemoryStream(), options: options);
             emitter.Options.Should().BeSameAs(options);
         }
 
@@ -76,14 +76,14 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream);
+                var emitter = new Emitter<IAstNode>(stream);
                 Action action = () => emitter.WriteBlock(writeBodyAction: null);
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writeBodyAction");
 
-                action = () => emitter.WriteBlock<ICodeModel>(blockElements: null, elementAction: _ => { });
+                action = () => emitter.WriteBlock<IAstNode>(blockElements: null, elementAction: _ => { });
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("blockElements");
 
-                action = () => emitter.WriteBlock(blockElements: new ICodeModel[0], elementAction: null);
+                action = () => emitter.WriteBlock(blockElements: new IAstNode[0], elementAction: null);
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementAction");
             }
         }
@@ -94,7 +94,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             using (var writer = new StreamWriter(stream) { AutoFlush = true })
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions);
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 // ReSharper disable once AccessToDisposedClosure
                 emitter.WriteBlock(() => writer.Write("body"));
                 stream.ReadAllText().Should().Be("{\nbody\n}");
@@ -106,7 +106,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions);
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(() => emitter.Write("text"));
                 stream.ReadAllText().Should().Be("{\n\ttext\n}");
             }
@@ -120,8 +120,8 @@ namespace Desalt.Core.Tests.Emit
                 EmitOptions options = s_testOptions
                     .WithSimpleBlockOnNewLine(false)
                     .WithSpaceWithinSimpleBlockBraces(false);
-                var emitter = new Emitter<ICodeModel>(stream, options: options);
-                emitter.WriteBlock(Enumerable.Empty<ICodeModel>(), elem => emitter.Write("Element"));
+                var emitter = new Emitter<IAstNode>(stream, options: options);
+                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{}");
             }
         }
@@ -134,8 +134,8 @@ namespace Desalt.Core.Tests.Emit
                 EmitOptions options = s_testOptions
                     .WithSimpleBlockOnNewLine(false)
                     .WithSpaceWithinSimpleBlockBraces(true);
-                var emitter = new Emitter<ICodeModel>(stream, options: options);
-                emitter.WriteBlock(Enumerable.Empty<ICodeModel>(), elem => emitter.Write("Element"));
+                var emitter = new Emitter<IAstNode>(stream, options: options);
+                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
             }
         }
@@ -149,9 +149,9 @@ namespace Desalt.Core.Tests.Emit
                     .WithSimpleBlockOnNewLine(false)
                     .WithSpaceWithinSimpleBlockBraces(true)
                     .WithSpaceWithinEmptyFunctionBody(true);
-                var emitter = new Emitter<ICodeModel>(stream, options: options);
+                var emitter = new Emitter<IAstNode>(stream, options: options);
                 emitter.WriteBlock(
-                    Enumerable.Empty<ICodeModel>(), elem => emitter.Write("Element"), isFunctionBlock: true);
+                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
                 stream.ReadAllText().Should().Be("{ }");
             }
         }
@@ -165,9 +165,9 @@ namespace Desalt.Core.Tests.Emit
                     .WithSimpleBlockOnNewLine(false)
                     .WithSpaceWithinSimpleBlockBraces(true)
                     .WithSpaceWithinEmptyFunctionBody(false);
-                var emitter = new Emitter<ICodeModel>(stream, options: options);
+                var emitter = new Emitter<IAstNode>(stream, options: options);
                 emitter.WriteBlock(
-                    Enumerable.Empty<ICodeModel>(), elem => emitter.Write("Element"), isFunctionBlock: true);
+                    Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"), isFunctionBlock: true);
                 stream.ReadAllText().Should().Be("{}");
             }
         }
@@ -177,14 +177,14 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(false));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(false));
                 emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
                 stream.ReadAllText().Should().Be("{ text }");
             }
 
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(true));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSimpleBlockOnNewLine(true));
                 emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
                 stream.ReadAllText().Should().Be("{\n\ttext\n}");
             }
@@ -199,7 +199,7 @@ namespace Desalt.Core.Tests.Emit
                 .WithSpaceWithinSimpleBlockBraces(false);
 
             using (var stream = new MemoryStream())
-            using (var emitter = new Emitter<ICodeModel>(stream, options: options))
+            using (var emitter = new Emitter<IAstNode>(stream, options: options))
             {
                 // ReSharper disable once AccessToDisposedClosure
                 emitter.WriteBlock(() => emitter.Write("text"));
@@ -212,7 +212,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions);
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
                 emitter.WriteBlock(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
             }
@@ -223,8 +223,8 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream);
-                Action action = () => emitter.WriteList<ICodeModel>(null, "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                var emitter = new Emitter<IAstNode>(stream);
+                Action action = () => emitter.WriteList<IAstNode>(null, "-", elem => emitter.Write(elem.ToCodeDisplay()));
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
 
                 action = () => emitter.WriteList(s_mockStatements, null, elem => emitter.Write(elem.ToCodeDisplay()));
@@ -243,7 +243,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream);
+                var emitter = new Emitter<IAstNode>(stream);
                 emitter.WriteList(s_mockStatements, "-", elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One-Two-Three");
             }
@@ -254,7 +254,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream);
+                var emitter = new Emitter<IAstNode>(stream);
                 emitter.WriteList(s_mockStatements.Take(1), "-", elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One");
             }
@@ -265,8 +265,8 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream);
-                Action action = () => emitter.WriteCommaList<ICodeModel>(null, elem => emitter.Write(elem.ToCodeDisplay()));
+                var emitter = new Emitter<IAstNode>(stream);
+                Action action = () => emitter.WriteCommaList<IAstNode>(null, elem => emitter.Write(elem.ToCodeDisplay()));
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
 
                 action = () => emitter.WriteCommaList(s_mockStatements, elementAction: null);
@@ -279,7 +279,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions.WithSpaceAfterComma(false));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(false));
                 emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One,Two,Three");
             }
@@ -290,7 +290,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter<ICodeModel>(stream, options: s_testOptions.WithSpaceAfterComma(true));
+                var emitter = new Emitter<IAstNode>(stream, options: s_testOptions.WithSpaceAfterComma(true));
                 emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
                 stream.ReadAllText().Should().Be("One, Two, Three");
             }
