@@ -10,11 +10,12 @@ namespace Desalt.TypeScript.Emit
     using System;
     using System.IO;
     using System.Text;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast;
 
     /// <summary>
-    /// Takes an <see cref="ITsAstNode"/> and converts it to text.
+    /// Takes an <see cref="IAstNode"/> and converts it to text.
     /// </summary>
     public partial class TsEmitter : TsVisitor, IDisposable
     {

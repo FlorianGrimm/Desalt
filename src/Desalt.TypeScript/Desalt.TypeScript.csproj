@@ -50,7 +50,6 @@
     <Compile Include="Ast\Expressions\TsUnaryExpression.cs" />
     <Compile Include="Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="Ast\ImplementationSourceFile.cs" />
-    <Compile Include="Ast\ITsAstNode.cs" />
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
     <Compile Include="Ast\TsAstFactory.Types.cs" />

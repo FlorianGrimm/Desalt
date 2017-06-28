@@ -9,6 +9,7 @@ namespace Desalt.TypeScript.Tests.Emit
 {
     using System;
     using System.IO;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
@@ -24,7 +25,7 @@ namespace Desalt.TypeScript.Tests.Emit
         private static readonly ITsIdentifier s_y = Factory.Identifier("y");
         private static readonly ITsIdentifier s_z = Factory.Identifier("z");
 
-        private static void VerifyOutput(ITsAstNode node, string expected, EmitOptions options = null)
+        private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
             using (var emitter = new TsEmitter(stream, options: options ?? EmitOptions.Default))

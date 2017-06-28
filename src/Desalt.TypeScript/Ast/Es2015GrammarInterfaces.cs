@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.TypeScript.Ast.Expressions;
 
     /***********************************************************************************************
@@ -168,7 +169,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsArrayElement> Elements { get; }
     }
 
-    public interface ITsArrayElement : ITsAstNode
+    public interface ITsArrayElement : IAstNode
     {
         ITsExpression Element { get; }
 
@@ -220,7 +221,8 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
 
-    public interface ITsPropertyDefinition : ITsAstNode { }
+    public interface ITsPropertyDefinition : IAstNode
+    { }
 
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {
@@ -234,7 +236,8 @@ namespace Desalt.TypeScript.Ast
         ITsAssignmentExpression Initializer { get; }
     }
 
-    public interface ITsPropertyName : ITsAstNode { }
+    public interface ITsPropertyName : IAstNode
+    { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }
 
@@ -361,7 +364,8 @@ namespace Desalt.TypeScript.Ast
      *   CallExpression
      */
 
-    public interface ITsLeftHandSideExpression : ITsAstNode { }
+    public interface ITsLeftHandSideExpression : IAstNode
+    { }
 
     /* 12.4 Postfix Expressions
      * ------------------------
@@ -515,7 +519,7 @@ namespace Desalt.TypeScript.Ast
      *   Expression , AssignmentExpression
      */
 
-    public interface ITsExpression : ITsAstNode
+    public interface ITsExpression : IAstNode
     {
     }
 
@@ -567,7 +571,8 @@ namespace Desalt.TypeScript.Ast
      *   Declaration
      */
 
-    public interface ITsStatementListItem : ITsAstNode { }
+    public interface ITsStatementListItem : IAstNode
+    { }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------

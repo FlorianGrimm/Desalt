@@ -8,12 +8,13 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
-    /// Contains static extension methods for <see cref="ITsAstNode"/> objects.
+    /// Contains static extension methods for <see cref="IAstNode"/> objects.
     /// </summary>
     public static class TsGrammarExtensions
     {

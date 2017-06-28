@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
 
     /***********************************************************************************************
      * TypeScript Grammar, version 1.8 (Jan 2016)
@@ -40,7 +41,7 @@ namespace Desalt.TypeScript.Ast
      *   extends Type
      */
 
-    public interface ITsTypeParameter : ITsAstNode
+    public interface ITsTypeParameter : IAstNode
     {
         ITsIdentifier TypeName { get; }
         ITsType Constraint { get; }
@@ -63,7 +64,8 @@ namespace Desalt.TypeScript.Ast
      *   ConstructorType
      */
 
-    public interface ITsType : ITsAstNode { }
+    public interface ITsType : IAstNode
+    { }
 
     /* UnionOrIntersectionOrPrimaryType:
      *   UnionType
@@ -133,7 +135,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsNamespaceName : ITsQualifiedName { }
 
-    public interface ITsQualifiedName : ITsAstNode
+    public interface ITsQualifiedName : IAstNode
     {
         ImmutableArray<ITsIdentifier> Left { get; }
         ITsIdentifier Right { get; }
@@ -164,7 +166,8 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsTypeMember> TypeMembers { get; }
     }
 
-    public interface ITsTypeMember : ITsAstNode { }
+    public interface ITsTypeMember : IAstNode
+    { }
 
     /* ArrayType:
      *   PrimaryType [no LineTerminator here] [ ]
@@ -286,7 +289,7 @@ namespace Desalt.TypeScript.Ast
      *   RequiredParameterList , OptionalParameterList , RestParameter
      */
 
-    public interface ITsParameterList : ITsAstNode
+    public interface ITsParameterList : IAstNode
     {
         ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
         ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
@@ -307,7 +310,8 @@ namespace Desalt.TypeScript.Ast
      *   protected
      */
 
-    public interface ITsRequiredParameter : ITsAstNode { }
+    public interface ITsRequiredParameter : IAstNode
+    { }
 
     public interface ITsBoundRequiredParameter : ITsRequiredParameter
     {
@@ -334,7 +338,8 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern
      */
 
-    public interface ITsBindingIdentifierOrPattern : ITsAstNode { }
+    public interface ITsBindingIdentifierOrPattern : IAstNode
+    { }
 
     /* OptionalParameterList:
      *   OptionalParameter
@@ -346,7 +351,8 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier ? : StringLiteral
      */
 
-    public interface ITsOptionalParameter : ITsAstNode { }
+    public interface ITsOptionalParameter : IAstNode
+    { }
 
     public interface ITsBoundOptionalParameter : ITsOptionalParameter
     {
@@ -366,7 +372,7 @@ namespace Desalt.TypeScript.Ast
      *   ... BindingIdentifier TypeAnnotationOpt
      */
 
-    public interface ITsRestParameter : ITsAstNode
+    public interface ITsRestParameter : IAstNode
     {
         ITsIdentifier ParameterName { get; }
         ITsType ParameterType { get; }
@@ -410,7 +416,7 @@ namespace Desalt.TypeScript.Ast
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
-    public interface ITsTypeAliasDeclaration : ITsAstNode
+    public interface ITsTypeAliasDeclaration : IAstNode
     {
         ITsIdentifier AliasName { get; }
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }
@@ -553,7 +559,8 @@ namespace Desalt.TypeScript.Ast
      *   IndexMemberDeclaration
      */
 
-    public interface ITsClassElement : ITsAstNode { }
+    public interface ITsClassElement : IAstNode
+    { }
 
     /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
@@ -665,7 +672,7 @@ namespace Desalt.TypeScript.Ast
      *   DeclarationModule
      */
 
-    public interface IImplementationSourceFile : ITsAstNode
+    public interface IImplementationSourceFile : IAstNode
     {
         bool IsModule { get; }
     }
@@ -687,7 +694,8 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<IImplementationScriptElement> Elements { get; }
     }
 
-    public interface IImplementationScriptElement : ITsAstNode { }
+    public interface IImplementationScriptElement : IAstNode
+    { }
 
     /* ImplementationElement:
      *   Statement
