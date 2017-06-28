@@ -69,25 +69,13 @@ namespace Desalt.Core.Emit
         //// Methods
         //// ===========================================================================================================
 
-        public void Write(string text)
-        {
-            _writer.Write(text);
-        }
+        public void Write(string text) => _writer.Write(text);
 
-        public void WriteLine()
-        {
-            _writer.WriteLine();
-        }
+        public void WriteLine() => _writer.WriteLine();
 
-        public void WriteLine(string text)
-        {
-            _writer.WriteLine(text);
-        }
+        public void WriteLine(string text) => _writer.WriteLine(text);
 
-        public void WriteBlankLine()
-        {
-            _writer.WriteBlankLine();
-        }
+        public void WriteBlankLine() => _writer.WriteBlankLine();
 
         /// <summary>
         /// Writes a block of elements, using the options to format the code.
