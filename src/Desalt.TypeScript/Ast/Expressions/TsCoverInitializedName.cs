@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an element in an object initializer of the form 'identifer = expression'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode, ITsCoverInitializedName
+    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
 
         public override string CodeDisplay => $"{Identifier.CodeDisplay} = ${Initializer.CodeDisplay}";
 

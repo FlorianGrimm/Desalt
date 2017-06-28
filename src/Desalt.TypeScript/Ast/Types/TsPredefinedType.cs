@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : AstNode, ITsPredefinedType
+    internal class TsPredefinedType : AstNode<TsVisitor>, ITsPredefinedType
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -46,7 +46,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
 
         public override string CodeDisplay => Name;
 

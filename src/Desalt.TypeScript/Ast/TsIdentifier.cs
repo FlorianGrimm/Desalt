@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : AstNode, ITsIdentifier
+    internal class TsIdentifier : AstNode<TsVisitor>, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -63,7 +63,7 @@ namespace Desalt.TypeScript.Ast
             return identifier;
         }
 
-        public void Accept(TsVisitor visitor)
+        public override void Accept(TsVisitor visitor)
         {
             visitor.VisitIdentifier(this);
         }

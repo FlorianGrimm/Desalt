@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    internal class TsRestParameter : AstNode, ITsRestParameter
+    internal class TsRestParameter : AstNode<TsVisitor>, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
 
         public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 

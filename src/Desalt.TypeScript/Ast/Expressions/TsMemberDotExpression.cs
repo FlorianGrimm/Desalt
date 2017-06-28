@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode, ITsMemberDotExpression
+    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +40,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 

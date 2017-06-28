@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
     /// </summary>
-    internal class TsConstructSignature : AstNode, ITsConstructSignature
+    internal class TsConstructSignature : AstNode<TsVisitor>, ITsConstructSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
 
         public override string CodeDisplay
         {

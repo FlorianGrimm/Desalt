@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a class declaration acting as an expression.
     /// </summary>
-    internal class TsClassExpression : AstNode, ITsClassExpression
+    internal class TsClassExpression : AstNode<TsVisitor>, ITsClassExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
 
         public override string CodeDisplay
         {

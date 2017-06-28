@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : AstNode, ITsIndexSignature
+    internal class TsIndexSignature : AstNode<TsVisitor>, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
 
         public override string CodeDisplay
         {

@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an object literal property function.
     /// </summary>
-    internal class TsPropertyFunction : AstNode, ITsPropertyFunction
+    internal class TsPropertyFunction : AstNode<TsVisitor>, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
 
         public override string CodeDisplay =>
             $"{PropertyName.CodeDisplay} {CallSignature.CodeDisplay} {{ {FunctionBody.ToElidedList()} }}";

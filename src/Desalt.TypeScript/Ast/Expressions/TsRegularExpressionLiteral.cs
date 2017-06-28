@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : AstNode<TsVisitor>, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 

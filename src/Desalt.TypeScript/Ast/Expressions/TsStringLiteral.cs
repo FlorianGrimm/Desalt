@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : AstNode, ITsStringLiteral
+    internal class TsStringLiteral : AstNode<TsVisitor>, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,7 +38,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
 
         public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 

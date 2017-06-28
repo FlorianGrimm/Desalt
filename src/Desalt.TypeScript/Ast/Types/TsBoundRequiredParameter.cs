@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a bound required parameter in a parameter list for a function.
     /// </summary>
-    internal class TsBoundRequiredParameter : AstNode, ITsBoundRequiredParameter
+    internal class TsBoundRequiredParameter : AstNode<TsVisitor>, ITsBoundRequiredParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBoundRequiredParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBoundRequiredParameter(this);
 
         public override string CodeDisplay
         {

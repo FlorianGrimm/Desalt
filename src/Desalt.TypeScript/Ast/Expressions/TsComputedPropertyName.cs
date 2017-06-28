@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property name inside of an object of the form '[ expression ]'.
     /// </summary>
-    internal class TsComputedPropertyName : AstNode, ITsComputedPropertyName
+    internal class TsComputedPropertyName : AstNode<TsVisitor>, ITsComputedPropertyName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
 
         public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 

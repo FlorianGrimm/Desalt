@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript function or constructor type.
     /// </summary>
-    internal class TsFunctionOrConstructorType : AstNode, ITsFunctionType, ITsConstructorType
+    internal class TsFunctionOrConstructorType : AstNode<TsVisitor>, ITsFunctionType, ITsConstructorType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor)
+        public override void Accept(TsVisitor visitor)
         {
             if (IsConstructorType)
             {

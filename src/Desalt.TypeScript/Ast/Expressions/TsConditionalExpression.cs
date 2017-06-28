@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
+    internal class TsConditionalExpression : AstNode<TsVisitor>, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 

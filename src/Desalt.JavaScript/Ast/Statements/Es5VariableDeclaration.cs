@@ -8,14 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'
     /// keyword - that's the <see cref="Es5VariableStatement"/>).
     /// </summary>
-    public sealed class Es5VariableDeclaration : AstNode
+    public sealed class Es5VariableDeclaration : Es5AstNode
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,10 +37,9 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override string CodeDisplay
-        {
-            get { return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}"; }
-        }
+        public override string CodeDisplay => Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}";
+
+        public override void Accept(Es5Visitor visitor) => throw new NotSupportedException();
 
         public override void Emit(Emitter emitter)
         {

@@ -17,7 +17,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
     /// </summary>
-    internal class TsQualifiedName : AstNode, ITsQualifiedName
+    internal class TsQualifiedName : AstNode<TsVisitor>, ITsQualifiedName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +40,7 @@ namespace Desalt.TypeScript.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
 
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 

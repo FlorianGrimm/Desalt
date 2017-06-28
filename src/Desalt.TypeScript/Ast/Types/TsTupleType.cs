@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript tuple type.
     /// </summary>
-    internal class TsTupleType : AstNode, ITsTupleType
+    internal class TsTupleType : AstNode<TsVisitor>, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,7 +38,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 

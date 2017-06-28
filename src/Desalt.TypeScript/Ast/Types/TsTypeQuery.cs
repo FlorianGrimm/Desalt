@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a 'typeof' query.
     /// </summary>
-    internal class TsTypeQuery : AstNode, ITsTypeQuery
+    internal class TsTypeQuery : AstNode<TsVisitor>, ITsTypeQuery
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
 
         public override string CodeDisplay => $"typeof {Query}";
 

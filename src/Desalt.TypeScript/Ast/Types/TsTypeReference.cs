@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : AstNode, ITsTypeReference
+    internal class TsTypeReference : AstNode<TsVisitor>, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
 
         public override string CodeDisplay
         {

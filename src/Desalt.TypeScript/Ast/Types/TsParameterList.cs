@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a parameter list of the form '(parameter: type)'.
     /// </summary>
-    internal class TsParameterList : AstNode, ITsParameterList
+    internal class TsParameterList : AstNode<TsVisitor>, ITsParameterList
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
 
         public override string CodeDisplay
         {

@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a binary expression.
     /// </summary>
-    internal class TsBinaryExpression : AstNode, ITsBinaryExpression
+    internal class TsBinaryExpression : AstNode<TsVisitor>, ITsBinaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 

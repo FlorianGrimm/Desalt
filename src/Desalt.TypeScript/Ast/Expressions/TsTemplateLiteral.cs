@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode, ITsTemplateLiteral
+    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
 
         public override string CodeDisplay
         {

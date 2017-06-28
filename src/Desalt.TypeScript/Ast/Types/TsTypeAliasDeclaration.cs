@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
     /// </summary>
-    internal class TsTypeAliasDeclaration : AstNode, ITsTypeAliasDeclaration
+    internal class TsTypeAliasDeclaration : AstNode<TsVisitor>, ITsTypeAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
 
         public override string CodeDisplay
         {

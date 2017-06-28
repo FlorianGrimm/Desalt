@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    public class ImplementationSourceFile : AstNode, ITsAstNode
+    public class ImplementationSourceFile : AstNode<TsVisitor>, ITsAstNode
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
 
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 

@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsNumericLiteral : AstNode, ITsNumericLiteral
+    internal class TsNumericLiteral : AstNode<TsVisitor>, ITsNumericLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -66,7 +66,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitNumericLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitNumericLiteral(this);
 
         public override string CodeDisplay
         {

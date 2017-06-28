@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a function declaration acting as an expression.
     /// </summary>
-    internal class TsFunctionExpression : AstNode, ITsFunctionExpression
+    internal class TsFunctionExpression : AstNode<TsVisitor>, ITsFunctionExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
 
         public override string CodeDisplay =>
             $"function {FunctionName.CodeDisplay}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";

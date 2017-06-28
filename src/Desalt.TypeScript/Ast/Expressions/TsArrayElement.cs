@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an element in an array.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    internal class TsArrayElement : AstNode<TsVisitor>, ITsArrayElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
 
         public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 

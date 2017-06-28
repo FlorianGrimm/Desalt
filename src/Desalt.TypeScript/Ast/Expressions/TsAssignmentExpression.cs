@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    internal class TsAssignmentExpression : AstNode, ITsAssignmentExpression
+    internal class TsAssignmentExpression : AstNode<TsVisitor>, ITsAssignmentExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 

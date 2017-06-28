@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    internal class TsUnaryExpression : AstNode, ITsUnaryExpression
+    internal class TsUnaryExpression : AstNode<TsVisitor>, ITsUnaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
 
         public override string CodeDisplay
         {

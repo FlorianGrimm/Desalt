@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : AstNode, ITsPropertySignature
+    internal class TsPropertySignature : AstNode<TsVisitor>, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
 
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.ToTypeAnnotationCodeDisplay();

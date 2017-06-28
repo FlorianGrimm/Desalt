@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
+    internal class TsPropertyAssignment : AstNode<TsVisitor>, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
 
         public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 

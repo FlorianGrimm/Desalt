@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteral : AstNode, ITsArrayLiteral
+    internal class TsArrayLiteral : AstNode<TsVisitor>, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 

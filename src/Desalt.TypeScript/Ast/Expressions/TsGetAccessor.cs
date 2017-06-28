@@ -16,7 +16,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
     /// </summary>
-    internal class TsGetAccessor : AstNode, ITsGetAccessor
+    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
 
         public override string CodeDisplay =>
             $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";

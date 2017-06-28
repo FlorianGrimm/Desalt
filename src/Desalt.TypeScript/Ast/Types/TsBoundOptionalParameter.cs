@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : AstNode<TsVisitor>, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +45,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
 
         public override string CodeDisplay
         {

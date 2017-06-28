@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
+    internal class TsParenthesizedType : AstNode<TsVisitor>, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
 
         public override string CodeDisplay => $"({Type.CodeDisplay})";
 

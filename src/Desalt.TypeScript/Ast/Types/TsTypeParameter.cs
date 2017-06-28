@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
     /// </summary>
-    internal class TsTypeParameter : AstNode, ITsTypeParameter
+    internal class TsTypeParameter : AstNode<TsVisitor>, ITsTypeParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
 
         public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 

@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.
     /// </summary>
-    internal class TsCallSignature : AstNode, ITsCallSignature
+    internal class TsCallSignature : AstNode<TsVisitor>, ITsCallSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
 
         public override string CodeDisplay
         {

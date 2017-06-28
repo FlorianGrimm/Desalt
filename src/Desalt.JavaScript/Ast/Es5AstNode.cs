@@ -12,8 +12,7 @@ namespace Desalt.JavaScript.Ast
     /// <summary>
     /// Abstract base class for all ES5 abstract syntax tree (AST) nodes.
     /// </summary>
-    public abstract class Es5AstNode : AstNode, IEs5AstNode
+    public abstract class Es5AstNode : AstNode<Es5Visitor>, IEs5AstNode
     {
-        public abstract void Accept(Es5Visitor visitor);
     }
 }

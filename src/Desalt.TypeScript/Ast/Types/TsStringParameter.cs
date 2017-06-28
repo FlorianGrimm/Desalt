@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringParameter : AstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
+    internal class TsStringParameter : AstNode<TsVisitor>, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
 
         public override string CodeDisplay
         {

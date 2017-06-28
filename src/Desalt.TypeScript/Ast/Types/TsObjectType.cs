@@ -15,7 +15,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : AstNode, ITsObjectType
+    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,7 +36,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 

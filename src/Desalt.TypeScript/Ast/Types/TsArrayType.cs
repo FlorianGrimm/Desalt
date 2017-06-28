@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : AstNode, ITsArrayType
+    internal class TsArrayType : AstNode<TsVisitor>, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,7 +35,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
 
         public override string CodeDisplay => $"{Type.CodeDisplay}[]";
 

@@ -14,7 +14,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression
+    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,7 +37,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
 
         public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 
