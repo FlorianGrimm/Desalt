@@ -68,11 +68,6 @@ namespace Desalt.JavaScript.Ast
             visitor.VisitIdentifier(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitIdentifier(this);
-        }
-
         public override string CodeDisplay => Text;
 
         public override void Emit(Emitter emitter)

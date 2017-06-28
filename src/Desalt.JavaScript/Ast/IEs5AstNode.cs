@@ -15,7 +15,5 @@ namespace Desalt.JavaScript.Ast
     public interface IEs5AstNode : IAstNode
     {
         void Accept(Es5Visitor visitor);
-
-        T Accept<T>(Es5Visitor<T> visitor);
     }
 }

@@ -37,8 +37,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeQuery(this);
-
         public override string CodeDisplay => $"typeof {Query}";
 
         public override void Emit(Emitter emitter)

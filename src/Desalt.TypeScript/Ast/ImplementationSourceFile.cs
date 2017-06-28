@@ -39,8 +39,6 @@ namespace Desalt.TypeScript.Ast
 
         public void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
-
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
         public override void Emit(Emitter emitter)

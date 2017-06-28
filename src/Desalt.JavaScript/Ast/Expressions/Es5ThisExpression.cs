@@ -37,11 +37,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitThisExpresssion(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitThisExpresssion(this);
-        }
-
         public override string CodeDisplay => "this";
 
         public override void Emit(Emitter emitter)

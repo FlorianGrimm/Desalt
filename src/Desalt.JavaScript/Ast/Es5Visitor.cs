@@ -35,33 +35,4 @@ namespace Desalt.JavaScript.Ast
         /// </summary>
         public virtual void VisitIdentifier(Es5Identifier node) => DefaultVisit(node);
     }
-
-    /// <summary>
-    /// Represents an <see cref="Es5AstNode"/> visitor that visits only the single node passed
-    /// into its Visit method and produces a value of the type specified by the <typeparamref
-    /// name="TResult"/> parameter.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the return value this visitor's Visit method.</typeparam>
-    public abstract partial class Es5Visitor<TResult> : AstVisitor<IEs5AstNode, TResult>
-    {
-        public override TResult Visit(IEs5AstNode node)
-        {
-            return node != null ? node.Accept(this) : default(TResult);
-        }
-
-        /// <summary>
-        /// Visits a function declaration of the form 'function name?(parameters) { body }'.
-        /// </summary>
-        public virtual TResult VisitFunctionDeclaration(Es5FunctionDeclaration node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a JavaScript program.
-        /// </summary>
-        public virtual TResult VisitProgram(Es5Program node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a JavaScript identifier.
-        /// </summary>
-        public virtual TResult VisitIdentifier(Es5Identifier node) => DefaultVisit(node);
-    }
 }

@@ -45,11 +45,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitAssignmentExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitAssignmentExpression(this);
-        }
-
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
         public override void Emit(Emitter emitter)

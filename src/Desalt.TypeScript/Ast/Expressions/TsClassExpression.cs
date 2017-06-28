@@ -45,8 +45,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitClassExpression(this);
-
         public override string CodeDisplay
         {
             get

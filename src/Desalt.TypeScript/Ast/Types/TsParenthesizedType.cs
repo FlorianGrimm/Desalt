@@ -37,8 +37,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParenthesizedType(this);
-
         public override string CodeDisplay => $"({Type.CodeDisplay})";
 
         public override void Emit(Emitter emitter)

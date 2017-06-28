@@ -40,8 +40,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitStringLiteral(this);
-
         public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 
         public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);

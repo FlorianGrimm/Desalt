@@ -43,8 +43,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
-
         public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 
         public override void Emit(Emitter emitter)

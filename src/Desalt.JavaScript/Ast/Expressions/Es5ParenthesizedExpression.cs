@@ -38,11 +38,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitParenthesizedExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitParenthesizedExpression(this);
-        }
-
         public override string CodeDisplay => $"({Expression})";
 
         public override void Emit(Emitter emitter)

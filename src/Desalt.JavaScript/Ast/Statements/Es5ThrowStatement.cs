@@ -39,11 +39,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitThrowStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitThrowStatement(this);
-        }
-
         public override string CodeDisplay
         {
             get { return $"throw {Expression};"; }

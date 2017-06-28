@@ -39,8 +39,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitCoverInitializedName(this);
-
         public override string CodeDisplay => $"{Identifier.CodeDisplay} = ${Initializer.CodeDisplay}";
 
         public override void Emit(Emitter emitter)

@@ -39,8 +39,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertyAssignment(this);
-
         public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 
         public override void Emit(Emitter emitter)

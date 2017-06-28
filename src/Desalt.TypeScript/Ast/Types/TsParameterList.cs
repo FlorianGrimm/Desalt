@@ -45,8 +45,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParameterList(this);
-
         public override string CodeDisplay
         {
             get

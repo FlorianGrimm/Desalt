@@ -44,11 +44,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitCaseClause(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitCaseClause(this);
-        }
-
         public override string CodeDisplay
         {
             get { return $"case {Expression}: {Statements.ToElidedList()}"; }

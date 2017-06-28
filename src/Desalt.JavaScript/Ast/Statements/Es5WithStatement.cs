@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitWithStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitWithStatement(this);
-        }
-
         public override string CodeDisplay => $"with ({Expression}) {Statement}";
 
         public override void Emit(Emitter emitter)

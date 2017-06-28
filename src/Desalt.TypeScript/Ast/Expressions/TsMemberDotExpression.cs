@@ -42,8 +42,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberDotExpression(this);
-
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
         public override void Emit(Emitter emitter)

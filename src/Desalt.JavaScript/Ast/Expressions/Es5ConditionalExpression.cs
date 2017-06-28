@@ -46,11 +46,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitConditionalExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitConditionalExpression(this);
-        }
-
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
         public override void Emit(Emitter emitter)

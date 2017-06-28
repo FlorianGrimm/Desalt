@@ -60,11 +60,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitCallExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitCallExpression(this);
-        }
-
         public override string CodeDisplay
         {
             get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }

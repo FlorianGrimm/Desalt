@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast
             visitor.VisitProgram(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitProgram(this);
-        }
-
         public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
 
         public override void Emit(Emitter emitter)

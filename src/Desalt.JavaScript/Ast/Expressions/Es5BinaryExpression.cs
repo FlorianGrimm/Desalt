@@ -47,11 +47,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitBinaryExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitBinaryExpression(this);
-        }
-
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
         public override void Emit(Emitter emitter)

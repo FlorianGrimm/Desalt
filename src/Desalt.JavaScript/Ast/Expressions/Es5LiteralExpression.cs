@@ -55,11 +55,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitLiteralExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitLiteralExpression(this);
-        }
-
         public override string CodeDisplay
         {
             get

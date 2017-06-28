@@ -35,8 +35,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitThis(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThis(this);
-
         public override string CodeDisplay => "this";
 
         public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);

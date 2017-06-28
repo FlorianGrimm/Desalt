@@ -43,11 +43,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitPropertyValueAssignment(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitPropertyValueAssignment(this);
-        }
-
         public override string CodeDisplay => $"{PropertyName}: {Value}";
 
         public override void Emit(Emitter emitter)

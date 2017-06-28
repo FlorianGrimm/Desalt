@@ -35,8 +35,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitNullLiteral(this);
-
         public override string CodeDisplay => "null";
 
         public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);

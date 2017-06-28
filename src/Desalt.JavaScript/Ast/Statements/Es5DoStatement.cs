@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitDoStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitDoStatement(this);
-        }
-
         public override string CodeDisplay
         {
             get { return $"do ({Condition}) {Statement}"; }

@@ -37,11 +37,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitEmptyStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitEmptyStatement(this);
-        }
-
         public override string CodeDisplay => ";";
 
         public override void Emit(Emitter emitter)

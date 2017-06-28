@@ -39,8 +39,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitUnaryExpression(this);
-
         public override string CodeDisplay
         {
             get

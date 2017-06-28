@@ -42,8 +42,6 @@ namespace Desalt.TypeScript.Ast
 
         public void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitQualifiedName(this);
-
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
         public override void Emit(Emitter emitter)

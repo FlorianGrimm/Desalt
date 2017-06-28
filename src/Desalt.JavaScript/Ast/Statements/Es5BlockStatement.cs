@@ -40,11 +40,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitBlockStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitBlockStatement(this);
-        }
-
         public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
 
         public override void Emit(Emitter emitter)

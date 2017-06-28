@@ -44,11 +44,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitContinueStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitContinueStatement(this);
-        }
-
         public override string CodeDisplay
         {
             get { return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";"; }

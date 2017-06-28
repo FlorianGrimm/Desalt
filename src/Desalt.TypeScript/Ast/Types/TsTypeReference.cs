@@ -41,8 +41,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeReference(this);
-
         public override string CodeDisplay
         {
             get

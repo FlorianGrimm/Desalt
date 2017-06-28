@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitUnaryExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitUnaryExpression(this);
-        }
-
         public override string CodeDisplay
         {
             get

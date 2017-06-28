@@ -44,8 +44,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertySignature(this);
-
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.ToTypeAnnotationCodeDisplay();
 

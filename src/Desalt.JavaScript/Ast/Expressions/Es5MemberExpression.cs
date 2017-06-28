@@ -66,11 +66,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitMemberExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitMemberExpression(this);
-        }
-
         public override string CodeDisplay
         {
             get { return MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}"); }

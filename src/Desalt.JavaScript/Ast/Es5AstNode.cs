@@ -15,7 +15,5 @@ namespace Desalt.JavaScript.Ast
     public abstract class Es5AstNode : AstNode, IEs5AstNode
     {
         public abstract void Accept(Es5Visitor visitor);
-
-        public abstract T Accept<T>(Es5Visitor<T> visitor);
     }
 }

@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitWhileStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitWhileStatement(this);
-        }
-
         public override string CodeDisplay => $"while ({Condition}) {Statement}";
 
         public override void Emit(Emitter emitter)

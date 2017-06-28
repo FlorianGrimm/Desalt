@@ -44,8 +44,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
-
         public override string CodeDisplay => Value ? "true" : "false";
 
         public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);

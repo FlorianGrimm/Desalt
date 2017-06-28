@@ -40,11 +40,6 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitObjectLiteralExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitObjectLiteralExpression(this);
-        }
-
         public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
 
         public override void Emit(Emitter emitter)

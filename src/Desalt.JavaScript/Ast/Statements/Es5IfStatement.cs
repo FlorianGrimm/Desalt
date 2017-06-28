@@ -49,11 +49,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitIfStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitIfStatement(this);
-        }
-
         public override string CodeDisplay
         {
             get

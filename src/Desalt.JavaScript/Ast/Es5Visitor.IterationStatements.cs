@@ -31,27 +31,4 @@ namespace Desalt.JavaScript.Ast
         /// </summary>
         public virtual void VisitForInStatement(Es5ForInStatement node) => DefaultVisit(node);
     }
-
-    public abstract partial class Es5Visitor<TResult>
-    {
-        /// <summary>
-        /// Visits a 'do-while' iteration statement.
-        /// </summary>
-        public virtual TResult VisitDoStatement(Es5DoStatement node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a 'while' iteration statement.
-        /// </summary>
-        public virtual TResult VisitWhileStatement(Es5WhileStatement node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a 'for' iteration statement.
-        /// </summary>
-        public virtual TResult VisitForStatement(Es5ForStatement node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a 'for-in' iteration statement.
-        /// </summary>
-        public virtual TResult VisitForInStatement(Es5ForInStatement node) => DefaultVisit(node);
-    }
 }

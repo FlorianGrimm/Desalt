@@ -37,11 +37,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitDebuggerStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitDebuggerStatement(this);
-        }
-
         public override string CodeDisplay => "debugger;";
 
         public override void Emit(Emitter emitter)

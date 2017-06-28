@@ -41,11 +41,6 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitVariableStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitVariableStatement(this);
-        }
-
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
         public override void Emit(Emitter emitter)

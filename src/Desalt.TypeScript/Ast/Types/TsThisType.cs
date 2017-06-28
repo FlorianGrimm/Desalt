@@ -39,8 +39,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitThisType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThisType(this);
-
         public override string CodeDisplay => "this";
 
         public override void Emit(Emitter emitter) => emitter.Write("this");

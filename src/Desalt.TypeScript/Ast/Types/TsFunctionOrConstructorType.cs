@@ -69,9 +69,6 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public T Accept<T>(TsVisitor<T> visitor) =>
-            IsConstructorType ? visitor.VisitConstructorType(this) : visitor.VisitFunctionType(this);
-
         public override string CodeDisplay
         {
             get

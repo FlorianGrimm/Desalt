@@ -44,8 +44,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitConditionalExpression(this);
-
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
         public override void Emit(Emitter emitter)

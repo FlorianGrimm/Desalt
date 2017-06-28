@@ -40,8 +40,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTupleType(this);
-
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
         public override void Emit(Emitter emitter)

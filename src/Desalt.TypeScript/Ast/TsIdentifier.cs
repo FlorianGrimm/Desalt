@@ -68,11 +68,6 @@ namespace Desalt.TypeScript.Ast
             visitor.VisitIdentifier(this);
         }
 
-        public T Accept<T>(TsVisitor<T> visitor)
-        {
-            return visitor.VisitIdentifier(this);
-        }
-
         public override string CodeDisplay => Text;
 
         public override void Emit(Emitter emitter) => emitter.Write(Text);
