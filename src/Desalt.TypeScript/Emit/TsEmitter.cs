@@ -22,7 +22,7 @@ namespace Desalt.TypeScript.Emit
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly Emitter<ITsAstNode> _emitter;
+        private readonly Emitter _emitter;
         private readonly EmitOptions _options;
 
         //// ===========================================================================================================
@@ -31,7 +31,7 @@ namespace Desalt.TypeScript.Emit
 
         public TsEmitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
         {
-            _emitter = new Emitter<ITsAstNode>(outputStream, encoding, options);
+            _emitter = new Emitter(outputStream, encoding, options);
             _options = options;
         }
 

@@ -18,7 +18,7 @@ namespace Desalt.Core.Emit
     /// <summary>
     /// General-purpose emitter for serializing abstract syntax nodes into code.
     /// </summary>
-    public class Emitter<T> : IDisposable where T : IAstNode
+    public class Emitter : IDisposable
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -96,7 +96,7 @@ namespace Desalt.Core.Emit
         /// <param name="blockElements">The elements to visit.</param>
         /// <param name="elementAction">The action to perform on each element.</param>
         public void WriteBlock<TElement>(IEnumerable<TElement> blockElements, Action<TElement> elementAction)
-            where TElement : T
+            where TElement : IAstNode
         {
             if (blockElements == null) { throw new ArgumentNullException(nameof(blockElements)); }
             if (elementAction == null) { throw new ArgumentNullException(nameof(elementAction)); }
