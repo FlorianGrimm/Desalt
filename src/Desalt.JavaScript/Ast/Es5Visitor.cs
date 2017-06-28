@@ -15,10 +15,7 @@ namespace Desalt.JavaScript.Ast
     /// </summary>
     public abstract partial class Es5Visitor : AstVisitor
     {
-        public override void Visit(IAstNode node)
-        {
-            (node as IAstNode)?.Accept(this);
-        }
+        public override void Visit(IAstNode node) => node?.Accept(this);
 
         /// <summary>
         /// Visits a function declaration of the form 'function name?(parameters) { body }'.
