@@ -75,7 +75,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             switch (Operator)
             {
@@ -83,7 +83,7 @@ namespace Desalt.JavaScript.Ast.Expressions
                 case Es5UnaryOperator.Void:
                 case Es5UnaryOperator.Typeof:
                     writer.Write($"{Operator.ToCodeDisplay()}");
-                    Operand.WriteFullCodeDisplay(writer);
+                    Operand.Emit(writer);
                     break;
 
                 case Es5UnaryOperator.PrefixIncrement:
@@ -93,12 +93,12 @@ namespace Desalt.JavaScript.Ast.Expressions
                 case Es5UnaryOperator.BitwiseNot:
                 case Es5UnaryOperator.LogicalNot:
                     writer.Write(Operator.ToCodeDisplay());
-                    Operand.WriteFullCodeDisplay(writer);
+                    Operand.Emit(writer);
                     break;
 
                 case Es5UnaryOperator.PostfixIncrement:
                 case Es5UnaryOperator.PostfixDecrement:
-                    Operand.WriteFullCodeDisplay(writer);
+                    Operand.Emit(writer);
                     writer.Write(Operator.ToCodeDisplay());
                     break;
 

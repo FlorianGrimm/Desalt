@@ -57,10 +57,10 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("class ");
-            ClassName?.WriteFullCodeDisplay(writer);
+            ClassName?.Emit(writer);
 
             if (Heritage != null)
             {
@@ -70,7 +70,7 @@ namespace Desalt.TypeScript.Ast.Expressions
                 }
 
                 writer.Write("extends ");
-                Heritage.WriteFullCodeDisplay(writer);
+                Heritage.Emit(writer);
             }
 
             WriteBlock(writer, ClassBody);

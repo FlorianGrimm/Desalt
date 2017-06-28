@@ -41,9 +41,9 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{Type.CodeDisplay}[]";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            Type.WriteFullCodeDisplay(writer);
+            Type.Emit(writer);
             writer.Write("[]");
         }
     }

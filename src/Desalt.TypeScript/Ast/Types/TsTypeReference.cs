@@ -56,9 +56,9 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            TypeName.WriteFullCodeDisplay(writer);
+            TypeName.Emit(writer);
 
             if (TypeArguments.Length > 0)
             {

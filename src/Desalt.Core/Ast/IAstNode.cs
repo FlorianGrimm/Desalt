@@ -41,6 +41,6 @@ namespace Desalt.Core.Ast
         /// should not be used to actually emit generated code.
         /// </summary>
         /// <param name="writer">The writer to use.</param>
-        void WriteFullCodeDisplay(IndentedTextWriter writer);
+        void Emit(IndentedTextWriter writer);
     }
 }

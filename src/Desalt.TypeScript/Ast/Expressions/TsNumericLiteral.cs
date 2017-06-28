@@ -94,6 +94,6 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(CodeDisplay);
+        public override void Emit(IndentedTextWriter writer) => writer.Write(CodeDisplay);
     }
 }

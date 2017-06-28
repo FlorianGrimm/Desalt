@@ -49,10 +49,10 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"throw {Expression};"; }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("throw ");
-            Expression.WriteFullCodeDisplay(writer);
+            Expression.Emit(writer);
             writer.Write(";");
         }
     }

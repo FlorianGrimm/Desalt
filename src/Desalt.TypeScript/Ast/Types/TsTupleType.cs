@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             WriteItems(writer, ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

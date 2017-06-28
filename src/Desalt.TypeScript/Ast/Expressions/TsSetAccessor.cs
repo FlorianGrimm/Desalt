@@ -55,12 +55,12 @@ namespace Desalt.TypeScript.Ast.Expressions
             $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
             $"{{{FunctionBody.ToElidedList()}}}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("set ");
-            PropertyName.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(writer);
             writer.Write("(");
-            ParameterName.WriteFullCodeDisplay(writer);
+            ParameterName.Emit(writer);
             ParameterType.WriteTypeAnnotation(writer);
             writer.Write(") ");
             WriteBlock(writer, FunctionBody);

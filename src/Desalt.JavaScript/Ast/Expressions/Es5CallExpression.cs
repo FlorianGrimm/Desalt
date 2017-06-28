@@ -70,14 +70,14 @@ namespace Desalt.JavaScript.Ast.Expressions
             get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             if (IsNewCall)
             {
                 writer.Write("new ");
             }
 
-            CallExpression.WriteFullCodeDisplay(writer);
+            CallExpression.Emit(writer);
             WriteParameterList(writer, Arguments);
         }
 

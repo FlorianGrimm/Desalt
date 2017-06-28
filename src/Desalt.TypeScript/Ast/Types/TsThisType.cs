@@ -43,6 +43,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => "this";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write("this");
+        public override void Emit(IndentedTextWriter writer) => writer.Write("this");
     }
 }

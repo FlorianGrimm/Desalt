@@ -49,9 +49,9 @@ namespace Desalt.TypeScript.Ast.Types
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.ToTypeAnnotationCodeDisplay();
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            PropertyName.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(writer);
             if (IsOptional)
             {
                 writer.Write("?");

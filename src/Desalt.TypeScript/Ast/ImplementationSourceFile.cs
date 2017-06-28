@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
         }

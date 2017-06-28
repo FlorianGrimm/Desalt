@@ -90,7 +90,7 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             WriteItems(
                 writer, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",

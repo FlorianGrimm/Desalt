@@ -45,10 +45,10 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"return {Expression};";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("return ");
-            Expression.WriteFullCodeDisplay(writer);
+            Expression.Emit(writer);
             writer.Write(";");
         }
     }

@@ -56,10 +56,10 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"switch ({Condition}) {{...}}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("switch (");
-            Condition.WriteFullCodeDisplay(writer);
+            Condition.Emit(writer);
             writer.Write(") ");
 
             WriteItems(writer, CaseClauses, indent: true, prefix: "{", itemDelimiter: Environment.NewLine);

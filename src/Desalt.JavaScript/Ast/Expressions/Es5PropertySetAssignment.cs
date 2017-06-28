@@ -56,10 +56,10 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"set {PropertyName}({SetParameter}) {{}}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write($"set {PropertyName}(");
-            SetParameter.WriteFullCodeDisplay(writer);
+            SetParameter.Emit(writer);
             writer.Write(") ");
             WriteBlock(writer, FunctionBody);
         }

@@ -43,16 +43,16 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}"; }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            Identifier.WriteFullCodeDisplay(writer);
+            Identifier.Emit(writer);
 
             if (Initializer == null)
             {
                 return;
             }
             writer.Write(" = ");
-            Initializer.WriteFullCodeDisplay(writer);
+            Initializer.Emit(writer);
         }
     }
 }

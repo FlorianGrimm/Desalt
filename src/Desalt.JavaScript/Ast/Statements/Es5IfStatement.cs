@@ -68,14 +68,14 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("if (");
-            IfExpression.WriteFullCodeDisplay(writer);
+            IfExpression.Emit(writer);
             writer.WriteLine(")");
 
             writer.IndentLevel++;
-            IfStatement.WriteFullCodeDisplay(writer);
+            IfStatement.Emit(writer);
             writer.IndentLevel--;
 
             if (ElseStatement == null)
@@ -85,7 +85,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
             writer.WriteLine("else");
             writer.IndentLevel++;
-            ElseStatement.WriteFullCodeDisplay(writer);
+            ElseStatement.Emit(writer);
             writer.IndentLevel--;
         }
     }

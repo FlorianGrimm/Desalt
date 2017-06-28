@@ -49,7 +49,7 @@ namespace Desalt.Core.Ast
             using (var stringWriter = new StringWriter())
             using (var writer = new IndentedTextWriter(stringWriter))
             {
-                WriteFullCodeDisplay(writer);
+                Emit(writer);
                 return stringWriter.ToString();
             }
         }
@@ -60,7 +60,7 @@ namespace Desalt.Core.Ast
         /// should not be used to actually emit generated code.
         /// </summary>
         /// <param name="writer">The writer to use.</param>
-        public abstract void WriteFullCodeDisplay(IndentedTextWriter writer);
+        public abstract void Emit(IndentedTextWriter writer);
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -186,7 +186,7 @@ namespace Desalt.Core.Ast
                 for (int i = 0; i < items.Count; i++)
                 {
                     IAstNode item = items[i];
-                    item.WriteFullCodeDisplay(writer);
+                    item.Emit(writer);
 
                     // write the delimiter
                     if (i < items.Count - 1 || delimiterAfterLastItem)

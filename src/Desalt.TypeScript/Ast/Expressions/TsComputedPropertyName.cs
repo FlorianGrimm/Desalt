@@ -41,10 +41,10 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("[");
-            Expression.WriteFullCodeDisplay(writer);
+            Expression.Emit(writer);
             writer.Write("]");
         }
     }

@@ -68,23 +68,23 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("for (");
             if (LeftSide != null)
             {
-                LeftSide.WriteFullCodeDisplay(writer);
+                LeftSide.Emit(writer);
             }
             else
             {
-                Declaration.WriteFullCodeDisplay(writer);
+                Declaration.Emit(writer);
             }
 
             writer.Write(" in ");
-            RightSide.WriteFullCodeDisplay(writer);
+            RightSide.Emit(writer);
             writer.Write(")");
 
-            Statement.WriteFullCodeDisplay(writer);
+            Statement.Emit(writer);
         }
     }
 }

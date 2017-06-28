@@ -58,11 +58,11 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             WriteItems(writer, RequiredParameters, indent: false, itemDelimiter: ", ");
             WriteItems(writer, OptionalParameters, indent: false, itemDelimiter: ", ");
-            RestParameter?.WriteFullCodeDisplay(writer);
+            RestParameter?.Emit(writer);
         }
     }
 }

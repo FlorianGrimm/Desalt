@@ -48,11 +48,11 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"{Identifier}: {Statement}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            Identifier.WriteFullCodeDisplay(writer);
+            Identifier.Emit(writer);
             writer.Write(": ");
-            Statement.WriteFullCodeDisplay(writer);
+            Statement.Emit(writer);
         }
     }
 }

@@ -129,7 +129,7 @@ namespace Desalt.TypeScript.Ast
             if (type != null)
             {
                 writer.Write(": ");
-                type.WriteFullCodeDisplay(writer);
+                type.Emit(writer);
             }
         }
     }

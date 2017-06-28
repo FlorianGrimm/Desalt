@@ -87,7 +87,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write(CodeDisplay);
         }

@@ -64,7 +64,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("`");
             foreach (TsTemplatePart part in Parts)
@@ -77,7 +77,7 @@ namespace Desalt.TypeScript.Ast.Expressions
                 if (part.Expression != null)
                 {
                     writer.Write("${");
-                    part.Expression.WriteFullCodeDisplay(writer);
+                    part.Expression.Emit(writer);
                     writer.Write("}");
                 }
             }

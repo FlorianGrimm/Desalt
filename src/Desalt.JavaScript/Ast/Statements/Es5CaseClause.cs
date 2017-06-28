@@ -54,10 +54,10 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"case {Expression}: {Statements.ToElidedList()}"; }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.WriteLine("case ");
-            Expression.WriteFullCodeDisplay(writer);
+            Expression.Emit(writer);
             writer.Write(": ");
             WriteItems(writer, Statements, indent: true, itemDelimiter: Environment.NewLine);
         }

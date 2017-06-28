@@ -54,11 +54,11 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(writer);
             writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.WriteFullCodeDisplay(writer);
+            RightSide.Emit(writer);
         }
     }
 }

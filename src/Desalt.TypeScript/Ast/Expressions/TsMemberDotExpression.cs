@@ -45,9 +45,9 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(writer);
             writer.Write($".{DotName}");
         }
     }

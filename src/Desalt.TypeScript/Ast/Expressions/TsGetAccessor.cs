@@ -51,10 +51,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("get ");
-            PropertyName.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(writer);
             writer.Write("()");
             PropertyType.WriteTypeAnnotation(writer);
             WriteBlock(writer, FunctionBody);

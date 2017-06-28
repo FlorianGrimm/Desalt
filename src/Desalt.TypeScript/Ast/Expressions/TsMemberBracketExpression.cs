@@ -43,11 +43,11 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(writer);
             writer.Write("[");
-            BracketContents.WriteFullCodeDisplay(writer);
+            BracketContents.Emit(writer);
             writer.Write("]");
         }
     }

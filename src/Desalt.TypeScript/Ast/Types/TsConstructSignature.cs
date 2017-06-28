@@ -63,7 +63,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("new ");
 
@@ -73,7 +73,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
 
             writer.Write("(");
-            ParameterList.WriteFullCodeDisplay(writer);
+            ParameterList.Emit(writer);
             writer.Write(")");
 
             ReturnType.WriteTypeAnnotation(writer);

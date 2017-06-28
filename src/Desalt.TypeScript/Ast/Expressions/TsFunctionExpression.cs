@@ -51,11 +51,11 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             $"function {FunctionName.CodeDisplay}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("function ");
-            FunctionName?.WriteFullCodeDisplay(writer);
-            CallSignature.WriteFullCodeDisplay(writer);
+            FunctionName?.Emit(writer);
+            CallSignature.Emit(writer);
             WriteBlock(writer, FunctionBody);
         }
     }

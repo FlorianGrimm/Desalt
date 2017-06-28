@@ -47,7 +47,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             WriteCommaNewlineSeparatedBlock(writer, PropertyAssignments);
         }

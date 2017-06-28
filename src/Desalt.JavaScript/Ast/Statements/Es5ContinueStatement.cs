@@ -54,14 +54,14 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("continue");
 
             if (Label != null)
             {
                 writer.Write(" ");
-                Label.WriteFullCodeDisplay(writer);
+                Label.Emit(writer);
             }
 
             writer.Write(";");

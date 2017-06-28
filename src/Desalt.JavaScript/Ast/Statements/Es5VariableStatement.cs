@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter writer)
         {
             writer.Write("var ");
             WriteItems(writer, Declarations, indent: false, itemDelimiter: ", ");
