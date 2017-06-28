@@ -10,7 +10,6 @@ namespace Desalt.Core.Ast
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -38,21 +37,6 @@ namespace Desalt.Core.Ast
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Returns a string representation of the full AST node, which is useful for debugging and
-        /// printing to logs. This should not be used to actually emit generated code.
-        /// </summary>
-        /// <returns>A string representation of the full AST node.</returns>
-        public virtual string ToFullCodeDisplay()
-        {
-            using (var stringWriter = new StringWriter())
-            using (var writer = new IndentedTextWriter(stringWriter))
-            {
-                Emit(writer);
-                return stringWriter.ToString();
-            }
-        }
 
         /// <summary>
         /// Writes a string representation of this AST node to the specified <see

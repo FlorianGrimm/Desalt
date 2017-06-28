@@ -29,13 +29,6 @@ namespace Desalt.Core.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a string representation of the full AST node, which is useful for debugging and
-        /// printing to logs. This should not be used to actually emit generated code.
-        /// </summary>
-        /// <returns>A string representation of the full AST node.</returns>
-        string ToFullCodeDisplay();
-
-        /// <summary>
         /// Writes a string representation of this AST node to the specified <see
         /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
         /// should not be used to actually emit generated code.

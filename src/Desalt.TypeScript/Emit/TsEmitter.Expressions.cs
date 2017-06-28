@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.Emit
 
         public override void VisitStringLiteral(ITsStringLiteral node)
         {
-            _emitter.Write(node.ToFullCodeDisplay());
+            _emitter.Write(node.CodeDisplay);
         }
 
         public override void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral node)
