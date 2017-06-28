@@ -60,33 +60,36 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitLiteralExpression(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            switch (Kind)
+            get
             {
-                case Es5LiteralKind.Null:
-                    return "null";
+                switch (Kind)
+                {
+                    case Es5LiteralKind.Null:
+                        return "null";
 
-                case Es5LiteralKind.True:
-                    return "true";
+                    case Es5LiteralKind.True:
+                        return "true";
 
-                case Es5LiteralKind.False:
-                    return "false";
+                    case Es5LiteralKind.False:
+                        return "false";
 
-                case Es5LiteralKind.Decimal:
-                case Es5LiteralKind.HexInteger:
-                case Es5LiteralKind.String:
-                case Es5LiteralKind.RegExp:
-                    return Literal;
+                    case Es5LiteralKind.Decimal:
+                    case Es5LiteralKind.HexInteger:
+                    case Es5LiteralKind.String:
+                    case Es5LiteralKind.RegExp:
+                        return Literal;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Kind));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Kind));
+                }
             }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            writer.Write(ToCodeDisplay());
+            writer.Write(CodeDisplay);
         }
 
         internal static Es5LiteralExpression CreateString(string literal) =>

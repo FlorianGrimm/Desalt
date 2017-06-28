@@ -70,27 +70,30 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitNumericLiteral(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            switch (Kind)
+            get
             {
-                case TsNumericLiteralKind.Decimal:
-                    return Value.ToString(CultureInfo.InvariantCulture);
+                switch (Kind)
+                {
+                    case TsNumericLiteralKind.Decimal:
+                        return Value.ToString(CultureInfo.InvariantCulture);
 
-                case TsNumericLiteralKind.BinaryInteger:
-                    return "0b" + Convert.ToString((long)Value, 2);
+                    case TsNumericLiteralKind.BinaryInteger:
+                        return "0b" + Convert.ToString((long)Value, 2);
 
-                case TsNumericLiteralKind.OctalInteger:
-                    return "0o" + Convert.ToString((long)Value, 8);
+                    case TsNumericLiteralKind.OctalInteger:
+                        return "0o" + Convert.ToString((long)Value, 8);
 
-                case TsNumericLiteralKind.HexInteger:
-                    return "0x" + Convert.ToString((long)Value, 16);
+                    case TsNumericLiteralKind.HexInteger:
+                        return "0x" + Convert.ToString((long)Value, 16);
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Kind));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Kind));
+                }
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(CodeDisplay);
     }
 }

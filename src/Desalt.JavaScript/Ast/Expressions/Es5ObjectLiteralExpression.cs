@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitObjectLiteralExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
+        public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

@@ -42,8 +42,8 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitRegularExpressionLiteral(this);
 
-        public override string ToCodeDisplay() => $"/{Body}/{Flags}";
+        public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(CodeDisplay);
     }
 }

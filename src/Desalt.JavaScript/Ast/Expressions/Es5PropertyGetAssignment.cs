@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitPropertyGetAssignment(this);
         }
 
-        public override string ToCodeDisplay() => $"get {PropertyName}() {{...}}";
+        public override string CodeDisplay => $"get {PropertyName}() {{...}}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

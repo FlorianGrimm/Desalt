@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitComputedPropertyName(this);
 
-        public override string ToCodeDisplay() => $"[{Expression.ToCodeDisplay()}]";
+        public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

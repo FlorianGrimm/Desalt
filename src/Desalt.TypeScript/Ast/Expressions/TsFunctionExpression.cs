@@ -48,8 +48,8 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitFunctionExpression(this);
 
-        public override string ToCodeDisplay() =>
-            $"function {FunctionName?.ToCodeDisplay()}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
+        public override string CodeDisplay =>
+            $"function {FunctionName.CodeDisplay}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

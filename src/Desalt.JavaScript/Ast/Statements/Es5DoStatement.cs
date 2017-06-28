@@ -46,9 +46,9 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitDoStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return $"do ({Condition}) {Statement}";
+            get { return $"do ({Condition}) {Statement}"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

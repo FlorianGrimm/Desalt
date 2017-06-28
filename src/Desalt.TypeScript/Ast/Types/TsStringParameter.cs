@@ -43,17 +43,20 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitStringRequiredParameter(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = ParameterName.ToCodeDisplay();
-            if (IsOptional)
+            get
             {
-                display += "?";
+                string display = ParameterName.CodeDisplay;
+                if (IsOptional)
+                {
+                    display += "?";
+                }
+
+                display += $": {StringLiteral}";
+
+                return display;
             }
-
-            display += $": {StringLiteral}";
-
-            return display;
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

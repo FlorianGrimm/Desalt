@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

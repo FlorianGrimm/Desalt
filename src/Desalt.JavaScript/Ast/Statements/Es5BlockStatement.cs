@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitBlockStatement(this);
         }
 
-        public override string ToCodeDisplay() => $"Block, Statements.Length = {{ {Statements.Length} }}";
+        public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

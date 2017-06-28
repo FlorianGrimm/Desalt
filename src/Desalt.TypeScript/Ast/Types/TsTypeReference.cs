@@ -43,14 +43,17 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeReference(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            if (TypeArguments.Length == 0)
+            get
             {
-                return TypeName.ToCodeDisplay();
-            }
+                if (TypeArguments.Length == 0)
+                {
+                    return TypeName.CodeDisplay;
+                }
 
-            return $"{TypeName}<{TypeArguments.ToElidedList()}>";
+                return $"{TypeName}<{TypeArguments.ToElidedList()}>";
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

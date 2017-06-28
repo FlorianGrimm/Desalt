@@ -65,26 +65,29 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitTryStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            var builder = new StringBuilder("try {...}");
-
-            if (CatchBlock != null)
+            get
             {
-                builder.Append(" catch ");
-                if (CatchIdentifier != null)
+                var builder = new StringBuilder("try {...}");
+
+                if (CatchBlock != null)
                 {
-                    builder.Append("(").Append(CatchIdentifier).Append(") ");
+                    builder.Append(" catch ");
+                    if (CatchIdentifier != null)
+                    {
+                        builder.Append("(").Append(CatchIdentifier).Append(") ");
+                    }
+                    builder.Append("{...}");
                 }
-                builder.Append("{...}");
-            }
 
-            if (FinallyBlock != null)
-            {
-                builder.Append(" finally {...}");
-            }
+                if (FinallyBlock != null)
+                {
+                    builder.Append(" finally {...}");
+                }
 
-            return builder.ToString();
+                return builder.ToString();
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

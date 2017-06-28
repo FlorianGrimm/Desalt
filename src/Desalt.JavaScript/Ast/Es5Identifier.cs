@@ -72,7 +72,7 @@ namespace Desalt.JavaScript.Ast
             return visitor.VisitIdentifier(this);
         }
 
-        public override string ToCodeDisplay() => Text;
+        public override string CodeDisplay => Text;
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

@@ -52,7 +52,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitBinaryExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
+        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

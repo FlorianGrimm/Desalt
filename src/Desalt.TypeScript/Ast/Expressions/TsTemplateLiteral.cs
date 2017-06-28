@@ -41,24 +41,27 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTemplateLiteral(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            var builder = new StringBuilder("`");
-            foreach (TsTemplatePart part in Parts)
+            get
             {
-                if (part.Template != null)
+                var builder = new StringBuilder("`");
+                foreach (TsTemplatePart part in Parts)
                 {
-                    builder.Append(part.Template);
+                    if (part.Template != null)
+                    {
+                        builder.Append(part.Template);
+                    }
+
+                    if (part.Expression != null)
+                    {
+                        builder.Append("${").Append(part.Expression.CodeDisplay).Append("}");
+                    }
                 }
 
-                if (part.Expression != null)
-                {
-                    builder.Append("${").Append(part.Expression.ToCodeDisplay()).Append("}");
-                }
+                builder.Append("`");
+                return builder.ToString();
             }
-
-            builder.Append("`");
-            return builder.ToString();
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

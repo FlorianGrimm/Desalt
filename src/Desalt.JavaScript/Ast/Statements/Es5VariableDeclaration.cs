@@ -38,9 +38,9 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}";
+            get { return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

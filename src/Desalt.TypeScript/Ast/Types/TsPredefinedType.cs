@@ -50,7 +50,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPredefinedType(this);
 
-        public override string ToCodeDisplay() => Name;
+        public override string CodeDisplay => Name;
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(Name);
     }

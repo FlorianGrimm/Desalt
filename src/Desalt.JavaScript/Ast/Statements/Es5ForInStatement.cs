@@ -59,10 +59,13 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitForInStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string prefix = LeftSide?.ToString() ?? Declaration.ToString();
-            return $"for ({prefix} in {RightSide}) {Statement}";
+            get
+            {
+                string prefix = LeftSide?.ToString() ?? Declaration.ToString();
+                return $"for ({prefix} in {RightSide}) {Statement}";
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -37,8 +37,8 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThis(this);
 
-        public override string ToCodeDisplay() => "this";
+        public override string CodeDisplay => "this";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(CodeDisplay);
     }
 }

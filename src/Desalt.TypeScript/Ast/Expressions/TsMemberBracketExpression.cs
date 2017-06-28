@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberBracketExpression(this);
 
-        public override string ToCodeDisplay() => $"{LeftSide}[{BracketContents}]";
+        public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

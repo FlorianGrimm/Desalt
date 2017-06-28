@@ -45,7 +45,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
 
-        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
+        public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

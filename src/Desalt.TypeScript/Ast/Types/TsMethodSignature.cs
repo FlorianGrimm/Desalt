@@ -43,16 +43,19 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMethodSignature(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = PropertyName.ToCodeDisplay();
-            if (IsOptional)
+            get
             {
-                display += "?";
-            }
+                string display = PropertyName.CodeDisplay;
+                if (IsOptional)
+                {
+                    display += "?";
+                }
 
-            display += CallSignature.ToCodeDisplay();
-            return display;
+                display += CallSignature.CodeDisplay;
+                return display;
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

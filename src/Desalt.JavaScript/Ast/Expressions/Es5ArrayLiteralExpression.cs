@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitArrayLiteralExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
+        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

@@ -24,20 +24,20 @@ namespace Desalt.Core.Ast
         //// ===========================================================================================================
 
         /// <summary>
+        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
+        /// </summary>
+        /// <value>A string representation of this AST node.</value>
+        public abstract string CodeDisplay { get; }
+
+        /// <summary>
         /// Gets a consise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
-        protected virtual string DebuggerDisplay => $"{GetType().Name}: {ToCodeDisplay()}";
+        protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <returns>A string representation of this AST node.</returns>
-        public abstract string ToCodeDisplay();
 
         /// <summary>
         /// Returns a string representation of the full AST node, which is useful for debugging and
@@ -66,7 +66,7 @@ namespace Desalt.Core.Ast
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => ToCodeDisplay();
+        public override string ToString() => CodeDisplay;
 
         /// <summary>
         /// Writes a list of items wrapped in a {} block to the specified text writer.

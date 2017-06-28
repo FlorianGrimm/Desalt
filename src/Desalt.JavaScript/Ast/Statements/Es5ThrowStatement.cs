@@ -44,9 +44,9 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitThrowStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return $"throw {Expression};";
+            get { return $"throw {Expression};"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParenthesizedType(this);
 
-        public override string ToCodeDisplay() => $"({Type.ToCodeDisplay()})";
+        public override string CodeDisplay => $"({Type.CodeDisplay})";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

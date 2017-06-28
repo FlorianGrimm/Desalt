@@ -44,8 +44,7 @@ namespace Desalt.TypeScript.Ast
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitQualifiedName(this);
 
-        public override string ToCodeDisplay() =>
-            $"{string.Join(".", Left.Select(x => x.ToCodeDisplay()))}{Right.ToCodeDisplay()}";
+        public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

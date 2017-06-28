@@ -33,7 +33,7 @@ namespace Desalt.Core.Tests.Emit
         private static IAstNode CreateMockStatement(string text)
         {
             var mock = new Mock<IAstNode>();
-            mock.Setup(m => m.ToCodeDisplay()).Returns(text);
+            mock.Setup(m => m.CodeDisplay).Returns(text);
             return mock.Object;
         }
 
@@ -158,7 +158,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
-                emitter.WriteBlock(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
+                emitter.WriteBlock(s_mockStatements, elem => emitter.Write(elem.CodeDisplay));
                 stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
             }
         }
@@ -169,13 +169,13 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream);
-                Action action = () => emitter.WriteList<IAstNode>(null, "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                Action action = () => emitter.WriteList<IAstNode>(null, "-", elem => emitter.Write(elem.CodeDisplay));
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
 
-                action = () => emitter.WriteList(s_mockStatements, null, elem => emitter.Write(elem.ToCodeDisplay()));
+                action = () => emitter.WriteList(s_mockStatements, null, elem => emitter.Write(elem.CodeDisplay));
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("delimiter");
 
-                action = () => emitter.WriteList(s_mockStatements, "", elem => emitter.Write(elem.ToCodeDisplay()));
+                action = () => emitter.WriteList(s_mockStatements, "", elem => emitter.Write(elem.CodeDisplay));
                 action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("delimiter");
 
                 action = () => emitter.WriteList(s_mockStatements, "-", elementAction: null);
@@ -189,7 +189,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream);
-                emitter.WriteList(s_mockStatements, "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                emitter.WriteList(s_mockStatements, "-", elem => emitter.Write(elem.CodeDisplay));
                 stream.ReadAllText().Should().Be("One-Two-Three");
             }
         }
@@ -200,7 +200,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream);
-                emitter.WriteList(s_mockStatements.Take(1), "-", elem => emitter.Write(elem.ToCodeDisplay()));
+                emitter.WriteList(s_mockStatements.Take(1), "-", elem => emitter.Write(elem.CodeDisplay));
                 stream.ReadAllText().Should().Be("One");
             }
         }
@@ -211,7 +211,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream);
-                Action action = () => emitter.WriteCommaList<IAstNode>(null, elem => emitter.Write(elem.ToCodeDisplay()));
+                Action action = () => emitter.WriteCommaList<IAstNode>(null, elem => emitter.Write(elem.CodeDisplay));
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elements");
 
                 action = () => emitter.WriteCommaList(s_mockStatements, elementAction: null);
@@ -225,7 +225,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter<IAstNode>(stream, options: s_testOptions);
-                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.ToCodeDisplay()));
+                emitter.WriteCommaList(s_mockStatements, elem => emitter.Write(elem.CodeDisplay));
                 stream.ReadAllText().Should().Be("One, Two, Three");
             }
         }

@@ -54,7 +54,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitSwitchStatement(this);
         }
 
-        public override string ToCodeDisplay() => $"switch ({Condition}) {{...}}";
+        public override string CodeDisplay => $"switch ({Condition}) {{...}}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

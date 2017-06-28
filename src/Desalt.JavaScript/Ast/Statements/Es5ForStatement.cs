@@ -87,30 +87,33 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitForStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            var builder = new StringBuilder("for (");
-            if (Initializer != null)
+            get
             {
-                builder.Append(Initializer);
+                var builder = new StringBuilder("for (");
+                if (Initializer != null)
+                {
+                    builder.Append(Initializer);
+                }
+                builder.Append("; ");
+
+                if (Condition != null)
+                {
+                    builder.Append(Condition);
+                }
+                builder.Append("; ");
+
+                if (Incrementor != null)
+                {
+                    builder.Append(Incrementor);
+                }
+                builder.AppendLine(")");
+
+                builder.Append(Statement);
+
+                return builder.ToString();
             }
-            builder.Append("; ");
-
-            if (Condition != null)
-            {
-                builder.Append(Condition);
-            }
-            builder.Append("; ");
-
-            if (Incrementor != null)
-            {
-                builder.Append(Incrementor);
-            }
-            builder.AppendLine(")");
-
-            builder.Append(Statement);
-
-            return builder.ToString();
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

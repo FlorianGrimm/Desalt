@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberDotExpression(this);
 
-        public override string ToCodeDisplay() => $"{LeftSide}.{DotName}";
+        public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

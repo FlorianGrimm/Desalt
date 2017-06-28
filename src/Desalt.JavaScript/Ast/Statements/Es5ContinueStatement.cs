@@ -49,9 +49,9 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitContinueStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";";
+            get { return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

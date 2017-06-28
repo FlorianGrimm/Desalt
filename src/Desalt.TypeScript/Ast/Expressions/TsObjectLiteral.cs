@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitObjectLiteral(this);
 
-        public override string ToCodeDisplay() => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
+        public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

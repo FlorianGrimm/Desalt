@@ -51,7 +51,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitConditionalExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"{Condition} ? {WhenTrue} : {WhenFalse}";
+        public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

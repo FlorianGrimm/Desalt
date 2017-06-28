@@ -47,17 +47,20 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitConstructSignature(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = "new ";
-
-            if (TypeParameters.Length > 0)
+            get
             {
-                display += $"<{TypeParameters.ToElidedList()}>";
-            }
+                string display = "new ";
 
-            display += $"(${ParameterList}){ReturnType.ToTypeAnnotationCodeDisplay()}";
-            return display;
+                if (TypeParameters.Length > 0)
+                {
+                    display += $"<{TypeParameters.ToElidedList()}>";
+                }
+
+                display += $"(${ParameterList}){ReturnType.ToTypeAnnotationCodeDisplay()}";
+                return display;
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

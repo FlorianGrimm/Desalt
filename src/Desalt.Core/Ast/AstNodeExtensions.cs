@@ -53,7 +53,7 @@ namespace Desalt.Core.Ast
                     builder.Append(delimiter);
                 }
 
-                string itemStr = item.ToCodeDisplay();
+                string itemStr = item.CodeDisplay;
                 if (builder.Length + itemStr.Length >= maxStringLength)
                 {
                     builder.Append("...");

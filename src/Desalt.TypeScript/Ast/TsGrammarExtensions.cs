@@ -121,7 +121,7 @@ namespace Desalt.TypeScript.Ast
         /// <param name="type">The type annotation to write.</param>
         public static string ToTypeAnnotationCodeDisplay(this ITsType type)
         {
-            return type != null ? $": {type.ToCodeDisplay()}" : string.Empty;
+            return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
 
         public static void WriteTypeAnnotation(this ITsType type, IndentedTextWriter writer)

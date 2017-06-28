@@ -72,23 +72,26 @@ namespace Desalt.TypeScript.Ast.Types
         public T Accept<T>(TsVisitor<T> visitor) =>
             IsConstructorType ? visitor.VisitConstructorType(this) : visitor.VisitFunctionType(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string code = string.Empty;
-
-            if (IsConstructorType)
+            get
             {
-                code += "new ";
+                string code = string.Empty;
+
+                if (IsConstructorType)
+                {
+                    code += "new ";
+                }
+
+                if (TypeParameters.Length == 0)
+                {
+                    code += $"<{TypeParameters.ToElidedList()}>";
+                }
+
+                code += $"{Parameters.CodeDisplay} => {ReturnType}";
+
+                return code;
             }
-
-            if (TypeParameters.Length == 0)
-            {
-                code += $"<{TypeParameters.ToElidedList()}>";
-            }
-
-            code += $"{Parameters?.ToCodeDisplay()} => {ReturnType}";
-
-            return code;
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

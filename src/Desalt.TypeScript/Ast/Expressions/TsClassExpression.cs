@@ -47,11 +47,14 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitClassExpression(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return $"class {ClassName?.ToCodeDisplay()}" +
-                (Heritage != null ? $" extends {Heritage}" : "") +
-                $"{{ {ClassBody.ToElidedList()} }}";
+            get
+            {
+                return $"class {ClassName.CodeDisplay}" +
+                    (Heritage != null ? $" extends {Heritage}" : "") +
+                    $"{{ {ClassBody.ToElidedList()} }}";
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

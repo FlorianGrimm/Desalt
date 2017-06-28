@@ -65,9 +65,9 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitCallExpression(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})";
+            get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

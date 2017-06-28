@@ -43,7 +43,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitReturnStatement(this);
         }
 
-        public override string ToCodeDisplay() => $"return {Expression};";
+        public override string CodeDisplay => $"return {Expression};";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

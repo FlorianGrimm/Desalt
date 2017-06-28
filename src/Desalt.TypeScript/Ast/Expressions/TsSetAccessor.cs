@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitSetAccessor(this);
 
-        public override string ToCodeDisplay() =>
+        public override string CodeDisplay =>
             $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
             $"{{{FunctionBody.ToElidedList()}}}";
 

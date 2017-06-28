@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitRestParameter(this);
 
-        public override string ToCodeDisplay() => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
+        public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

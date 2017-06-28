@@ -54,15 +54,18 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitIfStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            var builder = new StringBuilder($"if ({IfExpression}) {IfStatement}");
-            if (ElseStatement != null)
+            get
             {
-                builder.Append($"else {ElseStatement}");
-            }
+                var builder = new StringBuilder($"if ({IfExpression}) {IfStatement}");
+                if (ElseStatement != null)
+                {
+                    builder.Append($"else {ElseStatement}");
+                }
 
-            return builder.ToString();
+                return builder.ToString();
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

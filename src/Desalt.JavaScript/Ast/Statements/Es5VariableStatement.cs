@@ -46,7 +46,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitVariableStatement(this);
         }
 
-        public override string ToCodeDisplay() => $"var {Declarations.ToElidedList()};";
+        public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

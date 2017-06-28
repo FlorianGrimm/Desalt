@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitCoverInitializedName(this);
 
-        public override string ToCodeDisplay() => $"{Identifier.ToCodeDisplay()} = ${Initializer.ToCodeDisplay()}";
+        public override string CodeDisplay => $"{Identifier.CodeDisplay} = ${Initializer.CodeDisplay}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

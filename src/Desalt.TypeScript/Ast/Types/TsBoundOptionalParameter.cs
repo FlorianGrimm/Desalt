@@ -49,17 +49,20 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBoundOptionalParameter(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = string.Empty;
-            if (Modifier.HasValue)
+            get
             {
-                display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
+                string display = string.Empty;
+                if (Modifier.HasValue)
+                {
+                    display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
+                }
+
+                display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
+
+                return display;
             }
-
-            display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
-
-            return display;
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -53,7 +53,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitFunctionExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
+        public override string CodeDisplay => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

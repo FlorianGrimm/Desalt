@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThisType(this);
 
-        public override string ToCodeDisplay() => "this";
+        public override string CodeDisplay => "this";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write("this");
     }

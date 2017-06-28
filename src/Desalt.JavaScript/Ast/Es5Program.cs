@@ -46,7 +46,7 @@ namespace Desalt.JavaScript.Ast
             return visitor.VisitProgram(this);
         }
 
-        public override string ToCodeDisplay() => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
+        public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

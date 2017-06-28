@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTupleType(this);
 
-        public override string ToCodeDisplay() => $"[{ElementTypes.ToElidedList()}]";
+        public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

@@ -47,12 +47,15 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParameterList(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return
-                RequiredParameters.ToElidedList() +
-                OptionalParameters.ToElidedList() +
-                RestParameter?.ToCodeDisplay();
+            get
+            {
+                return
+                    RequiredParameters.ToElidedList() +
+                    OptionalParameters.ToElidedList() +
+                    RestParameter.CodeDisplay;
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

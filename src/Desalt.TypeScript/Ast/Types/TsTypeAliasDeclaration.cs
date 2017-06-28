@@ -48,16 +48,19 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeAliasDeclaration(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = $"type {AliasName}";
-            if (TypeParameters.Length > 0)
+            get
             {
-                display += $"<{TypeParameters.ToElidedList()}>";
-            }
+                string display = $"type {AliasName}";
+                if (TypeParameters.Length > 0)
+                {
+                    display += $"<{TypeParameters.ToElidedList()}>";
+                }
 
-            display += $" = {Type}";
-            return display;
+                display += $" = {Type}";
+                return display;
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

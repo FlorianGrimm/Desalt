@@ -14,11 +14,19 @@ namespace Desalt.Core.Ast
     /// </summary>
     public interface IAstNode
     {
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
-        /// <returns>A string representation of this AST node.</returns>
-        string ToCodeDisplay();
+        /// <value>A string representation of this AST node.</value>
+        string CodeDisplay { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
 
         /// <summary>
         /// Returns a string representation of the full AST node, which is useful for debugging and

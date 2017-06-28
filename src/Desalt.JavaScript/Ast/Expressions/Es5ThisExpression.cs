@@ -42,11 +42,11 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitThisExpresssion(this);
         }
 
-        public override string ToCodeDisplay() => "this";
+        public override string CodeDisplay => "this";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
-            writer.Write(ToCodeDisplay());
+            writer.Write(CodeDisplay);
         }
     }
 }

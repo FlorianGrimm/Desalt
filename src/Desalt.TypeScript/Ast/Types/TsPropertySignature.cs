@@ -46,8 +46,8 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertySignature(this);
 
-        public override string ToCodeDisplay() =>
-            PropertyName + (IsOptional ? "?" : "") + PropertyType.ToTypeAnnotationCodeDisplay();
+        public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
+            PropertyType.ToTypeAnnotationCodeDisplay();
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

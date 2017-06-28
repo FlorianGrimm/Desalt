@@ -41,29 +41,32 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitUnaryExpression(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            switch (Operator)
+            get
             {
-                case TsUnaryOperator.Delete:
-                case TsUnaryOperator.Void:
-                case TsUnaryOperator.Typeof:
-                    return $"{Operator.ToCodeDisplay()} {Operand}";
+                switch (Operator)
+                {
+                    case TsUnaryOperator.Delete:
+                    case TsUnaryOperator.Void:
+                    case TsUnaryOperator.Typeof:
+                        return $"{Operator.ToCodeDisplay()} {Operand}";
 
-                case TsUnaryOperator.PrefixIncrement:
-                case TsUnaryOperator.PrefixDecrement:
-                case TsUnaryOperator.Plus:
-                case TsUnaryOperator.Minus:
-                case TsUnaryOperator.BitwiseNot:
-                case TsUnaryOperator.LogicalNot:
-                    return $"{Operator.ToCodeDisplay()}{Operand}";
+                    case TsUnaryOperator.PrefixIncrement:
+                    case TsUnaryOperator.PrefixDecrement:
+                    case TsUnaryOperator.Plus:
+                    case TsUnaryOperator.Minus:
+                    case TsUnaryOperator.BitwiseNot:
+                    case TsUnaryOperator.LogicalNot:
+                        return $"{Operator.ToCodeDisplay()}{Operand}";
 
-                case TsUnaryOperator.PostfixIncrement:
-                case TsUnaryOperator.PostfixDecrement:
-                    return $"{Operand}{Operator.ToCodeDisplay()}";
+                    case TsUnaryOperator.PostfixIncrement:
+                    case TsUnaryOperator.PostfixDecrement:
+                        return $"{Operand}{Operator.ToCodeDisplay()}";
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Operator));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Operator));
+                }
             }
         }
 

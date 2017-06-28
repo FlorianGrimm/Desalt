@@ -49,9 +49,9 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitCaseClause(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return $"case {Expression}: {Statements.ToElidedList()}";
+            get { return $"case {Expression}: {Statements.ToElidedList()}"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -49,9 +49,9 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitBreakStatement(this);
         }
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            return "break" + (Label != null ? $" {Label}" : string.Empty) + ";";
+            get { return "break" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

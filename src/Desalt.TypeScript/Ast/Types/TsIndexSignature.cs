@@ -43,12 +43,15 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitIndexSignature(this);
 
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = $"[{ParameterName.ToCodeDisplay()}: ";
-            display += IsParameterNumberType ? "number" : "string";
-            display += $"]: {ParameterType}";
-            return display;
+            get
+            {
+                string display = $"[{ParameterName.CodeDisplay}: ";
+                display += IsParameterNumberType ? "number" : "string";
+                display += $"]: {ParameterType}";
+                return display;
+            }
         }
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)

@@ -42,7 +42,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitEmptyStatement(this);
         }
 
-        public override string ToCodeDisplay() => ";";
+        public override string CodeDisplay => ";";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

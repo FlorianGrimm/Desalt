@@ -46,7 +46,7 @@ namespace Desalt.JavaScript.Ast.Statements
             return visitor.VisitWhileStatement(this);
         }
 
-        public override string ToCodeDisplay() => $"while ({Condition}) {Statement}";
+        public override string CodeDisplay => $"while ({Condition}) {Statement}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

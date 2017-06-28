@@ -46,8 +46,8 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
 
-        public override string ToCodeDisplay() => Value ? "true" : "false";
+        public override string CodeDisplay => Value ? "true" : "false";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(CodeDisplay);
     }
 }

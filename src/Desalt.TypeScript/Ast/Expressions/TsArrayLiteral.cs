@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayLiteral(this);
 
-        public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
+        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

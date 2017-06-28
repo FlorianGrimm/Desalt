@@ -40,7 +40,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitObjectType(this);
 
-        public override string ToCodeDisplay() => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {

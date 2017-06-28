@@ -43,7 +43,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             return visitor.VisitParenthesizedExpression(this);
         }
 
-        public override string ToCodeDisplay() => $"({Expression})";
+        public override string CodeDisplay => $"({Expression})";
 
         public override void WriteFullCodeDisplay(IndentedTextWriter writer)
         {
