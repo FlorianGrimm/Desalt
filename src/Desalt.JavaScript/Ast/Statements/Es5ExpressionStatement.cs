@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that is wrapped as a statement.
@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => Expression + ";";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             Expression.Emit(emitter);
             emitter.Write(";");

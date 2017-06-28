@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression.
@@ -48,7 +48,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($" {Operator.ToCodeDisplay()} ");

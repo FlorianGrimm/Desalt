@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type reference.
@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

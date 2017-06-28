@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' expression.
@@ -44,7 +44,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => "this";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write(CodeDisplay);
         }

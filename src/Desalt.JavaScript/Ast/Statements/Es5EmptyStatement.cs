@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an empty statement.
@@ -44,7 +44,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => ";";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write(";");
         }

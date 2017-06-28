@@ -10,6 +10,7 @@ namespace Desalt.TypeScript.Ast
     using System;
     using System.Collections.Generic;
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -74,6 +75,6 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => Text;
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write(Text);
+        public override void Emit(Emitter emitter) => emitter.Write(Text);
     }
 }

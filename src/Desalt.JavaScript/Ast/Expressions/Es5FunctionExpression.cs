@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function expression of the form 'function name?(parameters) { body }'.
@@ -55,7 +55,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("function");
             if (FunctionName != null)

@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property set accessor of the form 'set name(value: type) { body }'.
@@ -55,7 +55,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
             $"{{{FunctionBody.ToElidedList()}}}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("set ");
             PropertyName.Emit(emitter);

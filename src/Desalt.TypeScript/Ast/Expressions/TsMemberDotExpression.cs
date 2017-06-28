@@ -9,6 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -45,7 +46,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($".{DotName}");

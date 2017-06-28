@@ -11,7 +11,7 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'for' loop statement.
@@ -116,7 +116,7 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("for (");
             Initializer?.Emit(emitter);

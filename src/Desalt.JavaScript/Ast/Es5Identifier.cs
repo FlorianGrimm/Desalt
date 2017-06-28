@@ -9,6 +9,7 @@ namespace Desalt.JavaScript.Ast
 {
     using System;
     using System.Collections.Generic;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -74,7 +75,7 @@ namespace Desalt.JavaScript.Ast
 
         public override string CodeDisplay => Text;
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write(Text);
         }

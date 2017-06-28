@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a top-level JavaScript program, consisting of a collection of source elements.
@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast
 
         public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteItems(emitter, SourceElements, indent: false, itemDelimiter: Environment.NewLine);
         }

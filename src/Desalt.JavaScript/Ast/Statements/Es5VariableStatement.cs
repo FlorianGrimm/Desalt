@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x' or 'var x = y, z'.
@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("var ");
             WriteItems(emitter, Declarations, indent: false, itemDelimiter: ", ");

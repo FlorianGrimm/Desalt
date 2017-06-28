@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a JavaScript 'debugger' statement.
@@ -44,7 +44,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => "debugger;";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("debugger");
         }

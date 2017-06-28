@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Returns a labelled statement of the form 'Identifier: Statement'.
@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"{Identifier}: {Statement}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             Identifier.Emit(emitter);
             emitter.Write(": ");

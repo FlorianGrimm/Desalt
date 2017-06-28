@@ -9,7 +9,7 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'try/catch/finally' statement.
@@ -90,7 +90,7 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteItems(
                 emitter, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",

@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'continue' or 'continue Identifier' statement.
@@ -54,7 +54,7 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("continue");
 

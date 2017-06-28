@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'throw' statement.
@@ -49,7 +49,7 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"throw {Expression};"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("throw ");
             Expression.Emit(emitter);

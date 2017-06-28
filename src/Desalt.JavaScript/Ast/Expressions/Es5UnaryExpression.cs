@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a unary expression.
@@ -75,7 +75,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             switch (Operator)
             {

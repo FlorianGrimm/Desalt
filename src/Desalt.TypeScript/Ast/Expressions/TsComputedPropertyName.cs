@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property name inside of an object of the form '[ expression ]'.
@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("[");
             Expression.Emit(emitter);

@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Immutable;
     using System.Text;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
@@ -64,7 +64,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("`");
             foreach (TsTemplatePart part in Parts)

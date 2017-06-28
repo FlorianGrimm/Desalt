@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteItems(emitter, Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

@@ -11,7 +11,7 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'case' clause within a 'switch' statement.
@@ -54,7 +54,7 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"case {Expression}: {Statements.ToElidedList()}"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.WriteLine("case ");
             Expression.Emit(emitter);

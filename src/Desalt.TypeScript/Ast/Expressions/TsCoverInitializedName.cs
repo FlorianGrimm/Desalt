@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an element in an object initializer of the form 'identifer = expression'.
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{Identifier.CodeDisplay} = ${Initializer.CodeDisplay}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             Identifier.Emit(emitter);
             emitter.Write(" = ");

@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     public sealed class Es5MemberExpression : Es5AstNode, IEs5Expression
     {
@@ -76,7 +76,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             get { return MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}"); }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             MemberExpression.Emit(emitter);
             if (IsBracketNotation)

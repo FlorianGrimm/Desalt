@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property signature.
@@ -49,7 +49,7 @@ namespace Desalt.TypeScript.Ast.Types
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.ToTypeAnnotationCodeDisplay();
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             if (IsOptional)

@@ -9,7 +9,7 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a block, containing other statements.
@@ -47,7 +47,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteBlock(emitter, Statements);
         }

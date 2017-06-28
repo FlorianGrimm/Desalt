@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.Ast
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
@@ -46,7 +46,7 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {

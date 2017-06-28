@@ -7,7 +7,7 @@
 
 namespace Desalt.Core.Ast
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
@@ -29,11 +29,9 @@ namespace Desalt.Core.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Writes a string representation of this AST node to the specified <see
-        /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
-        /// should not be used to actually emit generated code.
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        void Emit(IndentedTextWriter emitter);
+        void Emit(Emitter emitter);
     }
 }

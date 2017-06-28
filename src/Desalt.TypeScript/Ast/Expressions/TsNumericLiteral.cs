@@ -10,8 +10,8 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System;
     using System.Globalization;
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
-    using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.
@@ -94,6 +94,6 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write(CodeDisplay);
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("... ");
             ParameterName.Emit(emitter);

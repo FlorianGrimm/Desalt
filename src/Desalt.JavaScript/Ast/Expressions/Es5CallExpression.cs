@@ -11,7 +11,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function call expression.
@@ -70,7 +70,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             if (IsNewCall)
             {

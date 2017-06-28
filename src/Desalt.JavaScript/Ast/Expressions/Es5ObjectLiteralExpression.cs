@@ -9,7 +9,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents on object literal of the form '{ propertyAssignment... }'.
@@ -47,7 +47,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteCommaNewlineSeparatedBlock(emitter, PropertyAssignments);
         }

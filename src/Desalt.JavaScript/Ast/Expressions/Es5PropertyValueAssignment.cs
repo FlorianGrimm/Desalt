@@ -8,6 +8,7 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -49,7 +50,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{PropertyName}: {Value}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write($"{PropertyName}: ");
             Value.Emit(emitter);

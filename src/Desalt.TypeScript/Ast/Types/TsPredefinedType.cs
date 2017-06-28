@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
@@ -52,6 +52,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => Name;
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write(Name);
+        public override void Emit(Emitter emitter) => emitter.Write(Name);
     }
 }

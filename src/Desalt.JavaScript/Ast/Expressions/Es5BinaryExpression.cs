@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression of the form 'x ? y' where ? represents any of the enum values
@@ -54,7 +54,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($" {Operator.ToCodeDisplay()} ");

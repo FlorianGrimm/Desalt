@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript tuple type.
@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteItems(emitter, ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

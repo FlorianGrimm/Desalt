@@ -8,7 +8,7 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.
@@ -48,6 +48,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => Value ? "true" : "false";
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write(CodeDisplay);
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that assigns one value to another.
@@ -52,7 +52,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($" {Operator.ToCodeDisplay()} ");

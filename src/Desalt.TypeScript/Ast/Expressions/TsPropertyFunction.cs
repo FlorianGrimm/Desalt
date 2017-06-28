@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an object literal property function.
@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             $"{PropertyName.CodeDisplay} {CallSignature.CodeDisplay} {{ {FunctionBody.ToElidedList()} }}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             emitter.Write(" ");

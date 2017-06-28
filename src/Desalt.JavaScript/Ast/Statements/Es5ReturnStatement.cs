@@ -7,7 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a JavaScript 'return' statement.
@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"return {Expression};";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("return ");
             Expression.Emit(emitter);

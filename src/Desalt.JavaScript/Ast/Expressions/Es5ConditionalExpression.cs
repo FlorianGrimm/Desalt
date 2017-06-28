@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
@@ -53,7 +53,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             Condition.Emit(emitter);
             emitter.Write(" ? ");

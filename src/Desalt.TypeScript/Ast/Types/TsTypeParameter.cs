@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

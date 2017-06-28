@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
@@ -59,7 +59,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             ParameterName.Emit(emitter);
             if (IsOptional)

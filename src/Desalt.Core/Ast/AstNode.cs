@@ -10,7 +10,7 @@ namespace Desalt.Core.Ast
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Abstract base class for all abstract syntax tree (AST) nodes.
@@ -39,12 +39,10 @@ namespace Desalt.Core.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Writes a string representation of this AST node to the specified <see
-        /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
-        /// should not be used to actually emit generated code.
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        public abstract void Emit(IndentedTextWriter emitter);
+        public abstract void Emit(Emitter emitter);
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -55,12 +53,12 @@ namespace Desalt.Core.Ast
         /// <summary>
         /// Writes a list of items wrapped in a {} block to the specified text emitter.
         /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
+        /// <param name="emitter">The <see cref="Emitter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
+        protected void WriteBlock(Emitter emitter, IReadOnlyList<IAstNode> items)
         {
             WriteItems(
-                writer,
+                emitter,
                 items,
                 indent: true,
                 prefix: "{",
@@ -75,12 +73,12 @@ namespace Desalt.Core.Ast
         /// Writes a list of items wrapped in a {} block where each item is separated by a comma and
         /// new line to the specified text emitter.
         /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
+        /// <param name="emitter">The <see cref="Emitter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteCommaNewlineSeparatedBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
+        protected void WriteCommaNewlineSeparatedBlock(Emitter emitter, IReadOnlyList<IAstNode> items)
         {
             WriteItems(
-                writer,
+                emitter,
                 items,
                 indent: true,
                 prefix: "{",
@@ -93,18 +91,18 @@ namespace Desalt.Core.Ast
         /// <summary>
         /// Writes a comma-separated list wrapped in a () block to the specified text emitter.
         /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
+        /// <param name="emitter">The <see cref="Emitter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
-        protected void WriteParameterList(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
+        protected void WriteParameterList(Emitter emitter, IReadOnlyList<IAstNode> items)
         {
-            WriteItems(writer, items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
+            WriteItems(emitter, items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
         }
 
         /// <summary>
         /// Writes a list of items to the specified text emitter, surrounded by the specified prefix
         /// and suffix and delimited by the specified delimiter.
         /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
+        /// <param name="emitter">The <see cref="Emitter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
         /// <param name="indent">Indicates whether to indent the items.</param>
         /// <param name="prefix">The prefix to write before writing the items.</param>
@@ -121,7 +119,7 @@ namespace Desalt.Core.Ast
         /// Indicates whether the last item should include a newline.
         /// </param>
         protected void WriteItems(
-            IndentedTextWriter writer,
+            Emitter emitter,
             IReadOnlyList<IAstNode> items,
             bool indent,
             string prefix = null,
@@ -149,49 +147,49 @@ namespace Desalt.Core.Ast
 
             if (items.Count == 0)
             {
-                writer.Write($"{prefix}{suffix}");
+                emitter.Write($"{prefix}{suffix}");
             }
             else
             {
                 if (newLineAfterPrefix)
                 {
-                    writer.WriteLine(prefix);
+                    emitter.WriteLine(prefix);
                 }
                 else
                 {
-                    writer.Write(prefix);
+                    emitter.Write(prefix);
                 }
 
                 if (indent)
                 {
-                    writer.IndentLevel++;
+                    emitter.IndentLevel++;
                 }
 
                 for (int i = 0; i < items.Count; i++)
                 {
                     IAstNode item = items[i];
-                    item.Emit(writer);
+                    item.Emit(emitter);
 
                     // write the delimiter
                     if (i < items.Count - 1 || delimiterAfterLastItem)
                     {
-                        writer.Write(itemDelimiter);
+                        emitter.Write(itemDelimiter);
                     }
 
                     // write a new line after the last item if necessary
                     if (i < items.Count - 1 && newlineAfterItems ||
                         i == items.Count - 1 && newLineAfterLastItem)
                     {
-                        writer.WriteLine();
+                        emitter.WriteLine();
                     }
                 }
 
                 if (indent)
                 {
-                    writer.IndentLevel--;
+                    emitter.IndentLevel--;
                 }
 
-                writer.Write(suffix);
+                emitter.Write(suffix);
             }
         }
     }

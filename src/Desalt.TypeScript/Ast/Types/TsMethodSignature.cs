@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a method signature, which is a shorthand for declaring a property of a function type.
@@ -58,7 +58,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             if (IsOptional)

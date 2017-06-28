@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -44,6 +45,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write(CodeDisplay);
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

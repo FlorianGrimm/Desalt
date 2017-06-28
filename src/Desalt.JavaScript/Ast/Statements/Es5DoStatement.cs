@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a do-while statement.
@@ -51,7 +51,7 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"do ({Condition}) {Statement}"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("do (");
             Condition.Emit(emitter);

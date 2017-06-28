@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             emitter.Write(": ");

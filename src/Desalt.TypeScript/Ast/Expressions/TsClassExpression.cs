@@ -10,7 +10,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a class declaration acting as an expression.
@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("class ");
             ClassName?.Emit(emitter);

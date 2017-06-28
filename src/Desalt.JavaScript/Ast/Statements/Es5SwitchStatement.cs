@@ -10,7 +10,7 @@ namespace Desalt.JavaScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'switch' statement.
@@ -56,7 +56,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"switch ({Condition}) {{...}}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("switch (");
             Condition.Emit(emitter);

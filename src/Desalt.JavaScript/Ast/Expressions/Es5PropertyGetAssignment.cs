@@ -9,6 +9,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -50,7 +51,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"get {PropertyName}() {{...}}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write($"get {PropertyName}() ");
             WriteBlock(emitter, FunctionBody);

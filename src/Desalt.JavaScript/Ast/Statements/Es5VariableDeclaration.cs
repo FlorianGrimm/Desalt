@@ -9,7 +9,7 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'
@@ -43,7 +43,7 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}"; }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             Identifier.Emit(emitter);
 

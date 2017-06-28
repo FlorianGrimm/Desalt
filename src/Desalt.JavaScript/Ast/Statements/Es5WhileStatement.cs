@@ -8,7 +8,7 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'while' loop statement.
@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"while ({Condition}) {Statement}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("while (");
             Condition.Emit(emitter);

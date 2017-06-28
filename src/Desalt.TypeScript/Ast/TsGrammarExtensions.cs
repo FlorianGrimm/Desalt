@@ -8,7 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Types;
 
@@ -124,12 +124,12 @@ namespace Desalt.TypeScript.Ast
             return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
 
-        public static void WriteTypeAnnotation(this ITsType type, IndentedTextWriter writer)
+        public static void WriteTypeAnnotation(this ITsType type, Emitter emitter)
         {
             if (type != null)
             {
-                writer.Write(": ");
-                type.Emit(writer);
+                emitter.Write(": ");
+                type.Emit(emitter);
             }
         }
     }

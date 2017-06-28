@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'typeof' query.
@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"typeof {Query}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("typeof ");
             Query.Emit(emitter);

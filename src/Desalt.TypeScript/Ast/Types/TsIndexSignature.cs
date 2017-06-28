@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("[");
             ParameterName.Emit(emitter);

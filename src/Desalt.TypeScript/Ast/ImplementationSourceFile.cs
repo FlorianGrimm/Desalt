@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             WriteItems(emitter, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
         }

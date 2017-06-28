@@ -8,7 +8,7 @@
 namespace Desalt.TypeScript.Ast.Types
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' type.
@@ -43,6 +43,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => "this";
 
-        public override void Emit(IndentedTextWriter emitter) => emitter.Write("this");
+        public override void Emit(Emitter emitter) => emitter.Write("this");
     }
 }

@@ -9,7 +9,7 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     public sealed class Es5IfStatement : Es5AstNode, IEs5Statement
     {
@@ -68,7 +68,7 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("if (");
             IfExpression.Emit(emitter);

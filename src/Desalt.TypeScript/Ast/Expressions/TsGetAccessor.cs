@@ -11,7 +11,7 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
 
-        public override void Emit(IndentedTextWriter emitter)
+        public override void Emit(Emitter emitter)
         {
             emitter.Write("get ");
             PropertyName.Emit(emitter);
