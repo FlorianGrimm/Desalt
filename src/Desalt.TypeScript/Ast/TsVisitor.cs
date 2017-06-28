@@ -20,16 +20,16 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
         /// </summary>
-        public virtual void VisitImplementationSourceFile(ImplementationSourceFile node) => DefaultVisit(node);
+        public virtual void VisitImplementationSourceFile(ImplementationSourceFile node) => Visit(node);
 
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual void VisitIdentifier(ITsIdentifier node) => DefaultVisit(node);
+        public virtual void VisitIdentifier(ITsIdentifier node) => Visit(node);
 
         /// <summary>
         /// Visits a TypeScript qualified name, which is a full name with dots separating components.
         /// </summary>
-        public virtual void VisitQualifiedName(ITsQualifiedName node) => DefaultVisit(node);
+        public virtual void VisitQualifiedName(ITsQualifiedName node) => Visit(node);
     }
 }

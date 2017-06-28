@@ -14,21 +14,21 @@ namespace Desalt.JavaScript.Ast
         /// <summary>
         /// Visits a 'do-while' iteration statement.
         /// </summary>
-        public virtual void VisitDoStatement(Es5DoStatement node) => DefaultVisit(node);
+        public virtual void VisitDoStatement(Es5DoStatement node) => Visit(node);
 
         /// <summary>
         /// Visits a 'while' iteration statement.
         /// </summary>
-        public virtual void VisitWhileStatement(Es5WhileStatement node) => DefaultVisit(node);
+        public virtual void VisitWhileStatement(Es5WhileStatement node) => Visit(node);
 
         /// <summary>
         /// Visits a 'for' iteration statement.
         /// </summary>
-        public virtual void VisitForStatement(Es5ForStatement node) => DefaultVisit(node);
+        public virtual void VisitForStatement(Es5ForStatement node) => Visit(node);
 
         /// <summary>
         /// Visits a 'for-in' iteration statement.
         /// </summary>
-        public virtual void VisitForInStatement(Es5ForInStatement node) => DefaultVisit(node);
+        public virtual void VisitForInStatement(Es5ForInStatement node) => Visit(node);
     }
 }

@@ -23,16 +23,16 @@ namespace Desalt.JavaScript.Ast
         /// <summary>
         /// Visits a function declaration of the form 'function name?(parameters) { body }'.
         /// </summary>
-        public virtual void VisitFunctionDeclaration(Es5FunctionDeclaration node) => DefaultVisit(node);
+        public virtual void VisitFunctionDeclaration(Es5FunctionDeclaration node) => Visit(node);
 
         /// <summary>
         /// Visits a JavaScript program.
         /// </summary>
-        public virtual void VisitProgram(Es5Program node) => DefaultVisit(node);
+        public virtual void VisitProgram(Es5Program node) => Visit(node);
 
         /// <summary>
         /// Visits a JavaScript identifier.
         /// </summary>
-        public virtual void VisitIdentifier(Es5Identifier node) => DefaultVisit(node);
+        public virtual void VisitIdentifier(Es5Identifier node) => Visit(node);
     }
 }

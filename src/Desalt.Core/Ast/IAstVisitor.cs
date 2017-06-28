@@ -13,8 +13,6 @@ namespace Desalt.Core.Ast
     /// <typeparam name="TNode">The type of nodes in the tree.</typeparam>
     public interface IAstVisitor<in TNode> where TNode : IAstNode
     {
-        void DefaultVisit(TNode node);
-
         void Visit(TNode node);
     }
 }

@@ -14,12 +14,9 @@ namespace Desalt.Core.Ast
     /// single node passed into its Visit method.
     /// </summary>
     /// <typeparam name="TNode">The type of the node to visit.</typeparam>
-    public abstract class AstVisitor<TNode> : IAstVisitor<TNode>
-        where TNode : IAstNode
+    public abstract class AstVisitor<TNode> : IAstVisitor<TNode> where TNode : IAstNode
     {
-        public abstract void Visit(TNode node);
-
-        public virtual void DefaultVisit(TNode node)
+        public virtual void Visit(TNode node)
         {
             throw new InvalidOperationException($"{GetType().Name}: Node not supported: {node.GetType().Name}");
         }
