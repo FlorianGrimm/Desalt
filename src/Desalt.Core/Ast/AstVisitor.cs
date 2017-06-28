@@ -10,13 +10,12 @@ namespace Desalt.Core.Ast
     using System;
 
     /// <summary>
-    /// Abstract base class for an <see cref="IAstVisitor{TNode}"/> visitor that visits only the
-    /// single node passed into its Visit method.
+    /// Abstract base class for an <see cref="IAstVisitor"/> visitor that visits only the single node
+    /// passed into its Visit method.
     /// </summary>
-    /// <typeparam name="TNode">The type of the node to visit.</typeparam>
-    public abstract class AstVisitor<TNode> : IAstVisitor<TNode> where TNode : IAstNode
+    public abstract class AstVisitor : IAstVisitor
     {
-        public virtual void Visit(TNode node)
+        public virtual void Visit(IAstNode node)
         {
             throw new InvalidOperationException($"{GetType().Name}: Node not supported: {node.GetType().Name}");
         }

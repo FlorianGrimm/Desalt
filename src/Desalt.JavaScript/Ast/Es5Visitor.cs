@@ -13,11 +13,11 @@ namespace Desalt.JavaScript.Ast
     /// Represents an <see cref="Es5AstNode"/> visitor that visits only the single node passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class Es5Visitor : AstVisitor<IEs5AstNode>
+    public abstract partial class Es5Visitor : AstVisitor
     {
-        public override void Visit(IEs5AstNode node)
+        public override void Visit(IAstNode node)
         {
-            node?.Accept(this);
+            (node as IEs5AstNode)?.Accept(this);
         }
 
         /// <summary>

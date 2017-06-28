@@ -10,9 +10,8 @@ namespace Desalt.Core.Ast
     /// <summary>
     /// Service contract for a class that visits nodes in an abstract syntax tree (AST).
     /// </summary>
-    /// <typeparam name="TNode">The type of nodes in the tree.</typeparam>
-    public interface IAstVisitor<in TNode> where TNode : IAstNode
+    public interface IAstVisitor
     {
-        void Visit(TNode node);
+        void Visit(IAstNode node);
     }
 }

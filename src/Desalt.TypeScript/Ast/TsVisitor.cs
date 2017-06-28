@@ -13,9 +13,9 @@ namespace Desalt.TypeScript.Ast
     /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single node passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class TsVisitor : AstVisitor<ITsAstNode>
+    public abstract partial class TsVisitor : AstVisitor
     {
-        public override void Visit(ITsAstNode node) => node?.Accept(this);
+        public override void Visit(IAstNode node) => (node as ITsAstNode)?.Accept(this);
 
         /// <summary>
         /// Visits a TypeScript implementation (.ts) source file.
