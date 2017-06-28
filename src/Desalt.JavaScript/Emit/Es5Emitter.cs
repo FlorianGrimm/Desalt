@@ -27,7 +27,6 @@ namespace Desalt.JavaScript.Emit
         //// ===========================================================================================================
 
         private readonly Emitter _emitter;
-        private readonly EmitOptions _options;
 
         //// ===========================================================================================================
         //// Constructors
@@ -36,7 +35,6 @@ namespace Desalt.JavaScript.Emit
         public Es5Emitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
         {
             _emitter = new Emitter(outputStream, encoding, options);
-            _options = options;
         }
 
         //// ===========================================================================================================
