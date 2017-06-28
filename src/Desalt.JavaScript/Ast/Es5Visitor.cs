@@ -10,8 +10,7 @@ namespace Desalt.JavaScript.Ast
     using Desalt.Core.Ast;
 
     /// <summary>
-    /// Represents an <see cref="Es5AstNode"/> visitor that visits only the single node passed
-    /// into its Visit method.
+    /// Represents an ES5 visitor that visits only the single node passed into its Visit method.
     /// </summary>
     public abstract partial class Es5Visitor : AstVisitor
     {

@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Returns a labelled statement of the form 'Identifier: Statement'.
     /// </summary>
-    public sealed class Es5LabelledStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5LabelledStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

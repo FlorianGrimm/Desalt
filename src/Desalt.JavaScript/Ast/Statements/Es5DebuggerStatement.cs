@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a JavaScript 'debugger' statement.
     /// </summary>
-    public sealed class Es5DebuggerStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5DebuggerStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables

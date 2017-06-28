@@ -9,12 +9,13 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a block, containing other statements.
     /// </summary>
-    public sealed class Es5BlockStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5BlockStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    public class Es5AssignmentExpression : Es5AstNode, IEs5Expression
+    public class Es5AssignmentExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

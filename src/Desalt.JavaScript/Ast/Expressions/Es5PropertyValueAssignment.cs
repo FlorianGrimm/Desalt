@@ -8,13 +8,14 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    public class Es5PropertyValueAssignment : Es5AstNode, IEs5PropertyAssignment
+    public class Es5PropertyValueAssignment : AstNode<Es5Visitor>, IEs5PropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'break' or 'break Identifier' statement.
     /// </summary>
-    public sealed class Es5BreakStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5BreakStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables

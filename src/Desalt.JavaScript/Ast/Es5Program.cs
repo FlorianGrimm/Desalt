@@ -10,12 +10,13 @@ namespace Desalt.JavaScript.Ast
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a top-level JavaScript program, consisting of a collection of source elements.
     /// </summary>
-    public class Es5Program : Es5AstNode
+    public class Es5Program : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors

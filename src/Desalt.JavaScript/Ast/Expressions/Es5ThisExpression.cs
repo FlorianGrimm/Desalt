@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    public class Es5ThisExpression : Es5AstNode, IEs5Expression
+    public class Es5ThisExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -8,13 +8,14 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression of the form 'x ? y' where ? represents any of the enum values
     /// from <see cref="Es5BinaryOperator"/>.
     /// </summary>
-    public sealed class Es5BinaryExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5BinaryExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

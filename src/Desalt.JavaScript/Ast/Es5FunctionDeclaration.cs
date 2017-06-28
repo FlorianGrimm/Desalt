@@ -15,7 +15,7 @@ namespace Desalt.JavaScript.Ast
     /// <summary>
     /// Represents a function declaration of the form 'function name?(parameters) { body }'.
     /// </summary>
-    public sealed class Es5FunctionDeclaration : Es5AstNode, IEs5SourceElement
+    public sealed class Es5FunctionDeclaration : AstNode<Es5Visitor>, IEs5SourceElement
     {
         //// ===========================================================================================================
         //// Constructors

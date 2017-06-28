@@ -16,7 +16,7 @@ namespace Desalt.JavaScript.Ast.Statements
     /// <summary>
     /// Represents a 'case' clause within a 'switch' statement.
     /// </summary>
-    public sealed class Es5CaseClause : Es5AstNode
+    public sealed class Es5CaseClause : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors

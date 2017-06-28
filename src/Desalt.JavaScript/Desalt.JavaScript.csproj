@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\Es5AstFactory.cs" />
-    <Compile Include="Ast\Es5AstNode.cs" />
     <Compile Include="Ast\Es5FunctionDeclaration.cs" />
     <Compile Include="Ast\Es5GrammarInterfaces.cs" />
     <Compile Include="Ast\Es5Identifier.cs" />

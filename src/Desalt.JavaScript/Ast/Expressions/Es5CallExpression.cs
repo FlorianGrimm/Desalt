@@ -16,7 +16,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents a function call expression.
     /// </summary>
-    public sealed class Es5CallExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5CallExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

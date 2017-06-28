@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'continue' or 'continue Identifier' statement.
     /// </summary>
-    public sealed class Es5ContinueStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ContinueStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -9,9 +9,10 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
-    public sealed class Es5IfStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5IfStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

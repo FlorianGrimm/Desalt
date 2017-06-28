@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that is wrapped as a statement.
     /// </summary>
-    public class Es5ExpressionStatement : Es5AstNode, IEs5Statement
+    public class Es5ExpressionStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

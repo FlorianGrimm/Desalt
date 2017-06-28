@@ -10,13 +10,14 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'get propertyName() { }'.
     /// </summary>
-    public class Es5PropertySetAssignment : Es5AstNode, IEs5PropertyAssignment
+    public class Es5PropertySetAssignment : AstNode<Es5Visitor>, IEs5PropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

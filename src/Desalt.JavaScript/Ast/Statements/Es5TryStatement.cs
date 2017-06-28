@@ -9,12 +9,13 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'try/catch/finally' statement.
     /// </summary>
-    public class Es5TryStatement : Es5AstNode, IEs5Statement
+    public class Es5TryStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

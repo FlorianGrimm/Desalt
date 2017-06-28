@@ -11,12 +11,13 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'for' loop statement.
     /// </summary>
-    public sealed class Es5ForStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ForStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

@@ -10,12 +10,13 @@ namespace Desalt.JavaScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'switch' statement.
     /// </summary>
-    public sealed class Es5SwitchStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5SwitchStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors

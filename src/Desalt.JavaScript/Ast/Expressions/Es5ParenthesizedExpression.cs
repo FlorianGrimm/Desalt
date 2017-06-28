@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression wrapped in parentheses.
     /// </summary>
-    public sealed class Es5ParenthesizedExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ParenthesizedExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

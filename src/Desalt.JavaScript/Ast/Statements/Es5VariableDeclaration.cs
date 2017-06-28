@@ -8,13 +8,14 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'
     /// keyword - that's the <see cref="Es5VariableStatement"/>).
     /// </summary>
-    public sealed class Es5VariableDeclaration : Es5AstNode
+    public sealed class Es5VariableDeclaration : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors

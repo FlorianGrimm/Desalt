@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    public sealed class Es5EmptyStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5EmptyStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables

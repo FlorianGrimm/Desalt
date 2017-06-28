@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression containing a literal value.
     /// </summary>
-    public class Es5LiteralExpression : Es5AstNode, IEs5Expression
+    public class Es5LiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables

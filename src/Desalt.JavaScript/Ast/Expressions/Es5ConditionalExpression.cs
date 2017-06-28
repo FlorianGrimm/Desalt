@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    public sealed class Es5ConditionalExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ConditionalExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

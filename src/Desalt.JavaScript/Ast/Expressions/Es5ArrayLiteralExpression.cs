@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Ast.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    public class Es5ArrayLiteralExpression : Es5AstNode, IEs5Expression
+    public class Es5ArrayLiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

@@ -9,12 +9,13 @@ namespace Desalt.JavaScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents on object literal of the form '{ propertyAssignment... }'.
     /// </summary>
-    public sealed class Es5ObjectLiteralExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ObjectLiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors

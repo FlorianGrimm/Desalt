@@ -9,13 +9,14 @@ namespace Desalt.JavaScript.Ast
 {
     using System;
     using System.Collections.Generic;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a JavaScript identifier.
     /// </summary>
-    public class Es5Identifier : Es5AstNode, IEs5Expression
+    public class Es5Identifier : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables
