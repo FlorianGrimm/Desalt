@@ -47,9 +47,9 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            WriteBlock(writer, Statements);
+            WriteBlock(emitter, Statements);
         }
     }
 }

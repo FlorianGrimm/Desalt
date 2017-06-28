@@ -57,23 +57,23 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("class ");
-            ClassName?.Emit(writer);
+            emitter.Write("class ");
+            ClassName?.Emit(emitter);
 
             if (Heritage != null)
             {
                 if (ClassName != null)
                 {
-                    writer.Write(" ");
+                    emitter.Write(" ");
                 }
 
-                writer.Write("extends ");
-                Heritage.Emit(writer);
+                emitter.Write("extends ");
+                Heritage.Emit(emitter);
             }
 
-            WriteBlock(writer, ClassBody);
+            WriteBlock(emitter, ClassBody);
         }
     }
 }

@@ -43,11 +43,11 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("... ");
-            ParameterName.Emit(writer);
-            ParameterType.WriteTypeAnnotation(writer);
+            emitter.Write("... ");
+            ParameterName.Emit(emitter);
+            ParameterType.WriteTypeAnnotation(emitter);
         }
     }
 }

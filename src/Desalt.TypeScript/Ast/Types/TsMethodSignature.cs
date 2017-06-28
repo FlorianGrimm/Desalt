@@ -58,15 +58,15 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            PropertyName.Emit(writer);
+            PropertyName.Emit(emitter);
             if (IsOptional)
             {
-                writer.Write("?");
+                emitter.Write("?");
             }
 
-            CallSignature.Emit(writer);
+            CallSignature.Emit(emitter);
         }
     }
 }

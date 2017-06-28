@@ -68,25 +68,25 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("if (");
-            IfExpression.Emit(writer);
-            writer.WriteLine(")");
+            emitter.Write("if (");
+            IfExpression.Emit(emitter);
+            emitter.WriteLine(")");
 
-            writer.IndentLevel++;
-            IfStatement.Emit(writer);
-            writer.IndentLevel--;
+            emitter.IndentLevel++;
+            IfStatement.Emit(emitter);
+            emitter.IndentLevel--;
 
             if (ElseStatement == null)
             {
                 return;
             }
 
-            writer.WriteLine("else");
-            writer.IndentLevel++;
-            ElseStatement.Emit(writer);
-            writer.IndentLevel--;
+            emitter.WriteLine("else");
+            emitter.IndentLevel++;
+            ElseStatement.Emit(emitter);
+            emitter.IndentLevel--;
         }
     }
 }

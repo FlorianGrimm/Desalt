@@ -65,18 +65,18 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             if (Modifier.HasValue)
             {
-                writer.Write($"{Modifier.Value.ToString().ToLowerInvariant()} ");
+                emitter.Write($"{Modifier.Value.ToString().ToLowerInvariant()} ");
             }
 
-            ParameterName.Emit(writer);
-            ParameterType.WriteTypeAnnotation(writer);
+            ParameterName.Emit(emitter);
+            ParameterType.WriteTypeAnnotation(emitter);
 
-            writer.Write(" = ");
-            Initializer.Emit(writer);
+            emitter.Write(" = ");
+            Initializer.Emit(emitter);
         }
     }
 }

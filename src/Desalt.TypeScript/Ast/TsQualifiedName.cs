@@ -46,15 +46,15 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {
-                left.Emit(writer);
-                writer.Write(".");
+                left.Emit(emitter);
+                emitter.Write(".");
             }
 
-            Right.Emit(writer);
+            Right.Emit(emitter);
         }
     }
 }

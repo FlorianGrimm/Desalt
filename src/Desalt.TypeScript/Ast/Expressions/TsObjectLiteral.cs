@@ -43,9 +43,9 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            WriteCommaNewlineSeparatedBlock(writer, PropertyDefinitions);
+            WriteCommaNewlineSeparatedBlock(emitter, PropertyDefinitions);
         }
     }
 }

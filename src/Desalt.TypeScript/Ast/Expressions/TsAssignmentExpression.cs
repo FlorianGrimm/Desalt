@@ -48,11 +48,11 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            LeftSide.Emit(writer);
-            writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.Emit(writer);
+            LeftSide.Emit(emitter);
+            emitter.Write($" {Operator.ToCodeDisplay()} ");
+            RightSide.Emit(emitter);
         }
     }
 }

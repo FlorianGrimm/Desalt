@@ -43,14 +43,14 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            TypeName.Emit(writer);
+            TypeName.Emit(emitter);
 
             if (Constraint != null)
             {
-                writer.Write(" extends ");
-                Constraint.Emit(writer);
+                emitter.Write(" extends ");
+                Constraint.Emit(emitter);
             }
         }
     }

@@ -64,25 +64,25 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("`");
+            emitter.Write("`");
             foreach (TsTemplatePart part in Parts)
             {
                 if (part.Template != null)
                 {
-                    writer.Write(part.Template);
+                    emitter.Write(part.Template);
                 }
 
                 if (part.Expression != null)
                 {
-                    writer.Write("${");
-                    part.Expression.Emit(writer);
-                    writer.Write("}");
+                    emitter.Write("${");
+                    part.Expression.Emit(emitter);
+                    emitter.Write("}");
                 }
             }
 
-            writer.Write("`");
+            emitter.Write("`");
         }
     }
 }

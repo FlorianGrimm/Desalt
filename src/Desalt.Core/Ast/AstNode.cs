@@ -59,8 +59,8 @@ namespace Desalt.Core.Ast
         /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
         /// should not be used to actually emit generated code.
         /// </summary>
-        /// <param name="writer">The writer to use.</param>
-        public abstract void Emit(IndentedTextWriter writer);
+        /// <param name="emitter">The emitter to use.</param>
+        public abstract void Emit(IndentedTextWriter emitter);
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -69,7 +69,7 @@ namespace Desalt.Core.Ast
         public override string ToString() => CodeDisplay;
 
         /// <summary>
-        /// Writes a list of items wrapped in a {} block to the specified text writer.
+        /// Writes a list of items wrapped in a {} block to the specified text emitter.
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
@@ -89,7 +89,7 @@ namespace Desalt.Core.Ast
 
         /// <summary>
         /// Writes a list of items wrapped in a {} block where each item is separated by a comma and
-        /// new line to the specified text writer.
+        /// new line to the specified text emitter.
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
@@ -107,7 +107,7 @@ namespace Desalt.Core.Ast
         }
 
         /// <summary>
-        /// Writes a comma-separated list wrapped in a () block to the specified text writer.
+        /// Writes a comma-separated list wrapped in a () block to the specified text emitter.
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
         /// <param name="items">The items to write.</param>
@@ -117,7 +117,7 @@ namespace Desalt.Core.Ast
         }
 
         /// <summary>
-        /// Writes a list of items to the specified text writer, surrounded by the specified prefix
+        /// Writes a list of items to the specified text emitter, surrounded by the specified prefix
         /// and suffix and delimited by the specified delimiter.
         /// </summary>
         /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>

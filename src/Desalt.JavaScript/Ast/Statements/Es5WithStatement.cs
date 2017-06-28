@@ -48,12 +48,12 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"with ({Expression}) {Statement}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("with (");
-            Expression.Emit(writer);
-            writer.WriteLine(")");
-            Statement.Emit(writer);
+            emitter.Write("with (");
+            Expression.Emit(emitter);
+            emitter.WriteLine(")");
+            Statement.Emit(emitter);
         }
     }
 }

@@ -43,11 +43,11 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            PropertyName.Emit(writer);
-            writer.Write(": ");
-            Initializer.Emit(writer);
+            PropertyName.Emit(emitter);
+            emitter.Write(": ");
+            Initializer.Emit(emitter);
         }
     }
 }

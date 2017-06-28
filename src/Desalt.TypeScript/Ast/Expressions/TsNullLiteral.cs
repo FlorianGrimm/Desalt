@@ -39,6 +39,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => "null";
 
-        public override void Emit(IndentedTextWriter writer) => writer.Write(CodeDisplay);
+        public override void Emit(IndentedTextWriter emitter) => emitter.Write(CodeDisplay);
     }
 }

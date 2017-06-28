@@ -55,16 +55,16 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("function");
+            emitter.Write("function");
             if (FunctionName != null)
             {
-                writer.Write($" {FunctionName}");
+                emitter.Write($" {FunctionName}");
             }
-            WriteParameterList(writer, Parameters);
-            writer.Write(" ");
-            WriteBlock(writer, FunctionBody);
+            WriteParameterList(emitter, Parameters);
+            emitter.Write(" ");
+            WriteBlock(emitter, FunctionBody);
         }
     }
 }

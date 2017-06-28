@@ -76,19 +76,19 @@ namespace Desalt.JavaScript.Ast.Expressions
             get { return MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}"); }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            MemberExpression.Emit(writer);
+            MemberExpression.Emit(emitter);
             if (IsBracketNotation)
             {
-                writer.Write("[");
-                BracketExpression.Emit(writer);
-                writer.Write("]");
+                emitter.Write("[");
+                BracketExpression.Emit(emitter);
+                emitter.Write("]");
             }
             else
             {
-                writer.Write(".");
-                DotName.Emit(writer);
+                emitter.Write(".");
+                DotName.Emit(emitter);
             }
         }
 

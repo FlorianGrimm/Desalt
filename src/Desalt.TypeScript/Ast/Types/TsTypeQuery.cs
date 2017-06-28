@@ -41,10 +41,10 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"typeof {Query}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("typeof ");
-            Query.Emit(writer);
+            emitter.Write("typeof ");
+            Query.Emit(emitter);
         }
     }
 }

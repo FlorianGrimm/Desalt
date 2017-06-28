@@ -41,11 +41,11 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"({Type.CodeDisplay})";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("(");
-            Type.Emit(writer);
-            writer.Write(")");
+            emitter.Write("(");
+            Type.Emit(emitter);
+            emitter.Write(")");
         }
     }
 }

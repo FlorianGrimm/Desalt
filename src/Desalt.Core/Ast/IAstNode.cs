@@ -40,7 +40,7 @@ namespace Desalt.Core.Ast
         /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
         /// should not be used to actually emit generated code.
         /// </summary>
-        /// <param name="writer">The writer to use.</param>
-        void Emit(IndentedTextWriter writer);
+        /// <param name="emitter">The emitter to use.</param>
+        void Emit(IndentedTextWriter emitter);
     }
 }

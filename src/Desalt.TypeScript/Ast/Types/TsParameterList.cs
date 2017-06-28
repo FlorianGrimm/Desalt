@@ -58,11 +58,11 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            WriteItems(writer, RequiredParameters, indent: false, itemDelimiter: ", ");
-            WriteItems(writer, OptionalParameters, indent: false, itemDelimiter: ", ");
-            RestParameter?.Emit(writer);
+            WriteItems(emitter, RequiredParameters, indent: false, itemDelimiter: ", ");
+            WriteItems(emitter, OptionalParameters, indent: false, itemDelimiter: ", ");
+            RestParameter?.Emit(emitter);
         }
     }
 }

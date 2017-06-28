@@ -116,19 +116,19 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("for (");
-            Initializer?.Emit(writer);
-            writer.Write("; ");
+            emitter.Write("for (");
+            Initializer?.Emit(emitter);
+            emitter.Write("; ");
 
-            Condition?.Emit(writer);
-            writer.Write("; ");
+            Condition?.Emit(emitter);
+            emitter.Write("; ");
 
-            Incrementor?.Emit(writer);
-            writer.WriteLine(")");
+            Incrementor?.Emit(emitter);
+            emitter.WriteLine(")");
 
-            Statement.Emit(writer);
+            Statement.Emit(emitter);
         }
     }
 }

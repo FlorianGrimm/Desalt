@@ -90,20 +90,20 @@ namespace Desalt.JavaScript.Ast.Statements
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             WriteItems(
-                writer, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",
+                emitter, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",
                 itemDelimiter: Environment.NewLine);
 
             if (CatchBlock != null)
             {
-                writer.Write(" catch ");
+                emitter.Write(" catch ");
                 if (CatchIdentifier != null)
                 {
-                    writer.Write($"({CatchIdentifier}) ");
+                    emitter.Write($"({CatchIdentifier}) ");
                 }
-                WriteBlock(writer, CatchBlock.Statements);
+                WriteBlock(emitter, CatchBlock.Statements);
             }
 
             if (FinallyBlock == null)
@@ -111,8 +111,8 @@ namespace Desalt.JavaScript.Ast.Statements
                 return;
             }
 
-            writer.Write(" finally ");
-            WriteBlock(writer, FinallyBlock.Statements);
+            emitter.Write(" finally ");
+            WriteBlock(emitter, FinallyBlock.Statements);
         }
 
         public Es5TryStatement WithCatch(Es5Identifier catchIdentifier, Es5BlockStatement catchBlock)

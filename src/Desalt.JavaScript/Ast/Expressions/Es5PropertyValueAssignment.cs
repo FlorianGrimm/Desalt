@@ -49,10 +49,10 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{PropertyName}: {Value}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write($"{PropertyName}: ");
-            Value.Emit(writer);
+            emitter.Write($"{PropertyName}: ");
+            Value.Emit(emitter);
         }
     }
 }

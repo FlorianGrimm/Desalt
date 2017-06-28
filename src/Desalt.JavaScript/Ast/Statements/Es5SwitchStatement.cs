@@ -56,21 +56,21 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"switch ({Condition}) {{...}}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("switch (");
-            Condition.Emit(writer);
-            writer.Write(") ");
+            emitter.Write("switch (");
+            Condition.Emit(emitter);
+            emitter.Write(") ");
 
-            WriteItems(writer, CaseClauses, indent: true, prefix: "{", itemDelimiter: Environment.NewLine);
+            WriteItems(emitter, CaseClauses, indent: true, prefix: "{", itemDelimiter: Environment.NewLine);
 
             if (DefaultClauseStatements.Length > 0)
             {
-                writer.WriteLine("default:");
-                WriteItems(writer, DefaultClauseStatements, indent: true, itemDelimiter: Environment.NewLine);
+                emitter.WriteLine("default:");
+                WriteItems(emitter, DefaultClauseStatements, indent: true, itemDelimiter: Environment.NewLine);
             }
 
-            writer.Write("}");
+            emitter.Write("}");
         }
     }
 }

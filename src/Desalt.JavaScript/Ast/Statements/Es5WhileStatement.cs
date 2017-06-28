@@ -48,12 +48,12 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => $"while ({Condition}) {Statement}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("while (");
-            Condition.Emit(writer);
-            writer.WriteLine(")");
-            Statement.Emit(writer);
+            emitter.Write("while (");
+            Condition.Emit(emitter);
+            emitter.WriteLine(")");
+            Statement.Emit(emitter);
         }
     }
 }

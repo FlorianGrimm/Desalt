@@ -50,10 +50,10 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"get {PropertyName}() {{...}}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write($"get {PropertyName}() ");
-            WriteBlock(writer, FunctionBody);
+            emitter.Write($"get {PropertyName}() ");
+            WriteBlock(emitter, FunctionBody);
         }
     }
 }

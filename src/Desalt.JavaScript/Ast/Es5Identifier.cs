@@ -74,9 +74,9 @@ namespace Desalt.JavaScript.Ast
 
         public override string CodeDisplay => Text;
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write(Text);
+            emitter.Write(Text);
         }
     }
 }

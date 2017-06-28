@@ -52,6 +52,6 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => Name;
 
-        public override void Emit(IndentedTextWriter writer) => writer.Write(Name);
+        public override void Emit(IndentedTextWriter emitter) => emitter.Write(Name);
     }
 }

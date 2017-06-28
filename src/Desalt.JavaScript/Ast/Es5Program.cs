@@ -48,9 +48,9 @@ namespace Desalt.JavaScript.Ast
 
         public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            WriteItems(writer, SourceElements, indent: false, itemDelimiter: Environment.NewLine);
+            WriteItems(emitter, SourceElements, indent: false, itemDelimiter: Environment.NewLine);
         }
     }
 }

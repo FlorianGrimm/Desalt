@@ -63,20 +63,20 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("new ");
+            emitter.Write("new ");
 
             if (TypeParameters.Length > 0)
             {
-                WriteItems(writer, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                WriteItems(emitter, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
-            writer.Write("(");
-            ParameterList.Emit(writer);
-            writer.Write(")");
+            emitter.Write("(");
+            ParameterList.Emit(emitter);
+            emitter.Write(")");
 
-            ReturnType.WriteTypeAnnotation(writer);
+            ReturnType.WriteTypeAnnotation(emitter);
         }
     }
 }

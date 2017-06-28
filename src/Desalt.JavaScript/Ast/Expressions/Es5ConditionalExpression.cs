@@ -53,13 +53,13 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            Condition.Emit(writer);
-            writer.Write(" ? ");
-            WhenTrue.Emit(writer);
-            writer.Write(" : ");
-            WhenFalse.Emit(writer);
+            Condition.Emit(emitter);
+            emitter.Write(" ? ");
+            WhenTrue.Emit(emitter);
+            emitter.Write(" : ");
+            WhenFalse.Emit(emitter);
         }
     }
 }

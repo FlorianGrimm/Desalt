@@ -51,12 +51,12 @@ namespace Desalt.JavaScript.Ast.Statements
             get { return $"do ({Condition}) {Statement}"; }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write("do (");
-            Condition.Emit(writer);
-            writer.Write(") ");
-            Statement.Emit(writer);
+            emitter.Write("do (");
+            Condition.Emit(emitter);
+            emitter.Write(") ");
+            Statement.Emit(emitter);
         }
     }
 }

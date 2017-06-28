@@ -47,9 +47,9 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            WriteItems(writer, Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            WriteItems(emitter, Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
     }
 }

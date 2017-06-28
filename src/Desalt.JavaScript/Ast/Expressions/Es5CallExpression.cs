@@ -70,15 +70,15 @@ namespace Desalt.JavaScript.Ast.Expressions
             get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             if (IsNewCall)
             {
-                writer.Write("new ");
+                emitter.Write("new ");
             }
 
-            CallExpression.Emit(writer);
-            WriteParameterList(writer, Arguments);
+            CallExpression.Emit(emitter);
+            WriteParameterList(emitter, Arguments);
         }
 
         public Es5CallExpression WithArguments(ImmutableArray<IEs5Expression> arguments)

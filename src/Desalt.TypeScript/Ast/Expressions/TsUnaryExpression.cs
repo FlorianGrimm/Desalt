@@ -70,15 +70,15 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             switch (Operator)
             {
                 case TsUnaryOperator.Delete:
                 case TsUnaryOperator.Void:
                 case TsUnaryOperator.Typeof:
-                    writer.Write($"{Operator.ToCodeDisplay()}");
-                    Operand.Emit(writer);
+                    emitter.Write($"{Operator.ToCodeDisplay()}");
+                    Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PrefixIncrement:
@@ -87,14 +87,14 @@ namespace Desalt.TypeScript.Ast.Expressions
                 case TsUnaryOperator.Minus:
                 case TsUnaryOperator.BitwiseNot:
                 case TsUnaryOperator.LogicalNot:
-                    writer.Write(Operator.ToCodeDisplay());
-                    Operand.Emit(writer);
+                    emitter.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PostfixIncrement:
                 case TsUnaryOperator.PostfixDecrement:
-                    Operand.Emit(writer);
-                    writer.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
+                    emitter.Write(Operator.ToCodeDisplay());
                     break;
 
                 default:

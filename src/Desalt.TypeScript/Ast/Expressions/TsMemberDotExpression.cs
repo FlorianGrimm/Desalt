@@ -45,10 +45,10 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            LeftSide.Emit(writer);
-            writer.Write($".{DotName}");
+            LeftSide.Emit(emitter);
+            emitter.Write($".{DotName}");
         }
     }
 }

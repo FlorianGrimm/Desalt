@@ -87,9 +87,9 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
         }
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
-            writer.Write(CodeDisplay);
+            emitter.Write(CodeDisplay);
         }
 
         internal static Es5LiteralExpression CreateString(string literal) =>

@@ -47,14 +47,14 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 
-        public override void Emit(IndentedTextWriter writer)
+        public override void Emit(IndentedTextWriter emitter)
         {
             if (IsSpreadElement)
             {
-                writer.Write("... ");
+                emitter.Write("... ");
             }
 
-            Element.Emit(writer);
+            Element.Emit(emitter);
         }
     }
 }

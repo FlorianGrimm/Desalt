@@ -44,6 +44,6 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override void Emit(IndentedTextWriter writer) => writer.Write(CodeDisplay);
+        public override void Emit(IndentedTextWriter emitter) => emitter.Write(CodeDisplay);
     }
 }
