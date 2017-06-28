@@ -12,12 +12,13 @@ namespace Desalt.JavaScript.Emit
     using System.IO;
     using System.Linq;
     using System.Text;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Ast.Statements;
 
     /// <summary>
-    /// Takes an <see cref="IEs5AstNode"/> and converts it to text.
+    /// Takes an <see cref="IAstNode"/> and converts it to text.
     /// </summary>
     public partial class Es5Emitter : Es5Visitor, IDisposable
     {
@@ -71,7 +72,7 @@ namespace Desalt.JavaScript.Emit
         /// last element.
         /// </summary>
         /// <param name="elements">The list of elements to visit.</param>
-        private void WriteCommaList(IEnumerable<IEs5AstNode> elements)
+        private void WriteCommaList(IEnumerable<IAstNode> elements)
         {
             _emitter.WriteList(elements, ", ", elem => elem.Accept(this));
         }
@@ -100,7 +101,7 @@ namespace Desalt.JavaScript.Emit
             _emitter.Write(isUnnamed ? "(" : $" {functionName}(");
 
             // write the parameters
-            WriteCommaList(parameters ?? Enumerable.Empty<IEs5AstNode>());
+            WriteCommaList(parameters ?? Enumerable.Empty<IAstNode>());
 
             // write the closing parenthesis
             _emitter.Write(") ");

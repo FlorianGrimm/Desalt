@@ -17,7 +17,7 @@ namespace Desalt.JavaScript.Ast
     {
         public override void Visit(IAstNode node)
         {
-            (node as IEs5AstNode)?.Accept(this);
+            (node as IAstNode)?.Accept(this);
         }
 
         /// <summary>

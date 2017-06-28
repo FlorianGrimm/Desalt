@@ -9,6 +9,7 @@ namespace Desalt.JavaScript.Tests.Emit
 {
     using System;
     using System.IO;
+    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast;
@@ -24,7 +25,7 @@ namespace Desalt.JavaScript.Tests.Emit
         private static readonly Es5Identifier s_y = Factory.Identifier("y");
         private static readonly Es5Identifier s_z = Factory.Identifier("z");
 
-        private static void VerifyOutput(IEs5AstNode node, string expected, EmitOptions options = null)
+        private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
             using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default))
