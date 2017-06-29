@@ -23,6 +23,18 @@ namespace Desalt.Core.Emit
         /// </summary>
         public static readonly EmitOptions Default = new EmitOptions(instanceToCopy: null);
 
+        /// <summary>
+        /// Represents options that use Unix line endings (\n) and tabs for indentation.
+        /// </summary>
+        public static readonly EmitOptions UnixTabs =
+            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "\t");
+
+        /// <summary>
+        /// Represents options that use Unix line endings (\n) and two spaces for indentation.
+        /// </summary>
+        public static readonly EmitOptions UnixSpaces =
+            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "  ");
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================

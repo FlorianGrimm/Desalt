@@ -21,7 +21,7 @@ namespace Desalt.Core.Tests.Emit
     [TestClass]
     public class EmitterTests
     {
-        private static readonly EmitOptions s_testOptions = new EmitOptions(newline: "\n", indentationPrefix: "\t");
+        private static readonly EmitOptions s_testOptions = EmitOptions.UnixTabs;
 
         private static readonly IAstNode[] s_mockStatements = new[]
         {
