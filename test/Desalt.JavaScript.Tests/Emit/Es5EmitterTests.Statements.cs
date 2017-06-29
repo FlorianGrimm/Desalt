@@ -7,6 +7,7 @@
 
 namespace Desalt.JavaScript.Tests.Emit
 {
+    using System;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast.Expressions;
@@ -20,16 +21,13 @@ namespace Desalt.JavaScript.Tests.Emit
         public void Emit_block_statements()
         {
             Es5BlockStatement block = Factory.BlockStatement(Factory.DebuggerStatement, Factory.ReturnStatement(s_x));
-            VerifyOutput(block, @"{
-  debugger;
-  return x;
-}");
+            VerifyOutput(block, "{\n  debugger;\n  return x;\n}");
         }
 
         [TestMethod]
         public void Emit_variable_statements()
         {
-            const string expected = @"var x = this, y, z = false;";
+            const string expected = "var x = this, y, z = false;";
             Es5VariableStatement expression = Factory.VariableStatement(
                 Factory.VariableDeclaration(s_x, Factory.ThisExpression),
                 Factory.VariableDeclaration(s_y),
@@ -51,8 +49,8 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.BlockStatement(Factory.ReturnStatement(Factory.TrueLiteral)),
                 elseStatement: null);
 
-            VerifyOutput(statement, "if (x === y) {\r\n  return true;\r\n}",
-                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(statement, "if (x === y) {\n  return true;\n}",
+                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
             VerifyOutput(statement, "if (x === y) { return true; } else return false;");
@@ -93,7 +91,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_switch_statement()
         {
-            const string expected = @"switch (x) {
+            string expected = @"switch (x) {
   case ""true"":
     x = y;
     break;
@@ -103,7 +101,8 @@ namespace Desalt.JavaScript.Tests.Emit
 
   default:
     break;
-}";
+}".Replace(Environment.NewLine, "\n");
+
             Es5SwitchStatement statement = Factory.SwitchStatement(
                 condition: s_x,
                 caseClauses: Factory.CaseClauses(
@@ -132,10 +131,7 @@ namespace Desalt.JavaScript.Tests.Emit
         public void Emit_try_statements()
         {
             // try block only
-            const string tryExpected = @"try {
-  x += y;
-  return x;
-}";
+            const string tryExpected = "try {\n  x += y;\n  return x;\n}";
 
             Es5TryStatement tryStatement = Factory.TryStatement(
                 Factory.AssignmentExpression(s_x, Es5AssignmentOperator.AddAssign, s_y).ToStatement(),
@@ -144,19 +140,15 @@ namespace Desalt.JavaScript.Tests.Emit
             VerifyOutput(tryStatement, tryExpected);
 
             // try/catch blocks
-            const string catchExpected = tryExpected + @" catch (err) {
-  return y;
-}";
+            const string catchExpected = tryExpected + " catch (err) {\n  return y;\n}";
             Es5TryStatement catchStatement = tryStatement.WithCatch(
                 Factory.Identifier("err"),
                 Factory.ReturnStatement(s_y));
 
-            VerifyOutput(catchStatement, catchExpected, EmitOptions.Default.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(catchStatement, catchExpected, EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
 
             // set up the finally block
-            const string finallyExpected = @" finally {
-  console.log('message');
-}";
+            const string finallyExpected = " finally {\n  console.log('message');\n}";
             Es5BlockStatement finallyStatement = Factory.BlockStatement(
                 Factory.Call(
                     Factory.MemberDot(Factory.Identifier("console"), Factory.Identifier("log")),
@@ -166,13 +158,13 @@ namespace Desalt.JavaScript.Tests.Emit
             VerifyOutput(
                 tryStatement.WithFinally(finallyStatement),
                 tryExpected + finallyExpected,
-                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
+                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
 
             // try/catch/finally block
             VerifyOutput(
                 catchStatement.WithFinally(finallyStatement),
                 catchExpected + finallyExpected,
-                EmitOptions.Default.WithSimpleBlockOnNewLine(true));
+                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
         }
 
         [TestMethod]

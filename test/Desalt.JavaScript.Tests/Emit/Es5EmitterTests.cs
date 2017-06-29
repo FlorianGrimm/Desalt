@@ -28,7 +28,7 @@ namespace Desalt.JavaScript.Tests.Emit
         private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
-            using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.Default))
+            using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
             {
                 emitter.Visit(node);
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);
