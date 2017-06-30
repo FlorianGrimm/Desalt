@@ -1,17 +1,17 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsEmitterTests.AssignmentExpressions.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitterTests.AssignmentExpressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
-    using Op = Desalt.TypeScript.Ast.Expressions.TsAssignmentOperator;
+    using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
+    using Op = Desalt.JavaScript.Ast.Expressions.Es5AssignmentOperator;
 
-    public partial class TsEmitterTests
+    public partial class Es5EmitterTests
     {
         [TestMethod]
         public void Emit_all_assignment_expressions()

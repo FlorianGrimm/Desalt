@@ -38,12 +38,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Emit\TsEmitterTests.AssignmentExpressions.cs" />
-    <Compile Include="Emit\TsEmitterTests.cs" />
-    <Compile Include="Emit\TsEmitterTests.LeftHandSideExpressions.cs" />
-    <Compile Include="Emit\TsEmitterTests.LiteralExpressions.cs" />
-    <Compile Include="Emit\TsEmitterTests.SourceFile.cs" />
-    <Compile Include="Emit\TsEmitterTests.UnaryAndBinaryExpressions.cs" />
+    <Compile Include="Ast\TsEmitterTests.AssignmentExpressions.cs" />
+    <Compile Include="Ast\TsEmitterTests.cs" />
+    <Compile Include="Ast\TsEmitterTests.LeftHandSideExpressions.cs" />
+    <Compile Include="Ast\TsEmitterTests.LiteralExpressions.cs" />
+    <Compile Include="Ast\TsEmitterTests.SourceFile.cs" />
+    <Compile Include="Ast\TsEmitterTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

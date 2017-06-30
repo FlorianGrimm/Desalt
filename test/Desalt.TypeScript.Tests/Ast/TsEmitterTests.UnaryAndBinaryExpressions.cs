@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Tests.Emit
+namespace Desalt.TypeScript.Tests.Ast
 {
     using Desalt.TypeScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

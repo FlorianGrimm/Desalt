@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
     using System;
     using Desalt.Core.Emit;
