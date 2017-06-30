@@ -95,7 +95,7 @@ namespace Desalt.Core.Emit
             TElement[] array = blockElements.ToSafeArray();
 
             // check empty blocks
-            if (array.Length == 0 && !Options.SimpleBlockOnNewLine)
+            if (array.Length == 0)
             {
                 _writer.Write("{ }");
                 return;
@@ -134,7 +134,7 @@ namespace Desalt.Core.Emit
 
             _writer.Write("{");
 
-            bool indentBlock = isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock;
+            bool indentBlock = !isSimpleBlock;
             if (indentBlock)
             {
                 _writer.WriteLine();
@@ -152,7 +152,7 @@ namespace Desalt.Core.Emit
                 _writer.IndentLevel--;
             }
 
-            if (isSimpleBlock && Options.SimpleBlockOnNewLine || !isSimpleBlock)
+            if (!isSimpleBlock)
             {
                 _writer.WriteLine();
             }

@@ -89,8 +89,7 @@ namespace Desalt.JavaScript.Tests.Emit
 
             Es5Program program = Factory.Program(Factory.Call(topFunc.WithParentheses()).ToStatement());
 
-            EmitOptions options = EmitOptions.Default.WithSimpleBlockOnNewLine(false);
-
+            EmitOptions options = EmitOptions.Default;
             VerifyOutput(program, expected, options);
         }
     }

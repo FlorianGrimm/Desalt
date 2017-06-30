@@ -49,8 +49,7 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.BlockStatement(Factory.ReturnStatement(Factory.TrueLiteral)),
                 elseStatement: null);
 
-            VerifyOutput(statement, "if (x === y) {\n  return true;\n}",
-                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(statement, "if (x === y) { return true; }", EmitOptions.UnixSpaces);
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
             VerifyOutput(statement, "if (x === y) { return true; } else return false;");
@@ -140,31 +139,25 @@ namespace Desalt.JavaScript.Tests.Emit
             VerifyOutput(tryStatement, tryExpected);
 
             // try/catch blocks
-            const string catchExpected = tryExpected + " catch (err) {\n  return y;\n}";
+            const string catchExpected = tryExpected + " catch (err) { return y; }";
             Es5TryStatement catchStatement = tryStatement.WithCatch(
                 Factory.Identifier("err"),
                 Factory.ReturnStatement(s_y));
 
-            VerifyOutput(catchStatement, catchExpected, EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(catchStatement, catchExpected);
 
             // set up the finally block
-            const string finallyExpected = " finally {\n  console.log('message');\n}";
+            const string finallyExpected = " finally { console.log('message'); }";
             Es5BlockStatement finallyStatement = Factory.BlockStatement(
                 Factory.Call(
                     Factory.MemberDot(Factory.Identifier("console"), Factory.Identifier("log")),
                     Factory.StringLiteral("'message'")).ToStatement());
 
             // try/finally block
-            VerifyOutput(
-                tryStatement.WithFinally(finallyStatement),
-                tryExpected + finallyExpected,
-                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(tryStatement.WithFinally(finallyStatement), tryExpected + finallyExpected);
 
             // try/catch/finally block
-            VerifyOutput(
-                catchStatement.WithFinally(finallyStatement),
-                catchExpected + finallyExpected,
-                EmitOptions.UnixSpaces.WithSimpleBlockOnNewLine(true));
+            VerifyOutput(catchStatement.WithFinally(finallyStatement), catchExpected + finallyExpected);
         }
 
         [TestMethod]

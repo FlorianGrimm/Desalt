@@ -115,20 +115,7 @@ namespace Desalt.Core.Tests.Emit
         {
             using (var stream = new MemoryStream())
             {
-                EmitOptions options = s_testOptions.WithSimpleBlockOnNewLine(false);
                 var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
-                stream.ReadAllText().Should().Be("{ }");
-            }
-        }
-
-        [TestMethod]
-        public void WriteBlock_should_add_a_space_between_empty_function_block_braces_if_the_options_specifiy_it()
-        {
-            using (var stream = new MemoryStream())
-            {
-                EmitOptions options = s_testOptions.WithSimpleBlockOnNewLine(false);
-                var emitter = new Emitter(stream, options: options);
                 emitter.WriteBlock(Enumerable.Empty<IAstNode>(), elem => emitter.Write("Element"));
                 stream.ReadAllText().Should().Be("{ }");
             }
@@ -146,8 +133,8 @@ namespace Desalt.Core.Tests.Emit
 
             using (var stream = new MemoryStream())
             {
-                var emitter = new Emitter(stream, options: s_testOptions.WithSimpleBlockOnNewLine(true));
-                emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: true);
+                var emitter = new Emitter(stream, options: s_testOptions);
+                emitter.WriteBlock(() => emitter.Write("text"), isSimpleBlock: false);
                 stream.ReadAllText().Should().Be("{\n\ttext\n}");
             }
         }
