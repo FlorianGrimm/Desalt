@@ -75,7 +75,10 @@ namespace Desalt.Core.Emit
 
         public void WriteLine(string text) => _writer.WriteLine(text);
 
-        public void WriteBlankLine() => _writer.WriteBlankLine();
+        /// <summary>
+        /// Writes the specified string to a line without tabs.
+        /// </summary>
+        public void WriteLineWithoutIndentation() => _writer.WriteLineWithoutIndentation();
 
         /// <summary>
         /// Writes a block of elements, using the options to format the code.

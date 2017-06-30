@@ -152,7 +152,7 @@ namespace Desalt.JavaScript.Emit
                     bool shouldWriteNewline = i < node.CaseClauses.Length - 1 || node.DefaultClauseStatements.Length > 0;
                     if (shouldWriteNewline)
                     {
-                        _emitter.WriteBlankLine();
+                        _emitter.WriteLineWithoutIndentation();
                     }
 
                     // we still need to decrease the indentation level if we wrote a new line above

@@ -120,7 +120,7 @@ namespace Desalt.Core.Utility
         /// <summary>
         /// Writes the specified string to a line without tabs.
         /// </summary>
-        public void WriteBlankLine()
+        public void WriteLineWithoutIndentation()
         {
             InnerWriter.WriteLine();
             _indentPending = true;
