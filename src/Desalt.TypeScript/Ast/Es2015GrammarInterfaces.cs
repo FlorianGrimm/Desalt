@@ -578,6 +578,10 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
+    public interface ITsStatement : IAstNode
+    {
+    }
+
     /* Declaration:
      *   HoistableDeclaration
      *   ClassDeclaration
@@ -609,7 +613,8 @@ namespace Desalt.TypeScript.Ast
      */
 
     public interface ITsStatementListItem : IAstNode
-    { }
+    {
+    }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
@@ -797,12 +802,17 @@ namespace Desalt.TypeScript.Ast
      * CatchParameter:
      *   BindingIdentifier
      *   BindingPattern
-     *
-     * 13.16 The debugger Statement
+     */
+
+    /* 13.16 The debugger Statement
      * ----------------------------
      * DebuggerStatement:
      *   debugger ;
      */
+
+    public interface ITsDebuggerStatement : ITsStatement
+    {
+    }
 
     /* A.4 Functions and Classes
      *
