@@ -71,7 +71,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
 
             CallExpression.Emit(emitter);
-            WriteParameterList(emitter, Arguments);
+            emitter.WriteParameterList(Arguments);
         }
 
         public Es5CallExpression WithArguments(ImmutableArray<IEs5Expression> arguments)

@@ -61,7 +61,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             ParameterName.Emit(emitter);
             ParameterType.WriteTypeAnnotation(emitter);
             emitter.Write(") ");
-            WriteBlock(emitter, FunctionBody);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

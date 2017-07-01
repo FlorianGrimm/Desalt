@@ -59,7 +59,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             emitter.Write($"set {PropertyName}(");
             SetParameter.Emit(emitter);
             emitter.Write(") ");
-            WriteBlock(emitter, FunctionBody);
+            emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }
     }
 }

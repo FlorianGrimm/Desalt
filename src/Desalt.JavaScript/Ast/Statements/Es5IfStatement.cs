@@ -61,23 +61,19 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override void Emit(Emitter emitter)
         {
+            bool ifStatementIsBlock = IfStatement is Es5BlockStatement;
+
             emitter.Write("if (");
             IfExpression.Emit(emitter);
-            emitter.WriteLine(")");
-
-            emitter.IndentLevel++;
-            IfStatement.Emit(emitter);
-            emitter.IndentLevel--;
+            emitter.WriteStatementIndentedOrInBlock(IfStatement, ifStatementIsBlock, ")", ") ");
 
             if (ElseStatement == null)
             {
                 return;
             }
 
-            emitter.WriteLine("else");
-            emitter.IndentLevel++;
-            ElseStatement.Emit(emitter);
-            emitter.IndentLevel--;
+            emitter.Write(ifStatementIsBlock ? " else" : "else");
+            emitter.WriteStatementIndentedOrInBlock(ElseStatement, ElseStatement is Es5BlockStatement);
         }
     }
 }

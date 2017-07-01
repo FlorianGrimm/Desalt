@@ -115,16 +115,26 @@ namespace Desalt.JavaScript.Ast.Statements
         public override void Emit(Emitter emitter)
         {
             emitter.Write("for (");
-            Initializer?.Emit(emitter);
+
+            if (Declarations.Length > 0)
+            {
+                emitter.Write("var ");
+                emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
+            }
+            else
+            {
+                Initializer?.Emit(emitter);
+            }
+
             emitter.Write("; ");
 
             Condition?.Emit(emitter);
             emitter.Write("; ");
 
             Incrementor?.Emit(emitter);
-            emitter.WriteLine(")");
+            emitter.Write(")");
 
-            Statement.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement);
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_array_literals_with_spread_operator()
         {
-            VerifyOutput(Factory.ArrayLiteral(Factory.ArrayElement(s_y, isSpreadElement: true)), "[y ...]");
+            VerifyOutput(Factory.ArrayLiteral(Factory.ArrayElement(s_y, isSpreadElement: true)), "[... y]");
         }
 
         [TestMethod]

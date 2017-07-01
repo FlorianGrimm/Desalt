@@ -43,8 +43,8 @@ namespace Desalt.JavaScript.Ast.Statements
         public override void Emit(Emitter emitter)
         {
             emitter.Write("var ");
-            WriteItems(emitter, Declarations, indent: false, itemDelimiter: ", ");
-            emitter.Write(";");
+            emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
+            emitter.WriteLine(";");
         }
     }
 }

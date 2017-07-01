@@ -56,17 +56,28 @@ namespace Desalt.JavaScript.Ast.Statements
         {
             emitter.Write("switch (");
             Condition.Emit(emitter);
-            emitter.Write(") ");
+            emitter.WriteLine(") {");
+            emitter.IndentLevel++;
 
-            WriteItems(emitter, CaseClauses, indent: true, prefix: "{", itemDelimiter: Environment.NewLine);
+            foreach (Es5CaseClause caseClause in CaseClauses)
+            {
+                caseClause.Emit(emitter);
+                emitter.WriteLineWithoutIndentation();
+            }
 
             if (DefaultClauseStatements.Length > 0)
             {
                 emitter.WriteLine("default:");
-                WriteItems(emitter, DefaultClauseStatements, indent: true, itemDelimiter: Environment.NewLine);
+                emitter.IndentLevel++;
+                foreach (IEs5Statement statement in DefaultClauseStatements)
+                {
+                    statement.Emit(emitter);
+                }
+                emitter.IndentLevel--;
             }
 
-            emitter.Write("}");
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
         }
     }
 }

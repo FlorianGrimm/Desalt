@@ -7,13 +7,11 @@
 
 namespace Desalt.JavaScript.Tests.Ast
 {
-    using System;
     using System.IO;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast;
-    using Desalt.JavaScript.Emit;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
@@ -28,19 +26,11 @@ namespace Desalt.JavaScript.Tests.Ast
         private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
-            using (var emitter = new Es5Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
+            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
             {
-                emitter.Visit(node);
+                node.Emit(emitter);
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);
             }
-        }
-
-        [TestMethod]
-        public void Ctor_should_throw_on_null_args()
-        {
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new Es5Emitter(outputStream: null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
         }
     }
 }

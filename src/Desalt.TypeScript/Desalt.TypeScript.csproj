@@ -81,8 +81,6 @@
     <Compile Include="Ast\Types\TsTypeParameter.cs" />
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
-    <Compile Include="Emit\TsEmitter.cs" />
-    <Compile Include="Emit\TsEmitter.Expressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

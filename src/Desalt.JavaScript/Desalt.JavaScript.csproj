@@ -72,10 +72,6 @@
     <Compile Include="Ast\Statements\Es5VariableStatement.cs" />
     <Compile Include="Ast\Statements\Es5WhileStatement.cs" />
     <Compile Include="Ast\Statements\Es5WithStatement.cs" />
-    <Compile Include="Emit\Es5Emitter.cs" />
-    <Compile Include="Emit\Es5Emitter.Expressions.cs" />
-    <Compile Include="Emit\Es5Emitter.IterationStatements.cs" />
-    <Compile Include="Emit\Es5Emitter.Statements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

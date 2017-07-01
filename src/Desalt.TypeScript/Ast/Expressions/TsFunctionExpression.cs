@@ -52,10 +52,17 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("function ");
-            FunctionName?.Emit(emitter);
+            emitter.Write("function");
+
+            if (FunctionName != null)
+            {
+                emitter.Write(" ");
+                FunctionName.Emit(emitter);
+            }
+
+            emitter.Write(" ");
             CallSignature.Emit(emitter);
-            WriteBlock(emitter, FunctionBody);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

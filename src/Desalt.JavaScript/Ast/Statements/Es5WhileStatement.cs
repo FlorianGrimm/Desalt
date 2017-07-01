@@ -45,8 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
         {
             emitter.Write("while (");
             Condition.Emit(emitter);
-            emitter.WriteLine(")");
-            Statement.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, ")", ") ");
         }
     }
 }

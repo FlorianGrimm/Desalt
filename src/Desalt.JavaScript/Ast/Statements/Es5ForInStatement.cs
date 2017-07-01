@@ -73,14 +73,14 @@ namespace Desalt.JavaScript.Ast.Statements
             }
             else
             {
+                emitter.Write("var ");
                 Declaration.Emit(emitter);
             }
 
             emitter.Write(" in ");
             RightSide.Emit(emitter);
-            emitter.Write(")");
 
-            Statement.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, ")", ") ");
         }
     }
 }

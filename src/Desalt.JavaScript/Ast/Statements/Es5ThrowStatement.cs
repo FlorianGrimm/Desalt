@@ -43,7 +43,7 @@ namespace Desalt.JavaScript.Ast.Statements
         {
             emitter.Write("throw ");
             Expression.Emit(emitter);
-            emitter.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }

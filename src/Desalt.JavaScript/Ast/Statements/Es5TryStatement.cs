@@ -85,9 +85,8 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override void Emit(Emitter emitter)
         {
-            WriteItems(
-                emitter, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",
-                itemDelimiter: Environment.NewLine);
+            emitter.Write("try ");
+            emitter.WriteBlock(TryBlock.Statements, skipNewlines: true);
 
             if (CatchBlock != null)
             {
@@ -96,7 +95,7 @@ namespace Desalt.JavaScript.Ast.Statements
                 {
                     emitter.Write($"({CatchIdentifier}) ");
                 }
-                WriteBlock(emitter, CatchBlock.Statements);
+                emitter.WriteBlock(CatchBlock.Statements, skipNewlines: true);
             }
 
             if (FinallyBlock == null)
@@ -105,7 +104,7 @@ namespace Desalt.JavaScript.Ast.Statements
             }
 
             emitter.Write(" finally ");
-            WriteBlock(emitter, FinallyBlock.Statements);
+            emitter.WriteBlock(FinallyBlock.Statements, skipNewlines: true);
         }
 
         public Es5TryStatement WithCatch(Es5Identifier catchIdentifier, Es5BlockStatement catchBlock)

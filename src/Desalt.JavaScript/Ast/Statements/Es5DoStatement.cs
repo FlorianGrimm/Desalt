@@ -39,17 +39,14 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override void Accept(Es5Visitor visitor) => visitor.VisitDoStatement(this);
 
-        public override string CodeDisplay
-        {
-            get { return $"do ({Condition}) {Statement}"; }
-        }
+        public override string CodeDisplay => $"do {Statement} while ({Condition});";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("do (");
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, "do", "do ");
+            emitter.Write("while (");
             Condition.Emit(emitter);
-            emitter.Write(") ");
-            Statement.Emit(emitter);
+            emitter.WriteLine(");");
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_full_function_expression()
         {
-            const string expected = @"function funcName(param1, param2) { return x; }";
+            const string expected = "function funcName(param1, param2) {\n  return x;\n}";
             Es5FunctionExpression expression = Factory.Function(
                 "funcName",
                 Factory.ParamList("param1", "param2"),
@@ -99,7 +99,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_unnamed_function_expression()
         {
-            const string expected = @"function(param1, param2) { return x; }";
+            const string expected = "function(param1, param2) {\n  return x;\n}";
             Es5FunctionExpression expression = Factory.Function(
                 functionName: null,
                 parameters: Factory.ParamList("param1", "param2"),

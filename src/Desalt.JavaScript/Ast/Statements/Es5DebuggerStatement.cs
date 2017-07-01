@@ -37,9 +37,6 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override string CodeDisplay => "debugger;";
 
-        public override void Emit(Emitter emitter)
-        {
-            emitter.Write("debugger");
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteLine("debugger;");
     }
 }

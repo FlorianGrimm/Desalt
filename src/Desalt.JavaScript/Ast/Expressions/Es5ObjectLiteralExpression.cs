@@ -7,6 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
@@ -45,7 +46,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override void Emit(Emitter emitter)
         {
-            WriteCommaNewlineSeparatedBlock(emitter, PropertyAssignments);
+            emitter.WriteCommaNewlineSeparatedBlock(PropertyAssignments);
         }
     }
 }

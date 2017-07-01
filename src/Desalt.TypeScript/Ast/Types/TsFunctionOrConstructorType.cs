@@ -85,7 +85,7 @@ namespace Desalt.TypeScript.Ast.Types
                     code += $"<{TypeParameters.ToElidedList()}>";
                 }
 
-                code += $"{Parameters.CodeDisplay} => {ReturnType}";
+                code += $"{Parameters?.CodeDisplay} => {ReturnType}";
 
                 return code;
             }
@@ -93,9 +93,14 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Emit(Emitter emitter)
         {
+            if (IsConstructorType)
+            {
+                emitter.Write("new ");
+            }
+
             if (TypeParameters.Length > 0)
             {
-                WriteItems(emitter, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
             Parameters?.Emit(emitter);

@@ -75,7 +75,7 @@ namespace Desalt.TypeScript.Ast.Expressions
                 case TsUnaryOperator.Delete:
                 case TsUnaryOperator.Void:
                 case TsUnaryOperator.Typeof:
-                    emitter.Write($"{Operator.ToCodeDisplay()}");
+                    emitter.Write($"{Operator.ToCodeDisplay()} ");
                     Operand.Emit(emitter);
                     break;
 

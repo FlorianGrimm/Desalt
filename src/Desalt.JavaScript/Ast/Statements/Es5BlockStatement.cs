@@ -7,6 +7,7 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
@@ -38,11 +39,8 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override void Accept(Es5Visitor visitor) => visitor.VisitBlockStatement(this);
 
-        public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
+        public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
-        public override void Emit(Emitter emitter)
-        {
-            WriteBlock(emitter, Statements);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteBlock(Statements, skipNewlines: true);
     }
 }

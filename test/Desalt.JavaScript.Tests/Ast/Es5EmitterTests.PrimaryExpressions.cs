@@ -128,7 +128,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_object_literal_with_property_get()
         {
-            const string expected = @"{ get getter() { return x; } }";
+            const string expected = "{\n  get getter() {\n    return x;\n  }\n}";
             Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
                 Factory.PropertyGet("getter", Factory.ReturnStatement(s_x)));
 
@@ -138,7 +138,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_object_literal_with_property_set()
         {
-            const string expected = @"{ set setter(value) { x = value; } }";
+            const string expected = "{\n  set setter(value) {\n    x = value;\n  }\n}";
             Es5Identifier valueId = Factory.Identifier("value");
             Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
                 Factory.PropertySet(

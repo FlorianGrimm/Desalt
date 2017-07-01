@@ -55,7 +55,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             emitter.Write(" ");
             CallSignature.Emit(emitter);
             emitter.Write(" ");
-            WriteBlock(emitter, FunctionBody);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

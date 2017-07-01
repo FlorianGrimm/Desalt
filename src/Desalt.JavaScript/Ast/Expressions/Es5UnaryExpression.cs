@@ -78,7 +78,7 @@ namespace Desalt.JavaScript.Ast.Expressions
                 case Es5UnaryOperator.Delete:
                 case Es5UnaryOperator.Void:
                 case Es5UnaryOperator.Typeof:
-                    emitter.Write($"{Operator.ToCodeDisplay()}");
+                    emitter.Write($"{Operator.ToCodeDisplay()} ");
                     Operand.Emit(emitter);
                     break;
 

@@ -52,10 +52,15 @@ namespace Desalt.JavaScript.Ast
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write($"function {FunctionName} ");
-            WriteParameterList(emitter, Parameters);
+            emitter.Write("function");
+            if (FunctionName != null)
+            {
+                emitter.Write($" {FunctionName}");
+            }
+
+            emitter.WriteParameterList(Parameters);
             emitter.Write(" ");
-            WriteBlock(emitter, FunctionBody);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

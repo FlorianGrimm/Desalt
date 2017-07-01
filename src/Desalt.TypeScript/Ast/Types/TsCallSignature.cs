@@ -66,7 +66,7 @@ namespace Desalt.TypeScript.Ast.Types
         {
             if (TypeParameters.Length > 0)
             {
-                WriteItems(emitter, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
             Parameters?.Emit(emitter);

@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Tests.Ast
 {
-    using System;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast.Expressions;
@@ -27,7 +26,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_variable_statements()
         {
-            const string expected = "var x = this, y, z = false;";
+            const string expected = "var x = this, y, z = false;\n";
             Es5VariableStatement expression = Factory.VariableStatement(
                 Factory.VariableDeclaration(s_x, Factory.ThisExpression),
                 Factory.VariableDeclaration(s_y),
@@ -38,7 +37,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_empty_statement()
         {
-            VerifyOutput(Factory.EmptyStatement, ";");
+            VerifyOutput(Factory.EmptyStatement, ";\n");
         }
 
         [TestMethod]
@@ -49,58 +48,49 @@ namespace Desalt.JavaScript.Tests.Ast
                 Factory.BlockStatement(Factory.ReturnStatement(Factory.TrueLiteral)),
                 elseStatement: null);
 
-            VerifyOutput(statement, "if (x === y) { return true; }", EmitOptions.UnixSpaces);
+            VerifyOutput(statement, "if (x === y) {\n  return true;\n}");
 
             statement = statement.WithElseStatement(Factory.ReturnStatement(Factory.FalseLiteral));
-            VerifyOutput(statement, "if (x === y) { return true; } else return false;");
+            VerifyOutput(statement, "if (x === y) {\n  return true;\n} else\n  return false;\n");
         }
 
         [TestMethod]
         public void Emit_continue_statements()
         {
-            VerifyOutput(Factory.ContinueLabelStatement(), "continue;");
-            VerifyOutput(Factory.ContinueLabelStatement(s_x), "continue x;");
+            VerifyOutput(Factory.ContinueLabelStatement(), "continue;\n");
+            VerifyOutput(Factory.ContinueLabelStatement(s_x), "continue x;\n");
         }
 
         [TestMethod]
         public void Emit_break_statements()
         {
-            VerifyOutput(Factory.BreakLabelStatement(), "break;");
-            VerifyOutput(Factory.BreakLabelStatement(s_x), "break x;");
+            VerifyOutput(Factory.BreakLabelStatement(), "break;\n");
+            VerifyOutput(Factory.BreakLabelStatement(s_x), "break x;\n");
         }
 
         [TestMethod]
         public void Emit_return_statement()
         {
-            VerifyOutput(Factory.ReturnStatement(s_x), "return x;");
+            VerifyOutput(Factory.ReturnStatement(s_x), "return x;\n");
         }
 
         [TestMethod]
         public void Emit_with_statement()
         {
-            VerifyOutput(Factory.WithStatement(s_x, Factory.ReturnStatement(s_y)), "with (x) return y;");
+            VerifyOutput(Factory.WithStatement(s_x, Factory.ReturnStatement(s_y)), "with (x)\n  return y;\n");
         }
 
         [TestMethod]
         public void Emit_labelled_statement()
         {
-            VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x: debugger;");
+            VerifyOutput(Factory.LabelledStatement(s_x, Factory.DebuggerStatement), "x: debugger;\n");
         }
 
         [TestMethod]
         public void Emit_switch_statement()
         {
-            string expected = @"switch (x) {
-  case ""true"":
-    x = y;
-    break;
-
-  case 4:
-    return x;
-
-  default:
-    break;
-}".Replace(Environment.NewLine, "\n");
+            const string expected = "switch (x) {\n•case \"true\":\n••x = y;\n••break;\n\n•" +
+                "case 4:\n••return x;\n\n•default:\n••break;\n}\n";
 
             Es5SwitchStatement statement = Factory.SwitchStatement(
                 condition: s_x,
@@ -114,7 +104,7 @@ namespace Desalt.JavaScript.Tests.Ast
                         Factory.ReturnStatement(s_x))),
                 defaultClauseStatements: Factory.BreakStatement.ToSafeArray());
 
-            VerifyOutput(statement, expected);
+            VerifyOutput(statement, expected, new EmitOptions(newline: "\n", indentationPrefix: "•"));
         }
 
         [TestMethod]
@@ -123,7 +113,7 @@ namespace Desalt.JavaScript.Tests.Ast
             VerifyOutput(
                 Factory.ThrowStatement(
                     Factory.NewCall(Factory.Identifier("Error"), Factory.DecimalLiteral("2"))),
-                "throw new Error(2);");
+                "throw new Error(2);\n");
         }
 
         [TestMethod]
@@ -139,7 +129,7 @@ namespace Desalt.JavaScript.Tests.Ast
             VerifyOutput(tryStatement, tryExpected);
 
             // try/catch blocks
-            const string catchExpected = tryExpected + " catch (err) { return y; }";
+            const string catchExpected = tryExpected + " catch (err) {\n  return y;\n}";
             Es5TryStatement catchStatement = tryStatement.WithCatch(
                 Factory.Identifier("err"),
                 Factory.ReturnStatement(s_y));
@@ -147,7 +137,7 @@ namespace Desalt.JavaScript.Tests.Ast
             VerifyOutput(catchStatement, catchExpected);
 
             // set up the finally block
-            const string finallyExpected = " finally { console.log('message'); }";
+            const string finallyExpected = " finally {\n  console.log('message');\n}";
             Es5BlockStatement finallyStatement = Factory.BlockStatement(
                 Factory.Call(
                     Factory.MemberDot(Factory.Identifier("console"), Factory.Identifier("log")),
@@ -163,7 +153,7 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_debugger_statement()
         {
-            VerifyOutput(Factory.DebuggerStatement, "debugger;");
+            VerifyOutput(Factory.DebuggerStatement, "debugger;\n");
         }
     }
 }

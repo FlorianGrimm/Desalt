@@ -65,7 +65,7 @@ namespace Desalt.TypeScript.Ast.Expressions
                 Heritage.Emit(emitter);
             }
 
-            WriteBlock(emitter, ClassBody);
+            emitter.WriteBlock(ClassBody);
         }
     }
 }

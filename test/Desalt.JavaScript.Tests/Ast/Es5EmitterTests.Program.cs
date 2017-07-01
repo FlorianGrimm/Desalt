@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Tests.Ast
 {
-    using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,14 +19,19 @@ namespace Desalt.JavaScript.Tests.Ast
         [TestMethod]
         public void Emit_full_program()
         {
-            const string expected = @"(function() {
+            string expected = @"(function() {
   'use strict';
   var $asm = {};
   global.TestNs = global.TestNs || {};
   ss.initAssembly($asm, 'Test');
-  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() { }, { add: function(x, y) { return x + y; } });
+  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() { }, {
+    add: function(x, y) {
+      return x + y;
+    }
+  });
   ss.initClass($TestNs_Expressions);
-})();";
+})();
+".Replace("\r\n", "\n");
 
             // ReSharper disable InconsistentNaming
             Es5Identifier asm = Factory.Identifier("$asm");
@@ -89,8 +93,7 @@ namespace Desalt.JavaScript.Tests.Ast
 
             Es5Program program = Factory.Program(Factory.Call(topFunc.WithParentheses()).ToStatement());
 
-            EmitOptions options = EmitOptions.Default;
-            VerifyOutput(program, expected, options);
+            VerifyOutput(program, expected);
         }
     }
 }

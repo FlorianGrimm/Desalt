@@ -45,10 +45,17 @@ namespace Desalt.JavaScript.Ast.Statements
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteLine("case ");
+            emitter.Write("case ");
             Expression.Emit(emitter);
-            emitter.Write(": ");
-            WriteItems(emitter, Statements, indent: true, itemDelimiter: Environment.NewLine);
+            emitter.WriteLine(":");
+            emitter.IndentLevel++;
+
+            foreach (IEs5Statement statement in Statements)
+            {
+                statement.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
         }
     }
 }

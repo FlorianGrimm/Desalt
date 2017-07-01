@@ -45,21 +45,25 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                return
-                    RequiredParameters.ToElidedList() +
-                    OptionalParameters.ToElidedList() +
-                    RestParameter.CodeDisplay;
-            }
-        }
+        public override string CodeDisplay =>
+            RequiredParameters.ToElidedList() +
+            OptionalParameters.ToElidedList() +
+            RestParameter.CodeDisplay;
 
         public override void Emit(Emitter emitter)
         {
-            WriteItems(emitter, RequiredParameters, indent: false, itemDelimiter: ", ");
-            WriteItems(emitter, OptionalParameters, indent: false, itemDelimiter: ", ");
+            emitter.WriteItems(RequiredParameters, indent: false, itemDelimiter: ", ");
+            if (RequiredParameters.Length > 0 && OptionalParameters.Length > 0 || RestParameter != null)
+            {
+                emitter.Write(", ");
+            }
+
+            emitter.WriteItems(OptionalParameters, indent: false, itemDelimiter: ", ");
+            if (OptionalParameters.Length > 0 && RestParameter != null)
+            {
+                emitter.Write(", ");
+            }
+
             RestParameter?.Emit(emitter);
         }
     }

@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
@@ -39,11 +40,8 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
 
-        public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
+        public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
-        public override void Emit(Emitter emitter)
-        {
-            WriteCommaNewlineSeparatedBlock(emitter, PropertyDefinitions);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
     }
 }

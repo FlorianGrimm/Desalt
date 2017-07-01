@@ -7,7 +7,6 @@
 
 namespace Desalt.JavaScript.Ast
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
@@ -46,7 +45,7 @@ namespace Desalt.JavaScript.Ast
 
         public override void Emit(Emitter emitter)
         {
-            WriteItems(emitter, SourceElements, indent: false, itemDelimiter: Environment.NewLine);
+            emitter.WriteItems(SourceElements, indent: false, itemDelimiter: emitter.Options.Newline);
         }
     }
 }

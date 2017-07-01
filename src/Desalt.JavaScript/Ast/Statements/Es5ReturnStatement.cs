@@ -34,10 +34,7 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitReturnStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitReturnStatement(this);
 
         public override string CodeDisplay => $"return {Expression};";
 
@@ -45,7 +42,7 @@ namespace Desalt.JavaScript.Ast.Statements
         {
             emitter.Write("return ");
             Expression.Emit(emitter);
-            emitter.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }

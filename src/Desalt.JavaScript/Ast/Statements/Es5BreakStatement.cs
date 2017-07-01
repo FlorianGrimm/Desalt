@@ -57,7 +57,7 @@ namespace Desalt.JavaScript.Ast.Statements
                 Label.Emit(emitter);
             }
 
-            emitter.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Desalt.JavaScript.Ast.Statements
         public override void Emit(Emitter emitter)
         {
             Expression.Emit(emitter);
-            emitter.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }
