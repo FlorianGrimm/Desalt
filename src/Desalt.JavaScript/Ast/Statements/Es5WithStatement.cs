@@ -37,10 +37,7 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitWithStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitWithStatement(this);
 
         public override string CodeDisplay => $"with ({Expression}) {Statement}";
 

@@ -64,16 +64,10 @@ namespace Desalt.JavaScript.Ast
             return identifier;
         }
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitIdentifier(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitIdentifier(this);
 
         public override string CodeDisplay => Text;
 
-        public override void Emit(Emitter emitter)
-        {
-            emitter.Write(Text);
-        }
+        public override void Emit(Emitter emitter) => emitter.Write(Text);
     }
 }

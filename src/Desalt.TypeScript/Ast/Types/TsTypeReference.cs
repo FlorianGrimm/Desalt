@@ -41,18 +41,8 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                if (TypeArguments.Length == 0)
-                {
-                    return TypeName.CodeDisplay;
-                }
-
-                return $"{TypeName}<{TypeArguments.ToElidedList()}>";
-            }
-        }
+        public override string CodeDisplay =>
+            TypeArguments.Length == 0 ? TypeName.CodeDisplay : $"{TypeName}<{TypeArguments.ToElidedList()}>";
 
         public override void Emit(Emitter emitter)
         {

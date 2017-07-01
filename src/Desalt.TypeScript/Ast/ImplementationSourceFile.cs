@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScript.Ast
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
@@ -41,9 +40,7 @@ namespace Desalt.TypeScript.Ast
 
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
-        public override void Emit(Emitter emitter)
-        {
-            WriteItems(emitter, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
-        }
+        public override void Emit(Emitter emitter) =>
+            emitter.WriteItems(ScriptElements, indent: false, itemDelimiter: emitter.Options.Newline);
     }
 }

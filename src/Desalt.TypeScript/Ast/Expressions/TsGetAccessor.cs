@@ -47,7 +47,8 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
 
         public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
+            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} " +
+            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
         public override void Emit(Emitter emitter)
         {

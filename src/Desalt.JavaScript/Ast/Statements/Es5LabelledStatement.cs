@@ -37,10 +37,7 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitLabelledStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitLabelledStatement(this);
 
         public override string CodeDisplay => $"{Identifier}: {Statement}";
 

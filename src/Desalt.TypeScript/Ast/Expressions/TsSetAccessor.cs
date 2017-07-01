@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override string CodeDisplay =>
             $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
-            $"{{{FunctionBody.ToElidedList()}}}";
+            $"{{ {FunctionBody.ToElidedList()} }}";
 
         public override void Emit(Emitter emitter)
         {

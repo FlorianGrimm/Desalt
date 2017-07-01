@@ -67,10 +67,8 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitMemberExpression(this);
         }
 
-        public override string CodeDisplay
-        {
-            get { return MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}"); }
-        }
+        public override string CodeDisplay =>
+            MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}");
 
         public override void Emit(Emitter emitter)
         {

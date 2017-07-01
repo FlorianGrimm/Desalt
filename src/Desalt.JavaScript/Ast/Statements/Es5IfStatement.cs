@@ -40,15 +40,10 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public Es5IfStatement WithElseStatement(IEs5Statement statement)
-        {
-            return new Es5IfStatement(IfExpression, IfStatement, statement);
-        }
+        public Es5IfStatement WithElseStatement(IEs5Statement statement) =>
+            new Es5IfStatement(IfExpression, IfStatement, statement);
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitIfStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitIfStatement(this);
 
         public override string CodeDisplay
         {

@@ -45,7 +45,8 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitPropertyGetAssignment(this);
         }
 
-        public override string CodeDisplay => $"get {PropertyName}() {{...}}";
+        public override string CodeDisplay =>
+            $"get {PropertyName}() {{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
         public override void Emit(Emitter emitter)
         {

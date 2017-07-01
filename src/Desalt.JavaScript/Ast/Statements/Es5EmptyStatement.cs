@@ -33,10 +33,7 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitEmptyStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitEmptyStatement(this);
 
         public override string CodeDisplay => ";";
 

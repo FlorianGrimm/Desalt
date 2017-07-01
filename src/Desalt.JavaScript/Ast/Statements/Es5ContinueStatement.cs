@@ -45,10 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitContinueStatement(this);
         }
 
-        public override string CodeDisplay
-        {
-            get { return "continue" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
-        }
+        public override string CodeDisplay => "continue" + (Label != null ? $" {Label}" : string.Empty) + ";";
 
         public override void Emit(Emitter emitter)
         {

@@ -45,10 +45,7 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitBreakStatement(this);
         }
 
-        public override string CodeDisplay
-        {
-            get { return "break" + (Label != null ? $" {Label}" : string.Empty) + ";"; }
-        }
+        public override string CodeDisplay => "break" + (Label != null ? $" {Label}" : string.Empty) + ";";
 
         public override void Emit(Emitter emitter)
         {

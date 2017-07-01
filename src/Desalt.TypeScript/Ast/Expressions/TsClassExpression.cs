@@ -45,15 +45,9 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                return $"class {ClassName.CodeDisplay}" +
-                    (Heritage != null ? $" extends {Heritage}" : "") +
-                    $"{{ {ClassBody.ToElidedList()} }}";
-            }
-        }
+        public override string CodeDisplay =>
+            $"class {ClassName.CodeDisplay}" + (Heritage != null ? $" extends {Heritage}" : "") +
+            $"{{ {ClassBody.ToElidedList()} }}";
 
         public override void Emit(Emitter emitter)
         {

@@ -60,10 +60,8 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitCallExpression(this);
         }
 
-        public override string CodeDisplay
-        {
-            get { return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})"; }
-        }
+        public override string CodeDisplay =>
+            (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})";
 
         public override void Emit(Emitter emitter)
         {

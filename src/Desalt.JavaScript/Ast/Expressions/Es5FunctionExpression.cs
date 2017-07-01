@@ -43,12 +43,10 @@ namespace Desalt.JavaScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitFunctionExpression(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitFunctionExpression(this);
 
-        public override string CodeDisplay => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
+        public override string CodeDisplay =>
+            $"function {FunctionName}({Parameters.ToElidedList()}) {{ {FunctionBody.ToElidedList()} }}";
 
         public override void Emit(Emitter emitter)
         {

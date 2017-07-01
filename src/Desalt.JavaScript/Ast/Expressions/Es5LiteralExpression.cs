@@ -83,10 +83,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             }
         }
 
-        public override void Emit(Emitter emitter)
-        {
-            emitter.Write(CodeDisplay);
-        }
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
 
         internal static Es5LiteralExpression CreateString(string literal) =>
             new Es5LiteralExpression(Es5LiteralKind.String, literal);

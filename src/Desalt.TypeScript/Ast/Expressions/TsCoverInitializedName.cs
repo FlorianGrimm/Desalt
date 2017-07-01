@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
 
-        public override string CodeDisplay => $"{Identifier.CodeDisplay} = ${Initializer.CodeDisplay}";
+        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
 
         public override void Emit(Emitter emitter)
         {

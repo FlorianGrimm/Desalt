@@ -33,10 +33,7 @@ namespace Desalt.JavaScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitThisExpresssion(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitThisExpresssion(this);
 
         public override string CodeDisplay => "this";
 

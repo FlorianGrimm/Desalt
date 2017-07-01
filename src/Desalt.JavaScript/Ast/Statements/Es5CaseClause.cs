@@ -39,15 +39,9 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitCaseClause(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitCaseClause(this);
 
-        public override string CodeDisplay
-        {
-            get { return $"case {Expression}: {Statements.ToElidedList()}"; }
-        }
+        public override string CodeDisplay => $"case {Expression}: {Statements.ToElidedList()}";
 
         public override void Emit(Emitter emitter)
         {

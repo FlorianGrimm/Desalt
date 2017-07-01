@@ -35,15 +35,9 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitThrowStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitThrowStatement(this);
 
-        public override string CodeDisplay
-        {
-            get { return $"throw {Expression};"; }
-        }
+        public override string CodeDisplay => $"throw {Expression};";
 
         public override void Emit(Emitter emitter)
         {

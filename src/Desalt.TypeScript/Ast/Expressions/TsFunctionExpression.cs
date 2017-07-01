@@ -47,7 +47,8 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
 
         public override string CodeDisplay =>
-            $"function {FunctionName.CodeDisplay}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
+            $"function {FunctionName.CodeDisplay}{CallSignature} " +
+            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
         public override void Emit(Emitter emitter)
         {

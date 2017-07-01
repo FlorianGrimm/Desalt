@@ -41,7 +41,7 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitObjectLiteralExpression(this);
         }
 
-        public override string CodeDisplay => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
+        public override string CodeDisplay => $"{{ {PropertyAssignments.ToElidedList(Environment.NewLine)} }}";
 
         public override void Emit(Emitter emitter)
         {

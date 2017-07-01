@@ -36,10 +36,7 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitBlockStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitBlockStatement(this);
 
         public override string CodeDisplay => $"Block, Statements.Length = {{ {Statements.Length} }}";
 
