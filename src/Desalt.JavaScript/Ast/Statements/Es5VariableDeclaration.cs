@@ -9,13 +9,13 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration of the form 'x' or 'x = y' (does not include the 'var'
     /// keyword - that's the <see cref="Es5VariableStatement"/>).
     /// </summary>
-    public sealed class Es5VariableDeclaration : AstNode
+    public sealed class Es5VariableDeclaration : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,21 +38,20 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override string ToCodeDisplay()
-        {
-            return Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}";
-        }
+        public override string CodeDisplay => Initializer == null ? $"{Identifier}" : $"{Identifier} = {Initializer}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Accept(Es5Visitor visitor) => throw new NotSupportedException();
+
+        public override void Emit(Emitter emitter)
         {
-            Identifier.WriteFullCodeDisplay(writer);
+            Identifier.Emit(emitter);
 
             if (Initializer == null)
             {
                 return;
             }
-            writer.Write(" = ");
-            Initializer.WriteFullCodeDisplay(writer);
+            emitter.Write(" = ");
+            Initializer.Emit(emitter);
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an element in an array.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    internal class TsArrayElement : AstNode<TsVisitor>, ITsArrayElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,20 +41,18 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayElement(this);
+        public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 
-        public override string ToCodeDisplay() => (IsSpreadElement ? "... " : "") + Element.ToCodeDisplay();
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             if (IsSpreadElement)
             {
-                writer.Write("... ");
+                emitter.Write("... ");
             }
 
-            Element.WriteFullCodeDisplay(writer);
+            Element.Emit(emitter);
         }
     }
 }

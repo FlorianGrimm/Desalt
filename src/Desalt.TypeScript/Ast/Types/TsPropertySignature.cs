@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : AstNode, ITsPropertySignature
+    internal class TsPropertySignature : AstNode<TsVisitor>, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,22 +42,20 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertySignature(this);
+        public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
+            PropertyType.ToTypeAnnotationCodeDisplay();
 
-        public override string ToCodeDisplay() =>
-            PropertyName + (IsOptional ? "?" : "") + PropertyType.ToTypeAnnotationCodeDisplay();
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            PropertyName.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(emitter);
             if (IsOptional)
             {
-                writer.Write("?");
+                emitter.Write("?");
             }
 
-            PropertyType.WriteTypeAnnotation(writer);
+            PropertyType.WriteTypeAnnotation(emitter);
         }
     }
 }

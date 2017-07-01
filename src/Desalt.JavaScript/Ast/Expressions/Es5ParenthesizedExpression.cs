@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression wrapped in parentheses.
     /// </summary>
-    public sealed class Es5ParenthesizedExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ParenthesizedExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,18 +39,13 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitParenthesizedExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitParenthesizedExpression(this);
-        }
+        public override string CodeDisplay => $"({Expression})";
 
-        public override string ToCodeDisplay() => $"({Expression})";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("(");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write(")");
+            emitter.Write("(");
+            Expression.Emit(emitter);
+            emitter.Write(")");
         }
     }
 }

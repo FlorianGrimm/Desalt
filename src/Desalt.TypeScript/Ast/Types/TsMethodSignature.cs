@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a method signature, which is a shorthand for declaring a property of a function type.
     /// </summary>
-    internal class TsMethodSignature : AstNode, ITsMethodSignature
+    internal class TsMethodSignature : AstNode<TsVisitor>, ITsMethodSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,31 +39,32 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitMethodSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMethodSignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMethodSignature(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = PropertyName.ToCodeDisplay();
-            if (IsOptional)
+            get
             {
-                display += "?";
-            }
+                string display = PropertyName.CodeDisplay;
+                if (IsOptional)
+                {
+                    display += "?";
+                }
 
-            display += CallSignature.ToCodeDisplay();
-            return display;
+                display += CallSignature.CodeDisplay;
+                return display;
+            }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            PropertyName.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(emitter);
             if (IsOptional)
             {
-                writer.Write("?");
+                emitter.Write("?");
             }
 
-            CallSignature.WriteFullCodeDisplay(writer);
+            CallSignature.Emit(emitter);
         }
     }
 }

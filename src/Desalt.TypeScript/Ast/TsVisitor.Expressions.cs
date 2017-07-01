@@ -12,256 +12,127 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
-        public virtual void VisitThis(ITsThis node) => DefaultVisit(node);
+        public virtual void VisitThis(ITsThis node) => Visit(node);
 
         /// <summary>
         /// Visits a null literal.
         /// </summary>
-        public virtual void VisitNullLiteral(ITsNullLiteral node) => DefaultVisit(node);
+        public virtual void VisitNullLiteral(ITsNullLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits a boolean literal.
         /// </summary>
-        public virtual void VisitBooleanLiteral(ITsBooleanLiteral node) => DefaultVisit(node);
+        public virtual void VisitBooleanLiteral(ITsBooleanLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits a numeric literal.
         /// </summary>
-        public virtual void VisitNumericLiteral(ITsNumericLiteral node) => DefaultVisit(node);
+        public virtual void VisitNumericLiteral(ITsNumericLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits a string literal.
         /// </summary>
-        public virtual void VisitStringLiteral(ITsStringLiteral node) => DefaultVisit(node);
+        public virtual void VisitStringLiteral(ITsStringLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits a regular expression literal.
         /// </summary>
-        public virtual void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral node) => DefaultVisit(node);
+        public virtual void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits an array literal of the form '[element, element...]'.
         /// </summary>
-        public virtual void VisitArrayLiteral(ITsArrayLiteral node) => DefaultVisit(node);
+        public virtual void VisitArrayLiteral(ITsArrayLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits an array element.
         /// </summary>
-        public virtual void VisitArrayElement(ITsArrayElement node) => DefaultVisit(node);
+        public virtual void VisitArrayElement(ITsArrayElement node) => Visit(node);
 
         /// <summary>
         /// Visits an object literal of the form '{ PropertDefinition, ... }'.
         /// </summary>
-        public virtual void VisitObjectLiteral(ITsObjectLiteral node) => DefaultVisit(node);
+        public virtual void VisitObjectLiteral(ITsObjectLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits an element in an object initializer of the form 'identifer = expression'.
         /// </summary>
         /// <param name="node"></param>
-        public virtual void VisitCoverInitializedName(ITsCoverInitializedName node) => DefaultVisit(node);
+        public virtual void VisitCoverInitializedName(ITsCoverInitializedName node) => Visit(node);
 
         /// <summary>
         /// Visits a property value assignment within an object literal of the form 'property: value'.
         /// </summary>
-        public virtual void VisitPropertyAssignment(ITsPropertyAssignment node) => DefaultVisit(node);
+        public virtual void VisitPropertyAssignment(ITsPropertyAssignment node) => Visit(node);
 
         /// <summary>
         /// Visits a computed property name within an object literal of the form '[expression]'.
         /// </summary>
-        public virtual void VisitComputedPropertyName(ITsComputedPropertyName node) => DefaultVisit(node);
+        public virtual void VisitComputedPropertyName(ITsComputedPropertyName node) => Visit(node);
 
         /// <summary>
         /// Visits an object literal property function.
         /// </summary>
-        public virtual void VisitPropertyFunction(ITsPropertyFunction node) => DefaultVisit(node);
+        public virtual void VisitPropertyFunction(ITsPropertyFunction node) => Visit(node);
 
         /// <summary>
         /// Visits a property get accessor of the form 'get name (): type { body }'.
         /// </summary>
-        public virtual void VisitGetAccessor(ITsGetAccessor node) => DefaultVisit(node);
+        public virtual void VisitGetAccessor(ITsGetAccessor node) => Visit(node);
 
         /// <summary>
         /// Visits a property set accessor of the form 'set name(value: type) { body }'.
         /// </summary>
-        public virtual void VisitSetAccessor(ITsSetAccessor node) => DefaultVisit(node);
+        public virtual void VisitSetAccessor(ITsSetAccessor node) => Visit(node);
 
         /// <summary>
         /// Visits a function declaration acting as an expression.
         /// </summary>
-        public virtual void VisitFunctionExpression(ITsFunctionExpression node) => DefaultVisit(node);
+        public virtual void VisitFunctionExpression(ITsFunctionExpression node) => Visit(node);
 
         /// <summary>
         /// Visits an element within a class.
         /// </summary>
-        public virtual void VisitClassElement(ITsClassElement node) => DefaultVisit(node);
+        public virtual void VisitClassElement(ITsClassElement node) => Visit(node);
 
         /// <summary>
         /// Visits a class declaration acting as an expression.
         /// </summary>
-        public virtual void VisitClassExpression(ITsClassExpression node) => DefaultVisit(node);
+        public virtual void VisitClassExpression(ITsClassExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a template literal of the form `string${Expression}`.
         /// </summary>
-        public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
+        public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => Visit(node);
 
         /// <summary>
         /// Visits a unary expression
         /// </summary>
-        public virtual void VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
+        public virtual void VisitUnaryExpression(ITsUnaryExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a binary expression
         /// </summary>
-        public virtual void VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
+        public virtual void VisitBinaryExpression(ITsBinaryExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a conditional expression of the form 'x ? y : z'.
         /// </summary>
-        public virtual void VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
+        public virtual void VisitConditionalExpression(ITsConditionalExpression node) => Visit(node);
 
         /// <summary>
         /// Visits an expression that assigns one value to another.
         /// </summary>
-        public virtual void VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
+        public virtual void VisitAssignmentExpression(ITsAssignmentExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a member expression of the form 'expression[expression]'.
         /// </summary>
-        public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
+        public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a member expression of the form 'expression.name'.
         /// </summary>
-        public virtual void VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
-    }
-
-    public abstract partial class TsVisitor<TResult>
-    {
-        /// <summary>
-        /// Visits an expression representing the literal 'this'.
-        /// </summary>
-        public virtual TResult VisitThis(ITsThis node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a null literal.
-        /// </summary>
-        public virtual TResult VisitNullLiteral(ITsNullLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a boolean literal.
-        /// </summary>
-        public virtual TResult VisitBooleanLiteral(ITsBooleanLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a numeric literal.
-        /// </summary>
-        public virtual TResult VisitNumericLiteral(ITsNumericLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a string literal.
-        /// </summary>
-        public virtual TResult VisitStringLiteral(ITsStringLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a regular expression literal.
-        /// </summary>
-        public virtual TResult VisitRegularExpressionLiteral(ITsRegularExpressionLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an array literal of the form '[element, element...]'.
-        /// </summary>
-        public virtual TResult VisitArrayLiteral(ITsArrayLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an array element.
-        /// </summary>
-        public virtual TResult VisitArrayElement(ITsArrayElement node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an object literal of the form '{ PropertDefinition, ... }'.
-        /// </summary>
-        public virtual TResult VisitObjectLiteral(ITsObjectLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an element in an object initializer of the form 'identifer = expression'.
-        /// </summary>
-        /// <param name="node"></param>
-        public virtual TResult VisitCoverInitializedName(ITsCoverInitializedName node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a property value assignment within an object literal of the form 'property: value'.
-        /// </summary>
-        public virtual TResult VisitPropertyAssignment(ITsPropertyAssignment node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a computed property name within an object literal of the form '[expression]'.
-        /// </summary>
-        public virtual TResult VisitComputedPropertyName(ITsComputedPropertyName node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an object literal property function.
-        /// </summary>
-        public virtual TResult VisitPropertyFunction(ITsPropertyFunction node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a property get accessor of the form 'get name (): type { body }'.
-        /// </summary>
-        public virtual TResult VisitGetAccessor(ITsGetAccessor node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a property set accessor of the form 'set name(value: type) { body }'.
-        /// </summary>
-        public virtual TResult VisitSetAccessor(ITsSetAccessor node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a function declaration acting as an expression.
-        /// </summary>
-        public virtual TResult VisitFunctionExpression(ITsFunctionExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an element within a class.
-        /// </summary>
-        public virtual TResult VisitClassElement(ITsClassElement node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a class declaration acting as an expression.
-        /// </summary>
-        public virtual TResult VisitClassExpression(ITsClassExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a template literal of the form `string${Expression}`.
-        /// </summary>
-        public virtual TResult VisitTemplateLiteral(ITsTemplateLiteral node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a unary expression
-        /// </summary>
-        public virtual TResult VisitUnaryExpression(ITsUnaryExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a binary expression
-        /// </summary>
-        public virtual TResult VisitBinaryExpression(ITsBinaryExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a conditional expression of the form 'x ? y : z'.
-        /// </summary>
-        public virtual TResult VisitConditionalExpression(ITsConditionalExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits an expression that assigns one value to another.
-        /// </summary>
-        public virtual TResult VisitAssignmentExpression(ITsAssignmentExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a member expression of the form 'expression[expression]'.
-        /// </summary>
-        public virtual TResult VisitMemberBracketExpression(ITsMemberBracketExpression node) => DefaultVisit(node);
-
-        /// <summary>
-        /// Visits a member expression of the form 'expression.name'.
-        /// </summary>
-        public virtual TResult VisitMemberDotExpression(ITsMemberDotExpression node) => DefaultVisit(node);
+        public virtual void VisitMemberDotExpression(ITsMemberDotExpression node) => Visit(node);
     }
 }

@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression
+    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,18 +37,16 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberBracketExpression(this);
+        public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 
-        public override string ToCodeDisplay() => $"{LeftSide}[{BracketContents}]";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write("[");
-            BracketContents.WriteFullCodeDisplay(writer);
-            writer.Write("]");
+            LeftSide.Emit(emitter);
+            emitter.Write("[");
+            BracketContents.Emit(emitter);
+            emitter.Write("]");
         }
     }
 }

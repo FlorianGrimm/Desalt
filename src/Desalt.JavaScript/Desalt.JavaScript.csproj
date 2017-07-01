@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\Es5AstFactory.cs" />
-    <Compile Include="Ast\Es5AstNode.cs" />
     <Compile Include="Ast\Es5FunctionDeclaration.cs" />
     <Compile Include="Ast\Es5GrammarInterfaces.cs" />
     <Compile Include="Ast\Es5Identifier.cs" />
@@ -53,7 +52,6 @@
     <Compile Include="Ast\Expressions\Es5ThisExpression.cs" />
     <Compile Include="Ast\Expressions\Es5UnaryExpression.cs" />
     <Compile Include="Ast\Expressions\Es5UnaryOperator.cs" />
-    <Compile Include="Ast\IEs5AstNode.cs" />
     <Compile Include="Ast\Statements\Es5BlockStatement.cs" />
     <Compile Include="Ast\Statements\Es5BreakStatement.cs" />
     <Compile Include="Ast\Statements\Es5CaseClause.cs" />
@@ -74,10 +72,6 @@
     <Compile Include="Ast\Statements\Es5VariableStatement.cs" />
     <Compile Include="Ast\Statements\Es5WhileStatement.cs" />
     <Compile Include="Ast\Statements\Es5WithStatement.cs" />
-    <Compile Include="Emit\Es5Emitter.cs" />
-    <Compile Include="Emit\Es5Emitter.Expressions.cs" />
-    <Compile Include="Emit\Es5Emitter.IterationStatements.cs" />
-    <Compile Include="Emit\Es5Emitter.Statements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

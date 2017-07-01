@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : AstNode, ITsTypeReference
+    internal class TsTypeReference : AstNode<TsVisitor>, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,27 +39,18 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeReference(this);
+        public override string CodeDisplay =>
+            TypeArguments.Length == 0 ? TypeName.CodeDisplay : $"{TypeName}<{TypeArguments.ToElidedList()}>";
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            if (TypeArguments.Length == 0)
-            {
-                return TypeName.ToCodeDisplay();
-            }
-
-            return $"{TypeName}<{TypeArguments.ToElidedList()}>";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            TypeName.WriteFullCodeDisplay(writer);
+            TypeName.Emit(emitter);
 
             if (TypeArguments.Length > 0)
             {
-                WriteItems(writer, TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
         }
     }

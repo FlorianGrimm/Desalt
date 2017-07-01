@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.
     /// </summary>
-    internal class TsCallSignature : AstNode, ITsCallSignature
+    internal class TsCallSignature : AstNode<TsVisitor>, ITsCallSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,33 +43,34 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitCallSignature(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string code = string.Empty;
-
-            if (TypeParameters.Length == 0)
+            get
             {
-                code += $"<{TypeParameters.ToElidedList()}>";
+                string code = string.Empty;
+
+                if (TypeParameters.Length == 0)
+                {
+                    code += $"<{TypeParameters.ToElidedList()}>";
+                }
+
+                code += $"{Parameters.CodeDisplay}: {ReturnType}";
+
+                return code;
             }
-
-            code += $"{Parameters?.ToCodeDisplay()}: {ReturnType}";
-
-            return code;
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             if (TypeParameters.Length > 0)
             {
-                WriteItems(writer, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
-            Parameters?.WriteFullCodeDisplay(writer);
-            ReturnType.WriteTypeAnnotation(writer);
+            Parameters?.Emit(emitter);
+            ReturnType.WriteTypeAnnotation(emitter);
         }
     }
 }

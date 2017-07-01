@@ -9,12 +9,14 @@ namespace Desalt.JavaScript.Ast
 {
     using System;
     using System.Collections.Generic;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a JavaScript identifier.
     /// </summary>
-    public class Es5Identifier : Es5AstNode, IEs5Expression
+    public class Es5Identifier : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -62,21 +64,10 @@ namespace Desalt.JavaScript.Ast
             return identifier;
         }
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitIdentifier(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitIdentifier(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitIdentifier(this);
-        }
+        public override string CodeDisplay => Text;
 
-        public override string ToCodeDisplay() => Text;
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write(Text);
-        }
+        public override void Emit(Emitter emitter) => emitter.Write(Text);
     }
 }

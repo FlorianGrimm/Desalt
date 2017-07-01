@@ -10,12 +10,12 @@ namespace Desalt.JavaScript.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function declaration of the form 'function name?(parameters) { body }'.
     /// </summary>
-    public sealed class Es5FunctionDeclaration : Es5AstNode, IEs5SourceElement
+    public sealed class Es5FunctionDeclaration : AstNode<Es5Visitor>, IEs5SourceElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -48,19 +48,19 @@ namespace Desalt.JavaScript.Ast
             visitor.VisitFunctionDeclaration(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitFunctionDeclaration(this);
-        }
+        public override string CodeDisplay => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
 
-        public override string ToCodeDisplay() => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write($"function {FunctionName} ");
-            WriteParameterList(writer, Parameters);
-            writer.Write(" ");
-            WriteBlock(writer, FunctionBody);
+            emitter.Write("function");
+            if (FunctionName != null)
+            {
+                emitter.Write($" {FunctionName}");
+            }
+
+            emitter.WriteParameterList(Parameters);
+            emitter.Write(" ");
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

@@ -10,12 +10,13 @@ namespace Desalt.JavaScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'switch' statement.
     /// </summary>
-    public sealed class Es5SwitchStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5SwitchStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -49,28 +50,34 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitSwitchStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay => $"switch ({Condition}) {{...}}";
+
+        public override void Emit(Emitter emitter)
         {
-            return visitor.VisitSwitchStatement(this);
-        }
+            emitter.Write("switch (");
+            Condition.Emit(emitter);
+            emitter.WriteLine(") {");
+            emitter.IndentLevel++;
 
-        public override string ToCodeDisplay() => $"switch ({Condition}) {{...}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("switch (");
-            Condition.WriteFullCodeDisplay(writer);
-            writer.Write(") ");
-
-            WriteItems(writer, CaseClauses, indent: true, prefix: "{", itemDelimiter: Environment.NewLine);
+            foreach (Es5CaseClause caseClause in CaseClauses)
+            {
+                caseClause.Emit(emitter);
+                emitter.WriteLineWithoutIndentation();
+            }
 
             if (DefaultClauseStatements.Length > 0)
             {
-                writer.WriteLine("default:");
-                WriteItems(writer, DefaultClauseStatements, indent: true, itemDelimiter: Environment.NewLine);
+                emitter.WriteLine("default:");
+                emitter.IndentLevel++;
+                foreach (IEs5Statement statement in DefaultClauseStatements)
+                {
+                    statement.Emit(emitter);
+                }
+                emitter.IndentLevel--;
             }
 
-            writer.Write("}");
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
         }
     }
 }

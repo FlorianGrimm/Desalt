@@ -10,12 +10,14 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'get propertyName() { }'.
     /// </summary>
-    public class Es5PropertySetAssignment : Es5AstNode, IEs5PropertyAssignment
+    public class Es5PropertySetAssignment : AstNode<Es5Visitor>, IEs5PropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors
@@ -49,19 +51,15 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitPropertySetAssignment(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitPropertySetAssignment(this);
-        }
+        public override string CodeDisplay =>
+            $"set {PropertyName}({SetParameter}) {{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        public override string ToCodeDisplay() => $"set {PropertyName}({SetParameter}) {{}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write($"set {PropertyName}(");
-            SetParameter.WriteFullCodeDisplay(writer);
-            writer.Write(") ");
-            WriteBlock(writer, FunctionBody);
+            emitter.Write($"set {PropertyName}(");
+            SetParameter.Emit(emitter);
+            emitter.Write(") ");
+            emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }
     }
 }

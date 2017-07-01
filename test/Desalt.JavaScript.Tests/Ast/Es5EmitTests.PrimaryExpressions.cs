@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.PrimaryExpressions.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.PrimaryExpressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
     using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Ast.Expressions;
@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Tests.Emit
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
     using Op = Desalt.JavaScript.Ast.Expressions.Es5AssignmentOperator;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         /* 11.1 Primary Expressions
          * ------------------------
@@ -117,10 +117,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_simple_property_assignment()
         {
-            const string expected = @"{
-  boolProp: true,
-  intProp: 4
-}";
+            const string expected = "{\n  boolProp: true,\n  intProp: 4\n}";
             Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
                 Factory.PropertyValueAssignment("boolProp", Factory.TrueLiteral),
                 Factory.PropertyValueAssignment("intProp", Factory.DecimalLiteral("4")));
@@ -131,7 +128,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_object_literal_with_property_get()
         {
-            const string expected = @"{ get getter() { return x; } }";
+            const string expected = "{\n  get getter() {\n    return x;\n  }\n}";
             Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
                 Factory.PropertyGet("getter", Factory.ReturnStatement(s_x)));
 
@@ -141,7 +138,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_object_literal_with_property_set()
         {
-            const string expected = @"{ set setter(value) { x = value; } }";
+            const string expected = "{\n  set setter(value) {\n    x = value;\n  }\n}";
             Es5Identifier valueId = Factory.Identifier("value");
             Es5ObjectLiteralExpression expression = Factory.ObjectLiteral(
                 Factory.PropertySet(

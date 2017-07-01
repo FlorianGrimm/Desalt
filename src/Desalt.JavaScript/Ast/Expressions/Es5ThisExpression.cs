@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    public class Es5ThisExpression : Es5AstNode, IEs5Expression
+    public class Es5ThisExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -32,21 +33,10 @@ namespace Desalt.JavaScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitThisExpresssion(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitThisExpresssion(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitThisExpresssion(this);
-        }
+        public override string CodeDisplay => "this";
 
-        public override string ToCodeDisplay() => "this";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write(ToCodeDisplay());
-        }
+        public override void Emit(Emitter emitter) => emitter.Write("this");
     }
 }

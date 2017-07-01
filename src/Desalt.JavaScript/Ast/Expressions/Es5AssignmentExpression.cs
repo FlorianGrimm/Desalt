@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    public class Es5AssignmentExpression : Es5AstNode, IEs5Expression
+    public class Es5AssignmentExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,18 +46,13 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitAssignmentExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitAssignmentExpression(this);
-        }
+        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override string ToCodeDisplay() => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(emitter);
+            emitter.Write($" {Operator.ToCodeDisplay()} ");
+            RightSide.Emit(emitter);
         }
     }
 }

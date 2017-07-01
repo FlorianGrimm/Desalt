@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'typeof' query.
     /// </summary>
-    internal class TsTypeQuery : AstNode, ITsTypeQuery
+    internal class TsTypeQuery : AstNode<TsVisitor>, ITsTypeQuery
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,16 +35,14 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeQuery(this);
+        public override string CodeDisplay => $"typeof {Query}";
 
-        public override string ToCodeDisplay() => $"typeof {Query}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("typeof ");
-            Query.WriteFullCodeDisplay(writer);
+            emitter.Write("typeof ");
+            Query.Emit(emitter);
         }
     }
 }

@@ -8,12 +8,12 @@
 namespace Desalt.TypeScript.Ast.Types
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' type.
     /// </summary>
-    internal class TsThisType : AstNode, ITsThisType
+    internal class TsThisType : AstNode<TsVisitor>, ITsThisType
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -37,12 +37,10 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitThisType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitThisType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThisType(this);
+        public override string CodeDisplay => "this";
 
-        public override string ToCodeDisplay() => "this";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write("this");
+        public override void Emit(Emitter emitter) => emitter.Write("this");
     }
 }

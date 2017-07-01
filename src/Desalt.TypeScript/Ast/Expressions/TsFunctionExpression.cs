@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function declaration acting as an expression.
     /// </summary>
-    internal class TsFunctionExpression : AstNode, ITsFunctionExpression
+    internal class TsFunctionExpression : AstNode<TsVisitor>, ITsFunctionExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,19 +44,25 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitFunctionExpression(this);
+        public override string CodeDisplay =>
+            $"function {FunctionName.CodeDisplay}{CallSignature} " +
+            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        public override string ToCodeDisplay() =>
-            $"function {FunctionName?.ToCodeDisplay()}{CallSignature} {{ {FunctionBody.ToElidedList()} }}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("function ");
-            FunctionName?.WriteFullCodeDisplay(writer);
-            CallSignature.WriteFullCodeDisplay(writer);
-            WriteBlock(writer, FunctionBody);
+            emitter.Write("function");
+
+            if (FunctionName != null)
+            {
+                emitter.Write(" ");
+                FunctionName.Emit(emitter);
+            }
+
+            emitter.Write(" ");
+            CallSignature.Emit(emitter);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

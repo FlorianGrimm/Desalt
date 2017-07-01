@@ -8,12 +8,12 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TsThis : AstNode, ITsThis
+    internal class TsThis : AstNode<TsVisitor>, ITsThis
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -33,12 +33,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitThis(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitThis(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitThis(this);
+        public override string CodeDisplay => "this";
 
-        public override string ToCodeDisplay() => "this";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void Emit(Emitter emitter) => emitter.Write("this");
     }
 }

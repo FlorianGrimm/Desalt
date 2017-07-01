@@ -10,12 +10,12 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function expression of the form 'function name?(parameters) { body }'.
     /// </summary>
-    public sealed class Es5FunctionExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5FunctionExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,28 +43,22 @@ namespace Desalt.JavaScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitFunctionExpression(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitFunctionExpression(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitFunctionExpression(this);
-        }
+        public override string CodeDisplay =>
+            $"function {FunctionName}({Parameters.ToElidedList()}) {{ {FunctionBody.ToElidedList()} }}";
 
-        public override string ToCodeDisplay() => $"function {FunctionName}({Parameters.ToElidedList()}) {{...}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("function");
+            emitter.Write("function");
             if (FunctionName != null)
             {
-                writer.Write($" {FunctionName}");
+                emitter.Write($" {FunctionName}");
             }
-            WriteParameterList(writer, Parameters);
-            writer.Write(" ");
-            WriteBlock(writer, FunctionBody);
+
+            emitter.WriteParameterList(Parameters);
+            emitter.Write(" ");
+            emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }
     }
 }

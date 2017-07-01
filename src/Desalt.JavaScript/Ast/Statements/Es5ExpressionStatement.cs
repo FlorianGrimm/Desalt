@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that is wrapped as a statement.
     /// </summary>
-    public class Es5ExpressionStatement : Es5AstNode, IEs5Statement
+    public class Es5ExpressionStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -33,22 +34,14 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitExpressionStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitExpressionStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitExpressionStatement(this);
-        }
+        public override string CodeDisplay => Expression + ";";
 
-        public override string ToCodeDisplay() => Expression + ";";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write(";");
+            Expression.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

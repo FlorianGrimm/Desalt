@@ -9,12 +9,13 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'try/catch/finally' statement.
     /// </summary>
-    public class Es5TryStatement : Es5AstNode, IEs5Statement
+    public class Es5TryStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -55,52 +56,46 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
+        public override void Accept(Es5Visitor visitor) => visitor.VisitTryStatement(this);
+
+        public override string CodeDisplay
         {
-            visitor.VisitTryStatement(this);
+            get
+            {
+                var builder = new StringBuilder("try {...}");
+
+                if (CatchBlock != null)
+                {
+                    builder.Append(" catch ");
+                    if (CatchIdentifier != null)
+                    {
+                        builder.Append("(").Append(CatchIdentifier).Append(") ");
+                    }
+                    builder.Append("{...}");
+                }
+
+                if (FinallyBlock != null)
+                {
+                    builder.Append(" finally {...}");
+                }
+
+                return builder.ToString();
+            }
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override void Emit(Emitter emitter)
         {
-            return visitor.VisitTryStatement(this);
-        }
-
-        public override string ToCodeDisplay()
-        {
-            var builder = new StringBuilder("try {...}");
+            emitter.Write("try ");
+            emitter.WriteBlock(TryBlock.Statements, skipNewlines: true);
 
             if (CatchBlock != null)
             {
-                builder.Append(" catch ");
+                emitter.Write(" catch ");
                 if (CatchIdentifier != null)
                 {
-                    builder.Append("(").Append(CatchIdentifier).Append(") ");
+                    emitter.Write($"({CatchIdentifier}) ");
                 }
-                builder.Append("{...}");
-            }
-
-            if (FinallyBlock != null)
-            {
-                builder.Append(" finally {...}");
-            }
-
-            return builder.ToString();
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteItems(
-                writer, TryBlock.Statements, indent: true, prefix: "try {", suffix: "}",
-                itemDelimiter: Environment.NewLine);
-
-            if (CatchBlock != null)
-            {
-                writer.Write(" catch ");
-                if (CatchIdentifier != null)
-                {
-                    writer.Write($"({CatchIdentifier}) ");
-                }
-                WriteBlock(writer, CatchBlock.Statements);
+                emitter.WriteBlock(CatchBlock.Statements, skipNewlines: true);
             }
 
             if (FinallyBlock == null)
@@ -108,8 +103,8 @@ namespace Desalt.JavaScript.Ast.Statements
                 return;
             }
 
-            writer.Write(" finally ");
-            WriteBlock(writer, FinallyBlock.Statements);
+            emitter.Write(" finally ");
+            emitter.WriteBlock(FinallyBlock.Statements, skipNewlines: true);
         }
 
         public Es5TryStatement WithCatch(Es5Identifier catchIdentifier, Es5BlockStatement catchBlock)

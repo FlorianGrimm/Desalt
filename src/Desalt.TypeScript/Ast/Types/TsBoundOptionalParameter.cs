@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : AstNode<TsVisitor>, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,35 +45,36 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBoundOptionalParameter(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = string.Empty;
-            if (Modifier.HasValue)
+            get
             {
-                display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
+                string display = string.Empty;
+                if (Modifier.HasValue)
+                {
+                    display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
+                }
+
+                display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
+
+                return display;
             }
-
-            display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
-
-            return display;
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             if (Modifier.HasValue)
             {
-                writer.Write($"{Modifier.Value.ToString().ToLowerInvariant()} ");
+                emitter.Write($"{Modifier.Value.ToString().ToLowerInvariant()} ");
             }
 
-            ParameterName.WriteFullCodeDisplay(writer);
-            ParameterType.WriteTypeAnnotation(writer);
+            ParameterName.Emit(emitter);
+            ParameterType.WriteTypeAnnotation(emitter);
 
-            writer.Write(" = ");
-            Initializer.WriteFullCodeDisplay(writer);
+            emitter.Write(" = ");
+            Initializer.Emit(emitter);
         }
     }
 }

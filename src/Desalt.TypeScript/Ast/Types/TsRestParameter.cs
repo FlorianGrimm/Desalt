@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    internal class TsRestParameter : AstNode, ITsRestParameter
+    internal class TsRestParameter : AstNode<TsVisitor>, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,17 +37,15 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitRestParameter(this);
+        public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
 
-        public override string ToCodeDisplay() => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("... ");
-            ParameterName.WriteFullCodeDisplay(writer);
-            ParameterType.WriteTypeAnnotation(writer);
+            emitter.Write("... ");
+            ParameterName.Emit(emitter);
+            ParameterType.WriteTypeAnnotation(emitter);
         }
     }
 }

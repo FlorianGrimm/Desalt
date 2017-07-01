@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    public sealed class Es5EmptyStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5EmptyStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -32,21 +33,10 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitEmptyStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitEmptyStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitEmptyStatement(this);
-        }
+        public override string CodeDisplay => ";";
 
-        public override string ToCodeDisplay() => ";";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write(";");
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteLine(";");
     }
 }

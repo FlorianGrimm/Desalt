@@ -7,6 +7,8 @@
 
 namespace Desalt.JavaScript.Ast
 {
+    using Desalt.Core.Ast;
+
     /***************************************************************************
      * Ecma-262 (ES 2015/ES 5.1) Grammar
      * -------------------------------------------------------------------------
@@ -61,7 +63,7 @@ namespace Desalt.JavaScript.Ast
      *     Identifier
      */
 
-    public interface IEs5PropertyAssignment : IEs5AstNode
+    public interface IEs5PropertyAssignment : IAstNode
     {
     }
 
@@ -264,7 +266,7 @@ namespace Desalt.JavaScript.Ast
      *     ExpressionNoIn , AssignmentExpressionNoIn
      */
 
-    public interface IEs5Expression : IEs5AstNode
+    public interface IEs5Expression : IAstNode
     {
     }
 
@@ -454,7 +456,7 @@ namespace Desalt.JavaScript.Ast
      *     FunctionDeclaration
      */
 
-    public interface IEs5SourceElement : IEs5AstNode
+    public interface IEs5SourceElement : IAstNode
     {
     }
 }

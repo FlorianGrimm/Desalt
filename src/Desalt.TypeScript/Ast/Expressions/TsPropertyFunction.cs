@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an object literal property function.
     /// </summary>
-    internal class TsPropertyFunction : AstNode, ITsPropertyFunction
+    internal class TsPropertyFunction : AstNode<TsVisitor>, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,20 +44,18 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertyFunction(this);
+        public override string CodeDisplay =>
+            $"{PropertyName.CodeDisplay} {CallSignature.CodeDisplay} {{ {FunctionBody.ToElidedList()} }}";
 
-        public override string ToCodeDisplay() =>
-            $"{PropertyName.ToCodeDisplay()} {CallSignature.ToCodeDisplay()} {{ {FunctionBody.ToElidedList()} }}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            PropertyName.WriteFullCodeDisplay(writer);
-            writer.Write(" ");
-            CallSignature.WriteFullCodeDisplay(writer);
-            writer.Write(" ");
-            WriteBlock(writer, FunctionBody);
+            PropertyName.Emit(emitter);
+            emitter.Write(" ");
+            CallSignature.Emit(emitter);
+            emitter.Write(" ");
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

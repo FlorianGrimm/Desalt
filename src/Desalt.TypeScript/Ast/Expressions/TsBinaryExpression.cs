@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression.
     /// </summary>
-    internal class TsBinaryExpression : AstNode, ITsBinaryExpression
+    internal class TsBinaryExpression : AstNode<TsVisitor>, ITsBinaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,17 +42,15 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBinaryExpression(this);
+        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override string ToCodeDisplay() => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(emitter);
+            emitter.Write($" {Operator.ToCodeDisplay()} ");
+            RightSide.Emit(emitter);
         }
     }
 }

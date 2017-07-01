@@ -1,21 +1,20 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ITsAstNode.cs" company="Justin Rockwood">
+// <copyright file="TypeScriptEmitterTests.SourceFile.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast
+namespace Desalt.TypeScript.Tests.Ast
 {
-    using Desalt.Core.Ast;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    /// <summary>
-    /// Root interface for all TypeScript abstract syntax tree (AST) nodes.
-    /// </summary>
-    public interface ITsAstNode : IAstNode
+    public partial class TsEmitTests
     {
-        void Accept(TsVisitor visitor);
-
-        T Accept<T>(TsVisitor<T> visitor);
+        [TestMethod]
+        public void Emit_an_ImplementationScript()
+        {
+            Assert.Inconclusive("Not implemented yet");
+        }
     }
 }

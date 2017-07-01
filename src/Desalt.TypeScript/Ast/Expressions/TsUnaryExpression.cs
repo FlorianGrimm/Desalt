@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    internal class TsUnaryExpression : AstNode, ITsUnaryExpression
+    internal class TsUnaryExpression : AstNode<TsVisitor>, ITsUnaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,45 +37,46 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitUnaryExpression(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            switch (Operator)
+            get
             {
-                case TsUnaryOperator.Delete:
-                case TsUnaryOperator.Void:
-                case TsUnaryOperator.Typeof:
-                    return $"{Operator.ToCodeDisplay()} {Operand}";
+                switch (Operator)
+                {
+                    case TsUnaryOperator.Delete:
+                    case TsUnaryOperator.Void:
+                    case TsUnaryOperator.Typeof:
+                        return $"{Operator.ToCodeDisplay()} {Operand}";
 
-                case TsUnaryOperator.PrefixIncrement:
-                case TsUnaryOperator.PrefixDecrement:
-                case TsUnaryOperator.Plus:
-                case TsUnaryOperator.Minus:
-                case TsUnaryOperator.BitwiseNot:
-                case TsUnaryOperator.LogicalNot:
-                    return $"{Operator.ToCodeDisplay()}{Operand}";
+                    case TsUnaryOperator.PrefixIncrement:
+                    case TsUnaryOperator.PrefixDecrement:
+                    case TsUnaryOperator.Plus:
+                    case TsUnaryOperator.Minus:
+                    case TsUnaryOperator.BitwiseNot:
+                    case TsUnaryOperator.LogicalNot:
+                        return $"{Operator.ToCodeDisplay()}{Operand}";
 
-                case TsUnaryOperator.PostfixIncrement:
-                case TsUnaryOperator.PostfixDecrement:
-                    return $"{Operand}{Operator.ToCodeDisplay()}";
+                    case TsUnaryOperator.PostfixIncrement:
+                    case TsUnaryOperator.PostfixDecrement:
+                        return $"{Operand}{Operator.ToCodeDisplay()}";
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Operator));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Operator));
+                }
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             switch (Operator)
             {
                 case TsUnaryOperator.Delete:
                 case TsUnaryOperator.Void:
                 case TsUnaryOperator.Typeof:
-                    writer.Write($"{Operator.ToCodeDisplay()}");
-                    Operand.WriteFullCodeDisplay(writer);
+                    emitter.Write($"{Operator.ToCodeDisplay()} ");
+                    Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PrefixIncrement:
@@ -84,14 +85,14 @@ namespace Desalt.TypeScript.Ast.Expressions
                 case TsUnaryOperator.Minus:
                 case TsUnaryOperator.BitwiseNot:
                 case TsUnaryOperator.LogicalNot:
-                    writer.Write(Operator.ToCodeDisplay());
-                    Operand.WriteFullCodeDisplay(writer);
+                    emitter.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PostfixIncrement:
                 case TsUnaryOperator.PostfixDecrement:
-                    Operand.WriteFullCodeDisplay(writer);
-                    writer.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
+                    emitter.Write(Operator.ToCodeDisplay());
                     break;
 
                 default:

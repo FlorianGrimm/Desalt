@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : AstNode, ITsPredefinedType
+    internal class TsPredefinedType : AstNode<TsVisitor>, ITsPredefinedType
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -46,12 +46,10 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPredefinedType(this);
+        public override string CodeDisplay => Name;
 
-        public override string ToCodeDisplay() => Name;
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(Name);
+        public override void Emit(Emitter emitter) => emitter.Write(Name);
     }
 }

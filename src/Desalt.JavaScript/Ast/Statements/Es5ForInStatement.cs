@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'for-in' loop.
     /// </summary>
-    public sealed class Es5ForInStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ForInStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -54,34 +55,32 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitForInStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay
         {
-            return visitor.VisitForInStatement(this);
+            get
+            {
+                string prefix = LeftSide?.ToString() ?? Declaration.ToString();
+                return $"for ({prefix} in {RightSide}) {Statement}";
+            }
         }
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            string prefix = LeftSide?.ToString() ?? Declaration.ToString();
-            return $"for ({prefix} in {RightSide}) {Statement}";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("for (");
+            emitter.Write("for (");
             if (LeftSide != null)
             {
-                LeftSide.WriteFullCodeDisplay(writer);
+                LeftSide.Emit(emitter);
             }
             else
             {
-                Declaration.WriteFullCodeDisplay(writer);
+                emitter.Write("var ");
+                Declaration.Emit(emitter);
             }
 
-            writer.Write(" in ");
-            RightSide.WriteFullCodeDisplay(writer);
-            writer.Write(")");
+            emitter.Write(" in ");
+            RightSide.Emit(emitter);
 
-            Statement.WriteFullCodeDisplay(writer);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, ")", ") ");
         }
     }
 }

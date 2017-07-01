@@ -10,12 +10,12 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x' or 'var x = y, z'.
     /// </summary>
-    public sealed class Es5VariableStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5VariableStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,23 +36,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitVariableStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitVariableStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitVariableStatement(this);
-        }
+        public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
-        public override string ToCodeDisplay() => $"var {Declarations.ToElidedList()};";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("var ");
-            WriteItems(writer, Declarations, indent: false, itemDelimiter: ", ");
-            writer.Write(";");
+            emitter.Write("var ");
+            emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
+            emitter.WriteLine(";");
         }
     }
 }

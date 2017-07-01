@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringParameter : AstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
+    internal class TsStringParameter : AstNode<TsVisitor>, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,33 +39,34 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitStringRequiredParameter(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = ParameterName.ToCodeDisplay();
-            if (IsOptional)
+            get
             {
-                display += "?";
+                string display = ParameterName.CodeDisplay;
+                if (IsOptional)
+                {
+                    display += "?";
+                }
+
+                display += $": {StringLiteral}";
+
+                return display;
             }
-
-            display += $": {StringLiteral}";
-
-            return display;
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            ParameterName.WriteFullCodeDisplay(writer);
+            ParameterName.Emit(emitter);
             if (IsOptional)
             {
-                writer.Write("?");
+                emitter.Write("?");
             }
 
-            writer.Write(": ");
-            StringLiteral.WriteFullCodeDisplay(writer);
+            emitter.Write(": ");
+            StringLiteral.Emit(emitter);
         }
     }
 }

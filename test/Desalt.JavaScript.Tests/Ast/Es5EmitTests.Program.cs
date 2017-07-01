@@ -1,13 +1,12 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.Program.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.Program.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
-    using Desalt.Core.Emit;
     using Desalt.JavaScript.Ast;
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,19 +14,24 @@ namespace Desalt.JavaScript.Tests.Emit
     using BinaryOp = Desalt.JavaScript.Ast.Expressions.Es5BinaryOperator;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         [TestMethod]
         public void Emit_full_program()
         {
-            const string expected = @"(function() {
+            string expected = @"(function() {
   'use strict';
   var $asm = {};
   global.TestNs = global.TestNs || {};
   ss.initAssembly($asm, 'Test');
-  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() { }, { add: function(x, y) { return x + y; } });
+  var $TestNs_Expressions = global.TestNs.Expressions = ss.mkType($asm, 'TestNs.Expressions', function() { }, {
+    add: function(x, y) {
+      return x + y;
+    }
+  });
   ss.initClass($TestNs_Expressions);
-})();";
+})();
+".Replace("\r\n", "\n");
 
             // ReSharper disable InconsistentNaming
             Es5Identifier asm = Factory.Identifier("$asm");
@@ -89,9 +93,7 @@ namespace Desalt.JavaScript.Tests.Emit
 
             Es5Program program = Factory.Program(Factory.Call(topFunc.WithParentheses()).ToStatement());
 
-            EmitOptions options = EmitOptions.Default.WithSimpleBlockOnNewLine(false);
-
-            VerifyOutput(program, expected, options);
+            VerifyOutput(program, expected);
         }
     }
 }

@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a JavaScript 'return' statement.
     /// </summary>
-    public sealed class Es5ReturnStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ReturnStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -33,23 +34,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitReturnStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitReturnStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitReturnStatement(this);
-        }
+        public override string CodeDisplay => $"return {Expression};";
 
-        public override string ToCodeDisplay() => $"return {Expression};";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("return ");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write(";");
+            emitter.Write("return ");
+            Expression.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

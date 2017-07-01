@@ -9,9 +9,10 @@ namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
-    public sealed class Es5IfStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5IfStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,51 +40,40 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public Es5IfStatement WithElseStatement(IEs5Statement statement)
-        {
-            return new Es5IfStatement(IfExpression, IfStatement, statement);
-        }
+        public Es5IfStatement WithElseStatement(IEs5Statement statement) =>
+            new Es5IfStatement(IfExpression, IfStatement, statement);
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitIfStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitIfStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay
         {
-            return visitor.VisitIfStatement(this);
-        }
-
-        public override string ToCodeDisplay()
-        {
-            var builder = new StringBuilder($"if ({IfExpression}) {IfStatement}");
-            if (ElseStatement != null)
+            get
             {
-                builder.Append($"else {ElseStatement}");
-            }
+                var builder = new StringBuilder($"if ({IfExpression}) {IfStatement}");
+                if (ElseStatement != null)
+                {
+                    builder.Append($"else {ElseStatement}");
+                }
 
-            return builder.ToString();
+                return builder.ToString();
+            }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("if (");
-            IfExpression.WriteFullCodeDisplay(writer);
-            writer.WriteLine(")");
+            bool ifStatementIsBlock = IfStatement is Es5BlockStatement;
 
-            writer.IndentLevel++;
-            IfStatement.WriteFullCodeDisplay(writer);
-            writer.IndentLevel--;
+            emitter.Write("if (");
+            IfExpression.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(IfStatement, ifStatementIsBlock, ")", ") ");
 
             if (ElseStatement == null)
             {
                 return;
             }
 
-            writer.WriteLine("else");
-            writer.IndentLevel++;
-            ElseStatement.WriteFullCodeDisplay(writer);
-            writer.IndentLevel--;
+            emitter.Write(ifStatementIsBlock ? " else" : "else");
+            emitter.WriteStatementIndentedOrInBlock(ElseStatement, ElseStatement is Es5BlockStatement);
         }
     }
 }

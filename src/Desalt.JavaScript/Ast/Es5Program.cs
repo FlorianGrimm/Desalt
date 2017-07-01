@@ -7,15 +7,15 @@
 
 namespace Desalt.JavaScript.Ast
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a top-level JavaScript program, consisting of a collection of source elements.
     /// </summary>
-    public class Es5Program : Es5AstNode
+    public class Es5Program : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,16 +41,11 @@ namespace Desalt.JavaScript.Ast
             visitor.VisitProgram(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitProgram(this);
-        }
+        public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
 
-        public override string ToCodeDisplay() => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            WriteItems(writer, SourceElements, indent: false, itemDelimiter: Environment.NewLine);
+            emitter.WriteItems(SourceElements, indent: false, itemDelimiter: emitter.Options.Newline);
         }
     }
 }

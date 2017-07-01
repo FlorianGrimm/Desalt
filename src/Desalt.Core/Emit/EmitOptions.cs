@@ -23,6 +23,18 @@ namespace Desalt.Core.Emit
         /// </summary>
         public static readonly EmitOptions Default = new EmitOptions(instanceToCopy: null);
 
+        /// <summary>
+        /// Represents options that use Unix line endings (\n) and tabs for indentation.
+        /// </summary>
+        public static readonly EmitOptions UnixTabs =
+            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "\t");
+
+        /// <summary>
+        /// Represents options that use Unix line endings (\n) and two spaces for indentation.
+        /// </summary>
+        public static readonly EmitOptions UnixSpaces =
+            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "  ");
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -36,16 +48,8 @@ namespace Desalt.Core.Emit
         /// <param name="indentationPrefix">
         /// The prefix to use for indenting blocks. Defaults to two spaces.
         /// </param>
-        /// <param name="simpleBlockOnNewLine">
-        /// Indicates whether a block of one statement should be on the same line within the braces
-        /// or on a separate line. Defaults to false.
-        /// </param>
-        public EmitOptions(
-            string newline = null,
-            string indentationPrefix = "  ",
-            bool simpleBlockOnNewLine = false)
-
-            : this(null, newline, indentationPrefix, simpleBlockOnNewLine)
+        public EmitOptions(string newline = null, string indentationPrefix = "  ")
+            : this(null, newline, indentationPrefix)
         {
         }
 
@@ -59,12 +63,10 @@ namespace Desalt.Core.Emit
         private EmitOptions(
             EmitOptions instanceToCopy = null,
             string newline = null,
-            string indentationPrefix = null,
-            bool? simpleBlockOnNewLine = null)
+            string indentationPrefix = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? Environment.NewLine;
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "  ";
-            SimpleBlockOnNewLine = simpleBlockOnNewLine ?? instanceToCopy?.SimpleBlockOnNewLine ?? false;
         }
 
         //// ===========================================================================================================
@@ -84,13 +86,5 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
-
-        /// <summary>
-        /// Gets a value indicating whether a block of one statement should be on the same line
-        /// within the braces or on a separate line.
-        /// </summary>
-        public bool SimpleBlockOnNewLine { get; }
-
-        public EmitOptions WithSimpleBlockOnNewLine(bool value) => new EmitOptions(this, simpleBlockOnNewLine: value);
     }
 }

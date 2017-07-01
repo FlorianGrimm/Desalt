@@ -7,14 +7,16 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a block, containing other statements.
     /// </summary>
-    public sealed class Es5BlockStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5BlockStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,21 +37,10 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitBlockStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitBlockStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitBlockStatement(this);
-        }
+        public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
-        public override string ToCodeDisplay() => $"Block, Statements.Length = {{ {Statements.Length} }}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteBlock(writer, Statements);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteBlock(Statements, skipNewlines: true);
     }
 }

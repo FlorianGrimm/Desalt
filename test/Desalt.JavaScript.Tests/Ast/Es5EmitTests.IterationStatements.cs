@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.IterationStatements.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.IterationStatements.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
     using Desalt.Core.Extensions;
     using Desalt.JavaScript.Ast.Expressions;
@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Tests.Emit
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         [TestMethod]
         public void Emit_do_while_statement()
@@ -22,13 +22,13 @@ namespace Desalt.JavaScript.Tests.Emit
                 Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixIncrement).ToStatement(),
                 Factory.TrueLiteral);
 
-            VerifyOutput(statement, "do\r\n  x++;\r\nwhile (true);");
+            VerifyOutput(statement, "do\n  x++;\nwhile (true);\n");
         }
 
         [TestMethod]
         public void Emit_while_statement()
         {
-            const string expected = "while (true)\r\n  x++;";
+            const string expected = "while (true)\n  x++;\n";
             Es5WhileStatement statement = Factory.WhileStatement(
                 Factory.TrueLiteral,
                 Factory.UnaryExpression(s_x, Es5UnaryOperator.PostfixIncrement).ToStatement());
@@ -39,7 +39,7 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_for_statements()
         {
-            string expected = "for (var x = 0; x < y; x++)\r\n  z--;";
+            string expected = "for (var x = 0; x < y; x++)\n  z--;\n";
             Es5ForStatement statement = Factory.ForStatement(
                 declarations: Factory.VariableDeclaration(s_x, Factory.DecimalLiteral("0")).ToSafeArray(),
                 condition: Factory.BinaryExpression(s_x, Es5BinaryOperator.LessThan, s_y),
@@ -48,7 +48,7 @@ namespace Desalt.JavaScript.Tests.Emit
 
             VerifyOutput(statement, expected);
 
-            expected = "for (var x = 0; ; x++)\r\n  ;";
+            expected = "for (var x = 0; ; x++)\n  ;\n";
             statement = Factory.ForStatement(
                 declarations: Factory.VariableDeclaration(s_x, Factory.DecimalLiteral("0")).ToSafeArray(),
                 condition: null,
@@ -57,7 +57,7 @@ namespace Desalt.JavaScript.Tests.Emit
 
             VerifyOutput(statement, expected);
 
-            expected = "for (; ; )\r\n  ;";
+            expected = "for (; ; )\n  ;\n";
             statement = Factory.ForStatement(
                 declarations: null,
                 condition: null,
@@ -70,13 +70,13 @@ namespace Desalt.JavaScript.Tests.Emit
         [TestMethod]
         public void Emit_for_in_statements()
         {
-            string expected = "for (x in y)\r\n  z--;";
+            string expected = "for (x in y)\n  z--;\n";
             Es5ForInStatement statement = Factory.ForInStatement(
                 s_x, s_y, Factory.UnaryExpression(s_z, Es5UnaryOperator.PostfixDecrement).ToStatement());
 
             VerifyOutput(statement, expected);
 
-            expected = "for (var x in y)\r\n  z--;";
+            expected = "for (var x in y)\n  z--;\n";
             statement = Factory.ForInStatement(
                 Factory.VariableDeclaration(s_x),
                 s_y,

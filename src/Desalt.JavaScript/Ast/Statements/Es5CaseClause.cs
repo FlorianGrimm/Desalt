@@ -11,12 +11,12 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'case' clause within a 'switch' statement.
     /// </summary>
-    public sealed class Es5CaseClause : Es5AstNode
+    public sealed class Es5CaseClause : AstNode<Es5Visitor>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,27 +39,23 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitCaseClause(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitCaseClause(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitCaseClause(this);
-        }
+        public override string CodeDisplay => $"case {Expression}: {Statements.ToElidedList()}";
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return $"case {Expression}: {Statements.ToElidedList()}";
-        }
+            emitter.Write("case ");
+            Expression.Emit(emitter);
+            emitter.WriteLine(":");
+            emitter.IndentLevel++;
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.WriteLine("case ");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write(": ");
-            WriteItems(writer, Statements, indent: true, itemDelimiter: Environment.NewLine);
+            foreach (IEs5Statement statement in Statements)
+            {
+                statement.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
         }
     }
 }

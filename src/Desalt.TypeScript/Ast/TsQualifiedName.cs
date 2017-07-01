@@ -12,12 +12,12 @@ namespace Desalt.TypeScript.Ast
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
     /// </summary>
-    internal class TsQualifiedName : AstNode, ITsQualifiedName
+    internal class TsQualifiedName : AstNode<TsVisitor>, ITsQualifiedName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,22 +40,19 @@ namespace Desalt.TypeScript.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitQualifiedName(this);
+        public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
-        public override string ToCodeDisplay() =>
-            $"{string.Join(".", Left.Select(x => x.ToCodeDisplay()))}{Right.ToCodeDisplay()}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {
-                left.WriteFullCodeDisplay(writer);
-                writer.Write(".");
+                left.Emit(emitter);
+                emitter.Write(".");
             }
 
-            Right.WriteFullCodeDisplay(writer);
+            Right.Emit(emitter);
         }
     }
 }

@@ -8,12 +8,12 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : AstNode, ITsStringLiteral
+    internal class TsStringLiteral : AstNode<TsVisitor>, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,12 +38,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitStringLiteral(this);
+        public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 
-        public override string ToCodeDisplay() => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

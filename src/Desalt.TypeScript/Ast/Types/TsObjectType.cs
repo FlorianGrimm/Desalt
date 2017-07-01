@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : AstNode, ITsObjectType
+    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,23 +36,10 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitObjectType(this);
+        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        public override string ToCodeDisplay() => $"{{{TypeMembers.ToElidedList()}}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteItems(
-                writer,
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: ",",
-                newLineAfterPrefix: true,
-                delimiterAfterLastItem: false,
-                newLineAfterLastItem: true);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(TypeMembers);
     }
 }

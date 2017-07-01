@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
+    internal class TsParenthesizedType : AstNode<TsVisitor>, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,17 +35,15 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParenthesizedType(this);
+        public override string CodeDisplay => $"({Type.CodeDisplay})";
 
-        public override string ToCodeDisplay() => $"({Type.ToCodeDisplay()})";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("(");
-            Type.WriteFullCodeDisplay(writer);
-            writer.Write(")");
+            emitter.Write("(");
+            Type.Emit(emitter);
+            emitter.Write(")");
         }
     }
 }

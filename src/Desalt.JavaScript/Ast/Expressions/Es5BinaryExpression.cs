@@ -8,13 +8,14 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression of the form 'x ? y' where ? represents any of the enum values
     /// from <see cref="Es5BinaryOperator"/>.
     /// </summary>
-    public sealed class Es5BinaryExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5BinaryExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,18 +48,13 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitBinaryExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitBinaryExpression(this);
-        }
+        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override string ToCodeDisplay() => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(emitter);
+            emitter.Write($" {Operator.ToCodeDisplay()} ");
+            RightSide.Emit(emitter);
         }
     }
 }

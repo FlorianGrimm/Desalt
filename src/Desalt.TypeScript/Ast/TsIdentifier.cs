@@ -10,12 +10,13 @@ namespace Desalt.TypeScript.Ast
     using System;
     using System.Collections.Generic;
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : AstNode, ITsIdentifier
+    internal class TsIdentifier : AstNode<TsVisitor>, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -62,18 +63,13 @@ namespace Desalt.TypeScript.Ast
             return identifier;
         }
 
-        public void Accept(TsVisitor visitor)
+        public override void Accept(TsVisitor visitor)
         {
             visitor.VisitIdentifier(this);
         }
 
-        public T Accept<T>(TsVisitor<T> visitor)
-        {
-            return visitor.VisitIdentifier(this);
-        }
+        public override string CodeDisplay => Text;
 
-        public override string ToCodeDisplay() => Text;
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(Text);
+        public override void Emit(Emitter emitter) => emitter.Write(Text);
     }
 }

@@ -8,12 +8,12 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsBooleanLiteral : AstNode, ITsBooleanLiteral
+    internal class TsBooleanLiteral : AstNode<TsVisitor>, ITsBooleanLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -42,12 +42,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitBooleanLiteral(this);
+        public override string CodeDisplay => Value ? "true" : "false";
 
-        public override string ToCodeDisplay() => Value ? "true" : "false";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

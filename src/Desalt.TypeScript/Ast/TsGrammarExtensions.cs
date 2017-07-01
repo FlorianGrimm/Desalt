@@ -8,12 +8,13 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
-    /// Contains static extension methods for <see cref="ITsAstNode"/> objects.
+    /// Contains static extension methods for <see cref="IAstNode"/> objects.
     /// </summary>
     public static class TsGrammarExtensions
     {
@@ -121,15 +122,15 @@ namespace Desalt.TypeScript.Ast
         /// <param name="type">The type annotation to write.</param>
         public static string ToTypeAnnotationCodeDisplay(this ITsType type)
         {
-            return type != null ? $": {type.ToCodeDisplay()}" : string.Empty;
+            return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
 
-        public static void WriteTypeAnnotation(this ITsType type, IndentedTextWriter writer)
+        public static void WriteTypeAnnotation(this ITsType type, Emitter emitter)
         {
             if (type != null)
             {
-                writer.Write(": ");
-                type.WriteFullCodeDisplay(writer);
+                emitter.Write(": ");
+                type.Emit(emitter);
             }
         }
     }

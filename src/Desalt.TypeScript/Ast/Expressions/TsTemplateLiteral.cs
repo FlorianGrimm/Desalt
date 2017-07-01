@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Immutable;
     using System.Text;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode, ITsTemplateLiteral
+    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,49 +37,50 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTemplateLiteral(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            var builder = new StringBuilder("`");
-            foreach (TsTemplatePart part in Parts)
+            get
             {
-                if (part.Template != null)
+                var builder = new StringBuilder("`");
+                foreach (TsTemplatePart part in Parts)
                 {
-                    builder.Append(part.Template);
+                    if (part.Template != null)
+                    {
+                        builder.Append(part.Template);
+                    }
+
+                    if (part.Expression != null)
+                    {
+                        builder.Append("${").Append(part.Expression.CodeDisplay).Append("}");
+                    }
                 }
 
-                if (part.Expression != null)
-                {
-                    builder.Append("${").Append(part.Expression.ToCodeDisplay()).Append("}");
-                }
+                builder.Append("`");
+                return builder.ToString();
             }
-
-            builder.Append("`");
-            return builder.ToString();
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("`");
+            emitter.Write("`");
             foreach (TsTemplatePart part in Parts)
             {
                 if (part.Template != null)
                 {
-                    writer.Write(part.Template);
+                    emitter.Write(part.Template);
                 }
 
                 if (part.Expression != null)
                 {
-                    writer.Write("${");
-                    part.Expression.WriteFullCodeDisplay(writer);
-                    writer.Write("}");
+                    emitter.Write("${");
+                    part.Expression.Emit(emitter);
+                    emitter.Write("}");
                 }
             }
 
-            writer.Write("`");
+            emitter.Write("`");
         }
     }
 }

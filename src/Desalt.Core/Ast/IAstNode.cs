@@ -7,32 +7,38 @@
 
 namespace Desalt.Core.Ast
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
     /// </summary>
     public interface IAstNode
     {
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
-        /// <returns>A string representation of this AST node.</returns>
-        string ToCodeDisplay();
+        /// <value>A string representation of this AST node.</value>
+        string CodeDisplay { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a string representation of the full AST node, which is useful for debugging and
-        /// printing to logs. This should not be used to actually emit generated code.
+        /// Accepts the visitor by calling into a specific method on the visitor for this type of AST node.
         /// </summary>
-        /// <returns>A string representation of the full AST node.</returns>
-        string ToFullCodeDisplay();
+        /// <typeparam name="TVisitor">The specific type of visitor to accept.</typeparam>
+        /// <param name="visitor">The visitor to visit.</param>
+        void Accept<TVisitor>(TVisitor visitor) where TVisitor : IAstVisitor;
 
         /// <summary>
-        /// Writes a string representation of this AST node to the specified <see
-        /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
-        /// should not be used to actually emit generated code.
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
         /// </summary>
-        /// <param name="writer">The writer to use.</param>
-        void WriteFullCodeDisplay(IndentedTextWriter writer);
+        /// <param name="emitter">The emitter to use.</param>
+        void Emit(Emitter emitter);
     }
 }

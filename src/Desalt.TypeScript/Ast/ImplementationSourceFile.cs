@@ -7,16 +7,15 @@
 
 namespace Desalt.TypeScript.Ast
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    public class ImplementationSourceFile : AstNode, ITsAstNode
+    public class ImplementationSourceFile : AstNode<TsVisitor>, IAstNode
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,15 +36,11 @@ namespace Desalt.TypeScript.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitImplementationSourceFile(this);
+        public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
-        public override string ToCodeDisplay() => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteItems(writer, ScriptElements, indent: false, itemDelimiter: Environment.NewLine);
-        }
+        public override void Emit(Emitter emitter) =>
+            emitter.WriteItems(ScriptElements, indent: false, itemDelimiter: emitter.Options.Newline);
     }
 }

@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
     /// </summary>
-    internal class TsGetAccessor : AstNode, ITsGetAccessor
+    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,20 +44,19 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitGetAccessor(this);
+        public override string CodeDisplay =>
+            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} " +
+            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        public override string ToCodeDisplay() =>
-            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} {{{FunctionBody.ToElidedList()}}}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("get ");
-            PropertyName.WriteFullCodeDisplay(writer);
-            writer.Write("()");
-            PropertyType.WriteTypeAnnotation(writer);
-            WriteBlock(writer, FunctionBody);
+            emitter.Write("get ");
+            PropertyName.Emit(emitter);
+            emitter.Write("()");
+            PropertyType.WriteTypeAnnotation(emitter);
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

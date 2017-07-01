@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property set accessor of the form 'set name(value: type) { body }'.
     /// </summary>
-    internal class TsSetAccessor : AstNode, ITsSetAccessor
+    internal class TsSetAccessor : AstNode<TsVisitor>, ITsSetAccessor
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,23 +47,21 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitSetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSetAccessor(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitSetAccessor(this);
-
-        public override string ToCodeDisplay() =>
+        public override string CodeDisplay =>
             $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
-            $"{{{FunctionBody.ToElidedList()}}}";
+            $"{{ {FunctionBody.ToElidedList()} }}";
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("set ");
-            PropertyName.WriteFullCodeDisplay(writer);
-            writer.Write("(");
-            ParameterName.WriteFullCodeDisplay(writer);
-            ParameterType.WriteTypeAnnotation(writer);
-            writer.Write(") ");
-            WriteBlock(writer, FunctionBody);
+            emitter.Write("set ");
+            PropertyName.Emit(emitter);
+            emitter.Write("(");
+            ParameterName.Emit(emitter);
+            ParameterType.WriteTypeAnnotation(emitter);
+            emitter.Write(") ");
+            emitter.WriteBlock(FunctionBody);
         }
     }
 }

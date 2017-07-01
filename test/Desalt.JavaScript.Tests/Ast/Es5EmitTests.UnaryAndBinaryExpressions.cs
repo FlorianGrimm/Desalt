@@ -1,17 +1,17 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.UnaryAndBinaryExpressions.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.UnaryAndBinaryExpressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Tests.Emit
+namespace Desalt.JavaScript.Tests.Ast
 {
     using Desalt.JavaScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         [TestMethod]
         public void Emit_unary_expressions()

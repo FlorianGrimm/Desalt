@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
+    internal class TsConditionalExpression : AstNode<TsVisitor>, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,19 +42,17 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitConditionalExpression(this);
+        public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override string ToCodeDisplay() => $"{Condition} ? {WhenTrue} : {WhenFalse}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            Condition.WriteFullCodeDisplay(writer);
-            writer.Write(" ? ");
-            WhenTrue.WriteFullCodeDisplay(writer);
-            writer.Write(" : ");
-            WhenFalse.WriteFullCodeDisplay(writer);
+            Condition.Emit(emitter);
+            emitter.Write(" ? ");
+            WhenTrue.Emit(emitter);
+            emitter.Write(" : ");
+            WhenFalse.Emit(emitter);
         }
     }
 }

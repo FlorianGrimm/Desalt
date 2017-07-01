@@ -9,12 +9,12 @@ namespace Desalt.JavaScript.Ast.Expressions
 {
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    public class Es5ArrayLiteralExpression : Es5AstNode, IEs5Expression
+    public class Es5ArrayLiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,16 +40,11 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitArrayLiteralExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitArrayLiteralExpression(this);
-        }
+        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
-        public override string ToCodeDisplay() => $"[{Elements.ToElidedList()}]";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            WriteItems(writer, Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            emitter.WriteItems(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript tuple type.
     /// </summary>
-    internal class TsTupleType : AstNode, ITsTupleType
+    internal class TsTupleType : AstNode<TsVisitor>, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,15 +38,13 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTupleType(this);
+        public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
-        public override string ToCodeDisplay() => $"[{ElementTypes.ToElidedList()}]";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            WriteItems(writer, ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            emitter.WriteItems(ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
     }
 }

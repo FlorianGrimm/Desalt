@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript function or constructor type.
     /// </summary>
-    internal class TsFunctionOrConstructorType : AstNode, ITsFunctionType, ITsConstructorType
+    internal class TsFunctionOrConstructorType : AstNode<TsVisitor>, ITsFunctionType, ITsConstructorType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -57,7 +57,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor)
+        public override void Accept(TsVisitor visitor)
         {
             if (IsConstructorType)
             {
@@ -69,38 +69,43 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public T Accept<T>(TsVisitor<T> visitor) =>
-            IsConstructorType ? visitor.VisitConstructorType(this) : visitor.VisitFunctionType(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string code = string.Empty;
-
-            if (IsConstructorType)
+            get
             {
-                code += "new ";
+                string code = string.Empty;
+
+                if (IsConstructorType)
+                {
+                    code += "new ";
+                }
+
+                if (TypeParameters.Length == 0)
+                {
+                    code += $"<{TypeParameters.ToElidedList()}>";
+                }
+
+                code += $"{Parameters?.CodeDisplay} => {ReturnType}";
+
+                return code;
             }
-
-            if (TypeParameters.Length == 0)
-            {
-                code += $"<{TypeParameters.ToElidedList()}>";
-            }
-
-            code += $"{Parameters?.ToCodeDisplay()} => {ReturnType}";
-
-            return code;
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            if (TypeParameters.Length > 0)
+            if (IsConstructorType)
             {
-                WriteItems(writer, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.Write("new ");
             }
 
-            Parameters?.WriteFullCodeDisplay(writer);
-            writer.Write(" => ");
-            ReturnType.WriteFullCodeDisplay(writer);
+            if (TypeParameters.Length > 0)
+            {
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+            }
+
+            Parameters?.Emit(emitter);
+            emitter.Write(" => ");
+            ReturnType.Emit(emitter);
         }
     }
 }

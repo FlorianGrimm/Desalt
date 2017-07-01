@@ -8,207 +8,68 @@
 namespace Desalt.Core.Ast
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Abstract base class for all abstract syntax tree (AST) nodes.
     /// </summary>
+    /// <typeparam name="TVisitor">The specific type of visitor to accept.</typeparam>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public abstract class AstNode : IAstNode
+    public abstract class AstNode<TVisitor> : IAstNode where TVisitor : class, IAstVisitor
     {
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
         /// <summary>
+        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
+        /// </summary>
+        /// <value>A string representation of this AST node.</value>
+        public abstract string CodeDisplay { get; }
+
+        /// <summary>
         /// Gets a consise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
-        protected virtual string DebuggerDisplay => $"{GetType().Name}: {ToCodeDisplay()}";
+        protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
+        /// Accepts the visitor by calling into a specific method on the visitor for this type of AST node.
         /// </summary>
-        /// <returns>A string representation of this AST node.</returns>
-        public abstract string ToCodeDisplay();
-
-        /// <summary>
-        /// Returns a string representation of the full AST node, which is useful for debugging and
-        /// printing to logs. This should not be used to actually emit generated code.
-        /// </summary>
-        /// <returns>A string representation of the full AST node.</returns>
-        public virtual string ToFullCodeDisplay()
+        /// <typeparam name="T">The specific type of visitor to accept.</typeparam>
+        /// <param name="visitor">The visitor to visit.</param>
+        public void Accept<T>(T visitor) where T : IAstVisitor
         {
-            using (var stringWriter = new StringWriter())
-            using (var writer = new IndentedTextWriter(stringWriter))
+            var specificVisitor = visitor as TVisitor;
+            if (specificVisitor == null)
             {
-                WriteFullCodeDisplay(writer);
-                return stringWriter.ToString();
+                throw new ArgumentException($"Visitor is not a type of {typeof(TVisitor).Name}", nameof(visitor));
             }
+
+            Accept(specificVisitor);
         }
 
         /// <summary>
-        /// Writes a string representation of this AST node to the specified <see
-        /// cref="IndentedTextWriter"/>, which is useful for debugging and printing to logs. This
-        /// should not be used to actually emit generated code.
+        /// Accepts the visitor by calling into a specific method on the visitor for this type of AST node.
         /// </summary>
-        /// <param name="writer">The writer to use.</param>
-        public abstract void WriteFullCodeDisplay(IndentedTextWriter writer);
+        /// <param name="visitor">The visitor to visit.</param>
+        public abstract void Accept(TVisitor visitor);
+
+        /// <summary>
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// </summary>
+        /// <param name="emitter">The emitter to use.</param>
+        public abstract void Emit(Emitter emitter);
 
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => ToCodeDisplay();
-
-        /// <summary>
-        /// Writes a list of items wrapped in a {} block to the specified text writer.
-        /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
-        /// <param name="items">The items to write.</param>
-        protected void WriteBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
-        {
-            WriteItems(
-                writer,
-                items,
-                indent: true,
-                prefix: "{",
-                suffix: "}",
-                itemDelimiter: Environment.NewLine,
-                newLineAfterPrefix: true,
-                delimiterAfterLastItem: true,
-                newLineAfterLastItem: true);
-        }
-
-        /// <summary>
-        /// Writes a list of items wrapped in a {} block where each item is separated by a comma and
-        /// new line to the specified text writer.
-        /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
-        /// <param name="items">The items to write.</param>
-        protected void WriteCommaNewlineSeparatedBlock(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
-        {
-            WriteItems(
-                writer,
-                items,
-                indent: true,
-                prefix: "{",
-                suffix: "}",
-                itemDelimiter: "," + Environment.NewLine,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true);
-        }
-
-        /// <summary>
-        /// Writes a comma-separated list wrapped in a () block to the specified text writer.
-        /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
-        /// <param name="items">The items to write.</param>
-        protected void WriteParameterList(IndentedTextWriter writer, IReadOnlyList<IAstNode> items)
-        {
-            WriteItems(writer, items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
-        }
-
-        /// <summary>
-        /// Writes a list of items to the specified text writer, surrounded by the specified prefix
-        /// and suffix and delimited by the specified delimiter.
-        /// </summary>
-        /// <param name="writer">The <see cref="IndentedTextWriter"/> to write to.</param>
-        /// <param name="items">The items to write.</param>
-        /// <param name="indent">Indicates whether to indent the items.</param>
-        /// <param name="prefix">The prefix to write before writing the items.</param>
-        /// <param name="suffix">The suffix to write after writing the items.</param>
-        /// <param name="itemDelimiter">The delimiter to write between items.</param>
-        /// <param name="newLineAfterPrefix">
-        /// Indicates whether a newline should be written after the prefix (useful for blocks).
-        /// </param>
-        /// <param name="delimiterAfterLastItem">
-        /// Indicates whether the last item should also have a delimiter at the end (useful for
-        /// blocks to put a newline before the last brace.
-        /// </param>
-        /// <param name="newLineAfterLastItem">
-        /// Indicates whether the last item should include a newline.
-        /// </param>
-        protected void WriteItems(
-            IndentedTextWriter writer,
-            IReadOnlyList<IAstNode> items,
-            bool indent,
-            string prefix = null,
-            string suffix = null,
-            string itemDelimiter = null,
-            bool newLineAfterPrefix = false,
-            bool delimiterAfterLastItem = false,
-            bool newLineAfterLastItem = false)
-        {
-            prefix = prefix ?? string.Empty;
-            suffix = suffix ?? string.Empty;
-            itemDelimiter = itemDelimiter ?? string.Empty;
-
-            bool newlineAfterItems = false;
-            if (itemDelimiter.EndsWith("\r\n"))
-            {
-                newlineAfterItems = true;
-                itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 2);
-            }
-            else if (itemDelimiter.EndsWith("\r") || itemDelimiter.EndsWith("\n"))
-            {
-                newlineAfterItems = true;
-                itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 1);
-            }
-
-            if (items.Count == 0)
-            {
-                writer.Write($"{prefix}{suffix}");
-            }
-            else
-            {
-                if (newLineAfterPrefix)
-                {
-                    writer.WriteLine(prefix);
-                }
-                else
-                {
-                    writer.Write(prefix);
-                }
-
-                if (indent)
-                {
-                    writer.IndentLevel++;
-                }
-
-                for (int i = 0; i < items.Count; i++)
-                {
-                    IAstNode item = items[i];
-                    item.WriteFullCodeDisplay(writer);
-
-                    // write the delimiter
-                    if (i < items.Count - 1 || delimiterAfterLastItem)
-                    {
-                        writer.Write(itemDelimiter);
-                    }
-
-                    // write a new line after the last item if necessary
-                    if (i < items.Count - 1 && newlineAfterItems ||
-                        i == items.Count - 1 && newLineAfterLastItem)
-                    {
-                        writer.WriteLine();
-                    }
-                }
-
-                if (indent)
-                {
-                    writer.IndentLevel--;
-                }
-
-                writer.Write(suffix);
-            }
-        }
+        public override string ToString() => CodeDisplay;
     }
 }

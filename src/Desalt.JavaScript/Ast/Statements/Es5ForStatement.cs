@@ -11,12 +11,13 @@ namespace Desalt.JavaScript.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'for' loop statement.
     /// </summary>
-    public sealed class Es5ForStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ForStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -82,50 +83,58 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitForStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay
         {
-            return visitor.VisitForStatement(this);
+            get
+            {
+                var builder = new StringBuilder("for (");
+                if (Initializer != null)
+                {
+                    builder.Append(Initializer);
+                }
+                builder.Append("; ");
+
+                if (Condition != null)
+                {
+                    builder.Append(Condition);
+                }
+                builder.Append("; ");
+
+                if (Incrementor != null)
+                {
+                    builder.Append(Incrementor);
+                }
+                builder.AppendLine(")");
+
+                builder.Append(Statement);
+
+                return builder.ToString();
+            }
         }
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            var builder = new StringBuilder("for (");
-            if (Initializer != null)
+            emitter.Write("for (");
+
+            if (Declarations.Length > 0)
             {
-                builder.Append(Initializer);
+                emitter.Write("var ");
+                emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
             }
-            builder.Append("; ");
-
-            if (Condition != null)
+            else
             {
-                builder.Append(Condition);
+                Initializer?.Emit(emitter);
             }
-            builder.Append("; ");
 
-            if (Incrementor != null)
-            {
-                builder.Append(Incrementor);
-            }
-            builder.AppendLine(")");
+            emitter.Write("; ");
 
-            builder.Append(Statement);
+            Condition?.Emit(emitter);
+            emitter.Write("; ");
 
-            return builder.ToString();
-        }
+            Incrementor?.Emit(emitter);
+            emitter.Write(")");
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("for (");
-            Initializer?.WriteFullCodeDisplay(writer);
-            writer.Write("; ");
-
-            Condition?.WriteFullCodeDisplay(writer);
-            writer.Write("; ");
-
-            Incrementor?.WriteFullCodeDisplay(writer);
-            writer.WriteLine(")");
-
-            Statement.WriteFullCodeDisplay(writer);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement);
         }
     }
 }

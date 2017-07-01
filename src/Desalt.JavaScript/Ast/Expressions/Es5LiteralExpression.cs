@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression containing a literal value.
     /// </summary>
-    public class Es5LiteralExpression : Es5AstNode, IEs5Expression
+    public class Es5LiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -55,39 +56,34 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitLiteralExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay
         {
-            return visitor.VisitLiteralExpression(this);
-        }
-
-        public override string ToCodeDisplay()
-        {
-            switch (Kind)
+            get
             {
-                case Es5LiteralKind.Null:
-                    return "null";
+                switch (Kind)
+                {
+                    case Es5LiteralKind.Null:
+                        return "null";
 
-                case Es5LiteralKind.True:
-                    return "true";
+                    case Es5LiteralKind.True:
+                        return "true";
 
-                case Es5LiteralKind.False:
-                    return "false";
+                    case Es5LiteralKind.False:
+                        return "false";
 
-                case Es5LiteralKind.Decimal:
-                case Es5LiteralKind.HexInteger:
-                case Es5LiteralKind.String:
-                case Es5LiteralKind.RegExp:
-                    return Literal;
+                    case Es5LiteralKind.Decimal:
+                    case Es5LiteralKind.HexInteger:
+                    case Es5LiteralKind.String:
+                    case Es5LiteralKind.RegExp:
+                        return Literal;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Kind));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Kind));
+                }
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write(ToCodeDisplay());
-        }
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
 
         internal static Es5LiteralExpression CreateString(string literal) =>
             new Es5LiteralExpression(Es5LiteralKind.String, literal);

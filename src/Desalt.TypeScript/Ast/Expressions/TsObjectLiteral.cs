@@ -7,15 +7,16 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents on object literal of the form '{ PropertyDefinition... }'.
     /// </summary>
-    internal class TsObjectLiteral : AstNode, ITsObjectLiteral
+    internal class TsObjectLiteral : AstNode<TsVisitor>, ITsObjectLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,15 +38,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitObjectLiteral(this);
+        public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
-        public override string ToCodeDisplay() => $"Object Literal, PropertyCount = {PropertyDefinitions.Length}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteCommaNewlineSeparatedBlock(writer, PropertyDefinitions);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
     }
 }

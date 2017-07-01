@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : AstNode, ITsArrayType
+    internal class TsArrayType : AstNode<TsVisitor>, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,16 +35,14 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitArrayType(this);
+        public override string CodeDisplay => $"{Type.CodeDisplay}[]";
 
-        public override string ToCodeDisplay() => $"{Type.ToCodeDisplay()}[]";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            Type.WriteFullCodeDisplay(writer);
-            writer.Write("[]");
+            Type.Emit(emitter);
+            emitter.Write("[]");
         }
     }
 }

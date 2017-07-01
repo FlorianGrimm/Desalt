@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'throw' statement.
     /// </summary>
-    public sealed class Es5ThrowStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5ThrowStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -34,26 +35,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitThrowStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitThrowStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitThrowStatement(this);
-        }
+        public override string CodeDisplay => $"throw {Expression};";
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return $"throw {Expression};";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("throw ");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write(";");
+            emitter.Write("throw ");
+            Expression.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

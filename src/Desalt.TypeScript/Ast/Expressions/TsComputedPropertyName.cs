@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property name inside of an object of the form '[ expression ]'.
     /// </summary>
-    internal class TsComputedPropertyName : AstNode, ITsComputedPropertyName
+    internal class TsComputedPropertyName : AstNode<TsVisitor>, ITsComputedPropertyName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -35,17 +35,15 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitComputedPropertyName(this);
+        public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 
-        public override string ToCodeDisplay() => $"[{Expression.ToCodeDisplay()}]";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("[");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.Write("]");
+            emitter.Write("[");
+            Expression.Emit(emitter);
+            emitter.Write("]");
         }
     }
 }

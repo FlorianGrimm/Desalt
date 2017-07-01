@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
+    internal class TsPropertyAssignment : AstNode<TsVisitor>, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,17 +37,15 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitPropertyAssignment(this);
+        public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 
-        public override string ToCodeDisplay() => $"{PropertyName.ToCodeDisplay()}: {Initializer.ToCodeDisplay()}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            PropertyName.WriteFullCodeDisplay(writer);
-            writer.Write(": ");
-            Initializer.WriteFullCodeDisplay(writer);
+            PropertyName.Emit(emitter);
+            emitter.Write(": ");
+            Initializer.Emit(emitter);
         }
     }
 }

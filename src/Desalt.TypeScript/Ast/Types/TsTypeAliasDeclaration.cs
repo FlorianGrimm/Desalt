@@ -11,12 +11,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
     /// </summary>
-    internal class TsTypeAliasDeclaration : AstNode, ITsTypeAliasDeclaration
+    internal class TsTypeAliasDeclaration : AstNode<TsVisitor>, ITsTypeAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,34 +44,35 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeAliasDeclaration(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = $"type {AliasName}";
-            if (TypeParameters.Length > 0)
+            get
             {
-                display += $"<{TypeParameters.ToElidedList()}>";
-            }
+                string display = $"type {AliasName}";
+                if (TypeParameters.Length > 0)
+                {
+                    display += $"<{TypeParameters.ToElidedList()}>";
+                }
 
-            display += $" = {Type}";
-            return display;
+                display += $" = {Type}";
+                return display;
+            }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("type ");
-            AliasName.WriteFullCodeDisplay(writer);
+            emitter.Write("type ");
+            AliasName.Emit(emitter);
 
             if (TypeParameters.Length > 0)
             {
-                WriteItems(writer, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
-            writer.Write(" = ");
-            Type.WriteFullCodeDisplay(writer);
+            emitter.Write(" = ");
+            Type.Emit(emitter);
         }
     }
 }

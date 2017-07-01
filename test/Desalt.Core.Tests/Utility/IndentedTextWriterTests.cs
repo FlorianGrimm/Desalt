@@ -122,5 +122,17 @@ namespace Desalt.Core.Tests.Utility
             };
             RunTest(test, "abc\n    def\n");
         }
+
+        [TestMethod]
+        public void Write_should_add_the_indentation_when_writing_an_empty_string()
+        {
+            Action<IndentedTextWriter> test = writer =>
+            {
+                writer.IndentLevel++;
+                writer.WriteLine();
+                writer.Write(string.Empty);
+            };
+            RunTest(test, "\n  ");
+        }
     }
 }

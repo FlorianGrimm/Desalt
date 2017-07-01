@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
     /// </summary>
-    internal class TsTypeParameter : AstNode, ITsTypeParameter
+    internal class TsTypeParameter : AstNode<TsVisitor>, ITsTypeParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,21 +37,18 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitTypeParameter(this);
+        public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 
-        public override string ToCodeDisplay() =>
-            TypeName.ToCodeDisplay() + (Constraint != null ? $" extends {Constraint}" : "");
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            TypeName.WriteFullCodeDisplay(writer);
+            TypeName.Emit(emitter);
 
             if (Constraint != null)
             {
-                writer.Write(" extends ");
-                Constraint.WriteFullCodeDisplay(writer);
+                emitter.Write(" extends ");
+                Constraint.Emit(emitter);
             }
         }
     }

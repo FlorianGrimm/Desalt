@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Returns a labelled statement of the form 'Identifier: Statement'.
     /// </summary>
-    public sealed class Es5LabelledStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5LabelledStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,23 +37,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitLabelledStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitLabelledStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitLabelledStatement(this);
-        }
+        public override string CodeDisplay => $"{Identifier}: {Statement}";
 
-        public override string ToCodeDisplay() => $"{Identifier}: {Statement}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            Identifier.WriteFullCodeDisplay(writer);
-            writer.Write(": ");
-            Statement.WriteFullCodeDisplay(writer);
+            Identifier.Emit(emitter);
+            emitter.Write(": ");
+            Statement.Emit(emitter);
         }
     }
 }

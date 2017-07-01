@@ -7,12 +7,13 @@
 
 namespace Desalt.JavaScript.Ast.Statements
 {
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'break' or 'break Identifier' statement.
     /// </summary>
-    public sealed class Es5BreakStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5BreakStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -44,27 +45,19 @@ namespace Desalt.JavaScript.Ast.Statements
             visitor.VisitBreakStatement(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitBreakStatement(this);
-        }
+        public override string CodeDisplay => "break" + (Label != null ? $" {Label}" : string.Empty) + ";";
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return "break" + (Label != null ? $" {Label}" : string.Empty) + ";";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("break");
+            emitter.Write("break");
 
             if (Label != null)
             {
-                writer.Write(" ");
-                Label.WriteFullCodeDisplay(writer);
+                emitter.Write(" ");
+                Label.Emit(emitter);
             }
 
-            writer.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }

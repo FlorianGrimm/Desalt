@@ -9,12 +9,13 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode, ITsMemberDotExpression
+    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,16 +40,14 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitMemberDotExpression(this);
+        public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
-        public override string ToCodeDisplay() => $"{LeftSide}.{DotName}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write($".{DotName}");
+            LeftSide.Emit(emitter);
+            emitter.Write($".{DotName}");
         }
     }
 }

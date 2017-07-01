@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    public sealed class Es5UnaryExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5UnaryExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,46 +42,44 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitUnaryExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
+        public override string CodeDisplay
         {
-            return visitor.VisitUnaryExpression(this);
-        }
-
-        public override string ToCodeDisplay()
-        {
-            switch (Operator)
+            get
             {
-                case Es5UnaryOperator.Delete:
-                case Es5UnaryOperator.Void:
-                case Es5UnaryOperator.Typeof:
-                    return $"{Operator.ToCodeDisplay()} {Operand}";
+                switch (Operator)
+                {
+                    case Es5UnaryOperator.Delete:
+                    case Es5UnaryOperator.Void:
+                    case Es5UnaryOperator.Typeof:
+                        return $"{Operator.ToCodeDisplay()} {Operand}";
 
-                case Es5UnaryOperator.PrefixIncrement:
-                case Es5UnaryOperator.PrefixDecrement:
-                case Es5UnaryOperator.Plus:
-                case Es5UnaryOperator.Minus:
-                case Es5UnaryOperator.BitwiseNot:
-                case Es5UnaryOperator.LogicalNot:
-                    return $"{Operator.ToCodeDisplay()}{Operand}";
+                    case Es5UnaryOperator.PrefixIncrement:
+                    case Es5UnaryOperator.PrefixDecrement:
+                    case Es5UnaryOperator.Plus:
+                    case Es5UnaryOperator.Minus:
+                    case Es5UnaryOperator.BitwiseNot:
+                    case Es5UnaryOperator.LogicalNot:
+                        return $"{Operator.ToCodeDisplay()}{Operand}";
 
-                case Es5UnaryOperator.PostfixIncrement:
-                case Es5UnaryOperator.PostfixDecrement:
-                    return $"{Operand}{Operator.ToCodeDisplay()}";
+                    case Es5UnaryOperator.PostfixIncrement:
+                    case Es5UnaryOperator.PostfixDecrement:
+                        return $"{Operand}{Operator.ToCodeDisplay()}";
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Operator));
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Operator));
+                }
             }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             switch (Operator)
             {
                 case Es5UnaryOperator.Delete:
                 case Es5UnaryOperator.Void:
                 case Es5UnaryOperator.Typeof:
-                    writer.Write($"{Operator.ToCodeDisplay()}");
-                    Operand.WriteFullCodeDisplay(writer);
+                    emitter.Write($"{Operator.ToCodeDisplay()} ");
+                    Operand.Emit(emitter);
                     break;
 
                 case Es5UnaryOperator.PrefixIncrement:
@@ -89,14 +88,14 @@ namespace Desalt.JavaScript.Ast.Expressions
                 case Es5UnaryOperator.Minus:
                 case Es5UnaryOperator.BitwiseNot:
                 case Es5UnaryOperator.LogicalNot:
-                    writer.Write(Operator.ToCodeDisplay());
-                    Operand.WriteFullCodeDisplay(writer);
+                    emitter.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
                     break;
 
                 case Es5UnaryOperator.PostfixIncrement:
                 case Es5UnaryOperator.PostfixDecrement:
-                    Operand.WriteFullCodeDisplay(writer);
-                    writer.Write(Operator.ToCodeDisplay());
+                    Operand.Emit(emitter);
+                    emitter.Write(Operator.ToCodeDisplay());
                     break;
 
                 default:

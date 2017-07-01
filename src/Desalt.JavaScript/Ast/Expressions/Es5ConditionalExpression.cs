@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    public sealed class Es5ConditionalExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ConditionalExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -46,20 +47,15 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitConditionalExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitConditionalExpression(this);
-        }
+        public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override string ToCodeDisplay() => $"{Condition} ? {WhenTrue} : {WhenFalse}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            Condition.WriteFullCodeDisplay(writer);
-            writer.Write(" ? ");
-            WhenTrue.WriteFullCodeDisplay(writer);
-            writer.Write(" : ");
-            WhenFalse.WriteFullCodeDisplay(writer);
+            Condition.Emit(emitter);
+            emitter.Write(" ? ");
+            WhenTrue.Emit(emitter);
+            emitter.Write(" : ");
+            WhenFalse.Emit(emitter);
         }
     }
 }

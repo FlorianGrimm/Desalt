@@ -8,12 +8,12 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a null literal.
     /// </summary>
-    internal class TsNullLiteral : AstNode, ITsNullLiteral
+    internal class TsNullLiteral : AstNode<TsVisitor>, ITsNullLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -33,12 +33,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitNullLiteral(this);
+        public override string CodeDisplay => "null";
 
-        public override string ToCodeDisplay() => "null";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void Emit(Emitter emitter) => emitter.Write("null");
     }
 }

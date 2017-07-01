@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    internal class TsAssignmentExpression : AstNode, ITsAssignmentExpression
+    internal class TsAssignmentExpression : AstNode<TsVisitor>, ITsAssignmentExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,17 +42,15 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitAssignmentExpression(this);
+        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override string ToCodeDisplay() => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            LeftSide.WriteFullCodeDisplay(writer);
-            writer.Write($" {Operator.ToCodeDisplay()} ");
-            RightSide.WriteFullCodeDisplay(writer);
+            LeftSide.Emit(emitter);
+            emitter.Write($" {Operator.ToCodeDisplay()} ");
+            RightSide.Emit(emitter);
         }
     }
 }

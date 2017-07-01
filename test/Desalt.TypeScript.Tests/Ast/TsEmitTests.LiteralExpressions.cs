@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsEmitterTests.LiteralExpressions.cs" company="Justin Rockwood">
+// <copyright file="TsEmitTests.LiteralExpressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Tests.Emit
+namespace Desalt.TypeScript.Tests.Ast
 {
     using System;
     using Desalt.TypeScript.Ast;
@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.Tests.Emit
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
-    public partial class TsEmitterTests
+    public partial class TsEmitTests
     {
         //// ===========================================================================================================
         //// Literal Expressions
@@ -110,7 +110,7 @@ namespace Desalt.TypeScript.Tests.Emit
         [TestMethod]
         public void Emit_array_literals_with_spread_operator()
         {
-            VerifyOutput(Factory.ArrayLiteral(Factory.ArrayElement(s_y, isSpreadElement: true)), "[y ...]");
+            VerifyOutput(Factory.ArrayLiteral(Factory.ArrayElement(s_y, isSpreadElement: true)), "[... y]");
         }
 
         [TestMethod]

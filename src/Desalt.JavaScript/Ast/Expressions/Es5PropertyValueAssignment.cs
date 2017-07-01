@@ -8,12 +8,14 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    public class Es5PropertyValueAssignment : Es5AstNode, IEs5PropertyAssignment
+    public class Es5PropertyValueAssignment : AstNode<Es5Visitor>, IEs5PropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors
@@ -37,22 +39,14 @@ namespace Desalt.JavaScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitPropertyValueAssignment(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitPropertyValueAssignment(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitPropertyValueAssignment(this);
-        }
+        public override string CodeDisplay => $"{PropertyName}: {Value}";
 
-        public override string ToCodeDisplay() => $"{PropertyName}: {Value}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write($"{PropertyName}: ");
-            Value.WriteFullCodeDisplay(writer);
+            emitter.Write($"{PropertyName}: ");
+            Value.Emit(emitter);
         }
     }
 }

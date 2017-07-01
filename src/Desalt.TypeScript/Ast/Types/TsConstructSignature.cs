@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
     /// </summary>
-    internal class TsConstructSignature : AstNode, ITsConstructSignature
+    internal class TsConstructSignature : AstNode<TsVisitor>, ITsConstructSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,37 +43,38 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitConstructSignature(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = "new ";
-
-            if (TypeParameters.Length > 0)
+            get
             {
-                display += $"<{TypeParameters.ToElidedList()}>";
-            }
+                string display = "new ";
 
-            display += $"(${ParameterList}){ReturnType.ToTypeAnnotationCodeDisplay()}";
-            return display;
+                if (TypeParameters.Length > 0)
+                {
+                    display += $"<{TypeParameters.ToElidedList()}>";
+                }
+
+                display += $"(${ParameterList}){ReturnType.ToTypeAnnotationCodeDisplay()}";
+                return display;
+            }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("new ");
+            emitter.Write("new ");
 
             if (TypeParameters.Length > 0)
             {
-                WriteItems(writer, TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
-            writer.Write("(");
-            ParameterList.WriteFullCodeDisplay(writer);
-            writer.Write(")");
+            emitter.Write("(");
+            ParameterList.Emit(emitter);
+            emitter.Write(")");
 
-            ReturnType.WriteTypeAnnotation(writer);
+            ReturnType.WriteTypeAnnotation(emitter);
         }
     }
 }

@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'while' loop statement.
     /// </summary>
-    public sealed class Es5WhileStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5WhileStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,24 +37,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitWhileStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitWhileStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitWhileStatement(this);
-        }
+        public override string CodeDisplay => $"while ({Condition}) {Statement}";
 
-        public override string ToCodeDisplay() => $"while ({Condition}) {Statement}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("while (");
-            Condition.WriteFullCodeDisplay(writer);
-            writer.WriteLine(")");
-            Statement.WriteFullCodeDisplay(writer);
+            emitter.Write("while (");
+            Condition.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, ")", ") ");
         }
     }
 }

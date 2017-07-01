@@ -11,12 +11,12 @@ namespace Desalt.JavaScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function call expression.
     /// </summary>
-    public sealed class Es5CallExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5CallExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -60,25 +60,18 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitCallExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitCallExpression(this);
-        }
+        public override string CodeDisplay =>
+            (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})";
 
-        public override string ToCodeDisplay()
-        {
-            return (IsNewCall ? "new " : "") + $"{CallExpression}({Arguments.ToElidedList()})";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
             if (IsNewCall)
             {
-                writer.Write("new ");
+                emitter.Write("new ");
             }
 
-            CallExpression.WriteFullCodeDisplay(writer);
-            WriteParameterList(writer, Arguments);
+            CallExpression.Emit(emitter);
+            emitter.WriteParameterList(Arguments);
         }
 
         public Es5CallExpression WithArguments(ImmutableArray<IEs5Expression> arguments)

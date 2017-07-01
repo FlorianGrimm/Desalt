@@ -8,12 +8,13 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : AstNode<TsVisitor>, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -38,12 +39,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitRegularExpressionLiteral(this);
+        public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override string ToCodeDisplay() => $"/{Body}/{Flags}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer) => writer.Write(ToCodeDisplay());
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

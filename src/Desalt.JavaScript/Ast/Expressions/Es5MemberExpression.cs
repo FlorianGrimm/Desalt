@@ -8,9 +8,10 @@
 namespace Desalt.JavaScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
-    public sealed class Es5MemberExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5MemberExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -66,29 +67,22 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitMemberExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitMemberExpression(this);
-        }
+        public override string CodeDisplay =>
+            MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}");
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return MemberExpression + (IsBracketNotation ? $"[{BracketExpression}]" : $".{DotName}");
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            MemberExpression.WriteFullCodeDisplay(writer);
+            MemberExpression.Emit(emitter);
             if (IsBracketNotation)
             {
-                writer.Write("[");
-                BracketExpression.WriteFullCodeDisplay(writer);
-                writer.Write("]");
+                emitter.Write("[");
+                BracketExpression.Emit(emitter);
+                emitter.Write("]");
             }
             else
             {
-                writer.Write(".");
-                DotName.WriteFullCodeDisplay(writer);
+                emitter.Write(".");
+                DotName.Emit(emitter);
             }
         }
 

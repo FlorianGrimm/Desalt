@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast.Types
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a parameter list of the form '(parameter: type)'.
     /// </summary>
-    internal class TsParameterList : AstNode, ITsParameterList
+    internal class TsParameterList : AstNode<TsVisitor>, ITsParameterList
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,23 +43,28 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitParameterList(this);
+        public override string CodeDisplay =>
+            RequiredParameters.ToElidedList() +
+            OptionalParameters.ToElidedList() +
+            RestParameter.CodeDisplay;
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return
-                RequiredParameters.ToElidedList() +
-                OptionalParameters.ToElidedList() +
-                RestParameter?.ToCodeDisplay();
-        }
+            emitter.WriteItems(RequiredParameters, indent: false, itemDelimiter: ", ");
+            if (RequiredParameters.Length > 0 && OptionalParameters.Length > 0 || RestParameter != null)
+            {
+                emitter.Write(", ");
+            }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            WriteItems(writer, RequiredParameters, indent: false, itemDelimiter: ", ");
-            WriteItems(writer, OptionalParameters, indent: false, itemDelimiter: ", ");
-            RestParameter?.WriteFullCodeDisplay(writer);
+            emitter.WriteItems(OptionalParameters, indent: false, itemDelimiter: ", ");
+            if (OptionalParameters.Length > 0 && RestParameter != null)
+            {
+                emitter.Write(", ");
+            }
+
+            RestParameter?.Emit(emitter);
         }
     }
 }

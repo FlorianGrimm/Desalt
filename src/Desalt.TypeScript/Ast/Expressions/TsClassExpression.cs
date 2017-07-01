@@ -10,12 +10,12 @@ namespace Desalt.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a class declaration acting as an expression.
     /// </summary>
-    internal class TsClassExpression : AstNode, ITsClassExpression
+    internal class TsClassExpression : AstNode<TsVisitor>, ITsClassExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,34 +43,29 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitClassExpression(this);
+        public override string CodeDisplay =>
+            $"class {ClassName.CodeDisplay}" + (Heritage != null ? $" extends {Heritage}" : "") +
+            $"{{ {ClassBody.ToElidedList()} }}";
 
-        public override string ToCodeDisplay()
+        public override void Emit(Emitter emitter)
         {
-            return $"class {ClassName?.ToCodeDisplay()}" +
-                (Heritage != null ? $" extends {Heritage}" : "") +
-                $"{{ {ClassBody.ToElidedList()} }}";
-        }
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
-        {
-            writer.Write("class ");
-            ClassName?.WriteFullCodeDisplay(writer);
+            emitter.Write("class ");
+            ClassName?.Emit(emitter);
 
             if (Heritage != null)
             {
                 if (ClassName != null)
                 {
-                    writer.Write(" ");
+                    emitter.Write(" ");
                 }
 
-                writer.Write("extends ");
-                Heritage.WriteFullCodeDisplay(writer);
+                emitter.Write("extends ");
+                Heritage.Emit(emitter);
             }
 
-            WriteBlock(writer, ClassBody);
+            emitter.WriteBlock(ClassBody);
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Desalt.TypeScript.Ast.Types
 {
     using System;
     using Desalt.Core.Ast;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : AstNode, ITsIndexSignature
+    internal class TsIndexSignature : AstNode<TsVisitor>, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,26 +39,27 @@ namespace Desalt.TypeScript.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
 
-        public T Accept<T>(TsVisitor<T> visitor) => visitor.VisitIndexSignature(this);
-
-        public override string ToCodeDisplay()
+        public override string CodeDisplay
         {
-            string display = $"[{ParameterName.ToCodeDisplay()}: ";
-            display += IsParameterNumberType ? "number" : "string";
-            display += $"]: {ParameterType}";
-            return display;
+            get
+            {
+                string display = $"[{ParameterName.CodeDisplay}: ";
+                display += IsParameterNumberType ? "number" : "string";
+                display += $"]: {ParameterType}";
+                return display;
+            }
         }
 
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("[");
-            ParameterName.WriteFullCodeDisplay(writer);
-            writer.Write(": ");
-            writer.Write(IsParameterNumberType ? "number" : "string");
-            writer.Write("]: ");
-            ParameterType.WriteFullCodeDisplay(writer);
+            emitter.Write("[");
+            ParameterName.Emit(emitter);
+            emitter.Write(": ");
+            emitter.Write(IsParameterNumberType ? "number" : "string");
+            emitter.Write("]: ");
+            ParameterType.Emit(emitter);
         }
     }
 }

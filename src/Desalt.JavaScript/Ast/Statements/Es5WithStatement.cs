@@ -8,12 +8,13 @@
 namespace Desalt.JavaScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'with (Expression) Statement' statement.
     /// </summary>
-    public sealed class Es5WithStatement : Es5AstNode, IEs5Statement
+    public sealed class Es5WithStatement : AstNode<Es5Visitor>, IEs5Statement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -36,24 +37,15 @@ namespace Desalt.JavaScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitWithStatement(this);
-        }
+        public override void Accept(Es5Visitor visitor) => visitor.VisitWithStatement(this);
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitWithStatement(this);
-        }
+        public override string CodeDisplay => $"with ({Expression}) {Statement}";
 
-        public override string ToCodeDisplay() => $"with ({Expression}) {Statement}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            writer.Write("with (");
-            Expression.WriteFullCodeDisplay(writer);
-            writer.WriteLine(")");
-            Statement.WriteFullCodeDisplay(writer);
+            emitter.Write("with (");
+            Expression.Emit(emitter);
+            emitter.WriteStatementIndentedOrInBlock(Statement, Statement is Es5BlockStatement, ")", ") ");
         }
     }
 }

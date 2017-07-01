@@ -7,14 +7,16 @@
 
 namespace Desalt.JavaScript.Ast.Expressions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Utility;
+    using Desalt.Core.Ast;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents on object literal of the form '{ propertyAssignment... }'.
     /// </summary>
-    public sealed class Es5ObjectLiteralExpression : Es5AstNode, IEs5Expression
+    public sealed class Es5ObjectLiteralExpression : AstNode<Es5Visitor>, IEs5Expression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,16 +42,11 @@ namespace Desalt.JavaScript.Ast.Expressions
             visitor.VisitObjectLiteralExpression(this);
         }
 
-        public override T Accept<T>(Es5Visitor<T> visitor)
-        {
-            return visitor.VisitObjectLiteralExpression(this);
-        }
+        public override string CodeDisplay => $"{{ {PropertyAssignments.ToElidedList(Environment.NewLine)} }}";
 
-        public override string ToCodeDisplay() => $"Object Literal, PropertyCount = {PropertyAssignments.Length}";
-
-        public override void WriteFullCodeDisplay(IndentedTextWriter writer)
+        public override void Emit(Emitter emitter)
         {
-            WriteCommaNewlineSeparatedBlock(writer, PropertyAssignments);
+            emitter.WriteCommaNewlineSeparatedBlock(PropertyAssignments);
         }
     }
 }
