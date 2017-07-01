@@ -76,5 +76,11 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.SuperCall(Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
                 "super(y, ... z)");
         }
+
+        [TestMethod]
+        public void Emit_new_target_expression()
+        {
+            VerifyOutput(Factory.NewTarget, "new.target");
+        }
     }
 }

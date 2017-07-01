@@ -346,6 +346,10 @@ namespace Desalt.TypeScript.Ast
      *   new . target
      */
 
+    public interface ITsNewTargetExpression : ITsExpression
+    {
+    }
+
     /* NewExpression:
      *   MemberExpression
      *   new NewExpression

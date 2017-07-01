@@ -158,6 +158,8 @@ namespace Desalt.TypeScript.Ast
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
             new TsArgument(argument, isSpreadArgument);
 
+        public static ITsNewTargetExpression NewTarget => TsNewTargetExpression.Instance;
+
         //// ===========================================================================================================
         //// Function and Class Expressions
         //// ===========================================================================================================
