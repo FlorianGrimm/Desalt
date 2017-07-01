@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsClassExpression.cs" company="Justin Rockwood">
+// <copyright file="TsArgument.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,65 +7,52 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a class declaration acting as an expression.
+    /// Represents an argument in a call expression.
     /// </summary>
-    internal class TsClassExpression : AstNode<TsVisitor>, ITsClassExpression
+    internal class TsArgument : AstNode<TsVisitor>, ITsArgument
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsClassExpression(
-            ITsIdentifier className = null,
-            ITsExpression heritage = null,
-            IEnumerable<ITsClassElement> classBody = null)
+        public TsArgument(ITsExpression argument, bool isSpreadArgument = false)
         {
-            ClassName = className;
-            Heritage = heritage;
-            ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
+            Argument = argument ?? throw new ArgumentNullException(nameof(argument));
+            IsSpreadArgument = isSpreadArgument;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ClassName { get; }
-        public ITsExpression Heritage { get; }
-        public ImmutableArray<ITsClassElement> ClassBody { get; }
+        public ITsExpression Argument { get; }
+
+        /// <summary>
+        /// Indicates whether the <see cref="Argument"/> is preceded by a spread operator '...'.
+        /// </summary>
+        public bool IsSpreadArgument { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArgument(this);
 
-        public override string CodeDisplay =>
-            $"class {ClassName.CodeDisplay}" + (Heritage != null ? $" extends {Heritage}" : "") +
-            $"{{ {ClassBody.ToElidedList()} }}";
+        public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Argument;
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("class ");
-            ClassName?.Emit(emitter);
-
-            if (Heritage != null)
+            if (IsSpreadArgument)
             {
-                if (ClassName != null)
-                {
-                    emitter.Write(" ");
-                }
-
-                emitter.Write("extends ");
-                Heritage.Emit(emitter);
+                emitter.Write("... ");
             }
 
-            emitter.WriteBlock(ClassBody);
+            Argument.Emit(emitter);
         }
     }
 }

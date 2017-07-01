@@ -15,18 +15,19 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression
+    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression, ITsSuperDotExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsMemberDotExpression(ITsExpression leftSide, string dotName)
+        private TsMemberDotExpression(ITsExpression leftSide, string dotName, bool isSuper)
         {
             Param.VerifyString(dotName, nameof(dotName));
 
             LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
             DotName = dotName;
+            IsSuper = isSuper;
         }
 
         //// ===========================================================================================================
@@ -35,12 +36,29 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public ITsExpression LeftSide { get; }
         public string DotName { get; }
+        public bool IsSuper { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
+        public static TsMemberDotExpression Create(ITsExpression leftSide, string dotName) =>
+            new TsMemberDotExpression(leftSide, dotName, isSuper: false);
+
+        public static TsMemberDotExpression CreateSuper(string dotName) =>
+            new TsMemberDotExpression(TsIdentifier.Get("super"), dotName, isSuper: true);
+
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsSuper)
+            {
+                visitor.VisitSuperDotExpression(this);
+            }
+            else
+            {
+                visitor.VisitMemberDotExpression(this);
+            }
+        }
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 

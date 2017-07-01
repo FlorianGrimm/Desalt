@@ -14,16 +14,17 @@ namespace Desalt.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression
+    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression, ITsSuperBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsMemberBracketExpression(ITsExpression leftSide, ITsExpression bracketContents)
+        private TsMemberBracketExpression(ITsExpression leftSide, ITsExpression bracketContents, bool isSuper)
         {
             LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
             BracketContents = bracketContents ?? throw new ArgumentNullException(nameof(bracketContents));
+            IsSuper = isSuper;
         }
 
         //// ===========================================================================================================
@@ -32,12 +33,29 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public ITsExpression LeftSide { get; }
         public ITsExpression BracketContents { get; }
+        public bool IsSuper { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
+        public static TsMemberBracketExpression Create(ITsExpression leftSide, ITsExpression bracketContents) =>
+            new TsMemberBracketExpression(leftSide, bracketContents, isSuper: false);
+
+        public static TsMemberBracketExpression CreateSuper(ITsExpression bracketContents) =>
+            new TsMemberBracketExpression(TsIdentifier.Get("super"), bracketContents, isSuper: true);
+
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsSuper)
+            {
+                visitor.VisitSuperBracketExpression(this);
+            }
+            else
+            {
+                visitor.VisitMemberBracketExpression(this);
+            }
+        }
 
         public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 

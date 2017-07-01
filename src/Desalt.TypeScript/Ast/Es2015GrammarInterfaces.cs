@@ -327,14 +327,30 @@ namespace Desalt.TypeScript.Ast
     /* SuperProperty:
      *   super [ Expression ]
      *   super . IdentifierName
-     *
-     * MetaProperty:
+     */
+
+    public interface ITsSuperBracketExpression : ITsExpression
+    {
+        ITsExpression BracketContents { get; }
+    }
+
+    public interface ITsSuperDotExpression : ITsExpression
+    {
+        string DotName { get; }
+    }
+
+    /* MetaProperty:
      *   NewTarget
      *
      * NewTarget:
      *   new . target
-     *
-     * NewExpression:
+     */
+
+    public interface ITsNewTargetExpression : ITsExpression
+    {
+    }
+
+    /* NewExpression:
      *   MemberExpression
      *   new NewExpression
      *
@@ -364,8 +380,28 @@ namespace Desalt.TypeScript.Ast
      *   CallExpression
      */
 
-    public interface ITsLeftHandSideExpression : IAstNode
-    { }
+    public interface ITsCallExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        ImmutableArray<ITsArgument> Arguments { get; }
+    }
+
+    public interface ITsNewCallExpression : ITsCallExpression { }
+
+    public interface ITsSuperCallExpression : ITsExpression
+    {
+        ImmutableArray<ITsArgument> Arguments { get; }
+    }
+
+    public interface ITsArgument : IAstNode
+    {
+        ITsExpression Argument { get; }
+
+        /// <summary>
+        /// Indicates whether the <see cref="Argument"/> is preceded by a spread operator '...'.
+        /// </summary>
+        bool IsSpreadArgument { get; }
+    }
 
     /* 12.4 Postfix Expressions
      * ------------------------
@@ -540,8 +576,9 @@ namespace Desalt.TypeScript.Ast
      *   ThrowStatement
      *   TryStatement
      *   DebuggerStatement
-     *
-     * Declaration:
+     */
+
+    /* Declaration:
      *   HoistableDeclaration
      *   ClassDeclaration
      *   LexicalDeclaration
@@ -893,7 +930,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsClassExpression : ITsExpression
     {
         ITsIdentifier ClassName { get; }
-        ITsLeftHandSideExpression Heritage { get; }
+        ITsExpression Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 

@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
+    <Compile Include="Ast\Expressions\TsArgument.cs" />
     <Compile Include="Ast\Expressions\TsArrayElement.cs" />
     <Compile Include="Ast\Expressions\TsArrayLiteral.cs" />
     <Compile Include="Ast\Expressions\TsAssignmentExpression.cs" />
@@ -29,6 +30,7 @@
     <Compile Include="Ast\Expressions\TsBinaryExpression.cs" />
     <Compile Include="Ast\Expressions\TsBinaryOperator.cs" />
     <Compile Include="Ast\Expressions\TsBooleanLiteral.cs" />
+    <Compile Include="Ast\Expressions\TsCallExpression.cs" />
     <Compile Include="Ast\Expressions\TsClassExpression.cs" />
     <Compile Include="Ast\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="Ast\Expressions\TsConditionalExpression.cs" />
@@ -37,6 +39,7 @@
     <Compile Include="Ast\Expressions\TsGetAccessor.cs" />
     <Compile Include="Ast\Expressions\TsMemberBracketExpression.cs" />
     <Compile Include="Ast\Expressions\TsMemberDotExpression.cs" />
+    <Compile Include="Ast\Expressions\TsNewTargetExpression.cs" />
     <Compile Include="Ast\Expressions\TsNullLiteral.cs" />
     <Compile Include="Ast\Expressions\TsNumericLiteral.cs" />
     <Compile Include="Ast\Expressions\TsObjectLiteral.cs" />

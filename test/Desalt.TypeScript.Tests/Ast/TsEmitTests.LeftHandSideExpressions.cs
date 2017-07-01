@@ -40,5 +40,47 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.MemberDot(s_x, "y"), "x.y");
         }
+
+        [TestMethod]
+        public void Emit_super_bracket_expression()
+        {
+            VerifyOutput(Factory.SuperBracket(s_z), "super[z]");
+        }
+
+        [TestMethod]
+        public void Emit_super_dot_expression()
+        {
+            VerifyOutput(Factory.SuperDot("name"), "super.name");
+        }
+
+        [TestMethod]
+        public void Emit_call_expression()
+        {
+            VerifyOutput(
+                Factory.Call(s_x, Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                "x(y, ... z)");
+        }
+
+        [TestMethod]
+        public void Emit_new_call_expression()
+        {
+            VerifyOutput(
+                Factory.NewCall(s_x, Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                "new x(y, ... z)");
+        }
+
+        [TestMethod]
+        public void Emit_super_call_expression()
+        {
+            VerifyOutput(
+                Factory.SuperCall(Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                "super(y, ... z)");
+        }
+
+        [TestMethod]
+        public void Emit_new_target_expression()
+        {
+            VerifyOutput(Factory.NewTarget, "new.target");
+        }
     }
 }

@@ -135,15 +135,30 @@ namespace Desalt.TypeScript.Ast
         //// Left-hand Side Expressions
         //// ===========================================================================================================
 
-        public static ITsMemberBracketExpression MemberBracket(
-            ITsExpression leftSide,
-            ITsExpression bracketContents)
-        {
-            return new TsMemberBracketExpression(leftSide, bracketContents);
-        }
+        public static ITsMemberBracketExpression MemberBracket(ITsExpression leftSide, ITsExpression bracketContents) =>
+            TsMemberBracketExpression.Create(leftSide, bracketContents);
 
         public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, string dotName) =>
-            new TsMemberDotExpression(leftSide, dotName);
+            TsMemberDotExpression.Create(leftSide, dotName);
+
+        public static ITsSuperBracketExpression SuperBracket(ITsExpression bracketContents) =>
+            TsMemberBracketExpression.CreateSuper(bracketContents);
+
+        public static ITsSuperDotExpression SuperDot(string dotName) => TsMemberDotExpression.CreateSuper(dotName);
+
+        public static ITsCallExpression Call(ITsExpression leftSide, params ITsArgument[] arguments) =>
+            TsCallExpression.Create(leftSide, arguments);
+
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, params ITsArgument[] arguments) =>
+            TsCallExpression.CreateNew(leftSide, arguments);
+
+        public static ITsSuperCallExpression SuperCall(params ITsArgument[] arguments) =>
+            TsCallExpression.CreateSuper(arguments);
+
+        public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
+            new TsArgument(argument, isSpreadArgument);
+
+        public static ITsNewTargetExpression NewTarget => TsNewTargetExpression.Instance;
 
         //// ===========================================================================================================
         //// Function and Class Expressions
@@ -159,7 +174,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsClassExpression ClassExpression(
             ITsIdentifier className = null,
-            ITsLeftHandSideExpression heritage = null,
+            ITsExpression heritage = null,
             params ITsClassElement[] classBody)
         {
             return new TsClassExpression(className, heritage, classBody);
