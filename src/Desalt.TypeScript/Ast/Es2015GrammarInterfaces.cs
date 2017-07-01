@@ -578,7 +578,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : IAstNode
+    public interface ITsStatement : ITsStatementListItem
     {
     }
 
@@ -594,8 +594,9 @@ namespace Desalt.TypeScript.Ast
      * BreakableStatement:
      *   IterationStatement
      *   SwitchStatement
-     *
-     * 13.2 Block
+     */
+
+    /* 13.2 Block
      * ----------
      * BlockStatement:
      *   Block
@@ -611,6 +612,11 @@ namespace Desalt.TypeScript.Ast
      *   Statement
      *   Declaration
      */
+
+    public interface ITsBlockStatement : ITsStatement
+    {
+        ImmutableArray<ITsStatementListItem> Statements { get; }
+    }
 
     public interface ITsStatementListItem : IAstNode
     {

@@ -10,6 +10,11 @@ namespace Desalt.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
+        /// Visits a block of statements.
+        /// </summary>
+        public virtual void VisitBlockStatement(ITsBlockStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

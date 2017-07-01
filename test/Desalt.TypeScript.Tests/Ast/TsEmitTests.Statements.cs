@@ -13,6 +13,14 @@ namespace Desalt.TypeScript.Tests.Ast
     public partial class TsEmitTests
     {
         [TestMethod]
+        public void Emit_block_statements()
+        {
+            VerifyOutput(
+                TsAstFactory.Block(TsAstFactory.Debugger, TsAstFactory.Debugger),
+                "{\n  debugger;\n  debugger;\n}");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(TsAstFactory.Debugger, "debugger;\n");

@@ -11,6 +11,9 @@ namespace Desalt.TypeScript.Ast
 
     public static partial class TsAstFactory
     {
+        public static ITsBlockStatement Block(params ITsStatementListItem[] statements) =>
+            new TsBlockStatement(statements);
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }
