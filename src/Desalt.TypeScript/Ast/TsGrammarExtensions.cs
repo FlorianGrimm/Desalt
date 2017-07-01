@@ -125,7 +125,12 @@ namespace Desalt.TypeScript.Ast
             return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
 
-        public static void WriteTypeAnnotation(this ITsType type, Emitter emitter)
+        /// <summary>
+        /// Writes out a ": type" type annotation if the type is not null.
+        /// </summary>
+        /// <param name="type">The type annotation to write.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitTypeAnnotation(this ITsType type, Emitter emitter)
         {
             if (type != null)
             {
