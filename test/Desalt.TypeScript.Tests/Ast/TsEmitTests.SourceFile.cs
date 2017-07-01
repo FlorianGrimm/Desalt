@@ -9,7 +9,7 @@ namespace Desalt.TypeScript.Tests.Ast
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public partial class TsEmitterTests
+    public partial class TsEmitTests
     {
         [TestMethod]
         public void Emit_an_ImplementationScript()

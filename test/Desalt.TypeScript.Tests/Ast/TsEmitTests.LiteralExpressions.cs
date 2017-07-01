@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsEmitterTests.LiteralExpressions.cs" company="Justin Rockwood">
+// <copyright file="TsEmitTests.LiteralExpressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,7 +13,7 @@ namespace Desalt.TypeScript.Tests.Ast
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
-    public partial class TsEmitterTests
+    public partial class TsEmitTests
     {
         //// ===========================================================================================================
         //// Literal Expressions
