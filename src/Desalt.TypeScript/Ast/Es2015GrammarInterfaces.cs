@@ -364,9 +364,6 @@ namespace Desalt.TypeScript.Ast
      *   CallExpression
      */
 
-    public interface ITsLeftHandSideExpression : IAstNode
-    { }
-
     /* 12.4 Postfix Expressions
      * ------------------------
      * PostfixExpression:
@@ -893,7 +890,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsClassExpression : ITsExpression
     {
         ITsIdentifier ClassName { get; }
-        ITsLeftHandSideExpression Heritage { get; }
+        ITsExpression Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 

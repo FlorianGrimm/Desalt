@@ -159,7 +159,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsClassExpression ClassExpression(
             ITsIdentifier className = null,
-            ITsLeftHandSideExpression heritage = null,
+            ITsExpression heritage = null,
             params ITsClassElement[] classBody)
         {
             return new TsClassExpression(className, heritage, classBody);

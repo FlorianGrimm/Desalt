@@ -23,7 +23,7 @@ namespace Desalt.TypeScript.Ast.Expressions
 
         public TsClassExpression(
             ITsIdentifier className = null,
-            ITsLeftHandSideExpression heritage = null,
+            ITsExpression heritage = null,
             IEnumerable<ITsClassElement> classBody = null)
         {
             ClassName = className;
@@ -36,7 +36,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// ===========================================================================================================
 
         public ITsIdentifier ClassName { get; }
-        public ITsLeftHandSideExpression Heritage { get; }
+        public ITsExpression Heritage { get; }
         public ImmutableArray<ITsClassElement> ClassBody { get; }
 
         //// ===========================================================================================================
