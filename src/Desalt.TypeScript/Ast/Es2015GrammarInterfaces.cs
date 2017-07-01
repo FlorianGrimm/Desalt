@@ -344,8 +344,9 @@ namespace Desalt.TypeScript.Ast
      *
      * NewTarget:
      *   new . target
-     *
-     * NewExpression:
+     */
+
+    /* NewExpression:
      *   MemberExpression
      *   new NewExpression
      *
@@ -374,6 +375,29 @@ namespace Desalt.TypeScript.Ast
      *   NewExpression
      *   CallExpression
      */
+
+    public interface ITsCallExpression : ITsExpression
+    {
+        ITsExpression LeftSide { get; }
+        ImmutableArray<ITsArgument> Arguments { get; }
+    }
+
+    public interface ITsNewCallExpression : ITsCallExpression { }
+
+    public interface ITsSuperCallExpression : ITsExpression
+    {
+        ImmutableArray<ITsArgument> Arguments { get; }
+    }
+
+    public interface ITsArgument : IAstNode
+    {
+        ITsExpression Argument { get; }
+
+        /// <summary>
+        /// Indicates whether the <see cref="Argument"/> is preceded by a spread operator '...'.
+        /// </summary>
+        bool IsSpreadArgument { get; }
+    }
 
     /* 12.4 Postfix Expressions
      * ------------------------
@@ -548,8 +572,9 @@ namespace Desalt.TypeScript.Ast
      *   ThrowStatement
      *   TryStatement
      *   DebuggerStatement
-     *
-     * Declaration:
+     */
+
+    /* Declaration:
      *   HoistableDeclaration
      *   ClassDeclaration
      *   LexicalDeclaration

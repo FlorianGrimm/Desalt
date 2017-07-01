@@ -146,6 +146,18 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsSuperDotExpression SuperDot(string dotName) => TsMemberDotExpression.CreateSuper(dotName);
 
+        public static ITsCallExpression Call(ITsExpression leftSide, params ITsArgument[] arguments) =>
+            TsCallExpression.Create(leftSide, arguments);
+
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, params ITsArgument[] arguments) =>
+            TsCallExpression.CreateNew(leftSide, arguments);
+
+        public static ITsSuperCallExpression SuperCall(params ITsArgument[] arguments) =>
+            TsCallExpression.CreateSuper(arguments);
+
+        public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
+            new TsArgument(argument, isSpreadArgument);
+
         //// ===========================================================================================================
         //// Function and Class Expressions
         //// ===========================================================================================================

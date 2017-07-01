@@ -144,5 +144,25 @@ namespace Desalt.TypeScript.Ast
         /// Visits a member expression of the form 'super.name'.
         /// </summary>
         public virtual void VisitSuperDotExpression(ITsSuperDotExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits a call expression of the form 'expression(arguments)'.
+        /// </summary>
+        public virtual void VisitCallExpression(ITsCallExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits a new call expression of the form 'new expression(arguments)'.
+        /// </summary>
+        public virtual void VisitNewCallExpression(ITsNewCallExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits a super call expression of the form 'super(arguments)'.
+        /// </summary>
+        public virtual void VisitSuperCallExpression(ITsSuperCallExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits an argument in a call expression.
+        /// </summary>
+        public virtual void VisitArgument(ITsArgument node) => Visit(node);
     }
 }
