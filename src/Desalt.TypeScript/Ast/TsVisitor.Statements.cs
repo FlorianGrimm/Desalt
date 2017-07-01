@@ -20,6 +20,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitEmptyStatement(ITsEmptyStatement node) => Visit(node);
 
         /// <summary>
+        /// Visits a simple variable declaration of the form 'x = y'.
+        /// </summary>
+        public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

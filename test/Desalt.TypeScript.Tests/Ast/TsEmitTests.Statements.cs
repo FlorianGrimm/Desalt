@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
+    using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
@@ -22,6 +23,19 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_empty_statement()
         {
             VerifyOutput(Factory.EmptyStatement, ";\n");
+        }
+
+        [TestMethod]
+        public void Emit_simple_variable_declarations()
+        {
+            VerifyOutput(Factory.SimpleVariableDeclaration(s_x), "x");
+            VerifyOutput(Factory.SimpleVariableDeclaration(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(
+                Factory.SimpleVariableDeclaration(
+                    s_x,
+                    Factory.String,
+                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                "x: string = 'hello'");
         }
 
         [TestMethod]

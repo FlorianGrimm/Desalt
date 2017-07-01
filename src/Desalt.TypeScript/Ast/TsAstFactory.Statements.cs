@@ -16,6 +16,14 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
 
+        public static ITsSimpleVariableDeclaration SimpleVariableDeclaration(
+            ITsIdentifier variableName,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsSimpleVariableDeclaration(variableName, variableType, initializer);
+        }
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }

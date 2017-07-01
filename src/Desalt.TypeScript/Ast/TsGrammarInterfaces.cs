@@ -491,8 +491,9 @@ namespace Desalt.TypeScript.Ast
      *   InterfaceDeclaration
      *   TypeAliasDeclaration
      *   EnumDeclaration
-     *
-     * VariableDeclaration: ( Modified )
+     */
+
+    /* VariableDeclaration: ( Modified )
      *   SimpleVariableDeclaration
      *   DestructuringVariableDeclaration
      *
@@ -501,8 +502,18 @@ namespace Desalt.TypeScript.Ast
      *
      * DestructuringVariableDeclaration:
      *   BindingPattern TypeAnnotationOpt Initializer
-     *
-     * LexicalBinding: ( Modified )
+     */
+
+    public interface ITsVariableDeclaration : IAstNode { }
+
+    public interface ITsSimpleVariableDeclaration : ITsVariableDeclaration
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    /* LexicalBinding: ( Modified )
      *   SimpleLexicalBinding
      *   DestructuringLexicalBinding
      *
