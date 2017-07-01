@@ -117,7 +117,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Writes out a ": type" type annotation if the type is not null.
+        /// Returns a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
         public static string ToTypeAnnotationCodeDisplay(this ITsType type)
@@ -136,6 +136,29 @@ namespace Desalt.TypeScript.Ast
             {
                 emitter.Write(": ");
                 type.Emit(emitter);
+            }
+        }
+
+        /// <summary>
+        /// Returns a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        public static string ToAssignmentCodeDisplay(this ITsExpression expression)
+        {
+            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
+        }
+
+        /// <summary>
+        /// Writes out a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitAssignment(this ITsExpression expression, Emitter emitter)
+        {
+            if (expression != null)
+            {
+                emitter.Write(" = ");
+                expression.Emit(emitter);
             }
         }
     }

@@ -50,12 +50,7 @@ namespace Desalt.TypeScript.Ast.Statements
             {
                 string display = VariableName.CodeDisplay;
                 display += VariableType?.ToTypeAnnotationCodeDisplay();
-
-                if (Initializer != null)
-                {
-                    display += " = " + Initializer.CodeDisplay;
-                }
-
+                display += Initializer.ToAssignmentCodeDisplay();
                 return display;
             }
         }
@@ -64,12 +59,7 @@ namespace Desalt.TypeScript.Ast.Statements
         {
             VariableName.Emit(emitter);
             VariableType?.EmitTypeAnnotation(emitter);
-
-            if (Initializer != null)
-            {
-                emitter.Write(" = ");
-                Initializer?.Emit(emitter);
-            }
+            Initializer.EmitAssignment(emitter);
         }
     }
 }
