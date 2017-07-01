@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.IterationStatements.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.IterationStatements.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,7 +13,7 @@ namespace Desalt.JavaScript.Tests.Ast
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         [TestMethod]
         public void Emit_do_while_statement()

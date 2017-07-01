@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -17,7 +17,7 @@ namespace Desalt.JavaScript.Tests.Ast
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
     [TestClass]
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         private static readonly Es5Identifier s_x = Factory.Identifier("x");
         private static readonly Es5Identifier s_y = Factory.Identifier("y");

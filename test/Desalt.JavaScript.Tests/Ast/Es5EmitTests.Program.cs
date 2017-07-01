@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5EmitterTests.Program.cs" company="Justin Rockwood">
+// <copyright file="Es5EmitTests.Program.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Desalt.JavaScript.Tests.Ast
     using BinaryOp = Desalt.JavaScript.Ast.Expressions.Es5BinaryOperator;
     using Factory = Desalt.JavaScript.Ast.Es5AstFactory;
 
-    public partial class Es5EmitterTests
+    public partial class Es5EmitTests
     {
         [TestMethod]
         public void Emit_full_program()

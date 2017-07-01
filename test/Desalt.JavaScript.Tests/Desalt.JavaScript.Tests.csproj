@@ -38,14 +38,14 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\Es5EmitterTests.AssignmentExpressions.cs" />
-    <Compile Include="Ast\Es5EmitterTests.cs" />
-    <Compile Include="Ast\Es5EmitterTests.IterationStatements.cs" />
-    <Compile Include="Ast\Es5EmitterTests.LeftHandSideExpressions.cs" />
-    <Compile Include="Ast\Es5EmitterTests.PrimaryExpressions.cs" />
-    <Compile Include="Ast\Es5EmitterTests.Program.cs" />
-    <Compile Include="Ast\Es5EmitterTests.Statements.cs" />
-    <Compile Include="Ast\Es5EmitterTests.UnaryAndBinaryExpressions.cs" />
+    <Compile Include="Ast\Es5EmitTests.AssignmentExpressions.cs" />
+    <Compile Include="Ast\Es5EmitTests.cs" />
+    <Compile Include="Ast\Es5EmitTests.IterationStatements.cs" />
+    <Compile Include="Ast\Es5EmitTests.LeftHandSideExpressions.cs" />
+    <Compile Include="Ast\Es5EmitTests.PrimaryExpressions.cs" />
+    <Compile Include="Ast\Es5EmitTests.Program.cs" />
+    <Compile Include="Ast\Es5EmitTests.Statements.cs" />
+    <Compile Include="Ast\Es5EmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
