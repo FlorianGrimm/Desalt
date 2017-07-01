@@ -702,8 +702,11 @@ namespace Desalt.TypeScript.Ast
      * --------------------
      * EmptyStatement:
      *   ;
-     *
-     * 13.5 Expression Statement
+     */
+
+    public interface ITsEmptyStatement : ITsStatement { }
+
+    /* 13.5 Expression Statement
      * -------------------------
      * ExpressionStatement:
      *   [lookahead not { {, function, class, let [ }] Expression ;

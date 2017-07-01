@@ -14,6 +14,8 @@ namespace Desalt.TypeScript.Ast
         public static ITsBlockStatement Block(params ITsStatementListItem[] statements) =>
             new TsBlockStatement(statements);
 
+        public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }

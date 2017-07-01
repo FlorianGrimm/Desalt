@@ -15,6 +15,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitBlockStatement(ITsBlockStatement node) => Visit(node);
 
         /// <summary>
+        /// Visits an empty statement.
+        /// </summary>
+        public virtual void VisitEmptyStatement(ITsEmptyStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

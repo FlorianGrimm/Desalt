@@ -55,6 +55,7 @@
     <Compile Include="Ast\ImplementationSourceFile.cs" />
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
+    <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
     <Compile Include="Ast\TsAstFactory.Statements.cs" />

@@ -7,23 +7,27 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
-    using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
         [TestMethod]
         public void Emit_block_statements()
         {
-            VerifyOutput(
-                TsAstFactory.Block(TsAstFactory.Debugger, TsAstFactory.Debugger),
-                "{\n  debugger;\n  debugger;\n}");
+            VerifyOutput(Factory.Block(Factory.Debugger, Factory.Debugger), "{\n  debugger;\n  debugger;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_empty_statement()
+        {
+            VerifyOutput(Factory.EmptyStatement, ";\n");
         }
 
         [TestMethod]
         public void Emit_debugger_statement()
         {
-            VerifyOutput(TsAstFactory.Debugger, "debugger;\n");
+            VerifyOutput(Factory.Debugger, "debugger;\n");
         }
     }
 }
