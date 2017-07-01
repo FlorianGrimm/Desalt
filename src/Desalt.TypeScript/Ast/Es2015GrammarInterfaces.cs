@@ -327,8 +327,19 @@ namespace Desalt.TypeScript.Ast
     /* SuperProperty:
      *   super [ Expression ]
      *   super . IdentifierName
-     *
-     * MetaProperty:
+     */
+
+    public interface ITsSuperBracketExpression : ITsExpression
+    {
+        ITsExpression BracketContents { get; }
+    }
+
+    public interface ITsSuperDotExpression : ITsExpression
+    {
+        string DotName { get; }
+    }
+
+    /* MetaProperty:
      *   NewTarget
      *
      * NewTarget:

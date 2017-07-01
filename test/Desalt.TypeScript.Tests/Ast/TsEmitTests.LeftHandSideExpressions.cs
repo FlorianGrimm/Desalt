@@ -40,5 +40,17 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.MemberDot(s_x, "y"), "x.y");
         }
+
+        [TestMethod]
+        public void Emit_super_bracket_expression()
+        {
+            VerifyOutput(Factory.SuperBracket(s_z), "super[z]");
+        }
+
+        [TestMethod]
+        public void Emit_super_dot_expression()
+        {
+            VerifyOutput(Factory.SuperDot("name"), "super.name");
+        }
     }
 }

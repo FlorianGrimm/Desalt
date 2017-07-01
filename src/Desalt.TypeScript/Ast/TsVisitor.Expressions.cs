@@ -131,8 +131,18 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitMemberBracketExpression(ITsMemberBracketExpression node) => Visit(node);
 
         /// <summary>
+        /// Visits a member expression of the form 'super[expression]'.
+        /// </summary>
+        public virtual void VisitSuperBracketExpression(ITsSuperBracketExpression node) => Visit(node);
+
+        /// <summary>
         /// Visits a member expression of the form 'expression.name'.
         /// </summary>
         public virtual void VisitMemberDotExpression(ITsMemberDotExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member expression of the form 'super.name'.
+        /// </summary>
+        public virtual void VisitSuperDotExpression(ITsSuperDotExpression node) => Visit(node);
     }
 }
