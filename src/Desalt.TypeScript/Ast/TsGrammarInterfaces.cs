@@ -338,8 +338,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern
      */
 
-    public interface ITsBindingIdentifierOrPattern : IAstNode
-    { }
+    public interface ITsBindingIdentifierOrPattern : IAstNode { }
 
     /* OptionalParameterList:
      *   OptionalParameter
@@ -351,8 +350,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier ? : StringLiteral
      */
 
-    public interface ITsOptionalParameter : IAstNode
-    { }
+    public interface ITsOptionalParameter : IAstNode { }
 
     public interface ITsBoundOptionalParameter : ITsOptionalParameter
     {

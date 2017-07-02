@@ -396,5 +396,38 @@ namespace Desalt.TypeScript.Tests.Ast
                 "for (let x: number = 0; x < 10; x++)\n  debugger;\n");
         }
 
+        [TestMethod]
+        public void Emit_basic_for_in_loop()
+        {
+            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger), "for (x in y)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_for_in_loop_with_declarations()
+        {
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Const,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (const x in [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Let,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (let x in [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Var,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (var x in [1, 2])\n  debugger;\n");
+        }
     }
 }

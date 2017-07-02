@@ -249,5 +249,27 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsForStatement(initializer, condition, incrementor, statement);
         }
+
+        /// <summary>
+        /// Creates a for-in loop of the form, 'for (x in expression) statement'.
+        /// </summary>
+        public static ITsForInStatement ForIn(
+            ITsExpression initializer,
+            ITsExpression rightSide,
+            ITsStatement statement)
+        {
+            return new TsForInStatement(initializer, rightSide, statement);
+        }
+
+        /// <summary>
+        /// Creates a for-in loop of the form, 'for (const x in expression) statement'.
+        /// </summary>
+        public static ITsForInStatement ForIn(
+            ForDeclarationKind declarationKind,
+            ITsBindingIdentifierOrPattern declaration,
+            ITsExpression rightSide, ITsStatement statement)
+        {
+            return new TsForInStatement(declarationKind, declaration, rightSide, statement);
+        }
     }
 }

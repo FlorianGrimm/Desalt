@@ -816,17 +816,32 @@ namespace Desalt.TypeScript.Ast
     /*   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
      *   for ( var ForBinding in Expression ) Statement
      *   for ( ForDeclaration in Expression ) Statement
-     *   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
+     */
+
+    public interface ITsForInStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ForDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern Declaration { get; }
+
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /*   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
      *   for ( var ForBinding of AssignmentExpression ) Statement
      *   for ( ForDeclaration of AssignmentExpression ) Statement
-     *
-     * ForDeclaration:
+     */
+
+    /* ForDeclaration:
      *   LetOrConst ForBinding
      *
      * ForBinding:
      *   BindingIdentifier
      *   BindingPattern
      */
+
+    public enum ForDeclarationKind { Var, Let, Const }
 
     /* 13.8 The continue Statement
      * ---------------------------
