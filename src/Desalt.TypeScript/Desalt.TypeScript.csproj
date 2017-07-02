@@ -57,6 +57,7 @@
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
     <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
     <Compile Include="Ast\Statements\TsSimpleVariableDeclaration.cs" />
+    <Compile Include="Ast\Statements\TsSingleNameBinding.cs" />
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
     <Compile Include="Ast\TsAstFactory.Statements.cs" />

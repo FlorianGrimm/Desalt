@@ -659,8 +659,11 @@ namespace Desalt.TypeScript.Ast
      * BindingPattern:
      *   ObjectBindingPattern
      *   ArrayBindingPattern
-     *
-     * ObjectBindingPattern:
+     */
+
+    public interface ITsBindingPattern : ITsBindingIdentifierOrPattern { }
+
+    /* ObjectBindingPattern:
      *   { }
      *   { BindingPropertyList }
      *   { BindingPropertyList , }
@@ -696,7 +699,20 @@ namespace Desalt.TypeScript.Ast
      *   ... BindingIdentifier
      */
 
-    public interface ITsBindingPattern : ITsBindingIdentifierOrPattern { }
+    public interface ITsObjectBindingPattern : ITsBindingPattern
+    {
+        ImmutableArray<ITsBindingProperty> BindingProperties { get; }
+    }
+
+    public interface ITsBindingProperty : IAstNode
+    {
+    }
+
+    public interface ITsSingleNameBinding : IAstNode
+    {
+        ITsIdentifier Name { get; }
+        ITsExpression Initializer { get; }
+    }
 
     /* 13.4 Empty Statement
      * --------------------

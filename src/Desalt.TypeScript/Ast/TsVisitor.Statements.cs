@@ -25,6 +25,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
 
         /// <summary>
+        /// Visits a single name binding pattern used in object and array bindings, of the form 'name = expression'.
+        /// </summary>
+        public virtual void VisitSingleNameBinding(ITsSingleNameBinding node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

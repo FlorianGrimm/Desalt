@@ -39,6 +39,12 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_single_name_binding()
+        {
+            VerifyOutput(Factory.SingleNameBinding(s_x, s_y), "x = y");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");

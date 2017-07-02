@@ -24,6 +24,9 @@ namespace Desalt.TypeScript.Ast
             return new TsSimpleVariableDeclaration(variableName, variableType, initializer);
         }
 
+        public static ITsSingleNameBinding SingleNameBinding(ITsIdentifier name, ITsExpression initializer) =>
+            new TsSingleNameBinding(name, initializer);
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }
