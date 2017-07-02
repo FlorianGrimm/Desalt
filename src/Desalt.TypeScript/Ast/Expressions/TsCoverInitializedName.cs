@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsAssignmentExpression initializer)
+        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
         {
             Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
             Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
@@ -31,7 +31,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// ===========================================================================================================
 
         public ITsIdentifier Identifier { get; }
-        public ITsAssignmentExpression Initializer { get; }
+        public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods

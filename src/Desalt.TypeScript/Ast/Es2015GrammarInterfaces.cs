@@ -227,13 +227,13 @@ namespace Desalt.TypeScript.Ast
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {
         ITsIdentifier Identifier { get; }
-        ITsAssignmentExpression Initializer { get; }
+        ITsExpression Initializer { get; }
     }
 
     public interface ITsPropertyAssignment : ITsPropertyDefinition
     {
         ITsPropertyName PropertyName { get; }
-        ITsAssignmentExpression Initializer { get; }
+        ITsExpression Initializer { get; }
     }
 
     public interface ITsPropertyName : IAstNode
@@ -243,7 +243,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsComputedPropertyName : ITsPropertyName
     {
-        ITsAssignmentExpression Expression { get; }
+        ITsExpression Expression { get; }
     }
 
     /* 12.2.9 Template Literals (and 11.8.6 Template Literal Lexical Components)

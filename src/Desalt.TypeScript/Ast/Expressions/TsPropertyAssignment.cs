@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsPropertyAssignment(ITsPropertyName propertyName, ITsAssignmentExpression initializer)
+        public TsPropertyAssignment(ITsPropertyName propertyName, ITsExpression initializer)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
             Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
@@ -31,7 +31,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// ===========================================================================================================
 
         public ITsPropertyName PropertyName { get; }
-        public ITsAssignmentExpression Initializer { get; }
+        public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods

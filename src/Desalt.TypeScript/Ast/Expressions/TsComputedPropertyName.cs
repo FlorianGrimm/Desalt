@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsComputedPropertyName(ITsAssignmentExpression expression)
+        public TsComputedPropertyName(ITsExpression expression)
         {
             Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
@@ -29,7 +29,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsAssignmentExpression Expression { get; }
+        public ITsExpression Expression { get; }
 
         //// ===========================================================================================================
         //// Methods
