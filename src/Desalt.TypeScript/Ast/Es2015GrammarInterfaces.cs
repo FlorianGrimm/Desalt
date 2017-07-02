@@ -761,8 +761,16 @@ namespace Desalt.TypeScript.Ast
      * IfStatement:
      *   if ( Expression ) Statement else Statement
      *   if ( Expression ) Statement
-     *
-     * 13.7 Iteration Statements
+     */
+
+    public interface ITsIfStatement : ITsStatement
+    {
+        ITsExpression IfCondition { get; }
+        ITsStatement IfStatement { get; }
+        ITsStatement ElseStatement { get; }
+    }
+
+    /* 13.7 Iteration Statements
      * -------------------------
      * IterationStatement:
      *   do Statement while ( Expression ) ;

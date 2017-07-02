@@ -30,6 +30,12 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates a new statement from the expression.
+        /// </summary>
+        public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
+            new TsExpressionStatement(expression);
+
+        /// <summary>
         /// Converts a unary operator to its code representation.
         /// </summary>
         public static string ToCodeDisplay(this TsUnaryOperator unaryOperator)
@@ -164,9 +170,26 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Creates a new statement from the expression.
+        /// Writes a statement on a new line unless the statement is a block, in which case the block
+        /// will start on the same line.
         /// </summary>
-        public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
-            new TsExpressionStatement(expression);
+        /// <param name="statement">The statement to emit.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        /// <param name="prefixForIndentedStatement">
+        /// If supplied, the prefix is written before the statement when it's a not a block statement.
+        /// </param>
+        /// <param name="prefixForBlock">
+        /// If supplied, the prefix is written before the statement when it's a block statement.
+        /// </param>
+        public static void EmitIndentedOrInBlock(
+            this ITsStatement statement,
+            Emitter emitter,
+            string prefixForIndentedStatement = ")",
+            string prefixForBlock = ") ")
+        {
+            bool isBlockStatement = statement is ITsBlockStatement;
+            emitter.WriteStatementIndentedOrInBlock(
+                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
+        }
     }
 }

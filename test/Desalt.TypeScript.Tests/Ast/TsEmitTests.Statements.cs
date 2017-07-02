@@ -150,6 +150,56 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_if_statement_with_blocks()
+        {
+            VerifyOutput(
+                Factory.IfStatement(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.StrictEquals, s_y),
+                    Factory.Block(
+                        Factory.AssignmentExpression(
+                                s_z, TsAssignmentOperator.SimpleAssign, Factory.TrueLiteral)
+                            .ToStatement())),
+                "if (x === y) {\n  z = true;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_if_statement_without_blocks()
+        {
+            VerifyOutput(
+                Factory.IfStatement(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.StrictEquals, s_y),
+                    Factory.AssignmentExpression(
+                            s_z, TsAssignmentOperator.SimpleAssign, Factory.TrueLiteral)
+                        .ToStatement()),
+                "if (x === y)\n  z = true;\n");
+        }
+
+        [TestMethod]
+        public void Emit_if_else_statement_with_blocks()
+        {
+            VerifyOutput(
+                Factory.IfStatement(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.StrictNotEquals, s_y),
+                    Factory.Block(
+                        Factory.AssignmentExpression(
+                            s_z, TsAssignmentOperator.SimpleAssign, Factory.FalseLiteral).ToStatement()),
+                    Factory.Block(Factory.UnaryExpression(s_p, TsUnaryOperator.PostfixIncrement).ToStatement())),
+                "if (x !== y) {\n  z = false;\n} else {\n  p++;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_if_else_statement_without_blocks()
+        {
+            VerifyOutput(
+                Factory.IfStatement(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.StrictNotEquals, s_y),
+                    Factory.AssignmentExpression(
+                        s_z, TsAssignmentOperator.SimpleAssign, Factory.FalseLiteral).ToStatement(),
+                    Factory.UnaryExpression(s_p, TsUnaryOperator.PostfixIncrement).ToStatement()),
+                "if (x !== y)\n  z = false;\nelse\n  p++;\n");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");

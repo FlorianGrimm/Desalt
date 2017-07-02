@@ -61,6 +61,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitExpressionStatement(ITsExpressionStatement node) => Visit(node);
 
         /// <summary>
+        /// Visits an 'if' statement of the form 'if (expression) statement else statement'.
+        /// </summary>
+        public virtual void VisitIfStatement(ITsIfStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

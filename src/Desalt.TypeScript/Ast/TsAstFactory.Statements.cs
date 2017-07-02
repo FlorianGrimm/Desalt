@@ -116,6 +116,17 @@ namespace Desalt.TypeScript.Ast
         public static ITsExpressionStatement ExpressionStatement(ITsExpression expression) =>
             new TsExpressionStatement(expression);
 
+        /// <summary>
+        /// Creates an 'if' statement of the form 'if (expression) statement else statement'.
+        /// </summary>
+        public static ITsIfStatement IfStatement(
+            ITsExpression ifCondition,
+            ITsStatement ifStatement,
+            ITsStatement elseStatement = null)
+        {
+            return new TsIfStatement(ifCondition, ifStatement, elseStatement);
+        }
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }
