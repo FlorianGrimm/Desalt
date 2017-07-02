@@ -27,6 +27,11 @@ namespace Desalt.TypeScript.Ast.Expressions
         /// </summary>
         public static readonly long MaxSafeInteger = (long)(Math.Pow(2, 53) - 1);
 
+        /// <summary>
+        /// Represents the number zero.
+        /// </summary>
+        public static readonly TsNumericLiteral Zero = new TsNumericLiteral(TsNumericLiteralKind.Decimal, 0);
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
