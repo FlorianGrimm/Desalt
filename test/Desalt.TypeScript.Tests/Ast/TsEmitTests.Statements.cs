@@ -46,9 +46,39 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_object_binding_pattern_used_in_basic_assignment()
+        {
+            VerifyOutput(
+                Factory.ObjectBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                "{x, y}");
+        }
+
+        [TestMethod]
+        public void Emit_object_binding_pattern_with_default_values()
+        {
+            VerifyOutput(
+                Factory.ObjectBindingPattern(
+                    Factory.SingleNameBinding(s_x, Factory.NullLiteral),
+                    Factory.SingleNameBinding(s_y, Factory.DecimalLiteral(10))),
+                "{x = null, y = 10}");
+        }
+
+        [TestMethod]
         public void Emit_a_recursive_pattern_binding()
         {
-            Assert.Inconclusive("Finish this test when an object binding pattern is implemented");
+            VerifyOutput(
+                Factory.PatternBinding(
+                    Factory.ObjectBindingPattern(
+                        Factory.SingleNameBinding(
+                            Factory.Identifier("size"), Factory.StringLiteral("big", StringLiteralQuoteKind.SingleQuote)),
+                        Factory.SingleNameBinding(
+                            Factory.Identifier("cords"),
+                            Factory.ObjectLiteral(
+                                Factory.PropertyAssignment(s_x, Factory.Zero),
+                                Factory.PropertyAssignment(s_y, Factory.Zero))),
+                        Factory.SingleNameBinding(Factory.Identifier("radius"), Factory.DecimalLiteral(25))),
+                    Factory.EmptyObjectLiteral),
+                "{size = 'big', cords = {\n  x: 0,\n  y: 0\n}, radius = 25} = {}");
         }
 
         [TestMethod]

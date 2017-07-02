@@ -56,6 +56,7 @@
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
     <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
+    <Compile Include="Ast\Statements\TsObjectBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsPatternBinding.cs" />
     <Compile Include="Ast\Statements\TsSimpleVariableDeclaration.cs" />
     <Compile Include="Ast\Statements\TsSingleNameBinding.cs" />

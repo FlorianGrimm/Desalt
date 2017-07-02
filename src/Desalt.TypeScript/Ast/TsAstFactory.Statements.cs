@@ -25,6 +25,12 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
+        /// </summary>
+        public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties) =>
+            new TsObjectBindingPattern(properties);
+
+        /// <summary>
         /// Creates a single name binding within an object or array pattern binding, of the form
         /// 'name = defaultValue'.
         /// </summary>

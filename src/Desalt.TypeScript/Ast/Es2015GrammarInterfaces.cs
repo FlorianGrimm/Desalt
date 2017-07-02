@@ -701,7 +701,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsObjectBindingPattern : ITsBindingPattern
     {
-        ImmutableArray<ITsBindingProperty> BindingProperties { get; }
+        ImmutableArray<ITsBindingProperty> Properties { get; }
     }
 
     public interface ITsBindingProperty : IAstNode { }
