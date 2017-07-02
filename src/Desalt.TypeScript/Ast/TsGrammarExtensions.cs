@@ -10,6 +10,7 @@ namespace Desalt.TypeScript.Ast
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Statements;
     using Desalt.TypeScript.Ast.Types;
@@ -34,6 +35,18 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
             new TsExpressionStatement(expression);
+
+        /// <summary>
+        /// Wraps the statement in a block statement.
+        /// </summary>
+        public static ITsBlockStatement ToBlock(this ITsStatement statement) =>
+            new TsBlockStatement(statement.ToSafeArray());
+
+        /// <summary>
+        /// Converts the expression to a statement and wraps it in a block statement.
+        /// </summary>
+        public static ITsBlockStatement ToBlock(this ITsExpression expression) =>
+            new TsBlockStatement(expression.ToStatement().ToSafeArray());
 
         /// <summary>
         /// Converts a unary operator to its code representation.

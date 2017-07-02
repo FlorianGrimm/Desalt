@@ -847,8 +847,9 @@ namespace Desalt.TypeScript.Ast
      * -------------------------
      * ThrowStatement:
      *   throw [no LineTerminator here] Expression ;
-     *
-     * 12.14 The try Statement
+     */
+
+    /* 12.14 The try Statement
      * -----------------------
      * TryStatement:
      *   try Block Catch
@@ -865,6 +866,14 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier
      *   BindingPattern
      */
+
+    public interface ITsTryStatement : ITsStatement
+    {
+        ITsBlockStatement TryBlock { get; }
+        ITsBindingIdentifierOrPattern CatchParameter { get; }
+        ITsBlockStatement CatchBlock { get; }
+        ITsBlockStatement FinallyBlock { get; }
+    }
 
     /* 13.16 The debugger Statement
      * ----------------------------

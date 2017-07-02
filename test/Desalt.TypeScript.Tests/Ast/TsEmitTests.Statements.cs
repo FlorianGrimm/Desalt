@@ -200,6 +200,52 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_try_only_statement()
+        {
+            VerifyOutput(
+                Factory.Try(Factory.AssignmentExpression(s_x, TsAssignmentOperator.AddAssign, s_y).ToBlock()),
+                "try {\n  x += y;\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_try_catch_statement()
+        {
+            VerifyOutput(
+                Factory.TryCatch(
+                    Factory.AssignmentExpression(
+                        s_x,
+                        TsAssignmentOperator.SimpleAssign,
+                        Factory.NewCall(Factory.Identifier("Widget"))).ToBlock(),
+                    Factory.Identifier("err"),
+                    Factory.Call(Factory.QualifiedName("console.log"), Factory.Argument(Factory.Identifier("err")))
+                        .ToBlock()),
+                "try {\n  x = new Widget();\n} catch (err) {\n  console.log(err);\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_try_finally_statement()
+        {
+            VerifyOutput(
+                Factory.TryFinally(
+                    Factory.Debugger.ToBlock(),
+                    Factory.Call(s_x).ToBlock()),
+                "try {\n  debugger;\n} finally {\n  x();\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_try_catch_finally_statement()
+        {
+            VerifyOutput(
+                Factory.TryCatchFinally(
+                    Factory.Debugger.ToBlock(),
+                    Factory.Identifier("e"),
+                    Factory.SuperCall(Factory.Argument(Factory.Identifier("e"))).ToBlock(),
+                    Factory.VariableStatement(
+                        Factory.SimpleVariableDeclaration(s_p, initializer: Factory.DecimalLiteral(1.2))).ToBlock()),
+                "try {\n  debugger;\n} catch (e) {\n  super(e);\n} finally {\n  var p = 1.2;\n}\n");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");

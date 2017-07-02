@@ -135,7 +135,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsNamespaceName : ITsQualifiedName { }
 
-    public interface ITsQualifiedName : IAstNode
+    public interface ITsQualifiedName : ITsExpression
     {
         ImmutableArray<ITsIdentifier> Left { get; }
         ITsIdentifier Right { get; }

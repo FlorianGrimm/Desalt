@@ -66,6 +66,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitIfStatement(ITsIfStatement node) => Visit(node);
 
         /// <summary>
+        /// Visits a try/catch/finally statement.
+        /// </summary>
+        public virtual void VisitTryStatement(ITsTryStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

@@ -127,6 +127,32 @@ namespace Desalt.TypeScript.Ast
             return new TsIfStatement(ifCondition, ifStatement, elseStatement);
         }
 
+        public static ITsTryStatement Try(ITsBlockStatement tryBlock) => TsTryStatement.CreateTry(tryBlock);
+
+        public static ITsTryStatement TryCatch(
+            ITsBlockStatement tryBlock,
+            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBlockStatement catchBlock)
+        {
+            return TsTryStatement.CreateTryCatch(tryBlock, catchParameter, catchBlock);
+        }
+
+        public static ITsTryStatement TryFinally(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement finallyBlock)
+        {
+            return TsTryStatement.CreateTryFinally(tryBlock, finallyBlock);
+        }
+
+        public static ITsTryStatement TryCatchFinally(
+            ITsBlockStatement tryBlock,
+            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBlockStatement catchBlock,
+            ITsBlockStatement finallyBlock)
+        {
+            return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
+        }
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }
