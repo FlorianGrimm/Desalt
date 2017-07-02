@@ -24,8 +24,22 @@ namespace Desalt.TypeScript.Ast
             return new TsSimpleVariableDeclaration(variableName, variableType, initializer);
         }
 
-        public static ITsSingleNameBinding SingleNameBinding(ITsIdentifier name, ITsExpression initializer) =>
-            new TsSingleNameBinding(name, initializer);
+        /// <summary>
+        /// Creates a single name binding within an object or array pattern binding, of the form
+        /// 'name = defaultValue'.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the variable in an array pattern binding, or the name of the property in an
+        /// object pattern binding.
+        /// </param>
+        /// <param name="defaultValue">The default value assigned to the variable or property.</param>
+        /// <returns>An <see cref="ITsSingleNameBinding"/> instance.</returns>
+        public static ITsSingleNameBinding SingleNameBinding(
+            ITsIdentifier name,
+            ITsExpression defaultValue = null)
+        {
+            return new TsSingleNameBinding(name, defaultValue);
+        }
 
         public static ITsPatternBinding PatternBinding(
             ITsBindingPattern bindingPattern,

@@ -26,6 +26,9 @@ namespace Desalt.TypeScript.Ast
 
         /// <summary>
         /// Visits a single name binding pattern used in object and array bindings, of the form 'name = expression'.
+        /// <summary>
+        /// Visits a single name binding within an object or array pattern binding, of the form 'name
+        /// = defaultValue'.
         /// </summary>
         public virtual void VisitSingleNameBinding(ITsSingleNameBinding node) => Visit(node);
 

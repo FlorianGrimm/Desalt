@@ -693,7 +693,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern InitializerOpt
      *
      * SingleNameBinding:
-     *   BindingIdentifier Initializer
+     *   BindingIdentifier InitializerOpt
      *
      * BindingRestElement:
      *   ... BindingIdentifier
@@ -709,7 +709,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
     {
         ITsIdentifier Name { get; }
-        ITsExpression Initializer { get; }
+        ITsExpression DefaultValue { get; }
     }
 
     public interface ITsPropertyNameBinding : ITsBindingProperty
