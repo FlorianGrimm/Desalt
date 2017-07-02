@@ -704,13 +704,25 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsBindingProperty> BindingProperties { get; }
     }
 
-    public interface ITsBindingProperty : IAstNode
-    {
-    }
+    public interface ITsBindingProperty : IAstNode { }
 
-    public interface ITsSingleNameBinding : IAstNode
+    public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
     {
         ITsIdentifier Name { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    public interface ITsPropertyNameBinding : ITsBindingProperty
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsBindingElement BindingElement { get; }
+    }
+
+    public interface ITsBindingElement : IAstNode { }
+
+    public interface ITsPatternBinding : ITsBindingElement
+    {
+        ITsBindingPattern BindingPattern { get; }
         ITsExpression Initializer { get; }
     }
 

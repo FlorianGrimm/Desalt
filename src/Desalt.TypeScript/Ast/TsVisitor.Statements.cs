@@ -30,6 +30,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSingleNameBinding(ITsSingleNameBinding node) => Visit(node);
 
         /// <summary>
+        /// Visits a recursive pattern binding in an object or array binding.
+        /// </summary>
+        public virtual void VisitPatternBinding(ITsPatternBinding node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

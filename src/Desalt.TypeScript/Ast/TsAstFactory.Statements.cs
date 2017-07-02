@@ -27,6 +27,13 @@ namespace Desalt.TypeScript.Ast
         public static ITsSingleNameBinding SingleNameBinding(ITsIdentifier name, ITsExpression initializer) =>
             new TsSingleNameBinding(name, initializer);
 
+        public static ITsPatternBinding PatternBinding(
+            ITsBindingPattern bindingPattern,
+            ITsExpression initializer = null)
+        {
+            return new TsPatternBinding(bindingPattern, initializer);
+        }
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }

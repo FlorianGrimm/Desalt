@@ -45,6 +45,12 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_a_recursive_pattern_binding()
+        {
+            Assert.Inconclusive("Finish this test when an object binding pattern is implemented");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");
