@@ -19,6 +19,7 @@ namespace Desalt.TypeScript.Tests.Ast
     [TestClass]
     public partial class TsEmitTests
     {
+        private static readonly ITsIdentifier s_p = Factory.Identifier("p");
         private static readonly ITsIdentifier s_x = Factory.Identifier("x");
         private static readonly ITsIdentifier s_y = Factory.Identifier("y");
         private static readonly ITsIdentifier s_z = Factory.Identifier("z");

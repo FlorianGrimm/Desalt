@@ -9,6 +9,7 @@ namespace Desalt.TypeScript.Tests.Ast
 {
     using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
+    using Desalt.TypeScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
@@ -127,6 +128,17 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.ArrayType(Factory.Number),
                     s_z),
                 "[x, y]: number[] = z");
+        }
+
+        [TestMethod]
+        public void Emit_variable_declaration_statements()
+        {
+            VerifyOutput(
+                Factory.VariableStatement(
+                    Factory.SimpleVariableDeclaration(
+                        s_x, Factory.Boolean, Factory.BinaryExpression(s_y, TsBinaryOperator.LogicalAnd, s_z)),
+                    Factory.SimpleVariableDeclaration(s_p)),
+                "var x: boolean = y && z, p;\n");
         }
 
         [TestMethod]

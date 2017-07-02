@@ -7,7 +7,10 @@
 
 namespace Desalt.TypeScript.Ast
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Statements;
 
     public static partial class TsAstFactory
@@ -16,6 +19,21 @@ namespace Desalt.TypeScript.Ast
             new TsBlockStatement(statements);
 
         public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
+
+        /// <summary>
+        /// Creates a variable declaration statement of the form 'var x = y;'.
+        /// </summary>
+        public static ITsVariableStatement VariableStatement(
+            ITsVariableDeclaration declaration,
+            params ITsVariableDeclaration[] declarations)
+        {
+            if (declaration == null)
+            {
+                throw new ArgumentNullException(nameof(declaration));
+            }
+
+            return new TsVariableStatement(declaration.ToSafeArray().Concat(declarations));
+        }
 
         public static ITsSimpleVariableDeclaration SimpleVariableDeclaration(
             ITsIdentifier variableName,

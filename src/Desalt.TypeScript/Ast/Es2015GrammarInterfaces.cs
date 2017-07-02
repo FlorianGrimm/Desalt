@@ -649,10 +649,15 @@ namespace Desalt.TypeScript.Ast
      *   VariableDeclaration
      *   VariableDeclarationList , VariableDeclaration
      *
-     * VariableDeclaration:
+     * VariableDeclaration: (see TypeScript definition)
      *   BindingIdentifier InitializerOpt
      *   BindingPattern Initializer
      */
+
+    public interface ITsVariableStatement : ITsStatement
+    {
+        ImmutableArray<ITsVariableDeclaration> Declarations { get; }
+    }
 
     /* 13.3.3 Destructuring Binding Patterns
      * -------------------------------------
