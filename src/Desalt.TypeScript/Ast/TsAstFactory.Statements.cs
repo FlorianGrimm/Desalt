@@ -201,5 +201,53 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsLexicalDeclaration(isConst, declarations);
         }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsExpression initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (var i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsVariableDeclaration initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer.ToSafeArray(), condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (var i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            IEnumerable<ITsVariableDeclaration> initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (const i: number = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsLexicalDeclaration initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
     }
 }

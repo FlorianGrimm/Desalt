@@ -780,11 +780,40 @@ namespace Desalt.TypeScript.Ast
      * -------------------------
      * IterationStatement:
      *   do Statement while ( Expression ) ;
-     *   while ( Expression ) Statement
-     *   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
+     */
+
+    public interface ITsDoWhileStatement : ITsStatement
+    {
+        ITsStatement DoStatement { get; }
+        ITsExpression WhileCondition { get; }
+    }
+
+    /*   while ( Expression ) Statement
+     */
+
+    public interface ITsWhileStatement : ITsStatement
+    {
+        ITsExpression WhileCondition { get; }
+        ITsStatement WhileStatement { get; }
+    }
+
+    /*   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
      *   for ( var VariableDeclarationList ; ExpressionOpt ; ExpressionOpt ) Statement
      *   for ( LexicalDeclaration ExpressionOpt ; ExpressionOpt ) Statement
-     *   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
+     */
+
+    public interface ITsForStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ImmutableArray<ITsVariableDeclaration> InitializerWithVariableDeclarations { get; }
+        ITsLexicalDeclaration InitializerWithLexicalDeclaration { get; }
+
+        ITsExpression Condition { get; }
+        ITsExpression Incrementor { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /*   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
      *   for ( var ForBinding in Expression ) Statement
      *   for ( ForDeclaration in Expression ) Statement
      *   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
@@ -798,18 +827,6 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier
      *   BindingPattern
      */
-
-    public interface ITsDoWhileStatement : ITsStatement
-    {
-        ITsStatement DoStatement { get; }
-        ITsExpression WhileCondition { get; }
-    }
-
-    public interface ITsWhileStatement : ITsStatement
-    {
-        ITsExpression WhileCondition { get; }
-        ITsStatement WhileStatement { get; }
-    }
 
     /* 13.8 The continue Statement
      * ---------------------------

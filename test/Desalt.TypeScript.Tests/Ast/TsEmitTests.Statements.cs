@@ -351,5 +351,50 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
                 "let x, y: any = z;");
         }
+
+        [TestMethod]
+        public void Emit_basic_for_loop()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.AssignmentExpression(s_x, TsAssignmentOperator.SimpleAssign, Factory.Zero),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (x = 0; x < 10; x++)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_for_loop_with_variable_declaration()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.SimpleVariableDeclaration(s_x, initializer: Factory.Zero),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (var x = 0; x < 10; x++)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_for_loop_with_const_and_let_declarations()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.LexicalDeclaration(true, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (const x: number = 0; x < 10; x++)\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.For(
+                    Factory.LexicalDeclaration(false, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (let x: number = 0; x < 10; x++)\n  debugger;\n");
+        }
+
     }
 }
