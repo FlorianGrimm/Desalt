@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsDestructuringVariableDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsDestructuringLexicalBinding.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,22 +12,22 @@ namespace Desalt.TypeScript.Ast.Statements
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
+    /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsDestructuringVariableDeclaration : AstNode<TsVisitor>, ITsDestructuringVariableDeclaration
+    internal class TsDestructuringLexicalBinding : AstNode<TsVisitor>, ITsDestructuringLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsDestructuringVariableDeclaration(
+        public TsDestructuringLexicalBinding(
             ITsBindingPattern bindingPattern,
-            ITsExpression initializer,
-            ITsType variableType = null)
+            ITsType variableType = null,
+            ITsExpression initializer = null)
         {
             BindingPattern = bindingPattern ?? throw new ArgumentNullException(nameof(bindingPattern));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
             VariableType = variableType;
+            Initializer = initializer;
         }
 
         //// ===========================================================================================================
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringVariableDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringLexicalBinding(this);
 
         public override string CodeDisplay =>
             $"{BindingPattern}{VariableType.ToTypeAnnotationCodeDisplay()}{Initializer.ToAssignmentCodeDisplay()}";

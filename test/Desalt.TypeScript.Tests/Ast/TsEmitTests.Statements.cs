@@ -47,19 +47,6 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_simple_lexical_bindings()
-        {
-            VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
-            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
-            VerifyOutput(
-                Factory.SimpleLexicalBinding(
-                    s_x,
-                    Factory.String,
-                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
-                "x: string = 'hello'");
-        }
-
-        [TestMethod]
         public void Emit_single_name_binding()
         {
             VerifyOutput(Factory.SingleNameBinding(s_z), "z");
@@ -302,6 +289,49 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
                     Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock()),
                 "while (x >= 0) {\n  x--;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_simple_lexical_bindings()
+        {
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(
+                Factory.SimpleLexicalBinding(
+                    s_x,
+                    Factory.String,
+                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                "x: string = 'hello'");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_no_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    initializer: s_z),
+                "[x, y] = z");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    Factory.ArrayType(Factory.Number),
+                    s_z),
+                "[x, y]: number[] = z");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_no_type_annotation_or_initializer()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y))),
+                "[x, y]");
         }
     }
 }

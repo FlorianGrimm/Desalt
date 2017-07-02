@@ -49,18 +49,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Creates a simple lexical binding of the form 'x: type = y'.
-        /// </summary>
-        public static ITsSimpleLexicalBinding SimpleLexicalBinding(
-            ITsIdentifier variableName,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
-        {
-            return new TsSimpleLexicalBinding(variableName, variableType, initializer);
-        }
-
-        /// <summary>
-        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// Creates a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
         /// </summary>
         public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
@@ -70,7 +59,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// Creates a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
         /// </summary>
         public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
@@ -180,5 +169,27 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsWhileStatement While(ITsExpression whileCondition, ITsStatement whileStatement) =>
             new TsWhileStatement(whileCondition, whileStatement);
+
+        /// <summary>
+        /// Creates a simple lexical binding of the form 'x: type = y'.
+        /// </summary>
+        public static ITsSimpleLexicalBinding SimpleLexicalBinding(
+            ITsIdentifier variableName,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsSimpleLexicalBinding(variableName, variableType, initializer);
+        }
+
+        /// <summary>
+        /// Creates a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
+        /// </summary>
+        public static ITsDestructuringLexicalBinding DestructuringLexicalBinding(
+            ITsBindingPattern bindingPattern,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsDestructuringLexicalBinding(bindingPattern, variableType, initializer);
+        }
     }
 }

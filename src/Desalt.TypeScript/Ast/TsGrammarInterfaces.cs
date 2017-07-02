@@ -540,6 +540,13 @@ namespace Desalt.TypeScript.Ast
         ITsExpression Initializer { get; }
     }
 
+    public interface ITsDestructuringLexicalBinding : ITsLexicalBinding
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
     /* A.4 Functions
      * -------------
      * FunctionDeclaration: ( Modified )

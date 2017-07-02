@@ -35,11 +35,6 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
 
         /// <summary>
-        /// Visits a simple variable declaration of the form 'x: type = y'.
-        /// </summary>
-        public virtual void VisitSimpleLexicalBinding(ITsSimpleLexicalBinding node) => Visit(node);
-
-        /// <summary>
         /// Visits a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
         /// </summary>
         public virtual void VisitDestructuringVariableDeclaration(ITsDestructuringVariableDeclaration node) => Visit(node);
@@ -89,5 +84,15 @@ namespace Desalt.TypeScript.Ast
         /// Visits a while loop statement.
         /// </summary>
         public virtual void VisitWhileStatement(ITsWhileStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a simple variable declaration of the form 'x: type = y'.
+        /// </summary>
+        public virtual void VisitSimpleLexicalBinding(ITsSimpleLexicalBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
+        /// </summary>
+        public virtual void VisitDestructuringLexicalBinding(ITsDestructuringLexicalBinding node) => Visit(node);
     }
 }
