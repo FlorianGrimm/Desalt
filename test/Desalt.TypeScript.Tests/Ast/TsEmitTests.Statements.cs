@@ -333,5 +333,23 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y))),
                 "[x, y]");
         }
+
+        [TestMethod]
+        public void Emit_lexical_declarations()
+        {
+            VerifyOutput(
+                Factory.LexicalDeclaration(
+                    true,
+                    Factory.SimpleLexicalBinding(s_x),
+                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                "const x, y: any = z;");
+
+            VerifyOutput(
+                Factory.LexicalDeclaration(
+                    false,
+                    Factory.SimpleLexicalBinding(s_x),
+                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                "let x, y: any = z;");
+        }
     }
 }

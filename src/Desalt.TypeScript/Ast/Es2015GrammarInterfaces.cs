@@ -640,6 +640,12 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern Initializer
      */
 
+    public interface ITsLexicalDeclaration : ITsStatement
+    {
+        bool IsConst { get; }
+        ImmutableArray<ITsLexicalBinding> Declarations { get; }
+    }
+
     /* 13.3.2 Variable Statement
      * -------------------------
      * VariableStatement:

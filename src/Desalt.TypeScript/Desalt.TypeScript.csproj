@@ -62,6 +62,7 @@
     <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
     <Compile Include="Ast\Statements\TsExpressionStatement.cs" />
     <Compile Include="Ast\Statements\TsIfStatement.cs" />
+    <Compile Include="Ast\Statements\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Statements\TsObjectBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsPatternBinding.cs" />
     <Compile Include="Ast\Statements\TsSimpleLexicalBinding.cs" />

@@ -191,5 +191,15 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsDestructuringLexicalBinding(bindingPattern, variableType, initializer);
         }
+
+        /// <summary>
+        /// Creates a lexical declaration of the form 'const|let x: type, y: type = z;'.
+        /// </summary>
+        public static ITsLexicalDeclaration LexicalDeclaration(
+            bool isConst,
+            params ITsLexicalBinding[] declarations)
+        {
+            return new TsLexicalDeclaration(isConst, declarations);
+        }
     }
 }

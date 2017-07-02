@@ -94,5 +94,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
         /// </summary>
         public virtual void VisitDestructuringLexicalBinding(ITsDestructuringLexicalBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits a lexical declaration of the form 'const|let x: type, y: type = z;'.
+        /// </summary>
+        public virtual void VisitLexicalDeclaration(ITsLexicalDeclaration node) => Visit(node);
     }
 }
