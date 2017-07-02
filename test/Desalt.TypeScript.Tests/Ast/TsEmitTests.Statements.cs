@@ -109,6 +109,27 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_destructuring_variable_declaration_with_no_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringVariableDeclaration(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    s_z),
+                "[x, y] = z");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_variable_declaration_with_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringVariableDeclaration(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    Factory.ArrayType(Factory.Number),
+                    s_z),
+                "[x, y]: number[] = z");
+        }
+
+        [TestMethod]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");

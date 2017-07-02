@@ -25,6 +25,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
 
         /// <summary>
+        /// Visits a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// </summary>
+        public virtual void VisitDestructuringVariableDeclaration(ITsDestructuringVariableDeclaration node) => Visit(node);
+
+        /// <summary>
         /// Visits an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
         /// </summary>
         public virtual void VisitObjectBindingPattern(ITsObjectBindingPattern node) => Visit(node);

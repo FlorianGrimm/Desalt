@@ -26,6 +26,27 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// </summary>
+        public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
+            ITsBindingPattern bindingPattern,
+            ITsExpression initializer)
+        {
+            return new TsDestructuringVariableDeclaration(bindingPattern, initializer);
+        }
+
+        /// <summary>
+        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// </summary>
+        public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
+            ITsBindingPattern bindingPattern,
+            ITsType variableType,
+            ITsExpression initializer)
+        {
+            return new TsDestructuringVariableDeclaration(bindingPattern, initializer, variableType);
+        }
+
+        /// <summary>
         /// Creates an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
         /// </summary>
         public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties) =>
