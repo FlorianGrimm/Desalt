@@ -791,8 +791,15 @@ namespace Desalt.TypeScript.Ast
      * ForBinding:
      *   BindingIdentifier
      *   BindingPattern
-     *
-     * 13.8 The continue Statement
+     */
+
+    public interface ITsDoWhileStatement : ITsStatement
+    {
+        ITsStatement DoStatement { get; }
+        ITsExpression WhileCondition { get; }
+    }
+
+    /* 13.8 The continue Statement
      * ---------------------------
      * ContinueStatement:
      *   continue ;

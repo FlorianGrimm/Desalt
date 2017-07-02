@@ -127,6 +127,12 @@ namespace Desalt.TypeScript.Ast
             return new TsIfStatement(ifCondition, ifStatement, elseStatement);
         }
 
+        /// <summary>
+        /// Creates a do/while statement.
+        /// </summary>
+        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition) =>
+            new TsDoWhileStatement(doStatement, whileCondition);
+
         public static ITsTryStatement Try(ITsBlockStatement tryBlock) => TsTryStatement.CreateTry(tryBlock);
 
         public static ITsTryStatement TryCatch(

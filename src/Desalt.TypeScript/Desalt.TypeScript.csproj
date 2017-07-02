@@ -57,6 +57,7 @@
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
     <Compile Include="Ast\Statements\TsDestructuringVariableDeclaration.cs" />
+    <Compile Include="Ast\Statements\TsDoWhileStatement.cs" />
     <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
     <Compile Include="Ast\Statements\TsExpressionStatement.cs" />
     <Compile Include="Ast\Statements\TsIfStatement.cs" />

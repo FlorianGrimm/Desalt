@@ -16,6 +16,12 @@ namespace Desalt.TypeScript.Tests.Ast
     public partial class TsEmitTests
     {
         [TestMethod]
+        public void Emit_debugger_statement()
+        {
+            VerifyOutput(Factory.Debugger, "debugger;\n");
+        }
+
+        [TestMethod]
         public void Emit_block_statements()
         {
             VerifyOutput(Factory.Block(Factory.Debugger, Factory.Debugger), "{\n  debugger;\n  debugger;\n}");
@@ -246,9 +252,23 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_debugger_statement()
+        public void Emit_do_while_loop_without_block()
         {
-            VerifyOutput(Factory.Debugger, "debugger;\n");
+            VerifyOutput(
+                Factory.DoWhile(
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToStatement(),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero)),
+                "do\n  x--;\nwhile (x >= 0);\n");
+        }
+
+        [TestMethod]
+        public void Emit_do_while_loop_with_block()
+        {
+            VerifyOutput(
+                Factory.DoWhile(
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock(),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero)),
+                "do {\n  x--;\n} while (x >= 0);\n");
         }
     }
 }
