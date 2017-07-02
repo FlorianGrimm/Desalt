@@ -135,7 +135,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsNamespaceName : ITsQualifiedName { }
 
-    public interface ITsQualifiedName : IAstNode
+    public interface ITsQualifiedName : ITsExpression
     {
         ImmutableArray<ITsIdentifier> Left { get; }
         ITsIdentifier Right { get; }
@@ -491,8 +491,9 @@ namespace Desalt.TypeScript.Ast
      *   InterfaceDeclaration
      *   TypeAliasDeclaration
      *   EnumDeclaration
-     *
-     * VariableDeclaration: ( Modified )
+     */
+
+    /* VariableDeclaration: ( Modified )
      *   SimpleVariableDeclaration
      *   DestructuringVariableDeclaration
      *
@@ -501,8 +502,25 @@ namespace Desalt.TypeScript.Ast
      *
      * DestructuringVariableDeclaration:
      *   BindingPattern TypeAnnotationOpt Initializer
-     *
-     * LexicalBinding: ( Modified )
+     */
+
+    public interface ITsVariableDeclaration : IAstNode { }
+
+    public interface ITsSimpleVariableDeclaration : ITsVariableDeclaration
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    public interface ITsDestructuringVariableDeclaration : ITsVariableDeclaration
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    /* LexicalBinding: ( Modified )
      *   SimpleLexicalBinding
      *   DestructuringLexicalBinding
      *

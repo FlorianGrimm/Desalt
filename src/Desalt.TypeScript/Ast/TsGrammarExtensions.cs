@@ -10,7 +10,9 @@ namespace Desalt.TypeScript.Ast
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Expressions;
+    using Desalt.TypeScript.Ast.Statements;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
@@ -27,6 +29,24 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsParenthesizedType(type);
         }
+
+        /// <summary>
+        /// Creates a new statement from the expression.
+        /// </summary>
+        public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
+            new TsExpressionStatement(expression);
+
+        /// <summary>
+        /// Wraps the statement in a block statement.
+        /// </summary>
+        public static ITsBlockStatement ToBlock(this ITsStatement statement) =>
+            new TsBlockStatement(statement.ToSafeArray());
+
+        /// <summary>
+        /// Converts the expression to a statement and wraps it in a block statement.
+        /// </summary>
+        public static ITsBlockStatement ToBlock(this ITsExpression expression) =>
+            new TsBlockStatement(expression.ToStatement().ToSafeArray());
 
         /// <summary>
         /// Converts a unary operator to its code representation.
@@ -117,7 +137,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Writes out a ": type" type annotation if the type is not null.
+        /// Returns a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
         public static string ToTypeAnnotationCodeDisplay(this ITsType type)
@@ -125,13 +145,64 @@ namespace Desalt.TypeScript.Ast
             return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
 
-        public static void WriteTypeAnnotation(this ITsType type, Emitter emitter)
+        /// <summary>
+        /// Writes out a ": type" type annotation if the type is not null.
+        /// </summary>
+        /// <param name="type">The type annotation to write.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitTypeAnnotation(this ITsType type, Emitter emitter)
         {
             if (type != null)
             {
                 emitter.Write(": ");
                 type.Emit(emitter);
             }
+        }
+
+        /// <summary>
+        /// Returns a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        public static string ToAssignmentCodeDisplay(this ITsExpression expression)
+        {
+            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
+        }
+
+        /// <summary>
+        /// Writes out a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitAssignment(this ITsExpression expression, Emitter emitter)
+        {
+            if (expression != null)
+            {
+                emitter.Write(" = ");
+                expression.Emit(emitter);
+            }
+        }
+
+        /// <summary>
+        /// Writes a statement on a new line unless the statement is a block, in which case the block
+        /// will start on the same line.
+        /// </summary>
+        /// <param name="statement">The statement to emit.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        /// <param name="prefixForIndentedStatement">
+        /// If supplied, the prefix is written before the statement when it's a not a block statement.
+        /// </param>
+        /// <param name="prefixForBlock">
+        /// If supplied, the prefix is written before the statement when it's a block statement.
+        /// </param>
+        public static void EmitIndentedOrInBlock(
+            this ITsStatement statement,
+            Emitter emitter,
+            string prefixForIndentedStatement = ")",
+            string prefixForBlock = ") ")
+        {
+            bool isBlockStatement = statement is ITsBlockStatement;
+            emitter.WriteStatementIndentedOrInBlock(
+                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
         }
     }
 }

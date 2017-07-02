@@ -1,62 +1,65 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsGetAccessor.cs" company="Justin Rockwood">
+// <copyright file="TsIfStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
     /// </summary>
-    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
+    internal class TsIfStatement : AstNode<TsVisitor>, ITsIfStatement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsGetAccessor(
-            ITsPropertyName propertyName,
-            ITsType propertyType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+        public TsIfStatement(ITsExpression ifCondition, ITsStatement ifStatement, ITsStatement elseStatement = null)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            PropertyType = propertyType;
-            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            IfCondition = ifCondition ?? throw new ArgumentNullException(nameof(ifCondition));
+            IfStatement = ifStatement ?? throw new ArgumentNullException(nameof(ifStatement));
+            ElseStatement = elseStatement;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPropertyName PropertyName { get; }
-        public ITsType PropertyType { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public ITsExpression IfCondition { get; }
+        public ITsStatement IfStatement { get; }
+        public ITsStatement ElseStatement { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIfStatement(this);
 
         public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
+            $"if ({IfCondition}) {IfStatement}" + (ElseStatement != null ? $" else {ElseStatement}" : "");
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("get ");
-            PropertyName.Emit(emitter);
-            emitter.Write("()");
-            PropertyType.EmitTypeAnnotation(emitter);
-            emitter.WriteBlock(FunctionBody);
+            emitter.Write("if (");
+            IfCondition.Emit(emitter);
+            IfStatement.EmitIndentedOrInBlock(emitter);
+
+            if (ElseStatement != null)
+            {
+                if (IfStatement is ITsBlockStatement)
+                {
+                    emitter.Write(" ");
+                }
+
+                emitter.Write("else");
+                ElseStatement.EmitIndentedOrInBlock(emitter, prefixForIndentedStatement: "", prefixForBlock: " ");
+            }
         }
     }
 }

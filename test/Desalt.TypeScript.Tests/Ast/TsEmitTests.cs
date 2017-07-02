@@ -19,6 +19,7 @@ namespace Desalt.TypeScript.Tests.Ast
     [TestClass]
     public partial class TsEmitTests
     {
+        private static readonly ITsIdentifier s_p = Factory.Identifier("p");
         private static readonly ITsIdentifier s_x = Factory.Identifier("x");
         private static readonly ITsIdentifier s_y = Factory.Identifier("y");
         private static readonly ITsIdentifier s_z = Factory.Identifier("z");
@@ -26,7 +27,7 @@ namespace Desalt.TypeScript.Tests.Ast
         private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
-            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.Default))
+            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
             {
                 node.Emit(emitter);
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);

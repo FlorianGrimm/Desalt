@@ -1,50 +1,50 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsSingleNameBinding.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsSingleNameBinding : AstNode<TsVisitor>, ITsSingleNameBinding
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        public TsSingleNameBinding(ITsIdentifier name, ITsExpression defaultValue = null)
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            DefaultValue = defaultValue;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
-        public ITsExpression Initializer { get; }
+        public ITsIdentifier Name { get; }
+        public ITsExpression DefaultValue { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay => $"{Name}{DefaultValue.ToAssignmentCodeDisplay()}";
 
         public override void Emit(Emitter emitter)
         {
-            Identifier.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
+            Name.Emit(emitter);
+            DefaultValue.EmitAssignment(emitter);
         }
     }
 }

@@ -1,50 +1,55 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsVariableStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents a variable declaration statement of the form 'var x = y;'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsVariableStatement : AstNode<TsVisitor>, ITsVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        public TsVariableStatement(IEnumerable<ITsVariableDeclaration> declarations)
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            Declarations = declarations?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(declarations));
+            if (Declarations.IsEmpty)
+            {
+                throw new ArgumentException("There must be at least one declaration", nameof(declarations));
+            }
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
-        public ITsExpression Initializer { get; }
+        public ImmutableArray<ITsVariableDeclaration> Declarations { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitVariableStatement(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
         public override void Emit(Emitter emitter)
         {
-            Identifier.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
+            emitter.Write("var ");
+            emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
+            emitter.WriteLine(";");
         }
     }
 }

@@ -1,49 +1,64 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsSimpleVariableDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents a simple variable declaration of the form 'x = y'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsSimpleVariableDeclaration : AstNode<TsVisitor>, ITsSimpleVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        public TsSimpleVariableDeclaration(
+            ITsIdentifier variableName,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
+            VariableType = variableType;
+            Initializer = initializer;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
+        public ITsIdentifier VariableName { get; }
+        public ITsType VariableType { get; }
         public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleVariableDeclaration(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay
+        {
+            get
+            {
+                string display = VariableName.CodeDisplay;
+                display += VariableType?.ToTypeAnnotationCodeDisplay();
+                display += Initializer.ToAssignmentCodeDisplay();
+                return display;
+            }
+        }
 
         public override void Emit(Emitter emitter)
         {
-            Identifier.Emit(emitter);
+            VariableName.Emit(emitter);
+            VariableType?.EmitTypeAnnotation(emitter);
             Initializer.EmitAssignment(emitter);
         }
     }

@@ -1,50 +1,47 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsObjectBindingPattern.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsObjectBindingPattern : AstNode<TsVisitor>, ITsObjectBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        public TsObjectBindingPattern(IEnumerable<ITsBindingProperty> properties)
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            Properties = properties?.ToImmutableArray() ?? ImmutableArray<ITsBindingProperty>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
-        public ITsExpression Initializer { get; }
+        public ImmutableArray<ITsBindingProperty> Properties { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitObjectBindingPattern(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay => $"{{{Properties.ToElidedList()}}}";
 
-        public override void Emit(Emitter emitter)
-        {
-            Identifier.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
-        }
+        public override void Emit(Emitter emitter) =>
+            emitter.WriteItems(
+                Properties, indent: false, prefix: "{", suffix: "}", itemDelimiter: ", ", emptyContents: "{}");
     }
 }

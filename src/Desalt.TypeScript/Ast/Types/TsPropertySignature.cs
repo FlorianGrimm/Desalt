@@ -55,7 +55,7 @@ namespace Desalt.TypeScript.Ast.Types
                 emitter.Write("?");
             }
 
-            PropertyType.WriteTypeAnnotation(emitter);
+            PropertyType.EmitTypeAnnotation(emitter);
         }
     }
 }

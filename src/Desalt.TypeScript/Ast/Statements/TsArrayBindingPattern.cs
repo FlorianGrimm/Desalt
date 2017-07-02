@@ -1,62 +1,63 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsGetAccessor.cs" company="Justin Rockwood">
+// <copyright file="TsArrayBindingPattern.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// Represents an array binding pattern of the form '[x = y, z, ...p]'.
     /// </summary>
-    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
+    internal class TsArrayBindingPattern : AstNode<TsVisitor>, ITsArrayBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsGetAccessor(
-            ITsPropertyName propertyName,
-            ITsType propertyType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+        public TsArrayBindingPattern(IEnumerable<ITsBindingElement> elements, ITsIdentifier restElement = null)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            PropertyType = propertyType;
-            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsBindingElement>.Empty;
+            RestElement = restElement;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPropertyName PropertyName { get; }
-        public ITsType PropertyType { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public ImmutableArray<ITsBindingElement> Elements { get; }
+        public ITsIdentifier RestElement { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayBindingPattern(this);
 
         public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType.ToTypeAnnotationCodeDisplay()} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
+            "[" + Elements.ToElidedList() + (RestElement != null ? $", ... {RestElement}" : "") + "]";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("get ");
-            PropertyName.Emit(emitter);
-            emitter.Write("()");
-            PropertyType.EmitTypeAnnotation(emitter);
-            emitter.WriteBlock(FunctionBody);
+            if (RestElement != null)
+            {
+                emitter.Write("[");
+                emitter.WriteItems(Elements, indent: false, itemDelimiter: ", ", delimiterAfterLastItem: true);
+                emitter.Write("... ");
+                RestElement.Emit(emitter);
+                emitter.Write("]");
+            }
+            else
+            {
+                emitter.WriteItems(
+                    Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
+            }
         }
     }
 }

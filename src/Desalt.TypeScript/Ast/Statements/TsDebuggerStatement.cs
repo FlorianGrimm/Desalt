@@ -1,50 +1,46 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsDebuggerStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
-    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents a 'debugger' statement.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsDebuggerStatement : AstNode<TsVisitor>, ITsDebuggerStatement
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly TsDebuggerStatement Instance = new TsDebuggerStatement();
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        private TsDebuggerStatement()
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
-        public ITsExpression Initializer { get; }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDebuggerStatement(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay => "debugger;";
 
-        public override void Emit(Emitter emitter)
-        {
-            Identifier.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
-        }
+        public override void Emit(Emitter emitter) => emitter.WriteLine("debugger;");
     }
 }

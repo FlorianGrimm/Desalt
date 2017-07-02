@@ -1,49 +1,56 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsCoverInitializedName.cs" company="Justin Rockwood">
+// <copyright file="TsDestructuringVariableDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
     using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode<TsVisitor>, ITsCoverInitializedName
+    internal class TsDestructuringVariableDeclaration : AstNode<TsVisitor>, ITsDestructuringVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsCoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
+        public TsDestructuringVariableDeclaration(
+            ITsBindingPattern bindingPattern,
+            ITsExpression initializer,
+            ITsType variableType = null)
         {
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
+            BindingPattern = bindingPattern ?? throw new ArgumentNullException(nameof(bindingPattern));
             Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            VariableType = variableType;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Identifier { get; }
+        public ITsBindingPattern BindingPattern { get; }
+        public ITsType VariableType { get; }
         public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringVariableDeclaration(this);
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
+        public override string CodeDisplay =>
+            $"{BindingPattern}{VariableType.ToTypeAnnotationCodeDisplay()}{Initializer.ToAssignmentCodeDisplay()}";
 
         public override void Emit(Emitter emitter)
         {
-            Identifier.Emit(emitter);
+            BindingPattern.Emit(emitter);
+            VariableType.EmitTypeAnnotation(emitter);
             Initializer.EmitAssignment(emitter);
         }
     }

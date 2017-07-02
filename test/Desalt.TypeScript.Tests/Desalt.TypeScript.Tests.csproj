@@ -43,6 +43,7 @@
     <Compile Include="Ast\TsEmitTests.LeftHandSideExpressions.cs" />
     <Compile Include="Ast\TsEmitTests.LiteralExpressions.cs" />
     <Compile Include="Ast\TsEmitTests.SourceFile.cs" />
+    <Compile Include="Ast\TsEmitTests.Statements.cs" />
     <Compile Include="Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

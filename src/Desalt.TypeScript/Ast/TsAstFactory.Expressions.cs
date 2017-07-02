@@ -23,6 +23,8 @@ namespace Desalt.TypeScript.Ast
         public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
         public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
 
+        public static ITsNumericLiteral Zero => TsNumericLiteral.Zero;
+
         public static ITsStringLiteral StringLiteral(string value, StringLiteralQuoteKind quoteKind) =>
             new TsStringLiteral(value, quoteKind);
 
@@ -58,21 +60,17 @@ namespace Desalt.TypeScript.Ast
         public static ITsObjectLiteral ObjectLiteral(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
-        public static ITsCoverInitializedName CoverInitializedName(
-            ITsIdentifier identifier,
-            ITsAssignmentExpression initializer)
+        public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
         {
             return new TsCoverInitializedName(identifier, initializer);
         }
 
-        public static ITsPropertyAssignment PropertyAssignment(
-            ITsPropertyName propertyName,
-            ITsAssignmentExpression initializer)
+        public static ITsPropertyAssignment PropertyAssignment(ITsPropertyName propertyName, ITsExpression initializer)
         {
             return new TsPropertyAssignment(propertyName, initializer);
         }
 
-        public static ITsComputedPropertyName ComputedPropertyName(ITsAssignmentExpression expression) =>
+        public static ITsComputedPropertyName ComputedPropertyName(ITsExpression expression) =>
             new TsComputedPropertyName(expression);
 
         public static ITsPropertyFunction PropertyFunction(

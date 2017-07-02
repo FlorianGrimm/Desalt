@@ -227,13 +227,13 @@ namespace Desalt.TypeScript.Ast
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {
         ITsIdentifier Identifier { get; }
-        ITsAssignmentExpression Initializer { get; }
+        ITsExpression Initializer { get; }
     }
 
     public interface ITsPropertyAssignment : ITsPropertyDefinition
     {
         ITsPropertyName PropertyName { get; }
-        ITsAssignmentExpression Initializer { get; }
+        ITsExpression Initializer { get; }
     }
 
     public interface ITsPropertyName : IAstNode
@@ -243,7 +243,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsComputedPropertyName : ITsPropertyName
     {
-        ITsAssignmentExpression Expression { get; }
+        ITsExpression Expression { get; }
     }
 
     /* 12.2.9 Template Literals (and 11.8.6 Template Literal Lexical Components)
@@ -578,6 +578,10 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
+    public interface ITsStatement : ITsStatementListItem
+    {
+    }
+
     /* Declaration:
      *   HoistableDeclaration
      *   ClassDeclaration
@@ -590,8 +594,9 @@ namespace Desalt.TypeScript.Ast
      * BreakableStatement:
      *   IterationStatement
      *   SwitchStatement
-     *
-     * 13.2 Block
+     */
+
+    /* 13.2 Block
      * ----------
      * BlockStatement:
      *   Block
@@ -608,8 +613,14 @@ namespace Desalt.TypeScript.Ast
      *   Declaration
      */
 
+    public interface ITsBlockStatement : ITsStatement
+    {
+        ImmutableArray<ITsStatementListItem> Statements { get; }
+    }
+
     public interface ITsStatementListItem : IAstNode
-    { }
+    {
+    }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
@@ -638,18 +649,26 @@ namespace Desalt.TypeScript.Ast
      *   VariableDeclaration
      *   VariableDeclarationList , VariableDeclaration
      *
-     * VariableDeclaration:
+     * VariableDeclaration: (see TypeScript definition)
      *   BindingIdentifier InitializerOpt
      *   BindingPattern Initializer
      */
+
+    public interface ITsVariableStatement : ITsStatement
+    {
+        ImmutableArray<ITsVariableDeclaration> Declarations { get; }
+    }
 
     /* 13.3.3 Destructuring Binding Patterns
      * -------------------------------------
      * BindingPattern:
      *   ObjectBindingPattern
      *   ArrayBindingPattern
-     *
-     * ObjectBindingPattern:
+     */
+
+    public interface ITsBindingPattern : ITsBindingIdentifierOrPattern { }
+
+    /* ObjectBindingPattern:
      *   { }
      *   { BindingPropertyList }
      *   { BindingPropertyList , }
@@ -679,31 +698,79 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern InitializerOpt
      *
      * SingleNameBinding:
-     *   BindingIdentifier Initializer
+     *   BindingIdentifier InitializerOpt
      *
      * BindingRestElement:
      *   ... BindingIdentifier
      */
 
-    public interface ITsBindingPattern : ITsBindingIdentifierOrPattern { }
+    public interface ITsObjectBindingPattern : ITsBindingPattern
+    {
+        ImmutableArray<ITsBindingProperty> Properties { get; }
+    }
+
+    public interface ITsArrayBindingPattern : ITsBindingPattern
+    {
+        ImmutableArray<ITsBindingElement> Elements { get; }
+        ITsIdentifier RestElement { get; }
+    }
+
+    public interface ITsBindingProperty : IAstNode { }
+
+    public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
+    {
+        ITsIdentifier Name { get; }
+        ITsExpression DefaultValue { get; }
+    }
+
+    public interface ITsPropertyNameBinding : ITsBindingProperty
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsBindingElement BindingElement { get; }
+    }
+
+    public interface ITsBindingElement : IAstNode { }
+
+    public interface ITsPatternBinding : ITsBindingElement
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsExpression Initializer { get; }
+    }
 
     /* 13.4 Empty Statement
      * --------------------
      * EmptyStatement:
      *   ;
-     *
-     * 13.5 Expression Statement
+     */
+
+    public interface ITsEmptyStatement : ITsStatement { }
+
+    /* 13.5 Expression Statement
      * -------------------------
      * ExpressionStatement:
      *   [lookahead not { {, function, class, let [ }] Expression ;
-     *
-     * 13.6 The if Statement
+     */
+
+    public interface ITsExpressionStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /* 13.6 The if Statement
      * ---------------------
      * IfStatement:
      *   if ( Expression ) Statement else Statement
      *   if ( Expression ) Statement
-     *
-     * 13.7 Iteration Statements
+     */
+
+    public interface ITsIfStatement : ITsStatement
+    {
+        ITsExpression IfCondition { get; }
+        ITsStatement IfStatement { get; }
+        ITsStatement ElseStatement { get; }
+    }
+
+    /* 13.7 Iteration Statements
      * -------------------------
      * IterationStatement:
      *   do Statement while ( Expression ) ;
@@ -780,8 +847,9 @@ namespace Desalt.TypeScript.Ast
      * -------------------------
      * ThrowStatement:
      *   throw [no LineTerminator here] Expression ;
-     *
-     * 12.14 The try Statement
+     */
+
+    /* 12.14 The try Statement
      * -----------------------
      * TryStatement:
      *   try Block Catch
@@ -797,12 +865,25 @@ namespace Desalt.TypeScript.Ast
      * CatchParameter:
      *   BindingIdentifier
      *   BindingPattern
-     *
-     * 13.16 The debugger Statement
+     */
+
+    public interface ITsTryStatement : ITsStatement
+    {
+        ITsBlockStatement TryBlock { get; }
+        ITsBindingIdentifierOrPattern CatchParameter { get; }
+        ITsBlockStatement CatchBlock { get; }
+        ITsBlockStatement FinallyBlock { get; }
+    }
+
+    /* 13.16 The debugger Statement
      * ----------------------------
      * DebuggerStatement:
      *   debugger ;
      */
+
+    public interface ITsDebuggerStatement : ITsStatement
+    {
+    }
 
     /* A.4 Functions and Classes
      *
