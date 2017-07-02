@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
@@ -46,7 +47,7 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_object_binding_pattern_used_in_basic_assignment()
+        public void Emit_object_binding_pattern()
         {
             VerifyOutput(
                 Factory.ObjectBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
@@ -79,6 +80,32 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.SingleNameBinding(Factory.Identifier("radius"), Factory.DecimalLiteral(25))),
                     Factory.EmptyObjectLiteral),
                 "{size = 'big', cords = {\n  x: 0,\n  y: 0\n}, radius = 25} = {}");
+        }
+
+        [TestMethod]
+        public void Emit_array_binding_pattern()
+        {
+            VerifyOutput(
+                Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                "[x, y]");
+        }
+
+        [TestMethod]
+        public void Emit_array_binding_pattern_with_default_values()
+        {
+            VerifyOutput(
+                Factory.ArrayBindingPattern(
+                    Factory.SingleNameBinding(s_x, Factory.NullLiteral),
+                    Factory.SingleNameBinding(s_y, Factory.DecimalLiteral(10))),
+                "[x = null, y = 10]");
+        }
+
+        [TestMethod]
+        public void Emit_array_binding_pattern_with_a_rest_parameter()
+        {
+            VerifyOutput(
+                Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x).ToSafeArray(), s_y),
+                "[x, ... y]");
         }
 
         [TestMethod]

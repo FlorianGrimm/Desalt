@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Ast
 {
+    using System.Collections.Generic;
     using Desalt.TypeScript.Ast.Statements;
 
     public static partial class TsAstFactory
@@ -29,6 +30,22 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties) =>
             new TsObjectBindingPattern(properties);
+
+        /// <summary>
+        /// Creates an array binding pattern of the form '[x = y, z, ...p]'.
+        /// </summary>
+        public static ITsArrayBindingPattern ArrayBindingPattern(
+            IEnumerable<ITsBindingElement> elements,
+            ITsIdentifier restElement = null)
+        {
+            return new TsArrayBindingPattern(elements, restElement);
+        }
+
+        /// <summary>
+        /// Creates an array binding pattern of the form '[x = y, z]'.
+        /// </summary>
+        public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement[] elements) =>
+            new TsArrayBindingPattern(elements);
 
         /// <summary>
         /// Creates a single name binding within an object or array pattern binding, of the form

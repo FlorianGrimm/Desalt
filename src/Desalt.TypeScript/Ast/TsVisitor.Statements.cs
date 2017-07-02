@@ -30,6 +30,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitObjectBindingPattern(ITsObjectBindingPattern node) => Visit(node);
 
         /// <summary>
+        /// Visits an array binding pattern of the form '[x = y, z, ...p]'.
+        /// </summary>
+        public virtual void VisitArrayBindingPattern(ITsArrayBindingPattern node) => Visit(node);
+
+        /// <summary>
         /// Visits a single name binding within an object or array pattern binding, of the form 'name
         /// = defaultValue'.
         /// </summary>

@@ -53,6 +53,7 @@
     <Compile Include="Ast\Expressions\TsUnaryExpression.cs" />
     <Compile Include="Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="Ast\ImplementationSourceFile.cs" />
+    <Compile Include="Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
     <Compile Include="Ast\Statements\TsEmptyStatement.cs" />
