@@ -110,6 +110,12 @@ namespace Desalt.TypeScript.Ast
             return new TsPatternBinding(bindingPattern, initializer);
         }
 
+        /// <summary>
+        /// Creates an expression in statement form.
+        /// </summary>
+        public static ITsExpressionStatement ExpressionStatement(ITsExpression expression) =>
+            new TsExpressionStatement(expression);
+
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
     }
 }

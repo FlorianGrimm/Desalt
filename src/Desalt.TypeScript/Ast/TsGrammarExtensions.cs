@@ -11,6 +11,7 @@ namespace Desalt.TypeScript.Ast
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.TypeScript.Ast.Expressions;
+    using Desalt.TypeScript.Ast.Statements;
     using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
@@ -161,5 +162,11 @@ namespace Desalt.TypeScript.Ast
                 expression.Emit(emitter);
             }
         }
+
+        /// <summary>
+        /// Creates a new statement from the expression.
+        /// </summary>
+        public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
+            new TsExpressionStatement(expression);
     }
 }

@@ -56,6 +56,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitPatternBinding(ITsPatternBinding node) => Visit(node);
 
         /// <summary>
+        /// Visits an expression in statement form.
+        /// </summary>
+        public virtual void VisitExpressionStatement(ITsExpressionStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a debugger statement.
         /// </summary>
         public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);

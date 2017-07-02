@@ -749,8 +749,14 @@ namespace Desalt.TypeScript.Ast
      * -------------------------
      * ExpressionStatement:
      *   [lookahead not { {, function, class, let [ }] Expression ;
-     *
-     * 13.6 The if Statement
+     */
+
+    public interface ITsExpressionStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /* 13.6 The if Statement
      * ---------------------
      * IfStatement:
      *   if ( Expression ) Statement else Statement
