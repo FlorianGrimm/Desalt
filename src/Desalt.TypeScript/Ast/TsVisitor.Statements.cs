@@ -10,6 +10,11 @@ namespace Desalt.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
+        /// Visits a debugger statement.
+        /// </summary>
+        public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a block of statements.
         /// </summary>
         public virtual void VisitBlockStatement(ITsBlockStatement node) => Visit(node);
@@ -66,18 +71,18 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitIfStatement(ITsIfStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a do/while statement.
-        /// </summary>
-        public virtual void VisitDoWhileStatement(ITsDoWhileStatement node) => Visit(node);
-
-        /// <summary>
         /// Visits a try/catch/finally statement.
         /// </summary>
         public virtual void VisitTryStatement(ITsTryStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a debugger statement.
+        /// Visits a do/while statement.
         /// </summary>
-        public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);
+        public virtual void VisitDoWhileStatement(ITsDoWhileStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a while loop statement.
+        /// </summary>
+        public virtual void VisitWhileStatement(ITsWhileStatement node) => Visit(node);
     }
 }

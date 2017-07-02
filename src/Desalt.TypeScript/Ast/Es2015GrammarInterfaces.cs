@@ -799,6 +799,12 @@ namespace Desalt.TypeScript.Ast
         ITsExpression WhileCondition { get; }
     }
 
+    public interface ITsWhileStatement : ITsStatement
+    {
+        ITsExpression WhileCondition { get; }
+        ITsStatement WhileStatement { get; }
+    }
+
     /* 13.8 The continue Statement
      * ---------------------------
      * ContinueStatement:

@@ -270,5 +270,25 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero)),
                 "do {\n  x--;\n} while (x >= 0);\n");
         }
+
+        [TestMethod]
+        public void Emit_while_loop_without_block()
+        {
+            VerifyOutput(
+                Factory.While(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToStatement()),
+                "while (x >= 0)\n  x--;\n");
+        }
+
+        [TestMethod]
+        public void Emit_while_loop_with_block()
+        {
+            VerifyOutput(
+                Factory.While(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock()),
+                "while (x >= 0) {\n  x--;\n}");
+        }
     }
 }

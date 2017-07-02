@@ -15,6 +15,8 @@ namespace Desalt.TypeScript.Ast
 
     public static partial class TsAstFactory
     {
+        public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
+
         public static ITsBlockStatement Block(params ITsStatementListItem[] statements) =>
             new TsBlockStatement(statements);
 
@@ -127,12 +129,6 @@ namespace Desalt.TypeScript.Ast
             return new TsIfStatement(ifCondition, ifStatement, elseStatement);
         }
 
-        /// <summary>
-        /// Creates a do/while statement.
-        /// </summary>
-        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition) =>
-            new TsDoWhileStatement(doStatement, whileCondition);
-
         public static ITsTryStatement Try(ITsBlockStatement tryBlock) => TsTryStatement.CreateTry(tryBlock);
 
         public static ITsTryStatement TryCatch(
@@ -159,6 +155,16 @@ namespace Desalt.TypeScript.Ast
             return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
         }
 
-        public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
+        /// <summary>
+        /// Creates a do/while statement.
+        /// </summary>
+        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition) =>
+            new TsDoWhileStatement(doStatement, whileCondition);
+
+        /// <summary>
+        /// Creates a while loop.
+        /// </summary>
+        public static ITsWhileStatement While(ITsExpression whileCondition, ITsStatement whileStatement) =>
+            new TsWhileStatement(whileCondition, whileStatement);
     }
 }
