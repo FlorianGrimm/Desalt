@@ -63,6 +63,7 @@
     <Compile Include="Ast\Statements\TsIfStatement.cs" />
     <Compile Include="Ast\Statements\TsObjectBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsPatternBinding.cs" />
+    <Compile Include="Ast\Statements\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Statements\TsSimpleVariableDeclaration.cs" />
     <Compile Include="Ast\Statements\TsSingleNameBinding.cs" />
     <Compile Include="Ast\Statements\TsTryStatement.cs" />

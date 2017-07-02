@@ -37,12 +37,26 @@ namespace Desalt.TypeScript.Ast
             return new TsVariableStatement(declaration.ToSafeArray().Concat(declarations));
         }
 
+        /// <summary>
+        /// Creates a simple variable declaration of the form 'x: type = y'.
+        /// </summary>
         public static ITsSimpleVariableDeclaration SimpleVariableDeclaration(
             ITsIdentifier variableName,
             ITsType variableType = null,
             ITsExpression initializer = null)
         {
             return new TsSimpleVariableDeclaration(variableName, variableType, initializer);
+        }
+
+        /// <summary>
+        /// Creates a simple lexical binding of the form 'x: type = y'.
+        /// </summary>
+        public static ITsSimpleLexicalBinding SimpleLexicalBinding(
+            ITsIdentifier variableName,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsSimpleLexicalBinding(variableName, variableType, initializer);
         }
 
         /// <summary>

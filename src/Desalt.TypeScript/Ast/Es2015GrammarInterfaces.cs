@@ -635,7 +635,7 @@ namespace Desalt.TypeScript.Ast
      *   LexicalBinding
      *   BindingList , LexicalBinding
      *
-     * LexicalBinding:
+     * LexicalBinding: (see TypeScript grammar)
      *   BindingIdentifier InitializerOpt
      *   BindingPattern Initializer
      */

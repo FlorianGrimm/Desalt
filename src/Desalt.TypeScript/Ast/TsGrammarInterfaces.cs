@@ -531,6 +531,15 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern TypeAnnotationOpt InitializerOpt
      */
 
+    public interface ITsLexicalBinding : IAstNode { }
+
+    public interface ITsSimpleLexicalBinding : ITsLexicalBinding
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
     /* A.4 Functions
      * -------------
      * FunctionDeclaration: ( Modified )

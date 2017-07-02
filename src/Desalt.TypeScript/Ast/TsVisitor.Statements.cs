@@ -25,14 +25,19 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitEmptyStatement(ITsEmptyStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a variable declaration statement of the form 'var x = y;'.
+        /// Visits a variable declaration statement of the form 'var x: type = y;'.
         /// </summary>
         public virtual void VisitVariableStatement(ITsVariableStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a simple variable declaration of the form 'x = y'.
+        /// Visits a simple variable declaration of the form 'x: type = y'.
         /// </summary>
         public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a simple variable declaration of the form 'x: type = y'.
+        /// </summary>
+        public virtual void VisitSimpleLexicalBinding(ITsSimpleLexicalBinding node) => Visit(node);
 
         /// <summary>
         /// Visits a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.

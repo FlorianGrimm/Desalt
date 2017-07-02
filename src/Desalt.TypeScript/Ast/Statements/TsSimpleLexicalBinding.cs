@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsSimpleVariableDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsSimpleLexicalBinding.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,15 +12,15 @@ namespace Desalt.TypeScript.Ast.Statements
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a simple variable declaration of the form 'x: type = y'.
+    /// Represents a simple lexical binding of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleVariableDeclaration : AstNode<TsVisitor>, ITsSimpleVariableDeclaration
+    internal class TsSimpleLexicalBinding : AstNode<TsVisitor>, ITsSimpleLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsSimpleVariableDeclaration(
+        public TsSimpleLexicalBinding(
             ITsIdentifier variableName,
             ITsType variableType = null,
             ITsExpression initializer = null)
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleVariableDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleLexicalBinding(this);
 
         public override string CodeDisplay
         {

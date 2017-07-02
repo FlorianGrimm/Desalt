@@ -47,6 +47,19 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_simple_lexical_bindings()
+        {
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(
+                Factory.SimpleLexicalBinding(
+                    s_x,
+                    Factory.String,
+                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                "x: string = 'hello'");
+        }
+
+        [TestMethod]
         public void Emit_single_name_binding()
         {
             VerifyOutput(Factory.SingleNameBinding(s_z), "z");
