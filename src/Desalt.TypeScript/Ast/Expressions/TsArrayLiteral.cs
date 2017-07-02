@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
@@ -20,7 +21,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(params ITsArrayElement[] elements)
+        internal TsArrayLiteral(IEnumerable<ITsArrayElement> elements)
         {
             Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
         }
