@@ -1,48 +1,54 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsDoWhileStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an array literal of the form '[element...]'.
+    /// Represents a do/while statement.
     /// </summary>
-    internal class TsArrayLiteral : AstNode<TsVisitor>, ITsArrayLiteral
+    internal class TsDoWhileStatement : AstNode<TsVisitor>, ITsDoWhileStatement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(IEnumerable<ITsArrayElement> elements)
+        public TsDoWhileStatement(ITsStatement doStatement, ITsExpression whileCondition)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
+            DoStatement = doStatement ?? throw new ArgumentNullException(nameof(doStatement));
+            WhileCondition = whileCondition ?? throw new ArgumentNullException(nameof(whileCondition));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsArrayElement> Elements { get; }
+        public ITsStatement DoStatement { get; }
+        public ITsExpression WhileCondition { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDoWhileStatement(this);
 
-        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
+        public override string CodeDisplay => $"do {DoStatement} while ({WhileCondition});";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            emitter.Write("do");
+            DoStatement.EmitIndentedOrInBlock(emitter, prefixForIndentedStatement: "", prefixForBlock: " ");
+
+            emitter.Write(DoStatement is ITsBlockStatement ? " while (" : "while (");
+            WhileCondition.Emit(emitter);
+            emitter.WriteLine(");");
         }
     }
 }

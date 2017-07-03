@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.Ast.Statements
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a simple variable declaration of the form 'x = y'.
+    /// Represents a simple variable declaration of the form 'x: type = y'.
     /// </summary>
     internal class TsSimpleVariableDeclaration : AstNode<TsVisitor>, ITsSimpleVariableDeclaration
     {

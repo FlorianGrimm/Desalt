@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Desalt.TypeScript.Ast.Expressions;
 
     public static partial class TsAstFactory
@@ -44,6 +45,9 @@ namespace Desalt.TypeScript.Ast
             new TsRegularExpressionLiteral(body, flags);
 
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
+
+        public static ITsArrayLiteral ArrayLiteral(params ITsExpression[] elements) =>
+            new TsArrayLiteral(elements.Select(e => ArrayElement(e, isSpreadElement: false)));
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);

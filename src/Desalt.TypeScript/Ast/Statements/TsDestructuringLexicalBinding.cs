@@ -1,48 +1,57 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsArrayLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsDestructuringLexicalBinding.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Statements
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an array literal of the form '[element...]'.
+    /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsArrayLiteral : AstNode<TsVisitor>, ITsArrayLiteral
+    internal class TsDestructuringLexicalBinding : AstNode<TsVisitor>, ITsDestructuringLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(IEnumerable<ITsArrayElement> elements)
+        public TsDestructuringLexicalBinding(
+            ITsBindingPattern bindingPattern,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
+            BindingPattern = bindingPattern ?? throw new ArgumentNullException(nameof(bindingPattern));
+            VariableType = variableType;
+            Initializer = initializer;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsArrayElement> Elements { get; }
+        public ITsBindingPattern BindingPattern { get; }
+        public ITsType VariableType { get; }
+        public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringLexicalBinding(this);
 
-        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
+        public override string CodeDisplay =>
+            $"{BindingPattern}{VariableType.ToTypeAnnotationCodeDisplay()}{Initializer.ToAssignmentCodeDisplay()}";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            BindingPattern.Emit(emitter);
+            VariableType.EmitTypeAnnotation(emitter);
+            Initializer.EmitAssignment(emitter);
         }
     }
 }

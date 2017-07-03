@@ -12,7 +12,7 @@ namespace Desalt.TypeScript.Ast.Statements
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+    /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
     internal class TsDestructuringVariableDeclaration : AstNode<TsVisitor>, ITsDestructuringVariableDeclaration
     {

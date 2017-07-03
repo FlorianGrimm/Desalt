@@ -15,6 +15,8 @@ namespace Desalt.TypeScript.Ast
 
     public static partial class TsAstFactory
     {
+        public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
+
         public static ITsBlockStatement Block(params ITsStatementListItem[] statements) =>
             new TsBlockStatement(statements);
 
@@ -35,6 +37,9 @@ namespace Desalt.TypeScript.Ast
             return new TsVariableStatement(declaration.ToSafeArray().Concat(declarations));
         }
 
+        /// <summary>
+        /// Creates a simple variable declaration of the form 'x: type = y'.
+        /// </summary>
         public static ITsSimpleVariableDeclaration SimpleVariableDeclaration(
             ITsIdentifier variableName,
             ITsType variableType = null,
@@ -44,7 +49,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// Creates a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
         /// </summary>
         public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
@@ -54,7 +59,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Creates a destructuring variable declaration of the form '{x, y} = foo' or '[x, y] = foo'.
+        /// Creates a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
         /// </summary>
         public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
@@ -153,6 +158,140 @@ namespace Desalt.TypeScript.Ast
             return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
         }
 
-        public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
+        /// <summary>
+        /// Creates a do/while statement.
+        /// </summary>
+        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition) =>
+            new TsDoWhileStatement(doStatement, whileCondition);
+
+        /// <summary>
+        /// Creates a while loop.
+        /// </summary>
+        public static ITsWhileStatement While(ITsExpression whileCondition, ITsStatement whileStatement) =>
+            new TsWhileStatement(whileCondition, whileStatement);
+
+        /// <summary>
+        /// Creates a simple lexical binding of the form 'x: type = y'.
+        /// </summary>
+        public static ITsSimpleLexicalBinding SimpleLexicalBinding(
+            ITsIdentifier variableName,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsSimpleLexicalBinding(variableName, variableType, initializer);
+        }
+
+        /// <summary>
+        /// Creates a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
+        /// </summary>
+        public static ITsDestructuringLexicalBinding DestructuringLexicalBinding(
+            ITsBindingPattern bindingPattern,
+            ITsType variableType = null,
+            ITsExpression initializer = null)
+        {
+            return new TsDestructuringLexicalBinding(bindingPattern, variableType, initializer);
+        }
+
+        /// <summary>
+        /// Creates a lexical declaration of the form 'const|let x: type, y: type = z;'.
+        /// </summary>
+        public static ITsLexicalDeclaration LexicalDeclaration(
+            bool isConst,
+            params ITsLexicalBinding[] declarations)
+        {
+            return new TsLexicalDeclaration(isConst, declarations);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsExpression initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (var i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsVariableDeclaration initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer.ToSafeArray(), condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (var i = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            IEnumerable<ITsVariableDeclaration> initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for loop of the form, 'for (const i: number = 0; i &lt; 10; i++) statement'.
+        /// </summary>
+        public static ITsForStatement For(
+            ITsLexicalDeclaration initializer,
+            ITsExpression condition,
+            ITsExpression incrementor,
+            ITsStatement statement)
+        {
+            return new TsForStatement(initializer, condition, incrementor, statement);
+        }
+
+        /// <summary>
+        /// Creates a for-in loop of the form, 'for (x in expression) statement'.
+        /// </summary>
+        public static ITsForInStatement ForIn(
+            ITsExpression initializer,
+            ITsExpression rightSide,
+            ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: false);
+        }
+
+        /// <summary>
+        /// Creates a for-in loop of the form, 'for (const x in expression) statement'.
+        /// </summary>
+        public static ITsForInStatement ForIn(
+            ForDeclarationKind declarationKind,
+            ITsBindingIdentifierOrPattern declaration,
+            ITsExpression rightSide, ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: false);
+        }
+
+        /// <summary>
+        /// Creates a for-of loop of the form, 'for (x of expression) statement'.
+        /// </summary>
+        public static ITsForOfStatement ForOf(
+            ITsExpression initializer,
+            ITsExpression rightSide,
+            ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: true);
+        }
+
+        /// <summary>
+        /// Creates a for-of loop of the form, 'for (const x of expression) statement'.
+        /// </summary>
+        public static ITsForOfStatement ForOf(
+            ForDeclarationKind declarationKind,
+            ITsBindingIdentifierOrPattern declaration,
+            ITsExpression rightSide, ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: true);
+        }
     }
 }

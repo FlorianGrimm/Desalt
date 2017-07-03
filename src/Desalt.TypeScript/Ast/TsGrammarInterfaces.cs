@@ -338,8 +338,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern
      */
 
-    public interface ITsBindingIdentifierOrPattern : IAstNode
-    { }
+    public interface ITsBindingIdentifierOrPattern : IAstNode { }
 
     /* OptionalParameterList:
      *   OptionalParameter
@@ -351,8 +350,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingIdentifier ? : StringLiteral
      */
 
-    public interface ITsOptionalParameter : IAstNode
-    { }
+    public interface ITsOptionalParameter : IAstNode { }
 
     public interface ITsBoundOptionalParameter : ITsOptionalParameter
     {
@@ -530,6 +528,22 @@ namespace Desalt.TypeScript.Ast
      * DestructuringLexicalBinding:
      *   BindingPattern TypeAnnotationOpt InitializerOpt
      */
+
+    public interface ITsLexicalBinding : IAstNode { }
+
+    public interface ITsSimpleLexicalBinding : ITsLexicalBinding
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    public interface ITsDestructuringLexicalBinding : ITsLexicalBinding
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsType VariableType { get; }
+        ITsExpression Initializer { get; }
+    }
 
     /* A.4 Functions
      * -------------

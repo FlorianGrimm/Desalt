@@ -10,6 +10,11 @@ namespace Desalt.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
+        /// Visits a debugger statement.
+        /// </summary>
+        public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);
+
+        /// <summary>
         /// Visits a block of statements.
         /// </summary>
         public virtual void VisitBlockStatement(ITsBlockStatement node) => Visit(node);
@@ -20,12 +25,12 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitEmptyStatement(ITsEmptyStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a variable declaration statement of the form 'var x = y;'.
+        /// Visits a variable declaration statement of the form 'var x: type = y;'.
         /// </summary>
         public virtual void VisitVariableStatement(ITsVariableStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a simple variable declaration of the form 'x = y'.
+        /// Visits a simple variable declaration of the form 'x: type = y'.
         /// </summary>
         public virtual void VisitSimpleVariableDeclaration(ITsSimpleVariableDeclaration node) => Visit(node);
 
@@ -71,8 +76,43 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitTryStatement(ITsTryStatement node) => Visit(node);
 
         /// <summary>
-        /// Visits a debugger statement.
+        /// Visits a do/while statement.
         /// </summary>
-        public virtual void VisitDebuggerStatement(ITsDebuggerStatement node) => Visit(node);
+        public virtual void VisitDoWhileStatement(ITsDoWhileStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a while loop statement.
+        /// </summary>
+        public virtual void VisitWhileStatement(ITsWhileStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a simple variable declaration of the form 'x: type = y'.
+        /// </summary>
+        public virtual void VisitSimpleLexicalBinding(ITsSimpleLexicalBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
+        /// </summary>
+        public virtual void VisitDestructuringLexicalBinding(ITsDestructuringLexicalBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits a lexical declaration of the form 'const|let x: type, y: type = z;'.
+        /// </summary>
+        public virtual void VisitLexicalDeclaration(ITsLexicalDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'for' loop statement.
+        /// </summary>
+        public virtual void VisitForStatement(ITsForStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a for-in loop of the form 'for (const x in expression) statement'.
+        /// </summary>
+        public virtual void VisitForInStatement(ITsForInStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a for-of loop of the form 'for (const x of expression) statement'.
+        /// </summary>
+        public virtual void VisitForOfStatement(ITsForOfStatement node) => Visit(node);
     }
 }

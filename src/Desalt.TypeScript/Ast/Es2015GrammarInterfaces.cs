@@ -635,10 +635,16 @@ namespace Desalt.TypeScript.Ast
      *   LexicalBinding
      *   BindingList , LexicalBinding
      *
-     * LexicalBinding:
+     * LexicalBinding: (see TypeScript grammar)
      *   BindingIdentifier InitializerOpt
      *   BindingPattern Initializer
      */
+
+    public interface ITsLexicalDeclaration : ITsStatement
+    {
+        bool IsConst { get; }
+        ImmutableArray<ITsLexicalBinding> Declarations { get; }
+    }
 
     /* 13.3.2 Variable Statement
      * -------------------------
@@ -774,25 +780,80 @@ namespace Desalt.TypeScript.Ast
      * -------------------------
      * IterationStatement:
      *   do Statement while ( Expression ) ;
-     *   while ( Expression ) Statement
-     *   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
+     */
+
+    public interface ITsDoWhileStatement : ITsStatement
+    {
+        ITsStatement DoStatement { get; }
+        ITsExpression WhileCondition { get; }
+    }
+
+    /*   while ( Expression ) Statement
+     */
+
+    public interface ITsWhileStatement : ITsStatement
+    {
+        ITsExpression WhileCondition { get; }
+        ITsStatement WhileStatement { get; }
+    }
+
+    /*   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
      *   for ( var VariableDeclarationList ; ExpressionOpt ; ExpressionOpt ) Statement
      *   for ( LexicalDeclaration ExpressionOpt ; ExpressionOpt ) Statement
-     *   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
+     */
+
+    public interface ITsForStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ImmutableArray<ITsVariableDeclaration> InitializerWithVariableDeclarations { get; }
+        ITsLexicalDeclaration InitializerWithLexicalDeclaration { get; }
+
+        ITsExpression Condition { get; }
+        ITsExpression Incrementor { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /*   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
      *   for ( var ForBinding in Expression ) Statement
      *   for ( ForDeclaration in Expression ) Statement
-     *   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
+     */
+
+    public interface ITsForInStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ForDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern Declaration { get; }
+
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /*   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
      *   for ( var ForBinding of AssignmentExpression ) Statement
      *   for ( ForDeclaration of AssignmentExpression ) Statement
-     *
-     * ForDeclaration:
+     */
+
+    public interface ITsForOfStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ForDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern Declaration { get; }
+
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /* ForDeclaration:
      *   LetOrConst ForBinding
      *
      * ForBinding:
      *   BindingIdentifier
      *   BindingPattern
-     *
-     * 13.8 The continue Statement
+     */
+
+    public enum ForDeclarationKind { Var, Let, Const }
+
+    /* 13.8 The continue Statement
      * ---------------------------
      * ContinueStatement:
      *   continue ;

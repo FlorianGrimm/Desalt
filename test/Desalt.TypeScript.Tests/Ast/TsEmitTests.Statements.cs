@@ -16,6 +16,12 @@ namespace Desalt.TypeScript.Tests.Ast
     public partial class TsEmitTests
     {
         [TestMethod]
+        public void Emit_debugger_statement()
+        {
+            VerifyOutput(Factory.Debugger, "debugger;\n");
+        }
+
+        [TestMethod]
         public void Emit_block_statements()
         {
             VerifyOutput(Factory.Block(Factory.Debugger, Factory.Debugger), "{\n  debugger;\n  debugger;\n}");
@@ -246,9 +252,216 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_debugger_statement()
+        public void Emit_do_while_loop_without_block()
         {
-            VerifyOutput(Factory.Debugger, "debugger;\n");
+            VerifyOutput(
+                Factory.DoWhile(
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToStatement(),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero)),
+                "do\n  x--;\nwhile (x >= 0);\n");
+        }
+
+        [TestMethod]
+        public void Emit_do_while_loop_with_block()
+        {
+            VerifyOutput(
+                Factory.DoWhile(
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock(),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero)),
+                "do {\n  x--;\n} while (x >= 0);\n");
+        }
+
+        [TestMethod]
+        public void Emit_while_loop_without_block()
+        {
+            VerifyOutput(
+                Factory.While(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToStatement()),
+                "while (x >= 0)\n  x--;\n");
+        }
+
+        [TestMethod]
+        public void Emit_while_loop_with_block()
+        {
+            VerifyOutput(
+                Factory.While(
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock()),
+                "while (x >= 0) {\n  x--;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_simple_lexical_bindings()
+        {
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(
+                Factory.SimpleLexicalBinding(
+                    s_x,
+                    Factory.String,
+                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                "x: string = 'hello'");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_no_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    initializer: s_z),
+                "[x, y] = z");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_type_annotation()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
+                    Factory.ArrayType(Factory.Number),
+                    s_z),
+                "[x, y]: number[] = z");
+        }
+
+        [TestMethod]
+        public void Emit_destructuring_lexical_binding_with_no_type_annotation_or_initializer()
+        {
+            VerifyOutput(
+                Factory.DestructuringLexicalBinding(
+                    Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y))),
+                "[x, y]");
+        }
+
+        [TestMethod]
+        public void Emit_lexical_declarations()
+        {
+            VerifyOutput(
+                Factory.LexicalDeclaration(
+                    true,
+                    Factory.SimpleLexicalBinding(s_x),
+                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                "const x, y: any = z;");
+
+            VerifyOutput(
+                Factory.LexicalDeclaration(
+                    false,
+                    Factory.SimpleLexicalBinding(s_x),
+                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                "let x, y: any = z;");
+        }
+
+        [TestMethod]
+        public void Emit_basic_for_loop()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.AssignmentExpression(s_x, TsAssignmentOperator.SimpleAssign, Factory.Zero),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (x = 0; x < 10; x++)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_for_loop_with_variable_declaration()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.SimpleVariableDeclaration(s_x, initializer: Factory.Zero),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (var x = 0; x < 10; x++)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_for_loop_with_const_and_let_declarations()
+        {
+            VerifyOutput(
+                Factory.For(
+                    Factory.LexicalDeclaration(true, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (const x: number = 0; x < 10; x++)\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.For(
+                    Factory.LexicalDeclaration(false, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
+                    Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
+                    Factory.Debugger),
+                "for (let x: number = 0; x < 10; x++)\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_basic_for_in_loop()
+        {
+            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger.ToBlock()), "for (x in y) {\n  debugger;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_for_in_loop_with_declarations()
+        {
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Const,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (const x in [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Let,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (let x in [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForIn(
+                    ForDeclarationKind.Var,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (var x in [1, 2])\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_basic_for_of_loop()
+        {
+            VerifyOutput(Factory.ForOf(s_x, s_y, Factory.Debugger.ToBlock()), "for (x of y) {\n  debugger;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_for_of_loop_with_declarations()
+        {
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Const,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (const x of [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Let,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (let x of [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Var,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (var x of [1, 2])\n  debugger;\n");
         }
     }
 }
