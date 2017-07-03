@@ -170,7 +170,7 @@ namespace Desalt.TypeScript.Ast
         //// Function and Class Expressions
         //// ===========================================================================================================
 
-        public static ITsFunctionExpression FunctionExpression(
+        public static ITsFunctionExpression Function(
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
             params ITsStatementListItem[] functionBody)
@@ -178,7 +178,7 @@ namespace Desalt.TypeScript.Ast
             return new TsFunctionExpression(callSignature, functionName, functionBody);
         }
 
-        public static ITsClassExpression ClassExpression(
+        public static ITsClassExpression Class(
             ITsIdentifier className = null,
             ITsExpression heritage = null,
             params ITsClassElement[] classBody)
