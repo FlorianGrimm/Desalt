@@ -33,7 +33,7 @@ namespace Desalt.TypeScript.Ast
             return new TsStringLiteral(value, quoteKind);
         }
 
-        public static ITsNumericLiteral DecimalLiteral(double value) =>
+        public static ITsNumericLiteral Number(double value) =>
             new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
 
         public static ITsNumericLiteral BinaryIntegerLiteral(long value) =>

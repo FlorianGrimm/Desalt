@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Number_literals_should_be_positive()
         {
-            Action action = () => Factory.DecimalLiteral(-123);
+            Action action = () => Factory.Number(-123);
             action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
             action = () => Factory.BinaryIntegerLiteral(-123);
@@ -58,10 +58,10 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_decimal_literals()
         {
-            VerifyOutput(Factory.DecimalLiteral(123), "123");
-            VerifyOutput(Factory.DecimalLiteral(1.23e4), "12300");
-            VerifyOutput(Factory.DecimalLiteral(83e45), "8.3E+46");
-            VerifyOutput(Factory.DecimalLiteral(53e-53), "5.3E-52");
+            VerifyOutput(Factory.Number(123), "123");
+            VerifyOutput(Factory.Number(1.23e4), "12300");
+            VerifyOutput(Factory.Number(83e45), "8.3E+46");
+            VerifyOutput(Factory.Number(53e-53), "5.3E-52");
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.ArrayLiteral(
                     Factory.ArrayElement(s_x),
-                    Factory.ArrayElement(Factory.DecimalLiteral(10))),
+                    Factory.ArrayElement(Factory.Number(10))),
                 "[x, 10]");
 
             VerifyOutput(
