@@ -30,7 +30,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             const string expected = @"x['throw']";
             ITsMemberBracketExpression expression =
-                Factory.MemberBracket(s_x, Factory.StringLiteral("throw", StringLiteralQuoteKind.SingleQuote));
+                Factory.MemberBracket(s_x, Factory.String("throw"));
 
             VerifyOutput(expression, expected);
         }

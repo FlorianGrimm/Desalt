@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.SimpleVariableDeclaration(
                     s_x,
                     Factory.StringType,
-                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                    Factory.String("hello")),
                 "x: string = 'hello'");
         }
 
@@ -78,7 +78,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.PatternBinding(
                     Factory.ObjectBindingPattern(
                         Factory.SingleNameBinding(
-                            Factory.Identifier("size"), Factory.StringLiteral("big", StringLiteralQuoteKind.SingleQuote)),
+                            Factory.Identifier("size"), Factory.String("big")),
                         Factory.SingleNameBinding(
                             Factory.Identifier("cords"),
                             Factory.ObjectLiteral(
@@ -300,7 +300,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.SimpleLexicalBinding(
                     s_x,
                     Factory.StringType,
-                    Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
+                    Factory.String("hello")),
                 "x: string = 'hello'");
         }
 

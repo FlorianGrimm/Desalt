@@ -35,8 +35,8 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_string_literals()
         {
-            VerifyOutput(Factory.StringLiteral("single", StringLiteralQuoteKind.SingleQuote), "'single'");
-            VerifyOutput(Factory.StringLiteral("double", StringLiteralQuoteKind.DoubleQuote), "\"double\"");
+            VerifyOutput(Factory.String("single"), "'single'");
+            VerifyOutput(Factory.String("double", StringLiteralQuoteKind.DoubleQuote), "\"double\"");
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ArrayLiteral(
                     Factory.ArrayElement(s_y),
                     Factory.ArrayElement(s_z),
-                    Factory.ArrayElement(Factory.StringLiteral("str", StringLiteralQuoteKind.SingleQuote))),
+                    Factory.ArrayElement(Factory.String("str"))),
                 "[y, z, 'str']");
         }
 

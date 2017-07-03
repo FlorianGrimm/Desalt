@@ -26,8 +26,12 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsNumericLiteral Zero => TsNumericLiteral.Zero;
 
-        public static ITsStringLiteral StringLiteral(string value, StringLiteralQuoteKind quoteKind) =>
-            new TsStringLiteral(value, quoteKind);
+        public static ITsStringLiteral String(
+            string value,
+            StringLiteralQuoteKind quoteKind = StringLiteralQuoteKind.SingleQuote)
+        {
+            return new TsStringLiteral(value, quoteKind);
+        }
 
         public static ITsNumericLiteral DecimalLiteral(double value) =>
             new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
