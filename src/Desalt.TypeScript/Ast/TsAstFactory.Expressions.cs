@@ -129,7 +129,7 @@ namespace Desalt.TypeScript.Ast
             return new TsConditionalExpression(condition, whenTrue, whenFalse);
         }
 
-        public static ITsAssignmentExpression AssignmentExpression(
+        public static ITsAssignmentExpression Assignment(
             ITsExpression leftSide,
             TsAssignmentOperator @operator,
             ITsExpression rightSide)
