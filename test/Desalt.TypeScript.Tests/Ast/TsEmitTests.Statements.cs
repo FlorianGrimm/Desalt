@@ -85,7 +85,7 @@ namespace Desalt.TypeScript.Tests.Ast
                                 Factory.PropertyAssignment(s_x, Factory.Zero),
                                 Factory.PropertyAssignment(s_y, Factory.Zero))),
                         Factory.SingleNameBinding(Factory.Identifier("radius"), Factory.DecimalLiteral(25))),
-                    Factory.EmptyObjectLiteral),
+                    Factory.EmptyObject),
                 "{size = 'big', cords = {\n  x: 0,\n  y: 0\n}, radius = 25} = {}");
         }
 
@@ -150,7 +150,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_expression_statements()
         {
-            VerifyOutput(Factory.EmptyObjectLiteral.ToStatement(), "{};\n");
+            VerifyOutput(Factory.EmptyObject.ToStatement(), "{};\n");
             VerifyOutput(
                 Factory.ExpressionStatement(Factory.UnaryExpression(s_x, TsUnaryOperator.BitwiseNot)), "~x;\n");
         }

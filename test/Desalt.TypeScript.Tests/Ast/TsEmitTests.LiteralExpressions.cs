@@ -131,7 +131,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_empty_object_literal()
         {
-            VerifyOutput(Factory.EmptyObjectLiteral, "{}");
+            VerifyOutput(Factory.EmptyObject, "{}");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Desalt.TypeScript.Ast
         //// ===========================================================================================================
 
         public static ITsThis This => TsThis.Instance;
-        public static readonly ITsObjectLiteral EmptyObjectLiteral = new TsObjectLiteral(null);
+        public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral(null);
 
         public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
         public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
@@ -47,7 +47,7 @@ namespace Desalt.TypeScript.Ast
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
         public static ITsArrayLiteral ArrayLiteral(params ITsExpression[] elements) =>
-            new TsArrayLiteral(elements.Select(e => ArrayElement(e, isSpreadElement: false)));
+            new TsArrayLiteral(elements.Select(e => ArrayElement(e)));
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
