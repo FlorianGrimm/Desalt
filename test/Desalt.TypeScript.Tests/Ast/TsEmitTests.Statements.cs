@@ -37,11 +37,11 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_simple_variable_declarations()
         {
             VerifyOutput(Factory.SimpleVariableDeclaration(s_x), "x");
-            VerifyOutput(Factory.SimpleVariableDeclaration(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(Factory.SimpleVariableDeclaration(s_x, Factory.ArrayType(Factory.BooleanType)), "x: boolean[]");
             VerifyOutput(
                 Factory.SimpleVariableDeclaration(
                     s_x,
-                    Factory.String,
+                    Factory.StringType,
                     Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
                 "x: string = 'hello'");
         }
@@ -131,7 +131,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.DestructuringVariableDeclaration(
                     Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
-                    Factory.ArrayType(Factory.Number),
+                    Factory.ArrayType(Factory.NumberType),
                     s_z),
                 "[x, y]: number[] = z");
         }
@@ -142,7 +142,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.VariableStatement(
                     Factory.SimpleVariableDeclaration(
-                        s_x, Factory.Boolean, Factory.BinaryExpression(s_y, TsBinaryOperator.LogicalAnd, s_z)),
+                        s_x, Factory.BooleanType, Factory.BinaryExpression(s_y, TsBinaryOperator.LogicalAnd, s_z)),
                     Factory.SimpleVariableDeclaration(s_p)),
                 "var x: boolean = y && z, p;\n");
         }
@@ -295,11 +295,11 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_simple_lexical_bindings()
         {
             VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
-            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.Boolean)), "x: boolean[]");
+            VerifyOutput(Factory.SimpleLexicalBinding(s_x, Factory.ArrayType(Factory.BooleanType)), "x: boolean[]");
             VerifyOutput(
                 Factory.SimpleLexicalBinding(
                     s_x,
-                    Factory.String,
+                    Factory.StringType,
                     Factory.StringLiteral("hello", StringLiteralQuoteKind.SingleQuote)),
                 "x: string = 'hello'");
         }
@@ -320,7 +320,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.DestructuringLexicalBinding(
                     Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x), Factory.SingleNameBinding(s_y)),
-                    Factory.ArrayType(Factory.Number),
+                    Factory.ArrayType(Factory.NumberType),
                     s_z),
                 "[x, y]: number[] = z");
         }
@@ -341,14 +341,14 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.LexicalDeclaration(
                     true,
                     Factory.SimpleLexicalBinding(s_x),
-                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                    Factory.SimpleLexicalBinding(s_y, Factory.AnyType, s_z)),
                 "const x, y: any = z;");
 
             VerifyOutput(
                 Factory.LexicalDeclaration(
                     false,
                     Factory.SimpleLexicalBinding(s_x),
-                    Factory.SimpleLexicalBinding(s_y, Factory.Any, s_z)),
+                    Factory.SimpleLexicalBinding(s_y, Factory.AnyType, s_z)),
                 "let x, y: any = z;");
         }
 
@@ -381,7 +381,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.For(
-                    Factory.LexicalDeclaration(true, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.LexicalDeclaration(true, Factory.SimpleLexicalBinding(s_x, Factory.NumberType, Factory.Zero)),
                     Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
                     Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
                     Factory.Debugger),
@@ -389,7 +389,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.For(
-                    Factory.LexicalDeclaration(false, Factory.SimpleLexicalBinding(s_x, Factory.Number, Factory.Zero)),
+                    Factory.LexicalDeclaration(false, Factory.SimpleLexicalBinding(s_x, Factory.NumberType, Factory.Zero)),
                     Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, Factory.DecimalLiteral(10)),
                     Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement),
                     Factory.Debugger),
