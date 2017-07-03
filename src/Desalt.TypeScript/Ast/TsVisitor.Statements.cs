@@ -129,5 +129,15 @@ namespace Desalt.TypeScript.Ast
         /// Visits a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
         /// </summary>
         public virtual void VisitSwitchStatement(ITsSwitchStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'continue' statement.
+        /// </summary>
+        public virtual void VisitContinueStatement(ITsContinueStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'break' statement.
+        /// </summary>
+        public virtual void VisitBreakStatement(ITsBreakStatement node) => Visit(node);
     }
 }

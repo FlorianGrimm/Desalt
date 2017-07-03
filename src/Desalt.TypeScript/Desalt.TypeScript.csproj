@@ -55,6 +55,7 @@
     <Compile Include="Ast\ImplementationSourceFile.cs" />
     <Compile Include="Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
+    <Compile Include="Ast\Statements\TsContinueOrBreakStatement.cs" />
     <Compile Include="Ast\Statements\TsDebuggerStatement.cs" />
     <Compile Include="Ast\Statements\TsDestructuringLexicalBinding.cs" />
     <Compile Include="Ast\Statements\TsDestructuringVariableDeclaration.cs" />

@@ -523,5 +523,29 @@ namespace Desalt.TypeScript.Tests.Ast
 }
 ".Replace("\r\n", "\n"));
         }
+
+        [TestMethod]
+        public void Emit_continue_statement_with_no_label()
+        {
+            VerifyOutput(Factory.Continue(), "continue;\n");
+        }
+
+        [TestMethod]
+        public void Emit_continue_statement_with_label()
+        {
+            VerifyOutput(Factory.Continue(s_x), "continue x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_break_statement_with_no_label()
+        {
+            VerifyOutput(Factory.Break(), "break;\n");
+        }
+
+        [TestMethod]
+        public void Emit_break_statement_with_label()
+        {
+            VerifyOutput(Factory.Break(s_x), "break x;\n");
+        }
     }
 }

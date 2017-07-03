@@ -856,14 +856,26 @@ namespace Desalt.TypeScript.Ast
      * ContinueStatement:
      *   continue ;
      *   continue [no LineTerminator here] LabelIdentifier ;
-     *
-     * 13.9 The break Statement
+     */
+
+    public interface ITsContinueStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+    }
+
+    /* 13.9 The break Statement
      * ------------------------
      * BreakStatement:
      *   break ;
      *   break [no LineTerminator here] LabelIdentifier ;
-     *
-     * 13.10 The return Statement
+     */
+
+    public interface ITsBreakStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+    }
+
+    /* 13.10 The return Statement
      * --------------------------
      * ReturnStatement:
      *   return ;

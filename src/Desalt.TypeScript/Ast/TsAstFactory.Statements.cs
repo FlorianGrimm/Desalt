@@ -311,5 +311,17 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses) =>
             new TsSwitchStatement(condition, clauses);
+
+        /// <summary>
+        /// Creates a continue statement with an optional label to continue to.
+        /// </summary>
+        public static ITsContinueStatement Continue(ITsIdentifier label = null) =>
+            new TsContinueOrBreakStatement(isContinue: true, label: label);
+
+        /// <summary>
+        /// Creates a break statement with an optional label to break to.
+        /// </summary>
+        public static ITsBreakStatement Break(ITsIdentifier label = null) =>
+            new TsContinueOrBreakStatement(isContinue: false, label: label);
     }
 }
