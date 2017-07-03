@@ -22,14 +22,14 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_null_literal()
         {
-            VerifyOutput(Factory.NullLiteral, "null");
+            VerifyOutput(Factory.Null, "null");
         }
 
         [TestMethod]
         public void Emit_boolean_literals()
         {
-            VerifyOutput(Factory.TrueLiteral, "true");
-            VerifyOutput(Factory.FalseLiteral, "false");
+            VerifyOutput(Factory.True, "true");
+            VerifyOutput(Factory.False, "false");
         }
 
         [TestMethod]

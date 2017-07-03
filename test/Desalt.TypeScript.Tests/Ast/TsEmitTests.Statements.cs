@@ -66,7 +66,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ObjectBindingPattern(
-                    Factory.SingleNameBinding(s_x, Factory.NullLiteral),
+                    Factory.SingleNameBinding(s_x, Factory.Null),
                     Factory.SingleNameBinding(s_y, Factory.DecimalLiteral(10))),
                 "{x = null, y = 10}");
         }
@@ -102,7 +102,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ArrayBindingPattern(
-                    Factory.SingleNameBinding(s_x, Factory.NullLiteral),
+                    Factory.SingleNameBinding(s_x, Factory.Null),
                     Factory.SingleNameBinding(s_y, Factory.DecimalLiteral(10))),
                 "[x = null, y = 10]");
         }
@@ -163,7 +163,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.BinaryExpression(s_x, TsBinaryOperator.StrictEquals, s_y),
                     Factory.Block(
                         Factory.AssignmentExpression(
-                                s_z, TsAssignmentOperator.SimpleAssign, Factory.TrueLiteral)
+                                s_z, TsAssignmentOperator.SimpleAssign, Factory.True)
                             .ToStatement())),
                 "if (x === y) {\n  z = true;\n}");
         }
@@ -175,7 +175,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.IfStatement(
                     Factory.BinaryExpression(s_x, TsBinaryOperator.StrictEquals, s_y),
                     Factory.AssignmentExpression(
-                            s_z, TsAssignmentOperator.SimpleAssign, Factory.TrueLiteral)
+                            s_z, TsAssignmentOperator.SimpleAssign, Factory.True)
                         .ToStatement()),
                 "if (x === y)\n  z = true;\n");
         }
@@ -188,7 +188,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.BinaryExpression(s_x, TsBinaryOperator.StrictNotEquals, s_y),
                     Factory.Block(
                         Factory.AssignmentExpression(
-                            s_z, TsAssignmentOperator.SimpleAssign, Factory.FalseLiteral).ToStatement()),
+                            s_z, TsAssignmentOperator.SimpleAssign, Factory.False).ToStatement()),
                     Factory.Block(Factory.UnaryExpression(s_p, TsUnaryOperator.PostfixIncrement).ToStatement())),
                 "if (x !== y) {\n  z = false;\n} else {\n  p++;\n}");
         }
@@ -200,7 +200,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.IfStatement(
                     Factory.BinaryExpression(s_x, TsBinaryOperator.StrictNotEquals, s_y),
                     Factory.AssignmentExpression(
-                        s_z, TsAssignmentOperator.SimpleAssign, Factory.FalseLiteral).ToStatement(),
+                        s_z, TsAssignmentOperator.SimpleAssign, Factory.False).ToStatement(),
                     Factory.UnaryExpression(s_p, TsUnaryOperator.PostfixIncrement).ToStatement()),
                 "if (x !== y)\n  z = false;\nelse\n  p++;\n");
         }

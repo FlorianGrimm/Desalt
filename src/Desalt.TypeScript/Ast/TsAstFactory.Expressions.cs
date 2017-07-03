@@ -20,9 +20,9 @@ namespace Desalt.TypeScript.Ast
         public static ITsThis This => TsThis.Instance;
         public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral(null);
 
-        public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
-        public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
-        public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
+        public static ITsNullLiteral Null => TsNullLiteral.Instance;
+        public static ITsBooleanLiteral True => TsBooleanLiteral.True;
+        public static ITsBooleanLiteral False => TsBooleanLiteral.False;
 
         public static ITsNumericLiteral Zero => TsNumericLiteral.Zero;
 
