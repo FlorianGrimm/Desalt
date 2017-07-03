@@ -70,7 +70,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_conditional_expressions()
         {
-            VerifyOutput(Factory.ConditionalExpression(s_x, s_y, s_z), "x ? y : z");
+            VerifyOutput(Factory.Conditional(s_x, s_y, s_z), "x ? y : z");
         }
     }
 }
