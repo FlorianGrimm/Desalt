@@ -618,9 +618,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsStatementListItem> Statements { get; }
     }
 
-    public interface ITsStatementListItem : IAstNode
-    {
-    }
+    public interface ITsStatementListItem : IAstNode { }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
@@ -875,8 +873,9 @@ namespace Desalt.TypeScript.Ast
      * ------------------------
      * WithStatement:
      *   with ( Expression ) Statement
-     *
-     * 13.12 The switch Statement
+     */
+
+    /* 13.12 The switch Statement
      * --------------------------
      * SwitchStatement:
      *   switch ( Expression ) CaseBlock
@@ -894,8 +893,29 @@ namespace Desalt.TypeScript.Ast
      *
      * DefaultClause:
      *   default : StatementListOpt
-     *
-     * 13.13 Labelled Statements
+     */
+
+    public interface ITsSwitchStatement : ITsStatement
+    {
+        ITsExpression Condition { get; }
+        ImmutableArray<ITsCaseOrDefaultClause> Clauses { get; }
+    }
+
+    public interface ITsCaseOrDefaultClause : IAstNode
+    {
+        ImmutableArray<ITsStatementListItem> Statements { get; }
+    }
+
+    public interface ITsCaseClause : ITsCaseOrDefaultClause
+    {
+        ITsExpression Expression { get; }
+    }
+
+    public interface ITsDefaultClause : ITsCaseOrDefaultClause
+    {
+    }
+
+    /* 13.13 Labelled Statements
      * -------------------------
      * LabelledStatement:
      *   LabelIdentifier : LabelledItem

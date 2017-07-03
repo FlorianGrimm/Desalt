@@ -97,6 +97,7 @@ namespace Desalt.Core.Emit
                 itemDelimiter: skipNewlines ? string.Empty : Options.Newline,
                 newLineAfterPrefix: true,
                 delimiterAfterLastItem: true,
+                newLineBeforeFirstItem: !skipNewlines,
                 newLineAfterLastItem: !skipNewlines,
                 emptyContents: "{ }");
         }
@@ -144,6 +145,9 @@ namespace Desalt.Core.Emit
         /// Indicates whether the last item should also have a delimiter at the end (useful for
         /// blocks to put a newline before the last brace.
         /// </param>
+        /// <param name="newLineBeforeFirstItem">
+        /// Indicates whether a newline should be included before the first item.
+        /// </param>
         /// <param name="newLineAfterLastItem">
         /// Indicates whether the last item should include a newline.
         /// </param>
@@ -159,6 +163,7 @@ namespace Desalt.Core.Emit
             string itemDelimiter = null,
             bool newLineAfterPrefix = false,
             bool delimiterAfterLastItem = false,
+            bool newLineBeforeFirstItem = false,
             bool newLineAfterLastItem = false,
             string emptyContents = null)
         {
@@ -187,7 +192,8 @@ namespace Desalt.Core.Emit
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 1);
             }
 
-            if (newLineAfterPrefix)
+            // write a new line before the first item if necessary
+            if (newLineAfterPrefix || newlineAfterItems && newLineBeforeFirstItem)
             {
                 WriteLine(prefix);
             }

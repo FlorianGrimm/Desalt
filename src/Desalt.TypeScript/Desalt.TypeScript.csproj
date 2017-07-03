@@ -70,6 +70,8 @@
     <Compile Include="Ast\Statements\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Statements\TsSimpleVariableDeclaration.cs" />
     <Compile Include="Ast\Statements\TsSingleNameBinding.cs" />
+    <Compile Include="Ast\Statements\TsSwitchClause.cs" />
+    <Compile Include="Ast\Statements\TsSwitchStatement.cs" />
     <Compile Include="Ast\Statements\TsTryStatement.cs" />
     <Compile Include="Ast\Statements\TsVariableStatement.cs" />
     <Compile Include="Ast\Statements\TsWhileStatement.cs" />

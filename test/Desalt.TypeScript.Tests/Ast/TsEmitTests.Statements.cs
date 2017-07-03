@@ -463,5 +463,65 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.Debugger),
                 "for (var x of [1, 2])\n  debugger;\n");
         }
+
+        [TestMethod]
+        public void Emit_case_clause()
+        {
+            VerifyOutput(
+                Factory.CaseClause(s_x, Factory.Debugger),
+                "case x:\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_case_clause_with_block()
+        {
+            VerifyOutput(
+                Factory.CaseClause(s_x, Factory.Debugger.ToBlock()),
+                "case x:\n  {\n    debugger;\n  }");
+        }
+
+        [TestMethod]
+        public void Emit_case_clause_with_empty_statements_should_not_indent_next_line()
+        {
+            VerifyOutput(Factory.CaseClause(s_x), "case x:\n");
+        }
+
+        [TestMethod]
+        public void Emit_default_clause()
+        {
+            VerifyOutput(
+                Factory.DefaultClause(
+                    Factory.Call(
+                        s_x,
+                        Factory.Argument(s_y),
+                        Factory.Argument(s_z))
+                    .ToStatement()),
+                "default:\n  x(y, z);\n");
+        }
+
+        [TestMethod]
+        public void Emit_switch_statement()
+        {
+            VerifyOutput(
+                Factory.Switch(
+                    s_x,
+                    Factory.CaseClause(Factory.String("a"), Factory.Debugger),
+                    Factory.CaseClause(Factory.String("b")),
+                    Factory.DefaultClause(),
+                    Factory.CaseClause(
+                        Factory.String("c"),
+                        Factory.Assignment(s_y, TsAssignmentOperator.AddAssign, Factory.Number(4))
+                        .ToStatement())),
+                @"switch (x) {
+  case 'a':
+    debugger;
+
+  case 'b':
+  default:
+  case 'c':
+    y += 4;
+}
+".Replace("\r\n", "\n"));
+        }
     }
 }

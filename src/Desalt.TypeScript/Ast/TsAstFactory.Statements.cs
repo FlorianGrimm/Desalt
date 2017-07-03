@@ -293,5 +293,23 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: true);
         }
+
+        /// <summary>
+        /// Creates a case clause in a switch statement.
+        /// </summary>
+        public static ITsCaseClause CaseClause(ITsExpression expression, params ITsStatementListItem[] statements) =>
+            TsSwitchClause.Case(expression, statements);
+
+        /// <summary>
+        /// Creates a default clause in a switch statement of the form 'default: statements'.
+        /// </summary>
+        public static ITsDefaultClause DefaultClause(params ITsStatementListItem[] statements) =>
+            TsSwitchClause.Default(statements);
+
+        /// <summary>
+        /// Creates a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
+        /// </summary>
+        public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses) =>
+            new TsSwitchStatement(condition, clauses);
     }
 }
