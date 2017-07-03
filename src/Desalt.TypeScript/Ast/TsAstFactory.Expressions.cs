@@ -36,16 +36,16 @@ namespace Desalt.TypeScript.Ast
         public static ITsNumericLiteral Number(double value) =>
             new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
 
-        public static ITsNumericLiteral BinaryIntegerLiteral(long value) =>
+        public static ITsNumericLiteral BinaryInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.BinaryInteger, value);
 
-        public static ITsNumericLiteral OctalIntegerLiteral(long value) =>
+        public static ITsNumericLiteral OctalInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.OctalInteger, value);
 
-        public static ITsNumericLiteral HexIntegerLiteral(long value) =>
+        public static ITsNumericLiteral HexInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
 
-        public static ITsRegularExpressionLiteral RegularExpressionLiteral(string body, string flags) =>
+        public static ITsRegularExpressionLiteral RegularExpression(string body, string flags) =>
             new TsRegularExpressionLiteral(body, flags);
 
         public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);

@@ -45,13 +45,13 @@ namespace Desalt.TypeScript.Tests.Ast
             Action action = () => Factory.Number(-123);
             action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
-            action = () => Factory.BinaryIntegerLiteral(-123);
+            action = () => Factory.BinaryInteger(-123);
             action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
-            action = () => Factory.OctalIntegerLiteral(-123);
+            action = () => Factory.OctalInteger(-123);
             action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
-            action = () => Factory.HexIntegerLiteral(-123);
+            action = () => Factory.HexInteger(-123);
             action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
         }
 
@@ -67,27 +67,27 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_binary_integer_literals()
         {
-            VerifyOutput(Factory.BinaryIntegerLiteral(17), "0b10001");
+            VerifyOutput(Factory.BinaryInteger(17), "0b10001");
         }
 
         [TestMethod]
         public void Emit_octal_integer_literals()
         {
-            VerifyOutput(Factory.OctalIntegerLiteral(20), "0o24");
+            VerifyOutput(Factory.OctalInteger(20), "0o24");
         }
 
         [TestMethod]
         public void Emit_hex_integer_literal()
         {
-            VerifyOutput(Factory.HexIntegerLiteral(415), "0x19f");
-            VerifyOutput(Factory.HexIntegerLiteral(48879), "0xbeef");
+            VerifyOutput(Factory.HexInteger(415), "0x19f");
+            VerifyOutput(Factory.HexInteger(48879), "0xbeef");
         }
 
         [TestMethod]
         public void Emit_regular_expression_literals()
         {
-            VerifyOutput(Factory.RegularExpressionLiteral("a-z", "g"), "/a-z/g");
-            VerifyOutput(Factory.RegularExpressionLiteral("hello", null), "/hello/");
+            VerifyOutput(Factory.RegularExpression("a-z", "g"), "/a-z/g");
+            VerifyOutput(Factory.RegularExpression("hello", null), "/hello/");
         }
 
         [TestMethod]
