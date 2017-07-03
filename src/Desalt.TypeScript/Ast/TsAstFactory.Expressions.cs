@@ -18,50 +18,54 @@ namespace Desalt.TypeScript.Ast
         //// ===========================================================================================================
 
         public static ITsThis This => TsThis.Instance;
-        public static readonly ITsObjectLiteral EmptyObjectLiteral = new TsObjectLiteral(null);
+        public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral(null);
 
-        public static ITsNullLiteral NullLiteral => TsNullLiteral.Instance;
-        public static ITsBooleanLiteral TrueLiteral => TsBooleanLiteral.True;
-        public static ITsBooleanLiteral FalseLiteral => TsBooleanLiteral.False;
+        public static ITsNullLiteral Null => TsNullLiteral.Instance;
+        public static ITsBooleanLiteral True => TsBooleanLiteral.True;
+        public static ITsBooleanLiteral False => TsBooleanLiteral.False;
 
         public static ITsNumericLiteral Zero => TsNumericLiteral.Zero;
 
-        public static ITsStringLiteral StringLiteral(string value, StringLiteralQuoteKind quoteKind) =>
-            new TsStringLiteral(value, quoteKind);
+        public static ITsStringLiteral String(
+            string value,
+            StringLiteralQuoteKind quoteKind = StringLiteralQuoteKind.SingleQuote)
+        {
+            return new TsStringLiteral(value, quoteKind);
+        }
 
-        public static ITsNumericLiteral DecimalLiteral(double value) =>
+        public static ITsNumericLiteral Number(double value) =>
             new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
 
-        public static ITsNumericLiteral BinaryIntegerLiteral(long value) =>
+        public static ITsNumericLiteral BinaryInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.BinaryInteger, value);
 
-        public static ITsNumericLiteral OctalIntegerLiteral(long value) =>
+        public static ITsNumericLiteral OctalInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.OctalInteger, value);
 
-        public static ITsNumericLiteral HexIntegerLiteral(long value) =>
+        public static ITsNumericLiteral HexInteger(long value) =>
             new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
 
-        public static ITsRegularExpressionLiteral RegularExpressionLiteral(string body, string flags) =>
+        public static ITsRegularExpressionLiteral RegularExpression(string body, string flags) =>
             new TsRegularExpressionLiteral(body, flags);
 
-        public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
+        public static ITsArrayLiteral Array(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
-        public static ITsArrayLiteral ArrayLiteral(params ITsExpression[] elements) =>
-            new TsArrayLiteral(elements.Select(e => ArrayElement(e, isSpreadElement: false)));
+        public static ITsArrayLiteral Array(params ITsExpression[] elements) =>
+            new TsArrayLiteral(elements.Select(e => ArrayElement(e)));
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
 
-        public static ITsTemplateLiteral TemplateLiteral(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+        public static ITsTemplateLiteral TemplateString(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
 
         //// ===========================================================================================================
         //// Object Literal Expressions
         //// ===========================================================================================================
 
-        public static ITsObjectLiteral ObjectLiteral(IEnumerable<ITsPropertyDefinition> propertyDefinitions) =>
+        public static ITsObjectLiteral Object(IEnumerable<ITsPropertyDefinition> propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
-        public static ITsObjectLiteral ObjectLiteral(params ITsPropertyDefinition[] propertyDefinitions) =>
+        public static ITsObjectLiteral Object(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
         public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
@@ -117,7 +121,7 @@ namespace Desalt.TypeScript.Ast
             return new TsBinaryExpression(leftSide, @operator, rightSide);
         }
 
-        public static ITsConditionalExpression ConditionalExpression(
+        public static ITsConditionalExpression Conditional(
             ITsExpression condition,
             ITsExpression whenTrue,
             ITsExpression whenFalse)
@@ -125,7 +129,7 @@ namespace Desalt.TypeScript.Ast
             return new TsConditionalExpression(condition, whenTrue, whenFalse);
         }
 
-        public static ITsAssignmentExpression AssignmentExpression(
+        public static ITsAssignmentExpression Assignment(
             ITsExpression leftSide,
             TsAssignmentOperator @operator,
             ITsExpression rightSide)
@@ -166,7 +170,7 @@ namespace Desalt.TypeScript.Ast
         //// Function and Class Expressions
         //// ===========================================================================================================
 
-        public static ITsFunctionExpression FunctionExpression(
+        public static ITsFunctionExpression Function(
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
             params ITsStatementListItem[] functionBody)
@@ -174,7 +178,7 @@ namespace Desalt.TypeScript.Ast
             return new TsFunctionExpression(callSignature, functionName, functionBody);
         }
 
-        public static ITsClassExpression ClassExpression(
+        public static ITsClassExpression Class(
             ITsIdentifier className = null,
             ITsExpression heritage = null,
             params ITsClassElement[] classBody)
