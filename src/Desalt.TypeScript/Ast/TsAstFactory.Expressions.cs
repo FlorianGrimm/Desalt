@@ -62,10 +62,10 @@ namespace Desalt.TypeScript.Ast
         //// Object Literal Expressions
         //// ===========================================================================================================
 
-        public static ITsObjectLiteral ObjectLiteral(IEnumerable<ITsPropertyDefinition> propertyDefinitions) =>
+        public static ITsObjectLiteral Object(IEnumerable<ITsPropertyDefinition> propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
-        public static ITsObjectLiteral ObjectLiteral(params ITsPropertyDefinition[] propertyDefinitions) =>
+        public static ITsObjectLiteral Object(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
         public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)

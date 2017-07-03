@@ -81,7 +81,7 @@ namespace Desalt.TypeScript.Tests.Ast
                             Factory.Identifier("size"), Factory.String("big")),
                         Factory.SingleNameBinding(
                             Factory.Identifier("cords"),
-                            Factory.ObjectLiteral(
+                            Factory.Object(
                                 Factory.PropertyAssignment(s_x, Factory.Zero),
                                 Factory.PropertyAssignment(s_y, Factory.Zero))),
                         Factory.SingleNameBinding(Factory.Identifier("radius"), Factory.Number(25))),
