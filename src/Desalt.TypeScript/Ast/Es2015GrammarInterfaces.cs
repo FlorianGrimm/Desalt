@@ -833,6 +833,16 @@ namespace Desalt.TypeScript.Ast
      *   for ( ForDeclaration of AssignmentExpression ) Statement
      */
 
+    public interface ITsForOfStatement : ITsStatement
+    {
+        ITsExpression Initializer { get; }
+        ForDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern Declaration { get; }
+
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
     /* ForDeclaration:
      *   LetOrConst ForBinding
      *

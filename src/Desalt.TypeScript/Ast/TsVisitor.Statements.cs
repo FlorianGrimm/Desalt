@@ -109,5 +109,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a for-in loop of the form 'for (const x in expression) statement'.
         /// </summary>
         public virtual void VisitForInStatement(ITsForInStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a for-of loop of the form 'for (const x of expression) statement'.
+        /// </summary>
+        public virtual void VisitForOfStatement(ITsForOfStatement node) => Visit(node);
     }
 }

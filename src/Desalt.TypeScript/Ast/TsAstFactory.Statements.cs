@@ -258,7 +258,7 @@ namespace Desalt.TypeScript.Ast
             ITsExpression rightSide,
             ITsStatement statement)
         {
-            return new TsForInStatement(initializer, rightSide, statement);
+            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: false);
         }
 
         /// <summary>
@@ -269,7 +269,29 @@ namespace Desalt.TypeScript.Ast
             ITsBindingIdentifierOrPattern declaration,
             ITsExpression rightSide, ITsStatement statement)
         {
-            return new TsForInStatement(declarationKind, declaration, rightSide, statement);
+            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: false);
+        }
+
+        /// <summary>
+        /// Creates a for-of loop of the form, 'for (x of expression) statement'.
+        /// </summary>
+        public static ITsForOfStatement ForOf(
+            ITsExpression initializer,
+            ITsExpression rightSide,
+            ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: true);
+        }
+
+        /// <summary>
+        /// Creates a for-of loop of the form, 'for (const x of expression) statement'.
+        /// </summary>
+        public static ITsForOfStatement ForOf(
+            ForDeclarationKind declarationKind,
+            ITsBindingIdentifierOrPattern declaration,
+            ITsExpression rightSide, ITsStatement statement)
+        {
+            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: true);
         }
     }
 }

@@ -399,7 +399,7 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_basic_for_in_loop()
         {
-            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger), "for (x in y)\n  debugger;\n");
+            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger.ToBlock()), "for (x in y) {\n  debugger;\n}");
         }
 
         [TestMethod]
@@ -428,6 +428,40 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
                     Factory.Debugger),
                 "for (var x in [1, 2])\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_basic_for_of_loop()
+        {
+            VerifyOutput(Factory.ForOf(s_x, s_y, Factory.Debugger.ToBlock()), "for (x of y) {\n  debugger;\n}");
+        }
+
+        [TestMethod]
+        public void Emit_for_of_loop_with_declarations()
+        {
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Const,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (const x of [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Let,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (let x of [1, 2])\n  debugger;\n");
+
+            VerifyOutput(
+                Factory.ForOf(
+                    ForDeclarationKind.Var,
+                    s_x,
+                    Factory.ArrayLiteral(Factory.DecimalLiteral(1), Factory.DecimalLiteral(2)),
+                    Factory.Debugger),
+                "for (var x of [1, 2])\n  debugger;\n");
         }
     }
 }
