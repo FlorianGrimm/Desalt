@@ -409,7 +409,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForIn(
                     ForDeclarationKind.Const,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (const x in [1, 2])\n  debugger;\n");
 
@@ -417,7 +417,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForIn(
                     ForDeclarationKind.Let,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (let x in [1, 2])\n  debugger;\n");
 
@@ -425,7 +425,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForIn(
                     ForDeclarationKind.Var,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (var x in [1, 2])\n  debugger;\n");
         }
@@ -443,7 +443,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForOf(
                     ForDeclarationKind.Const,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (const x of [1, 2])\n  debugger;\n");
 
@@ -451,7 +451,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForOf(
                     ForDeclarationKind.Let,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (let x of [1, 2])\n  debugger;\n");
 
@@ -459,7 +459,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ForOf(
                     ForDeclarationKind.Var,
                     s_x,
-                    Factory.ArrayLiteral(Factory.Number(1), Factory.Number(2)),
+                    Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
                 "for (var x of [1, 2])\n  debugger;\n");
         }

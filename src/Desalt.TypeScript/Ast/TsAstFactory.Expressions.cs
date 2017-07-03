@@ -48,9 +48,9 @@ namespace Desalt.TypeScript.Ast
         public static ITsRegularExpressionLiteral RegularExpression(string body, string flags) =>
             new TsRegularExpressionLiteral(body, flags);
 
-        public static ITsArrayLiteral ArrayLiteral(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
+        public static ITsArrayLiteral Array(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
-        public static ITsArrayLiteral ArrayLiteral(params ITsExpression[] elements) =>
+        public static ITsArrayLiteral Array(params ITsExpression[] elements) =>
             new TsArrayLiteral(elements.Select(e => ArrayElement(e)));
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
