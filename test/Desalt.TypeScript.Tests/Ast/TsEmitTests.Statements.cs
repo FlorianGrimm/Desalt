@@ -547,5 +547,18 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.Break(s_x), "break x;\n");
         }
+
+        [TestMethod]
+        public void Emit_a_return_statement()
+        {
+            VerifyOutput(
+                Factory.Return(Factory.BinaryExpression(s_x, TsBinaryOperator.Divide, s_y)), "return x / y;\n");
+        }
+
+        [TestMethod]
+        public void Emit_a_return_statement_with_no_expression()
+        {
+            VerifyOutput(Factory.Return(), "return;\n");
+        }
     }
 }

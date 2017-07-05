@@ -880,8 +880,14 @@ namespace Desalt.TypeScript.Ast
      * ReturnStatement:
      *   return ;
      *   return [no LineTerminator here] Expression ;
-     *
-     * 13.11 The with Statement
+     */
+
+    public interface ITsReturnStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /* 13.11 The with Statement
      * ------------------------
      * WithStatement:
      *   with ( Expression ) Statement

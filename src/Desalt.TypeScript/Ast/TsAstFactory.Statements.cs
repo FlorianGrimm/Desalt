@@ -323,5 +323,11 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsBreakStatement Break(ITsIdentifier label = null) =>
             new TsContinueOrBreakStatement(isContinue: false, label: label);
+
+        /// <summary>
+        /// Create a 'return' statement.
+        /// </summary>
+        public static ITsReturnStatement Return(ITsExpression expression = null) =>
+            new TsReturnStatement(expression);
     }
 }

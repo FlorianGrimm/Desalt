@@ -139,5 +139,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a 'break' statement.
         /// </summary>
         public virtual void VisitBreakStatement(ITsBreakStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'return' statement
+        /// </summary>
+        public virtual void VisitReturnStatement(ITsReturnStatement node) => Visit(node);
     }
 }
