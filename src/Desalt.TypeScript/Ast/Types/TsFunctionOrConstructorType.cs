@@ -85,7 +85,7 @@ namespace Desalt.TypeScript.Ast.Types
                     code += $"<{TypeParameters.ToElidedList()}>";
                 }
 
-                code += $"{Parameters?.CodeDisplay} => {ReturnType}";
+                code += $"({Parameters?.CodeDisplay}) => {ReturnType}";
 
                 return code;
             }
@@ -103,7 +103,10 @@ namespace Desalt.TypeScript.Ast.Types
                 emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
+            emitter.Write("(");
             Parameters?.Emit(emitter);
+            emitter.Write(")");
+
             emitter.Write(" => ");
             ReturnType.Emit(emitter);
         }

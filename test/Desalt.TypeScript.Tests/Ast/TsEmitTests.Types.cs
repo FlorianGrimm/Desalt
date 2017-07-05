@@ -204,5 +204,39 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.IntersectionType(s_TRef, Factory.StringType, Factory.ArrayType(Factory.NumberType)),
                 "T & string & number[]");
         }
+
+        [TestMethod]
+        public void Emit_function_type()
+        {
+            VerifyOutput(
+                Factory.FunctionType(
+                    Factory.TypeParameter(s_T).ToSafeArray(),
+                    Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
+                    Factory.StringType),
+                "<T>(x, y) => string");
+
+            VerifyOutput(
+                Factory.FunctionType(
+                    Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
+                    Factory.StringType),
+                "(x, y) => string");
+        }
+
+        [TestMethod]
+        public void Emit_ctor_type()
+        {
+            VerifyOutput(
+                Factory.ConstructorType(
+                    Factory.TypeParameter(s_T).ToSafeArray(),
+                    Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
+                    Factory.StringType),
+                "new <T>(x, y) => string");
+
+            VerifyOutput(
+                Factory.ConstructorType(
+                    Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
+                    Factory.StringType),
+                "new (x, y) => string");
+        }
     }
 }
