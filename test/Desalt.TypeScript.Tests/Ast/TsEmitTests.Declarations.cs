@@ -72,5 +72,52 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.SimpleLexicalBinding(s_y, Factory.AnyType, s_z)),
                 "let x, y: any = z;");
         }
+
+        [TestMethod]
+        public void Emit_anonymous_function_declaration_with_no_body()
+        {
+            VerifyOutput(
+                Factory.FunctionDeclaration(
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)))),
+                "function(x: number);\n");
+        }
+
+        [TestMethod]
+        public void Emit_named_function_declaration_with_no_body()
+        {
+            VerifyOutput(
+                Factory.FunctionDeclaration(
+                    Factory.Identifier("func"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.BooleanType)),
+                        Factory.AnyType)),
+                "function func(x: boolean): any;\n");
+        }
+
+        [TestMethod]
+        public void Emit_anonymous_function_declaration_with_body()
+        {
+            VerifyOutput(
+                Factory.FunctionDeclaration(
+                    null,
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType))),
+                    Factory.Return()),
+                "function(x: number) {\n  return;\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_named_function_declaration_with_body()
+        {
+            VerifyOutput(
+                Factory.FunctionDeclaration(
+                    Factory.Identifier("func"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.BooleanType)),
+                        Factory.AnyType),
+                    Factory.Return(Factory.Zero)),
+                "function func(x: boolean): any {\n  return 0;\n}\n");
+        }
     }
 }

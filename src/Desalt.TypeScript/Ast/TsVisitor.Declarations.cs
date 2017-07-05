@@ -23,5 +23,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a lexical declaration of the form 'const|let x: type, y: type = z;'.
         /// </summary>
         public virtual void VisitLexicalDeclaration(ITsLexicalDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a function declaration of the form 'function [name] signature { body }'.
+        /// </summary>
+        public virtual void VisitFunctionDeclaration(ITsFunctionDeclaration node) => Visit(node);
     }
 }

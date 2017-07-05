@@ -42,5 +42,32 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsLexicalDeclaration(isConst, declarations);
         }
+
+        /// <summary>
+        /// Creates a function declaration of the form 'function [name] signature { body }'.
+        /// </summary>
+        public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature) =>
+            new TsFunctionDeclaration(callSignature);
+
+        /// <summary>
+        /// Creates a function declaration of the form 'function [name] signature { body }'.
+        /// </summary>
+        public static ITsFunctionDeclaration FunctionDeclaration(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature)
+        {
+            return new TsFunctionDeclaration(callSignature, functionName);
+        }
+
+        /// <summary>
+        /// Creates a function declaration of the form 'function [name] signature { body }'.
+        /// </summary>
+        public static ITsFunctionDeclaration FunctionDeclaration(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature,
+            params ITsStatementListItem[] functionBody)
+        {
+            return new TsFunctionDeclaration(callSignature, functionName, functionBody);
+        }
     }
 }

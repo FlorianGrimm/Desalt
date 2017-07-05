@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\Declarations\TsDestructuringLexicalBinding.cs" />
+    <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
