@@ -239,7 +239,9 @@ namespace Desalt.TypeScript.Ast
      *   this
      */
 
-    public interface ITsThisType : ITsType { }
+    public interface ITsThisType : ITsType
+    {
+    }
 
     /* PropertySignature:
      *   PropertyName ?Opt TypeAnnotationOpt

@@ -244,5 +244,11 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.TypeQuery(Factory.QualifiedName("a.b.c")), "typeof a.b.c");
         }
+
+        [TestMethod]
+        public void Emit_this_type()
+        {
+            VerifyOutput(Factory.ThisType, "this");
+        }
     }
 }
