@@ -586,6 +586,7 @@ namespace Desalt.TypeScript.Ast
      *   HoistableDeclaration
      *   ClassDeclaration
      *   LexicalDeclaration
+     *   (see more in TypeScript grammar)
      *
      * HoistableDeclaration:
      *   FunctionDeclaration
@@ -595,6 +596,8 @@ namespace Desalt.TypeScript.Ast
      *   IterationStatement
      *   SwitchStatement
      */
+
+    public interface ITsDeclaration : ITsStatementListItem { }
 
     /* 13.2 Block
      * ----------
@@ -638,7 +641,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern Initializer
      */
 
-    public interface ITsLexicalDeclaration : ITsStatement
+    public interface ITsLexicalDeclaration : ITsDeclaration
     {
         bool IsConst { get; }
         ImmutableArray<ITsLexicalBinding> Declarations { get; }
