@@ -188,5 +188,13 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.TupleType(Factory.BooleanType, Factory.StringType),
                 "[boolean, string]");
         }
+
+        [TestMethod]
+        public void Emit_union_types()
+        {
+            VerifyOutput(
+                Factory.UnionType(s_TRef, Factory.StringType, Factory.ArrayType(Factory.NumberType)),
+                "T | string | number[]");
+        }
     }
 }

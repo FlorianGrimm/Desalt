@@ -186,7 +186,10 @@ namespace Desalt.TypeScript.Ast
      *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
      */
 
-    public interface ITsUnionType : ITsType { }
+    public interface ITsUnionType : ITsType
+    {
+        ImmutableArray<ITsType> Types { get; }
+    }
 
     /* IntersectionType:
      *   IntersectionOrPrimaryType & PrimaryType

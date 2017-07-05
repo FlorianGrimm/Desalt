@@ -170,5 +170,11 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
         }
+
+        /// <summary>
+        /// Creates a union type of the form 'type1 | type2'.
+        /// </summary>
+        public static ITsUnionType UnionType(ITsType type1, ITsType type2, params ITsType[] otherTypes) =>
+            new TsUnionType(type1, type2, otherTypes);
     }
 }
