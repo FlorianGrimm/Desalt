@@ -60,7 +60,9 @@ namespace Desalt.TypeScript.Ast
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITsThis : ITsExpression { }
+    public interface ITsThis : ITsExpression
+    {
+    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
@@ -98,7 +100,9 @@ namespace Desalt.TypeScript.Ast
      *   ' SingleStringCharacters '
      */
 
-    public interface ITsNullLiteral : ITsExpression { }
+    public interface ITsNullLiteral : ITsExpression
+    {
+    }
 
     public interface ITsBooleanLiteral : ITsExpression
     {
@@ -221,8 +225,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
 
-    public interface ITsPropertyDefinition : IAstNode
-    { }
+    public interface ITsPropertyDefinition : IAstNode { }
 
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {
@@ -236,8 +239,7 @@ namespace Desalt.TypeScript.Ast
         ITsExpression Initializer { get; }
     }
 
-    public interface ITsPropertyName : IAstNode
-    { }
+    public interface ITsPropertyName : IAstNode { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }
 
@@ -578,9 +580,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : ITsStatementListItem
-    {
-    }
+    public interface ITsStatement : ITsStatementListItem { }
 
     /* Declaration:
      *   HoistableDeclaration
