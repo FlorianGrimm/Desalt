@@ -962,6 +962,11 @@ namespace Desalt.TypeScript.Ast
      *   throw [no LineTerminator here] Expression ;
      */
 
+    public interface ITsThrowStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
     /* 12.14 The try Statement
      * -----------------------
      * TryStatement:

@@ -592,5 +592,14 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()))),
                 "switch (x) {\n  case 1:\n  Label:\n    return;\n}\n");
         }
+
+        [TestMethod]
+        public void Emit_throw_statement()
+        {
+            VerifyOutput(
+                Factory.Throw(
+                    Factory.NewCall(Factory.Identifier("Error"), Factory.Argument(Factory.String("message")))),
+                "throw new Error('message');\n");
+        }
     }
 }

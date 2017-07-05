@@ -351,5 +351,10 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsLabelledStatement(label, functionDeclaration);
         }
+
+        /// <summary>
+        /// Creates a new 'throw' statement.
+        /// </summary>
+        public static ITsThrowStatement Throw(ITsExpression expression) => new TsThrowStatement(expression);
     }
 }

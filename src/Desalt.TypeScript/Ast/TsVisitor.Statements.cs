@@ -154,5 +154,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a labelled statement.
         /// </summary>
         public virtual void VisitLabelledStatement(ITsLabelledStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'throw' statement.
+        /// </summary>
+        public virtual void VisitThrowStatement(ITsThrowStatement node) => Visit(node);
     }
 }
