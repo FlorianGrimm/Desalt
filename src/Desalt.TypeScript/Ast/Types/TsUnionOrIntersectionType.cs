@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsUnionType.cs" company="Justin Rockwood">
+// <copyright file="TsUnionOrIntersectionType.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,15 +14,16 @@ namespace Desalt.TypeScript.Ast.Types
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a union type of the form 'type1 | type2'.
+    /// Represents a union type of the form 'type1 | type2' or an intersection type of the form
+    /// 'type1 &amp; type2'.
     /// </summary>
-    internal class TsUnionType : AstNode<TsVisitor>, ITsUnionType
+    internal class TsUnionOrIntersectionType : AstNode<TsVisitor>, ITsUnionType, ITsIntersectionType
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsUnionType(ITsType type1, ITsType type2, params ITsType[] otherTypes)
+        public TsUnionOrIntersectionType(ITsType type1, ITsType type2, IEnumerable<ITsType> otherTypes, bool isUnion)
         {
             var list = new List<ITsType>
             {
@@ -32,6 +33,7 @@ namespace Desalt.TypeScript.Ast.Types
             list.AddRange(otherTypes);
 
             Types = list.ToImmutableArray();
+            IsUnion = isUnion;
         }
 
         //// ===========================================================================================================
@@ -39,15 +41,28 @@ namespace Desalt.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public ImmutableArray<ITsType> Types { get; }
+        public bool IsUnion { get; }
+
+        private string Delimiter => IsUnion ? " | " : " & ";
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitUnionType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsUnion)
+            {
+                visitor.VisitUnionType(this);
+            }
+            else
+            {
+                visitor.VisitIntersectionType(this);
+            }
+        }
 
-        public override string CodeDisplay => Types.ToElidedList(" | ");
+        public override string CodeDisplay => Types.ToElidedList(Delimiter);
 
-        public override void Emit(Emitter emitter) => emitter.WriteItems(Types, indent: false, itemDelimiter: " | ");
+        public override void Emit(Emitter emitter) => emitter.WriteItems(Types, indent: false, itemDelimiter: Delimiter);
     }
 }

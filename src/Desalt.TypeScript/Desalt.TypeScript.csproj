@@ -116,7 +116,7 @@
     <Compile Include="Ast\Types\TsTypeParameter.cs" />
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
-    <Compile Include="Ast\Types\TsUnionType.cs" />
+    <Compile Include="Ast\Types\TsUnionOrIntersectionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

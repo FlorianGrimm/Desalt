@@ -196,5 +196,13 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.UnionType(s_TRef, Factory.StringType, Factory.ArrayType(Factory.NumberType)),
                 "T | string | number[]");
         }
+
+        [TestMethod]
+        public void Emit_intersection_types()
+        {
+            VerifyOutput(
+                Factory.IntersectionType(s_TRef, Factory.StringType, Factory.ArrayType(Factory.NumberType)),
+                "T & string & number[]");
+        }
     }
 }

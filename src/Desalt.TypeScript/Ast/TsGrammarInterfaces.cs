@@ -195,7 +195,10 @@ namespace Desalt.TypeScript.Ast
      *   IntersectionOrPrimaryType & PrimaryType
      */
 
-    public interface ITsIntersectionType : ITsType { }
+    public interface ITsIntersectionType : ITsType
+    {
+        ImmutableArray<ITsType> Types { get; }
+    }
 
     /* FunctionType:
      *   TypeParametersOpt ( ParameterListOpt ) => Type

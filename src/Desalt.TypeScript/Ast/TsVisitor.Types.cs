@@ -128,5 +128,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a union type of the form 'type1 | type2'.
         /// </summary>
         public virtual void VisitUnionType(ITsUnionType node) => Visit(node);
+
+        /// <summary>
+        /// Visits an interection type of the form 'type1 &amp; type2'.
+        /// </summary>
+        public virtual void VisitIntersectionType(ITsIntersectionType node) => Visit(node);
     }
 }
