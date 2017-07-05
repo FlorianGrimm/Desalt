@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast
         public static ITsConstructorType ConstructorType(ITsType returnType) =>
             new TsFunctionOrConstructorType(returnType, isConstructorType: true);
 
-        public static ITsTypeQuery TypeQuery(ITsTypeQueryExpression query) => new TsTypeQuery(query);
+        public static ITsTypeQuery TypeQuery(ITsTypeName query) => new TsTypeQuery(query);
 
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,

@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTypeQuery(ITsTypeQueryExpression query)
+        public TsTypeQuery(ITsTypeName query)
         {
             Query = query ?? throw new ArgumentNullException(nameof(query));
         }
@@ -29,7 +29,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeQueryExpression Query { get; }
+        public ITsTypeName Query { get; }
 
         //// ===========================================================================================================
         //// Methods

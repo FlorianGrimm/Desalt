@@ -238,5 +238,11 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.StringType),
                 "new (x, y) => string");
         }
+
+        [TestMethod]
+        public void Emit_type_query()
+        {
+            VerifyOutput(Factory.TypeQuery(Factory.QualifiedName("a.b.c")), "typeof a.b.c");
+        }
     }
 }

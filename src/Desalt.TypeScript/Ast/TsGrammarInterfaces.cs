@@ -232,10 +232,8 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsTypeQuery : ITsType
     {
-        ITsTypeQueryExpression Query { get; }
+        ITsTypeName Query { get; }
     }
-
-    public interface ITsTypeQueryExpression : ITsQualifiedName { }
 
     /* ThisType:
      *   this
