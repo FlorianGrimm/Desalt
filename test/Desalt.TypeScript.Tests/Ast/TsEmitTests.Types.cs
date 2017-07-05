@@ -9,19 +9,26 @@ namespace Desalt.TypeScript.Tests.Ast
 {
     using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
         [TestMethod]
         public void Emit_type_parameter_with_no_constraint()
         {
-            VerifyOutput(TsAstFactory.TypeParameter(s_T), "T");
+            VerifyOutput(Factory.TypeParameter(s_T), "T");
         }
 
         [TestMethod]
         public void Emit_type_parameter_with_constraint()
         {
-            VerifyOutput(TsAstFactory.TypeParameter(s_T, TsAstFactory.TypeReference(s_MyType)), "T extends MyType");
+            VerifyOutput(Factory.TypeParameter(s_T, Factory.TypeReference(s_MyType)), "T extends MyType");
+        }
+
+        [TestMethod]
+        public void Emit_parenthesized_type()
+        {
+            VerifyOutput(Factory.SymbolType.WithParentheses(), "(symbol)");
         }
     }
 }
