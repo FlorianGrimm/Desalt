@@ -138,9 +138,9 @@ namespace Desalt.TypeScript.Ast
         public static ITsIndexSignature IndexSignature(
             ITsIdentifier parameterName,
             bool isParameterNumberType,
-            ITsType parameterType)
+            ITsType returnType)
         {
-            return new TsIndexSignature(parameterName, isParameterNumberType, parameterType);
+            return new TsIndexSignature(parameterName, isParameterNumberType, returnType);
         }
 
         public static ITsMethodSignature MethodSignature(

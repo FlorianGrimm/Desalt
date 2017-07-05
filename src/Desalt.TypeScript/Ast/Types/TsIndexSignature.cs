@@ -20,11 +20,11 @@ namespace Desalt.TypeScript.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsIndexSignature(ITsIdentifier parameterName, bool isParameterNumberType, ITsType parameterType)
+        public TsIndexSignature(ITsIdentifier parameterName, bool isParameterNumberType, ITsType returnType)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
             IsParameterNumberType = isParameterNumberType;
-            ParameterType = parameterType ?? throw new ArgumentNullException(nameof(parameterType));
+            ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
         }
 
         //// ===========================================================================================================
@@ -33,7 +33,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public ITsIdentifier ParameterName { get; }
         public bool IsParameterNumberType { get; }
-        public ITsType ParameterType { get; }
+        public ITsType ReturnType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -47,7 +47,7 @@ namespace Desalt.TypeScript.Ast.Types
             {
                 string display = $"[{ParameterName.CodeDisplay}: ";
                 display += IsParameterNumberType ? "number" : "string";
-                display += $"]: {ParameterType}";
+                display += $"]: {ReturnType}";
                 return display;
             }
         }
@@ -59,7 +59,7 @@ namespace Desalt.TypeScript.Ast.Types
             emitter.Write(": ");
             emitter.Write(IsParameterNumberType ? "number" : "string");
             emitter.Write("]: ");
-            ParameterType.Emit(emitter);
+            ReturnType.Emit(emitter);
         }
     }
 }

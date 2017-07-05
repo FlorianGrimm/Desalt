@@ -385,7 +385,7 @@ namespace Desalt.TypeScript.Ast
     {
         ITsIdentifier ParameterName { get; }
         bool IsParameterNumberType { get; }
-        ITsType ParameterType { get; }
+        ITsType ReturnType { get; }
     }
 
     /* MethodSignature:
