@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Ast\TsEmitTests.AssignmentExpressions.cs" />
     <Compile Include="Ast\TsEmitTests.cs" />
+    <Compile Include="Ast\TsEmitTests.Declarations.cs" />
     <Compile Include="Ast\TsEmitTests.LeftHandSideExpressions.cs" />
     <Compile Include="Ast\TsEmitTests.LiteralExpressions.cs" />
     <Compile Include="Ast\TsEmitTests.SourceFile.cs" />

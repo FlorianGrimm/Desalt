@@ -171,38 +171,6 @@ namespace Desalt.TypeScript.Ast
             new TsWhileStatement(whileCondition, whileStatement);
 
         /// <summary>
-        /// Creates a simple lexical binding of the form 'x: type = y'.
-        /// </summary>
-        public static ITsSimpleLexicalBinding SimpleLexicalBinding(
-            ITsIdentifier variableName,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
-        {
-            return new TsSimpleLexicalBinding(variableName, variableType, initializer);
-        }
-
-        /// <summary>
-        /// Creates a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]: type = foo'.
-        /// </summary>
-        public static ITsDestructuringLexicalBinding DestructuringLexicalBinding(
-            ITsBindingPattern bindingPattern,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
-        {
-            return new TsDestructuringLexicalBinding(bindingPattern, variableType, initializer);
-        }
-
-        /// <summary>
-        /// Creates a lexical declaration of the form 'const|let x: type, y: type = z;'.
-        /// </summary>
-        public static ITsLexicalDeclaration LexicalDeclaration(
-            bool isConst,
-            params ITsLexicalBinding[] declarations)
-        {
-            return new TsLexicalDeclaration(isConst, declarations);
-        }
-
-        /// <summary>
         /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
         /// </summary>
         public static ITsForStatement For(

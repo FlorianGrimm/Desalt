@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Statements
+namespace Desalt.TypeScript.Ast.Declarations
 {
     using System;
     using System.Collections.Generic;

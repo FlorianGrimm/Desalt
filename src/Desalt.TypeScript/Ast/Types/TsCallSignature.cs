@@ -69,7 +69,10 @@ namespace Desalt.TypeScript.Ast.Types
                 emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
+            emitter.Write("(");
             Parameters?.Emit(emitter);
+            emitter.Write(")");
+
             ReturnType.EmitTypeAnnotation(emitter);
         }
     }
