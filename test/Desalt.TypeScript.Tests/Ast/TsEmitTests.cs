@@ -27,7 +27,8 @@ namespace Desalt.TypeScript.Tests.Ast
         // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
         private static readonly ITsIdentifier s_T = Factory.Identifier("T");
-        private static readonly ITsIdentifier s_MyType = Factory.Identifier("MyType");
+        private static readonly ITsTypeReference s_TRef = Factory.TypeReference(s_T);
+        private static readonly ITsTypeReference s_MyTypeRef = Factory.TypeReference(Factory.Identifier("MyType"));
 #pragma warning restore IDE1006 // Naming Styles
         // ReSharper restore InconsistentNaming
 

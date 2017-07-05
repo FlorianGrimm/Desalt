@@ -155,8 +155,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsTypeMember> TypeMembers { get; }
     }
 
-    public interface ITsTypeMember : IAstNode
-    { }
+    public interface ITsTypeMember : IAstNode { }
 
     /* ArrayType:
      *   PrimaryType [no LineTerminator here] [ ]

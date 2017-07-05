@@ -40,6 +40,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(TypeMembers);
+        public override void Emit(Emitter emitter) => emitter.WriteItems(
+            TypeMembers, indent: false, prefix: "{ ", suffix: " }", itemDelimiter: ", ", emptyContents: "{ }");
     }
 }

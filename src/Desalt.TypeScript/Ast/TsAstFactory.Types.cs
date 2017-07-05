@@ -64,15 +64,20 @@ namespace Desalt.TypeScript.Ast
             return new TsPropertySignature(propertyName, isOptional, propertyType);
         }
 
+        public static ITsCallSignature CallSignature()
+        {
+            return new TsCallSignature();
+        }
+
         public static ITsCallSignature CallSignature(
-            ITsParameterList parameters = null,
+            ITsParameterList parameters,
             ITsType returnType = null)
         {
             return new TsCallSignature(typeParameters: null, parameters: parameters, returnType: returnType);
         }
 
         public static ITsCallSignature CallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            IEnumerable<ITsTypeParameter> typeParameters,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
@@ -126,6 +131,13 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType parameterType = null) =>
             new TsRestParameter(parameterName, parameterType);
+
+        public static ITsConstructSignature ConstructSignature(
+            ITsParameterList parameterList = null,
+            ITsType returnType = null)
+        {
+            return new TsConstructSignature(typeParameters: null, parameterList: parameterList, returnType: returnType);
+        }
 
         public static ITsConstructSignature ConstructSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
