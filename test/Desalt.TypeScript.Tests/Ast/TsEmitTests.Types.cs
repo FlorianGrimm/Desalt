@@ -181,5 +181,12 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(Factory.ArrayType(Factory.StringType), "string[]");
         }
 
+        [TestMethod]
+        public void Emit_tuple_type()
+        {
+            VerifyOutput(
+                Factory.TupleType(Factory.BooleanType, Factory.StringType),
+                "[boolean, string]");
+        }
     }
 }
