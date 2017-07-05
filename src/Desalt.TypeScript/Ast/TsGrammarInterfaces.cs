@@ -122,11 +122,9 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsType> TypeArguments { get; }
     }
 
-    public interface ITsTypeName : IAstNode { }
+    public interface ITsTypeName : ITsExpression { }
 
-    public interface ITsNamespaceName : ITsQualifiedName { }
-
-    public interface ITsQualifiedName : ITsExpression
+    public interface ITsQualifiedName : ITsTypeName
     {
         ImmutableArray<ITsIdentifier> Left { get; }
         ITsIdentifier Right { get; }

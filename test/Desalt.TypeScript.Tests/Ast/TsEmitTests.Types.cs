@@ -30,5 +30,28 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.SymbolType.WithParentheses(), "(symbol)");
         }
+
+        [TestMethod]
+        public void Emit_simple_type_reference_with_no_type_arguments()
+        {
+            VerifyOutput(Factory.TypeReference(s_T), "T");
+        }
+
+        [TestMethod]
+        public void Emit_qualified_name_type_reference_with_no_type_arguments()
+        {
+            VerifyOutput(Factory.TypeReference(Factory.QualifiedName("Ns.Class")), "Ns.Class");
+        }
+
+        [TestMethod]
+        public void Emit_type_reference_with_type_arguments()
+        {
+            VerifyOutput(
+                Factory.TypeReference(
+                    Factory.Identifier("Sub"),
+                    Factory.TypeReference(
+                        Factory.Identifier("T1"), Factory.TypeReference(Factory.Identifier("T2")))),
+                "Sub<T1<T2>>");
+        }
     }
 }
