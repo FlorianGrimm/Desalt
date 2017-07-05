@@ -60,7 +60,9 @@ namespace Desalt.TypeScript.Ast
      *   CoverParenthesizedExpressionAndArrowParameterList
      */
 
-    public interface ITsThis : ITsExpression { }
+    public interface ITsThis : ITsExpression
+    {
+    }
 
     /*
      * CoverParenthesizedExpressionAndArrowParameterList:
@@ -98,7 +100,9 @@ namespace Desalt.TypeScript.Ast
      *   ' SingleStringCharacters '
      */
 
-    public interface ITsNullLiteral : ITsExpression { }
+    public interface ITsNullLiteral : ITsExpression
+    {
+    }
 
     public interface ITsBooleanLiteral : ITsExpression
     {
@@ -221,8 +225,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
 
-    public interface ITsPropertyDefinition : IAstNode
-    { }
+    public interface ITsPropertyDefinition : IAstNode { }
 
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {
@@ -236,8 +239,7 @@ namespace Desalt.TypeScript.Ast
         ITsExpression Initializer { get; }
     }
 
-    public interface ITsPropertyName : IAstNode
-    { }
+    public interface ITsPropertyName : IAstNode { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }
 
@@ -578,9 +580,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : ITsStatementListItem
-    {
-    }
+    public interface ITsStatement : ITsStatementListItem { }
 
     /* Declaration:
      *   HoistableDeclaration
@@ -618,9 +618,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsStatementListItem> Statements { get; }
     }
 
-    public interface ITsStatementListItem : IAstNode
-    {
-    }
+    public interface ITsStatementListItem : IAstNode { }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
@@ -858,25 +856,50 @@ namespace Desalt.TypeScript.Ast
      * ContinueStatement:
      *   continue ;
      *   continue [no LineTerminator here] LabelIdentifier ;
-     *
-     * 13.9 The break Statement
+     */
+
+    public interface ITsContinueStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+    }
+
+    /* 13.9 The break Statement
      * ------------------------
      * BreakStatement:
      *   break ;
      *   break [no LineTerminator here] LabelIdentifier ;
-     *
-     * 13.10 The return Statement
+     */
+
+    public interface ITsBreakStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+    }
+
+    /* 13.10 The return Statement
      * --------------------------
      * ReturnStatement:
      *   return ;
      *   return [no LineTerminator here] Expression ;
-     *
-     * 13.11 The with Statement
+     */
+
+    public interface ITsReturnStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /* 13.11 The with Statement
      * ------------------------
      * WithStatement:
      *   with ( Expression ) Statement
-     *
-     * 13.12 The switch Statement
+     */
+
+    public interface ITsWithStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /* 13.12 The switch Statement
      * --------------------------
      * SwitchStatement:
      *   switch ( Expression ) CaseBlock
@@ -894,8 +917,29 @@ namespace Desalt.TypeScript.Ast
      *
      * DefaultClause:
      *   default : StatementListOpt
-     *
-     * 13.13 Labelled Statements
+     */
+
+    public interface ITsSwitchStatement : ITsStatement
+    {
+        ITsExpression Condition { get; }
+        ImmutableArray<ITsCaseOrDefaultClause> Clauses { get; }
+    }
+
+    public interface ITsCaseOrDefaultClause : IAstNode
+    {
+        ImmutableArray<ITsStatementListItem> Statements { get; }
+    }
+
+    public interface ITsCaseClause : ITsCaseOrDefaultClause
+    {
+        ITsExpression Expression { get; }
+    }
+
+    public interface ITsDefaultClause : ITsCaseOrDefaultClause
+    {
+    }
+
+    /* 13.13 Labelled Statements
      * -------------------------
      * LabelledStatement:
      *   LabelIdentifier : LabelledItem
@@ -903,12 +947,25 @@ namespace Desalt.TypeScript.Ast
      * LabelledItem:
      *   Statement
      *   FunctionDeclaration
-     *
-     * 13.14 The throw Statement
+     */
+
+    public interface ITsLabelledStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+        ITsStatement Statement { get; }
+        ITsFunctionDeclaration FunctionDeclaration { get; }
+    }
+
+    /* 13.14 The throw Statement
      * -------------------------
      * ThrowStatement:
      *   throw [no LineTerminator here] Expression ;
      */
+
+    public interface ITsThrowStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
 
     /* 12.14 The try Statement
      * -----------------------
@@ -950,13 +1007,12 @@ namespace Desalt.TypeScript.Ast
      *
      * 14.1 Function Definitions
      * ------------------------
-     * FunctionDeclaration:
+     * FunctionDeclaration: (see TypeScript Grammar)
      *   function BindingIdentifier ( FormalParameters ) { FunctionBody }
      *   function ( FormalParameters ) { FunctionBody }
      *
-     * FunctionExpression:
-     *   xxfunction BindingIdentifierOpt ( FormalParameters ) { FunctionBody }xx
-     *   (See the definition in the TypeScript grammar)
+     * FunctionExpression: (see TypeScript Grammar)
+     *   function BindingIdentifierOpt ( FormalParameters ) { FunctionBody }
      *
      * StrictFormalParameters:
      *   FormalParameters

@@ -114,5 +114,50 @@ namespace Desalt.TypeScript.Ast
         /// Visits a for-of loop of the form 'for (const x of expression) statement'.
         /// </summary>
         public virtual void VisitForOfStatement(ITsForOfStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a case clause in a switch statement.
+        /// </summary>
+        public virtual void VisitCaseClause(ITsCaseClause node) => Visit(node);
+
+        /// <summary>
+        /// Visits a default clause in a switch statement of the form 'default: statements'.
+        /// </summary>
+        public virtual void VisitDefaultClause(ITsDefaultClause node) => Visit(node);
+
+        /// <summary>
+        /// Visits a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
+        /// </summary>
+        public virtual void VisitSwitchStatement(ITsSwitchStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'continue' statement.
+        /// </summary>
+        public virtual void VisitContinueStatement(ITsContinueStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'break' statement.
+        /// </summary>
+        public virtual void VisitBreakStatement(ITsBreakStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'return' statement
+        /// </summary>
+        public virtual void VisitReturnStatement(ITsReturnStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'with' statement of the form, 'with (expression) statement'.
+        /// </summary>
+        public virtual void VisitWithStatement(ITsWithStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a labelled statement.
+        /// </summary>
+        public virtual void VisitLabelledStatement(ITsLabelledStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'throw' statement.
+        /// </summary>
+        public virtual void VisitThrowStatement(ITsThrowStatement node) => Visit(node);
     }
 }

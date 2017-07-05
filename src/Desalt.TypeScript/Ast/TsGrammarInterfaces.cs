@@ -552,6 +552,8 @@ namespace Desalt.TypeScript.Ast
      *   function BindingIdentifierOpt CallSignature ;
      */
 
+    public interface ITsFunctionDeclaration : IAstNode { }
+
     /* A.5 Interfaces
      * --------------
      * InterfaceDeclaration:

@@ -293,5 +293,68 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: true);
         }
+
+        /// <summary>
+        /// Creates a case clause in a switch statement.
+        /// </summary>
+        public static ITsCaseClause CaseClause(ITsExpression expression, params ITsStatementListItem[] statements) =>
+            TsSwitchClause.Case(expression, statements);
+
+        /// <summary>
+        /// Creates a default clause in a switch statement of the form 'default: statements'.
+        /// </summary>
+        public static ITsDefaultClause DefaultClause(params ITsStatementListItem[] statements) =>
+            TsSwitchClause.Default(statements);
+
+        /// <summary>
+        /// Creates a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
+        /// </summary>
+        public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses) =>
+            new TsSwitchStatement(condition, clauses);
+
+        /// <summary>
+        /// Creates a continue statement with an optional label to continue to.
+        /// </summary>
+        public static ITsContinueStatement Continue(ITsIdentifier label = null) =>
+            new TsContinueOrBreakStatement(isContinue: true, label: label);
+
+        /// <summary>
+        /// Creates a break statement with an optional label to break to.
+        /// </summary>
+        public static ITsBreakStatement Break(ITsIdentifier label = null) =>
+            new TsContinueOrBreakStatement(isContinue: false, label: label);
+
+        /// <summary>
+        /// Create a 'return' statement.
+        /// </summary>
+        public static ITsReturnStatement Return(ITsExpression expression = null) =>
+            new TsReturnStatement(expression);
+
+        /// <summary>
+        /// Creates a 'with' statement of the form, 'with (expression) statement'.
+        /// </summary>
+        public static ITsWithStatement With(ITsExpression expression, ITsStatement statement) =>
+            new TsWithStatement(expression, statement);
+
+        /// <summary>
+        /// Creates a new labelled statement.
+        /// </summary>
+        public static ITsLabelledStatement LabelledStatement(ITsIdentifier label, ITsStatement statement) =>
+            new TsLabelledStatement(label, statement);
+
+        /// <summary>
+        /// Creates a new labelled statement.
+        /// </summary>
+        public static ITsLabelledStatement LabelledStatement(
+            ITsIdentifier label,
+            ITsFunctionDeclaration functionDeclaration)
+        {
+            return new TsLabelledStatement(label, functionDeclaration);
+        }
+
+        /// <summary>
+        /// Creates a new 'throw' statement.
+        /// </summary>
+        public static ITsThrowStatement Throw(ITsExpression expression) => new TsThrowStatement(expression);
     }
 }

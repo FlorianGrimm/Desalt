@@ -463,5 +463,143 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.Debugger),
                 "for (var x of [1, 2])\n  debugger;\n");
         }
+
+        [TestMethod]
+        public void Emit_case_clause()
+        {
+            VerifyOutput(
+                Factory.CaseClause(s_x, Factory.Debugger),
+                "case x:\n  debugger;\n");
+        }
+
+        [TestMethod]
+        public void Emit_case_clause_with_block()
+        {
+            VerifyOutput(
+                Factory.CaseClause(s_x, Factory.Debugger.ToBlock()),
+                "case x:\n  {\n    debugger;\n  }");
+        }
+
+        [TestMethod]
+        public void Emit_case_clause_with_empty_statements_should_not_indent_next_line()
+        {
+            VerifyOutput(Factory.CaseClause(s_x), "case x:\n");
+        }
+
+        [TestMethod]
+        public void Emit_default_clause()
+        {
+            VerifyOutput(
+                Factory.DefaultClause(
+                    Factory.Call(
+                        s_x,
+                        Factory.Argument(s_y),
+                        Factory.Argument(s_z))
+                    .ToStatement()),
+                "default:\n  x(y, z);\n");
+        }
+
+        [TestMethod]
+        public void Emit_switch_statement()
+        {
+            VerifyOutput(
+                Factory.Switch(
+                    s_x,
+                    Factory.CaseClause(Factory.String("a"), Factory.Debugger),
+                    Factory.CaseClause(Factory.String("b")),
+                    Factory.DefaultClause(),
+                    Factory.CaseClause(
+                        Factory.String("c"),
+                        Factory.Assignment(s_y, TsAssignmentOperator.AddAssign, Factory.Number(4))
+                        .ToStatement())),
+                @"switch (x) {
+  case 'a':
+    debugger;
+
+  case 'b':
+  default:
+  case 'c':
+    y += 4;
+}
+".Replace("\r\n", "\n"));
+        }
+
+        [TestMethod]
+        public void Emit_continue_statement_with_no_label()
+        {
+            VerifyOutput(Factory.Continue(), "continue;\n");
+        }
+
+        [TestMethod]
+        public void Emit_continue_statement_with_label()
+        {
+            VerifyOutput(Factory.Continue(s_x), "continue x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_break_statement_with_no_label()
+        {
+            VerifyOutput(Factory.Break(), "break;\n");
+        }
+
+        [TestMethod]
+        public void Emit_break_statement_with_label()
+        {
+            VerifyOutput(Factory.Break(s_x), "break x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_a_return_statement()
+        {
+            VerifyOutput(
+                Factory.Return(Factory.BinaryExpression(s_x, TsBinaryOperator.Divide, s_y)), "return x / y;\n");
+        }
+
+        [TestMethod]
+        public void Emit_a_return_statement_with_no_expression()
+        {
+            VerifyOutput(Factory.Return(), "return;\n");
+        }
+
+        [TestMethod]
+        public void Emit_with_statements()
+        {
+            VerifyOutput(
+                Factory.With(
+                    Factory.Object(
+                        Factory.PropertyAssignment(Factory.Identifier("foo"), Factory.Number(1)),
+                        Factory.PropertyAssignment(Factory.ComputedPropertyName(Factory.String("bar")), Factory.Null)),
+                    Factory.Return(Factory.Number(50))),
+                "with ({\n  foo: 1,\n  ['bar']: null\n})\n  return 50;\n");
+        }
+
+        [TestMethod]
+        public void Emit_labelled_statement_with_label_at_same_indentation_level()
+        {
+            VerifyOutput(
+                Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()),
+                "Label:\nreturn;\n");
+        }
+
+        [TestMethod]
+        public void Emit_labelled_statement_with_label_on_one_less_indentation_level()
+        {
+            VerifyOutput(
+                Factory.Switch(
+                    s_x,
+                    Factory.CaseClause(
+                        Factory.Number(1),
+                        Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()))),
+                "switch (x) {\n  case 1:\n  Label:\n    return;\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_throw_statement()
+        {
+            VerifyOutput(
+                Factory.Throw(
+                    Factory.NewCall(Factory.Identifier("Error"), Factory.Argument(Factory.String("message")))),
+                "throw new Error('message');\n");
+        }
     }
 }
