@@ -22,12 +22,12 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsThisType ThisType => TsThisType.Instance;
 
-        public static readonly ITsPredefinedType AnyType = TsPredefinedType.Any;
-        public static readonly ITsPredefinedType NumberType = TsPredefinedType.Number;
-        public static readonly ITsPredefinedType BooleanType = TsPredefinedType.Boolean;
-        public static readonly ITsPredefinedType StringType = TsPredefinedType.String;
-        public static readonly ITsPredefinedType SymbolType = TsPredefinedType.Symbol;
-        public static readonly ITsPredefinedType VoidType = TsPredefinedType.Void;
+        public static readonly ITsType AnyType = TsPredefinedType.Any;
+        public static readonly ITsType NumberType = TsPredefinedType.Number;
+        public static readonly ITsType BooleanType = TsPredefinedType.Boolean;
+        public static readonly ITsType StringType = TsPredefinedType.String;
+        public static readonly ITsType SymbolType = TsPredefinedType.Symbol;
+        public static readonly ITsType VoidType = TsPredefinedType.Void;
 
         //// ===========================================================================================================
         //// Identifiers

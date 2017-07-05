@@ -64,8 +64,7 @@ namespace Desalt.TypeScript.Ast
      *   ConstructorType
      */
 
-    public interface ITsType : IAstNode
-    { }
+    public interface ITsType : IAstNode { }
 
     /* UnionOrIntersectionOrPrimaryType:
      *   UnionType
@@ -75,10 +74,6 @@ namespace Desalt.TypeScript.Ast
      *   IntersectionType
      *   PrimaryType
      */
-
-    public interface IUnionOrIntersectionOrPrimaryType : ITsType { }
-
-    public interface ITsIntersectionOrPrimaryType : IUnionOrIntersectionOrPrimaryType { }
 
     /* PrimaryType:
      *   PredefinedType
@@ -91,13 +86,11 @@ namespace Desalt.TypeScript.Ast
      *   ThisType
      */
 
-    public interface ITsPrimaryType : ITsIntersectionOrPrimaryType { }
-
     /* ParenthesizedType:
      *   ( Type )
      */
 
-    public interface ITsParenthesizedType : ITsPrimaryType
+    public interface ITsParenthesizedType : ITsType
     {
         ITsType Type { get; }
     }
@@ -111,8 +104,6 @@ namespace Desalt.TypeScript.Ast
      *   void
      */
 
-    public interface ITsPredefinedType : ITsPrimaryType { }
-
     /* TypeReference:
      *   TypeName [no LineTerminator here] TypeArgumentsOpt
      *
@@ -125,7 +116,7 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceName . IdentifierReference
      */
 
-    public interface ITsTypeReference : ITsPrimaryType
+    public interface ITsTypeReference : ITsType
     {
         ITsTypeName TypeName { get; }
         ImmutableArray<ITsType> TypeArguments { get; }
@@ -161,7 +152,7 @@ namespace Desalt.TypeScript.Ast
      *   MethodSignature
      */
 
-    public interface ITsObjectType : ITsPrimaryType
+    public interface ITsObjectType : ITsType
     {
         ImmutableArray<ITsTypeMember> TypeMembers { get; }
     }
@@ -173,9 +164,9 @@ namespace Desalt.TypeScript.Ast
      *   PrimaryType [no LineTerminator here] [ ]
      */
 
-    public interface ITsArrayType : ITsPrimaryType
+    public interface ITsArrayType : ITsType
     {
-        ITsPrimaryType Type { get; }
+        ITsType Type { get; }
     }
 
     /* TupleType:
@@ -189,7 +180,7 @@ namespace Desalt.TypeScript.Ast
      *   Type
      */
 
-    public interface ITsTupleType : ITsPrimaryType
+    public interface ITsTupleType : ITsType
     {
         ImmutableArray<ITsType> ElementTypes { get; }
     }
@@ -198,13 +189,13 @@ namespace Desalt.TypeScript.Ast
      *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
      */
 
-    public interface ITsUnionType : IUnionOrIntersectionOrPrimaryType { }
+    public interface ITsUnionType : ITsType { }
 
     /* IntersectionType:
      *   IntersectionOrPrimaryType & PrimaryType
      */
 
-    public interface ITsIntersectionType : ITsIntersectionOrPrimaryType { }
+    public interface ITsIntersectionType : ITsType { }
 
     /* FunctionType:
      *   TypeParametersOpt ( ParameterListOpt ) => Type
@@ -236,7 +227,7 @@ namespace Desalt.TypeScript.Ast
      *   TypeQueryExpression . IdentifierName
      */
 
-    public interface ITsTypeQuery : ITsPrimaryType
+    public interface ITsTypeQuery : ITsType
     {
         ITsTypeQueryExpression Query { get; }
     }
@@ -247,7 +238,7 @@ namespace Desalt.TypeScript.Ast
      *   this
      */
 
-    public interface ITsThisType : ITsPrimaryType { }
+    public interface ITsThisType : ITsType { }
 
     /* PropertySignature:
      *   PropertyName ?Opt TypeAnnotationOpt

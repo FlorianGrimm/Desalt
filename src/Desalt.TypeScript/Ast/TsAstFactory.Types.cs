@@ -21,7 +21,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
 
-        public static ITsArrayType ArrayType(ITsPrimaryType type) => new TsArrayType(type);
+        public static ITsArrayType ArrayType(ITsType type) => new TsArrayType(type);
 
         public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>
             new TsTupleType(elementType, elementTypes);

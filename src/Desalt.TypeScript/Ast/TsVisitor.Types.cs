@@ -17,7 +17,7 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Visits a predefined type, which is one of any, number, boolean, string, symbol, or void.
         /// </summary>
-        public virtual void VisitPredefinedType(ITsPredefinedType node) => Visit(node);
+        public virtual void VisitPredefinedType(ITsType node) => Visit(node);
 
         /// <summary>
         /// Visits a TypeScript type reference.
