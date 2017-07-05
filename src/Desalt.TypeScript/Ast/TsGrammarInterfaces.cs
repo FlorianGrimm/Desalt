@@ -131,7 +131,7 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsType> TypeArguments { get; }
     }
 
-    public interface ITsTypeName : ITsQualifiedName { }
+    public interface ITsTypeName : IAstNode { }
 
     public interface ITsNamespaceName : ITsQualifiedName { }
 
