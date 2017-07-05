@@ -77,6 +77,7 @@
     <Compile Include="Ast\Statements\TsTryStatement.cs" />
     <Compile Include="Ast\Statements\TsVariableStatement.cs" />
     <Compile Include="Ast\Statements\TsWhileStatement.cs" />
+    <Compile Include="Ast\Statements\TsWithStatement.cs" />
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
     <Compile Include="Ast\TsAstFactory.Statements.cs" />

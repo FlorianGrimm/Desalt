@@ -560,5 +560,17 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.Return(), "return;\n");
         }
+
+        [TestMethod]
+        public void Emit_with_statements()
+        {
+            VerifyOutput(
+                Factory.With(
+                    Factory.Object(
+                        Factory.PropertyAssignment(Factory.Identifier("foo"), Factory.Number(1)),
+                        Factory.PropertyAssignment(Factory.ComputedPropertyName(Factory.String("bar")), Factory.Null)),
+                    Factory.Return(Factory.Number(50))),
+                "with ({\n  foo: 1,\n  ['bar']: null\n})\n  return 50;\n");
+        }
     }
 }

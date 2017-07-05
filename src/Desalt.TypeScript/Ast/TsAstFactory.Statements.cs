@@ -329,5 +329,11 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsReturnStatement Return(ITsExpression expression = null) =>
             new TsReturnStatement(expression);
+
+        /// <summary>
+        /// Creates a 'with' statement of the form, 'with (expression) statement'.
+        /// </summary>
+        public static ITsWithStatement With(ITsExpression expression, ITsStatement statement) =>
+            new TsWithStatement(expression, statement);
     }
 }

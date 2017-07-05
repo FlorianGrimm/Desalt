@@ -893,6 +893,12 @@ namespace Desalt.TypeScript.Ast
      *   with ( Expression ) Statement
      */
 
+    public interface ITsWithStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+        ITsStatement Statement { get; }
+    }
+
     /* 13.12 The switch Statement
      * --------------------------
      * SwitchStatement:
