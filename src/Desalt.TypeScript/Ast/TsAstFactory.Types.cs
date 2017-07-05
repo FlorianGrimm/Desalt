@@ -21,7 +21,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
 
-        public static ITsArrayType ArrayType(ITsPrimaryType type) => new TsArrayType(type);
+        public static ITsArrayType ArrayType(ITsType type) => new TsArrayType(type);
 
         public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>
             new TsTupleType(elementType, elementTypes);
@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast
         public static ITsConstructorType ConstructorType(ITsType returnType) =>
             new TsFunctionOrConstructorType(returnType, isConstructorType: true);
 
-        public static ITsTypeQuery TypeQuery(ITsTypeQueryExpression query) => new TsTypeQuery(query);
+        public static ITsTypeQuery TypeQuery(ITsTypeName query) => new TsTypeQuery(query);
 
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,
@@ -64,15 +64,20 @@ namespace Desalt.TypeScript.Ast
             return new TsPropertySignature(propertyName, isOptional, propertyType);
         }
 
+        public static ITsCallSignature CallSignature()
+        {
+            return new TsCallSignature();
+        }
+
         public static ITsCallSignature CallSignature(
-            ITsParameterList parameters = null,
+            ITsParameterList parameters,
             ITsType returnType = null)
         {
             return new TsCallSignature(typeParameters: null, parameters: parameters, returnType: returnType);
         }
 
         public static ITsCallSignature CallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            IEnumerable<ITsTypeParameter> typeParameters,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
@@ -110,7 +115,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsBoundOptionalParameter BoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsAssignmentExpression initializer,
+            ITsExpression initializer,
             ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
@@ -128,6 +133,13 @@ namespace Desalt.TypeScript.Ast
             new TsRestParameter(parameterName, parameterType);
 
         public static ITsConstructSignature ConstructSignature(
+            ITsParameterList parameterList = null,
+            ITsType returnType = null)
+        {
+            return new TsConstructSignature(typeParameters: null, parameterList: parameterList, returnType: returnType);
+        }
+
+        public static ITsConstructSignature ConstructSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
             ITsParameterList parameterList = null,
             ITsType returnType = null)
@@ -138,9 +150,9 @@ namespace Desalt.TypeScript.Ast
         public static ITsIndexSignature IndexSignature(
             ITsIdentifier parameterName,
             bool isParameterNumberType,
-            ITsType parameterType)
+            ITsType returnType)
         {
-            return new TsIndexSignature(parameterName, isParameterNumberType, parameterType);
+            return new TsIndexSignature(parameterName, isParameterNumberType, returnType);
         }
 
         public static ITsMethodSignature MethodSignature(
@@ -151,12 +163,16 @@ namespace Desalt.TypeScript.Ast
             return new TsMethodSignature(propertyName, isOptional, callSignature);
         }
 
-        public static ITsTypeAliasDeclaration TypeAliasDeclaration(
-            ITsIdentifier aliasName,
-            ITsType type,
-            params ITsTypeParameter[] typeParameters)
-        {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
-        }
+        /// <summary>
+        /// Creates a union type of the form 'type1 | type2'.
+        /// </summary>
+        public static ITsUnionType UnionType(ITsType type1, ITsType type2, params ITsType[] otherTypes) =>
+            new TsUnionOrIntersectionType(type1, type2, otherTypes, isUnion: true);
+
+        /// <summary>
+        /// Creates an intersection type of the form 'type1 &amp; type2'.
+        /// </summary>
+        public static ITsIntersectionType IntersectionType(ITsType type1, ITsType type2, params ITsType[] otherTypes) =>
+            new TsUnionOrIntersectionType(type1, type2, otherTypes, isUnion: false);
     }
 }

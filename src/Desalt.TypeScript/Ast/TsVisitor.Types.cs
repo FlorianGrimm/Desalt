@@ -17,7 +17,7 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Visits a predefined type, which is one of any, number, boolean, string, symbol, or void.
         /// </summary>
-        public virtual void VisitPredefinedType(ITsPredefinedType node) => Visit(node);
+        public virtual void VisitPredefinedType(ITsType node) => Visit(node);
 
         /// <summary>
         /// Visits a TypeScript type reference.
@@ -120,8 +120,13 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitMethodSignature(ITsMethodSignature node) => Visit(node);
 
         /// <summary>
-        /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// Visits a union type of the form 'type1 | type2'.
         /// </summary>
-        public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration node) => Visit(node);
+        public virtual void VisitUnionType(ITsUnionType node) => Visit(node);
+
+        /// <summary>
+        /// Visits an interection type of the form 'type1 &amp; type2'.
+        /// </summary>
+        public virtual void VisitIntersectionType(ITsIntersectionType node) => Visit(node);
     }
 }

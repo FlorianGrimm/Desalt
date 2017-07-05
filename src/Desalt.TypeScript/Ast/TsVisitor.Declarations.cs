@@ -28,5 +28,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a function declaration of the form 'function [name] signature { body }'.
         /// </summary>
         public virtual void VisitFunctionDeclaration(ITsFunctionDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration node) => Visit(node);
     }
 }

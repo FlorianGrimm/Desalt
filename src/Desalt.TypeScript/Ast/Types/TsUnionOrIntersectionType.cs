@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsIndexSignature.cs" company="Justin Rockwood">
+// <copyright file="TsUnionOrIntersectionType.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -8,58 +8,61 @@
 namespace Desalt.TypeScript.Ast.Types
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an index signature of the form '[parameterName: string|number]: type'.
+    /// Represents a union type of the form 'type1 | type2' or an intersection type of the form
+    /// 'type1 &amp; type2'.
     /// </summary>
-    internal class TsIndexSignature : AstNode<TsVisitor>, ITsIndexSignature
+    internal class TsUnionOrIntersectionType : AstNode<TsVisitor>, ITsUnionType, ITsIntersectionType
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsIndexSignature(ITsIdentifier parameterName, bool isParameterNumberType, ITsType returnType)
+        public TsUnionOrIntersectionType(ITsType type1, ITsType type2, IEnumerable<ITsType> otherTypes, bool isUnion)
         {
-            ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            IsParameterNumberType = isParameterNumberType;
-            ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
+            var list = new List<ITsType>
+            {
+                type1 ?? throw new ArgumentNullException(nameof(type1)),
+                type2 ?? throw new ArgumentNullException(nameof(type2))
+            };
+            list.AddRange(otherTypes);
+
+            Types = list.ToImmutableArray();
+            IsUnion = isUnion;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ParameterName { get; }
-        public bool IsParameterNumberType { get; }
-        public ITsType ReturnType { get; }
+        public ImmutableArray<ITsType> Types { get; }
+        public bool IsUnion { get; }
+
+        private string Delimiter => IsUnion ? " | " : " & ";
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
-
-        public override string CodeDisplay
+        public override void Accept(TsVisitor visitor)
         {
-            get
+            if (IsUnion)
             {
-                string display = $"[{ParameterName.CodeDisplay}: ";
-                display += IsParameterNumberType ? "number" : "string";
-                display += $"]: {ReturnType}";
-                return display;
+                visitor.VisitUnionType(this);
+            }
+            else
+            {
+                visitor.VisitIntersectionType(this);
             }
         }
 
-        public override void Emit(Emitter emitter)
-        {
-            emitter.Write("[");
-            ParameterName.Emit(emitter);
-            emitter.Write(": ");
-            emitter.Write(IsParameterNumberType ? "number" : "string");
-            emitter.Write("]: ");
-            ReturnType.Emit(emitter);
-        }
+        public override string CodeDisplay => Types.ToElidedList(Delimiter);
+
+        public override void Emit(Emitter emitter) => emitter.WriteItems(Types, indent: false, itemDelimiter: Delimiter);
     }
 }

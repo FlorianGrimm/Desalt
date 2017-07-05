@@ -7,6 +7,8 @@
 
 namespace Desalt.TypeScript.Ast
 {
+    using System.Collections.Generic;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -68,6 +70,34 @@ namespace Desalt.TypeScript.Ast
             params ITsStatementListItem[] functionBody)
         {
             return new TsFunctionDeclaration(callSignature, functionName, functionBody);
+        }
+
+        /// <summary>
+        /// Creates a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public static ITsTypeAliasDeclaration TypeAliasDeclaration(ITsIdentifier aliasName, ITsType type) =>
+            new TsTypeAliasDeclaration(aliasName, type);
+
+        /// <summary>
+        /// Creates a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public static ITsTypeAliasDeclaration TypeAliasDeclaration(
+            ITsIdentifier aliasName,
+            ITsTypeParameter typeParameter,
+            ITsType type)
+        {
+            return new TsTypeAliasDeclaration(aliasName, type, typeParameter.ToSafeArray());
+        }
+
+        /// <summary>
+        /// Creates a type alias of the form 'type alias&lt;T&gt; = type'.
+        /// </summary>
+        public static ITsTypeAliasDeclaration TypeAliasDeclaration(
+            ITsIdentifier aliasName,
+            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsType type)
+        {
+            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
         }
     }
 }

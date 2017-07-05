@@ -20,7 +20,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayType(ITsPrimaryType type)
+        public TsArrayType(ITsType type)
         {
             Type = type ?? throw new ArgumentNullException(nameof(type));
         }
@@ -29,7 +29,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPrimaryType Type { get; }
+        public ITsType Type { get; }
 
         //// ===========================================================================================================
         //// Methods

@@ -24,6 +24,14 @@ namespace Desalt.TypeScript.Tests.Ast
         private static readonly ITsIdentifier s_y = Factory.Identifier("y");
         private static readonly ITsIdentifier s_z = Factory.Identifier("z");
 
+        // ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
+        private static readonly ITsIdentifier s_T = Factory.Identifier("T");
+        private static readonly ITsTypeReference s_TRef = Factory.TypeReference(s_T);
+        private static readonly ITsTypeReference s_MyTypeRef = Factory.TypeReference(Factory.Identifier("MyType"));
+#pragma warning restore IDE1006 // Naming Styles
+        // ReSharper restore InconsistentNaming
+
         private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())

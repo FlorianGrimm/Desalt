@@ -25,6 +25,7 @@
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />
+    <Compile Include="Ast\Declarations\TsTypeAliasDeclaration.cs" />
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
     <Compile Include="Ast\Expressions\TsArgument.cs" />
     <Compile Include="Ast\Expressions\TsArrayElement.cs" />
@@ -112,10 +113,10 @@
     <Compile Include="Ast\Types\TsStringParameter.cs" />
     <Compile Include="Ast\Types\TsThisType.cs" />
     <Compile Include="Ast\Types\TsTupleType.cs" />
-    <Compile Include="Ast\Types\TsTypeAliasDeclaration.cs" />
     <Compile Include="Ast\Types\TsTypeParameter.cs" />
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
+    <Compile Include="Ast\Types\TsUnionOrIntersectionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
