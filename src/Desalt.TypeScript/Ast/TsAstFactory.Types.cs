@@ -65,12 +65,22 @@ namespace Desalt.TypeScript.Ast
         }
 
         public static ITsCallSignature CallSignature(
+            ITsParameterList parameters = null,
+            ITsType returnType = null)
+        {
+            return new TsCallSignature(typeParameters: null, parameters: parameters, returnType: returnType);
+        }
+
+        public static ITsCallSignature CallSignature(
             IEnumerable<ITsTypeParameter> typeParameters = null,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
+
+        public static ITsParameterList ParameterList(params ITsRequiredParameter[] requiredParameters) =>
+            new TsParameterList(requiredParameters);
 
         public static ITsParameterList ParameterList(
             IEnumerable<ITsRequiredParameter> requiredParameters = null,
