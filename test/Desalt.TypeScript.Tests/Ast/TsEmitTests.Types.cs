@@ -250,5 +250,42 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.ThisType, "this");
         }
+
+        [TestMethod]
+        public void Emit_parameter_list_with_only_required_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    Factory.BoundRequiredParameter(s_x),
+                    Factory.StringRequiredParameter(s_y, Factory.String("value")),
+                    Factory.StringRequiredParameter(s_z, Factory.String("hello", StringLiteralQuoteKind.DoubleQuote))),
+                "x, y: 'value', z: \"hello\"");
+        }
+
+        [TestMethod]
+        public void Emit_parameter_list_with_required_and_optional_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Factory.BoundRequiredParameter(s_x).ToSafeArray(),
+                    optionalParameters: new ITsOptionalParameter[]
+                    {
+                        Factory.StringOptionalParameter(s_y, Factory.String("value")),
+                        Factory.BoundOptionalParameter(s_z, Factory.Zero, Factory.NumberType)
+                    }),
+                "x, y?: 'value', z: number = 0");
+        }
+
+        [TestMethod]
+        public void Emit_parameter_list_with_required_optional_and_rest_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Factory.BoundRequiredParameter(s_x).ToSafeArray(),
+                    optionalParameters: Factory.BoundOptionalParameter(s_y, Factory.False, Factory.BooleanType)
+                        .ToSafeArray(),
+                    restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
+                "x, y: boolean = false, ... z: MyType");
+        }
     }
 }

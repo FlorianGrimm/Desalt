@@ -22,7 +22,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public TsBoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsAssignmentExpression initializer,
+            ITsExpression initializer,
             ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
@@ -39,7 +39,7 @@ namespace Desalt.TypeScript.Ast.Types
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
         public ITsType ParameterType { get; }
-        public ITsAssignmentExpression Initializer { get; }
+        public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods

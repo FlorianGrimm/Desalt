@@ -115,7 +115,7 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsBoundOptionalParameter BoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsAssignmentExpression initializer,
+            ITsExpression initializer,
             ITsType parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {

@@ -304,8 +304,7 @@ namespace Desalt.TypeScript.Ast
      *   protected
      */
 
-    public interface ITsRequiredParameter : IAstNode
-    { }
+    public interface ITsRequiredParameter : IAstNode { }
 
     public interface ITsBoundRequiredParameter : ITsRequiredParameter
     {
@@ -351,7 +350,7 @@ namespace Desalt.TypeScript.Ast
         TsAccessibilityModifier? Modifier { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
         ITsType ParameterType { get; }
-        ITsAssignmentExpression Initializer { get; }
+        ITsExpression Initializer { get; }
     }
 
     public interface ITsStringOptionalParameter : ITsOptionalParameter
