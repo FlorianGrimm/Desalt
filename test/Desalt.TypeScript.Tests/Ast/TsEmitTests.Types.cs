@@ -174,5 +174,12 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.MethodSignature(s_z, true, Factory.CallSignature(Factory.ParameterList(), Factory.VoidType))),
                 "{ x: string, (z, p): boolean, new <T extends MyType>(arg: T), [k: string]: any, z?(): void }");
         }
+
+        [TestMethod]
+        public void Emit_array_type()
+        {
+            VerifyOutput(Factory.ArrayType(Factory.StringType), "string[]");
+        }
+
     }
 }
