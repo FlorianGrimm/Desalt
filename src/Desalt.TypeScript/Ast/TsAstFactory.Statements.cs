@@ -335,5 +335,21 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsWithStatement With(ITsExpression expression, ITsStatement statement) =>
             new TsWithStatement(expression, statement);
+
+        /// <summary>
+        /// Creates a new labelled statement.
+        /// </summary>
+        public static ITsLabelledStatement LabelledStatement(ITsIdentifier label, ITsStatement statement) =>
+            new TsLabelledStatement(label, statement);
+
+        /// <summary>
+        /// Creates a new labelled statement.
+        /// </summary>
+        public static ITsLabelledStatement LabelledStatement(
+            ITsIdentifier label,
+            ITsFunctionDeclaration functionDeclaration)
+        {
+            return new TsLabelledStatement(label, functionDeclaration);
+        }
     }
 }

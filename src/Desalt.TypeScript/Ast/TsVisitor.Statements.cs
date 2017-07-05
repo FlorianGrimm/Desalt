@@ -149,5 +149,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a 'with' statement of the form, 'with (expression) statement'.
         /// </summary>
         public virtual void VisitWithStatement(ITsWithStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits a labelled statement.
+        /// </summary>
+        public virtual void VisitLabelledStatement(ITsLabelledStatement node) => Visit(node);
     }
 }

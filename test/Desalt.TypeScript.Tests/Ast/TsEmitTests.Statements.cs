@@ -572,5 +572,25 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.Return(Factory.Number(50))),
                 "with ({\n  foo: 1,\n  ['bar']: null\n})\n  return 50;\n");
         }
+
+        [TestMethod]
+        public void Emit_labelled_statement_with_label_at_same_indentation_level()
+        {
+            VerifyOutput(
+                Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()),
+                "Label:\nreturn;\n");
+        }
+
+        [TestMethod]
+        public void Emit_labelled_statement_with_label_on_one_less_indentation_level()
+        {
+            VerifyOutput(
+                Factory.Switch(
+                    s_x,
+                    Factory.CaseClause(
+                        Factory.Number(1),
+                        Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()))),
+                "switch (x) {\n  case 1:\n  Label:\n    return;\n}\n");
+        }
     }
 }

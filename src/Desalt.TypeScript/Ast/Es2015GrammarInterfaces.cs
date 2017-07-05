@@ -947,8 +947,16 @@ namespace Desalt.TypeScript.Ast
      * LabelledItem:
      *   Statement
      *   FunctionDeclaration
-     *
-     * 13.14 The throw Statement
+     */
+
+    public interface ITsLabelledStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+        ITsStatement Statement { get; }
+        ITsFunctionDeclaration FunctionDeclaration { get; }
+    }
+
+    /* 13.14 The throw Statement
      * -------------------------
      * ThrowStatement:
      *   throw [no LineTerminator here] Expression ;
@@ -994,13 +1002,12 @@ namespace Desalt.TypeScript.Ast
      *
      * 14.1 Function Definitions
      * ------------------------
-     * FunctionDeclaration:
+     * FunctionDeclaration: (see TypeScript Grammar)
      *   function BindingIdentifier ( FormalParameters ) { FunctionBody }
      *   function ( FormalParameters ) { FunctionBody }
      *
-     * FunctionExpression:
-     *   xxfunction BindingIdentifierOpt ( FormalParameters ) { FunctionBody }xx
-     *   (See the definition in the TypeScript grammar)
+     * FunctionExpression: (see TypeScript Grammar)
+     *   function BindingIdentifierOpt ( FormalParameters ) { FunctionBody }
      *
      * StrictFormalParameters:
      *   FormalParameters

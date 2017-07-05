@@ -65,6 +65,7 @@
     <Compile Include="Ast\Statements\TsForInOrOfStatement.cs" />
     <Compile Include="Ast\Statements\TsForStatement.cs" />
     <Compile Include="Ast\Statements\TsIfStatement.cs" />
+    <Compile Include="Ast\Statements\TsLabelledStatement.cs" />
     <Compile Include="Ast\Statements\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Statements\TsObjectBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsPatternBinding.cs" />
