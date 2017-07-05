@@ -120,11 +120,6 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitMethodSignature(ITsMethodSignature node) => Visit(node);
 
         /// <summary>
-        /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
-        /// </summary>
-        public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration node) => Visit(node);
-
-        /// <summary>
         /// Visits a union type of the form 'type1 | type2'.
         /// </summary>
         public virtual void VisitUnionType(ITsUnionType node) => Visit(node);

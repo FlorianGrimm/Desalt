@@ -407,7 +407,7 @@ namespace Desalt.TypeScript.Ast
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
-    public interface ITsTypeAliasDeclaration : IAstNode
+    public interface ITsTypeAliasDeclaration : ITsDeclaration
     {
         ITsIdentifier AliasName { get; }
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }

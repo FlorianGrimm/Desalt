@@ -36,7 +36,6 @@ namespace Desalt.TypeScript.Ast
      */
 
     public interface ITsIdentifier :
-        ITsExpression,
         ITsTypeName,
         ITsPropertyDefinition,
         ITsLiteralPropertyName,

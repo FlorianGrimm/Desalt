@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
     using System;
     using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.Ast.Types
                     display += $"<{TypeParameters.ToElidedList()}>";
                 }
 
-                display += $" = {Type}";
+                display += $" = {Type};";
                 return display;
             }
         }
@@ -73,6 +73,7 @@ namespace Desalt.TypeScript.Ast.Types
 
             emitter.Write(" = ");
             Type.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

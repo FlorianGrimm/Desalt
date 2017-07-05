@@ -163,14 +163,6 @@ namespace Desalt.TypeScript.Ast
             return new TsMethodSignature(propertyName, isOptional, callSignature);
         }
 
-        public static ITsTypeAliasDeclaration TypeAliasDeclaration(
-            ITsIdentifier aliasName,
-            ITsType type,
-            params ITsTypeParameter[] typeParameters)
-        {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
-        }
-
         /// <summary>
         /// Creates a union type of the form 'type1 | type2'.
         /// </summary>

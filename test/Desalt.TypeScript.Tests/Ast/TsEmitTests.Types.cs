@@ -287,5 +287,16 @@ namespace Desalt.TypeScript.Tests.Ast
                     restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
                 "x, y: boolean = false, ... z: MyType");
         }
+
+        [TestMethod]
+        public void Emit_type_alias_declaration()
+        {
+            VerifyOutput(
+                Factory.TypeAliasDeclaration(
+                    Factory.Identifier("AnotherT"),
+                    Factory.TypeParameter(s_T),
+                    Factory.TypeReference(Factory.Identifier("MrT"), Factory.TypeReference(Factory.Identifier("IceT")))),
+                "type AnotherT<T> = MrT<IceT>;\n");
+        }
     }
 }
