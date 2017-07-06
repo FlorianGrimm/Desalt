@@ -116,6 +116,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitUnaryExpression(ITsUnaryExpression node) => Visit(node);
 
         /// <summary>
+        /// Visits a unary cast expression of the form, '&lt;Type&gt;.
+        /// </summary>
+        public virtual void VisitCastExpression(ITsCastExpression node) => Visit(node);
+
+        /// <summary>
         /// Visits a binary expression
         /// </summary>
         public virtual void VisitBinaryExpression(ITsBinaryExpression node) => Visit(node);

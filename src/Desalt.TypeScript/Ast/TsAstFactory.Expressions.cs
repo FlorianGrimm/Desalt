@@ -133,6 +133,12 @@ namespace Desalt.TypeScript.Ast
         public static ITsUnaryExpression UnaryExpression(ITsExpression operand, TsUnaryOperator @operator) =>
             new TsUnaryExpression(operand, @operator);
 
+        /// <summary>
+        /// Create a unary cast expression of the form, '&lt;Type&gt;.
+        /// </summary>
+        public static ITsCastExpression Cast(ITsType castType, ITsExpression expression) =>
+            new TsCastExpression(castType, expression);
+
         public static ITsBinaryExpression BinaryExpression(
             ITsExpression leftSide,
             TsBinaryOperator @operator,

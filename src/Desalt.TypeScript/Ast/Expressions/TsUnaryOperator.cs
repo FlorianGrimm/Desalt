@@ -66,5 +66,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         /// The logical not (!) operator.
         /// </summary>
         LogicalNot,
+
+        /// <summary>
+        /// The cast (&lt;type&gt;) operator.
+        /// </summary>
+        Cast,
     }
 }

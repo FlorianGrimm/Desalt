@@ -37,6 +37,7 @@
     <Compile Include="Ast\Expressions\TsBinaryOperator.cs" />
     <Compile Include="Ast\Expressions\TsBooleanLiteral.cs" />
     <Compile Include="Ast\Expressions\TsCallExpression.cs" />
+    <Compile Include="Ast\Expressions\TsCastExpression.cs" />
     <Compile Include="Ast\Expressions\TsClassExpression.cs" />
     <Compile Include="Ast\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="Ast\Expressions\TsConditionalExpression.cs" />

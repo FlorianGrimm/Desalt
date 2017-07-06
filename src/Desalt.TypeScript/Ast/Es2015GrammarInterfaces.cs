@@ -429,12 +429,18 @@ namespace Desalt.TypeScript.Ast
      *   - UnaryExpression
      *   ~ UnaryExpression
      *   ! UnaryExpression
+     *   < Type > UnaryExpression (from TypeScript grammar)
      */
 
     public interface ITsUnaryExpression : ITsExpression
     {
         ITsExpression Operand { get; }
         TsUnaryOperator Operator { get; }
+    }
+
+    public interface ITsCastExpression : ITsUnaryExpression
+    {
+        ITsType CastType { get; }
     }
 
     /* 12.6 Multiplicative Operators
