@@ -31,6 +31,7 @@
     <Compile Include="Ast\Expressions\TsArgumentList.cs" />
     <Compile Include="Ast\Expressions\TsArrayElement.cs" />
     <Compile Include="Ast\Expressions\TsArrayLiteral.cs" />
+    <Compile Include="Ast\Expressions\TsArrowFunction.cs" />
     <Compile Include="Ast\Expressions\TsAssignmentExpression.cs" />
     <Compile Include="Ast\Expressions\TsAssignmentOperator.cs" />
     <Compile Include="Ast\Expressions\TsBinaryExpression.cs" />

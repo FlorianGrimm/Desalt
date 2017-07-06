@@ -1072,9 +1072,21 @@ namespace Desalt.TypeScript.Ast
      * ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList is recognized the following
      * grammar is used to refine the interpretation of CoverParenthesizedExpressionAndArrowParameterList:
      *
-     * ArrowFormalParameters:
+     * ArrowFormalParameters: (see TypeScript grammar copied below)
      *   ( StrictFormalParameters )
+     *
+     * ArrowFormalParameters: ( Modified )
+     *   CallSignature
      */
+
+    public interface ITsArrowFunction : ITsExpression
+    {
+        ITsIdentifier SingleParameterName { get; }
+        ITsCallSignature CallSignature { get; }
+
+        ITsExpression BodyExpression { get; }
+        ImmutableArray<ITsStatementListItem> Body { get; }
+    }
 
     /* 14.3 Method Definitions
      * -----------------------

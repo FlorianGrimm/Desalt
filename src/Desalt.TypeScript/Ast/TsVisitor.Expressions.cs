@@ -86,6 +86,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSetAccessor(ITsSetAccessor node) => Visit(node);
 
         /// <summary>
+        /// Visits an arrow function expression of the form '() => body'.
+        /// </summary>
+        public virtual void VisitArrowFunction(ITsArrowFunction node) => Visit(node);
+
+        /// <summary>
         /// Visits a function declaration acting as an expression.
         /// </summary>
         public virtual void VisitFunctionExpression(ITsFunctionExpression node) => Visit(node);

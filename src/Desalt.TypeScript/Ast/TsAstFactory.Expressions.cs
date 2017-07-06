@@ -207,6 +207,26 @@ namespace Desalt.TypeScript.Ast
         //// Function and Class Expressions
         //// ===========================================================================================================
 
+        public static ITsArrowFunction ArrowFunction(ITsIdentifier singleParameterName, ITsExpression bodyExpression) =>
+            new TsArrowFunction(singleParameterName, bodyExpression);
+
+        public static ITsArrowFunction ArrowFunction(
+            ITsIdentifier singleParameterName,
+            params ITsStatementListItem[] body)
+        {
+            return new TsArrowFunction(singleParameterName, body);
+        }
+
+        public static ITsArrowFunction ArrowFunction(ITsCallSignature callSignature, ITsExpression bodyExpression) =>
+            new TsArrowFunction(callSignature, bodyExpression);
+
+        public static ITsArrowFunction ArrowFunction(
+            ITsCallSignature callSignature,
+            params ITsStatementListItem[] body)
+        {
+            return new TsArrowFunction(callSignature, body);
+        }
+
         public static ITsFunctionExpression Function(
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
