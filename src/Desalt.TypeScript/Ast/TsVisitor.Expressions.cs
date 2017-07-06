@@ -106,6 +106,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => Visit(node);
 
         /// <summary>
+        /// Visits a part of a template literal.
+        /// </summary>
+        public virtual void VisitTemplatePart(ITsTemplatePart node) => Visit(node);
+
+        /// <summary>
         /// Visits a unary expression
         /// </summary>
         public virtual void VisitUnaryExpression(ITsUnaryExpression node) => Visit(node);

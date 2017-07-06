@@ -118,11 +118,11 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_template_literals()
         {
-            VerifyOutput(Factory.TemplateString(new TsTemplatePart(template: "string")), "`string`");
+            VerifyOutput(Factory.TemplateString(Factory.TemplatePart(template: "string")), "`string`");
             VerifyOutput(
                 Factory.TemplateString(
-                    new TsTemplatePart("xy=", s_x),
-                    new TsTemplatePart(expression: s_y)),
+                    Factory.TemplatePart("xy=", s_x),
+                    Factory.TemplatePart(expression: s_y)),
                 "`xy=${x}${y}`");
         }
 

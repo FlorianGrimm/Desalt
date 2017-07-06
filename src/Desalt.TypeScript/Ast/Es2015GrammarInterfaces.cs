@@ -285,21 +285,15 @@ namespace Desalt.TypeScript.Ast
      *   SourceCharacter but not one of ` or \ or $ or LineTerminator
      */
 
-    public sealed class TsTemplatePart
+    public interface ITsTemplatePart : IAstNode
     {
-        public TsTemplatePart(string template = null, ITsExpression expression = null)
-        {
-            Template = template;
-            Expression = expression;
-        }
-
-        public string Template { get; }
-        public ITsExpression Expression { get; }
+        string Template { get; }
+        ITsExpression Expression { get; }
     }
 
     public interface ITsTemplateLiteral : ITsExpression
     {
-        ImmutableArray<TsTemplatePart> Parts { get; }
+        ImmutableArray<ITsTemplatePart> Parts { get; }
     }
 
     /* 12.e Left-Hand-Side Expressions

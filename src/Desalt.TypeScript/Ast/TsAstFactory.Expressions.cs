@@ -56,7 +56,10 @@ namespace Desalt.TypeScript.Ast
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
 
-        public static ITsTemplateLiteral TemplateString(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+        public static ITsTemplateLiteral TemplateString(params ITsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+
+        public static ITsTemplatePart TemplatePart(string template = null, ITsExpression expression = null) =>
+            new TsTemplatePart(template, expression);
 
         //// ===========================================================================================================
         //// Object Literal Expressions
