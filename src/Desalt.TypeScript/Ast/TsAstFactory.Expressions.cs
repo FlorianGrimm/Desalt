@@ -97,11 +97,28 @@ namespace Desalt.TypeScript.Ast
             return new TsGetAccessor(propertyName, propertyType, functionBody);
         }
 
+        public static ITsGetAccessor GetAccessor(
+            ITsPropertyName propertyName,
+            ITsType propertyType,
+            params ITsStatementListItem[] functionBody)
+        {
+            return new TsGetAccessor(propertyName, propertyType, functionBody);
+        }
+
         public static ITsSetAccessor SetAccessor(
             ITsPropertyName propertyName,
             ITsBindingIdentifierOrPattern parameterName,
             ITsType parameterType = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
+        }
+
+        public static ITsSetAccessor SetAccessor(
+            ITsPropertyName propertyName,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType parameterType,
+            params ITsStatementListItem[] functionBody)
         {
             return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
         }
