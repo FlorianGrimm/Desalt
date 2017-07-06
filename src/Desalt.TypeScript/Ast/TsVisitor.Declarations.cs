@@ -33,5 +33,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
         /// </summary>
         public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a constructor declaration in a class.
+        /// </summary>
+        public virtual void VisitConstructorDeclaration(ITsConstructorDeclaration node) => Visit(node);
     }
 }

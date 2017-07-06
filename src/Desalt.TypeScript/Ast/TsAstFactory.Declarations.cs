@@ -99,5 +99,13 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
         }
+
+        public static ITsConstructorDeclaration ConstructorDeclaration(
+            TsAccessibilityModifier? accessibilityModifier = null,
+            ITsParameterList parameterList = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody);
+        }
     }
 }

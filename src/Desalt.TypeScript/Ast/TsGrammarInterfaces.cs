@@ -597,8 +597,16 @@ namespace Desalt.TypeScript.Ast
     /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) ;
-     *
-     * PropertyMemberDeclaration:
+     */
+
+    public interface ITsConstructorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        ITsParameterList ParameterList { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /* PropertyMemberDeclaration:
      *   MemberVariableDeclaration
      *   MemberFunctionDeclaration
      *   MemberAccessorDeclaration

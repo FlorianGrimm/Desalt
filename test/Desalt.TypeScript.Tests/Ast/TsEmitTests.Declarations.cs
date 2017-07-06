@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
+    using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
@@ -118,6 +119,18 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.AnyType),
                     Factory.Return(Factory.Zero)),
                 "function func(x: boolean): any {\n  return 0;\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_constructor_declaration()
+        {
+            VerifyOutput(
+                Factory.ConstructorDeclaration(
+                    TsAccessibilityModifier.Public,
+                    Factory.ParameterList(
+                        Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
+                        Factory.StringRequiredParameter(s_y, Factory.String("str")))),
+                "public constructor(protected x, y: 'str');\n");
         }
     }
 }
