@@ -171,6 +171,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitArgument(ITsArgument node) => Visit(node);
 
         /// <summary>
+        /// Visits an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
+        public virtual void VisitArgumentList(ITsArgumentList node) => Visit(node);
+
+        /// <summary>
         /// Visits an expression of the form 'new.target'.
         /// </summary>
         public virtual void VisitNewTargetExpression(ITsNewTargetExpression node) => Visit(node);

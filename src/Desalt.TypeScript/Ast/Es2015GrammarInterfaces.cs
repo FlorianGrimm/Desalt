@@ -361,9 +361,12 @@ namespace Desalt.TypeScript.Ast
      * SuperCall:
      *   super Arguments
      *
-     * Arguments:
+     * Arguments: (see TypeScript grammar copied below)
      *   ( )
      *   ( ArgumentList )
+     *
+     * Arguments: ( Modified )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
      *
      * ArgumentList:
      *   AssignmentExpression
@@ -379,13 +382,19 @@ namespace Desalt.TypeScript.Ast
     public interface ITsCallExpression : ITsExpression
     {
         ITsExpression LeftSide { get; }
-        ImmutableArray<ITsArgument> Arguments { get; }
+        ITsArgumentList Arguments { get; }
     }
 
     public interface ITsNewCallExpression : ITsCallExpression { }
 
     public interface ITsSuperCallExpression : ITsExpression
     {
+        ITsArgumentList Arguments { get; }
+    }
+
+    public interface ITsArgumentList : IAstNode
+    {
+        ImmutableArray<ITsType> TypeArguments { get; }
         ImmutableArray<ITsArgument> Arguments { get; }
     }
 

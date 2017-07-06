@@ -172,17 +172,28 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsSuperDotExpression SuperDot(string dotName) => TsMemberDotExpression.CreateSuper(dotName);
 
-        public static ITsCallExpression Call(ITsExpression leftSide, params ITsArgument[] arguments) =>
+        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             TsCallExpression.Create(leftSide, arguments);
 
-        public static ITsNewCallExpression NewCall(ITsExpression leftSide, params ITsArgument[] arguments) =>
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             TsCallExpression.CreateNew(leftSide, arguments);
 
-        public static ITsSuperCallExpression SuperCall(params ITsArgument[] arguments) =>
+        public static ITsSuperCallExpression SuperCall(ITsArgumentList arguments) =>
             TsCallExpression.CreateSuper(arguments);
 
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
             new TsArgument(argument, isSpreadArgument);
+
+        public static ITsArgumentList ArgumentList(IEnumerable<ITsType> typeArguments, params ITsArgument[] arguments)
+        {
+            return new TsArgumentList(typeArguments, arguments);
+        }
+
+        public static ITsArgumentList ArgumentList(params ITsArgument[] arguments) =>
+            new TsArgumentList(typeArguments: null, arguments: arguments);
+
+        public static ITsArgumentList ArgumentList(params ITsIdentifier[] arguments) =>
+            new TsArgumentList(typeArguments: null, arguments: arguments.Select(id => Argument(id)));
 
         public static ITsNewTargetExpression NewTarget => TsNewTargetExpression.Instance;
 

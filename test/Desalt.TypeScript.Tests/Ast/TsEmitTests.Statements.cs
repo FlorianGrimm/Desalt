@@ -223,8 +223,10 @@ namespace Desalt.TypeScript.Tests.Ast
                         TsAssignmentOperator.SimpleAssign,
                         Factory.NewCall(Factory.Identifier("Widget"))).ToBlock(),
                     Factory.Identifier("err"),
-                    Factory.Call(Factory.QualifiedName("console.log"), Factory.Argument(Factory.Identifier("err")))
-                        .ToBlock()),
+                    Factory.Call(
+                        Factory.MemberDot(Factory.Identifier("console"), "log"),
+                        Factory.ArgumentList(Factory.Argument(Factory.Identifier("err"))))
+                    .ToBlock()),
                 "try {\n  x = new Widget();\n} catch (err) {\n  console.log(err);\n}\n");
         }
 
@@ -245,7 +247,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.TryCatchFinally(
                     Factory.Debugger.ToBlock(),
                     Factory.Identifier("e"),
-                    Factory.SuperCall(Factory.Argument(Factory.Identifier("e"))).ToBlock(),
+                    Factory.SuperCall(Factory.ArgumentList(Factory.Identifier("e"))).ToBlock(),
                     Factory.VariableStatement(
                         Factory.SimpleVariableDeclaration(s_p, initializer: Factory.Number(1.2))).ToBlock()),
                 "try {\n  debugger;\n} catch (e) {\n  super(e);\n} finally {\n  var p = 1.2;\n}\n");
@@ -429,12 +431,7 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_default_clause()
         {
             VerifyOutput(
-                Factory.DefaultClause(
-                    Factory.Call(
-                        s_x,
-                        Factory.Argument(s_y),
-                        Factory.Argument(s_z))
-                    .ToStatement()),
+                Factory.DefaultClause(Factory.Call(s_x, Factory.ArgumentList(s_y, s_z)).ToStatement()),
                 "default:\n  x(y, z);\n");
         }
 
@@ -537,7 +534,9 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.Throw(
-                    Factory.NewCall(Factory.Identifier("Error"), Factory.Argument(Factory.String("message")))),
+                    Factory.NewCall(
+                        Factory.Identifier("Error"),
+                        Factory.ArgumentList(Factory.Argument(Factory.String("message"))))),
                 "throw new Error('message');\n");
         }
     }
