@@ -1152,7 +1152,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsClassExpression : ITsExpression
     {
         ITsIdentifier ClassName { get; }
-        ITsExpression Heritage { get; }
+        ITsClassHeritage Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 

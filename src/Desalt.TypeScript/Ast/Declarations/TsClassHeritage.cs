@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsClassExpression.cs" company="Justin Rockwood">
+// <copyright file="TsClassHeritage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -13,48 +13,52 @@ namespace Desalt.TypeScript.Ast.Expressions
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a class declaration acting as an expression.
+    /// Represents a class heritage of the form ' extends type implements type, type'.
     /// </summary>
-    internal class TsClassExpression : AstNode<TsVisitor>, ITsClassExpression
+    internal class TsClassHeritage : AstNode<TsVisitor>, ITsClassHeritage
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsClassExpression(
-            ITsIdentifier className = null,
-            ITsClassHeritage heritage = null,
-            IEnumerable<ITsClassElement> classBody = null)
+        public TsClassHeritage(
+            ITsTypeReference extendsClass = null,
+            IEnumerable<ITsTypeReference> implementsTypes = null)
         {
-            ClassName = className;
-            Heritage = heritage;
-            ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
+            ExtendsClass = extendsClass;
+            ImplementsTypes = implementsTypes?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ClassName { get; }
-        public ITsClassHeritage Heritage { get; }
-        public ImmutableArray<ITsClassElement> ClassBody { get; }
+        public ITsTypeReference ExtendsClass { get; }
+        public ImmutableArray<ITsTypeReference> ImplementsTypes { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassHeritage(this);
 
         public override string CodeDisplay =>
-            $"class {ClassName}{Heritage?.CodeDisplay} {{ {ClassBody.ToElidedList()} }}";
+            (ExtendsClass != null ? $" extends {ExtendsClass}" : "") +
+            (ImplementsTypes.IsEmpty ? "" : $" implements {ImplementsTypes.ToElidedList()}");
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("class ");
-            ClassName?.Emit(emitter);
-            Heritage?.Emit(emitter);
+            if (ExtendsClass != null)
+            {
+                emitter.Write(" extends ");
+                ExtendsClass.Emit(emitter);
+            }
 
-            emitter.WriteBlock(ClassBody);
+            if (!ImplementsTypes.IsEmpty)
+            {
+                emitter.Write(" implements ");
+                emitter.WriteItems(ImplementsTypes, indent: false, itemDelimiter: ", ");
+            }
         }
     }
 }

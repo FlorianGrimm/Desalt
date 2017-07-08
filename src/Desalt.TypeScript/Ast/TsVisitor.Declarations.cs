@@ -63,5 +63,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an index member declaration in a class.
         /// </summary>
         public virtual void VisitIndexMemberDeclaration(ITsIndexMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a class heritage of the form ' extends type implements type, type'.
+        /// </summary>
+        public virtual void VisitClassHeritage(ITsClassHeritage node) => Visit(node);
     }
 }

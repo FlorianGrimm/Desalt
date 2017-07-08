@@ -591,8 +591,13 @@ namespace Desalt.TypeScript.Ast
      *   IndexMemberDeclaration
      */
 
-    public interface ITsClassElement : IAstNode
-    { }
+    public interface ITsClassHeritage : IAstNode
+    {
+        ITsTypeReference ExtendsClass { get; }
+        ImmutableArray<ITsTypeReference> ImplementsTypes { get; }
+    }
+
+    public interface ITsClassElement : IAstNode { }
 
     /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }

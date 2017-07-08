@@ -263,5 +263,32 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.IndexSignature(Factory.Identifier("key"), false, Factory.AnyType)),
                 "[key: string]: any;\n");
         }
+
+        [TestMethod]
+        public void Emit_class_heritage()
+        {
+            VerifyOutput(
+                Factory.ClassHeritage(
+                    Factory.TypeReference(Factory.Identifier("Foo")),
+                    new[]
+                    {
+                        Factory.TypeReference(Factory.Identifier("IOne")),
+                        Factory.TypeReference(Factory.Identifier("ITwo")),
+                    }),
+                " extends Foo implements IOne, ITwo");
+
+            VerifyOutput(
+                Factory.ClassHeritage(Factory.TypeReference(Factory.Identifier("Foo"))),
+                " extends Foo");
+
+            VerifyOutput(
+                Factory.ClassHeritage(
+                    new[]
+                    {
+                        Factory.TypeReference(Factory.Identifier("IOne")),
+                        Factory.TypeReference(Factory.Identifier("ITwo")),
+                    }),
+                " implements IOne, ITwo");
+        }
     }
 }

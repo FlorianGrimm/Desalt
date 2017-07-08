@@ -21,6 +21,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ast\Declarations\TsClassHeritage.cs" />
     <Compile Include="Ast\Declarations\TsConstructorDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsDestructuringLexicalBinding.cs" />
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
