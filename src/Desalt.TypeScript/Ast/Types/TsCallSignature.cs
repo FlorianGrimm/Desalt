@@ -24,7 +24,7 @@ namespace Desalt.TypeScript.Ast.Types
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
-            TypeParameters = typeParameters ?? new TsTypeParameters();
+            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
             Parameters = parameters;
             ReturnType = returnType;
         }

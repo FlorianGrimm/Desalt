@@ -28,7 +28,7 @@ namespace Desalt.TypeScript.Ast.Declarations
         {
             AliasName = aliasName ?? throw new ArgumentNullException(nameof(aliasName));
             Type = type ?? throw new ArgumentNullException(nameof(type));
-            TypeParameters = typeParameters ?? new TsTypeParameters();
+            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
         }
 
         //// ===========================================================================================================

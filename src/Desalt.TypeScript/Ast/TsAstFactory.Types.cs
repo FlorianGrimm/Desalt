@@ -102,7 +102,7 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Creates an empty type parameters list.
         /// </summary>
-        public static ITsTypeParameters TypeParameters() => new TsTypeParameters();
+        public static ITsTypeParameters TypeParameters() => TsTypeParameters.Empty;
 
         /// <summary>
         /// Creates a list of type parameters of the form '&lt;type, type&gt;'.
