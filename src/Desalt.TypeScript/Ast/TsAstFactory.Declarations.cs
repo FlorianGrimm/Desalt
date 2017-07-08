@@ -135,5 +135,27 @@ namespace Desalt.TypeScript.Ast
             return new TsMemberFunctionDeclaration(
                 propertyName, callSignature, accessibilityModifier, isStatic, functionBody);
         }
+
+        /// <summary>
+        /// Creates a 'get' member accessor declaration in a class.
+        /// </summary>
+        public static ITsMemberGetAccessorDeclaration MemberGetAccessorDeclaration(
+            ITsGetAccessor getAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return new TsMemberGetSetAccessorDeclaration(getAccessor, accessibilityModifier, isStatic);
+        }
+
+        /// <summary>
+        /// Creates a 'set' member accessor declaration in a class.
+        /// </summary>
+        public static ITsMemberSetAccessorDeclaration MemberSetAccessorDeclaration(
+            ITsSetAccessor setAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return new TsMemberGetSetAccessorDeclaration(setAccessor, accessibilityModifier, isStatic);
+        }
     }
 }

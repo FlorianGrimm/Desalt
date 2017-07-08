@@ -226,5 +226,33 @@ namespace Desalt.TypeScript.Tests.Ast
                     functionBody: Factory.Return(Factory.Zero).ToSafeArray()),
                 "myMethod() {\n  return 0;\n}\n");
         }
+
+        [TestMethod]
+        public void Emit_get_and_set_member_accessor_declarations()
+        {
+            VerifyOutput(
+                Factory.MemberGetAccessorDeclaration(
+                    Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
+                    isStatic: true),
+                "public static get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.MemberGetAccessorDeclaration(
+                    Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType)),
+                "get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.MemberSetAccessorDeclaration(
+                    Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
+                    isStatic: true),
+                "public static set field(value: number) { }\n");
+
+            VerifyOutput(
+                Factory.MemberSetAccessorDeclaration(
+                    Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType)),
+                "set field(value: number) { }\n");
+        }
     }
 }

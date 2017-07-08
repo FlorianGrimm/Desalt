@@ -641,6 +641,20 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
+    public interface ITsMemberGetAccessorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsGetAccessor GetAccessor { get; }
+    }
+
+    public interface ITsMemberSetAccessorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsSetAccessor SetAccessor { get; }
+    }
+
     /* IndexMemberDeclaration:
      *   IndexSignature ;
      */
