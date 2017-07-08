@@ -125,6 +125,7 @@
     <Compile Include="Ast\Types\TsThisType.cs" />
     <Compile Include="Ast\Types\TsTupleType.cs" />
     <Compile Include="Ast\Types\TsTypeParameter.cs" />
+    <Compile Include="Ast\Types\TsTypeParameters.cs" />
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
     <Compile Include="Ast\Types\TsUnionOrIntersectionType.cs" />

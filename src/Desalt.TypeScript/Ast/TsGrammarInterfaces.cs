@@ -41,6 +41,11 @@ namespace Desalt.TypeScript.Ast
      *   extends Type
      */
 
+    public interface ITsTypeParameters : IAstNode
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+    }
+
     public interface ITsTypeParameter : IAstNode
     {
         ITsIdentifier TypeName { get; }

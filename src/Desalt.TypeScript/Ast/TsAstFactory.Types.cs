@@ -99,6 +99,17 @@ namespace Desalt.TypeScript.Ast
             return new TsParameterList(requiredParameters, optionalParameters, restParameter);
         }
 
+        /// <summary>
+        /// Creates an empty type parameters list.
+        /// </summary>
+        public static ITsTypeParameters TypeParameters() => new TsTypeParameters();
+
+        /// <summary>
+        /// Creates a list of type parameters of the form '&lt;type, type&gt;'.
+        /// </summary>
+        public static ITsTypeParameters TypeParameters(params ITsTypeParameter[] typeParameters) =>
+            new TsTypeParameters(typeParameters);
+
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
 
