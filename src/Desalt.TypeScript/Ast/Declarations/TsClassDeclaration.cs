@@ -23,12 +23,12 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public TsClassDeclaration(
             ITsIdentifier className = null,
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsClassHeritage heritage = null,
             IEnumerable<ITsClassElement> classBody = null)
         {
             ClassName = className;
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters;
             Heritage = heritage ?? new TsClassHeritage();
             ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
         }
@@ -38,7 +38,7 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier ClassName { get; }
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsClassHeritage Heritage { get; }
         public ImmutableArray<ITsClassElement> ClassBody { get; }
 
@@ -49,14 +49,13 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitClassDeclaration(this);
 
         public override string CodeDisplay =>
-            $"class {ClassName?.CodeDisplay}{TypeParameters.OptionalCodeDisplay()}{Heritage} " +
-            $"{{ {ClassBody.ToElidedList()} }}";
+            $"class {ClassName?.CodeDisplay}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
 
         public override void Emit(Emitter emitter)
         {
             emitter.Write("class ");
             ClassName?.Emit(emitter);
-            TypeParameters.EmitOptional(emitter);
+            TypeParameters.Emit(emitter);
             Heritage.Emit(emitter);
 
             emitter.WriteLine(" {");

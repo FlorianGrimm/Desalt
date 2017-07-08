@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
@@ -228,20 +227,5 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static void EmitOptionalStaticDeclaration(this bool isStatic, Emitter emitter) =>
             emitter.Write(isStatic ? "static " : "");
-
-        /// <summary>
-        /// Returns "&lt;typeParam, typeParam&gt;" if there are items, or an empty string.
-        /// </summary>
-        public static string OptionalCodeDisplay(this ImmutableArray<ITsTypeParameter> typeParameters) =>
-            typeParameters.Length > 0 ? typeParameters.ToElidedList() : "";
-
-        /// <summary>
-        /// Emits "&lt;typeParam, typeParam&gt;" if there are items, or an empty string.
-        /// </summary>
-        public static void EmitOptional(this ImmutableArray<ITsTypeParameter> typeParameters, Emitter emitter)
-        {
-            emitter.WriteItems(
-                typeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ", emptyContents: "");
-        }
     }
 }

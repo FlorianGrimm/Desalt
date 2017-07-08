@@ -7,8 +7,6 @@
 
 namespace Desalt.TypeScript.Ast.Types
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
@@ -22,11 +20,11 @@ namespace Desalt.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public TsConstructSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsParameterList parameterList = null,
             ITsType returnType = null)
         {
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             ParameterList = parameterList;
             ReturnType = returnType;
         }
@@ -35,7 +33,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsParameterList ParameterList { get; }
         public ITsType ReturnType { get; }
 
@@ -46,12 +44,12 @@ namespace Desalt.TypeScript.Ast.Types
         public override void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
 
         public override string CodeDisplay =>
-            $"new {TypeParameters.OptionalCodeDisplay()}(${ParameterList}){ReturnType.OptionalTypeAnnotation()}";
+            $"new {TypeParameters}(${ParameterList}){ReturnType.OptionalTypeAnnotation()}";
 
         public override void Emit(Emitter emitter)
         {
             emitter.Write("new ");
-            TypeParameters.EmitOptional(emitter);
+            TypeParameters.Emit(emitter);
             emitter.Write("(");
             ParameterList.Emit(emitter);
             emitter.Write(")");

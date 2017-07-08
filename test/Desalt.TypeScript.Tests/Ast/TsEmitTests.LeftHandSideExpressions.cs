@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
-    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
@@ -98,7 +97,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.ArrowFunction(
                     Factory.CallSignature(
-                        Factory.TypeParameter(s_T).ToSafeArray(),
+                        Factory.TypeParameters(Factory.TypeParameter(s_T)),
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, s_TRef))),
                     s_y),
                 "<T>(x: T) => y");

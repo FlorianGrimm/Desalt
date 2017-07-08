@@ -306,7 +306,7 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.ClassDeclaration(
                     Factory.Identifier("AnimalCollection"),
-                    Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal"))).ToSafeArray(),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal")))),
                     Factory.ClassHeritage(
                         Factory.TypeReference(Factory.Identifier("Collection"), s_TRef),
                         Factory.TypeReference(Factory.Identifier("ICollection"), s_TRef).ToSafeArray()),

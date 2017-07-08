@@ -28,7 +28,7 @@ namespace Desalt.TypeScript.Ast
             new TsTupleType(elementType, elementTypes);
 
         public static ITsFunctionType FunctionType(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast
             new TsFunctionOrConstructorType(returnType, isConstructorType: false);
 
         public static ITsConstructorType ConstructorType(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -78,7 +78,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         public static ITsCallSignature CallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
@@ -155,7 +155,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         public static ITsConstructSignature ConstructSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsParameterList parameterList = null,
             ITsType returnType = null)
         {

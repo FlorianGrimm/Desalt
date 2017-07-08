@@ -211,7 +211,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsFunctionType : ITsType
     {
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsParameterList Parameters { get; }
         ITsType ReturnType { get; }
     }
@@ -222,7 +222,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsConstructorType : ITsType
     {
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsParameterList Parameters { get; }
         ITsType ReturnType { get; }
     }
@@ -273,7 +273,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsCallSignature : ITsTypeMember
     {
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsParameterList Parameters { get; }
         ITsType ReturnType { get; }
     }
@@ -380,7 +380,7 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsConstructSignature : ITsTypeMember
     {
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsParameterList ParameterList { get; }
         ITsType ReturnType { get; }
     }
@@ -415,7 +415,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsTypeAliasDeclaration : ITsDeclaration
     {
         ITsIdentifier AliasName { get; }
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsType Type { get; }
     }
 
@@ -606,7 +606,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsClassDeclaration : ITsDeclaration
     {
         ITsIdentifier ClassName { get; }
-        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsTypeParameters TypeParameters { get; }
         ITsClassHeritage Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }

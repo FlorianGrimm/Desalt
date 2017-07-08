@@ -7,8 +7,6 @@
 
 namespace Desalt.TypeScript.Ast.Types
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
@@ -22,11 +20,11 @@ namespace Desalt.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public TsCallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             Parameters = parameters;
             ReturnType = returnType;
         }
@@ -35,7 +33,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsParameterList Parameters { get; }
         public ITsType ReturnType { get; }
 
@@ -45,12 +43,11 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
 
-        public override string CodeDisplay =>
-            $"{TypeParameters.OptionalCodeDisplay()}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
+        public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
 
         public override void Emit(Emitter emitter)
         {
-            TypeParameters.EmitOptional(emitter);
+            TypeParameters.Emit(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");

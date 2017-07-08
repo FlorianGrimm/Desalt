@@ -8,8 +8,6 @@
 namespace Desalt.TypeScript.Ast.Types
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
@@ -23,12 +21,12 @@ namespace Desalt.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public TsFunctionOrConstructorType(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters,
             ITsType returnType,
             bool isConstructorType)
         {
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             Parameters = parameters;
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             IsConstructorType = isConstructorType;
@@ -48,7 +46,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsParameterList Parameters { get; }
         public ITsType ReturnType { get; }
         public bool IsConstructorType { get; }
@@ -70,8 +68,7 @@ namespace Desalt.TypeScript.Ast.Types
         }
 
         public override string CodeDisplay =>
-            (IsConstructorType ? "new " : "") +
-            $"{TypeParameters.OptionalCodeDisplay()}({Parameters?.CodeDisplay}) => {ReturnType}";
+            (IsConstructorType ? "new " : "") + $"{TypeParameters}({Parameters?.CodeDisplay}) => {ReturnType}";
 
         public override void Emit(Emitter emitter)
         {
@@ -80,7 +77,7 @@ namespace Desalt.TypeScript.Ast.Types
                 emitter.Write("new ");
             }
 
-            TypeParameters.EmitOptional(emitter);
+            TypeParameters.Emit(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");

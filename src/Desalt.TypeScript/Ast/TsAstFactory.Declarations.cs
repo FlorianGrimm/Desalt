@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
-    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -86,7 +85,7 @@ namespace Desalt.TypeScript.Ast
             ITsTypeParameter typeParameter,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameter.ToSafeArray());
+            return new TsTypeAliasDeclaration(aliasName, type, TypeParameters(typeParameter));
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsTypeAliasDeclaration TypeAliasDeclaration(
             ITsIdentifier aliasName,
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsType type)
         {
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
@@ -185,7 +184,7 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsClassDeclaration ClassDeclaration(
             ITsIdentifier className = null,
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsClassHeritage heritage = null,
             IEnumerable<ITsClassElement> classBody = null)
         {
