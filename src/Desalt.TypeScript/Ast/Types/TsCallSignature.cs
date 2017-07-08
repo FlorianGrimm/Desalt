@@ -73,7 +73,7 @@ namespace Desalt.TypeScript.Ast.Types
             Parameters?.Emit(emitter);
             emitter.Write(")");
 
-            ReturnType.EmitTypeAnnotation(emitter);
+            ReturnType.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

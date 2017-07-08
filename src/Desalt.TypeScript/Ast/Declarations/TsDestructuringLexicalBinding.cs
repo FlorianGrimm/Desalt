@@ -45,13 +45,13 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringLexicalBinding(this);
 
         public override string CodeDisplay =>
-            $"{BindingPattern}{VariableType.ToTypeAnnotationCodeDisplay()}{Initializer.ToAssignmentCodeDisplay()}";
+            $"{BindingPattern}{VariableType.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()}";
 
         public override void Emit(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
-            VariableType.EmitTypeAnnotation(emitter);
-            Initializer.EmitAssignment(emitter);
+            VariableType.EmitOptionalTypeAnnotation(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
         }
     }
 }

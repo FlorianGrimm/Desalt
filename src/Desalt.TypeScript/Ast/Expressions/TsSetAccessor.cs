@@ -50,7 +50,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override void Accept(TsVisitor visitor) => visitor.VisitSetAccessor(this);
 
         public override string CodeDisplay =>
-            $"set {PropertyName}({ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}) " +
+            $"set {PropertyName}({ParameterName}{ParameterType.OptionalTypeAnnotation()}) " +
             $"{{ {FunctionBody.ToElidedList()} }}";
 
         public override void Emit(Emitter emitter)
@@ -59,7 +59,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             PropertyName.Emit(emitter);
             emitter.Write("(");
             ParameterName.Emit(emitter);
-            ParameterType.EmitTypeAnnotation(emitter);
+            ParameterType.EmitOptionalTypeAnnotation(emitter);
             emitter.Write(") ");
             emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }

@@ -56,7 +56,7 @@ namespace Desalt.TypeScript.Ast.Types
                     display += $"<{TypeParameters.ToElidedList()}>";
                 }
 
-                display += $"(${ParameterList}){ReturnType.ToTypeAnnotationCodeDisplay()}";
+                display += $"(${ParameterList}){ReturnType.OptionalTypeAnnotation()}";
                 return display;
             }
         }
@@ -74,7 +74,7 @@ namespace Desalt.TypeScript.Ast.Types
             ParameterList.Emit(emitter);
             emitter.Write(")");
 
-            ReturnType.EmitTypeAnnotation(emitter);
+            ReturnType.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

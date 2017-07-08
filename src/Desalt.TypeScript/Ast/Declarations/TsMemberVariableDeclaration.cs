@@ -51,16 +51,16 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberVariableDeclaration(this);
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalAccessibilityCodeDisplay()}{IsStatic.StaticDeclarationCodeDisplay()}" +
-            $"{PropertyName}{TypeAnnotation.ToTypeAnnotationCodeDisplay()}{Initializer.ToAssignmentCodeDisplay()};";
+            $"{AccessibilityModifier.OptionalAccessibility()}{IsStatic.OptionalStaticDeclaration()}" +
+            $"{PropertyName}{TypeAnnotation.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()};";
 
         public override void Emit(Emitter emitter)
         {
             AccessibilityModifier.EmitOptionalAccessibility(emitter);
-            IsStatic.EmitStaticDeclaration(emitter);
+            IsStatic.EmitOptionalStaticDeclaration(emitter);
             PropertyName.Emit(emitter);
-            TypeAnnotation.EmitTypeAnnotation(emitter);
-            Initializer.EmitAssignment(emitter);
+            TypeAnnotation.EmitOptionalTypeAnnotation(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
             emitter.WriteLine(";");
         }
     }

@@ -140,7 +140,7 @@ namespace Desalt.TypeScript.Ast
         /// Returns a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
-        public static string ToTypeAnnotationCodeDisplay(this ITsType type)
+        public static string OptionalTypeAnnotation(this ITsType type)
         {
             return type != null ? $": {type.CodeDisplay}" : string.Empty;
         }
@@ -150,7 +150,7 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
         /// <param name="emitter">The emitter to write to.</param>
-        public static void EmitTypeAnnotation(this ITsType type, Emitter emitter)
+        public static void EmitOptionalTypeAnnotation(this ITsType type, Emitter emitter)
         {
             if (type != null)
             {
@@ -163,7 +163,7 @@ namespace Desalt.TypeScript.Ast
         /// Returns a " = expression" assignment if the expression is not null.
         /// </summary>
         /// <param name="expression">The expression to assign.</param>
-        public static string ToAssignmentCodeDisplay(this ITsExpression expression)
+        public static string OptionalAssignment(this ITsExpression expression)
         {
             return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
         }
@@ -173,7 +173,7 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         /// <param name="expression">The expression to assign.</param>
         /// <param name="emitter">The emitter to write to.</param>
-        public static void EmitAssignment(this ITsExpression expression, Emitter emitter)
+        public static void EmitOptionalAssignment(this ITsExpression expression, Emitter emitter)
         {
             if (expression != null)
             {
@@ -205,7 +205,7 @@ namespace Desalt.TypeScript.Ast
                 statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
         }
 
-        public static string OptionalAccessibilityCodeDisplay(this TsAccessibilityModifier? accessibilityModifier) =>
+        public static string OptionalAccessibility(this TsAccessibilityModifier? accessibilityModifier) =>
             accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
 
         public static void EmitOptionalAccessibility(
@@ -222,12 +222,12 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Returns "static " if <paramref name="isStatic"/> is true or an empty string if not.
         /// </summary>
-        public static string StaticDeclarationCodeDisplay(this bool isStatic) => isStatic ? "static " : "";
+        public static string OptionalStaticDeclaration(this bool isStatic) => isStatic ? "static " : "";
 
         /// <summary>
         /// Writes "static " if <paramref name="isStatic"/> is true or an empty string if not.
         /// </summary>
-        public static void EmitStaticDeclaration(this bool isStatic, Emitter emitter) =>
+        public static void EmitOptionalStaticDeclaration(this bool isStatic, Emitter emitter) =>
             emitter.Write(isStatic ? "static " : "");
     }
 }

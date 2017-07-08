@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             get
             {
                 var builder = new StringBuilder();
-                builder.Append(AccessibilityModifier.OptionalAccessibilityCodeDisplay());
+                builder.Append(AccessibilityModifier.OptionalAccessibility());
                 builder.Append("constructor(").Append(ParameterList).Append(")");
                 builder.Append(FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
 
