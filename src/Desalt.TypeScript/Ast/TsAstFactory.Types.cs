@@ -59,8 +59,8 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,
-            bool isOptional = false,
-            ITsType propertyType = null)
+            ITsType propertyType = null,
+            bool isOptional = false)
         {
             return new TsPropertySignature(propertyName, isOptional, propertyType);
         }

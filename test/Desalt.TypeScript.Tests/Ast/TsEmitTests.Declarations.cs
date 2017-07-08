@@ -374,5 +374,22 @@ namespace Desalt.TypeScript.Tests.Ast
 }
 ".Replace("\r\n", "\n"));
         }
+
+        [TestMethod]
+        public void Emit_interface_declaration()
+        {
+            VerifyOutput(
+                Factory.InterfaceDeclaration(
+                    Factory.Identifier("ISomething"),
+                    typeParameters: Factory.TypeParameters(Factory.TypeParameter(s_T)),
+                    extendsClause: Factory.TypeReference(Factory.Identifier("IBase")).ToSafeArray(),
+                    body: Factory.ObjectType(
+                        Factory.PropertySignature(s_x, Factory.NumberType))),
+                "interface ISomething<T> extends IBase {\n  x: number\n}\n");
+
+            VerifyOutput(
+                Factory.InterfaceDeclaration(Factory.Identifier("ISomething"), Factory.ObjectType()),
+                "interface ISomething {}\n");
+        }
     }
 }

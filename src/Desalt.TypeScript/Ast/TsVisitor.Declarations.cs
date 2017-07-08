@@ -73,5 +73,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a class declaration.
         /// </summary>
         public virtual void VisitClassDeclaration(ITsClassDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an interface declaration
+        /// </summary>
+        public virtual void VisitInterfaceDeclaration(ITsInterfaceDeclaration node) => Visit(node);
     }
 }

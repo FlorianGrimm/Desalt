@@ -573,6 +573,14 @@ namespace Desalt.TypeScript.Ast
      *   TypeReference
      */
 
+    public interface ITsInterfaceDeclaration : ITsDeclaration
+    {
+        ITsIdentifier InterfaceName { get; }
+        ITsTypeParameters TypeParameters { get; }
+        ImmutableArray<ITsTypeReference> ExtendsClause { get; }
+        ITsObjectType Body { get; }
+    }
+
     /* A.6 Classes
      * -----------
      * ClassDeclaration: ( Modified )

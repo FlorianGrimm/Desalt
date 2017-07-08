@@ -161,6 +161,8 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_object_type()
         {
+            VerifyOutput(Factory.ObjectType(), "{}");
+
             VerifyOutput(
                 Factory.ObjectType(
                     Factory.PropertySignature(s_x, propertyType: Factory.StringType),
@@ -172,7 +174,13 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.ParameterList(Factory.BoundRequiredParameter(Factory.Identifier("arg"), s_TRef))),
                     Factory.IndexSignature(Factory.Identifier("k"), false, Factory.AnyType),
                     Factory.MethodSignature(s_z, true, Factory.CallSignature(Factory.ParameterList(), Factory.VoidType))),
-                "{ x: string, (z, p): boolean, new <T extends MyType>(arg: T), [k: string]: any, z?(): void }");
+                @"{
+  x: string,
+  (z, p): boolean,
+  new <T extends MyType>(arg: T),
+  [k: string]: any,
+  z?(): void
+}".Replace("\r\n", "\n"));
         }
 
         [TestMethod]

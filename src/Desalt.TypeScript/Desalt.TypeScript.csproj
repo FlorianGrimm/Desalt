@@ -28,6 +28,7 @@
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsIndexMemberDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsInterfaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsMemberFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />

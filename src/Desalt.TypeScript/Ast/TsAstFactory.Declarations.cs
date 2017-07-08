@@ -190,5 +190,17 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsClassDeclaration(className, typeParameters, heritage, classBody);
         }
+
+        /// <summary>
+        /// Creates an interface declaration.
+        /// </summary>
+        public static ITsInterfaceDeclaration InterfaceDeclaration(
+            ITsIdentifier interfaceName,
+            ITsObjectType body,
+            ITsTypeParameters typeParameters = null,
+            IEnumerable<ITsTypeReference> extendsClause = null)
+        {
+            return new TsInterfaceDeclaration(interfaceName, body, typeParameters, extendsClause);
+        }
     }
 }
