@@ -659,6 +659,11 @@ namespace Desalt.TypeScript.Ast
      *   IndexSignature ;
      */
 
+    public interface ITsIndexMemberDeclaration : ITsClassElement
+    {
+        ITsIndexSignature IndexSignature { get; }
+    }
+
     /* A.7 Enums
      * ---------
      * EnumDeclaration:

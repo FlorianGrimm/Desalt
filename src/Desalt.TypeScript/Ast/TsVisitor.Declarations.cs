@@ -58,5 +58,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a 'set' member accessor declaration in a class.
         /// </summary>
         public virtual void VisitSetAccessorMemberDeclaration(ITsSetAccessorMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an index member declaration in a class.
+        /// </summary>
+        public virtual void VisitIndexMemberDeclaration(ITsIndexMemberDeclaration node) => Visit(node);
     }
 }

@@ -254,5 +254,14 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType)),
                 "set field(value: number) { }\n");
         }
+
+        [TestMethod]
+        public void Emit_index_member_declarations()
+        {
+            VerifyOutput(
+                Factory.IndexMemberDeclaration(
+                    Factory.IndexSignature(Factory.Identifier("key"), false, Factory.AnyType)),
+                "[key: string]: any;\n");
+        }
     }
 }

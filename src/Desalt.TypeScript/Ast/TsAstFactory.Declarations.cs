@@ -157,5 +157,11 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic);
         }
+
+        /// <summary>
+        /// Creates an index member declaration in a class.
+        /// </summary>
+        public static ITsIndexMemberDeclaration IndexMemberDeclaration(ITsIndexSignature indexSignature) =>
+            new TsIndexMemberDeclaration(indexSignature);
     }
 }
