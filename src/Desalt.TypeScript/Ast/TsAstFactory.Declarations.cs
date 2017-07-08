@@ -202,5 +202,11 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsInterfaceDeclaration(interfaceName, body, typeParameters, extendsClause);
         }
+
+        /// <summary>
+        /// Creates an enum member of the form, 'name = value'.
+        /// </summary>
+        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null) =>
+            new TsEnumMember(name, value);
     }
 }

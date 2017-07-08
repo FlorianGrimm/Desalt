@@ -717,6 +717,12 @@ namespace Desalt.TypeScript.Ast
      *   AssignmentExpression
      */
 
+    public interface ITsEnumMember : IAstNode
+    {
+        ITsPropertyName Name { get; }
+        ITsExpression Value { get; }
+    }
+
     /* A.8 Namespaces
      * --------------
      * NamespaceDeclaration:

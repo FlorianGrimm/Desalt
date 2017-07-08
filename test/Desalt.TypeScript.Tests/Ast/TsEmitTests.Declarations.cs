@@ -391,5 +391,12 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.InterfaceDeclaration(Factory.Identifier("ISomething"), Factory.ObjectType()),
                 "interface ISomething {}\n");
         }
+
+        [TestMethod]
+        public void Emit_enum_member()
+        {
+            VerifyOutput(Factory.EnumMember(s_x), "x");
+            VerifyOutput(Factory.EnumMember(s_y, s_z), "y = z");
+        }
     }
 }
