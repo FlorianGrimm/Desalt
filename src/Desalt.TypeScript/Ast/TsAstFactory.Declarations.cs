@@ -167,17 +167,17 @@ namespace Desalt.TypeScript.Ast
         /// Creates a class heritage of the form 'extends type implements type, type'.
         /// </summary>
         public static ITsClassHeritage ClassHeritage(
-            ITsTypeReference extendsClass,
-            IEnumerable<ITsTypeReference> implementsTypes = null)
+            ITsTypeReference extendsClause,
+            IEnumerable<ITsTypeReference> implementsClause = null)
         {
-            return new TsClassHeritage(extendsClass, implementsTypes);
+            return new TsClassHeritage(extendsClause, implementsClause);
         }
 
         /// <summary>
         /// Creates a class heritage of the form 'implements type, type'.
         /// </summary>
         public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes) =>
-            new TsClassHeritage(extendsClass: null, implementsTypes: implementsTypes);
+            new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes);
 
         /// <summary>
         /// Creates a class declaration.

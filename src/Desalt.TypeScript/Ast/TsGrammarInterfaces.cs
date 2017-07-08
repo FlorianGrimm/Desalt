@@ -613,8 +613,8 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsClassHeritage : IAstNode
     {
-        ITsTypeReference ExtendsClass { get; }
-        ImmutableArray<ITsTypeReference> ImplementsTypes { get; }
+        ITsTypeReference ExtendsClause { get; }
+        ImmutableArray<ITsTypeReference> ImplementsClause { get; }
     }
 
     public interface ITsClassElement : IAstNode { }

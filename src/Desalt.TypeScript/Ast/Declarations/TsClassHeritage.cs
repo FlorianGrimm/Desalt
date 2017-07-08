@@ -22,19 +22,19 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// ===========================================================================================================
 
         public TsClassHeritage(
-            ITsTypeReference extendsClass = null,
-            IEnumerable<ITsTypeReference> implementsTypes = null)
+            ITsTypeReference extendsClause = null,
+            IEnumerable<ITsTypeReference> implementsClause = null)
         {
-            ExtendsClass = extendsClass;
-            ImplementsTypes = implementsTypes?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
+            ExtendsClause = extendsClause;
+            ImplementsClause = implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeReference ExtendsClass { get; }
-        public ImmutableArray<ITsTypeReference> ImplementsTypes { get; }
+        public ITsTypeReference ExtendsClause { get; }
+        public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -43,21 +43,21 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitClassHeritage(this);
 
         public override string CodeDisplay =>
-            (ExtendsClass != null ? $" extends {ExtendsClass}" : "") +
-            (ImplementsTypes.IsEmpty ? "" : $" implements {ImplementsTypes.ToElidedList()}");
+            (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
+            (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
 
         public override void Emit(Emitter emitter)
         {
-            if (ExtendsClass != null)
+            if (ExtendsClause != null)
             {
                 emitter.Write(" extends ");
-                ExtendsClass.Emit(emitter);
+                ExtendsClause.Emit(emitter);
             }
 
-            if (!ImplementsTypes.IsEmpty)
+            if (!ImplementsClause.IsEmpty)
             {
                 emitter.Write(" implements ");
-                emitter.WriteItems(ImplementsTypes, indent: false, itemDelimiter: ", ");
+                emitter.WriteItems(ImplementsClause, indent: false, itemDelimiter: ", ");
             }
         }
     }
