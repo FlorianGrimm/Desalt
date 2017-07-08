@@ -632,6 +632,15 @@ namespace Desalt.TypeScript.Ast
         ITsExpression Initializer { get; }
     }
 
+    public interface ITsMemberFunctionDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName PropertyName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
     /* IndexMemberDeclaration:
      *   IndexSignature ;
      */

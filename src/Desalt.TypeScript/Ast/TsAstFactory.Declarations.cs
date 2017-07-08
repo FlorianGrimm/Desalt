@@ -121,5 +121,19 @@ namespace Desalt.TypeScript.Ast
             return new TsMemberVariableDeclaration(
                 propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
         }
+
+        /// <summary>
+        /// Creates a member function declaration in a class.
+        /// </summary>
+        public static ITsMemberFunctionDeclaration MemberFunctionDeclaration(
+            ITsPropertyName propertyName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsMemberFunctionDeclaration(
+                propertyName, callSignature, accessibilityModifier, isStatic, functionBody);
+        }
     }
 }

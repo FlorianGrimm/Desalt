@@ -43,5 +43,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a member variable declaration in a class.
         /// </summary>
         public virtual void VisitMemberVariableDeclaration(ITsMemberVariableDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member function declaration in a class.
+        /// </summary>
+        public virtual void VisitMemberFunctionDeclaration(ITsMemberFunctionDeclaration node) => Visit(node);
     }
 }

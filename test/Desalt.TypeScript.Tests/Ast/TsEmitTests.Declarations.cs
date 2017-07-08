@@ -145,9 +145,11 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
                         Factory.StringRequiredParameter(s_y, Factory.String("str"))),
                     Factory.Assignment(
-                        Factory.MemberDot(Factory.This, "_y"),
-                        TsAssignmentOperator.SimpleAssign,
-                        s_y).ToStatement().ToSafeArray()),
+                            Factory.MemberDot(Factory.This, "_y"),
+                            TsAssignmentOperator.SimpleAssign,
+                            s_y)
+                        .ToStatement()
+                        .ToSafeArray()),
                 "public constructor(protected x, y: 'str') {\n  this._y = y;\n}\n");
         }
 
@@ -172,6 +174,57 @@ namespace Desalt.TypeScript.Tests.Ast
                 "static x: number = 10;\n");
 
             VerifyOutput(Factory.MemberVariableDeclaration(s_x), "x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_member_function_declarations_with_no_body()
+        {
+            VerifyOutput(
+                Factory.MemberFunctionDeclaration(
+                    Factory.Identifier("myMethod"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType),
+                    TsAccessibilityModifier.Private,
+                    isStatic: true),
+                "private static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.MemberFunctionDeclaration(
+                    Factory.Identifier("myMethod"),
+                    isStatic: true,
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.MemberFunctionDeclaration(
+                    Factory.Identifier("myMethod"),
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "myMethod(x: number): void;\n");
+        }
+
+        [TestMethod]
+        public void Emit_member_function_declarations_with_a_body()
+        {
+            VerifyOutput(
+                Factory.MemberFunctionDeclaration(
+                    Factory.Identifier("myMethod"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.BooleanType)),
+                        Factory.VoidType),
+                    TsAccessibilityModifier.Protected,
+                    functionBody: Factory.Return(Factory.Zero).ToSafeArray()),
+                "protected myMethod(x: boolean): void {\n  return 0;\n}\n");
+            VerifyOutput(
+                Factory.MemberFunctionDeclaration(
+                    Factory.Identifier("myMethod"),
+                    Factory.CallSignature(),
+                    functionBody: Factory.Return(Factory.Zero).ToSafeArray()),
+                "myMethod() {\n  return 0;\n}\n");
         }
     }
 }
