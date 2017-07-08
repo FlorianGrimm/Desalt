@@ -45,30 +45,12 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string code = string.Empty;
-
-                if (TypeParameters.Length == 0)
-                {
-                    code += $"<{TypeParameters.ToElidedList()}>";
-                }
-
-                code += $"{Parameters.CodeDisplay}: {ReturnType}";
-
-                return code;
-            }
-        }
+        public override string CodeDisplay =>
+            $"{TypeParameters.OptionalCodeDisplay()}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
 
         public override void Emit(Emitter emitter)
         {
-            if (TypeParameters.Length > 0)
-            {
-                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
+            TypeParameters.EmitOptional(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");

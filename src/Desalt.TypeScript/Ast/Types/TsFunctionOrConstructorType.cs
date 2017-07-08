@@ -69,27 +69,9 @@ namespace Desalt.TypeScript.Ast.Types
             }
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string code = string.Empty;
-
-                if (IsConstructorType)
-                {
-                    code += "new ";
-                }
-
-                if (TypeParameters.Length == 0)
-                {
-                    code += $"<{TypeParameters.ToElidedList()}>";
-                }
-
-                code += $"({Parameters?.CodeDisplay}) => {ReturnType}";
-
-                return code;
-            }
-        }
+        public override string CodeDisplay =>
+            (IsConstructorType ? "new " : "") +
+            $"{TypeParameters.OptionalCodeDisplay()}({Parameters?.CodeDisplay}) => {ReturnType}";
 
         public override void Emit(Emitter emitter)
         {
@@ -98,11 +80,7 @@ namespace Desalt.TypeScript.Ast.Types
                 emitter.Write("new ");
             }
 
-            if (TypeParameters.Length > 0)
-            {
-                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
+            TypeParameters.EmitOptional(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");

@@ -67,12 +67,12 @@ namespace Desalt.TypeScript.Ast.Declarations
         }
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalAccessibility()}{IsStatic.OptionalStaticDeclaration()}" +
+            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
             (GetAccessor != null ? GetAccessor.CodeDisplay : SetAccessor.CodeDisplay);
 
         public override void Emit(Emitter emitter)
         {
-            AccessibilityModifier.EmitOptionalAccessibility(emitter);
+            AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);
             GetAccessor?.Emit(emitter);
             SetAccessor?.Emit(emitter);

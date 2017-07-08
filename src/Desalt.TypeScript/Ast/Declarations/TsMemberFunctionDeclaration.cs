@@ -57,13 +57,13 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitFunctionMemberDeclaration(this);
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalAccessibility()}{IsStatic.OptionalStaticDeclaration()}" +
+            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
             $"{PropertyName}{CallSignature.CodeDisplay}" +
             (FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
 
         public override void Emit(Emitter emitter)
         {
-            AccessibilityModifier.EmitOptionalAccessibility(emitter);
+            AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);
             PropertyName.Emit(emitter);
             CallSignature.Emit(emitter);

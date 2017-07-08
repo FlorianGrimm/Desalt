@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             get
             {
                 var builder = new StringBuilder();
-                builder.Append(AccessibilityModifier.OptionalAccessibility());
+                builder.Append(AccessibilityModifier.OptionalCodeDisplay());
                 builder.Append("constructor(").Append(ParameterList).Append(")");
                 builder.Append(FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
 
@@ -64,7 +64,7 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override void Emit(Emitter emitter)
         {
-            AccessibilityModifier.EmitOptionalAccessibility(emitter);
+            AccessibilityModifier.EmitOptional(emitter);
 
             emitter.Write("constructor(");
             ParameterList?.Emit(emitter);

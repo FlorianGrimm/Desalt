@@ -46,31 +46,13 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = $"type {AliasName}";
-                if (TypeParameters.Length > 0)
-                {
-                    display += $"<{TypeParameters.ToElidedList()}>";
-                }
-
-                display += $" = {Type};";
-                return display;
-            }
-        }
+        public override string CodeDisplay => $"type {AliasName}{TypeParameters.OptionalCodeDisplay()} = {Type};";
 
         public override void Emit(Emitter emitter)
         {
             emitter.Write("type ");
             AliasName.Emit(emitter);
-
-            if (TypeParameters.Length > 0)
-            {
-                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
+            TypeParameters.EmitOptional(emitter);
             emitter.Write(" = ");
             Type.Emit(emitter);
             emitter.WriteLine(";");

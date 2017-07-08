@@ -48,12 +48,12 @@ namespace Desalt.TypeScript.Ast.Types
         public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
 
         public override string CodeDisplay =>
-            $"{Modifier.OptionalAccessibility()}" +
+            $"{Modifier.OptionalCodeDisplay()}" +
             $"{ParameterName}${ParameterType.OptionalTypeAnnotation()} = {Initializer}";
 
         public override void Emit(Emitter emitter)
         {
-            Modifier.EmitOptionalAccessibility(emitter);
+            Modifier.EmitOptional(emitter);
 
             ParameterName.Emit(emitter);
             ParameterType.EmitOptionalTypeAnnotation(emitter);

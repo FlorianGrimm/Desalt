@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
+    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
@@ -137,6 +138,29 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Writes a statement on a new line unless the statement is a block, in which case the block
+        /// will start on the same line.
+        /// </summary>
+        /// <param name="statement">The statement to emit.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        /// <param name="prefixForIndentedStatement">
+        /// If supplied, the prefix is written before the statement when it's a not a block statement.
+        /// </param>
+        /// <param name="prefixForBlock">
+        /// If supplied, the prefix is written before the statement when it's a block statement.
+        /// </param>
+        public static void EmitIndentedOrInBlock(
+            this ITsStatement statement,
+            Emitter emitter,
+            string prefixForIndentedStatement = ")",
+            string prefixForBlock = ") ")
+        {
+            bool isBlockStatement = statement is ITsBlockStatement;
+            emitter.WriteStatementIndentedOrInBlock(
+                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
+        }
+
+        /// <summary>
         /// Returns a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
@@ -182,35 +206,10 @@ namespace Desalt.TypeScript.Ast
             }
         }
 
-        /// <summary>
-        /// Writes a statement on a new line unless the statement is a block, in which case the block
-        /// will start on the same line.
-        /// </summary>
-        /// <param name="statement">The statement to emit.</param>
-        /// <param name="emitter">The emitter to write to.</param>
-        /// <param name="prefixForIndentedStatement">
-        /// If supplied, the prefix is written before the statement when it's a not a block statement.
-        /// </param>
-        /// <param name="prefixForBlock">
-        /// If supplied, the prefix is written before the statement when it's a block statement.
-        /// </param>
-        public static void EmitIndentedOrInBlock(
-            this ITsStatement statement,
-            Emitter emitter,
-            string prefixForIndentedStatement = ")",
-            string prefixForBlock = ") ")
-        {
-            bool isBlockStatement = statement is ITsBlockStatement;
-            emitter.WriteStatementIndentedOrInBlock(
-                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
-        }
-
-        public static string OptionalAccessibility(this TsAccessibilityModifier? accessibilityModifier) =>
+        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier) =>
             accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
 
-        public static void EmitOptionalAccessibility(
-            this TsAccessibilityModifier? accessibilityModifier,
-            Emitter emitter)
+        public static void EmitOptional(this TsAccessibilityModifier? accessibilityModifier, Emitter emitter)
         {
             if (accessibilityModifier != null)
             {
