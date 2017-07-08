@@ -23,13 +23,13 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// ===========================================================================================================
 
         public TsFunctionMemberDeclaration(
-            ITsPropertyName propertyName,
+            ITsPropertyName functionName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+            FunctionName = functionName ?? throw new ArgumentNullException(nameof(functionName));
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
@@ -46,7 +46,7 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
         public bool IsStatic { get; }
-        public ITsPropertyName PropertyName { get; }
+        public ITsPropertyName FunctionName { get; }
         public ITsCallSignature CallSignature { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
@@ -58,14 +58,14 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override string CodeDisplay =>
             $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
-            $"{PropertyName}{CallSignature.CodeDisplay}" +
+            $"{FunctionName}{CallSignature.CodeDisplay}" +
             (FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
 
         public override void Emit(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);
-            PropertyName.Emit(emitter);
+            FunctionName.Emit(emitter);
             CallSignature.Emit(emitter);
 
             if (FunctionBody.IsDefault)

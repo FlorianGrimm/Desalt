@@ -641,7 +641,7 @@ namespace Desalt.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
-        ITsPropertyName PropertyName { get; }
+        ITsPropertyName FunctionName { get; }
         ITsCallSignature CallSignature { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }

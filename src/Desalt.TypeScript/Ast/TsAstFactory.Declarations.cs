@@ -126,14 +126,14 @@ namespace Desalt.TypeScript.Ast
         /// Creates a member function declaration in a class.
         /// </summary>
         public static ITsFunctionMemberDeclaration FunctionMemberDeclaration(
-            ITsPropertyName propertyName,
+            ITsPropertyName functionName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
             return new TsFunctionMemberDeclaration(
-                propertyName, callSignature, accessibilityModifier, isStatic, functionBody);
+                functionName, callSignature, accessibilityModifier, isStatic, functionBody);
         }
 
         /// <summary>
