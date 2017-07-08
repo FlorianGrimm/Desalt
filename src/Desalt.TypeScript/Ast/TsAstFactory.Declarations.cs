@@ -111,51 +111,51 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Creates a member variable declaration in a class.
         /// </summary>
-        public static ITsMemberVariableDeclaration MemberVariableDeclaration(
+        public static ITsVariableMemberDeclaration VariableMemberDeclaration(
             ITsPropertyName propertyName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
-            return new TsMemberVariableDeclaration(
+            return new TsVariableMemberDeclaration(
                 propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
         }
 
         /// <summary>
         /// Creates a member function declaration in a class.
         /// </summary>
-        public static ITsMemberFunctionDeclaration MemberFunctionDeclaration(
+        public static ITsFunctionMemberDeclaration FunctionMemberDeclaration(
             ITsPropertyName propertyName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsMemberFunctionDeclaration(
+            return new TsFunctionMemberDeclaration(
                 propertyName, callSignature, accessibilityModifier, isStatic, functionBody);
         }
 
         /// <summary>
         /// Creates a 'get' member accessor declaration in a class.
         /// </summary>
-        public static ITsMemberGetAccessorDeclaration MemberGetAccessorDeclaration(
+        public static ITsGetAccessorMemberDeclaration GetAccessorMemberDeclaration(
             ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false)
         {
-            return new TsMemberGetSetAccessorDeclaration(getAccessor, accessibilityModifier, isStatic);
+            return new TsGetSetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic);
         }
 
         /// <summary>
         /// Creates a 'set' member accessor declaration in a class.
         /// </summary>
-        public static ITsMemberSetAccessorDeclaration MemberSetAccessorDeclaration(
+        public static ITsSetAccessorMemberDeclaration SetAccessorMemberDeclaration(
             ITsSetAccessor setAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false)
         {
-            return new TsMemberGetSetAccessorDeclaration(setAccessor, accessibilityModifier, isStatic);
+            return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic);
         }
     }
 }

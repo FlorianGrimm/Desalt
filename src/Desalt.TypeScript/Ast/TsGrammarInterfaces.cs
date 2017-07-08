@@ -623,7 +623,7 @@ namespace Desalt.TypeScript.Ast
      *   AccessibilityModifierOpt staticOpt SetAccessor
      */
 
-    public interface ITsMemberVariableDeclaration : ITsClassElement
+    public interface ITsVariableMemberDeclaration : ITsClassElement
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
@@ -632,7 +632,7 @@ namespace Desalt.TypeScript.Ast
         ITsExpression Initializer { get; }
     }
 
-    public interface ITsMemberFunctionDeclaration : ITsClassElement
+    public interface ITsFunctionMemberDeclaration : ITsClassElement
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
@@ -641,14 +641,14 @@ namespace Desalt.TypeScript.Ast
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
-    public interface ITsMemberGetAccessorDeclaration : ITsClassElement
+    public interface ITsGetAccessorMemberDeclaration : ITsClassElement
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
         ITsGetAccessor GetAccessor { get; }
     }
 
-    public interface ITsMemberSetAccessorDeclaration : ITsClassElement
+    public interface ITsSetAccessorMemberDeclaration : ITsClassElement
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }

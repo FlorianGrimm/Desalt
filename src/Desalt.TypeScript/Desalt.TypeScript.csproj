@@ -24,12 +24,12 @@
     <Compile Include="Ast\Declarations\TsConstructorDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsDestructuringLexicalBinding.cs" />
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsMemberFunctionDeclaration.cs" />
-    <Compile Include="Ast\Declarations\TsMemberGetSetAccessorDeclaration.cs" />
-    <Compile Include="Ast\Declarations\TsMemberVariableDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Declarations\TsTypeAliasDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsVariableMemberDeclaration.cs" />
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
     <Compile Include="Ast\Expressions\TsArgument.cs" />
     <Compile Include="Ast\Expressions\TsArgumentList.cs" />

@@ -42,21 +42,21 @@ namespace Desalt.TypeScript.Ast
         /// <summary>
         /// Visits a member variable declaration in a class.
         /// </summary>
-        public virtual void VisitMemberVariableDeclaration(ITsMemberVariableDeclaration node) => Visit(node);
+        public virtual void VisitVariableMemberDeclaration(ITsVariableMemberDeclaration node) => Visit(node);
 
         /// <summary>
         /// Visits a member function declaration in a class.
         /// </summary>
-        public virtual void VisitMemberFunctionDeclaration(ITsMemberFunctionDeclaration node) => Visit(node);
+        public virtual void VisitFunctionMemberDeclaration(ITsFunctionMemberDeclaration node) => Visit(node);
 
         /// <summary>
         /// Visits a 'get' member accessor declaration in a class.
         /// </summary>
-        public virtual void VisitMemberGetAccessorDeclaration(ITsMemberGetAccessorDeclaration node) => Visit(node);
+        public virtual void VisitGetAccessorMemberDeclaration(ITsGetAccessorMemberDeclaration node) => Visit(node);
 
         /// <summary>
         /// Visits a 'set' member accessor declaration in a class.
         /// </summary>
-        public virtual void VisitMemberSetAccessorDeclaration(ITsMemberSetAccessorDeclaration node) => Visit(node);
+        public virtual void VisitSetAccessorMemberDeclaration(ITsSetAccessorMemberDeclaration node) => Visit(node);
     }
 }

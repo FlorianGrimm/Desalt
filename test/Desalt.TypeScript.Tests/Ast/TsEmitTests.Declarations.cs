@@ -154,10 +154,10 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_member_variable_declaration()
+        public void Emit_variable_member_declaration()
         {
             VerifyOutput(
-                Factory.MemberVariableDeclaration(
+                Factory.VariableMemberDeclaration(
                     s_x,
                     TsAccessibilityModifier.Public,
                     isStatic: true,
@@ -166,21 +166,21 @@ namespace Desalt.TypeScript.Tests.Ast
                 "public static x: number = 10;\n");
 
             VerifyOutput(
-                Factory.MemberVariableDeclaration(
+                Factory.VariableMemberDeclaration(
                     s_x,
                     isStatic: true,
                     typeAnnotation: Factory.NumberType,
                     initializer: Factory.Number(10)),
                 "static x: number = 10;\n");
 
-            VerifyOutput(Factory.MemberVariableDeclaration(s_x), "x;\n");
+            VerifyOutput(Factory.VariableMemberDeclaration(s_x), "x;\n");
         }
 
         [TestMethod]
-        public void Emit_member_function_declarations_with_no_body()
+        public void Emit_function_member_declarations_with_no_body()
         {
             VerifyOutput(
-                Factory.MemberFunctionDeclaration(
+                Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     Factory.CallSignature(
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
@@ -190,7 +190,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 "private static myMethod(x: number): void;\n");
 
             VerifyOutput(
-                Factory.MemberFunctionDeclaration(
+                Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     isStatic: true,
                     callSignature: Factory.CallSignature(
@@ -199,7 +199,7 @@ namespace Desalt.TypeScript.Tests.Ast
                 "static myMethod(x: number): void;\n");
 
             VerifyOutput(
-                Factory.MemberFunctionDeclaration(
+                Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     callSignature: Factory.CallSignature(
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
@@ -208,10 +208,10 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_member_function_declarations_with_a_body()
+        public void Emit_function_member_declarations_with_a_body()
         {
             VerifyOutput(
-                Factory.MemberFunctionDeclaration(
+                Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     Factory.CallSignature(
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.BooleanType)),
@@ -220,7 +220,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     functionBody: Factory.Return(Factory.Zero).ToSafeArray()),
                 "protected myMethod(x: boolean): void {\n  return 0;\n}\n");
             VerifyOutput(
-                Factory.MemberFunctionDeclaration(
+                Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     Factory.CallSignature(),
                     functionBody: Factory.Return(Factory.Zero).ToSafeArray()),
@@ -228,29 +228,29 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_get_and_set_member_accessor_declarations()
+        public void Emit_get_and_set_accessor_member_declarations()
         {
             VerifyOutput(
-                Factory.MemberGetAccessorDeclaration(
+                Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
                     TsAccessibilityModifier.Public,
                     isStatic: true),
                 "public static get field(): number { }\n");
 
             VerifyOutput(
-                Factory.MemberGetAccessorDeclaration(
+                Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType)),
                 "get field(): number { }\n");
 
             VerifyOutput(
-                Factory.MemberSetAccessorDeclaration(
+                Factory.SetAccessorMemberDeclaration(
                     Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType),
                     TsAccessibilityModifier.Public,
                     isStatic: true),
                 "public static set field(value: number) { }\n");
 
             VerifyOutput(
-                Factory.MemberSetAccessorDeclaration(
+                Factory.SetAccessorMemberDeclaration(
                     Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType)),
                 "set field(value: number) { }\n");
         }

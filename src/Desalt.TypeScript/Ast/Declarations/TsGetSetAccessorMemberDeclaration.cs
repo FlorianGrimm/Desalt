@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsMemberVariableDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsGetSetAccessorMemberDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,26 +12,33 @@ namespace Desalt.TypeScript.Ast.Declarations
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a member variable declaration in a class.
+    /// Represents either a 'get' or a 'set' member accessor declaration in a class.
     /// </summary>
-    internal class TsMemberVariableDeclaration : AstNode<TsVisitor>, ITsMemberVariableDeclaration
+    internal class TsGetSetAccessorMemberDeclaration : AstNode<TsVisitor>,
+        ITsGetAccessorMemberDeclaration, ITsSetAccessorMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsMemberVariableDeclaration(
-            ITsPropertyName propertyName,
+        public TsGetSetAccessorMemberDeclaration(
+            ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false,
-            ITsType typeAnnotation = null,
-            ITsExpression initializer = null)
+            bool isStatic = false)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+            GetAccessor = getAccessor ?? throw new ArgumentNullException(nameof(getAccessor));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
-            TypeAnnotation = typeAnnotation;
-            Initializer = initializer;
+        }
+
+        public TsGetSetAccessorMemberDeclaration(
+            ITsSetAccessor setAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            SetAccessor = setAccessor ?? throw new ArgumentNullException(nameof(setAccessor));
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
         }
 
         //// ===========================================================================================================
@@ -40,28 +47,36 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
         public bool IsStatic { get; }
-        public ITsPropertyName PropertyName { get; }
-        public ITsType TypeAnnotation { get; }
-        public ITsExpression Initializer { get; }
+        public ITsGetAccessor GetAccessor { get; }
+        public ITsSetAccessor SetAccessor { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitMemberVariableDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            if (GetAccessor != null)
+            {
+                visitor.VisitGetAccessorMemberDeclaration(this);
+            }
+            else
+            {
+                visitor.VisitSetAccessorMemberDeclaration(this);
+            }
+        }
 
         public override string CodeDisplay =>
             $"{AccessibilityModifier.OptionalAccessibility()}{IsStatic.OptionalStaticDeclaration()}" +
-            $"{PropertyName}{TypeAnnotation.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()};";
+            (GetAccessor != null ? GetAccessor.CodeDisplay : SetAccessor.CodeDisplay);
 
         public override void Emit(Emitter emitter)
         {
             AccessibilityModifier.EmitOptionalAccessibility(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);
-            PropertyName.Emit(emitter);
-            TypeAnnotation.EmitOptionalTypeAnnotation(emitter);
-            Initializer.EmitOptionalAssignment(emitter);
-            emitter.WriteLine(";");
+            GetAccessor?.Emit(emitter);
+            SetAccessor?.Emit(emitter);
+            emitter.WriteLine();
         }
     }
 }

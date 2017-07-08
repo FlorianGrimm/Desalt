@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsMemberFunctionDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsFunctionMemberDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -16,13 +16,13 @@ namespace Desalt.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a member function declaration in a class.
     /// </summary>
-    internal class TsMemberFunctionDeclaration : AstNode<TsVisitor>, ITsMemberFunctionDeclaration
+    internal class TsFunctionMemberDeclaration : AstNode<TsVisitor>, ITsFunctionMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsMemberFunctionDeclaration(
+        public TsFunctionMemberDeclaration(
             ITsPropertyName propertyName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitMemberFunctionDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionMemberDeclaration(this);
 
         public override string CodeDisplay =>
             $"{AccessibilityModifier.OptionalAccessibility()}{IsStatic.OptionalStaticDeclaration()}" +
