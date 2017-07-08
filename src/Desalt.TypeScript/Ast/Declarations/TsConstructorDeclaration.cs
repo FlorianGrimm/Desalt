@@ -54,11 +54,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             get
             {
                 var builder = new StringBuilder();
-                if (AccessibilityModifier.HasValue)
-                {
-                    builder.Append(AccessibilityModifier.Value.ToString().ToLowerInvariant()).Append(" ");
-                }
-
+                builder.Append(AccessibilityModifier.OptionalAccessibilityCodeDisplay());
                 builder.Append("constructor(").Append(ParameterList).Append(")");
                 builder.Append(FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
 
@@ -68,11 +64,7 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override void Emit(Emitter emitter)
         {
-            if (AccessibilityModifier.HasValue)
-            {
-                emitter.Write(AccessibilityModifier.Value.ToString().ToLowerInvariant());
-                emitter.Write(" ");
-            }
+            AccessibilityModifier.EmitOptionalAccessibility(emitter);
 
             emitter.Write("constructor(");
             ParameterList?.Emit(emitter);
@@ -84,6 +76,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             }
             else
             {
+                emitter.Write(" ");
                 emitter.WriteBlock(FunctionBody, skipNewlines: true);
                 emitter.WriteLine();
             }

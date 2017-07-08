@@ -204,5 +204,19 @@ namespace Desalt.TypeScript.Ast
             emitter.WriteStatementIndentedOrInBlock(
                 statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
         }
+
+        public static string OptionalAccessibilityCodeDisplay(this TsAccessibilityModifier? accessibilityModifier) =>
+            accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
+
+        public static void EmitOptionalAccessibility(
+            this TsAccessibilityModifier? accessibilityModifier,
+            Emitter emitter)
+        {
+            if (accessibilityModifier != null)
+            {
+                emitter.Write(accessibilityModifier.Value.ToString().ToLowerInvariant());
+                emitter.Write(" ");
+            }
+        }
     }
 }
