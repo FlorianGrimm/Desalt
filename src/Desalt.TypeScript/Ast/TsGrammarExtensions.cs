@@ -218,5 +218,16 @@ namespace Desalt.TypeScript.Ast
                 emitter.Write(" ");
             }
         }
+
+        /// <summary>
+        /// Returns "static " if <paramref name="isStatic"/> is true or an empty string if not.
+        /// </summary>
+        public static string StaticDeclarationCodeDisplay(this bool isStatic) => isStatic ? "static " : "";
+
+        /// <summary>
+        /// Writes "static " if <paramref name="isStatic"/> is true or an empty string if not.
+        /// </summary>
+        public static void EmitStaticDeclaration(this bool isStatic, Emitter emitter) =>
+            emitter.Write(isStatic ? "static " : "");
     }
 }

@@ -7,7 +7,9 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
+    using Desalt.TypeScript.Ast.Expressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
 
@@ -122,7 +124,7 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
-        public void Emit_constructor_declaration()
+        public void Emit_constructor_declaration_with_no_body()
         {
             VerifyOutput(
                 Factory.ConstructorDeclaration(
@@ -131,6 +133,45 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
                         Factory.StringRequiredParameter(s_y, Factory.String("str")))),
                 "public constructor(protected x, y: 'str');\n");
+        }
+
+        [TestMethod]
+        public void Emit_constructor_declaration_with_body()
+        {
+            VerifyOutput(
+                Factory.ConstructorDeclaration(
+                    TsAccessibilityModifier.Public,
+                    Factory.ParameterList(
+                        Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
+                        Factory.StringRequiredParameter(s_y, Factory.String("str"))),
+                    Factory.Assignment(
+                        Factory.MemberDot(Factory.This, "_y"),
+                        TsAssignmentOperator.SimpleAssign,
+                        s_y).ToStatement().ToSafeArray()),
+                "public constructor(protected x, y: 'str') {\n  this._y = y;\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_member_variable_declaration()
+        {
+            VerifyOutput(
+                Factory.MemberVariableDeclaration(
+                    s_x,
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType,
+                    initializer: Factory.Number(10)),
+                "public static x: number = 10;\n");
+
+            VerifyOutput(
+                Factory.MemberVariableDeclaration(
+                    s_x,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType,
+                    initializer: Factory.Number(10)),
+                "static x: number = 10;\n");
+
+            VerifyOutput(Factory.MemberVariableDeclaration(s_x), "x;\n");
         }
     }
 }

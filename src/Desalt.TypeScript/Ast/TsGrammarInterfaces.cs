@@ -621,8 +621,18 @@ namespace Desalt.TypeScript.Ast
      * MemberAccessorDeclaration:
      *   AccessibilityModifierOpt staticOpt GetAccessor
      *   AccessibilityModifierOpt staticOpt SetAccessor
-     *
-     * IndexMemberDeclaration:
+     */
+
+    public interface ITsMemberVariableDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName PropertyName { get; }
+        ITsType TypeAnnotation { get; }
+        ITsExpression Initializer { get; }
+    }
+
+    /* IndexMemberDeclaration:
      *   IndexSignature ;
      */
 

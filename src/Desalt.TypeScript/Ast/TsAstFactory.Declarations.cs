@@ -107,5 +107,19 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody);
         }
+
+        /// <summary>
+        /// Creates a member variable declaration in a class.
+        /// </summary>
+        public static ITsMemberVariableDeclaration MemberVariableDeclaration(
+            ITsPropertyName propertyName,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            ITsType typeAnnotation = null,
+            ITsExpression initializer = null)
+        {
+            return new TsMemberVariableDeclaration(
+                propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+        }
     }
 }
