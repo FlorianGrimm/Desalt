@@ -68,5 +68,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a class heritage of the form ' extends type implements type, type'.
         /// </summary>
         public virtual void VisitClassHeritage(ITsClassHeritage node) => Visit(node);
+
+        /// <summary>
+        /// Visits a class declaration.
+        /// </summary>
+        public virtual void VisitClassDeclaration(ITsClassDeclaration node) => Visit(node);
     }
 }

@@ -290,5 +290,89 @@ namespace Desalt.TypeScript.Tests.Ast
                     }),
                 " implements IOne, ITwo");
         }
+
+        [TestMethod]
+        public void Emit_class_declaration_with_all_of_the_possible_elements()
+        {
+            // ReSharper disable once InconsistentNaming
+            ITsIdentifier _items = Factory.Identifier("_items");
+            ITsIdentifier item = Factory.Identifier("item");
+            ITsIdentifier items = Factory.Identifier("items");
+            ITsIdentifier length = Factory.Identifier("length");
+            ITsIdentifier value = Factory.Identifier("value");
+            ITsMemberDotExpression thisItems = Factory.MemberDot(Factory.This, "_items");
+            ITsMemberDotExpression thisItemsLength = Factory.MemberDot(thisItems, "length");
+
+            VerifyOutput(
+                Factory.ClassDeclaration(
+                    Factory.Identifier("AnimalCollection"),
+                    Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal"))).ToSafeArray(),
+                    Factory.ClassHeritage(
+                        Factory.TypeReference(Factory.Identifier("Collection"), s_TRef),
+                        Factory.TypeReference(Factory.Identifier("ICollection"), s_TRef).ToSafeArray()),
+                    new ITsClassElement[]
+                    {
+                        Factory.VariableMemberDeclaration(
+                            _items, TsAccessibilityModifier.Private,typeAnnotation: Factory.ArrayType(s_TRef)),
+                        Factory.ConstructorDeclaration(
+                            TsAccessibilityModifier.Public,
+                            Factory.ParameterList(
+                                requiredParameters: Factory.BoundRequiredParameter(item, s_TRef).ToSafeArray(),
+                                restParameter: Factory.RestParameter(items, Factory.ArrayType(s_TRef))),
+                            Factory.Assignment(
+                                thisItems,
+                                TsAssignmentOperator.SimpleAssign,
+                                Factory.Array(
+                                    Factory.ArrayElement(item), Factory.ArrayElement(items, isSpreadElement: true)))
+                            .ToStatement()
+                            .ToSafeArray()),
+                        Factory.IndexMemberDeclaration(
+                            Factory.IndexSignature(
+                                Factory.Identifier("index"),
+                                isParameterNumberType: true,
+                                returnType: s_TRef)),
+                        Factory.GetAccessorMemberDeclaration(
+                            Factory.GetAccessor(length, Factory.NumberType, Factory.Return(thisItemsLength)),
+                            TsAccessibilityModifier.Public),
+                        Factory.SetAccessorMemberDeclaration(
+                            Factory.SetAccessor(
+                                length, value, Factory.NumberType,
+                                Factory.Assignment(thisItemsLength, TsAssignmentOperator.SimpleAssign, value)
+                                .ToStatement()),
+                            TsAccessibilityModifier.Public),
+                        Factory.FunctionMemberDeclaration(
+                            Factory.Identifier("add"),
+                            Factory.CallSignature(
+                                Factory.ParameterList(Factory.BoundRequiredParameter(item, s_TRef)),
+                                Factory.VoidType),
+                            TsAccessibilityModifier.Public,
+                            functionBody: Factory.Assignment(
+                                Factory.MemberBracket(thisItems, thisItemsLength),
+                                TsAssignmentOperator.SimpleAssign,
+                                item).ToStatement().ToSafeArray())
+                    }),
+                @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
+  private _items: T[];
+
+  public constructor(item: T, ... items: T[]) {
+    this._items = [item, ... items];
+  }
+
+  [index: number]: T;
+
+  public get length(): number {
+    return this._items.length;
+  }
+
+  public set length(value: number) {
+    this._items.length = value;
+  }
+
+  public add(item: T): void {
+    this._items[this._items.length] = item;
+  }
+}
+".Replace("\r\n", "\n"));
+        }
     }
 }

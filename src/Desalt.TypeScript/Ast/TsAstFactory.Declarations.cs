@@ -179,5 +179,17 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes) =>
             new TsClassHeritage(extendsClass: null, implementsTypes: implementsTypes);
+
+        /// <summary>
+        /// Creates a class declaration.
+        /// </summary>
+        public static ITsClassDeclaration ClassDeclaration(
+            ITsIdentifier className = null,
+            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsClassHeritage heritage = null,
+            IEnumerable<ITsClassElement> classBody = null)
+        {
+            return new TsClassDeclaration(className, typeParameters, heritage, classBody);
+        }
     }
 }

@@ -585,11 +585,26 @@ namespace Desalt.TypeScript.Ast
      * ImplementsClause:
      *   implements ClassOrInterfaceTypeList
      *
+     * ClassBody:
+     *   ClassElementList
+     *
+     * ClassElementList:
+     *   ClassElement
+     *   ClassElementList ClassElement
+     *
      * ClassElement: ( Modified )
      *   ConstructorDeclaration
      *   PropertyMemberDeclaration
      *   IndexMemberDeclaration
      */
+
+    public interface ITsClassDeclaration : ITsDeclaration
+    {
+        ITsIdentifier ClassName { get; }
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        ITsClassHeritage Heritage { get; }
+        ImmutableArray<ITsClassElement> ClassBody { get; }
+    }
 
     public interface ITsClassHeritage : IAstNode
     {
