@@ -717,6 +717,13 @@ namespace Desalt.TypeScript.Ast
      *   AssignmentExpression
      */
 
+    public interface ITsEnumDeclaration : ITsDeclaration
+    {
+        bool IsConst { get; }
+        ITsIdentifier EnumName { get; }
+        ImmutableArray<ITsEnumMember> EnumBody { get; }
+    }
+
     public interface ITsEnumMember : IAstNode
     {
         ITsPropertyName Name { get; }

@@ -208,5 +208,33 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null) =>
             new TsEnumMember(name, value);
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(
+            ITsIdentifier enumName,
+            IEnumerable<ITsEnumMember> enumBody = null,
+            bool isConst = false)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(
+            bool isConst,
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody) =>
+            new TsEnumDeclaration(enumName, enumBody);
     }
 }

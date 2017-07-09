@@ -398,5 +398,17 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(Factory.EnumMember(s_x), "x");
             VerifyOutput(Factory.EnumMember(s_y, s_z), "y = z");
         }
+
+        [TestMethod]
+        public void Emit_enum_declaration()
+        {
+            VerifyOutput(
+                Factory.EnumDeclaration(
+                    true,
+                    Factory.Identifier("MyEnum"),
+                    Factory.EnumMember(s_x),
+                    Factory.EnumMember(s_y, Factory.Number(10))),
+                "const enum MyEnum {\n  x,\n  y = 10\n}\n");
+        }
     }
 }

@@ -83,5 +83,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an enum member of the form, 'name = value'.
         /// </summary>
         public virtual void VisitEnumMember(ITsEnumMember node) => Visit(node);
+
+        /// <summary>
+        /// Visits an enum declaration.
+        /// </summary>
+        public virtual void VisitEnumDeclaration(ITsEnumDeclaration node) => Visit(node);
     }
 }
