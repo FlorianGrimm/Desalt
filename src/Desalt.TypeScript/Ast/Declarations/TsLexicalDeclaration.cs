@@ -51,7 +51,7 @@ namespace Desalt.TypeScript.Ast.Declarations
         {
             emitter.Write(IsConst ? "const " : "let ");
             emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
-            emitter.Write(";");
+            emitter.WriteLine(";");
         }
     }
 }

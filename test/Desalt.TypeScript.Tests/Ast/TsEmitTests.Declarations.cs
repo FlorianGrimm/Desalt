@@ -66,14 +66,14 @@ namespace Desalt.TypeScript.Tests.Ast
                     true,
                     Factory.SimpleLexicalBinding(s_x),
                     Factory.SimpleLexicalBinding(s_y, Factory.AnyType, s_z)),
-                "const x, y: any = z;");
+                "const x, y: any = z;\n");
 
             VerifyOutput(
                 Factory.LexicalDeclaration(
                     false,
                     Factory.SimpleLexicalBinding(s_x),
                     Factory.SimpleLexicalBinding(s_y, Factory.AnyType, s_z)),
-                "let x, y: any = z;");
+                "let x, y: any = z;\n");
         }
 
         [TestMethod]
