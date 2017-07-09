@@ -246,5 +246,17 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsNamespaceDeclaration(namespaceName, body);
         }
+
+        /// <summary>
+        /// Creates an exported variable statement.
+        /// </summary>
+        public static ITsExportedVariableStatement ExportedVariableStatement(ITsVariableStatement statement) =>
+            new TsExportedVariableStatement(statement);
+
+        /// <summary>
+        /// Creates an exported declaration.
+        /// </summary>
+        public static ITsExportedDeclaration ExportedDeclaration(ITsDeclaration declaration) =>
+            new TsExportedDeclaration(declaration);
     }
 }

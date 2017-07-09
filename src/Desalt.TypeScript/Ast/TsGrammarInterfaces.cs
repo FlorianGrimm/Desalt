@@ -783,8 +783,19 @@ namespace Desalt.TypeScript.Ast
      *   export NamespaceDeclaration
      *   export AmbientDeclaration
      *   export ImportAliasDeclaration
-     *
-     * ImportAliasDeclaration:
+     */
+
+    public interface ITsExportedVariableStatement : ITsNamespaceElement
+    {
+        ITsVariableStatement ExportedStatement { get; }
+    }
+
+    public interface ITsExportedDeclaration : ITsNamespaceElement
+    {
+        ITsDeclaration ExportedDeclaration { get; }
+    }
+
+    /* ImportAliasDeclaration:
      *   import BindingIdentifier = EntityName ;
      *
      * EntityName:

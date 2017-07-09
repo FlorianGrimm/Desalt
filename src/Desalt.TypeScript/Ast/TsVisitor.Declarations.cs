@@ -93,5 +93,15 @@ namespace Desalt.TypeScript.Ast
         /// Visits a namespace declaration.
         /// </summary>
         public virtual void VisitNamespaceDeclaration(ITsNamespaceDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an exported declaration.
+        /// </summary>
+        public virtual void VisitExportedDeclaration(ITsExportedDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an exported variable declaration statement
+        /// </summary>
+        public virtual void VisitExportedVariableStatement(ITsExportedVariableStatement node) => Visit(node);
     }
 }

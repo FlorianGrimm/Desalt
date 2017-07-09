@@ -446,5 +446,25 @@ namespace Desalt.TypeScript.Tests.Ast
 }
 ".Replace("\r\n", "\n"));
         }
+
+        [TestMethod]
+        public void Emit_exported_variable_statement()
+        {
+            VerifyOutput(
+                Factory.VariableStatement(Factory.SimpleVariableDeclaration(s_x)).ToExported(),
+                "export var x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_exported_declarations()
+        {
+            VerifyOutput(
+                Factory.ExportedDeclaration(
+                    Factory.LexicalDeclaration(
+                        true, Factory.SimpleLexicalBinding(s_x, Factory.BooleanType, Factory.True))),
+                "export const x: boolean = true;\n");
+
+            VerifyOutput(Factory.ClassDeclaration().ToExported(), "export class {\n}\n");
+        }
     }
 }

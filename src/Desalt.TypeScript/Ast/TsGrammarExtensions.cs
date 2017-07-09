@@ -11,6 +11,7 @@ namespace Desalt.TypeScript.Ast
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
+    using Desalt.TypeScript.Ast.Declarations;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Statements;
     using Desalt.TypeScript.Ast.Types;
@@ -47,6 +48,18 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsBlockStatement ToBlock(this ITsExpression expression) =>
             new TsBlockStatement(expression.ToStatement().ToSafeArray());
+
+        /// <summary>
+        /// Converts the variable statement to an exported variable statement.
+        /// </summary>
+        public static ITsExportedVariableStatement ToExported(this ITsVariableStatement statement) =>
+            new TsExportedVariableStatement(statement);
+
+        /// <summary>
+        /// Converts the declaration to an exported declaration.
+        /// </summary>
+        public static ITsExportedDeclaration ToExported(this ITsDeclaration declaration) =>
+            new TsExportedDeclaration(declaration);
 
         /// <summary>
         /// Converts a unary operator to its code representation.
