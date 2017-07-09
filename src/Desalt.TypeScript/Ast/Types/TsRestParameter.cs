@@ -39,13 +39,13 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
 
-        public override string CodeDisplay => $"... {ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
+        public override string CodeDisplay => $"... {ParameterName}{ParameterType.OptionalTypeAnnotation()}";
 
         public override void Emit(Emitter emitter)
         {
             emitter.Write("... ");
             ParameterName.Emit(emitter);
-            ParameterType.EmitTypeAnnotation(emitter);
+            ParameterType.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

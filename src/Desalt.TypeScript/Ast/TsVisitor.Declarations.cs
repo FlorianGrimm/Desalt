@@ -33,5 +33,80 @@ namespace Desalt.TypeScript.Ast
         /// Visits a type alias of the form 'type alias&lt;T&gt; = type'.
         /// </summary>
         public virtual void VisitTypeAliasDeclaration(ITsTypeAliasDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a constructor declaration in a class.
+        /// </summary>
+        public virtual void VisitConstructorDeclaration(ITsConstructorDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member variable declaration in a class.
+        /// </summary>
+        public virtual void VisitVariableMemberDeclaration(ITsVariableMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member function declaration in a class.
+        /// </summary>
+        public virtual void VisitFunctionMemberDeclaration(ITsFunctionMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'get' member accessor declaration in a class.
+        /// </summary>
+        public virtual void VisitGetAccessorMemberDeclaration(ITsGetAccessorMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a 'set' member accessor declaration in a class.
+        /// </summary>
+        public virtual void VisitSetAccessorMemberDeclaration(ITsSetAccessorMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an index member declaration in a class.
+        /// </summary>
+        public virtual void VisitIndexMemberDeclaration(ITsIndexMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a class heritage of the form ' extends type implements type, type'.
+        /// </summary>
+        public virtual void VisitClassHeritage(ITsClassHeritage node) => Visit(node);
+
+        /// <summary>
+        /// Visits a class declaration.
+        /// </summary>
+        public virtual void VisitClassDeclaration(ITsClassDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an interface declaration
+        /// </summary>
+        public virtual void VisitInterfaceDeclaration(ITsInterfaceDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an enum member of the form, 'name = value'.
+        /// </summary>
+        public virtual void VisitEnumMember(ITsEnumMember node) => Visit(node);
+
+        /// <summary>
+        /// Visits an enum declaration.
+        /// </summary>
+        public virtual void VisitEnumDeclaration(ITsEnumDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a namespace declaration.
+        /// </summary>
+        public virtual void VisitNamespaceDeclaration(ITsNamespaceDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an exported declaration.
+        /// </summary>
+        public virtual void VisitExportedDeclaration(ITsExportedDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an exported variable declaration statement
+        /// </summary>
+        public virtual void VisitExportedVariableStatement(ITsExportedVariableStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import alias declaration of the form, 'import alias = dotted.name'.
+        /// </summary>
+        public virtual void VisitImportAliasDeclaration(ITsImportAliasDeclaration node) => Visit(node);
     }
 }

@@ -69,7 +69,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.CallSignature(
-                    Factory.TypeParameter(s_T, s_MyTypeRef).ToSafeArray(),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T, s_MyTypeRef)),
                     Factory.ParameterList(
                         Factory.BoundRequiredParameter(s_x, s_TRef, TsAccessibilityModifier.Private)),
                     Factory.AnyType),
@@ -102,7 +102,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ConstructSignature(
-                    Factory.TypeParameter(s_T, s_MyTypeRef).ToSafeArray(),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T, s_MyTypeRef)),
                     Factory.ParameterList(
                         Factory.BoundRequiredParameter(s_x, s_TRef, TsAccessibilityModifier.Private)),
                     Factory.AnyType),
@@ -161,6 +161,8 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_object_type()
         {
+            VerifyOutput(Factory.ObjectType(), "{}");
+
             VerifyOutput(
                 Factory.ObjectType(
                     Factory.PropertySignature(s_x, propertyType: Factory.StringType),
@@ -168,11 +170,17 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_z), Factory.BoundRequiredParameter(s_p)),
                         Factory.BooleanType),
                     Factory.ConstructSignature(
-                        Factory.TypeParameter(s_T, s_MyTypeRef).ToSafeArray(),
+                        Factory.TypeParameters(Factory.TypeParameter(s_T, s_MyTypeRef)),
                         Factory.ParameterList(Factory.BoundRequiredParameter(Factory.Identifier("arg"), s_TRef))),
                     Factory.IndexSignature(Factory.Identifier("k"), false, Factory.AnyType),
                     Factory.MethodSignature(s_z, true, Factory.CallSignature(Factory.ParameterList(), Factory.VoidType))),
-                "{ x: string, (z, p): boolean, new <T extends MyType>(arg: T), [k: string]: any, z?(): void }");
+                @"{
+  x: string,
+  (z, p): boolean,
+  new <T extends MyType>(arg: T),
+  [k: string]: any,
+  z?(): void
+}".Replace("\r\n", "\n"));
         }
 
         [TestMethod]
@@ -210,7 +218,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.FunctionType(
-                    Factory.TypeParameter(s_T).ToSafeArray(),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T)),
                     Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
                     Factory.StringType),
                 "<T>(x, y) => string");
@@ -227,7 +235,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ConstructorType(
-                    Factory.TypeParameter(s_T).ToSafeArray(),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T)),
                     Factory.ParameterList(Factory.BoundRequiredParameter(s_x), Factory.BoundRequiredParameter(s_y)),
                     Factory.StringType),
                 "new <T>(x, y) => string");

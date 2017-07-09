@@ -75,6 +75,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitParameterList(ITsParameterList node) => Visit(node);
 
         /// <summary>
+        /// Visits a list of type parameters of the form '&lt;type, type&gt;'.
+        /// </summary>
+        public virtual void VisitTypeParameters(ITsTypeParameters node) => Visit(node);
+
+        /// <summary>
         /// Visits a type parameter of the form &lt;MyType extends MyBase&gt;.
         /// </summary>
         public virtual void VisitTypeParameter(ITsTypeParameter node) => Visit(node);

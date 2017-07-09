@@ -1,53 +1,48 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsExportedVariableStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents an exported variable statement.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsExportedVariableStatement : AstNode<TsVisitor>, ITsExportedVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsExportedVariableStatement(ITsVariableStatement exportedStatement)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            ExportedStatement = exportedStatement ?? throw new ArgumentNullException(nameof(exportedStatement));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public ITsVariableStatement ExportedStatement { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitExportedVariableStatement(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => $"export {ExportedStatement}";
 
-        public override void Emit(Emitter emitter) =>
-            emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+        public override void Emit(Emitter emitter)
+        {
+            emitter.Write("export ");
+            ExportedStatement.Emit(emitter);
+        }
     }
 }

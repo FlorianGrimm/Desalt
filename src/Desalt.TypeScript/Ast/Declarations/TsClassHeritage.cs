@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Es5Program.cs" company="Justin Rockwood">
+// <copyright file="TsClassHeritage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.JavaScript.Ast
+namespace Desalt.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -13,39 +13,54 @@ namespace Desalt.JavaScript.Ast
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a top-level JavaScript program, consisting of a collection of source elements.
+    /// Represents a class heritage of the form ' extends type implements type, type'.
     /// </summary>
-    public class Es5Program : AstNode<Es5Visitor>
+    internal class TsClassHeritage : AstNode<TsVisitor>, ITsClassHeritage
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal Es5Program(IEnumerable<IEs5SourceElement> sourceElements)
+        public TsClassHeritage(
+            ITsTypeReference extendsClause = null,
+            IEnumerable<ITsTypeReference> implementsClause = null)
         {
-            SourceElements = sourceElements?.ToImmutableArray() ?? ImmutableArray<IEs5SourceElement>.Empty;
+            ExtendsClause = extendsClause;
+            ImplementsClause = implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IEs5SourceElement> SourceElements { get; }
+        public ITsTypeReference ExtendsClause { get; }
+        public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+
+        public bool IsEmpty => ExtendsClause == null && ImplementsClause.IsEmpty;
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(Es5Visitor visitor)
-        {
-            visitor.VisitProgram(this);
-        }
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassHeritage(this);
 
-        public override string CodeDisplay => $"Es5Program, SourceElements.Count = {SourceElements.Length}";
+        public override string CodeDisplay =>
+            (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
+            (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteList(SourceElements, indent: false, itemDelimiter: emitter.Options.Newline);
+            if (ExtendsClause != null)
+            {
+                emitter.Write(" extends ");
+                ExtendsClause.Emit(emitter);
+            }
+
+            if (!ImplementsClause.IsEmpty)
+            {
+                emitter.Write(" implements ");
+                emitter.WriteList(ImplementsClause, indent: false, itemDelimiter: ", ");
+            }
         }
     }
 }

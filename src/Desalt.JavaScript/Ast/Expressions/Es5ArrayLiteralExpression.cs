@@ -44,7 +44,7 @@ namespace Desalt.JavaScript.Ast.Expressions
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
+            emitter.WriteList(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
         }
     }
 }

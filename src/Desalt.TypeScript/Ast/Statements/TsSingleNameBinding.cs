@@ -39,12 +39,12 @@ namespace Desalt.TypeScript.Ast.Statements
 
         public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
 
-        public override string CodeDisplay => $"{Name}{DefaultValue.ToAssignmentCodeDisplay()}";
+        public override string CodeDisplay => $"{Name}{DefaultValue.OptionalAssignment()}";
 
         public override void Emit(Emitter emitter)
         {
             Name.Emit(emitter);
-            DefaultValue.EmitAssignment(emitter);
+            DefaultValue.EmitOptionalAssignment(emitter);
         }
     }
 }

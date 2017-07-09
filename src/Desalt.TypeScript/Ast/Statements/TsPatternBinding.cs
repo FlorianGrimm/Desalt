@@ -39,12 +39,12 @@ namespace Desalt.TypeScript.Ast.Statements
 
         public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
 
-        public override string CodeDisplay => $"{BindingPattern}{Initializer.ToAssignmentCodeDisplay()}";
+        public override string CodeDisplay => $"{BindingPattern}{Initializer.OptionalAssignment()}";
 
         public override void Emit(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
         }
     }
 }

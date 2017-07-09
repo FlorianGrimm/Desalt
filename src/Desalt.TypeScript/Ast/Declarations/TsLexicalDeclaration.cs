@@ -50,8 +50,8 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Emit(Emitter emitter)
         {
             emitter.Write(IsConst ? "const " : "let ");
-            emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
-            emitter.Write(";");
+            emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");
+            emitter.WriteLine(";");
         }
     }
 }

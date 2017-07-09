@@ -47,34 +47,18 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = string.Empty;
-                if (Modifier.HasValue)
-                {
-                    display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
-                }
-
-                display += $"{ParameterName}${ParameterType.ToTypeAnnotationCodeDisplay()} = {Initializer}";
-
-                return display;
-            }
-        }
+        public override string CodeDisplay =>
+            $"{Modifier.OptionalCodeDisplay()}" +
+            $"{ParameterName}${ParameterType.OptionalTypeAnnotation()} = {Initializer}";
 
         public override void Emit(Emitter emitter)
         {
-            if (Modifier.HasValue)
-            {
-                emitter.Write($"{Modifier.Value.ToString().ToLowerInvariant()} ");
-            }
+            Modifier.EmitOptional(emitter);
 
             ParameterName.Emit(emitter);
-            ParameterType.EmitTypeAnnotation(emitter);
+            ParameterType.EmitOptionalTypeAnnotation(emitter);
 
-            emitter.Write(" = ");
-            Initializer.Emit(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
         }
     }
 }

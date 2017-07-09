@@ -1,53 +1,71 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsEnumDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents an enum declaration.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsEnumDeclaration : AstNode<TsVisitor>, ITsEnumDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsEnumDeclaration(
+            ITsIdentifier enumName,
+            IEnumerable<ITsEnumMember> enumBody = null,
+            bool isConst = false)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            EnumName = enumName ?? throw new ArgumentNullException(nameof(enumName));
+            EnumBody = enumBody?.ToImmutableArray() ?? ImmutableArray<ITsEnumMember>.Empty;
+            IsConst = isConst;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public bool IsConst { get; }
+        public ITsIdentifier EnumName { get; }
+        public ImmutableArray<ITsEnumMember> EnumBody { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitEnumDeclaration(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay =>
+            (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter) =>
+        public override void Emit(Emitter emitter)
+        {
+            if (IsConst)
+            {
+                emitter.Write("const ");
+            }
+
+            emitter.Write("enum ");
+            EnumName.Emit(emitter);
+            emitter.Write(" ");
+
             emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
+                EnumBody, indent: true, prefix: "{", suffix: "}",
                 itemDelimiter: "," + emitter.Options.Newline,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+                newLineBeforeFirstItem: true, newLineAfterLastItem: true,
+                emptyContents: $"{{{emitter.Options.Newline}}}");
+            emitter.WriteLine();
+        }
     }
 }

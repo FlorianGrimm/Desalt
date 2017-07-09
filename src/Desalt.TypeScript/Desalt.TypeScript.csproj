@@ -21,11 +21,25 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ast\Declarations\TsClassDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsClassHeritage.cs" />
+    <Compile Include="Ast\Declarations\TsConstructorDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsDestructuringLexicalBinding.cs" />
+    <Compile Include="Ast\Declarations\TsEnumDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsEnumMember.cs" />
+    <Compile Include="Ast\Declarations\TsExportedDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsExportedVariableStatement.cs" />
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImportAliasDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsIndexMemberDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsInterfaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsMemberFunctionDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsNamespaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Declarations\TsTypeAliasDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsVariableMemberDeclaration.cs" />
     <Compile Include="Ast\Es2015GrammarInterfaces.cs" />
     <Compile Include="Ast\Expressions\TsArgument.cs" />
     <Compile Include="Ast\Expressions\TsArgumentList.cs" />
@@ -118,6 +132,7 @@
     <Compile Include="Ast\Types\TsThisType.cs" />
     <Compile Include="Ast\Types\TsTupleType.cs" />
     <Compile Include="Ast\Types\TsTypeParameter.cs" />
+    <Compile Include="Ast\Types\TsTypeParameters.cs" />
     <Compile Include="Ast\Types\TsTypeQuery.cs" />
     <Compile Include="Ast\Types\TsTypeReference.cs" />
     <Compile Include="Ast\Types\TsUnionOrIntersectionType.cs" />

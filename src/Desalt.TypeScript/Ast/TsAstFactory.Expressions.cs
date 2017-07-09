@@ -227,7 +227,7 @@ namespace Desalt.TypeScript.Ast
             return new TsArrowFunction(callSignature, body);
         }
 
-        public static ITsFunctionExpression Function(
+        public static ITsFunctionExpression FunctionExpression(
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
             params ITsStatementListItem[] functionBody)
@@ -235,9 +235,9 @@ namespace Desalt.TypeScript.Ast
             return new TsFunctionExpression(callSignature, functionName, functionBody);
         }
 
-        public static ITsClassExpression Class(
+        public static ITsClassExpression ClassExpression(
             ITsIdentifier className = null,
-            ITsExpression heritage = null,
+            ITsClassHeritage heritage = null,
             params ITsClassElement[] classBody)
         {
             return new TsClassExpression(className, heritage, classBody);

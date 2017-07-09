@@ -11,6 +11,7 @@ namespace Desalt.TypeScript.Ast
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
+    using Desalt.TypeScript.Ast.Declarations;
     using Desalt.TypeScript.Ast.Expressions;
     using Desalt.TypeScript.Ast.Statements;
     using Desalt.TypeScript.Ast.Types;
@@ -49,6 +50,18 @@ namespace Desalt.TypeScript.Ast
             new TsBlockStatement(expression.ToStatement().ToSafeArray());
 
         /// <summary>
+        /// Converts the variable statement to an exported variable statement.
+        /// </summary>
+        public static ITsExportedVariableStatement ToExported(this ITsVariableStatement statement) =>
+            new TsExportedVariableStatement(statement);
+
+        /// <summary>
+        /// Converts the declaration to an exported declaration.
+        /// </summary>
+        public static ITsExportedDeclaration ToExported(this ITsDeclaration declaration) =>
+            new TsExportedDeclaration(declaration);
+
+        /// <summary>
         /// Converts a unary operator to its code representation.
         /// </summary>
         public static string ToCodeDisplay(this TsUnaryOperator unaryOperator)
@@ -71,6 +84,9 @@ namespace Desalt.TypeScript.Ast
                 case TsUnaryOperator.Minus: return "-";
                 case TsUnaryOperator.BitwiseNot: return "~";
                 case TsUnaryOperator.LogicalNot: return "!";
+
+                case TsUnaryOperator.Cast:
+                    throw new InvalidOperationException($"Use {nameof(TsCastExpression.Emit)} instead");
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null);
@@ -137,52 +153,6 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
-        /// Returns a ": type" type annotation if the type is not null.
-        /// </summary>
-        /// <param name="type">The type annotation to write.</param>
-        public static string ToTypeAnnotationCodeDisplay(this ITsType type)
-        {
-            return type != null ? $": {type.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
-        /// Writes out a ": type" type annotation if the type is not null.
-        /// </summary>
-        /// <param name="type">The type annotation to write.</param>
-        /// <param name="emitter">The emitter to write to.</param>
-        public static void EmitTypeAnnotation(this ITsType type, Emitter emitter)
-        {
-            if (type != null)
-            {
-                emitter.Write(": ");
-                type.Emit(emitter);
-            }
-        }
-
-        /// <summary>
-        /// Returns a " = expression" assignment if the expression is not null.
-        /// </summary>
-        /// <param name="expression">The expression to assign.</param>
-        public static string ToAssignmentCodeDisplay(this ITsExpression expression)
-        {
-            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
-        /// Writes out a " = expression" assignment if the expression is not null.
-        /// </summary>
-        /// <param name="expression">The expression to assign.</param>
-        /// <param name="emitter">The emitter to write to.</param>
-        public static void EmitAssignment(this ITsExpression expression, Emitter emitter)
-        {
-            if (expression != null)
-            {
-                emitter.Write(" = ");
-                expression.Emit(emitter);
-            }
-        }
-
-        /// <summary>
         /// Writes a statement on a new line unless the statement is a block, in which case the block
         /// will start on the same line.
         /// </summary>
@@ -204,5 +174,74 @@ namespace Desalt.TypeScript.Ast
             emitter.WriteStatementIndentedOrInBlock(
                 statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
         }
+
+        /// <summary>
+        /// Returns a ": type" type annotation if the type is not null.
+        /// </summary>
+        /// <param name="type">The type annotation to write.</param>
+        public static string OptionalTypeAnnotation(this ITsType type)
+        {
+            return type != null ? $": {type.CodeDisplay}" : string.Empty;
+        }
+
+        /// <summary>
+        /// Writes out a ": type" type annotation if the type is not null.
+        /// </summary>
+        /// <param name="type">The type annotation to write.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitOptionalTypeAnnotation(this ITsType type, Emitter emitter)
+        {
+            if (type != null)
+            {
+                emitter.Write(": ");
+                type.Emit(emitter);
+            }
+        }
+
+        /// <summary>
+        /// Returns a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        public static string OptionalAssignment(this ITsExpression expression)
+        {
+            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
+        }
+
+        /// <summary>
+        /// Writes out a " = expression" assignment if the expression is not null.
+        /// </summary>
+        /// <param name="expression">The expression to assign.</param>
+        /// <param name="emitter">The emitter to write to.</param>
+        public static void EmitOptionalAssignment(this ITsExpression expression, Emitter emitter)
+        {
+            if (expression != null)
+            {
+                emitter.Write(" = ");
+                expression.Emit(emitter);
+            }
+        }
+
+        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier) =>
+            accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
+
+        public static void EmitOptional(this TsAccessibilityModifier? accessibilityModifier, Emitter emitter)
+        {
+            if (accessibilityModifier != null)
+            {
+                emitter.Write(accessibilityModifier.Value.ToString().ToLowerInvariant());
+                emitter.Write(" ");
+            }
+        }
+
+        /// <summary>
+        /// Returns "static " if <paramref name="isStatic"/> is true or an empty string if not.
+        /// </summary>
+        public static string OptionalStaticDeclaration(this bool isStatic) => isStatic ? "static " : "";
+
+        /// <summary>
+        /// Writes "static " if <paramref name="isStatic"/> is true or an empty string if not.
+        /// </summary>
+        public static void EmitOptionalStaticDeclaration(this bool isStatic, Emitter emitter) =>
+            emitter.Write(isStatic ? "static " : "");
     }
 }

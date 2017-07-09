@@ -28,7 +28,7 @@ namespace Desalt.TypeScript.Ast
             new TsTupleType(elementType, elementTypes);
 
         public static ITsFunctionType FunctionType(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -42,7 +42,7 @@ namespace Desalt.TypeScript.Ast
             new TsFunctionOrConstructorType(returnType, isConstructorType: false);
 
         public static ITsConstructorType ConstructorType(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -59,8 +59,8 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsPropertySignature PropertySignature(
             ITsLiteralPropertyName propertyName,
-            bool isOptional = false,
-            ITsType propertyType = null)
+            ITsType propertyType = null,
+            bool isOptional = false)
         {
             return new TsPropertySignature(propertyName, isOptional, propertyType);
         }
@@ -78,7 +78,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         public static ITsCallSignature CallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
@@ -98,6 +98,17 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsParameterList(requiredParameters, optionalParameters, restParameter);
         }
+
+        /// <summary>
+        /// Creates an empty type parameters list.
+        /// </summary>
+        public static ITsTypeParameters TypeParameters() => TsTypeParameters.Empty;
+
+        /// <summary>
+        /// Creates a list of type parameters of the form '&lt;type, type&gt;'.
+        /// </summary>
+        public static ITsTypeParameters TypeParameters(params ITsTypeParameter[] typeParameters) =>
+            new TsTypeParameters(typeParameters);
 
         public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
             new TsTypeParameter(typeName, constraint);
@@ -144,7 +155,7 @@ namespace Desalt.TypeScript.Ast
         }
 
         public static ITsConstructSignature ConstructSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsParameterList parameterList = null,
             ITsType returnType = null)
         {

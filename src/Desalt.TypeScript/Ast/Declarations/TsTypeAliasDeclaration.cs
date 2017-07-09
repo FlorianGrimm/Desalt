@@ -8,10 +8,9 @@
 namespace Desalt.TypeScript.Ast.Declarations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
+    using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
@@ -25,11 +24,11 @@ namespace Desalt.TypeScript.Ast.Declarations
         public TsTypeAliasDeclaration(
             ITsIdentifier aliasName,
             ITsType type,
-            IEnumerable<ITsTypeParameter> typeParameters = null)
+            ITsTypeParameters typeParameters = null)
         {
             AliasName = aliasName ?? throw new ArgumentNullException(nameof(aliasName));
             Type = type ?? throw new ArgumentNullException(nameof(type));
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
         }
 
         //// ===========================================================================================================
@@ -37,7 +36,7 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier AliasName { get; }
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsType Type { get; }
 
         //// ===========================================================================================================
@@ -46,31 +45,13 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = $"type {AliasName}";
-                if (TypeParameters.Length > 0)
-                {
-                    display += $"<{TypeParameters.ToElidedList()}>";
-                }
-
-                display += $" = {Type};";
-                return display;
-            }
-        }
+        public override string CodeDisplay => $"type {AliasName}{TypeParameters} = {Type};";
 
         public override void Emit(Emitter emitter)
         {
             emitter.Write("type ");
             AliasName.Emit(emitter);
-
-            if (TypeParameters.Length > 0)
-            {
-                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
+            TypeParameters.Emit(emitter);
             emitter.Write(" = ");
             Type.Emit(emitter);
             emitter.WriteLine(";");

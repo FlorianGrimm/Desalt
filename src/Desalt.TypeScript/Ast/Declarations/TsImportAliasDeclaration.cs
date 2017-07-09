@@ -1,53 +1,53 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsImportAliasDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsImportAliasDeclaration : AstNode<TsVisitor>, ITsImportAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsImportAliasDeclaration(ITsIdentifier alias, ITsQualifiedName importedName)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            Alias = alias ?? throw new ArgumentNullException(nameof(alias));
+            ImportedName = importedName ?? throw new ArgumentNullException(nameof(importedName));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public ITsIdentifier Alias { get; }
+        public ITsQualifiedName ImportedName { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportAliasDeclaration(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => $"import {Alias} = {ImportedName};";
 
-        public override void Emit(Emitter emitter) =>
-            emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+        public override void Emit(Emitter emitter)
+        {
+            emitter.Write("import ");
+            Alias.Emit(emitter);
+            emitter.Write(" = ");
+            ImportedName.Emit(emitter);
+            emitter.WriteLine(";");
+        }
     }
 }

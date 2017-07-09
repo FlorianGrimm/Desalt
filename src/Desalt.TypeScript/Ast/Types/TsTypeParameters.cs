@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsTypeParameters.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,47 +7,48 @@
 
 namespace Desalt.TypeScript.Ast.Types
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsTypeParameters : AstNode<TsVisitor>, ITsTypeParameters
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly TsTypeParameters Empty = new TsTypeParameters();
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsTypeParameters(params ITsTypeParameter[] typeParameters)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameters(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => TypeParameters.IsEmpty ? "" : $"<{TypeParameters.ToElidedList()}>";
 
-        public override void Emit(Emitter emitter) =>
+        public override void Emit(Emitter emitter)
+        {
             emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+                TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ", emptyContents: "");
+        }
     }
 }

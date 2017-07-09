@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
-    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -86,7 +85,7 @@ namespace Desalt.TypeScript.Ast
             ITsTypeParameter typeParameter,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameter.ToSafeArray());
+            return new TsTypeAliasDeclaration(aliasName, type, TypeParameters(typeParameter));
         }
 
         /// <summary>
@@ -94,10 +93,180 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsTypeAliasDeclaration TypeAliasDeclaration(
             ITsIdentifier aliasName,
-            IEnumerable<ITsTypeParameter> typeParameters,
+            ITsTypeParameters typeParameters,
             ITsType type)
         {
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
+        }
+
+        public static ITsConstructorDeclaration ConstructorDeclaration(
+            TsAccessibilityModifier? accessibilityModifier = null,
+            ITsParameterList parameterList = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody);
+        }
+
+        /// <summary>
+        /// Creates a member variable declaration in a class.
+        /// </summary>
+        public static ITsVariableMemberDeclaration VariableMemberDeclaration(
+            ITsPropertyName propertyName,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            ITsType typeAnnotation = null,
+            ITsExpression initializer = null)
+        {
+            return new TsVariableMemberDeclaration(
+                propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+        }
+
+        /// <summary>
+        /// Creates a member function declaration in a class.
+        /// </summary>
+        public static ITsFunctionMemberDeclaration FunctionMemberDeclaration(
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsFunctionMemberDeclaration(
+                functionName, callSignature, accessibilityModifier, isStatic, functionBody);
+        }
+
+        /// <summary>
+        /// Creates a 'get' member accessor declaration in a class.
+        /// </summary>
+        public static ITsGetAccessorMemberDeclaration GetAccessorMemberDeclaration(
+            ITsGetAccessor getAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return new TsGetSetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic);
+        }
+
+        /// <summary>
+        /// Creates a 'set' member accessor declaration in a class.
+        /// </summary>
+        public static ITsSetAccessorMemberDeclaration SetAccessorMemberDeclaration(
+            ITsSetAccessor setAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic);
+        }
+
+        /// <summary>
+        /// Creates an index member declaration in a class.
+        /// </summary>
+        public static ITsIndexMemberDeclaration IndexMemberDeclaration(ITsIndexSignature indexSignature) =>
+            new TsIndexMemberDeclaration(indexSignature);
+
+        /// <summary>
+        /// Creates a class heritage of the form 'extends type implements type, type'.
+        /// </summary>
+        public static ITsClassHeritage ClassHeritage(
+            ITsTypeReference extendsClause,
+            IEnumerable<ITsTypeReference> implementsClause = null)
+        {
+            return new TsClassHeritage(extendsClause, implementsClause);
+        }
+
+        /// <summary>
+        /// Creates a class heritage of the form 'implements type, type'.
+        /// </summary>
+        public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes) =>
+            new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes);
+
+        /// <summary>
+        /// Creates a class declaration.
+        /// </summary>
+        public static ITsClassDeclaration ClassDeclaration(
+            ITsIdentifier className = null,
+            ITsTypeParameters typeParameters = null,
+            ITsClassHeritage heritage = null,
+            IEnumerable<ITsClassElement> classBody = null)
+        {
+            return new TsClassDeclaration(className, typeParameters, heritage, classBody);
+        }
+
+        /// <summary>
+        /// Creates an interface declaration.
+        /// </summary>
+        public static ITsInterfaceDeclaration InterfaceDeclaration(
+            ITsIdentifier interfaceName,
+            ITsObjectType body,
+            ITsTypeParameters typeParameters = null,
+            IEnumerable<ITsTypeReference> extendsClause = null)
+        {
+            return new TsInterfaceDeclaration(interfaceName, body, typeParameters, extendsClause);
+        }
+
+        /// <summary>
+        /// Creates an enum member of the form, 'name = value'.
+        /// </summary>
+        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null) =>
+            new TsEnumMember(name, value);
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(
+            ITsIdentifier enumName,
+            IEnumerable<ITsEnumMember> enumBody = null,
+            bool isConst = false)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(
+            bool isConst,
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody) =>
+            new TsEnumDeclaration(enumName, enumBody);
+
+        /// <summary>
+        /// Creates a namespace declaration.
+        /// </summary>
+        public static ITsNamespaceDeclaration NamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            params ITsNamespaceElement[] body)
+        {
+            return new TsNamespaceDeclaration(namespaceName, body);
+        }
+
+        /// <summary>
+        /// Creates an exported variable statement.
+        /// </summary>
+        public static ITsExportedVariableStatement ExportedVariableStatement(ITsVariableStatement statement) =>
+            new TsExportedVariableStatement(statement);
+
+        /// <summary>
+        /// Creates an exported declaration.
+        /// </summary>
+        public static ITsExportedDeclaration ExportedDeclaration(ITsDeclaration declaration) =>
+            new TsExportedDeclaration(declaration);
+
+        /// <summary>
+        /// Creates an import alias declaration of the form, 'import alias = dotted.name'.
+        /// </summary>
+        public static ITsImportAliasDeclaration ImportAliasDeclaration(
+            ITsIdentifier alias,
+            ITsQualifiedName importedName)
+        {
+            return new TsImportAliasDeclaration(alias, importedName);
         }
     }
 }

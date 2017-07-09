@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override void Emit(Emitter emitter)
         {
             Identifier.Emit(emitter);
-            Initializer.EmitAssignment(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
         }
     }
 }

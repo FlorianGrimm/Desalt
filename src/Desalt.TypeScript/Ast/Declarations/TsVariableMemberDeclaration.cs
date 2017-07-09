@@ -1,67 +1,67 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsSetAccessor.cs" company="Justin Rockwood">
+// <copyright file="TsVariableMemberDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Expressions
+namespace Desalt.TypeScript.Ast.Declarations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a property set accessor of the form 'set name(value: type) { body }'.
+    /// Represents a member variable declaration in a class.
     /// </summary>
-    internal class TsSetAccessor : AstNode<TsVisitor>, ITsSetAccessor
+    internal class TsVariableMemberDeclaration : AstNode<TsVisitor>, ITsVariableMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsSetAccessor(
+        public TsVariableMemberDeclaration(
             ITsPropertyName propertyName,
-            ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            ITsType typeAnnotation = null,
+            ITsExpression initializer = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            ParameterType = parameterType;
-            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            TypeAnnotation = typeAnnotation;
+            Initializer = initializer;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
         public ITsPropertyName PropertyName { get; }
-        public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType ParameterType { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public ITsType TypeAnnotation { get; }
+        public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitSetAccessor(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitVariableMemberDeclaration(this);
 
         public override string CodeDisplay =>
-            $"set {PropertyName}({ParameterName}{ParameterType.OptionalTypeAnnotation()}) " +
-            $"{{ {FunctionBody.ToElidedList()} }}";
+            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
+            $"{PropertyName}{TypeAnnotation.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()};";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("set ");
+            AccessibilityModifier.EmitOptional(emitter);
+            IsStatic.EmitOptionalStaticDeclaration(emitter);
             PropertyName.Emit(emitter);
-            emitter.Write("(");
-            ParameterName.Emit(emitter);
-            ParameterType.EmitOptionalTypeAnnotation(emitter);
-            emitter.Write(") ");
-            emitter.WriteBlock(FunctionBody, skipNewlines: true);
+            TypeAnnotation.EmitOptionalTypeAnnotation(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

@@ -1,53 +1,56 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsNamespaceDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents a namespace declaration.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsNamespaceDeclaration : AstNode<TsVisitor>, ITsNamespaceDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsNamespaceDeclaration(ITsQualifiedName namespaceName, IEnumerable<ITsNamespaceElement> body = null)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            NamespaceName = namespaceName ?? throw new ArgumentNullException(nameof(namespaceName));
+            Body = body?.ToImmutableArray() ?? ImmutableArray<ITsNamespaceElement>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public ITsQualifiedName NamespaceName { get; }
+        public ImmutableArray<ITsNamespaceElement> Body { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitNamespaceDeclaration(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => $"namespace {NamespaceName} {{ {Body.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter) =>
-            emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+        public override void Emit(Emitter emitter)
+        {
+            emitter.Write("namespace ");
+            NamespaceName.Emit(emitter);
+            emitter.Write(" ");
+
+            emitter.WriteBlock(Body, skipNewlines: true);
+            emitter.WriteLine();
+        }
     }
 }

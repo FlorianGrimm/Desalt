@@ -89,7 +89,7 @@ namespace Desalt.Core.Emit
         /// </param>
         public void WriteBlock(IReadOnlyList<IAstNode> items, bool skipNewlines = false)
         {
-            WriteItems(
+            WriteList(
                 items,
                 indent: true,
                 prefix: "{",
@@ -109,7 +109,7 @@ namespace Desalt.Core.Emit
         /// <param name="items">The items to write.</param>
         public void WriteCommaNewlineSeparatedBlock(IReadOnlyList<IAstNode> items)
         {
-            WriteItems(
+            WriteList(
                 items,
                 indent: true,
                 prefix: "{",
@@ -126,7 +126,7 @@ namespace Desalt.Core.Emit
         /// <param name="items">The items to write.</param>
         public void WriteParameterList(IReadOnlyList<IAstNode> items)
         {
-            WriteItems(items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
+            WriteList(items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Desalt.Core.Emit
         /// The contents to write if the list is empty. If not supplied, it will just be <c><paramref
         /// name="prefix"/><paramref name="suffix"/></c>
         /// </param>
-        public void WriteItems(
+        public void WriteList(
             IReadOnlyList<IAstNode> items,
             bool indent,
             string prefix = null,

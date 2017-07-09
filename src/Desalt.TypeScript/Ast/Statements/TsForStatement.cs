@@ -10,9 +10,11 @@ namespace Desalt.TypeScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.IO;
     using System.Text;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
 
     /// <summary>
     /// Represents a 'for' loop.
@@ -145,13 +147,20 @@ namespace Desalt.TypeScript.Ast.Statements
             else if (InitializerWithVariableDeclarations.Length > 0)
             {
                 emitter.Write("var ");
-                emitter.WriteItems(InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
+                emitter.WriteList(InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
                 emitter.Write("; ");
             }
             else
             {
-                InitializerWithLexicalDeclaration.Emit(emitter);
-                emitter.Write(" ");
+                // Normally a lexical declaration ends in a newline, but we don't want that in our
+                // for loop. This is kind of kludgy, but we'll create a temporary emitter for it
+                // to use with spaces instead of newlines.
+                using (var memoryStream = new MemoryStream())
+                using (var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options.WithNewline(" ")))
+                {
+                    InitializerWithLexicalDeclaration.Emit(tempEmitter);
+                    emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
+                }
             }
 
             Condition.Emit(emitter);

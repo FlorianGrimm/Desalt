@@ -52,13 +52,13 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(RequiredParameters, indent: false, itemDelimiter: ", ");
+            emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
             if (RequiredParameters.Length > 0 && OptionalParameters.Length > 0 || RestParameter != null)
             {
                 emitter.Write(", ");
             }
 
-            emitter.WriteItems(OptionalParameters, indent: false, itemDelimiter: ", ");
+            emitter.WriteList(OptionalParameters, indent: false, itemDelimiter: ", ");
             if (OptionalParameters.Length > 0 && RestParameter != null)
             {
                 emitter.Write(", ");

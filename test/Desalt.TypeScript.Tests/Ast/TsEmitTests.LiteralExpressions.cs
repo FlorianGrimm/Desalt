@@ -8,7 +8,6 @@
 namespace Desalt.TypeScript.Tests.Ast
 {
     using System;
-    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
     using Desalt.TypeScript.Ast.Expressions;
     using FluentAssertions;
@@ -147,7 +146,8 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.PropertyFunction(
                         Factory.Identifier("method"),
                         Factory.CallSignature(
-                            Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IString"))).ToSafeArray(),
+                            Factory.TypeParameters(
+                                Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IString")))),
                             Factory.ParameterList(
                                 Factory.BoundRequiredParameter(s_x, s_TRef),
                                 Factory.BoundRequiredParameter(s_y, s_TRef)),

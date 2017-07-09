@@ -47,7 +47,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         {
             if (!TypeArguments.IsEmpty)
             {
-                emitter.WriteItems(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteList(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
 
             emitter.WriteParameterList(Arguments);

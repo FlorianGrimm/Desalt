@@ -7,8 +7,6 @@
 
 namespace Desalt.TypeScript.Ast.Types
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
@@ -22,11 +20,11 @@ namespace Desalt.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public TsCallSignature(
-            IEnumerable<ITsTypeParameter> typeParameters = null,
+            ITsTypeParameters typeParameters = null,
             ITsParameterList parameters = null,
             ITsType returnType = null)
         {
-            TypeParameters = typeParameters?.ToImmutableArray() ?? ImmutableArray<ITsTypeParameter>.Empty;
+            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
             Parameters = parameters;
             ReturnType = returnType;
         }
@@ -35,7 +33,7 @@ namespace Desalt.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsParameterList Parameters { get; }
         public ITsType ReturnType { get; }
 
@@ -45,35 +43,16 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string code = string.Empty;
-
-                if (TypeParameters.Length == 0)
-                {
-                    code += $"<{TypeParameters.ToElidedList()}>";
-                }
-
-                code += $"{Parameters.CodeDisplay}: {ReturnType}";
-
-                return code;
-            }
-        }
+        public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
 
         public override void Emit(Emitter emitter)
         {
-            if (TypeParameters.Length > 0)
-            {
-                emitter.WriteItems(TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
+            TypeParameters.Emit(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");
 
-            ReturnType.EmitTypeAnnotation(emitter);
+            ReturnType.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

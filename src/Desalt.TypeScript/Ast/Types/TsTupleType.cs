@@ -44,7 +44,7 @@ namespace Desalt.TypeScript.Ast.Types
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            emitter.WriteList(ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
     }
 }

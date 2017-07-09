@@ -54,7 +54,7 @@ namespace Desalt.TypeScript.Ast.Types
                     display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
                 }
 
-                display += $"{ParameterName}{ParameterType.ToTypeAnnotationCodeDisplay()}";
+                display += $"{ParameterName}{ParameterType.OptionalTypeAnnotation()}";
                 return display;
             }
         }
@@ -67,7 +67,7 @@ namespace Desalt.TypeScript.Ast.Types
             }
 
             ParameterName.Emit(emitter);
-            ParameterType.EmitTypeAnnotation(emitter);
+            ParameterType.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

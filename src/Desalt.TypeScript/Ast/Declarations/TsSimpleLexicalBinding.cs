@@ -49,8 +49,8 @@ namespace Desalt.TypeScript.Ast.Declarations
             get
             {
                 string display = VariableName.CodeDisplay;
-                display += VariableType?.ToTypeAnnotationCodeDisplay();
-                display += Initializer.ToAssignmentCodeDisplay();
+                display += VariableType?.OptionalTypeAnnotation();
+                display += Initializer.OptionalAssignment();
                 return display;
             }
         }
@@ -58,8 +58,8 @@ namespace Desalt.TypeScript.Ast.Declarations
         public override void Emit(Emitter emitter)
         {
             VariableName.Emit(emitter);
-            VariableType?.EmitTypeAnnotation(emitter);
-            Initializer.EmitAssignment(emitter);
+            VariableType?.EmitOptionalTypeAnnotation(emitter);
+            Initializer.EmitOptionalAssignment(emitter);
         }
     }
 }
