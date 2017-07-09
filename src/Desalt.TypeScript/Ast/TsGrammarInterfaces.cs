@@ -623,6 +623,7 @@ namespace Desalt.TypeScript.Ast
     {
         ITsTypeReference ExtendsClause { get; }
         ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+        bool IsEmpty { get; }
     }
 
     public interface ITsClassElement : IAstNode { }

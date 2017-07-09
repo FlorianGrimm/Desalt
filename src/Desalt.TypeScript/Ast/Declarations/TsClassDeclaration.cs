@@ -11,6 +11,7 @@ namespace Desalt.TypeScript.Ast.Declarations
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
+    using Desalt.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents a class declaration.
@@ -28,7 +29,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             IEnumerable<ITsClassElement> classBody = null)
         {
             ClassName = className;
-            TypeParameters = typeParameters;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             Heritage = heritage ?? new TsClassHeritage();
             ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
         }
@@ -58,7 +59,12 @@ namespace Desalt.TypeScript.Ast.Declarations
             TypeParameters.Emit(emitter);
             Heritage.Emit(emitter);
 
-            emitter.WriteLine(" {");
+            if (ClassName != null && Heritage.IsEmpty || !Heritage.IsEmpty)
+            {
+                emitter.Write(" ");
+            }
+
+            emitter.WriteLine("{");
             emitter.IndentLevel++;
 
             for (int i = 0; i < ClassBody.Length; i++)

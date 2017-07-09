@@ -36,6 +36,8 @@ namespace Desalt.TypeScript.Ast.Declarations
         public ITsTypeReference ExtendsClause { get; }
         public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
 
+        public bool IsEmpty => ExtendsClause == null && ImplementsClause.IsEmpty;
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================

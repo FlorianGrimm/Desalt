@@ -64,7 +64,7 @@ namespace Desalt.TypeScript.Ast.Declarations
                 EnumBody, indent: true, prefix: "{", suffix: "}",
                 itemDelimiter: "," + emitter.Options.Newline,
                 newLineBeforeFirstItem: true, newLineAfterLastItem: true,
-                emptyContents: "{ }");
+                emptyContents: $"{{{emitter.Options.Newline}}}");
             emitter.WriteLine();
         }
     }

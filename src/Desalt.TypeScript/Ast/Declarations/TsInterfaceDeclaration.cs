@@ -67,8 +67,17 @@ namespace Desalt.TypeScript.Ast.Declarations
             }
 
             emitter.Write(" ");
-            Body.Emit(emitter);
-            emitter.WriteLine();
+
+            if (Body.TypeMembers.IsEmpty)
+            {
+                emitter.WriteLine("{");
+                emitter.WriteLine("}");
+            }
+            else
+            {
+                Body.Emit(emitter);
+                emitter.WriteLine();
+            }
         }
     }
 }

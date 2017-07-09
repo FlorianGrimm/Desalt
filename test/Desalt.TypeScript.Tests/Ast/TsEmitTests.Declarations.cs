@@ -292,6 +292,12 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_empty_class_declaration()
+        {
+            VerifyOutput(Factory.ClassDeclaration(), "class {\n}\n");
+        }
+
+        [TestMethod]
         public void Emit_class_declaration_with_all_of_the_possible_elements()
         {
             // ReSharper disable once InconsistentNaming
@@ -376,6 +382,12 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_empty_interface_declaration()
+        {
+            VerifyOutput(Factory.InterfaceDeclaration(s_T, Factory.ObjectType()), "interface T {\n}\n");
+        }
+
+        [TestMethod]
         public void Emit_interface_declaration()
         {
             VerifyOutput(
@@ -389,7 +401,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.InterfaceDeclaration(Factory.Identifier("ISomething"), Factory.ObjectType()),
-                "interface ISomething {}\n");
+                "interface ISomething {\n}\n");
         }
 
         [TestMethod]
@@ -397,6 +409,12 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.EnumMember(s_x), "x");
             VerifyOutput(Factory.EnumMember(s_y, s_z), "y = z");
+        }
+
+        [TestMethod]
+        public void Emit_empty_enum_declaration()
+        {
+            VerifyOutput(Factory.EnumDeclaration(s_T), "enum T {\n}\n");
         }
 
         [TestMethod]
