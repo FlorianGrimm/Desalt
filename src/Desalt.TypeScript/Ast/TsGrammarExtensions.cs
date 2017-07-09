@@ -85,6 +85,9 @@ namespace Desalt.TypeScript.Ast
                 case TsUnaryOperator.BitwiseNot: return "~";
                 case TsUnaryOperator.LogicalNot: return "!";
 
+                case TsUnaryOperator.Cast:
+                    throw new InvalidOperationException($"Use {nameof(TsCastExpression.Emit)} instead");
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null);
             }
