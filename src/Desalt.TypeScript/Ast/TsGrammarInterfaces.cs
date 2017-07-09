@@ -746,8 +746,15 @@ namespace Desalt.TypeScript.Ast
      * NamespaceElements:
      *   NamespaceElement
      *   NamespaceElements NamespaceElement
-     *
-     * NamespaceElement:
+     */
+
+    public interface ITsNamespaceDeclaration : ITsDeclaration
+    {
+        ITsQualifiedName NamespaceName { get; }
+        ImmutableArray<ITsNamespaceElement> Body { get; }
+    }
+
+    /* NamespaceElement:
      *   Statement
      *   LexicalDeclaration
      *   FunctionDeclaration
@@ -760,8 +767,11 @@ namespace Desalt.TypeScript.Ast
      *   AmbientDeclaration
      *   ImportAliasDeclaration
      *   ExportNamespaceElement
-     *
-     * ExportNamespaceElement:
+     */
+
+    public interface ITsNamespaceElement : IAstNode { }
+
+    /* ExportNamespaceElement:
      *   export VariableStatement
      *   export LexicalDeclaration
      *   export FunctionDeclaration

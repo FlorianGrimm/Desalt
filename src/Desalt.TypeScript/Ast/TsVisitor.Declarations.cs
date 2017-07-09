@@ -88,5 +88,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an enum declaration.
         /// </summary>
         public virtual void VisitEnumDeclaration(ITsEnumDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a namespace declaration.
+        /// </summary>
+        public virtual void VisitNamespaceDeclaration(ITsNamespaceDeclaration node) => Visit(node);
     }
 }

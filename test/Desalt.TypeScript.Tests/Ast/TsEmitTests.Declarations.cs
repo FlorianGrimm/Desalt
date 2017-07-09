@@ -428,5 +428,23 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.EnumMember(s_y, Factory.Number(10))),
                 "const enum MyEnum {\n  x,\n  y = 10\n}\n");
         }
+
+        [TestMethod]
+        public void Emit_namespace_declaration()
+        {
+            VerifyOutput(
+                Factory.NamespaceDeclaration(Factory.QualifiedName("A.B.C")),
+                "namespace A.B.C { }\n");
+
+            VerifyOutput(
+                Factory.NamespaceDeclaration(
+                    Factory.QualifiedName("tab"),
+                    Factory.ClassDeclaration(s_T)),
+                @"namespace tab {
+  class T {
+  }
+}
+".Replace("\r\n", "\n"));
+        }
     }
 }

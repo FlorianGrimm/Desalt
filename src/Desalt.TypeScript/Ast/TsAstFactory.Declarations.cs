@@ -236,5 +236,15 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody) =>
             new TsEnumDeclaration(enumName, enumBody);
+
+        /// <summary>
+        /// Creates a namespace declaration.
+        /// </summary>
+        public static ITsNamespaceDeclaration NamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            params ITsNamespaceElement[] body)
+        {
+            return new TsNamespaceDeclaration(namespaceName, body);
+        }
     }
 }

@@ -589,7 +589,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : ITsStatementListItem { }
+    public interface ITsStatement : ITsStatementListItem, ITsNamespaceElement { }
 
     /* Declaration:
      *   HoistableDeclaration
@@ -606,7 +606,7 @@ namespace Desalt.TypeScript.Ast
      *   SwitchStatement
      */
 
-    public interface ITsDeclaration : ITsStatementListItem { }
+    public interface ITsDeclaration : ITsStatementListItem, ITsNamespaceElement { }
 
     /* 13.2 Block
      * ----------
@@ -1102,7 +1102,7 @@ namespace Desalt.TypeScript.Ast
 
     /* 14.4 Generator Function Definitions
      * -----------------------------------
-     * GeneratorMethod:
+     * GeneratorMethod: (not in TypeScript grammar)
      *   * PropertyName ( StrictFormalParameters ) { GeneratorBody }
      *
      * GeneratorDeclaration:

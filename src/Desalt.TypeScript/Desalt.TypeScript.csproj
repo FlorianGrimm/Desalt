@@ -33,6 +33,7 @@
     <Compile Include="Ast\Declarations\TsInterfaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsMemberFunctionDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsNamespaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsSimpleLexicalBinding.cs" />
     <Compile Include="Ast\Declarations\TsTypeAliasDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsVariableMemberDeclaration.cs" />
