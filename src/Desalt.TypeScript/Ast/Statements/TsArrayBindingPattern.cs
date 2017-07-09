@@ -48,14 +48,14 @@ namespace Desalt.TypeScript.Ast.Statements
             if (RestElement != null)
             {
                 emitter.Write("[");
-                emitter.WriteItems(Elements, indent: false, itemDelimiter: ", ", delimiterAfterLastItem: true);
+                emitter.WriteList(Elements, indent: false, itemDelimiter: ", ", delimiterAfterLastItem: true);
                 emitter.Write("... ");
                 RestElement.Emit(emitter);
                 emitter.Write("]");
             }
             else
             {
-                emitter.WriteItems(
+                emitter.WriteList(
                     Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
             }
         }

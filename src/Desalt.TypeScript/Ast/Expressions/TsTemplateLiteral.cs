@@ -43,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         public override void Emit(Emitter emitter)
         {
             emitter.Write("`");
-            emitter.WriteItems(Parts, indent: false);
+            emitter.WriteList(Parts, indent: false);
             emitter.Write("`");
         }
     }

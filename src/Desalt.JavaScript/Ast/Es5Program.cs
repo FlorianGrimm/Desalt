@@ -45,7 +45,7 @@ namespace Desalt.JavaScript.Ast
 
         public override void Emit(Emitter emitter)
         {
-            emitter.WriteItems(SourceElements, indent: false, itemDelimiter: emitter.Options.Newline);
+            emitter.WriteList(SourceElements, indent: false, itemDelimiter: emitter.Options.Newline);
         }
     }
 }

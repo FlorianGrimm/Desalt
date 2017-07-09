@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Statements
         public override string CodeDisplay => $"{{{Properties.ToElidedList()}}}";
 
         public override void Emit(Emitter emitter) =>
-            emitter.WriteItems(
+            emitter.WriteList(
                 Properties, indent: false, prefix: "{", suffix: "}", itemDelimiter: ", ", emptyContents: "{}");
     }
 }

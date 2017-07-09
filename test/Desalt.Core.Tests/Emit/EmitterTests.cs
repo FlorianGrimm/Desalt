@@ -181,7 +181,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter(stream);
-                Action action = () => emitter.WriteItems(null, true);
+                Action action = () => emitter.WriteList(null, true);
                 action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
             }
         }
@@ -192,7 +192,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter(stream);
-                emitter.WriteItems(s_statements, indent: false, itemDelimiter: "-");
+                emitter.WriteList(s_statements, indent: false, itemDelimiter: "-");
                 stream.ReadAllText().Should().Be("One-Two-Three");
             }
         }
@@ -203,7 +203,7 @@ namespace Desalt.Core.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter(stream);
-                emitter.WriteItems(s_statements.Take(1).ToImmutableArray(), indent: false, itemDelimiter: "-");
+                emitter.WriteList(s_statements.Take(1).ToImmutableArray(), indent: false, itemDelimiter: "-");
                 stream.ReadAllText().Should().Be("One");
             }
         }

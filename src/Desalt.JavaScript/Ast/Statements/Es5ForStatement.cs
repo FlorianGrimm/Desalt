@@ -119,7 +119,7 @@ namespace Desalt.JavaScript.Ast.Statements
             if (Declarations.Length > 0)
             {
                 emitter.Write("var ");
-                emitter.WriteItems(Declarations, indent: false, itemDelimiter: ", ");
+                emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");
             }
             else
             {

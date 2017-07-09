@@ -59,7 +59,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             if (!ImplementsClause.IsEmpty)
             {
                 emitter.Write(" implements ");
-                emitter.WriteItems(ImplementsClause, indent: false, itemDelimiter: ", ");
+                emitter.WriteList(ImplementsClause, indent: false, itemDelimiter: ", ");
             }
         }
     }

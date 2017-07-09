@@ -41,7 +41,7 @@ namespace Desalt.TypeScript.Ast.Types
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
         public override void Emit(Emitter emitter) =>
-            emitter.WriteItems(
+            emitter.WriteList(
                 TypeMembers,
                 indent: true,
                 prefix: "{", suffix: "}",

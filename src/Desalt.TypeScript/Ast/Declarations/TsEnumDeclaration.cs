@@ -60,7 +60,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             EnumName.Emit(emitter);
             emitter.Write(" ");
 
-            emitter.WriteItems(
+            emitter.WriteList(
                 EnumBody, indent: true, prefix: "{", suffix: "}",
                 itemDelimiter: "," + emitter.Options.Newline,
                 newLineBeforeFirstItem: true, newLineAfterLastItem: true,

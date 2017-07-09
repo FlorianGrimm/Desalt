@@ -50,7 +50,7 @@ namespace Desalt.TypeScript.Ast.Types
 
             if (TypeArguments.Length > 0)
             {
-                emitter.WriteItems(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+                emitter.WriteList(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
             }
         }
     }

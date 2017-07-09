@@ -147,7 +147,7 @@ namespace Desalt.TypeScript.Ast.Statements
             else if (InitializerWithVariableDeclarations.Length > 0)
             {
                 emitter.Write("var ");
-                emitter.WriteItems(InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
+                emitter.WriteList(InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
                 emitter.Write("; ");
             }
             else

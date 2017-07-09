@@ -41,6 +41,6 @@ namespace Desalt.TypeScript.Ast
         public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
 
         public override void Emit(Emitter emitter) =>
-            emitter.WriteItems(ScriptElements, indent: false, itemDelimiter: emitter.Options.Newline);
+            emitter.WriteList(ScriptElements, indent: false, itemDelimiter: emitter.Options.Newline);
     }
 }

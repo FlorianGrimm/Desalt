@@ -63,7 +63,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             if (!ExtendsClause.IsEmpty)
             {
                 emitter.Write(" extends ");
-                emitter.WriteItems(ExtendsClause, indent: false, itemDelimiter: ", ");
+                emitter.WriteList(ExtendsClause, indent: false, itemDelimiter: ", ");
             }
 
             emitter.Write(" ");
