@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Desalt.TypeScript.Ast.Types;
 
     public static partial class TsAstFactory
@@ -83,6 +84,9 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
+
+        public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters) =>
+            new TsParameterList(requiredParameters.Select(p => BoundRequiredParameter(p)));
 
         public static ITsParameterList ParameterList(params ITsRequiredParameter[] requiredParameters) =>
             new TsParameterList(requiredParameters);

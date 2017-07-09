@@ -86,6 +86,11 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitSetAccessor(ITsSetAccessor node) => Visit(node);
 
         /// <summary>
+        /// Visits an arrow function expression of the form '() => body'.
+        /// </summary>
+        public virtual void VisitArrowFunction(ITsArrowFunction node) => Visit(node);
+
+        /// <summary>
         /// Visits a function declaration acting as an expression.
         /// </summary>
         public virtual void VisitFunctionExpression(ITsFunctionExpression node) => Visit(node);
@@ -106,9 +111,19 @@ namespace Desalt.TypeScript.Ast
         public virtual void VisitTemplateLiteral(ITsTemplateLiteral node) => Visit(node);
 
         /// <summary>
+        /// Visits a part of a template literal.
+        /// </summary>
+        public virtual void VisitTemplatePart(ITsTemplatePart node) => Visit(node);
+
+        /// <summary>
         /// Visits a unary expression
         /// </summary>
         public virtual void VisitUnaryExpression(ITsUnaryExpression node) => Visit(node);
+
+        /// <summary>
+        /// Visits a unary cast expression of the form, '&lt;Type&gt;.
+        /// </summary>
+        public virtual void VisitCastExpression(ITsCastExpression node) => Visit(node);
 
         /// <summary>
         /// Visits a binary expression
@@ -164,6 +179,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits an argument in a call expression.
         /// </summary>
         public virtual void VisitArgument(ITsArgument node) => Visit(node);
+
+        /// <summary>
+        /// Visits an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
+        public virtual void VisitArgumentList(ITsArgumentList node) => Visit(node);
 
         /// <summary>
         /// Visits an expression of the form 'new.target'.

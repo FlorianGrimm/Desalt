@@ -285,21 +285,15 @@ namespace Desalt.TypeScript.Ast
      *   SourceCharacter but not one of ` or \ or $ or LineTerminator
      */
 
-    public sealed class TsTemplatePart
+    public interface ITsTemplatePart : IAstNode
     {
-        public TsTemplatePart(string template = null, ITsExpression expression = null)
-        {
-            Template = template;
-            Expression = expression;
-        }
-
-        public string Template { get; }
-        public ITsExpression Expression { get; }
+        string Template { get; }
+        ITsExpression Expression { get; }
     }
 
     public interface ITsTemplateLiteral : ITsExpression
     {
-        ImmutableArray<TsTemplatePart> Parts { get; }
+        ImmutableArray<ITsTemplatePart> Parts { get; }
     }
 
     /* 12.e Left-Hand-Side Expressions
@@ -367,9 +361,12 @@ namespace Desalt.TypeScript.Ast
      * SuperCall:
      *   super Arguments
      *
-     * Arguments:
+     * Arguments: (see TypeScript grammar copied below)
      *   ( )
      *   ( ArgumentList )
+     *
+     * Arguments: ( Modified )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
      *
      * ArgumentList:
      *   AssignmentExpression
@@ -385,13 +382,19 @@ namespace Desalt.TypeScript.Ast
     public interface ITsCallExpression : ITsExpression
     {
         ITsExpression LeftSide { get; }
-        ImmutableArray<ITsArgument> Arguments { get; }
+        ITsArgumentList Arguments { get; }
     }
 
     public interface ITsNewCallExpression : ITsCallExpression { }
 
     public interface ITsSuperCallExpression : ITsExpression
     {
+        ITsArgumentList Arguments { get; }
+    }
+
+    public interface ITsArgumentList : IAstNode
+    {
+        ImmutableArray<ITsType> TypeArguments { get; }
         ImmutableArray<ITsArgument> Arguments { get; }
     }
 
@@ -426,12 +429,18 @@ namespace Desalt.TypeScript.Ast
      *   - UnaryExpression
      *   ~ UnaryExpression
      *   ! UnaryExpression
+     *   < Type > UnaryExpression (from TypeScript grammar)
      */
 
     public interface ITsUnaryExpression : ITsExpression
     {
         ITsExpression Operand { get; }
         TsUnaryOperator Operator { get; }
+    }
+
+    public interface ITsCastExpression : ITsUnaryExpression
+    {
+        ITsType CastType { get; }
     }
 
     /* 12.6 Multiplicative Operators
@@ -1063,9 +1072,21 @@ namespace Desalt.TypeScript.Ast
      * ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList is recognized the following
      * grammar is used to refine the interpretation of CoverParenthesizedExpressionAndArrowParameterList:
      *
-     * ArrowFormalParameters:
+     * ArrowFormalParameters: (see TypeScript grammar copied below)
      *   ( StrictFormalParameters )
+     *
+     * ArrowFormalParameters: ( Modified )
+     *   CallSignature
      */
+
+    public interface ITsArrowFunction : ITsExpression
+    {
+        ITsIdentifier SingleParameterName { get; }
+        ITsCallSignature CallSignature { get; }
+
+        ITsExpression BodyExpression { get; }
+        ImmutableArray<ITsStatementListItem> Body { get; }
+    }
 
     /* 14.3 Method Definitions
      * -----------------------

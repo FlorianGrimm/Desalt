@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsTemplateLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsTemplatePart.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,44 +7,53 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a template literal of the form `string${Expression}`.
+    /// Represents a part of a template literal.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
+    internal class TsTemplatePart : AstNode<TsVisitor>, ITsTemplatePart
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTemplateLiteral(IEnumerable<ITsTemplatePart> parts)
+        public TsTemplatePart(string template = null, ITsExpression expression = null)
         {
-            Parts = parts?.ToImmutableArray() ?? ImmutableArray<ITsTemplatePart>.Empty;
+            Template = template;
+            Expression = expression;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTemplatePart> Parts { get; }
+        public string Template { get; }
+        public ITsExpression Expression { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTemplatePart(this);
 
-        public override string CodeDisplay => $"`{Parts.ToElidedList()}`";
+        public override string CodeDisplay =>
+            (Template ?? "") + (Expression != null ? "${" + Expression + "}" : "");
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("`");
-            emitter.WriteItems(Parts, indent: false);
-            emitter.Write("`");
+            if (Template != null)
+            {
+                emitter.Write(Template);
+            }
+
+            if (Expression != null)
+            {
+                emitter.Write("${");
+                Expression.Emit(emitter);
+                emitter.Write("}");
+            }
         }
     }
 }

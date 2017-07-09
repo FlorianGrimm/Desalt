@@ -33,6 +33,14 @@ namespace Desalt.TypeScript.Tests.Ast
         }
 
         [TestMethod]
+        public void Emit_cast_unary_expression()
+        {
+            VerifyOutput(
+                Factory.Cast(Factory.NumberType, Factory.UnaryExpression(s_x, TsUnaryOperator.PrefixIncrement)),
+                "<number>++x");
+        }
+
+        [TestMethod]
         public void Emit_binary_expressions()
         {
             VerifyOutput(Factory.BinaryExpression(s_x, TsBinaryOperator.Multiply, s_y), "x * y");

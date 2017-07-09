@@ -56,7 +56,10 @@ namespace Desalt.TypeScript.Ast
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false) =>
             new TsArrayElement(element, isSpreadElement);
 
-        public static ITsTemplateLiteral TemplateString(params TsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+        public static ITsTemplateLiteral TemplateString(params ITsTemplatePart[] parts) => new TsTemplateLiteral(parts);
+
+        public static ITsTemplatePart TemplatePart(string template = null, ITsExpression expression = null) =>
+            new TsTemplatePart(template, expression);
 
         //// ===========================================================================================================
         //// Object Literal Expressions
@@ -97,11 +100,28 @@ namespace Desalt.TypeScript.Ast
             return new TsGetAccessor(propertyName, propertyType, functionBody);
         }
 
+        public static ITsGetAccessor GetAccessor(
+            ITsPropertyName propertyName,
+            ITsType propertyType,
+            params ITsStatementListItem[] functionBody)
+        {
+            return new TsGetAccessor(propertyName, propertyType, functionBody);
+        }
+
         public static ITsSetAccessor SetAccessor(
             ITsPropertyName propertyName,
             ITsBindingIdentifierOrPattern parameterName,
             ITsType parameterType = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
+        }
+
+        public static ITsSetAccessor SetAccessor(
+            ITsPropertyName propertyName,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType parameterType,
+            params ITsStatementListItem[] functionBody)
         {
             return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
         }
@@ -112,6 +132,12 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsUnaryExpression UnaryExpression(ITsExpression operand, TsUnaryOperator @operator) =>
             new TsUnaryExpression(operand, @operator);
+
+        /// <summary>
+        /// Create a unary cast expression of the form, '&lt;Type&gt;.
+        /// </summary>
+        public static ITsCastExpression Cast(ITsType castType, ITsExpression expression) =>
+            new TsCastExpression(castType, expression);
 
         public static ITsBinaryExpression BinaryExpression(
             ITsExpression leftSide,
@@ -152,23 +178,54 @@ namespace Desalt.TypeScript.Ast
 
         public static ITsSuperDotExpression SuperDot(string dotName) => TsMemberDotExpression.CreateSuper(dotName);
 
-        public static ITsCallExpression Call(ITsExpression leftSide, params ITsArgument[] arguments) =>
+        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             TsCallExpression.Create(leftSide, arguments);
 
-        public static ITsNewCallExpression NewCall(ITsExpression leftSide, params ITsArgument[] arguments) =>
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             TsCallExpression.CreateNew(leftSide, arguments);
 
-        public static ITsSuperCallExpression SuperCall(params ITsArgument[] arguments) =>
+        public static ITsSuperCallExpression SuperCall(ITsArgumentList arguments) =>
             TsCallExpression.CreateSuper(arguments);
 
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
             new TsArgument(argument, isSpreadArgument);
+
+        public static ITsArgumentList ArgumentList(IEnumerable<ITsType> typeArguments, params ITsArgument[] arguments)
+        {
+            return new TsArgumentList(typeArguments, arguments);
+        }
+
+        public static ITsArgumentList ArgumentList(params ITsArgument[] arguments) =>
+            new TsArgumentList(typeArguments: null, arguments: arguments);
+
+        public static ITsArgumentList ArgumentList(params ITsIdentifier[] arguments) =>
+            new TsArgumentList(typeArguments: null, arguments: arguments.Select(id => Argument(id)));
 
         public static ITsNewTargetExpression NewTarget => TsNewTargetExpression.Instance;
 
         //// ===========================================================================================================
         //// Function and Class Expressions
         //// ===========================================================================================================
+
+        public static ITsArrowFunction ArrowFunction(ITsIdentifier singleParameterName, ITsExpression bodyExpression) =>
+            new TsArrowFunction(singleParameterName, bodyExpression);
+
+        public static ITsArrowFunction ArrowFunction(
+            ITsIdentifier singleParameterName,
+            params ITsStatementListItem[] body)
+        {
+            return new TsArrowFunction(singleParameterName, body);
+        }
+
+        public static ITsArrowFunction ArrowFunction(ITsCallSignature callSignature, ITsExpression bodyExpression) =>
+            new TsArrowFunction(callSignature, bodyExpression);
+
+        public static ITsArrowFunction ArrowFunction(
+            ITsCallSignature callSignature,
+            params ITsStatementListItem[] body)
+        {
+            return new TsArrowFunction(callSignature, body);
+        }
 
         public static ITsFunctionExpression Function(
             ITsCallSignature callSignature,

@@ -8,8 +8,6 @@
 namespace Desalt.TypeScript.Ast.Expressions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
@@ -22,10 +20,10 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        private TsCallExpression(ITsExpression leftSide, CallKind kind, IEnumerable<ITsArgument> arguments = null)
+        private TsCallExpression(ITsExpression leftSide, CallKind kind, ITsArgumentList arguments = null)
         {
             LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
-            Arguments = arguments?.ToImmutableArray() ?? ImmutableArray<ITsArgument>.Empty;
+            Arguments = arguments ?? new TsArgumentList();
             Kind = kind;
         }
 
@@ -45,7 +43,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// ===========================================================================================================
 
         public ITsExpression LeftSide { get; }
-        public ImmutableArray<ITsArgument> Arguments { get; }
+        public ITsArgumentList Arguments { get; }
 
         private CallKind Kind { get; }
 
@@ -53,13 +51,13 @@ namespace Desalt.TypeScript.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public static TsCallExpression Create(ITsExpression leftSide, IEnumerable<ITsArgument> arguments) =>
+        public static TsCallExpression Create(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             new TsCallExpression(leftSide, CallKind.Call, arguments);
 
-        public static TsCallExpression CreateNew(ITsExpression leftSide, IEnumerable<ITsArgument> arguments) =>
+        public static TsCallExpression CreateNew(ITsExpression leftSide, ITsArgumentList arguments = null) =>
             new TsCallExpression(leftSide, CallKind.New, arguments);
 
-        public static TsCallExpression CreateSuper(IEnumerable<ITsArgument> arguments) =>
+        public static TsCallExpression CreateSuper(ITsArgumentList arguments = null) =>
             new TsCallExpression(TsIdentifier.Get("super"), CallKind.Super, arguments);
 
         public override void Accept(TsVisitor visitor)
@@ -84,7 +82,7 @@ namespace Desalt.TypeScript.Ast.Expressions
         }
 
         public override string CodeDisplay =>
-            (Kind == CallKind.New ? "new " : "") + $"{LeftSide}(${Arguments.ToElidedList()})";
+            (Kind == CallKind.New ? "new " : "") + $"{LeftSide}{Arguments}";
 
         public override void Emit(Emitter emitter)
         {
@@ -94,7 +92,7 @@ namespace Desalt.TypeScript.Ast.Expressions
             }
 
             LeftSide.Emit(emitter);
-            emitter.WriteParameterList(Arguments);
+            Arguments.Emit(emitter);
         }
     }
 }

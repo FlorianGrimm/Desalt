@@ -56,7 +56,8 @@ namespace Desalt.TypeScript.Ast.Expressions
             PropertyName.Emit(emitter);
             emitter.Write("()");
             PropertyType.EmitTypeAnnotation(emitter);
-            emitter.WriteBlock(FunctionBody);
+            emitter.Write(" ");
+            emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }
     }
 }

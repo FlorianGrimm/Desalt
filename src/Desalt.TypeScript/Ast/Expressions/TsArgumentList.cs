@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsTemplateLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsArgumentList.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -13,38 +13,44 @@ namespace Desalt.TypeScript.Ast.Expressions
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a template literal of the form `string${Expression}`.
+    /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
     /// </summary>
-    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
+    internal class TsArgumentList : AstNode<TsVisitor>, ITsArgumentList
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTemplateLiteral(IEnumerable<ITsTemplatePart> parts)
+        public TsArgumentList(IEnumerable<ITsType> typeArguments = null, IEnumerable<ITsArgument> arguments = null)
         {
-            Parts = parts?.ToImmutableArray() ?? ImmutableArray<ITsTemplatePart>.Empty;
+            TypeArguments = typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty;
+            Arguments = arguments?.ToImmutableArray() ?? ImmutableArray<ITsArgument>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTemplatePart> Parts { get; }
+        public ImmutableArray<ITsType> TypeArguments { get; }
+        public ImmutableArray<ITsArgument> Arguments { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArgumentList(this);
 
-        public override string CodeDisplay => $"`{Parts.ToElidedList()}`";
+        public override string CodeDisplay =>
+            (TypeArguments.IsEmpty ? "" : $"<{TypeArguments.ToElidedList()}>") + $"({Arguments.ToElidedList()})";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("`");
-            emitter.WriteItems(Parts, indent: false);
-            emitter.Write("`");
+            if (!TypeArguments.IsEmpty)
+            {
+                emitter.WriteItems(TypeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
+            }
+
+            emitter.WriteParameterList(Arguments);
         }
     }
 }

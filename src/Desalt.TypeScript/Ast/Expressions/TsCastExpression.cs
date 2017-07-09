@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsTemplateLiteral.cs" company="Justin Rockwood">
+// <copyright file="TsCastExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -7,44 +7,49 @@
 
 namespace Desalt.TypeScript.Ast.Expressions
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a template literal of the form `string${Expression}`.
+    /// Represents a unary cast expression of the form, '&lt;Type&gt;.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
+    internal class TsCastExpression : AstNode<TsVisitor>, ITsCastExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTemplateLiteral(IEnumerable<ITsTemplatePart> parts)
+        public TsCastExpression(ITsType castType, ITsExpression expression)
         {
-            Parts = parts?.ToImmutableArray() ?? ImmutableArray<ITsTemplatePart>.Empty;
+            CastType = castType ?? throw new ArgumentNullException(nameof(castType));
+            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTemplatePart> Parts { get; }
+        ITsExpression ITsUnaryExpression.Operand => Expression;
+        TsUnaryOperator ITsUnaryExpression.Operator => TsUnaryOperator.Cast;
+
+        public ITsType CastType { get; }
+        public ITsExpression Expression { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitCastExpression(this);
 
-        public override string CodeDisplay => $"`{Parts.ToElidedList()}`";
+        public override string CodeDisplay => $"<{CastType}>{Expression}";
 
         public override void Emit(Emitter emitter)
         {
-            emitter.Write("`");
-            emitter.WriteItems(Parts, indent: false);
-            emitter.Write("`");
+            emitter.Write("<");
+            CastType.Emit(emitter);
+            emitter.Write(">");
+            Expression.Emit(emitter);
         }
     }
 }

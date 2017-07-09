@@ -8,7 +8,9 @@
 namespace Desalt.TypeScript.Tests.Ast
 {
     using System;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
+    using Desalt.TypeScript.Ast.Expressions;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
@@ -116,11 +118,11 @@ namespace Desalt.TypeScript.Tests.Ast
         [TestMethod]
         public void Emit_template_literals()
         {
-            VerifyOutput(Factory.TemplateString(new TsTemplatePart(template: "string")), "`string`");
+            VerifyOutput(Factory.TemplateString(Factory.TemplatePart(template: "string")), "`string`");
             VerifyOutput(
                 Factory.TemplateString(
-                    new TsTemplatePart("xy=", s_x),
-                    new TsTemplatePart(expression: s_y)),
+                    Factory.TemplatePart("xy=", s_x),
+                    Factory.TemplatePart(expression: s_y)),
                 "`xy=${x}${y}`");
         }
 
@@ -132,6 +134,52 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_empty_object_literal()
         {
             VerifyOutput(Factory.EmptyObject, "{}");
+        }
+
+        [TestMethod]
+        public void Emit_full_object_literal_with_every_type_of_property_definition()
+        {
+            VerifyOutput(
+                Factory.Object(
+                    Factory.Identifier("identifier"),
+                    Factory.CoverInitializedName(Factory.Identifier("coverInitializedName"), Factory.String("check")),
+                    Factory.PropertyAssignment(Factory.Identifier("propName"), Factory.String("assignment")),
+                    Factory.PropertyFunction(
+                        Factory.Identifier("method"),
+                        Factory.CallSignature(
+                            Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IString"))).ToSafeArray(),
+                            Factory.ParameterList(
+                                Factory.BoundRequiredParameter(s_x, s_TRef),
+                                Factory.BoundRequiredParameter(s_y, s_TRef)),
+                            s_TRef),
+                        Factory.Return(Factory.BinaryExpression(s_x, TsBinaryOperator.Add, s_y))),
+                    Factory.GetAccessor(
+                        Factory.Identifier("getter"),
+                        Factory.NumberType,
+                        Factory.Return(Factory.MemberDot(Factory.This, "_field"))),
+                    Factory.SetAccessor(
+                        Factory.Identifier("setter"),
+                        Factory.Identifier("value"),
+                        Factory.NumberType,
+                        Factory.Assignment(
+                            Factory.MemberBracket(Factory.This, Factory.String("_field")),
+                            TsAssignmentOperator.SimpleAssign,
+                            Factory.Identifier("value"))
+                        .ToStatement())),
+                @"{
+  identifier,
+  coverInitializedName = 'check',
+  propName: 'assignment',
+  method<T extends IString>(x: T, y: T): T {
+    return x + y;
+  },
+  get getter(): number {
+    return this._field;
+  },
+  set setter(value: number) {
+    this['_field'] = value;
+  }
+}".Replace("\r\n", "\n"));
         }
     }
 }

@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScript.Tests.Ast
 {
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Desalt.TypeScript.Ast.TsAstFactory;
@@ -57,7 +58,9 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_call_expression()
         {
             VerifyOutput(
-                Factory.Call(s_x, Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                Factory.Call(s_x, Factory.ArgumentList(
+                    Factory.Argument(s_y),
+                    Factory.Argument(s_z, isSpreadArgument: true))),
                 "x(y, ... z)");
         }
 
@@ -65,7 +68,9 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_new_call_expression()
         {
             VerifyOutput(
-                Factory.NewCall(s_x, Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                Factory.NewCall(s_x, Factory.ArgumentList(
+                    Factory.Argument(s_y),
+                    Factory.Argument(s_z, isSpreadArgument: true))),
                 "new x(y, ... z)");
         }
 
@@ -73,7 +78,9 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_super_call_expression()
         {
             VerifyOutput(
-                Factory.SuperCall(Factory.Argument(s_y), Factory.Argument(s_z, isSpreadArgument: true)),
+                Factory.SuperCall(Factory.ArgumentList(
+                    Factory.Argument(s_y),
+                    Factory.Argument(s_z, isSpreadArgument: true))),
                 "super(y, ... z)");
         }
 
@@ -81,6 +88,26 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_new_target_expression()
         {
             VerifyOutput(Factory.NewTarget, "new.target");
+        }
+
+        [TestMethod]
+        public void Emit_arrow_functions()
+        {
+            VerifyOutput(Factory.ArrowFunction(s_x, s_y), "x => y");
+            VerifyOutput(Factory.ArrowFunction(Factory.CallSignature(), s_y), "() => y");
+            VerifyOutput(
+                Factory.ArrowFunction(
+                    Factory.CallSignature(
+                        Factory.TypeParameter(s_T).ToSafeArray(),
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, s_TRef))),
+                    s_y),
+                "<T>(x: T) => y");
+
+            VerifyOutput(
+                Factory.ArrowFunction(
+                    Factory.CallSignature(Factory.ParameterList(s_x)),
+                    Factory.Return(s_y)),
+                "(x) => {\n  return y;\n}");
         }
     }
 }
