@@ -103,5 +103,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an exported variable declaration statement
         /// </summary>
         public virtual void VisitExportedVariableStatement(ITsExportedVariableStatement node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import alias declaration of the form, 'import alias = dotted.name'.
+        /// </summary>
+        public virtual void VisitImportAliasDeclaration(ITsImportAliasDeclaration node) => Visit(node);
     }
 }

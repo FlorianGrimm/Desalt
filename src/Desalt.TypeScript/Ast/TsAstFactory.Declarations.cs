@@ -258,5 +258,15 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsExportedDeclaration ExportedDeclaration(ITsDeclaration declaration) =>
             new TsExportedDeclaration(declaration);
+
+        /// <summary>
+        /// Creates an import alias declaration of the form, 'import alias = dotted.name'.
+        /// </summary>
+        public static ITsImportAliasDeclaration ImportAliasDeclaration(
+            ITsIdentifier alias,
+            ITsQualifiedName importedName)
+        {
+            return new TsImportAliasDeclaration(alias, importedName);
+        }
     }
 }

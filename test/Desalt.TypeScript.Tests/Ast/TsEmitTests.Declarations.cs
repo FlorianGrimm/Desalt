@@ -466,5 +466,13 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(Factory.ClassDeclaration().ToExported(), "export class {\n}\n");
         }
+
+        [TestMethod]
+        public void Emit_import_alias_declaration()
+        {
+            VerifyOutput(
+                Factory.ImportAliasDeclaration(s_x, Factory.QualifiedName("jQuery.IDeferred")),
+                "import x = jQuery.IDeferred;\n");
+        }
     }
 }

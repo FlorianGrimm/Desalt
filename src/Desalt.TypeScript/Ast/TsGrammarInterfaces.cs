@@ -803,6 +803,12 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceName . IdentifierReference
      */
 
+    public interface ITsImportAliasDeclaration : ITsNamespaceElement
+    {
+        ITsIdentifier Alias { get; }
+        ITsQualifiedName ImportedName { get; }
+    }
+
     /* A.9 Scripts and Modules
      * -----------------------
      * SourceFile:
