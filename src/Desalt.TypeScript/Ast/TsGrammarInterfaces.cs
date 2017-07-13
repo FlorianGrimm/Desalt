@@ -1001,8 +1001,15 @@ namespace Desalt.TypeScript.Ast
 
     /* AmbientFunctionDeclaration:
      *   function BindingIdentifier CallSignature ;
-     *
-     * AmbientClassDeclaration:
+     */
+
+    public interface ITsAmbientFunctionDeclaration : IAstNode
+    {
+        ITsIdentifier FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
+    /* AmbientClassDeclaration:
      *   class BindingIdentifier TypeParametersOpt ClassHeritage { AmbientClassBody }
      *
      * AmbientClassBody:
@@ -1023,11 +1030,13 @@ namespace Desalt.TypeScript.Ast
      * AmbientPropertyMemberDeclaration:
      *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt ;
      *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
-     *
-     * AmbientEnumDeclaration:
+     */
+
+    /* AmbientEnumDeclaration:
      *   EnumDeclaration
-     *
-     * AmbientNamespaceDeclaration:
+     */
+
+    /* AmbientNamespaceDeclaration:
      *   namespace IdentifierPath { AmbientNamespaceBody }
      *
      * AmbientNamespaceBody:

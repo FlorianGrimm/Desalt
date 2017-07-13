@@ -496,5 +496,13 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.AmbientBinding(s_y)),
                 "let x: number, y;\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_function_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientFunctionDeclaration(s_x, Factory.CallSignature()),
+                "function x();\n");
+        }
     }
 }

@@ -48,16 +48,16 @@ namespace Desalt.TypeScript.Ast
         /// Creates a function declaration of the form 'function [name] signature { body }'.
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature) =>
-            new TsFunctionDeclaration(callSignature);
+            TsFunctionDeclaration.Create(callSignature);
 
         /// <summary>
-        /// Creates a function declaration of the form 'function [name] signature { body }'.
+        /// Creates a function declaration of the form 'function name signature { }'.
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(
             ITsIdentifier functionName,
             ITsCallSignature callSignature)
         {
-            return new TsFunctionDeclaration(callSignature, functionName);
+            return TsFunctionDeclaration.Create(callSignature, functionName);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Desalt.TypeScript.Ast
             ITsCallSignature callSignature,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsFunctionDeclaration(callSignature, functionName, functionBody);
+            return TsFunctionDeclaration.Create(callSignature, functionName, functionBody);
         }
 
         /// <summary>
@@ -283,6 +283,16 @@ namespace Desalt.TypeScript.Ast
             params ITsAmbientBinding[] declarations)
         {
             return new TsAmbientVariableDeclaration(declarationKind, declarations);
+        }
+
+        /// <summary>
+        /// Creates a function declaration of the form 'function name signature;'.
+        /// </summary>
+        public static ITsAmbientFunctionDeclaration AmbientFunctionDeclaration(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature)
+        {
+            return TsFunctionDeclaration.CreateAmbient(functionName, callSignature);
         }
     }
 }

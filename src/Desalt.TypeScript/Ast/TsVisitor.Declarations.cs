@@ -118,5 +118,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an ambient variable declaration of the form, 'var|let|const x, y: type;'.
         /// </summary>
         public virtual void VisitAmbientVariableDeclaration(ITsAmbientVariableDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a function declaration of the form 'function name signature'.
+        /// </summary>
+        public virtual void VisitAmbientFunctionDeclaration(ITsAmbientFunctionDeclaration node) => Visit(node);
     }
 }
