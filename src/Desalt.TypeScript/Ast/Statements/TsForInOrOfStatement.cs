@@ -95,7 +95,7 @@ namespace Desalt.TypeScript.Ast.Statements
                 }
                 else
                 {
-                    builder.Append(DeclarationKind.ToString().ToLowerInvariant());
+                    builder.Append(DeclarationKind?.CodeDisplay());
                     builder.Append(Declaration.CodeDisplay);
                 }
 
@@ -118,7 +118,7 @@ namespace Desalt.TypeScript.Ast.Statements
             }
             else
             {
-                emitter.Write(DeclarationKind.ToString().ToLowerInvariant() + " ");
+                DeclarationKind?.Emit(emitter);
                 Declaration.Emit(emitter);
             }
 

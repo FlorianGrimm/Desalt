@@ -153,6 +153,20 @@ namespace Desalt.TypeScript.Ast
         }
 
         /// <summary>
+        /// Converts a <see cref="VariableDeclarationKind"/> to a code display representation, which
+        /// includes a trailing space.
+        /// </summary>
+        public static string CodeDisplay(this VariableDeclarationKind declarationKind) =>
+            declarationKind.ToString().ToLowerInvariant() + " ";
+
+        /// <summary>
+        /// Emits a <see cref="VariableDeclarationKind"/> to the specified emitter, which includes a
+        /// trailing space.
+        /// </summary>
+        public static void Emit(this VariableDeclarationKind declarationKind, Emitter emitter) =>
+            emitter.Write(declarationKind.CodeDisplay());
+
+        /// <summary>
         /// Writes a statement on a new line unless the statement is a block, in which case the block
         /// will start on the same line.
         /// </summary>
