@@ -966,8 +966,9 @@ namespace Desalt.TypeScript.Ast
      *   declare AmbientClassDeclaration
      *   declare AmbientEnumDeclaration
      *   declare AmbientNamespaceDeclaration
-     *
-     * AmbientVariableDeclaration:
+     */
+
+    /* AmbientVariableDeclaration:
      *   var AmbientBindingList ;
      *   let AmbientBindingList ;
      *   const AmbientBindingList ;
@@ -979,6 +980,15 @@ namespace Desalt.TypeScript.Ast
      * AmbientBinding:
      *   BindingIdentifier TypeAnnotationOpt
      */
+
+    /// <summary>
+    /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+    /// </summary>
+    public interface ITsAmbientVariableDeclaration : IAstNode
+    {
+        VariableDeclarationKind DeclarationKind { get; }
+        ImmutableArray<ITsAmbientBinding> Declarations { get; }
+    }
 
     /// <summary>
     /// Represents an ambient variable binding of the form 'name: type'.

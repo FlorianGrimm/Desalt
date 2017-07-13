@@ -481,5 +481,20 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(Factory.AmbientBinding(s_x), "x");
             VerifyOutput(Factory.AmbientBinding(s_x, Factory.BooleanType), "x: boolean");
         }
+
+        [TestMethod]
+        public void Emit_ambient_variable_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientVariableDeclaration(VariableDeclarationKind.Const, Factory.AmbientBinding(s_x)),
+                "const x;\n");
+
+            VerifyOutput(
+                Factory.AmbientVariableDeclaration(
+                    VariableDeclarationKind.Let,
+                    Factory.AmbientBinding(s_x, Factory.NumberType),
+                    Factory.AmbientBinding(s_y)),
+                "let x: number, y;\n");
+        }
     }
 }

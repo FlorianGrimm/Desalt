@@ -274,5 +274,15 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null) =>
             new TsAmbientBinding(variableName, variableType);
+
+        /// <summary>
+        /// Creates an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+        /// </summary>
+        public static ITsAmbientVariableDeclaration AmbientVariableDeclaration(
+            VariableDeclarationKind declarationKind,
+            params ITsAmbientBinding[] declarations)
+        {
+            return new TsAmbientVariableDeclaration(declarationKind, declarations);
+        }
     }
 }

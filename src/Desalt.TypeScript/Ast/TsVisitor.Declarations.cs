@@ -113,5 +113,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an ambient variable binding of the form 'name: type'.
         /// </summary>
         public virtual void VisitAmbientBinding(ITsAmbientBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+        /// </summary>
+        public virtual void VisitAmbientVariableDeclaration(ITsAmbientVariableDeclaration node) => Visit(node);
     }
 }
