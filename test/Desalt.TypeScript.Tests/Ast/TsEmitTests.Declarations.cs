@@ -515,5 +515,26 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.StringRequiredParameter(s_y, Factory.String("str")))),
                 "constructor(protected x, y: 'str');\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_variable_member_declarations()
+        {
+            VerifyOutput(
+                Factory.AmbientVariableMemberDeclaration(
+                    s_x,
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType),
+                "public static x: number;\n");
+
+            VerifyOutput(
+                Factory.AmbientVariableMemberDeclaration(
+                    s_x,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType),
+                "static x: number;\n");
+
+            VerifyOutput(Factory.AmbientVariableMemberDeclaration(s_x), "x;\n");
+        }
     }
 }

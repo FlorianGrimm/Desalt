@@ -661,7 +661,7 @@ namespace Desalt.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
-        ITsPropertyName PropertyName { get; }
+        ITsPropertyName VariableName { get; }
         ITsType TypeAnnotation { get; }
         ITsExpression Initializer { get; }
     }
@@ -1037,6 +1037,14 @@ namespace Desalt.TypeScript.Ast
     public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement
     {
         ITsParameterList ParameterList { get; }
+    }
+
+    public interface ITsAmbientVariableMemberDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName VariableName { get; }
+        ITsType TypeAnnotation { get; }
     }
 
     /* AmbientEnumDeclaration:

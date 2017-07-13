@@ -114,14 +114,14 @@ namespace Desalt.TypeScript.Ast
         /// Creates a member variable declaration in a class.
         /// </summary>
         public static ITsVariableMemberDeclaration VariableMemberDeclaration(
-            ITsPropertyName propertyName,
+            ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
-            return new TsVariableMemberDeclaration(
-                propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+            return TsVariableMemberDeclaration.Create(
+                variableName, accessibilityModifier, isStatic, typeAnnotation, initializer);
         }
 
         /// <summary>
@@ -305,6 +305,19 @@ namespace Desalt.TypeScript.Ast
             ITsParameterList parameterList = null)
         {
             return TsConstructorDeclaration.CreateAmbient(parameterList);
+        }
+
+        /// <summary>
+        /// Creates a member variable declaration in an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientVariableMemberDeclaration AmbientVariableMemberDeclaration(
+            ITsPropertyName variableName,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            ITsType typeAnnotation = null)
+        {
+            return TsVariableMemberDeclaration.CreateAmbient(
+                variableName, accessibilityModifier, isStatic, typeAnnotation);
         }
     }
 }
