@@ -978,8 +978,18 @@ namespace Desalt.TypeScript.Ast
      *
      * AmbientBinding:
      *   BindingIdentifier TypeAnnotationOpt
-     *
-     * AmbientFunctionDeclaration:
+     */
+
+    /// <summary>
+    /// Represents an ambient variable binding of the form 'name: type'.
+    /// </summary>
+    public interface ITsAmbientBinding : IAstNode
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+    }
+
+    /* AmbientFunctionDeclaration:
      *   function BindingIdentifier CallSignature ;
      *
      * AmbientClassDeclaration:
@@ -1028,6 +1038,6 @@ namespace Desalt.TypeScript.Ast
      *   exportOpt ImportAliasDeclaration
      *
      * AmbientModuleDeclaration:
-     *   declare module StringLiteral {  DeclarationModule }
+     *   declare module StringLiteral { DeclarationModule }
      */
 }

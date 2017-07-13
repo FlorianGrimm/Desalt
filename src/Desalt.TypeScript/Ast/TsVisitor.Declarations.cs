@@ -108,5 +108,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an import alias declaration of the form, 'import alias = dotted.name'.
         /// </summary>
         public virtual void VisitImportAliasDeclaration(ITsImportAliasDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient variable binding of the form 'name: type'.
+        /// </summary>
+        public virtual void VisitAmbientBinding(ITsAmbientBinding node) => Visit(node);
     }
 }

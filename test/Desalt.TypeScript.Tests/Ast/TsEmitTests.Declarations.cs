@@ -474,5 +474,12 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ImportAliasDeclaration(s_x, Factory.QualifiedName("jQuery.IDeferred")),
                 "import x = jQuery.IDeferred;\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_binding()
+        {
+            VerifyOutput(Factory.AmbientBinding(s_x), "x");
+            VerifyOutput(Factory.AmbientBinding(s_x, Factory.BooleanType), "x: boolean");
+        }
     }
 }

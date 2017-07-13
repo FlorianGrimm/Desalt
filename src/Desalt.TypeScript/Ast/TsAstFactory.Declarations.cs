@@ -268,5 +268,11 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsImportAliasDeclaration(alias, importedName);
         }
+
+        /// <summary>
+        /// Creates an ambient variable binding of the form 'name: type'.
+        /// </summary>
+        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null) =>
+            new TsAmbientBinding(variableName, variableType);
     }
 }
