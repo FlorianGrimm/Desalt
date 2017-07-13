@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
+    using System.Collections.Generic;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
@@ -165,6 +166,18 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static void Emit(this VariableDeclarationKind declarationKind, Emitter emitter) =>
             emitter.Write(declarationKind.CodeDisplay());
+
+        /// <summary>
+        /// Emits a comma-separated list, but only if the items are not null. Shortcut for
+        /// <see cref="Emitter.WriteCommaList"/>.
+        /// </summary>
+        public static void EmitCommaList(this IReadOnlyList<IAstNode> items, Emitter emitter)
+        {
+            if (items != null)
+            {
+                emitter.WriteCommaList(items);
+            }
+        }
 
         /// <summary>
         /// Writes a statement on a new line unless the statement is a block, in which case the block
