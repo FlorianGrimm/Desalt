@@ -1067,6 +1067,8 @@ namespace Desalt.TypeScript.Ast
      *   EnumDeclaration
      */
 
+    public interface ITsAmbientEnumDeclaration : IAstNode { }
+
     /* AmbientNamespaceDeclaration:
      *   namespace IdentifierPath { AmbientNamespaceBody }
      *

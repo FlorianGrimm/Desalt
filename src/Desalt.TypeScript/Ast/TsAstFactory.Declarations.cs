@@ -350,5 +350,37 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsAmbientClassDeclaration(className, typeParameters, heritage, classBody);
         }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            ITsIdentifier enumName,
+            IEnumerable<ITsEnumMember> enumBody = null,
+            bool isConst = false)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            bool isConst,
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody);
+        }
     }
 }
