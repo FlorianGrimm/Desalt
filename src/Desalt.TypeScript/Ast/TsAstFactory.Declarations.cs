@@ -134,7 +134,7 @@ namespace Desalt.TypeScript.Ast
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsFunctionMemberDeclaration(
+            return TsFunctionMemberDeclaration.Create(
                 functionName, callSignature, accessibilityModifier, isStatic, functionBody);
         }
 
@@ -318,6 +318,19 @@ namespace Desalt.TypeScript.Ast
         {
             return TsVariableMemberDeclaration.CreateAmbient(
                 variableName, accessibilityModifier, isStatic, typeAnnotation);
+        }
+
+        /// <summary>
+        /// Creates a member function declaration in an ambient class.
+        /// </summary>
+        public static ITsAmbientFunctionMemberDeclaration AmbientFunctionMemberDeclaration(
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return TsFunctionMemberDeclaration.CreateAmbient(
+                functionName, callSignature, accessibilityModifier, isStatic);
         }
     }
 }

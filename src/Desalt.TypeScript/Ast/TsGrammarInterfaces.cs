@@ -672,7 +672,7 @@ namespace Desalt.TypeScript.Ast
         bool IsStatic { get; }
         ITsPropertyName FunctionName { get; }
         ITsCallSignature CallSignature { get; }
-        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
     }
 
     public interface ITsGetAccessorMemberDeclaration : ITsClassElement
@@ -1045,6 +1045,14 @@ namespace Desalt.TypeScript.Ast
         bool IsStatic { get; }
         ITsPropertyName VariableName { get; }
         ITsType TypeAnnotation { get; }
+    }
+
+    public interface ITsAmbientFunctionMemberDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
     }
 
     /* AmbientEnumDeclaration:

@@ -133,5 +133,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a member variable declaration in an ambient class declaration.
         /// </summary>
         public virtual void VisitAmbientVariableMemberDeclaration(ITsAmbientVariableMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member function declaration in an ambient class.
+        /// </summary>
+        public virtual void VisitAmbientFunctionMemberDeclaration(ITsAmbientFunctionMemberDeclaration node) => Visit(node);
     }
 }

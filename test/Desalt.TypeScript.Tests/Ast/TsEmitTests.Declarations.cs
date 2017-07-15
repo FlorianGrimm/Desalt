@@ -536,5 +536,36 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(Factory.AmbientVariableMemberDeclaration(s_x), "x;\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_function_member_declarations()
+        {
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType),
+                    TsAccessibilityModifier.Private,
+                    isStatic: true),
+                "private static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    isStatic: true,
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "myMethod(x: number): void;\n");
+        }
     }
 }
