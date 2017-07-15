@@ -123,5 +123,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits a function declaration of the form 'function name signature'.
         /// </summary>
         public virtual void VisitAmbientFunctionDeclaration(ITsAmbientFunctionDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a constructor declaration in an ambient class declaration.
+        /// </summary>
+        public virtual void VisitAmbientConstructorDeclaration(ITsAmbientConstructorDeclaration node) => Visit(node);
     }
 }

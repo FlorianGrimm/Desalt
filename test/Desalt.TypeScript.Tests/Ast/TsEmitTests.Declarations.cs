@@ -504,5 +504,16 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.AmbientFunctionDeclaration(s_x, Factory.CallSignature()),
                 "function x();\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_constructor_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientConstructorDeclaration(
+                    Factory.ParameterList(
+                        Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
+                        Factory.StringRequiredParameter(s_y, Factory.String("str")))),
+                "constructor(protected x, y: 'str');\n");
+        }
     }
 }

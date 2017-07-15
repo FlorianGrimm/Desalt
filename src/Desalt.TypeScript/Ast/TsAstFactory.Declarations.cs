@@ -99,12 +99,15 @@ namespace Desalt.TypeScript.Ast
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
         }
 
+        /// <summary>
+        /// Creates a constructor declaration within a class declaration.
+        /// </summary>
         public static ITsConstructorDeclaration ConstructorDeclaration(
             TsAccessibilityModifier? accessibilityModifier = null,
             ITsParameterList parameterList = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody);
+            return TsConstructorDeclaration.Create(accessibilityModifier, parameterList, functionBody);
         }
 
         /// <summary>
@@ -293,6 +296,15 @@ namespace Desalt.TypeScript.Ast
             ITsCallSignature callSignature)
         {
             return TsFunctionDeclaration.CreateAmbient(functionName, callSignature);
+        }
+
+        /// <summary>
+        /// Creates a constructor declaration within an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientConstructorDeclaration AmbientConstructorDeclaration(
+            ITsParameterList parameterList = null)
+        {
+            return TsConstructorDeclaration.CreateAmbient(parameterList);
         }
     }
 }
