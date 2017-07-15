@@ -233,7 +233,7 @@ namespace Desalt.TypeScript.Ast
         /// Creates a for-in loop of the form, 'for (const x in expression) statement'.
         /// </summary>
         public static ITsForInStatement ForIn(
-            ForDeclarationKind declarationKind,
+            VariableDeclarationKind declarationKind,
             ITsBindingIdentifierOrPattern declaration,
             ITsExpression rightSide, ITsStatement statement)
         {
@@ -255,7 +255,7 @@ namespace Desalt.TypeScript.Ast
         /// Creates a for-of loop of the form, 'for (const x of expression) statement'.
         /// </summary>
         public static ITsForOfStatement ForOf(
-            ForDeclarationKind declarationKind,
+            VariableDeclarationKind declarationKind,
             ITsBindingIdentifierOrPattern declaration,
             ITsExpression rightSide, ITsStatement statement)
         {

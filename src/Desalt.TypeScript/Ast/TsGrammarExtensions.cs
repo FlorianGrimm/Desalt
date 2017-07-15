@@ -8,6 +8,7 @@
 namespace Desalt.TypeScript.Ast
 {
     using System;
+    using System.Collections.Generic;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
@@ -149,6 +150,32 @@ namespace Desalt.TypeScript.Ast
                 case TsAssignmentOperator.BitwiseOrAssign: return "|=";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(assignmentOperator), assignmentOperator, message: null);
+            }
+        }
+
+        /// <summary>
+        /// Converts a <see cref="VariableDeclarationKind"/> to a code display representation, which
+        /// includes a trailing space.
+        /// </summary>
+        public static string CodeDisplay(this VariableDeclarationKind declarationKind) =>
+            declarationKind.ToString().ToLowerInvariant() + " ";
+
+        /// <summary>
+        /// Emits a <see cref="VariableDeclarationKind"/> to the specified emitter, which includes a
+        /// trailing space.
+        /// </summary>
+        public static void Emit(this VariableDeclarationKind declarationKind, Emitter emitter) =>
+            emitter.Write(declarationKind.CodeDisplay());
+
+        /// <summary>
+        /// Emits a comma-separated list, but only if the items are not null. Shortcut for
+        /// <see cref="Emitter.WriteCommaList"/>.
+        /// </summary>
+        public static void EmitCommaList(this IReadOnlyList<IAstNode> items, Emitter emitter)
+        {
+            if (items != null)
+            {
+                emitter.WriteCommaList(items);
             }
         }
 

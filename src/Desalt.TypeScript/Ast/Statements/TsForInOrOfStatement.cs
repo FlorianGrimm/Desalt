@@ -40,7 +40,7 @@ namespace Desalt.TypeScript.Ast.Statements
         /// Creates a for-in loop of the form, 'for (const x in expression) statement'.
         /// </summary>
         public TsForInOrOfStatement(
-            ForDeclarationKind declarationKind,
+            VariableDeclarationKind declarationKind,
             ITsBindingIdentifierOrPattern declaration,
             ITsExpression rightSide,
             ITsStatement statement,
@@ -58,7 +58,7 @@ namespace Desalt.TypeScript.Ast.Statements
         //// ===========================================================================================================
 
         public ITsExpression Initializer { get; }
-        public ForDeclarationKind? DeclarationKind { get; }
+        public VariableDeclarationKind? DeclarationKind { get; }
         public ITsBindingIdentifierOrPattern Declaration { get; }
 
         public ITsExpression RightSide { get; }
@@ -95,7 +95,7 @@ namespace Desalt.TypeScript.Ast.Statements
                 }
                 else
                 {
-                    builder.Append(DeclarationKind.ToString().ToLowerInvariant());
+                    builder.Append(DeclarationKind?.CodeDisplay());
                     builder.Append(Declaration.CodeDisplay);
                 }
 
@@ -118,7 +118,7 @@ namespace Desalt.TypeScript.Ast.Statements
             }
             else
             {
-                emitter.Write(DeclarationKind.ToString().ToLowerInvariant() + " ");
+                DeclarationKind?.Emit(emitter);
                 Declaration.Emit(emitter);
             }
 

@@ -103,6 +103,15 @@ namespace Desalt.Core.Emit
         }
 
         /// <summary>
+        /// Writes a list of items separated by a comma.
+        /// </summary>
+        /// <param name="items">The items to write.</param>
+        public void WriteCommaList(IReadOnlyList<IAstNode> items)
+        {
+            WriteList(items, indent: false, itemDelimiter: ", ");
+        }
+
+        /// <summary>
         /// Writes a list of items wrapped in a {} block where each item is separated by a comma and
         /// new line.
         /// </summary>

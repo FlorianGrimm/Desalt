@@ -831,7 +831,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsForInStatement : ITsStatement
     {
         ITsExpression Initializer { get; }
-        ForDeclarationKind? DeclarationKind { get; }
+        VariableDeclarationKind? DeclarationKind { get; }
         ITsBindingIdentifierOrPattern Declaration { get; }
 
         ITsExpression RightSide { get; }
@@ -846,7 +846,7 @@ namespace Desalt.TypeScript.Ast
     public interface ITsForOfStatement : ITsStatement
     {
         ITsExpression Initializer { get; }
-        ForDeclarationKind? DeclarationKind { get; }
+        VariableDeclarationKind? DeclarationKind { get; }
         ITsBindingIdentifierOrPattern Declaration { get; }
 
         ITsExpression RightSide { get; }
@@ -861,7 +861,7 @@ namespace Desalt.TypeScript.Ast
      *   BindingPattern
      */
 
-    public enum ForDeclarationKind { Var, Let, Const }
+    public enum VariableDeclarationKind { Var, Let, Const }
 
     /* 13.8 The continue Statement
      * ---------------------------

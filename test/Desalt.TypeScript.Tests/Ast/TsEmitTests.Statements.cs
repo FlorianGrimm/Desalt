@@ -348,7 +348,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ForIn(
-                    ForDeclarationKind.Const,
+                    VariableDeclarationKind.Const,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
@@ -356,7 +356,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.ForIn(
-                    ForDeclarationKind.Let,
+                    VariableDeclarationKind.Let,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
@@ -364,7 +364,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.ForIn(
-                    ForDeclarationKind.Var,
+                    VariableDeclarationKind.Var,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
@@ -382,7 +382,7 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(
                 Factory.ForOf(
-                    ForDeclarationKind.Const,
+                    VariableDeclarationKind.Const,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
@@ -390,7 +390,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.ForOf(
-                    ForDeclarationKind.Let,
+                    VariableDeclarationKind.Let,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
@@ -398,7 +398,7 @@ namespace Desalt.TypeScript.Tests.Ast
 
             VerifyOutput(
                 Factory.ForOf(
-                    ForDeclarationKind.Var,
+                    VariableDeclarationKind.Var,
                     s_x,
                     Factory.Array(Factory.Number(1), Factory.Number(2)),
                     Factory.Debugger),
