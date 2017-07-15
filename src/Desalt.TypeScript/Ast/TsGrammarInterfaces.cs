@@ -1032,6 +1032,14 @@ namespace Desalt.TypeScript.Ast
      *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
      */
 
+    public interface ITsAmbientClassDeclaration : IAstNode
+    {
+        ITsIdentifier ClassName { get; }
+        ITsTypeParameters TypeParameters { get; }
+        ITsClassHeritage Heritage { get; }
+        ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
+    }
+
     public interface ITsAmbientClassBodyElement : IAstNode { }
 
     public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement

@@ -338,5 +338,17 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsIndexMemberDeclaration AmbientIndexMemberDeclaration(ITsIndexSignature indexSignature) =>
             new TsIndexMemberDeclaration(indexSignature);
+
+        /// <summary>
+        /// Creates an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientClassDeclaration AmbientClassDeclaration(
+            ITsIdentifier className,
+            ITsTypeParameters typeParameters = null,
+            ITsClassHeritage heritage = null,
+            IEnumerable<ITsAmbientClassBodyElement> classBody = null)
+        {
+            return new TsAmbientClassDeclaration(className, typeParameters, heritage, classBody);
+        }
     }
 }

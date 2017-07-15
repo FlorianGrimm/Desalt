@@ -567,5 +567,49 @@ namespace Desalt.TypeScript.Tests.Ast
                         Factory.VoidType)),
                 "myMethod(x: number): void;\n");
         }
+
+        [TestMethod]
+        public void Emit_ambient_class_declaration_with_all_of_the_possible_elements()
+        {
+            // ReSharper disable once InconsistentNaming
+            ITsIdentifier _items = Factory.Identifier("_items");
+            ITsIdentifier item = Factory.Identifier("item");
+            ITsIdentifier items = Factory.Identifier("items");
+
+            VerifyOutput(
+                Factory.AmbientClassDeclaration(
+                    Factory.Identifier("AnimalCollection"),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal")))),
+                    Factory.ClassHeritage(
+                        Factory.TypeReference(Factory.Identifier("Collection"), s_TRef),
+                        Factory.TypeReference(Factory.Identifier("ICollection"), s_TRef).ToSafeArray()),
+                    new ITsAmbientClassBodyElement[]
+                    {
+                        Factory.AmbientVariableMemberDeclaration(
+                            _items, TsAccessibilityModifier.Private,typeAnnotation: Factory.ArrayType(s_TRef)),
+                        Factory.AmbientConstructorDeclaration(
+                            Factory.ParameterList(
+                                requiredParameters: Factory.BoundRequiredParameter(item, s_TRef).ToSafeArray(),
+                                restParameter: Factory.RestParameter(items, Factory.ArrayType(s_TRef)))),
+                        Factory.AmbientIndexMemberDeclaration(
+                            Factory.IndexSignature(
+                                Factory.Identifier("index"),
+                                isParameterNumberType: true,
+                                returnType: s_TRef)),
+                        Factory.AmbientFunctionMemberDeclaration(
+                            Factory.Identifier("add"),
+                            Factory.CallSignature(
+                                Factory.ParameterList(Factory.BoundRequiredParameter(item, s_TRef)),
+                                Factory.VoidType),
+                            TsAccessibilityModifier.Protected)
+                    }),
+                @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
+  private _items: T[];
+  constructor(item: T, ... items: T[]);
+  [index: number]: T;
+  protected add(item: T): void;
+}
+".Replace("\r\n", "\n"));
+        }
     }
 }
