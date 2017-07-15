@@ -390,7 +390,7 @@ namespace Desalt.TypeScript.Ast
      *   [ BindingIdentifier : number ] TypeAnnotation
      */
 
-    public interface ITsIndexSignature : ITsTypeMember
+    public interface ITsIndexSignature : ITsTypeMember, ITsAmbientClassBodyElement
     {
         ITsIdentifier ParameterName { get; }
         bool IsParameterNumberType { get; }
@@ -693,7 +693,7 @@ namespace Desalt.TypeScript.Ast
      *   IndexSignature ;
      */
 
-    public interface ITsIndexMemberDeclaration : ITsClassElement
+    public interface ITsIndexMemberDeclaration : ITsClassElement, ITsAmbientClassBodyElement
     {
         ITsIndexSignature IndexSignature { get; }
     }
@@ -1022,7 +1022,7 @@ namespace Desalt.TypeScript.Ast
      * AmbientClassBodyElement:
      *   AmbientConstructorDeclaration
      *   AmbientPropertyMemberDeclaration
-     *   IndexSignature
+     *   IndexSignature (I think this is supposed to be IndexDeclaration)
      *
      * AmbientConstructorDeclaration:
      *   constructor ( ParameterListOpt ) ;

@@ -332,5 +332,11 @@ namespace Desalt.TypeScript.Ast
             return TsFunctionMemberDeclaration.CreateAmbient(
                 functionName, callSignature, accessibilityModifier, isStatic);
         }
+
+        /// <summary>
+        /// Creates an index member declaration in a class.
+        /// </summary>
+        public static ITsIndexMemberDeclaration AmbientIndexMemberDeclaration(ITsIndexSignature indexSignature) =>
+            new TsIndexMemberDeclaration(indexSignature);
     }
 }
