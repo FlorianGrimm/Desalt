@@ -616,10 +616,49 @@ namespace Desalt.TypeScript.Tests.Ast
         public void Emit_ambient_namespace_elements()
         {
             VerifyOutput(
-                Factory.AmbientVariableDeclaration(
-                    VariableDeclarationKind.Var,
-                    Factory.AmbientBinding(s_x, Factory.AnyType)).ToAmbientNamespaceElement(hasExportKeyword: true),
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientVariableDeclaration(
+                        VariableDeclarationKind.Var,
+                        Factory.AmbientBinding(s_x, Factory.AnyType)),
+                    hasExportKeyword: true),
                 "export var x: any;\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientFunctionDeclaration(s_x, Factory.CallSignature()),
+                    hasExportKeyword: true),
+                "export function x();\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientClassDeclaration(s_x),
+                    hasExportKeyword: true),
+                "export class x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.InterfaceDeclaration(s_x, Factory.ObjectType()), hasExportKeyword: true),
+                "export interface x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientEnumDeclaration(s_x), hasExportKeyword: true),
+                "export enum x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientNamespaceDeclaration(Factory.QualifiedName("MyNs")), hasExportKeyword: true),
+                "export namespace MyNs { }\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_namespace_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientNamespaceDeclaration(
+                    Factory.QualifiedName("A.B.C"),
+                    Factory.AmbientNamespaceElement(Factory.AmbientEnumDeclaration(s_x))),
+                "namespace A.B.C {\n  enum x {\n}\n}\n");
         }
     }
 }

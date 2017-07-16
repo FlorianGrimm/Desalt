@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ast\Declarations\TsAmbientBinding.cs" />
+    <Compile Include="Ast\Declarations\TsAmbientNamespaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsAmbientNamespaceElement.cs" />
     <Compile Include="Ast\Declarations\TsAmbientVariableDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsAmbientClassDeclaration.cs" />

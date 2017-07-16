@@ -14,16 +14,30 @@ namespace Desalt.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an element in an ambient namespace declaration.
     /// </summary>
-    internal class TsAmbientNamespaceElement<T> : AstNode<TsVisitor>, ITsAmbientNamespaceElement
-        where T : class, ITsDeclaration
+    internal class TsAmbientNamespaceElement : AstNode<TsVisitor>, ITsAmbientNamespaceElement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsAmbientNamespaceElement(T declaration, bool hasExportKeyword = false)
+        public TsAmbientNamespaceElement(ITsAmbientDeclarationElement declaration, bool hasExportKeyword = false)
         {
             Declaration = declaration ?? throw new ArgumentNullException(nameof(declaration));
+            HasExportKeyword = hasExportKeyword;
+        }
+
+        public TsAmbientNamespaceElement(ITsInterfaceDeclaration interfaceDeclaration, bool hasExportKeyword = false)
+        {
+            InterfaceDeclaration = interfaceDeclaration ?? throw new ArgumentNullException(nameof(interfaceDeclaration));
+            HasExportKeyword = hasExportKeyword;
+        }
+
+        public TsAmbientNamespaceElement(
+            ITsImportAliasDeclaration importAliasDeclaration,
+            bool hasExportKeyword = false)
+        {
+            ImportAliasDeclaration = importAliasDeclaration ??
+                throw new ArgumentNullException(nameof(importAliasDeclaration));
             HasExportKeyword = hasExportKeyword;
         }
 
@@ -32,9 +46,9 @@ namespace Desalt.TypeScript.Ast.Declarations
         //// ===========================================================================================================
 
         public bool HasExportKeyword { get; }
-        public T Declaration { get; }
-
-        ITsDeclaration ITsAmbientNamespaceElement.Declaration => Declaration;
+        public ITsAmbientDeclarationElement Declaration { get; }
+        public ITsInterfaceDeclaration InterfaceDeclaration { get; }
+        public ITsImportAliasDeclaration ImportAliasDeclaration { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -42,7 +56,9 @@ namespace Desalt.TypeScript.Ast.Declarations
 
         public override void Accept(TsVisitor visitor) => visitor.VisitAmbientNamespaceElement(this);
 
-        public override string CodeDisplay => HasExportKeyword ? "export " : "" + Declaration.CodeDisplay;
+        public override string CodeDisplay =>
+            HasExportKeyword ? "export " : "" +
+            $"{Declaration?.CodeDisplay}{InterfaceDeclaration?.CodeDisplay}{ImportAliasDeclaration?.CodeDisplay}";
 
         public override void Emit(Emitter emitter)
         {
@@ -51,7 +67,9 @@ namespace Desalt.TypeScript.Ast.Declarations
                 emitter.Write("export ");
             }
 
-            Declaration.Emit(emitter);
+            Declaration?.Emit(emitter);
+            InterfaceDeclaration?.Emit(emitter);
+            ImportAliasDeclaration?.Emit(emitter);
         }
     }
 }

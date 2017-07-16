@@ -718,7 +718,8 @@ namespace Desalt.TypeScript.Ast
      *   AssignmentExpression
      */
 
-    public interface ITsEnumDeclaration : ITsDeclaration
+    // ReSharper disable once RedundantExtendsListEntry
+    public interface ITsEnumDeclaration : ITsDeclaration, ITsAmbientEnumDeclaration
     {
         bool IsConst { get; }
         ITsIdentifier EnumName { get; }
@@ -970,6 +971,8 @@ namespace Desalt.TypeScript.Ast
 
     public interface ITsAmbientDeclaration : ITsDeclaration { }
 
+    public interface ITsAmbientDeclarationElement : IAstNode { }
+
     /* AmbientVariableDeclaration:
      *   var AmbientBindingList ;
      *   let AmbientBindingList ;
@@ -986,7 +989,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    public interface ITsAmbientVariableDeclaration : ITsAmbientDeclaration
+    public interface ITsAmbientVariableDeclaration : ITsAmbientDeclarationElement
     {
         VariableDeclarationKind DeclarationKind { get; }
         ImmutableArray<ITsAmbientBinding> Declarations { get; }
@@ -1005,7 +1008,7 @@ namespace Desalt.TypeScript.Ast
      *   function BindingIdentifier CallSignature ;
      */
 
-    public interface ITsAmbientFunctionDeclaration : IAstNode
+    public interface ITsAmbientFunctionDeclaration : ITsAmbientDeclarationElement
     {
         ITsIdentifier FunctionName { get; }
         ITsCallSignature CallSignature { get; }
@@ -1034,7 +1037,7 @@ namespace Desalt.TypeScript.Ast
      *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
      */
 
-    public interface ITsAmbientClassDeclaration : IAstNode
+    public interface ITsAmbientClassDeclaration : ITsAmbientDeclarationElement
     {
         ITsIdentifier ClassName { get; }
         ITsTypeParameters TypeParameters { get; }
@@ -1069,7 +1072,7 @@ namespace Desalt.TypeScript.Ast
      *   EnumDeclaration
      */
 
-    public interface ITsAmbientEnumDeclaration : IAstNode { }
+    public interface ITsAmbientEnumDeclaration : ITsAmbientDeclarationElement { }
 
     /* AmbientNamespaceDeclaration:
      *   namespace IdentifierPath { AmbientNamespaceBody }
@@ -1092,10 +1095,18 @@ namespace Desalt.TypeScript.Ast
      *   exportOpt ImportAliasDeclaration
      */
 
+    public interface ITsAmbientNamespaceDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsQualifiedName NamespaceName { get; }
+        ImmutableArray<ITsAmbientNamespaceElement> Body { get; }
+    }
+
     public interface ITsAmbientNamespaceElement : IAstNode
     {
         bool HasExportKeyword { get; }
-        ITsDeclaration Declaration { get; }
+        ITsAmbientDeclarationElement Declaration { get; }
+        ITsInterfaceDeclaration InterfaceDeclaration { get; }
+        ITsImportAliasDeclaration ImportAliasDeclaration { get; }
     }
 
     /* AmbientModuleDeclaration:

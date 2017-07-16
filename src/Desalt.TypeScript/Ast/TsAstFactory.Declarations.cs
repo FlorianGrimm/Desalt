@@ -382,5 +382,45 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsEnumDeclaration(enumName, enumBody);
         }
+
+        /// <summary>
+        /// Creates an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceDeclaration AmbientNamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            params ITsAmbientNamespaceElement[] body)
+        {
+            return new TsAmbientNamespaceDeclaration(namespaceName, body);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsAmbientDeclarationElement declaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(declaration, hasExportKeyword);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsInterfaceDeclaration interfaceDeclaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(interfaceDeclaration, hasExportKeyword);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsImportAliasDeclaration importAliasDeclaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(importAliasDeclaration, hasExportKeyword);
+        }
     }
 }

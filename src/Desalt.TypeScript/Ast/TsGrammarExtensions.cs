@@ -270,15 +270,5 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static void EmitOptionalStaticDeclaration(this bool isStatic, Emitter emitter) =>
             emitter.Write(isStatic ? "static " : "");
-
-        /// <summary>
-        /// Converts a <see cref="ITsAmbientVariableDeclaration"/> to a <see cref="ITsAmbientNamespaceElement"/>.
-        /// </summary>
-        public static ITsAmbientNamespaceElement ToAmbientNamespaceElement(
-            this ITsAmbientVariableDeclaration declaration,
-            bool hasExportKeyword = false)
-        {
-            return new TsAmbientNamespaceElement<ITsAmbientVariableDeclaration>(declaration, hasExportKeyword);
-        }
     }
 }
