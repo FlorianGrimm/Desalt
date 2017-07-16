@@ -968,6 +968,8 @@ namespace Desalt.TypeScript.Ast
      *   declare AmbientNamespaceDeclaration
      */
 
+    public interface ITsAmbientDeclaration : ITsDeclaration { }
+
     /* AmbientVariableDeclaration:
      *   var AmbientBindingList ;
      *   let AmbientBindingList ;
@@ -984,7 +986,7 @@ namespace Desalt.TypeScript.Ast
     /// <summary>
     /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    public interface ITsAmbientVariableDeclaration : IAstNode
+    public interface ITsAmbientVariableDeclaration : ITsAmbientDeclaration
     {
         VariableDeclarationKind DeclarationKind { get; }
         ImmutableArray<ITsAmbientBinding> Declarations { get; }
@@ -1081,15 +1083,22 @@ namespace Desalt.TypeScript.Ast
      *
      * AmbientNamespaceElement:
      *   exportOpt AmbientVariableDeclaration
-     *   exportOpt AmbientLexicalDeclaration
+     *   exportOpt AmbientLexicalDeclaration (I think this is a mistake - it's just an AmbientVariableDeclaration)
      *   exportOpt AmbientFunctionDeclaration
      *   exportOpt AmbientClassDeclaration
      *   exportOpt InterfaceDeclaration
      *   exportOpt AmbientEnumDeclaration
      *   exportOpt AmbientNamespaceDeclaration
      *   exportOpt ImportAliasDeclaration
-     *
-     * AmbientModuleDeclaration:
+     */
+
+    public interface ITsAmbientNamespaceElement : IAstNode
+    {
+        bool HasExportKeyword { get; }
+        ITsDeclaration Declaration { get; }
+    }
+
+    /* AmbientModuleDeclaration:
      *   declare module StringLiteral { DeclarationModule }
      */
 }

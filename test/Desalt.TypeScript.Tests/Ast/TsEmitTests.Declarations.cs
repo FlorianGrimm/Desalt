@@ -611,5 +611,15 @@ namespace Desalt.TypeScript.Tests.Ast
 }
 ".Replace("\r\n", "\n"));
         }
+
+        [TestMethod]
+        public void Emit_ambient_namespace_elements()
+        {
+            VerifyOutput(
+                Factory.AmbientVariableDeclaration(
+                    VariableDeclarationKind.Var,
+                    Factory.AmbientBinding(s_x, Factory.AnyType)).ToAmbientNamespaceElement(hasExportKeyword: true),
+                "export var x: any;\n");
+        }
     }
 }
