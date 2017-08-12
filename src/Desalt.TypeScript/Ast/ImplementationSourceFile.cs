@@ -21,16 +21,16 @@ namespace Desalt.TypeScript.Ast
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        internal ImplementationSourceFile(IEnumerable<ITsImplementationScriptElement> scriptElements)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<ITsImplementationScriptElement>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ImmutableArray<ITsImplementationScriptElement> ScriptElements { get; }
 
         //// ===========================================================================================================
         //// Methods

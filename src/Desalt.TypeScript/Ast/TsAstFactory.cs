@@ -63,13 +63,13 @@ namespace Desalt.TypeScript.Ast
         //// ===========================================================================================================
 
         public static ImplementationSourceFile ImplementationSourceFile(
-            IEnumerable<IImplementationScriptElement> scriptElements)
+            IEnumerable<ITsImplementationScriptElement> scriptElements)
         {
             return new ImplementationSourceFile(scriptElements);
         }
 
         public static ImplementationSourceFile ImplementationSourceFile(
-            params IImplementationScriptElement[] scriptElements)
+            params ITsImplementationScriptElement[] scriptElements)
         {
             return new ImplementationSourceFile(scriptElements);
         }

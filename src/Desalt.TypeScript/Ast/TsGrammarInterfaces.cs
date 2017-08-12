@@ -825,7 +825,7 @@ namespace Desalt.TypeScript.Ast
      *   DeclarationModule
      */
 
-    public interface IImplementationSourceFile : IAstNode
+    public interface ITsImplementationSourceFile : IAstNode
     {
         bool IsModule { get; }
     }
@@ -842,13 +842,12 @@ namespace Desalt.TypeScript.Ast
      *   AmbientModuleDeclaration
      */
 
-    public interface IImplementationScript : IImplementationSourceFile
+    public interface ITsImplementationScript : ITsImplementationSourceFile
     {
-        ImmutableArray<IImplementationScriptElement> Elements { get; }
+        ImmutableArray<ITsImplementationScriptElement> Elements { get; }
     }
 
-    public interface IImplementationScriptElement : IAstNode
-    { }
+    public interface ITsImplementationScriptElement : IAstNode { }
 
     /* ImplementationElement:
      *   Statement
@@ -864,7 +863,7 @@ namespace Desalt.TypeScript.Ast
      *   ImportAliasDeclaration
      */
 
-    public interface IImplementationElement : IImplementationScriptElement { }
+    public interface ITsImplementationElement : ITsImplementationScriptElement, ITsImplementationModuleElement { }
 
     /* DeclarationScript:
      *   DeclarationScriptElementsOpt
