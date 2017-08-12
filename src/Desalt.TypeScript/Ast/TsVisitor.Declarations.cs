@@ -163,5 +163,11 @@ namespace Desalt.TypeScript.Ast
         /// Visits a from clause in an import or export statement, of the form 'from moduleName'.
         /// </summary>
         public virtual void VisitFromClause(ITsFromClause node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }',
+        /// 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
+        /// </summary>
+        public virtual void VisitImportClause(ITsImportClause node) => Visit(node);
     }
 }

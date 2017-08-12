@@ -1210,6 +1210,13 @@ namespace Desalt.TypeScript.Ast
      *   { ImportsList , }
      */
 
+    public interface ITsImportClause : IAstNode
+    {
+        ITsIdentifier DefaultBinding { get; }
+        ITsIdentifier NamespaceBinding { get; }
+        ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+    }
+
     /* FromClause:
      *   from ModuleSpecifier
      */

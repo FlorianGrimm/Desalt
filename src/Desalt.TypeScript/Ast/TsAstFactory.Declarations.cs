@@ -8,6 +8,8 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -433,5 +435,43 @@ namespace Desalt.TypeScript.Ast
         /// Create a from clause in an import or export statement, of the form 'from moduleName'.
         /// </summary>
         public static ITsFromClause FromClause(ITsStringLiteral module) => new TsFromClause(module);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding) =>
+            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding: null);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier' or 'identifier, * as identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding) =>
+            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier' or 'identifier, { importSpecifier, importSpecifier }'.
+        /// </summary>
+        public static ITsImportClause ImportClause(
+            ITsIdentifier defaultBinding,
+            params ITsImportSpecifier[] namedImports)
+        {
+            return TsImportClause.CreateDefaultBinding(defaultBinding, namedImports);
+        }
+
+        /// <summary>
+        /// Create an import clause of the form '* as identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding) =>
+            TsImportClause.CreateNamespaceBinding(namespaceBinding);
+
+        /// <summary>
+        /// Create an import clause of the form '{ importSpecifier, importSpecifier }'.
+        /// </summary>
+        public static ITsImportClause ImportClause(
+            ITsImportSpecifier namedImport,
+            params ITsImportSpecifier[] namedImports)
+        {
+            return TsImportClause.CreateNamedImports(namedImport.ToSafeArray().Concat(namedImports));
+        }
     }
 }

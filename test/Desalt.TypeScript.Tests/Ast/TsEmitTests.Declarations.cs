@@ -673,5 +673,23 @@ namespace Desalt.TypeScript.Tests.Ast
         {
             VerifyOutput(Factory.FromClause(Factory.String("myModule")), "from 'myModule'");
         }
+
+        [TestMethod]
+        public void Emit_import_clauses()
+        {
+            // Default bindings
+            VerifyOutput(Factory.ImportClause(s_x), "x");
+            VerifyOutput(Factory.ImportClause(s_x, s_y), "x, * as y");
+            VerifyOutput(Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y)), "x, { y }");
+            VerifyOutput(
+                Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y), Factory.ImportSpecifier(s_z)),
+                "x, { y, z }");
+
+            VerifyOutput(Factory.ImportClauseNamespaceBinding(s_x), "* as x");
+
+            VerifyOutput(
+                Factory.ImportClause(Factory.ImportSpecifier(s_x, s_y), Factory.ImportSpecifier(s_z)),
+                "{ x as y, z }");
+        }
     }
 }
