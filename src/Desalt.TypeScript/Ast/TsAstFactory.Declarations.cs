@@ -428,5 +428,10 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null) =>
             new TsImportSpecifier(name, asName);
+
+        /// <summary>
+        /// Create a from clause in an import or export statement, of the form 'from moduleName'.
+        /// </summary>
+        public static ITsFromClause FromClause(ITsStringLiteral module) => new TsFromClause(module);
     }
 }

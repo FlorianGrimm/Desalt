@@ -1214,6 +1214,11 @@ namespace Desalt.TypeScript.Ast
      *   from ModuleSpecifier
      */
 
+    public interface ITsFromClause : IAstNode
+    {
+        ITsStringLiteral Module { get; }
+    }
+
     /* ImportsList:
      *   ImportSpecifier
      *   ImportsList , ImportSpecifier

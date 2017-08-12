@@ -667,5 +667,11 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(Factory.ImportSpecifier(s_x), "x");
             VerifyOutput(Factory.ImportSpecifier(s_x, s_y), "x as y");
         }
+
+        [TestMethod]
+        public void Emit_from_clause()
+        {
+            VerifyOutput(Factory.FromClause(Factory.String("myModule")), "from 'myModule'");
+        }
     }
 }
