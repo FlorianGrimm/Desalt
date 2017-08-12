@@ -39,6 +39,7 @@
     <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsImportAliasDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsImportClause.cs" />
+    <Compile Include="Ast\Declarations\TsImportDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsImportSpecifier.cs" />
     <Compile Include="Ast\Declarations\TsIndexMemberDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsInterfaceDeclaration.cs" />

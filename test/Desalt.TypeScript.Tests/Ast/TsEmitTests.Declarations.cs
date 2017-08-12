@@ -691,5 +691,16 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ImportClause(Factory.ImportSpecifier(s_x, s_y), Factory.ImportSpecifier(s_z)),
                 "{ x as y, z }");
         }
+
+        [TestMethod]
+        public void Emit_import_declarations()
+        {
+            VerifyOutput(Factory.ImportDeclaration(Factory.String("myModule")), "import 'myModule';\n");
+            VerifyOutput(
+                Factory.ImportDeclaration(
+                    Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y, s_z), Factory.ImportSpecifier(s_p)),
+                    Factory.FromClause(Factory.String("./Module"))),
+                "import x, { y as z, p } from './Module';\n");
+        }
     }
 }

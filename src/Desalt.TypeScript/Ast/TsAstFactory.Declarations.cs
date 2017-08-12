@@ -473,5 +473,17 @@ namespace Desalt.TypeScript.Ast
         {
             return TsImportClause.CreateNamedImports(namedImport.ToSafeArray().Concat(namedImports));
         }
+
+        /// <summary>
+        /// Create an import declaration of the form 'import ImportClause FromClause;'.
+        /// </summary>
+        public static ITsImportDeclaration ImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause) =>
+            new TsImportDeclaration(importClause, fromClause);
+
+        /// <summary>
+        /// Create an import declaration of the form 'import Module;'.
+        /// </summary>
+        public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module) =>
+            new TsImportDeclaration(module);
     }
 }
