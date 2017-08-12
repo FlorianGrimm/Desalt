@@ -422,5 +422,11 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsAmbientNamespaceElement(importAliasDeclaration, hasExportKeyword);
         }
+
+        /// <summary>
+        /// Create an import specifier, which is either an identifier or 'identifier as identifier'.
+        /// </summary>
+        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null) =>
+            new TsImportSpecifier(name, asName);
     }
 }

@@ -1217,14 +1217,22 @@ namespace Desalt.TypeScript.Ast
      * ImportSpecifier:
      *   ImportedBinding
      *   IdentifierName as ImportedBinding
-     *
-     * ModuleSpecifier:
+     */
+
+    public interface ITsImportSpecifier : IAstNode
+    {
+        ITsIdentifier Name { get; }
+        ITsIdentifier AsName { get; }
+    }
+
+    /* ModuleSpecifier:
      *   StringLiteral
      *
      * ImportedBinding:
      *   BindingIdentifier
-     *
-     * 15.2.3 Exports
+     */
+
+    /* 15.2.3 Exports
      * --------------
      * ExportDeclaration:
      *   export * FromClause ;

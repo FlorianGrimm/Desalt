@@ -660,5 +660,12 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.AmbientNamespaceElement(Factory.AmbientEnumDeclaration(s_x))),
                 "namespace A.B.C {\n  enum x {\n}\n}\n");
         }
+
+        [TestMethod]
+        public void Emit_import_specifier()
+        {
+            VerifyOutput(Factory.ImportSpecifier(s_x), "x");
+            VerifyOutput(Factory.ImportSpecifier(s_x, s_y), "x as y");
+        }
     }
 }

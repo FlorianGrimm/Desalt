@@ -153,5 +153,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an ambient namespace declaration.
         /// </summary>
         public virtual void VisitAmbientNamespaceDeclaration(ITsAmbientNamespaceDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import specifier, which is either an identifier or 'identifier as identifier'.
+        /// </summary>
+        public virtual void VisitImportSpecifier(ITsImportSpecifier node) => Visit(node);
     }
 }
