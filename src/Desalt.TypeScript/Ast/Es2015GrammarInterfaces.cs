@@ -1182,14 +1182,16 @@ namespace Desalt.TypeScript.Ast
      *   ImportDeclaration
      *   ExportDeclaration
      *   StatementListItem
-     *
-     * 15.2.2 Imports
+     */
+
+    /* 15.2.2 Imports
      * --------------
      * ImportDeclaration:
      *   import ImportClause FromClause ;
      *   import ModuleSpecifier ;
-     *
-     * ImportClause:
+     */
+
+    /* ImportClause:
      *   ImportedDefaultBinding
      *   NameSpaceImport
      *   NamedImports
@@ -1206,11 +1208,13 @@ namespace Desalt.TypeScript.Ast
      *   { }
      *   { ImportsList }
      *   { ImportsList , }
-     *
-     * FromClause:
+     */
+
+    /* FromClause:
      *   from ModuleSpecifier
-     *
-     * ImportsList:
+     */
+
+    /* ImportsList:
      *   ImportSpecifier
      *   ImportsList , ImportSpecifier
      *
@@ -1243,8 +1247,9 @@ namespace Desalt.TypeScript.Ast
      *   export default HoistableDeclaration
      *   export default ClassDeclaration
      *   export default [lookahead not in 'function', 'class'] AssignmentExpression ;
-     *
-     * ExportClause:
+     */
+
+    /* ExportClause:
      *   { }
      *   { ExportsList }
      *   { ExportsList , }

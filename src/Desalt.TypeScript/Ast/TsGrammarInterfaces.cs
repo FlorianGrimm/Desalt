@@ -875,15 +875,17 @@ namespace Desalt.TypeScript.Ast
      * DeclarationScriptElement:
      *   DeclarationElement
      *   AmbientModuleDeclaration
-     *
-     * DeclarationElement:
+     */
+
+    /* DeclarationElement:
      *   InterfaceDeclaration
      *   TypeAliasDeclaration
      *   NamespaceDeclaration
      *   AmbientDeclaration
      *   ImportAliasDeclaration
-     *
-     * ImplementationModule:
+     */
+
+    /* ImplementationModule:
      *   ImplementationModuleElementsOpt
      *
      * ImplementationModuleElements:
@@ -899,8 +901,9 @@ namespace Desalt.TypeScript.Ast
      *   ExportDefaultImplementationElement
      *   ExportListDeclaration
      *   ExportAssignment
-     *
-     * DeclarationModule:
+     */
+
+    /* DeclarationModule:
      *   DeclarationModuleElementsOpt
      *
      * DeclarationModuleElements:
