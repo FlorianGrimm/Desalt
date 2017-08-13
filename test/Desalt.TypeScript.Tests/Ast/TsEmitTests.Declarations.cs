@@ -426,7 +426,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.Identifier("MyEnum"),
                     Factory.EnumMember(s_x),
                     Factory.EnumMember(s_y, Factory.Number(10))),
-                "const enum MyEnum {\n  x,\n  y = 10\n}\n");
+                "const enum MyEnum {\n  x,\n  y = 10,\n}\n");
         }
 
         [TestMethod]
