@@ -57,21 +57,5 @@ namespace Desalt.TypeScript.Ast
             IEnumerable<TsIdentifier> left = new[] { name }.Concat(names.Take(names.Length - 1)).Select(TsIdentifier.Get);
             return new TsQualifiedName(right, left);
         }
-
-        //// ===========================================================================================================
-        //// Source Files
-        //// ===========================================================================================================
-
-        public static ImplementationSourceFile ImplementationSourceFile(
-            IEnumerable<ITsImplementationScriptElement> scriptElements)
-        {
-            return new ImplementationSourceFile(scriptElements);
-        }
-
-        public static ImplementationSourceFile ImplementationSourceFile(
-            params ITsImplementationScriptElement[] scriptElements)
-        {
-            return new ImplementationSourceFile(scriptElements);
-        }
     }
 }

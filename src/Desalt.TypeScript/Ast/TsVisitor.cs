@@ -18,11 +18,6 @@ namespace Desalt.TypeScript.Ast
         public override void Visit(IAstNode node) => node?.Accept(this);
 
         /// <summary>
-        /// Visits a TypeScript implementation (.ts) source file.
-        /// </summary>
-        public virtual void VisitImplementationSourceFile(ImplementationSourceFile node) => Visit(node);
-
-        /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
         public virtual void VisitIdentifier(ITsIdentifier node) => Visit(node);
