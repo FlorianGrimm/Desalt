@@ -493,5 +493,14 @@ namespace Desalt.TypeScript.Ast
         {
             return new TsImportRequireDeclaration(name, require);
         }
+
+        /// <summary>
+        /// Create an exported element in a module file.
+        /// </summary>
+        public static ITsExportImplementationElement ExportImplementationElement(
+            ITsImplementationElement exportedElement)
+        {
+            return new TsExportImplementationElement(exportedElement);
+        }
     }
 }

@@ -710,5 +710,14 @@ namespace Desalt.TypeScript.Tests.Ast
                 Factory.ImportRequireDeclaration(s_x, Factory.String("jQuery")),
                 "import x = require('jQuery');\n");
         }
+
+        [TestMethod]
+        public void Emit_export_implementation_element()
+        {
+            VerifyOutput(
+                Factory.ExportImplementationElement(
+                    Factory.VariableStatement(Factory.SimpleVariableDeclaration(s_x))),
+                "export var x;\n");
+        }
     }
 }

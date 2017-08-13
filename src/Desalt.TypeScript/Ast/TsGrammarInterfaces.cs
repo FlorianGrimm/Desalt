@@ -939,8 +939,14 @@ namespace Desalt.TypeScript.Ast
      *   export NamespaceDeclaration
      *   export AmbientDeclaration
      *   export ImportAliasDeclaration
-     *
-     * ExportDeclarationElement:
+     */
+
+    public interface ITsExportImplementationElement : ITsImplementationModuleElement
+    {
+        ITsImplementationElement ExportedElement { get; }
+    }
+
+    /* ExportDeclarationElement:
      *   export InterfaceDeclaration
      *   export TypeAliasDeclaration
      *   export AmbientDeclaration
