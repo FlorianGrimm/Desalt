@@ -45,7 +45,8 @@ namespace Desalt.TypeScript.Ast.Types
                 TypeMembers,
                 indent: true,
                 prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
+                itemDelimiter: ";" + emitter.Options.Newline,
+                delimiterAfterLastItem: true,
                 newLineAfterPrefix: true,
                 newLineAfterLastItem: true,
                 emptyContents: "{}");

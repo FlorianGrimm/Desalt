@@ -397,7 +397,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     extendsClause: Factory.TypeReference(Factory.Identifier("IBase")).ToSafeArray(),
                     body: Factory.ObjectType(
                         Factory.PropertySignature(s_x, Factory.NumberType))),
-                "interface ISomething<T> extends IBase {\n  x: number\n}\n");
+                "interface ISomething<T> extends IBase {\n  x: number;\n}\n");
 
             VerifyOutput(
                 Factory.InterfaceDeclaration(Factory.Identifier("ISomething"), Factory.ObjectType()),
