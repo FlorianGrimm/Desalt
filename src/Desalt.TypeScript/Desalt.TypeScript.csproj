@@ -37,6 +37,7 @@
     <Compile Include="Ast\Declarations\TsFromClause.cs" />
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImplementationScript.cs" />
     <Compile Include="Ast\Declarations\TsImportAliasDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsImportClause.cs" />
     <Compile Include="Ast\Declarations\TsImportDeclaration.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Declarations.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
+    <Compile Include="Ast\TsAstFactory.SourceFile.cs" />
     <Compile Include="Ast\TsAstFactory.Statements.cs" />
     <Compile Include="Ast\TsAstFactory.Types.cs" />
     <Compile Include="Ast\TsGrammarExtensions.cs" />
@@ -121,6 +123,7 @@
     <Compile Include="Ast\TsVisitor.cs" />
     <Compile Include="Ast\TsVisitor.Declarations.cs" />
     <Compile Include="Ast\TsVisitor.Expressions.cs" />
+    <Compile Include="Ast\TsVisitor.SourceFile.cs" />
     <Compile Include="Ast\TsVisitor.Statements.cs" />
     <Compile Include="Ast\TsVisitor.Types.cs" />
     <Compile Include="Ast\Types\TsArrayType.cs" />

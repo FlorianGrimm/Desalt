@@ -589,7 +589,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : ITsStatementListItem, ITsNamespaceElement { }
+    public interface ITsStatement : ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement { }
 
     /* Declaration:
      *   HoistableDeclaration
@@ -606,7 +606,7 @@ namespace Desalt.TypeScript.Ast
      *   SwitchStatement
      */
 
-    public interface ITsDeclaration : ITsStatementListItem, ITsNamespaceElement { }
+    public interface ITsDeclaration : ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement { }
 
     /* 13.2 Block
      * ----------
