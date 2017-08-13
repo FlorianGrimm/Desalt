@@ -174,5 +174,10 @@ namespace Desalt.TypeScript.Ast
         /// Visits an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
         /// </summary>
         public virtual void VisitImportDeclaration(ITsImportDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import declaration using 'require', of the form 'import name = require(string);'.
+        /// </summary>
+        public virtual void VisitImportRequireDeclaration(ITsImportRequireDeclaration node) => Visit(node);
     }
 }

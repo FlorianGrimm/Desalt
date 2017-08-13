@@ -915,11 +915,19 @@ namespace Desalt.TypeScript.Ast
      *   ExportDefaultDeclarationElement
      *   ExportListDeclaration
      *   ExportAssignment
-     *
-     * ImportRequireDeclaration:
+     */
+
+    /* ImportRequireDeclaration:
      *   import BindingIdentifier = require ( StringLiteral ) ;
-     *
-     * ExportImplementationElement:
+     */
+
+    public interface ITsImportRequireDeclaration : ITsImplementationModuleElement
+    {
+        ITsIdentifier Name { get; }
+        ITsStringLiteral Require { get; }
+    }
+
+    /* ExportImplementationElement:
      *   export VariableStatement
      *   export LexicalDeclaration
      *   export FunctionDeclaration

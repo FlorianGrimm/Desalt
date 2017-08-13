@@ -485,5 +485,13 @@ namespace Desalt.TypeScript.Ast
         /// </summary>
         public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module) =>
             new TsImportDeclaration(module);
+
+        /// <summary>
+        /// Create an import declaration using 'require', of the form 'import name = require(string);'.
+        /// </summary>
+        public static ITsImportRequireDeclaration ImportRequireDeclaration(ITsIdentifier name, ITsStringLiteral require)
+        {
+            return new TsImportRequireDeclaration(name, require);
+        }
     }
 }

@@ -702,5 +702,13 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.FromClause(Factory.String("./Module"))),
                 "import x, { y as z, p } from './Module';\n");
         }
+
+        [TestMethod]
+        public void Emit_import_require_declaration()
+        {
+            VerifyOutput(
+                Factory.ImportRequireDeclaration(s_x, Factory.String("jQuery")),
+                "import x = require('jQuery');\n");
+        }
     }
 }
