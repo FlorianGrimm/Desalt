@@ -145,6 +145,8 @@
   <ItemGroup>
     <Compile Include="Emit\EmitterTests.cs" />
     <Compile Include="Extensions\StreamExtensionsTests.cs" />
+    <Compile Include="Pipeline\FakePipelineStages.cs" />
+    <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
