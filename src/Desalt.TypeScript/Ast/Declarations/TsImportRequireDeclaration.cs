@@ -1,46 +1,53 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImplementationSourceFile.cs" company="Justin Rockwood">
+// <copyright file="TsImportRequireDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast
+namespace Desalt.TypeScript.Ast.Declarations
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
     /// </summary>
-    public class ImplementationSourceFile : AstNode<TsVisitor>, IAstNode
+    internal class TsImportRequireDeclaration : AstNode<TsVisitor>, ITsImportRequireDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        internal ImplementationSourceFile(IEnumerable<IImplementationScriptElement> scriptElements)
+        public TsImportRequireDeclaration(ITsIdentifier name, ITsStringLiteral require)
         {
-            ScriptElements = scriptElements?.ToImmutableArray() ?? ImmutableArray<IImplementationScriptElement>.Empty;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Require = require ?? throw new ArgumentNullException(nameof(require));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<IImplementationScriptElement> ScriptElements { get; }
+        public ITsIdentifier Name { get; }
+        public ITsStringLiteral Require { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationSourceFile(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportRequireDeclaration(this);
 
-        public override string CodeDisplay => $"{GetType().Name}, ScriptElements.Count = {ScriptElements.Length}";
+        public override string CodeDisplay => $"import {Name} = require({Require});";
 
-        public override void Emit(Emitter emitter) =>
-            emitter.WriteList(ScriptElements, indent: false, itemDelimiter: emitter.Options.Newline);
+        public override void Emit(Emitter emitter)
+        {
+            emitter.Write("import ");
+            Name.Emit(emitter);
+            emitter.Write(" = require(");
+            Require.Emit(emitter);
+            emitter.WriteLine(");");
+        }
     }
 }

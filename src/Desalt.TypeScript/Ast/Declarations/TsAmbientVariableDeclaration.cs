@@ -1,54 +1,55 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsObjectType.cs" company="Justin Rockwood">
+// <copyright file="TsAmbientVariableDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Types
+namespace Desalt.TypeScript.Ast.Declarations
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript object type.
+    /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsAmbientVariableDeclaration : AstNode<TsVisitor>, ITsAmbientVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsAmbientVariableDeclaration(
+            VariableDeclarationKind declarationKind,
+            IEnumerable<ITsAmbientBinding> declarations)
         {
-            TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            DeclarationKind = declarationKind;
+            Declarations = declarations?.ToImmutableArray() ?? throw new ArgumentNullException(nameof(declarations));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+        public VariableDeclarationKind DeclarationKind { get; }
+        public ImmutableArray<ITsAmbientBinding> Declarations { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientVariableDeclaration(this);
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
+        public override string CodeDisplay => $"{DeclarationKind.CodeDisplay()}{Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter) =>
-            emitter.WriteList(
-                TypeMembers,
-                indent: true,
-                prefix: "{", suffix: "}",
-                itemDelimiter: ";" + emitter.Options.Newline,
-                delimiterAfterLastItem: true,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
-                emptyContents: "{}");
+        public override void Emit(Emitter emitter)
+        {
+            DeclarationKind.Emit(emitter);
+            Declarations.EmitCommaList(emitter);
+            emitter.WriteLine(";");
+        }
     }
 }

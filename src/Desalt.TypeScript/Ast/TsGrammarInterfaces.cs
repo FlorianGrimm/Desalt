@@ -390,7 +390,7 @@ namespace Desalt.TypeScript.Ast
      *   [ BindingIdentifier : number ] TypeAnnotation
      */
 
-    public interface ITsIndexSignature : ITsTypeMember
+    public interface ITsIndexSignature : ITsTypeMember, ITsAmbientClassBodyElement
     {
         ITsIdentifier ParameterName { get; }
         bool IsParameterNumberType { get; }
@@ -412,7 +412,7 @@ namespace Desalt.TypeScript.Ast
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
-    public interface ITsTypeAliasDeclaration : ITsDeclaration
+    public interface ITsTypeAliasDeclaration : ITsDeclaration, ITsDeclarationElement
     {
         ITsIdentifier AliasName { get; }
         ITsTypeParameters TypeParameters { get; }
@@ -573,7 +573,7 @@ namespace Desalt.TypeScript.Ast
      *   TypeReference
      */
 
-    public interface ITsInterfaceDeclaration : ITsDeclaration
+    public interface ITsInterfaceDeclaration : ITsDeclaration, ITsDeclarationElement
     {
         ITsIdentifier InterfaceName { get; }
         ITsTypeParameters TypeParameters { get; }
@@ -661,7 +661,7 @@ namespace Desalt.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
-        ITsPropertyName PropertyName { get; }
+        ITsPropertyName VariableName { get; }
         ITsType TypeAnnotation { get; }
         ITsExpression Initializer { get; }
     }
@@ -672,7 +672,7 @@ namespace Desalt.TypeScript.Ast
         bool IsStatic { get; }
         ITsPropertyName FunctionName { get; }
         ITsCallSignature CallSignature { get; }
-        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
     }
 
     public interface ITsGetAccessorMemberDeclaration : ITsClassElement
@@ -693,7 +693,7 @@ namespace Desalt.TypeScript.Ast
      *   IndexSignature ;
      */
 
-    public interface ITsIndexMemberDeclaration : ITsClassElement
+    public interface ITsIndexMemberDeclaration : ITsClassElement, ITsAmbientClassBodyElement
     {
         ITsIndexSignature IndexSignature { get; }
     }
@@ -718,7 +718,8 @@ namespace Desalt.TypeScript.Ast
      *   AssignmentExpression
      */
 
-    public interface ITsEnumDeclaration : ITsDeclaration
+    // ReSharper disable once RedundantExtendsListEntry
+    public interface ITsEnumDeclaration : ITsDeclaration, ITsAmbientEnumDeclaration
     {
         bool IsConst { get; }
         ITsIdentifier EnumName { get; }
@@ -748,7 +749,7 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceElements NamespaceElement
      */
 
-    public interface ITsNamespaceDeclaration : ITsDeclaration
+    public interface ITsNamespaceDeclaration : ITsDeclaration, ITsDeclarationElement
     {
         ITsQualifiedName NamespaceName { get; }
         ImmutableArray<ITsNamespaceElement> Body { get; }
@@ -803,7 +804,7 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceName . IdentifierReference
      */
 
-    public interface ITsImportAliasDeclaration : ITsNamespaceElement
+    public interface ITsImportAliasDeclaration : ITsNamespaceElement, ITsImplementationElement, ITsDeclarationElement
     {
         ITsIdentifier Alias { get; }
         ITsQualifiedName ImportedName { get; }
@@ -824,10 +825,7 @@ namespace Desalt.TypeScript.Ast
      *   DeclarationModule
      */
 
-    public interface IImplementationSourceFile : IAstNode
-    {
-        bool IsModule { get; }
-    }
+    public interface ITsImplementationSourceFile : IAstNode { }
 
     /* ImplementationScript:
      *   ImplementationScriptElementsOpt
@@ -841,13 +839,12 @@ namespace Desalt.TypeScript.Ast
      *   AmbientModuleDeclaration
      */
 
-    public interface IImplementationScript : IImplementationSourceFile
+    public interface ITsImplementationScript : ITsImplementationSourceFile
     {
-        ImmutableArray<IImplementationScriptElement> Elements { get; }
+        ImmutableArray<ITsImplementationScriptElement> Elements { get; }
     }
 
-    public interface IImplementationScriptElement : IAstNode
-    { }
+    public interface ITsImplementationScriptElement : IAstNode { }
 
     /* ImplementationElement:
      *   Statement
@@ -863,7 +860,7 @@ namespace Desalt.TypeScript.Ast
      *   ImportAliasDeclaration
      */
 
-    public interface IImplementationElement : IImplementationScriptElement { }
+    public interface ITsImplementationElement : ITsImplementationScriptElement, ITsImplementationModuleElement { }
 
     /* DeclarationScript:
      *   DeclarationScriptElementsOpt
@@ -875,15 +872,17 @@ namespace Desalt.TypeScript.Ast
      * DeclarationScriptElement:
      *   DeclarationElement
      *   AmbientModuleDeclaration
-     *
-     * DeclarationElement:
+     */
+
+    /* DeclarationElement:
      *   InterfaceDeclaration
      *   TypeAliasDeclaration
      *   NamespaceDeclaration
      *   AmbientDeclaration
      *   ImportAliasDeclaration
-     *
-     * ImplementationModule:
+     */
+
+    /* ImplementationModule:
      *   ImplementationModuleElementsOpt
      *
      * ImplementationModuleElements:
@@ -899,8 +898,16 @@ namespace Desalt.TypeScript.Ast
      *   ExportDefaultImplementationElement
      *   ExportListDeclaration
      *   ExportAssignment
-     *
-     * DeclarationModule:
+     */
+
+    public interface ITsImplementationModule : ITsImplementationSourceFile
+    {
+        ImmutableArray<ITsImplementationModuleElement> Elements { get; }
+    }
+
+    public interface ITsImplementationModuleElement : IAstNode { }
+
+    /* DeclarationModule:
      *   DeclarationModuleElementsOpt
      *
      * DeclarationModuleElements:
@@ -915,11 +922,19 @@ namespace Desalt.TypeScript.Ast
      *   ExportDefaultDeclarationElement
      *   ExportListDeclaration
      *   ExportAssignment
-     *
-     * ImportRequireDeclaration:
+     */
+
+    /* ImportRequireDeclaration:
      *   import BindingIdentifier = require ( StringLiteral ) ;
-     *
-     * ExportImplementationElement:
+     */
+
+    public interface ITsImportRequireDeclaration : ITsImplementationModuleElement
+    {
+        ITsIdentifier Name { get; }
+        ITsStringLiteral Require { get; }
+    }
+
+    /* ExportImplementationElement:
      *   export VariableStatement
      *   export LexicalDeclaration
      *   export FunctionDeclaration
@@ -931,8 +946,14 @@ namespace Desalt.TypeScript.Ast
      *   export NamespaceDeclaration
      *   export AmbientDeclaration
      *   export ImportAliasDeclaration
-     *
-     * ExportDeclarationElement:
+     */
+
+    public interface ITsExportImplementationElement : ITsImplementationModuleElement
+    {
+        ITsImplementationElement ExportedElement { get; }
+    }
+
+    /* ExportDeclarationElement:
      *   export InterfaceDeclaration
      *   export TypeAliasDeclaration
      *   export AmbientDeclaration
@@ -966,8 +987,16 @@ namespace Desalt.TypeScript.Ast
      *   declare AmbientClassDeclaration
      *   declare AmbientEnumDeclaration
      *   declare AmbientNamespaceDeclaration
-     *
-     * AmbientVariableDeclaration:
+     */
+
+    public interface ITsAmbientDeclaration : ITsImplementationElement
+    {
+        ITsAmbientDeclarationElement Declaration { get; }
+    }
+
+    public interface ITsAmbientDeclarationElement : IAstNode { }
+
+    /* AmbientVariableDeclaration:
      *   var AmbientBindingList ;
      *   let AmbientBindingList ;
      *   const AmbientBindingList ;
@@ -978,11 +1007,37 @@ namespace Desalt.TypeScript.Ast
      *
      * AmbientBinding:
      *   BindingIdentifier TypeAnnotationOpt
-     *
-     * AmbientFunctionDeclaration:
+     */
+
+    /// <summary>
+    /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+    /// </summary>
+    public interface ITsAmbientVariableDeclaration : ITsAmbientDeclarationElement
+    {
+        VariableDeclarationKind DeclarationKind { get; }
+        ImmutableArray<ITsAmbientBinding> Declarations { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient variable binding of the form 'name: type'.
+    /// </summary>
+    public interface ITsAmbientBinding : IAstNode
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType VariableType { get; }
+    }
+
+    /* AmbientFunctionDeclaration:
      *   function BindingIdentifier CallSignature ;
-     *
-     * AmbientClassDeclaration:
+     */
+
+    public interface ITsAmbientFunctionDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsIdentifier FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
+    /* AmbientClassDeclaration:
      *   class BindingIdentifier TypeParametersOpt ClassHeritage { AmbientClassBody }
      *
      * AmbientClassBody:
@@ -995,7 +1050,7 @@ namespace Desalt.TypeScript.Ast
      * AmbientClassBodyElement:
      *   AmbientConstructorDeclaration
      *   AmbientPropertyMemberDeclaration
-     *   IndexSignature
+     *   IndexSignature (I think this is supposed to be IndexDeclaration)
      *
      * AmbientConstructorDeclaration:
      *   constructor ( ParameterListOpt ) ;
@@ -1003,11 +1058,46 @@ namespace Desalt.TypeScript.Ast
      * AmbientPropertyMemberDeclaration:
      *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt ;
      *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
-     *
-     * AmbientEnumDeclaration:
+     */
+
+    public interface ITsAmbientClassDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsIdentifier ClassName { get; }
+        ITsTypeParameters TypeParameters { get; }
+        ITsClassHeritage Heritage { get; }
+        ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
+    }
+
+    public interface ITsAmbientClassBodyElement : IAstNode { }
+
+    public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement
+    {
+        ITsParameterList ParameterList { get; }
+    }
+
+    public interface ITsAmbientVariableMemberDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName VariableName { get; }
+        ITsType TypeAnnotation { get; }
+    }
+
+    public interface ITsAmbientFunctionMemberDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        ITsPropertyName FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
+    /* AmbientEnumDeclaration:
      *   EnumDeclaration
-     *
-     * AmbientNamespaceDeclaration:
+     */
+
+    public interface ITsAmbientEnumDeclaration : ITsAmbientDeclarationElement { }
+
+    /* AmbientNamespaceDeclaration:
      *   namespace IdentifierPath { AmbientNamespaceBody }
      *
      * AmbientNamespaceBody:
@@ -1019,15 +1109,30 @@ namespace Desalt.TypeScript.Ast
      *
      * AmbientNamespaceElement:
      *   exportOpt AmbientVariableDeclaration
-     *   exportOpt AmbientLexicalDeclaration
+     *   exportOpt AmbientLexicalDeclaration (I think this is a mistake - it's just an AmbientVariableDeclaration)
      *   exportOpt AmbientFunctionDeclaration
      *   exportOpt AmbientClassDeclaration
      *   exportOpt InterfaceDeclaration
      *   exportOpt AmbientEnumDeclaration
      *   exportOpt AmbientNamespaceDeclaration
      *   exportOpt ImportAliasDeclaration
-     *
-     * AmbientModuleDeclaration:
-     *   declare module StringLiteral {  DeclarationModule }
+     */
+
+    public interface ITsAmbientNamespaceDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsQualifiedName NamespaceName { get; }
+        ImmutableArray<ITsAmbientNamespaceElement> Body { get; }
+    }
+
+    public interface ITsAmbientNamespaceElement : IAstNode
+    {
+        bool HasExportKeyword { get; }
+        ITsAmbientDeclarationElement Declaration { get; }
+        ITsInterfaceDeclaration InterfaceDeclaration { get; }
+        ITsImportAliasDeclaration ImportAliasDeclaration { get; }
+    }
+
+    /* AmbientModuleDeclaration:
+     *   declare module StringLiteral { DeclarationModule }
      */
 }

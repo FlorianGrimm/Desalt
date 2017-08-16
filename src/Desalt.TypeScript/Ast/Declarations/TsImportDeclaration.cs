@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsEnumDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsImportDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -8,65 +8,62 @@
 namespace Desalt.TypeScript.Ast.Declarations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents an enum declaration.
+    /// Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
     /// </summary>
-    internal class TsEnumDeclaration : AstNode<TsVisitor>, ITsEnumDeclaration
+    internal class TsImportDeclaration : AstNode<TsVisitor>, ITsImportDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsEnumDeclaration(
-            ITsIdentifier enumName,
-            IEnumerable<ITsEnumMember> enumBody = null,
-            bool isConst = false)
+        public TsImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause)
         {
-            EnumName = enumName ?? throw new ArgumentNullException(nameof(enumName));
-            EnumBody = enumBody?.ToImmutableArray() ?? ImmutableArray<ITsEnumMember>.Empty;
-            IsConst = isConst;
+            ImportClause = importClause ?? throw new ArgumentNullException(nameof(importClause));
+            FromClause = fromClause ?? throw new ArgumentNullException(nameof(fromClause));
+        }
+
+        public TsImportDeclaration(ITsStringLiteral module)
+        {
+            Module = module ?? throw new ArgumentNullException(nameof(module));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public bool IsConst { get; }
-        public ITsIdentifier EnumName { get; }
-        public ImmutableArray<ITsEnumMember> EnumBody { get; }
+        public ITsImportClause ImportClause { get; }
+        public ITsFromClause FromClause { get; }
+        public ITsStringLiteral Module { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitEnumDeclaration(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportDeclaration(this);
 
         public override string CodeDisplay =>
-            (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";
+            $"import {Module?.CodeDisplay}{ImportClause?.CodeDisplay} {FromClause?.CodeDisplay} ;";
 
         public override void Emit(Emitter emitter)
         {
-            if (IsConst)
+            emitter.Write("import ");
+
+            if (Module != null)
             {
-                emitter.Write("const ");
+                Module.Emit(emitter);
+            }
+            else
+            {
+                ImportClause.Emit(emitter);
+                emitter.Write(" ");
+                FromClause.Emit(emitter);
             }
 
-            emitter.Write("enum ");
-            EnumName.Emit(emitter);
-            emitter.Write(" ");
-
-            emitter.WriteList(
-                EnumBody, indent: true, prefix: "{", suffix: "}",
-                itemDelimiter: "," + emitter.Options.Newline,
-                newLineBeforeFirstItem: true, newLineAfterLastItem: true,
-                delimiterAfterLastItem: true,
-                emptyContents: $"{{{emitter.Options.Newline}}}");
-            emitter.WriteLine();
+            emitter.WriteLine(";");
         }
     }
 }

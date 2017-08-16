@@ -589,7 +589,7 @@ namespace Desalt.TypeScript.Ast
      *   DebuggerStatement
      */
 
-    public interface ITsStatement : ITsStatementListItem, ITsNamespaceElement { }
+    public interface ITsStatement : ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement { }
 
     /* Declaration:
      *   HoistableDeclaration
@@ -606,7 +606,7 @@ namespace Desalt.TypeScript.Ast
      *   SwitchStatement
      */
 
-    public interface ITsDeclaration : ITsStatementListItem, ITsNamespaceElement { }
+    public interface ITsDeclaration : ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement { }
 
     /* 13.2 Block
      * ----------
@@ -1182,14 +1182,23 @@ namespace Desalt.TypeScript.Ast
      *   ImportDeclaration
      *   ExportDeclaration
      *   StatementListItem
-     *
-     * 15.2.2 Imports
+     */
+
+    /* 15.2.2 Imports
      * --------------
      * ImportDeclaration:
      *   import ImportClause FromClause ;
      *   import ModuleSpecifier ;
-     *
-     * ImportClause:
+     */
+
+    public interface ITsImportDeclaration : ITsImplementationModuleElement
+    {
+        ITsImportClause ImportClause { get; }
+        ITsFromClause FromClause { get; }
+        ITsStringLiteral Module { get; }
+    }
+
+    /* ImportClause:
      *   ImportedDefaultBinding
      *   NameSpaceImport
      *   NamedImports
@@ -1206,25 +1215,47 @@ namespace Desalt.TypeScript.Ast
      *   { }
      *   { ImportsList }
      *   { ImportsList , }
-     *
-     * FromClause:
+     */
+
+    public interface ITsImportClause : IAstNode
+    {
+        ITsIdentifier DefaultBinding { get; }
+        ITsIdentifier NamespaceBinding { get; }
+        ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+    }
+
+    /* FromClause:
      *   from ModuleSpecifier
-     *
-     * ImportsList:
+     */
+
+    public interface ITsFromClause : IAstNode
+    {
+        ITsStringLiteral Module { get; }
+    }
+
+    /* ImportsList:
      *   ImportSpecifier
      *   ImportsList , ImportSpecifier
      *
      * ImportSpecifier:
      *   ImportedBinding
      *   IdentifierName as ImportedBinding
-     *
-     * ModuleSpecifier:
+     */
+
+    public interface ITsImportSpecifier : IAstNode
+    {
+        ITsIdentifier Name { get; }
+        ITsIdentifier AsName { get; }
+    }
+
+    /* ModuleSpecifier:
      *   StringLiteral
      *
      * ImportedBinding:
      *   BindingIdentifier
-     *
-     * 15.2.3 Exports
+     */
+
+    /* 15.2.3 Exports
      * --------------
      * ExportDeclaration:
      *   export * FromClause ;
@@ -1235,8 +1266,9 @@ namespace Desalt.TypeScript.Ast
      *   export default HoistableDeclaration
      *   export default ClassDeclaration
      *   export default [lookahead not in 'function', 'class'] AssignmentExpression ;
-     *
-     * ExportClause:
+     */
+
+    /* ExportClause:
      *   { }
      *   { ExportsList }
      *   { ExportsList , }

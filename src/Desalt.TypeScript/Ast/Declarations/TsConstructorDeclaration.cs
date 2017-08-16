@@ -16,17 +16,20 @@ namespace Desalt.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a constructor declaration in a class.
     /// </summary>
-    internal class TsConstructorDeclaration : AstNode<TsVisitor>, ITsConstructorDeclaration
+    internal class TsConstructorDeclaration : AstNode<TsVisitor>,
+        ITsConstructorDeclaration, ITsAmbientConstructorDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsConstructorDeclaration(
+        private TsConstructorDeclaration(
+            bool isAmbient,
             TsAccessibilityModifier? accessibilityModifier = null,
             ITsParameterList parameterList = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
+            IsAmbient = isAmbient;
             AccessibilityModifier = accessibilityModifier;
             ParameterList = parameterList;
             if (functionBody != null)
@@ -43,11 +46,34 @@ namespace Desalt.TypeScript.Ast.Declarations
         public ITsParameterList ParameterList { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
+        private bool IsAmbient { get; }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitConstructorDeclaration(this);
+        public static ITsConstructorDeclaration Create(
+            TsAccessibilityModifier? accessibilityModifier = null,
+            ITsParameterList parameterList = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsConstructorDeclaration(false, accessibilityModifier, parameterList, functionBody);
+        }
+
+        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList parameterList = null) =>
+            new TsConstructorDeclaration(true, parameterList: parameterList);
+
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsAmbient)
+            {
+                visitor.VisitAmbientConstructorDeclaration(this);
+            }
+            else
+            {
+                visitor.VisitConstructorDeclaration(this);
+            }
+        }
 
         public override string CodeDisplay
         {

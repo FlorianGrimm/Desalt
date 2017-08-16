@@ -17,17 +17,19 @@ namespace Desalt.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.
     /// </summary>
-    internal class TsFunctionDeclaration : AstNode<TsVisitor>, ITsFunctionDeclaration
+    internal class TsFunctionDeclaration : AstNode<TsVisitor>, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsFunctionDeclaration(
+        private TsFunctionDeclaration(
+            bool isAmbient,
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
+            IsAmbient = isAmbient;
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             FunctionName = functionName;
             if (functionBody != null)
@@ -44,11 +46,41 @@ namespace Desalt.TypeScript.Ast.Declarations
         public ITsCallSignature CallSignature { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
+        private bool IsAmbient { get; }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionDeclaration(this);
+        public static ITsFunctionDeclaration Create(
+            ITsCallSignature callSignature,
+            ITsIdentifier functionName = null,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsFunctionDeclaration(false, callSignature, functionName, functionBody);
+        }
+
+        public static ITsAmbientFunctionDeclaration CreateAmbient(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature)
+        {
+            return new TsFunctionDeclaration(
+                true,
+                callSignature,
+                functionName ?? throw new ArgumentNullException(nameof(functionName)));
+        }
+
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsAmbient)
+            {
+                visitor.VisitAmbientFunctionDeclaration(this);
+            }
+            else
+            {
+                visitor.VisitFunctionDeclaration(this);
+            }
+        }
 
         public override string CodeDisplay
         {

@@ -21,6 +21,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ast\Declarations\TsAmbientBinding.cs" />
+    <Compile Include="Ast\Declarations\TsAmbientNamespaceDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsAmbientNamespaceElement.cs" />
+    <Compile Include="Ast\Declarations\TsAmbientVariableDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsAmbientClassDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsClassDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsClassHeritage.cs" />
     <Compile Include="Ast\Declarations\TsConstructorDeclaration.cs" />
@@ -29,9 +34,17 @@
     <Compile Include="Ast\Declarations\TsEnumMember.cs" />
     <Compile Include="Ast\Declarations\TsExportedDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsExportedVariableStatement.cs" />
+    <Compile Include="Ast\Declarations\TsExportImplementationElement.cs" />
+    <Compile Include="Ast\Declarations\TsFromClause.cs" />
     <Compile Include="Ast\Declarations\TsFunctionDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsGetSetAccessorMemberDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImplementationModule.cs" />
+    <Compile Include="Ast\Declarations\TsImplementationScript.cs" />
     <Compile Include="Ast\Declarations\TsImportAliasDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImportClause.cs" />
+    <Compile Include="Ast\Declarations\TsImportDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImportRequireDeclaration.cs" />
+    <Compile Include="Ast\Declarations\TsImportSpecifier.cs" />
     <Compile Include="Ast\Declarations\TsIndexMemberDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsInterfaceDeclaration.cs" />
     <Compile Include="Ast\Declarations\TsLexicalDeclaration.cs" />
@@ -75,7 +88,6 @@
     <Compile Include="Ast\Expressions\TsThis.cs" />
     <Compile Include="Ast\Expressions\TsUnaryExpression.cs" />
     <Compile Include="Ast\Expressions\TsUnaryOperator.cs" />
-    <Compile Include="Ast\ImplementationSourceFile.cs" />
     <Compile Include="Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="Ast\Statements\TsContinueOrBreakStatement.cs" />
@@ -103,6 +115,7 @@
     <Compile Include="Ast\TsAstFactory.cs" />
     <Compile Include="Ast\TsAstFactory.Declarations.cs" />
     <Compile Include="Ast\TsAstFactory.Expressions.cs" />
+    <Compile Include="Ast\TsAstFactory.SourceFile.cs" />
     <Compile Include="Ast\TsAstFactory.Statements.cs" />
     <Compile Include="Ast\TsAstFactory.Types.cs" />
     <Compile Include="Ast\TsGrammarExtensions.cs" />
@@ -112,6 +125,7 @@
     <Compile Include="Ast\TsVisitor.cs" />
     <Compile Include="Ast\TsVisitor.Declarations.cs" />
     <Compile Include="Ast\TsVisitor.Expressions.cs" />
+    <Compile Include="Ast\TsVisitor.SourceFile.cs" />
     <Compile Include="Ast\TsVisitor.Statements.cs" />
     <Compile Include="Ast\TsVisitor.Types.cs" />
     <Compile Include="Ast\Types\TsArrayType.cs" />

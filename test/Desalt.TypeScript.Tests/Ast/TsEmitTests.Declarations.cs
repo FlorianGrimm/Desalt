@@ -397,7 +397,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     extendsClause: Factory.TypeReference(Factory.Identifier("IBase")).ToSafeArray(),
                     body: Factory.ObjectType(
                         Factory.PropertySignature(s_x, Factory.NumberType))),
-                "interface ISomething<T> extends IBase {\n  x: number\n}\n");
+                "interface ISomething<T> extends IBase {\n  x: number;\n}\n");
 
             VerifyOutput(
                 Factory.InterfaceDeclaration(Factory.Identifier("ISomething"), Factory.ObjectType()),
@@ -426,7 +426,7 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.Identifier("MyEnum"),
                     Factory.EnumMember(s_x),
                     Factory.EnumMember(s_y, Factory.Number(10))),
-                "const enum MyEnum {\n  x,\n  y = 10\n}\n");
+                "const enum MyEnum {\n  x,\n  y = 10,\n}\n");
         }
 
         [TestMethod]
@@ -473,6 +473,251 @@ namespace Desalt.TypeScript.Tests.Ast
             VerifyOutput(
                 Factory.ImportAliasDeclaration(s_x, Factory.QualifiedName("jQuery.IDeferred")),
                 "import x = jQuery.IDeferred;\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_binding()
+        {
+            VerifyOutput(Factory.AmbientBinding(s_x), "x");
+            VerifyOutput(Factory.AmbientBinding(s_x, Factory.BooleanType), "x: boolean");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_variable_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientVariableDeclaration(VariableDeclarationKind.Const, Factory.AmbientBinding(s_x)),
+                "const x;\n");
+
+            VerifyOutput(
+                Factory.AmbientVariableDeclaration(
+                    VariableDeclarationKind.Let,
+                    Factory.AmbientBinding(s_x, Factory.NumberType),
+                    Factory.AmbientBinding(s_y)),
+                "let x: number, y;\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_function_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientFunctionDeclaration(s_x, Factory.CallSignature()),
+                "function x();\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_constructor_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientConstructorDeclaration(
+                    Factory.ParameterList(
+                        Factory.BoundRequiredParameter(s_x, modifier: TsAccessibilityModifier.Protected),
+                        Factory.StringRequiredParameter(s_y, Factory.String("str")))),
+                "constructor(protected x, y: 'str');\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_variable_member_declarations()
+        {
+            VerifyOutput(
+                Factory.AmbientVariableMemberDeclaration(
+                    s_x,
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType),
+                "public static x: number;\n");
+
+            VerifyOutput(
+                Factory.AmbientVariableMemberDeclaration(
+                    s_x,
+                    isStatic: true,
+                    typeAnnotation: Factory.NumberType),
+                "static x: number;\n");
+
+            VerifyOutput(Factory.AmbientVariableMemberDeclaration(s_x), "x;\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_function_member_declarations()
+        {
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType),
+                    TsAccessibilityModifier.Private,
+                    isStatic: true),
+                "private static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    isStatic: true,
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "static myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.AmbientFunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "myMethod(x: number): void;\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_class_declaration_with_all_of_the_possible_elements()
+        {
+            // ReSharper disable once InconsistentNaming
+            ITsIdentifier _items = Factory.Identifier("_items");
+            ITsIdentifier item = Factory.Identifier("item");
+            ITsIdentifier items = Factory.Identifier("items");
+
+            VerifyOutput(
+                Factory.AmbientClassDeclaration(
+                    Factory.Identifier("AnimalCollection"),
+                    Factory.TypeParameters(Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal")))),
+                    Factory.ClassHeritage(
+                        Factory.TypeReference(Factory.Identifier("Collection"), s_TRef),
+                        Factory.TypeReference(Factory.Identifier("ICollection"), s_TRef).ToSafeArray()),
+                    new ITsAmbientClassBodyElement[]
+                    {
+                        Factory.AmbientVariableMemberDeclaration(
+                            _items, TsAccessibilityModifier.Private,typeAnnotation: Factory.ArrayType(s_TRef)),
+                        Factory.AmbientConstructorDeclaration(
+                            Factory.ParameterList(
+                                requiredParameters: Factory.BoundRequiredParameter(item, s_TRef).ToSafeArray(),
+                                restParameter: Factory.RestParameter(items, Factory.ArrayType(s_TRef)))),
+                        Factory.AmbientIndexMemberDeclaration(
+                            Factory.IndexSignature(
+                                Factory.Identifier("index"),
+                                isParameterNumberType: true,
+                                returnType: s_TRef)),
+                        Factory.AmbientFunctionMemberDeclaration(
+                            Factory.Identifier("add"),
+                            Factory.CallSignature(
+                                Factory.ParameterList(Factory.BoundRequiredParameter(item, s_TRef)),
+                                Factory.VoidType),
+                            TsAccessibilityModifier.Protected)
+                    }),
+                @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
+  private _items: T[];
+  constructor(item: T, ... items: T[]);
+  [index: number]: T;
+  protected add(item: T): void;
+}
+".Replace("\r\n", "\n"));
+        }
+
+        [TestMethod]
+        public void Emit_ambient_namespace_elements()
+        {
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientVariableDeclaration(
+                        VariableDeclarationKind.Var,
+                        Factory.AmbientBinding(s_x, Factory.AnyType)),
+                    hasExportKeyword: true),
+                "export var x: any;\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientFunctionDeclaration(s_x, Factory.CallSignature()),
+                    hasExportKeyword: true),
+                "export function x();\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientClassDeclaration(s_x),
+                    hasExportKeyword: true),
+                "export class x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.InterfaceDeclaration(s_x, Factory.ObjectType()), hasExportKeyword: true),
+                "export interface x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientEnumDeclaration(s_x), hasExportKeyword: true),
+                "export enum x {\n}\n");
+
+            VerifyOutput(
+                Factory.AmbientNamespaceElement(
+                    Factory.AmbientNamespaceDeclaration(Factory.QualifiedName("MyNs")), hasExportKeyword: true),
+                "export namespace MyNs { }\n");
+        }
+
+        [TestMethod]
+        public void Emit_ambient_namespace_declaration()
+        {
+            VerifyOutput(
+                Factory.AmbientNamespaceDeclaration(
+                    Factory.QualifiedName("A.B.C"),
+                    Factory.AmbientNamespaceElement(Factory.AmbientEnumDeclaration(s_x))),
+                "namespace A.B.C {\n  enum x {\n}\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_import_specifier()
+        {
+            VerifyOutput(Factory.ImportSpecifier(s_x), "x");
+            VerifyOutput(Factory.ImportSpecifier(s_x, s_y), "x as y");
+        }
+
+        [TestMethod]
+        public void Emit_from_clause()
+        {
+            VerifyOutput(Factory.FromClause(Factory.String("myModule")), "from 'myModule'");
+        }
+
+        [TestMethod]
+        public void Emit_import_clauses()
+        {
+            // Default bindings
+            VerifyOutput(Factory.ImportClause(s_x), "x");
+            VerifyOutput(Factory.ImportClause(s_x, s_y), "x, * as y");
+            VerifyOutput(Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y)), "x, { y }");
+            VerifyOutput(
+                Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y), Factory.ImportSpecifier(s_z)),
+                "x, { y, z }");
+
+            VerifyOutput(Factory.ImportClauseNamespaceBinding(s_x), "* as x");
+
+            VerifyOutput(
+                Factory.ImportClause(Factory.ImportSpecifier(s_x, s_y), Factory.ImportSpecifier(s_z)),
+                "{ x as y, z }");
+        }
+
+        [TestMethod]
+        public void Emit_import_declarations()
+        {
+            VerifyOutput(Factory.ImportDeclaration(Factory.String("myModule")), "import 'myModule';\n");
+            VerifyOutput(
+                Factory.ImportDeclaration(
+                    Factory.ImportClause(s_x, Factory.ImportSpecifier(s_y, s_z), Factory.ImportSpecifier(s_p)),
+                    Factory.FromClause(Factory.String("./Module"))),
+                "import x, { y as z, p } from './Module';\n");
+        }
+
+        [TestMethod]
+        public void Emit_import_require_declaration()
+        {
+            VerifyOutput(
+                Factory.ImportRequireDeclaration(s_x, Factory.String("jQuery")),
+                "import x = require('jQuery');\n");
+        }
+
+        [TestMethod]
+        public void Emit_export_implementation_element()
+        {
+            VerifyOutput(
+                Factory.ExportImplementationElement(
+                    Factory.VariableStatement(Factory.SimpleVariableDeclaration(s_x))),
+                "export var x;\n");
         }
     }
 }

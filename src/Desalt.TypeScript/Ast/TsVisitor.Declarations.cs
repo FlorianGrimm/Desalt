@@ -108,5 +108,81 @@ namespace Desalt.TypeScript.Ast
         /// Visits an import alias declaration of the form, 'import alias = dotted.name'.
         /// </summary>
         public virtual void VisitImportAliasDeclaration(ITsImportAliasDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient variable binding of the form 'name: type'.
+        /// </summary>
+        public virtual void VisitAmbientBinding(ITsAmbientBinding node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+        /// </summary>
+        public virtual void VisitAmbientVariableDeclaration(ITsAmbientVariableDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a function declaration of the form 'function name signature'.
+        /// </summary>
+        public virtual void VisitAmbientFunctionDeclaration(ITsAmbientFunctionDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a constructor declaration in an ambient class declaration.
+        /// </summary>
+        public virtual void VisitAmbientConstructorDeclaration(ITsAmbientConstructorDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member variable declaration in an ambient class declaration.
+        /// </summary>
+        public virtual void VisitAmbientVariableMemberDeclaration(ITsAmbientVariableMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits a member function declaration in an ambient class.
+        /// </summary>
+        public virtual void VisitAmbientFunctionMemberDeclaration(ITsAmbientFunctionMemberDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient class declaration.
+        /// </summary>
+        public virtual void VisitAmbientClassDeclaration(ITsAmbientClassDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an element in an ambient namespace declaration.
+        /// </summary>
+        public virtual void VisitAmbientNamespaceElement(ITsAmbientNamespaceElement node) => Visit(node);
+
+        /// <summary>
+        /// Visits an ambient namespace declaration.
+        /// </summary>
+        public virtual void VisitAmbientNamespaceDeclaration(ITsAmbientNamespaceDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import specifier, which is either an identifier or 'identifier as identifier'.
+        /// </summary>
+        public virtual void VisitImportSpecifier(ITsImportSpecifier node) => Visit(node);
+
+        /// <summary>
+        /// Visits a from clause in an import or export statement, of the form 'from moduleName'.
+        /// </summary>
+        public virtual void VisitFromClause(ITsFromClause node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }',
+        /// 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
+        /// </summary>
+        public virtual void VisitImportClause(ITsImportClause node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
+        /// </summary>
+        public virtual void VisitImportDeclaration(ITsImportDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an import declaration using 'require', of the form 'import name = require(string);'.
+        /// </summary>
+        public virtual void VisitImportRequireDeclaration(ITsImportRequireDeclaration node) => Visit(node);
+
+        /// <summary>
+        /// Visits an exported element in a module file.
+        /// </summary>
+        public virtual void VisitExportImplementationElement(ITsExportImplementationElement node) => Visit(node);
     }
 }

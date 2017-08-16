@@ -16,28 +16,27 @@ namespace Desalt.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a member function declaration in a class.
     /// </summary>
-    internal class TsFunctionMemberDeclaration : AstNode<TsVisitor>, ITsFunctionMemberDeclaration
+    internal class TsFunctionMemberDeclaration : AstNode<TsVisitor>,
+        ITsFunctionMemberDeclaration, ITsAmbientFunctionMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsFunctionMemberDeclaration(
+        private TsFunctionMemberDeclaration(
+            bool isAmbient,
             ITsPropertyName functionName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
+            IsAmbient = isAmbient;
             FunctionName = functionName ?? throw new ArgumentNullException(nameof(functionName));
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
-
-            if (functionBody != null)
-            {
-                FunctionBody = functionBody.ToImmutableArray();
-            }
+            FunctionBody = functionBody?.ToImmutableArray();
         }
 
         //// ===========================================================================================================
@@ -48,18 +47,50 @@ namespace Desalt.TypeScript.Ast.Declarations
         public bool IsStatic { get; }
         public ITsPropertyName FunctionName { get; }
         public ITsCallSignature CallSignature { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
+
+        private bool IsAmbient { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionMemberDeclaration(this);
+        public static ITsFunctionMemberDeclaration Create(
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            IEnumerable<ITsStatementListItem> functionBody = null)
+        {
+            return new TsFunctionMemberDeclaration(
+                false, functionName, callSignature, accessibilityModifier, isStatic, functionBody);
+        }
+
+        public static ITsAmbientFunctionMemberDeclaration CreateAmbient(
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return new TsFunctionMemberDeclaration(true, functionName, callSignature, accessibilityModifier, isStatic);
+        }
+
+        public override void Accept(TsVisitor visitor)
+        {
+            if (IsAmbient)
+            {
+                visitor.VisitAmbientFunctionMemberDeclaration(this);
+            }
+            else
+            {
+                visitor.VisitFunctionMemberDeclaration(this);
+            }
+        }
 
         public override string CodeDisplay =>
             $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
             $"{FunctionName}{CallSignature.CodeDisplay}" +
-            (FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
+            (FunctionBody?.ToElidedList() ?? ";");
 
         public override void Emit(Emitter emitter)
         {
@@ -68,7 +99,7 @@ namespace Desalt.TypeScript.Ast.Declarations
             FunctionName.Emit(emitter);
             CallSignature.Emit(emitter);
 
-            if (FunctionBody.IsDefault)
+            if (FunctionBody == null)
             {
                 emitter.WriteLine(";");
             }

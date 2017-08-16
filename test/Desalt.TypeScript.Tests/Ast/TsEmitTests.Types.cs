@@ -175,11 +175,11 @@ namespace Desalt.TypeScript.Tests.Ast
                     Factory.IndexSignature(Factory.Identifier("k"), false, Factory.AnyType),
                     Factory.MethodSignature(s_z, true, Factory.CallSignature(Factory.ParameterList(), Factory.VoidType))),
                 @"{
-  x: string,
-  (z, p): boolean,
-  new <T extends MyType>(arg: T),
-  [k: string]: any,
-  z?(): void
+  x: string;
+  (z, p): boolean;
+  new <T extends MyType>(arg: T);
+  [k: string]: any;
+  z?(): void;
 }".Replace("\r\n", "\n"));
         }
 

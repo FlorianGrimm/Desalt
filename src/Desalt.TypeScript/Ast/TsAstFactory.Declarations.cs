@@ -8,6 +8,8 @@
 namespace Desalt.TypeScript.Ast
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using Desalt.Core.Extensions;
     using Desalt.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -48,16 +50,16 @@ namespace Desalt.TypeScript.Ast
         /// Creates a function declaration of the form 'function [name] signature { body }'.
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature) =>
-            new TsFunctionDeclaration(callSignature);
+            TsFunctionDeclaration.Create(callSignature);
 
         /// <summary>
-        /// Creates a function declaration of the form 'function [name] signature { body }'.
+        /// Creates a function declaration of the form 'function name signature { }'.
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(
             ITsIdentifier functionName,
             ITsCallSignature callSignature)
         {
-            return new TsFunctionDeclaration(callSignature, functionName);
+            return TsFunctionDeclaration.Create(callSignature, functionName);
         }
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace Desalt.TypeScript.Ast
             ITsCallSignature callSignature,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsFunctionDeclaration(callSignature, functionName, functionBody);
+            return TsFunctionDeclaration.Create(callSignature, functionName, functionBody);
         }
 
         /// <summary>
@@ -99,26 +101,29 @@ namespace Desalt.TypeScript.Ast
             return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
         }
 
+        /// <summary>
+        /// Creates a constructor declaration within a class declaration.
+        /// </summary>
         public static ITsConstructorDeclaration ConstructorDeclaration(
             TsAccessibilityModifier? accessibilityModifier = null,
             ITsParameterList parameterList = null,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody);
+            return TsConstructorDeclaration.Create(accessibilityModifier, parameterList, functionBody);
         }
 
         /// <summary>
         /// Creates a member variable declaration in a class.
         /// </summary>
         public static ITsVariableMemberDeclaration VariableMemberDeclaration(
-            ITsPropertyName propertyName,
+            ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
-            return new TsVariableMemberDeclaration(
-                propertyName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+            return TsVariableMemberDeclaration.Create(
+                variableName, accessibilityModifier, isStatic, typeAnnotation, initializer);
         }
 
         /// <summary>
@@ -131,7 +136,7 @@ namespace Desalt.TypeScript.Ast
             bool isStatic = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
-            return new TsFunctionMemberDeclaration(
+            return TsFunctionMemberDeclaration.Create(
                 functionName, callSignature, accessibilityModifier, isStatic, functionBody);
         }
 
@@ -267,6 +272,235 @@ namespace Desalt.TypeScript.Ast
             ITsQualifiedName importedName)
         {
             return new TsImportAliasDeclaration(alias, importedName);
+        }
+
+        /// <summary>
+        /// Creates an ambient variable binding of the form 'name: type'.
+        /// </summary>
+        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null) =>
+            new TsAmbientBinding(variableName, variableType);
+
+        /// <summary>
+        /// Creates an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+        /// </summary>
+        public static ITsAmbientVariableDeclaration AmbientVariableDeclaration(
+            VariableDeclarationKind declarationKind,
+            params ITsAmbientBinding[] declarations)
+        {
+            return new TsAmbientVariableDeclaration(declarationKind, declarations);
+        }
+
+        /// <summary>
+        /// Creates a function declaration of the form 'function name signature;'.
+        /// </summary>
+        public static ITsAmbientFunctionDeclaration AmbientFunctionDeclaration(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature)
+        {
+            return TsFunctionDeclaration.CreateAmbient(functionName, callSignature);
+        }
+
+        /// <summary>
+        /// Creates a constructor declaration within an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientConstructorDeclaration AmbientConstructorDeclaration(
+            ITsParameterList parameterList = null)
+        {
+            return TsConstructorDeclaration.CreateAmbient(parameterList);
+        }
+
+        /// <summary>
+        /// Creates a member variable declaration in an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientVariableMemberDeclaration AmbientVariableMemberDeclaration(
+            ITsPropertyName variableName,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            ITsType typeAnnotation = null)
+        {
+            return TsVariableMemberDeclaration.CreateAmbient(
+                variableName, accessibilityModifier, isStatic, typeAnnotation);
+        }
+
+        /// <summary>
+        /// Creates a member function declaration in an ambient class.
+        /// </summary>
+        public static ITsAmbientFunctionMemberDeclaration AmbientFunctionMemberDeclaration(
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false)
+        {
+            return TsFunctionMemberDeclaration.CreateAmbient(
+                functionName, callSignature, accessibilityModifier, isStatic);
+        }
+
+        /// <summary>
+        /// Creates an index member declaration in a class.
+        /// </summary>
+        public static ITsIndexMemberDeclaration AmbientIndexMemberDeclaration(ITsIndexSignature indexSignature) =>
+            new TsIndexMemberDeclaration(indexSignature);
+
+        /// <summary>
+        /// Creates an ambient class declaration.
+        /// </summary>
+        public static ITsAmbientClassDeclaration AmbientClassDeclaration(
+            ITsIdentifier className,
+            ITsTypeParameters typeParameters = null,
+            ITsClassHeritage heritage = null,
+            IEnumerable<ITsAmbientClassBodyElement> classBody = null)
+        {
+            return new TsAmbientClassDeclaration(className, typeParameters, heritage, classBody);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            ITsIdentifier enumName,
+            IEnumerable<ITsEnumMember> enumBody = null,
+            bool isConst = false)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            bool isConst,
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody, isConst);
+        }
+
+        /// <summary>
+        /// Creates an enum declaration.
+        /// </summary>
+        public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
+            ITsIdentifier enumName,
+            params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody);
+        }
+
+        /// <summary>
+        /// Creates an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceDeclaration AmbientNamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            params ITsAmbientNamespaceElement[] body)
+        {
+            return new TsAmbientNamespaceDeclaration(namespaceName, body);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsAmbientDeclarationElement declaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(declaration, hasExportKeyword);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsInterfaceDeclaration interfaceDeclaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(interfaceDeclaration, hasExportKeyword);
+        }
+
+        /// <summary>
+        /// Create an element in an ambient namespace declaration.
+        /// </summary>
+        public static ITsAmbientNamespaceElement AmbientNamespaceElement(
+            ITsImportAliasDeclaration importAliasDeclaration,
+            bool hasExportKeyword = false)
+        {
+            return new TsAmbientNamespaceElement(importAliasDeclaration, hasExportKeyword);
+        }
+
+        /// <summary>
+        /// Create an import specifier, which is either an identifier or 'identifier as identifier'.
+        /// </summary>
+        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null) =>
+            new TsImportSpecifier(name, asName);
+
+        /// <summary>
+        /// Create a from clause in an import or export statement, of the form 'from moduleName'.
+        /// </summary>
+        public static ITsFromClause FromClause(ITsStringLiteral module) => new TsFromClause(module);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding) =>
+            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding: null);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier' or 'identifier, * as identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding) =>
+            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding);
+
+        /// <summary>
+        /// Create an import clause of the form 'identifier' or 'identifier, { importSpecifier, importSpecifier }'.
+        /// </summary>
+        public static ITsImportClause ImportClause(
+            ITsIdentifier defaultBinding,
+            params ITsImportSpecifier[] namedImports)
+        {
+            return TsImportClause.CreateDefaultBinding(defaultBinding, namedImports);
+        }
+
+        /// <summary>
+        /// Create an import clause of the form '* as identifier'.
+        /// </summary>
+        public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding) =>
+            TsImportClause.CreateNamespaceBinding(namespaceBinding);
+
+        /// <summary>
+        /// Create an import clause of the form '{ importSpecifier, importSpecifier }'.
+        /// </summary>
+        public static ITsImportClause ImportClause(
+            ITsImportSpecifier namedImport,
+            params ITsImportSpecifier[] namedImports)
+        {
+            return TsImportClause.CreateNamedImports(namedImport.ToSafeArray().Concat(namedImports));
+        }
+
+        /// <summary>
+        /// Create an import declaration of the form 'import ImportClause FromClause;'.
+        /// </summary>
+        public static ITsImportDeclaration ImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause) =>
+            new TsImportDeclaration(importClause, fromClause);
+
+        /// <summary>
+        /// Create an import declaration of the form 'import Module;'.
+        /// </summary>
+        public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module) =>
+            new TsImportDeclaration(module);
+
+        /// <summary>
+        /// Create an import declaration using 'require', of the form 'import name = require(string);'.
+        /// </summary>
+        public static ITsImportRequireDeclaration ImportRequireDeclaration(ITsIdentifier name, ITsStringLiteral require)
+        {
+            return new TsImportRequireDeclaration(name, require);
+        }
+
+        /// <summary>
+        /// Create an exported element in a module file.
+        /// </summary>
+        public static ITsExportImplementationElement ExportImplementationElement(
+            ITsImplementationElement exportedElement)
+        {
+            return new TsExportImplementationElement(exportedElement);
         }
     }
 }
