@@ -412,7 +412,7 @@ namespace Desalt.TypeScript.Ast
      *   type BindingIdentifier TypeParametersOpt = Type ;
      */
 
-    public interface ITsTypeAliasDeclaration : ITsDeclaration, ITsDeclarationElement
+    public interface ITsTypeAliasDeclaration : ITsDeclaration
     {
         ITsIdentifier AliasName { get; }
         ITsTypeParameters TypeParameters { get; }
@@ -573,7 +573,7 @@ namespace Desalt.TypeScript.Ast
      *   TypeReference
      */
 
-    public interface ITsInterfaceDeclaration : ITsDeclaration, ITsDeclarationElement
+    public interface ITsInterfaceDeclaration : ITsDeclaration
     {
         ITsIdentifier InterfaceName { get; }
         ITsTypeParameters TypeParameters { get; }
@@ -749,7 +749,7 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceElements NamespaceElement
      */
 
-    public interface ITsNamespaceDeclaration : ITsDeclaration, ITsDeclarationElement
+    public interface ITsNamespaceDeclaration : ITsDeclaration
     {
         ITsQualifiedName NamespaceName { get; }
         ImmutableArray<ITsNamespaceElement> Body { get; }
@@ -804,7 +804,7 @@ namespace Desalt.TypeScript.Ast
      *   NamespaceName . IdentifierReference
      */
 
-    public interface ITsImportAliasDeclaration : ITsNamespaceElement, ITsImplementationElement, ITsDeclarationElement
+    public interface ITsImportAliasDeclaration : ITsNamespaceElement, ITsImplementationElement
     {
         ITsIdentifier Alias { get; }
         ITsQualifiedName ImportedName { get; }
