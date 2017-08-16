@@ -10,8 +10,15 @@ namespace Desalt.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
-        /// Visits a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+        /// Visits a TypeScript implementation source file (extension '.ts'), containing statements
+        /// and declarations.
         /// </summary>
         public virtual void VisitImplementationScript(ITsImplementationScript node) => Visit(node);
+
+        /// <summary>
+        /// Visits a TypeScript implementation source file (extension '.ts'), containing exported
+        /// statements and declarations.
+        /// </summary>
+        public virtual void VisitImplementationModule(ITsImplementationModule node) => Visit(node);
     }
 }

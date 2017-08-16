@@ -900,6 +900,13 @@ namespace Desalt.TypeScript.Ast
      *   ExportAssignment
      */
 
+    public interface ITsImplementationModule : ITsImplementationSourceFile
+    {
+        ImmutableArray<ITsImplementationModuleElement> Elements { get; }
+    }
+
+    public interface ITsImplementationModuleElement : IAstNode { }
+
     /* DeclarationModule:
      *   DeclarationModuleElementsOpt
      *
@@ -982,7 +989,10 @@ namespace Desalt.TypeScript.Ast
      *   declare AmbientNamespaceDeclaration
      */
 
-    public interface ITsAmbientDeclaration : ITsDeclaration { }
+    public interface ITsAmbientDeclaration : ITsImplementationElement
+    {
+        ITsAmbientDeclarationElement Declaration { get; }
+    }
 
     public interface ITsAmbientDeclarationElement : IAstNode { }
 

@@ -12,9 +12,17 @@ namespace Desalt.TypeScript.Ast
     public static partial class TsAstFactory
     {
         /// <summary>
-        /// Create a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+        /// Create a TypeScript implementation source file (extension '.ts'), containing statements
+        /// and declarations.
         /// </summary>
         public static ITsImplementationScript ImplementationScript(params ITsImplementationScriptElement[] elements) =>
             new TsImplementationScript(elements);
+
+        /// <summary>
+        /// Create a TypeScript implementation source file (extension '.ts'), containing exported
+        /// statements and declarations.
+        /// </summary>
+        public static ITsImplementationModule ImplementationModule(params ITsImplementationModuleElement[] elements) =>
+            new TsImplementationModule(elements);
     }
 }

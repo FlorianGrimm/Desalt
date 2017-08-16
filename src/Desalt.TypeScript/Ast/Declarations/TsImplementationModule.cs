@@ -13,30 +13,31 @@ namespace Desalt.TypeScript.Ast.Declarations
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// Represents a TypeScript implementation source file (extension '.ts'), containing exported
+    /// statements and declarations.
     /// </summary>
-    internal class TsImplementationScript : AstNode<TsVisitor>, ITsImplementationScript
+    internal class TsImplementationModule : AstNode<TsVisitor>, ITsImplementationModule
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsImplementationScript(IEnumerable<ITsImplementationScriptElement> elements = null)
+        public TsImplementationModule(IEnumerable<ITsImplementationModuleElement> elements = null)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsImplementationScriptElement>.Empty;
+            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsImplementationModuleElement>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsImplementationScriptElement> Elements { get; }
+        public ImmutableArray<ITsImplementationModuleElement> Elements { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationScript(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationModule(this);
 
         public override string CodeDisplay => $"{GetType().Name}, Elements.Length = {Elements.Length}";
 
