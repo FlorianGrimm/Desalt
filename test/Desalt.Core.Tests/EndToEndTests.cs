@@ -1,0 +1,29 @@
+﻿// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="EndToEndTests.cs" company="Justin Rockwood">
+//   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+//   LICENSE.txt in the project root for license information.
+// </copyright>
+// ---------------------------------------------------------------------------------------------------------------------
+
+namespace Desalt.Core.Tests
+{
+    using System.Threading.Tasks;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    [TestClass]
+    public class EndToEndTests
+    {
+        public TestContext TestContext { get; set; }
+
+        // [Ignore]
+        [TestMethod]
+        public async Task E2E_Compiling_a_Saltarelle_Core_project()
+        {
+            // TODO: generalize this so that it's not an absolute path
+            const string projectFilePath = @"D:\github\Desalt\test\SaltarelleProjectTests\CoreSubset\CoreSubset.csproj";
+            var request = new CompilationRequest(projectFilePath);
+            var compiler = new DesaltCompiler();
+            await compiler.ExecuteAsync(request);
+        }
+    }
+}
