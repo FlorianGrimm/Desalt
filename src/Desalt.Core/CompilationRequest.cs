@@ -1,30 +1,36 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CompilerOptions.cs" company="Justin Rockwood">
+// <copyright file="CompilationRequest.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Compiler
+namespace Desalt.Core
 {
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
+    using Desalt.Core.Utility;
 
     /// <summary>
-    /// Contains options that control how to compile C# into TypeScript.
+    /// Represents an immutable request to compile a set of C# inputs to generated TypeScript.
     /// </summary>
-    public class CompilerOptions
+    public class CompilationRequest
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         /// <summary>
-        /// Default constructor contains the default values of all of the options.
+        /// Creates a new instance of the <see cref="CompilationRequest"/> class with the specified options.
         /// </summary>
-        public CompilerOptions(int warningLevel = 4)
+        public CompilationRequest(string projectFilePath, CompilerOptions options = null)
         {
-            WarningLevel = warningLevel;
+            Param.VerifyString(projectFilePath, nameof(projectFilePath));
+
+            ProjectFilePath = projectFilePath;
+            Options = options ?? new CompilerOptions();
         }
 
         //// ===========================================================================================================
@@ -32,19 +38,17 @@ namespace Desalt.Core.Compiler
         //// ===========================================================================================================
 
         /// <summary>
-        /// Gets the global warning level (from 0 to 4).
+        /// Gets the options used for compiling.
         /// </summary>
-        public int WarningLevel { get; }
+        public CompilerOptions Options { get; }
+
+        /// <summary>
+        /// Gets a .csproj file path containing C# files to compile.
+        /// </summary>
+        public string ProjectFilePath { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        internal CSharpCompilationOptions ToCSharpCompilationOptions()
-        {
-            return new CSharpCompilationOptions(
-                OutputKind.DynamicallyLinkedLibrary,
-                warningLevel: WarningLevel);
-        }
     }
 }
