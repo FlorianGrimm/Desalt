@@ -123,10 +123,14 @@
     <Compile Include="Ast\AstVisitor.cs" />
     <Compile Include="Ast\IAstNode.cs" />
     <Compile Include="Ast\IAstVisitor.cs" />
+    <Compile Include="Compiler\CompilationRequest.cs" />
+    <Compile Include="Compiler\CompilerOptions.cs" />
+    <Compile Include="Compiler\OpenProjectStage.cs" />
     <Compile Include="DiagnosticMessage.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="ExtendedResult.cs" />
+    <Compile Include="Extensions\DiagnosticExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
