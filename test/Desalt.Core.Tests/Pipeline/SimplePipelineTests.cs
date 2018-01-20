@@ -11,6 +11,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Collections;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,34 +67,38 @@ namespace Desalt.Core.Tests.Pipeline
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_an_interface_of_a_previous_output()
         {
             var pipeline = new SimplePipeline<int, bool>();
-            pipeline.AddStage(new FakePipelineStage<int, CaseInsensitiveComparer>(
-                input => new CaseInsensitiveComparer()));
+            pipeline.AddStage(
+                new FakePipelineStage<int, CaseInsensitiveComparer>(input => new CaseInsensitiveComparer()));
             pipeline.AddStage(new FakePipelineStage<IComparer, bool>(input => true));
             pipeline.Stages.Count().Should().Be(2);
         }
 
         [TestMethod]
-        public void Execute_should_throw_if_the_last_stage_does_not_output_a_compatible_type()
+        public async Task Execute_should_throw_if_the_last_stage_does_not_output_a_compatible_type()
         {
             var pipeline = new SimplePipeline<int, DateTime>();
             pipeline.AddStage(new IntToStringStage());
-            Action action = () => pipeline.Execute(123);
-            action.ShouldThrowExactly<InvalidOperationException>()
-                .WithMessage("The last stage outputs type 'String' but it should output type 'DateTime'.");
+            try { await pipeline.ExecuteAsync(123); }
+            catch (InvalidOperationException e)
+            {
+                e.Message.Should().Be("The last stage outputs type 'String' but it should output type 'DateTime'.");
+            }
+            catch (Exception e) { Assert.Fail($"Expecting InvalidOperationException but got {e.GetType()}"); }
         }
 
         [TestMethod]
-        public void Execute_should_run_the_stages_in_order()
+        public async Task Execute_should_run_the_stages_in_order()
         {
             var pipeline = new SimplePipeline<int, char[]>();
             pipeline.AddStage(new IntToStringStage());
             pipeline.AddStage(new StringToCharArrayStage());
 
-            pipeline.Execute(123).Result.Should().Equal('1', '2', '3');
+            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123);
+            result.Result.Should().Equal('1', '2', '3');
         }
 
         [TestMethod]
-        public void Execute_should_preserve_the_outputs_between_stages()
+        public async Task Execute_should_preserve_the_outputs_between_stages()
         {
             var pipeline = new SimplePipeline<string, string>();
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
@@ -101,30 +106,30 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
 
             const string inputString = "Input";
-            pipeline.Execute(inputString).Result.Should().BeSameAs(inputString);
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString);
+            result.Result.Should().BeSameAs(inputString);
         }
 
         [TestMethod]
-        public void Execute_should_stop_on_the_first_stage_that_has_a_failure()
+        public async Task Execute_should_stop_on_the_first_stage_that_has_a_failure()
         {
             var pipeline = new SimplePipeline<int, string>();
             pipeline.AddStage(
                 new FakePipelineStage<int, string>(
-                    (input, token) =>
-                        new ExtendedResult<string>(
-                            "output", new[] { DiagnosticMessage.Info("First") })));
+                    (input, token) => Task.FromResult<IExtendedResult<string>>(
+                        new ExtendedResult<string>("output", new[] { DiagnosticMessage.Info("First") }))));
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
-                    (input, token) =>
+                    (input, token) => Task.FromResult<IExtendedResult<string>>(
                         new ExtendedResult<string>(
-                            "Failed", new[] { DiagnosticMessage.FromException(new Exception("Failed Message")) })));
+                            "Failed",
+                            new[] { DiagnosticMessage.FromException(new Exception("Failed Message")) }))));
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
-                    (input, token) =>
-                        new ExtendedResult<string>(
-                            "Succeeded", new[] { DiagnosticMessage.Info("Third") })));
+                    (input, token) => Task.FromResult<IExtendedResult<string>>(
+                        new ExtendedResult<string>("Succeeded", new[] { DiagnosticMessage.Info("Third") }))));
 
-            IExtendedResult<string> result = pipeline.Execute(123);
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(123);
             result.Success.Should().BeFalse();
             result.Messages.Select(m => m.Message).Should().Equal("First", "Failed Message");
         }

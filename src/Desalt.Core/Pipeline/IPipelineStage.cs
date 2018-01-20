@@ -9,6 +9,7 @@ namespace Desalt.Core.Pipeline
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Service contract for a class participating in a <see cref="SimplePipeline{TInput,TOutput}"/>.
@@ -33,7 +34,7 @@ namespace Desalt.Core.Pipeline
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        IExtendedResult Execute(object input, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IExtendedResult> ExecuteAsync(object input, CancellationToken cancellationToken = default(CancellationToken));
     }
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace Desalt.Core.Pipeline
     /// </summary>
     /// <typeparam name="TInput">The type of the stage's input.</typeparam>
     /// <typeparam name="TOutput">The type of the stage's output.</typeparam>
-    internal interface IPipelineStage<in TInput, out TOutput> : IPipelineStage
+    internal interface IPipelineStage<in TInput, TOutput> : IPipelineStage
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -51,6 +52,8 @@ namespace Desalt.Core.Pipeline
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        IExtendedResult<TOutput> Execute(TInput input, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IExtendedResult<TOutput>> ExecuteAsync(
+            TInput input,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

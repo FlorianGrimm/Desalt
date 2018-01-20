@@ -10,6 +10,7 @@ namespace Desalt.Core.Pipeline
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents a simple pipeline that keeps track of stages to be run in order.
@@ -81,7 +82,7 @@ namespace Desalt.Core.Pipeline
         /// The result of running all of the stages of the pipeline in order. If there is a failure
         /// in one of the stages, the pipeline ends early.
         /// </returns>
-        public IExtendedResult<TOutput> Execute(TInput input)
+        public async Task<IExtendedResult<TOutput>> ExecuteAsync(TInput input)
         {
             ValidateStages();
 
@@ -98,7 +99,7 @@ namespace Desalt.Core.Pipeline
                         $"No previous outputs were found for input type '{stage.InputType.Name}'");
                 }
 
-                IExtendedResult stageResult = stage.Execute(nextInput);
+                IExtendedResult stageResult = await stage.ExecuteAsync(nextInput);
                 previousOutputs.Add(stageResult.Result);
                 messages.AddRange(stageResult.Messages);
 

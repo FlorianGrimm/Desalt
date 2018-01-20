@@ -9,6 +9,7 @@ namespace Desalt.Core.Pipeline
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Abstract base class for all compiler pipeline stages.
@@ -41,9 +42,9 @@ namespace Desalt.Core.Pipeline
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        IExtendedResult IPipelineStage.Execute(object input, CancellationToken cancellationToken)
+        async Task<IExtendedResult> IPipelineStage.ExecuteAsync(object input, CancellationToken cancellationToken)
         {
-            return Execute((TInput)input, cancellationToken);
+            return await ExecuteAsync((TInput)input, cancellationToken);
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Desalt.Core.Pipeline
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public abstract IExtendedResult<TOutput> Execute(
+        public abstract Task<IExtendedResult<TOutput>> ExecuteAsync(
             TInput input,
             CancellationToken cancellationToken = default(CancellationToken));
     }
