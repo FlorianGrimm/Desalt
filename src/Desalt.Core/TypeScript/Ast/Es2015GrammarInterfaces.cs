@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast
+namespace Desalt.Core.TypeScript.Ast
 {
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
-    using Desalt.TypeScript.Ast.Expressions;
+    using Desalt.Core.TypeScript.Ast.Expressions;
 
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar

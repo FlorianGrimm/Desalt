@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Declarations
+namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
-    using Desalt.TypeScript.Ast.Types;
+    using Desalt.Core.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents an ambient class declaration.

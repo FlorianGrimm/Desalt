@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Ast.Statements
+namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;

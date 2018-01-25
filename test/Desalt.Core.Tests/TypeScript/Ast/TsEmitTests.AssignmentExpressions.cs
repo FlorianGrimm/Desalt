@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Tests.Ast
+namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
-    using Op = Desalt.TypeScript.Ast.Expressions.TsAssignmentOperator;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using Op = Desalt.Core.TypeScript.Ast.Expressions.TsAssignmentOperator;
 
     public partial class TsEmitTests
     {

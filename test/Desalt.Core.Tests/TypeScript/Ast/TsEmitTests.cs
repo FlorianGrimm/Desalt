@@ -5,16 +5,16 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScript.Tests.Ast
+namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using System.IO;
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
-    using Desalt.TypeScript.Ast;
+    using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Desalt.TypeScript.Ast.TsAstFactory;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     [TestClass]
     public partial class TsEmitTests
