@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Compiler
 {
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
@@ -31,7 +32,21 @@ namespace Desalt.Core.Compiler
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult<IExtendedResult<bool>>(new ExtendedResult<bool>(true));
+            Directory.CreateDirectory(options.OutputPath);
+
+            foreach (Document document in input.Documents)
+            {
+                string typeScriptFilePath = Path.Combine(
+                    options.OutputPath,
+                    Path.GetFileNameWithoutExtension(document.FilePath) + ".ts");
+
+                using (var writer = new StreamWriter(typeScriptFilePath))
+                {
+                    await writer.WriteLineAsync($"// This is {typeScriptFilePath}");
+                }
+            }
+
+            return new ExtendedResult<bool>(true);
         }
     }
 }

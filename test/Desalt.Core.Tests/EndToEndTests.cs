@@ -21,7 +21,8 @@ namespace Desalt.Core.Tests
         {
             // TODO: generalize this so that it's not an absolute path
             const string projectFilePath = @"D:\github\Desalt\test\SaltarelleProjectTests\CoreSubset\CoreSubset.csproj";
-            var request = new CompilationRequest(projectFilePath);
+            var options = new CompilerOptions(@"D:\github\Desalt\TestResults\CoreSubset");
+            var request = new CompilationRequest(projectFilePath, options);
             var compiler = new DesaltCompiler();
             await compiler.ExecuteAsync(request);
         }
