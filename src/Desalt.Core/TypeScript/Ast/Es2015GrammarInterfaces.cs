@@ -16,6 +16,54 @@ namespace Desalt.Core.TypeScript.Ast
      * See http://www.ecma-international.org/ecma-262/6.0/
      **********************************************************************************************/
 
+    /* 11.4 Comments
+     * -------------
+     * Comment:
+     *   MultiLineComment
+     *   SingleLineComment
+     *
+     * MultiLineComment:
+     *   slash* MultiLineCommentCharsOpt *slash
+     *
+     * MultiLineCommentChars:
+     *   MultiLineNotAsteriskChar MultiLineCommentCharsOpt
+     *   * PostAsteriskCommentCharsOpt
+     *
+     * PostAsteriskCommentChars:
+     *   MultiLineNotForwardSlashOrAsteriskChar MultiLineCommentCharsOpt
+     *   *PostAsteriskCommentCharsOpt
+     *
+     * MultiLineNotAsteriskChar:
+     *   SourceCharacter but not *
+     *
+     * MultiLineNotForwardSlashOrAsteriskChar:
+     *   SourceCharacter but not one of / or *
+     *
+     * SingleLineComment:
+     *   // SingleLineCommentCharsOpt
+     *
+     * SingleLineCommentChars:
+     *   SingleLineCommentChar SingleLineCommentCharsOpt
+     *
+     * SingleLineCommentChar:
+     *   SourceCharacter but not LineTerminator
+     */
+
+    public interface ITsMultiLineComment : IAstTriviaNode
+    {
+        /// <summary>
+        /// Indicates whether the comment should start with /** (JsDoc) or /*.
+        /// </summary>
+        bool IsJsDoc { get; }
+
+        ImmutableArray<string> Lines { get; }
+    }
+
+    public interface ITsSingleLineComment : IAstTriviaNode
+    {
+        string Comment { get; }
+    }
+
     /* 12.1 Identifiers
      * ----------------
      * IdentifierReference:

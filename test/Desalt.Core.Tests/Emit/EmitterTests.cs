@@ -38,9 +38,16 @@ namespace Desalt.Core.Tests.Emit
 
             public string CodeDisplay => Name;
 
+            public ImmutableArray<IAstTriviaNode> LeadingTrivia { get; } = ImmutableArray<IAstTriviaNode>.Empty;
+            public ImmutableArray<IAstTriviaNode> TrailingTrivia { get; } = ImmutableArray<IAstTriviaNode>.Empty;
+
             public void Accept(TsVisitor visitor) => throw new NotImplementedException();
 
             public void Emit(Emitter emitter) => emitter.Write(Name);
+
+            public IAstNode WithLeadingTrivia(params IAstTriviaNode[] triviaNodes) => throw new NotImplementedException();
+
+            public IAstNode WithTrailingTrivia(params IAstTriviaNode[] triviaNodes) => throw new NotImplementedException();
         }
 
         [TestMethod]

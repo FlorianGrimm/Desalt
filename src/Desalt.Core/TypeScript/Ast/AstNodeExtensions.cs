@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using Desalt.Core.Utility;
@@ -64,6 +65,15 @@ namespace Desalt.Core.TypeScript.Ast
             }
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Creates a copy of this node with the specified leading trivia.
+        /// </summary>
+        public static T PrependTo<T>(this IAstTriviaNode trivia, T node) where T : IAstNode
+        {
+            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithLeadingTrivia<AstNode>(trivia);
         }
     }
 }

@@ -40,5 +40,15 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 stream.ReadAllText(emitter.Encoding).Should().Be(expected);
             }
         }
+
+        private static void VerifyOutput(IAstTriviaNode node, string expected, EmitOptions options = null)
+        {
+            using (var stream = new MemoryStream())
+            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
+            {
+                node.Emit(emitter);
+                stream.ReadAllText(emitter.Encoding).Should().Be(expected);
+            }
+        }
     }
 }

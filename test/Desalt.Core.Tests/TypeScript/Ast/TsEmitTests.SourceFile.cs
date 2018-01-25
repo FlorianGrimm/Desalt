@@ -33,8 +33,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 
             VerifyOutput(
                 Factory.ImplementationScript(
+                    Factory.SingleLineComment("Stuff in a zoo").PrependTo(
                     Factory.NamespaceDeclaration(
                         Factory.QualifiedName("Zoo"),
+                        Factory.MultiLineComment(
+                            isJsDoc: true,
+                            lines: new[] { "Represents any type of an animal:", "horse, snake, elephant, etc." })
+                        .PrependTo(
                         Factory.ExportedDeclaration(
                             Factory.InterfaceDeclaration(
                                 Animal,
@@ -49,7 +54,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                                         isOptional: false,
                                         callSignature: Factory.CallSignature(
                                             Factory.ParameterList(Factory.BoundRequiredParameter(food, FoodRef)),
-                                            Factory.VoidType)))))),
+                                            Factory.VoidType)))))))),
                         Factory.TypeAliasDeclaration(Factory.Identifier("Ape"), Factory.TypeReference(Monkey)),
                         Factory.ImportAliasDeclaration(Animal, Factory.QualifiedName("Zoo", "Animal")),
                         Factory.LexicalDeclaration(
@@ -109,7 +114,12 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                                     })
                             })
                     ),
-                @"namespace Zoo {
+                @"// Stuff in a zoo
+namespace Zoo {
+  /**
+   * Represents any type of an animal:
+   * horse, snake, elephant, etc.
+   */
   export interface Animal {
     name: string;
     isFull(): boolean;

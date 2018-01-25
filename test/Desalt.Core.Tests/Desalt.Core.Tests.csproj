@@ -153,6 +153,7 @@
     <Compile Include="TypeScript\Ast\TsEmitTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.Declarations.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.LeftHandSideExpressions.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.Lexical.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.LiteralExpressions.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.SourceFile.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.Statements.cs" />
