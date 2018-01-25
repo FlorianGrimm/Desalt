@@ -19,16 +19,16 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         public void Emit_an_ImplementationScript()
         {
             // ReSharper disable InconsistentNaming
-            var Animal = Factory.Identifier("Animal");
-            var animal = Factory.Identifier("animal");
-            var AnimalRef = Factory.TypeReference(Animal);
-            var feed = Factory.Identifier("feed");
-            var Food = Factory.Identifier("Food");
-            var food = Factory.Identifier("food");
-            var FoodRef = Factory.TypeReference(Food);
-            var isFull = Factory.Identifier("isFull");
-            var Monkey = Factory.Identifier("Monkey");
-            var name = Factory.Identifier("name");
+            ITsIdentifier Animal = Factory.Identifier("Animal");
+            ITsIdentifier animal = Factory.Identifier("animal");
+            ITsTypeReference AnimalRef = Factory.TypeReference(Animal);
+            ITsIdentifier feed = Factory.Identifier("feed");
+            ITsIdentifier Food = Factory.Identifier("Food");
+            ITsIdentifier food = Factory.Identifier("food");
+            ITsTypeReference FoodRef = Factory.TypeReference(Food);
+            ITsIdentifier isFull = Factory.Identifier("isFull");
+            ITsIdentifier Monkey = Factory.Identifier("Monkey");
+            ITsIdentifier name = Factory.Identifier("name");
             // ReSharper restore InconsistentNaming
 
             VerifyOutput(
@@ -152,21 +152,21 @@ class Monkey implements Animal {
         public void Emit_an_ImplementationModule()
         {
             // ReSharper disable InconsistentNaming
-            var existsSync = Factory.Identifier("existsSync");
-            var fileKey = Factory.Identifier("fileKey");
-            var fileMapping = Factory.Identifier("fileMapping");
-            var fileName = Factory.Identifier("fileName");
-            var filePath = Factory.Identifier("filePath");
-            var FileSystem = Factory.Identifier("FileSystem");
-            var FileSystemRef = Factory.TypeReference(FileSystem);
-            var fsExtra = Factory.Identifier("fsExtra");
-            var MockFileSystemEntry = Factory.Identifier("MockFileSystemEntry");
-            var MockFileSystemTree = Factory.Identifier("MockFileSystemTree");
-            var MockFileSystemTreeRef = Factory.TypeReference(MockFileSystemTree);
-            var MockFileSystemWriteFileCallback = Factory.Identifier("MockFileSystemWriteFileCallback");
-            var ObjectKeys = Factory.MemberDot(Factory.Identifier("Object"), "keys");
-            var path = Factory.Identifier("path");
-            var this_fileMapping = Factory.MemberDot(Factory.This, "fileMapping");
+            ITsIdentifier existsSync = Factory.Identifier("existsSync");
+            ITsIdentifier fileKey = Factory.Identifier("fileKey");
+            ITsIdentifier fileMapping = Factory.Identifier("fileMapping");
+            ITsIdentifier fileName = Factory.Identifier("fileName");
+            ITsIdentifier filePath = Factory.Identifier("filePath");
+            ITsIdentifier FileSystem = Factory.Identifier("FileSystem");
+            ITsTypeReference FileSystemRef = Factory.TypeReference(FileSystem);
+            ITsIdentifier fsExtra = Factory.Identifier("fsExtra");
+            ITsIdentifier MockFileSystemEntry = Factory.Identifier("MockFileSystemEntry");
+            ITsIdentifier MockFileSystemTree = Factory.Identifier("MockFileSystemTree");
+            ITsTypeReference MockFileSystemTreeRef = Factory.TypeReference(MockFileSystemTree);
+            ITsIdentifier MockFileSystemWriteFileCallback = Factory.Identifier("MockFileSystemWriteFileCallback");
+            ITsMemberDotExpression ObjectKeys = Factory.MemberDot(Factory.Identifier("Object"), "keys");
+            ITsIdentifier path = Factory.Identifier("path");
+            ITsMemberDotExpression this_fileMapping = Factory.MemberDot(Factory.This, "fileMapping");
             // ReSharper restore InconsistentNaming
 
             VerifyOutput(
