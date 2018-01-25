@@ -25,12 +25,12 @@ namespace Desalt.Core
         /// <summary>
         /// Creates a new instance of the <see cref="CompilationRequest"/> class with the specified options.
         /// </summary>
-        public CompilationRequest(string projectFilePath, CompilerOptions options = null)
+        public CompilationRequest(string projectFilePath, CompilerOptions options)
         {
             Param.VerifyString(projectFilePath, nameof(projectFilePath));
 
             ProjectFilePath = projectFilePath;
-            Options = options ?? new CompilerOptions();
+            Options = options;
         }
 
         //// ===========================================================================================================

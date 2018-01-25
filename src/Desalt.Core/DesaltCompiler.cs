@@ -19,7 +19,7 @@ namespace Desalt.Core
             pipeline.AddStage(new OpenProjectStage());
             pipeline.AddStage(new CompileProjectToTypeScriptStage());
 
-            return await pipeline.ExecuteAsync(compilationRequest);
+            return await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
         }
     }
 }

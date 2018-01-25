@@ -78,7 +78,7 @@ namespace Desalt.Core.Tests.Pipeline
         {
             var pipeline = new SimplePipeline<int, DateTime>();
             pipeline.AddStage(new IntToStringStage());
-            try { await pipeline.ExecuteAsync(123); }
+            try { await pipeline.ExecuteAsync(123, new CompilerOptions("out")); }
             catch (InvalidOperationException e)
             {
                 e.Message.Should().Be("The last stage outputs type 'String' but it should output type 'DateTime'.");
@@ -93,7 +93,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new IntToStringStage());
             pipeline.AddStage(new StringToCharArrayStage());
 
-            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123);
+            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
             result.Result.Should().Equal('1', '2', '3');
         }
 
@@ -106,7 +106,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
 
             const string inputString = "Input";
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString);
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString, new CompilerOptions("out"));
             result.Result.Should().BeSameAs(inputString);
         }
 
@@ -129,7 +129,7 @@ namespace Desalt.Core.Tests.Pipeline
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
                         new ExtendedResult<string>("Succeeded", new[] { DiagnosticMessage.Info("Third") }))));
 
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(123);
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
             result.Success.Should().BeFalse();
             result.Messages.Select(m => m.Message).Should().Equal("First", "Failed Message");
         }

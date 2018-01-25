@@ -30,11 +30,15 @@ namespace Desalt.Core.Pipeline
         /// Executes the pipeline stage.
         /// </summary>
         /// <param name="input">The input to the stage.</param>
+        /// <param name="options">The compiler options to use.</param>
         /// <param name="cancellationToken">
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        Task<IExtendedResult> ExecuteAsync(object input, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IExtendedResult> ExecuteAsync(
+            object input,
+            CompilerOptions options,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 
     /// <summary>
@@ -48,12 +52,14 @@ namespace Desalt.Core.Pipeline
         /// Executes the pipeline stage.
         /// </summary>
         /// <param name="input">The input to the stage.</param>
+        /// <param name="options">The compiler options to use.</param>
         /// <param name="cancellationToken">
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
         Task<IExtendedResult<TOutput>> ExecuteAsync(
             TInput input,
+            CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken));
     }
 }

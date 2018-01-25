@@ -21,12 +21,14 @@ namespace Desalt.Core.Compiler
         /// Executes the pipeline stage.
         /// </summary>
         /// <param name="input">The input to the stage.</param>
+        /// <param name="options">The compiler options to use.</param>
         /// <param name="cancellationToken">
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override Task<IExtendedResult<bool>> ExecuteAsync(
+        public override async Task<IExtendedResult<bool>> ExecuteAsync(
             Project input,
+            CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult<IExtendedResult<bool>>(new ExtendedResult<bool>(true));

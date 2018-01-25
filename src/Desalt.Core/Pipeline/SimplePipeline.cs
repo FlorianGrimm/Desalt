@@ -48,10 +48,7 @@ namespace Desalt.Core.Pipeline
         /// <param name="stage">The stage to add.</param>
         public void AddStage(IPipelineStage stage)
         {
-            if (stage == null)
-            {
-                throw new ArgumentNullException(nameof(stage));
-            }
+            if (stage == null) { throw new ArgumentNullException(nameof(stage)); }
 
             // check the first stage to make sure it accepts TInput
             if (StagesInner.Count == 0 && !typeof(TInput).IsAssignableFrom(stage.InputType))
@@ -78,11 +75,12 @@ namespace Desalt.Core.Pipeline
         /// Executes the pipeline, starting with the specified input.
         /// </summary>
         /// <param name="input">The starting value to the pipeline.</param>
+        /// <param name="options">The compiler options to use.</param>
         /// <returns>
         /// The result of running all of the stages of the pipeline in order. If there is a failure
         /// in one of the stages, the pipeline ends early.
         /// </returns>
-        public async Task<IExtendedResult<TOutput>> ExecuteAsync(TInput input)
+        public async Task<IExtendedResult<TOutput>> ExecuteAsync(TInput input, CompilerOptions options)
         {
             ValidateStages();
 
@@ -99,15 +97,12 @@ namespace Desalt.Core.Pipeline
                         $"No previous outputs were found for input type '{stage.InputType.Name}'");
                 }
 
-                IExtendedResult stageResult = await stage.ExecuteAsync(nextInput);
+                IExtendedResult stageResult = await stage.ExecuteAsync(nextInput, options);
                 previousOutputs.Add(stageResult.Result);
                 messages.AddRange(stageResult.Messages);
 
                 // don't continue the pipeline if there are errors
-                if (stageResult.HasErrors)
-                {
-                    break;
-                }
+                if (stageResult.HasErrors) { break; }
             }
 
             return new ExtendedResult<TOutput>((TOutput)previousOutputs.Last(), messages);

@@ -34,6 +34,7 @@ namespace Desalt.Core.Tests.Pipeline
 
         public override async Task<IExtendedResult<TOutput>> ExecuteAsync(
             TInput input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return await _executeFunc(input, cancellationToken);
@@ -44,6 +45,7 @@ namespace Desalt.Core.Tests.Pipeline
     {
         public override Task<IExtendedResult<string>> ExecuteAsync(
             int input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult<IExtendedResult<string>>(
@@ -55,6 +57,7 @@ namespace Desalt.Core.Tests.Pipeline
     {
         public override Task<IExtendedResult<char[]>> ExecuteAsync(
             string input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult<IExtendedResult<char[]>>(new ExtendedResult<char[]>(input.ToCharArray()));
@@ -65,6 +68,7 @@ namespace Desalt.Core.Tests.Pipeline
     {
         public override Task<IExtendedResult<string>> ExecuteAsync(
             char[] input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult<IExtendedResult<string>>(new ExtendedResult<string>(new string(input)));
@@ -75,6 +79,7 @@ namespace Desalt.Core.Tests.Pipeline
     {
         public override Task<IExtendedResult<int>> ExecuteAsync(
             string input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult<IExtendedResult<int>>(new ExtendedResult<int>(int.Parse(input)));
@@ -85,6 +90,7 @@ namespace Desalt.Core.Tests.Pipeline
     {
         public override Task<IExtendedResult<double>> ExecuteAsync(
             string input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.FromResult<IExtendedResult<double>>(new ExtendedResult<double>(double.Parse(input)));

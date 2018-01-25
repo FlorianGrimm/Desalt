@@ -21,6 +21,7 @@ namespace Desalt.Core.Compiler
     {
         public override async Task<IExtendedResult<Project>> ExecuteAsync(
             CompilationRequest input,
+            CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
         {
             // try to open the project
