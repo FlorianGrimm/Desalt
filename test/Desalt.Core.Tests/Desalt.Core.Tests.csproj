@@ -149,6 +149,15 @@
     <Compile Include="Pipeline\FakePipelineStages.cs" />
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.AssignmentExpressions.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.Declarations.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.LeftHandSideExpressions.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.LiteralExpressions.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.SourceFile.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.Statements.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.Types.cs" />
+    <Compile Include="TypeScript\Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
   </ItemGroup>
