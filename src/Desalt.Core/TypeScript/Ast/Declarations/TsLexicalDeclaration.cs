@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a lexical declaration of the form 'const|let x: type, y: type = z;'.
     /// </summary>
-    internal class TsLexicalDeclaration : AstNode<TsVisitor>, ITsLexicalDeclaration
+    internal class TsLexicalDeclaration : AstNode, ITsLexicalDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

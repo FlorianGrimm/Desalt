@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an enum member of the form, 'name = value'.
     /// </summary>
-    internal class TsEnumMember : AstNode<TsVisitor>, ITsEnumMember
+    internal class TsEnumMember : AstNode, ITsEnumMember
     {
         //// ===========================================================================================================
         //// Constructors

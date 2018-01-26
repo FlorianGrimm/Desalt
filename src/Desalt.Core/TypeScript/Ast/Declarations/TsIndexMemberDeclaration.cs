@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an index member declaration in a class.
     /// </summary>
-    internal class TsIndexMemberDeclaration : AstNode<TsVisitor>, ITsIndexMemberDeclaration
+    internal class TsIndexMemberDeclaration : AstNode, ITsIndexMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

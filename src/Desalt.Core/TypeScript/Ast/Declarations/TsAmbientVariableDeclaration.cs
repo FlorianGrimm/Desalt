@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    internal class TsAmbientVariableDeclaration : AstNode<TsVisitor>, ITsAmbientVariableDeclaration
+    internal class TsAmbientVariableDeclaration : AstNode, ITsAmbientVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

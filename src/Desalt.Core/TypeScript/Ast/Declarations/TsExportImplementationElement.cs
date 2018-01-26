@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an exported element in a module file.
     /// </summary>
-    internal class TsExportImplementationElement : AstNode<TsVisitor>, ITsExportImplementationElement
+    internal class TsExportImplementationElement : AstNode, ITsExportImplementationElement
     {
         //// ===========================================================================================================
         //// Constructors

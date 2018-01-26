@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression, ITsSuperDotExpression
+    internal class TsMemberDotExpression : AstNode, ITsMemberDotExpression, ITsSuperDotExpression
     {
         //// ===========================================================================================================
         //// Constructors

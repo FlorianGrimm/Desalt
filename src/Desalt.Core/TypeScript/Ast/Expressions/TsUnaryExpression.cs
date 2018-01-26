@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    internal class TsUnaryExpression : AstNode<TsVisitor>, ITsUnaryExpression
+    internal class TsUnaryExpression : AstNode, ITsUnaryExpression
     {
         //// ===========================================================================================================
         //// Constructors

@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    internal class TsEmptyStatement : AstNode<TsVisitor>, ITsEmptyStatement
+    internal class TsEmptyStatement : AstNode, ITsEmptyStatement
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an element in an ambient namespace declaration.
     /// </summary>
-    internal class TsAmbientNamespaceElement : AstNode<TsVisitor>, ITsAmbientNamespaceElement
+    internal class TsAmbientNamespaceElement : AstNode, ITsAmbientNamespaceElement
     {
         //// ===========================================================================================================
         //// Constructors

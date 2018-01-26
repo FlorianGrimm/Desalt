@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.
     /// </summary>
-    internal class TsImportSpecifier : AstNode<TsVisitor>, ITsImportSpecifier
+    internal class TsImportSpecifier : AstNode, ITsImportSpecifier
     {
         //// ===========================================================================================================
         //// Constructors

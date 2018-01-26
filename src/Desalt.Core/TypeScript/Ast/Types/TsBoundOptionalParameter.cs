@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : AstNode<TsVisitor>, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors

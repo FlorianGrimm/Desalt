@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an object literal property function.
     /// </summary>
-    internal class TsPropertyFunction : AstNode<TsVisitor>, ITsPropertyFunction
+    internal class TsPropertyFunction : AstNode, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors

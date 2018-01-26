@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringParameter : AstNode<TsVisitor>, ITsStringRequiredParameter, ITsStringOptionalParameter
+    internal class TsStringParameter : AstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors

@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a class heritage of the form ' extends type implements type, type'.
     /// </summary>
-    internal class TsClassHeritage : AstNode<TsVisitor>, ITsClassHeritage
+    internal class TsClassHeritage : AstNode, ITsClassHeritage
     {
         //// ===========================================================================================================
         //// Constructors

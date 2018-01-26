@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
     /// </summary>
-    internal class TsObjectBindingPattern : AstNode<TsVisitor>, ITsObjectBindingPattern
+    internal class TsObjectBindingPattern : AstNode, ITsObjectBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors

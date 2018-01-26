@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a block statement of the form '{ statements }'.
     /// </summary>
-    internal class TsBlockStatement : AstNode<TsVisitor>, ITsBlockStatement
+    internal class TsBlockStatement : AstNode, ITsBlockStatement
     {
         //// ===========================================================================================================
         //// Constructors

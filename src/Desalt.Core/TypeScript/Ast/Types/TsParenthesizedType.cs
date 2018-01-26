@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : AstNode<TsVisitor>, ITsParenthesizedType
+    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors

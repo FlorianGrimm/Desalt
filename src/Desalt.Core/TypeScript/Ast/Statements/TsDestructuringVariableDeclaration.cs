@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsDestructuringVariableDeclaration : AstNode<TsVisitor>, ITsDestructuringVariableDeclaration
+    internal class TsDestructuringVariableDeclaration : AstNode, ITsDestructuringVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

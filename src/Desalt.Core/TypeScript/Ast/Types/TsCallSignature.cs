@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.
     /// </summary>
-    internal class TsCallSignature : AstNode<TsVisitor>, ITsCallSignature
+    internal class TsCallSignature : AstNode, ITsCallSignature
     {
         //// ===========================================================================================================
         //// Constructors

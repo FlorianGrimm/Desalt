@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents either a 'get' or a 'set' member accessor declaration in a class.
     /// </summary>
-    internal class TsGetSetAccessorMemberDeclaration : AstNode<TsVisitor>,
+    internal class TsGetSetAccessorMemberDeclaration : AstNode,
         ITsGetAccessorMemberDeclaration, ITsSetAccessorMemberDeclaration
     {
         //// ===========================================================================================================

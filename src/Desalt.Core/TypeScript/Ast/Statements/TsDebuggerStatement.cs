@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a 'debugger' statement.
     /// </summary>
-    internal class TsDebuggerStatement : AstNode<TsVisitor>, ITsDebuggerStatement
+    internal class TsDebuggerStatement : AstNode, ITsDebuggerStatement
     {
         //// ===========================================================================================================
         //// Member Variables

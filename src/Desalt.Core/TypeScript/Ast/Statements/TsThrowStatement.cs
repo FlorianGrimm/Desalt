@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a 'throw' statement.
     /// </summary>
-    internal class TsThrowStatement : AstNode<TsVisitor>, ITsThrowStatement
+    internal class TsThrowStatement : AstNode, ITsThrowStatement
     {
         //// ===========================================================================================================
         //// Constructors

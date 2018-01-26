@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
     /// </summary>
-    internal class TsIfStatement : AstNode<TsVisitor>, ITsIfStatement
+    internal class TsIfStatement : AstNode, ITsIfStatement
     {
         //// ===========================================================================================================
         //// Constructors

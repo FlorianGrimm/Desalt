@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an enum declaration.
     /// </summary>
-    internal class TsEnumDeclaration : AstNode<TsVisitor>, ITsEnumDeclaration
+    internal class TsEnumDeclaration : AstNode, ITsEnumDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

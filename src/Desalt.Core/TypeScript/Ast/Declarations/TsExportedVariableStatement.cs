@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an exported variable statement.
     /// </summary>
-    internal class TsExportedVariableStatement : AstNode<TsVisitor>, ITsExportedVariableStatement
+    internal class TsExportedVariableStatement : AstNode, ITsExportedVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors

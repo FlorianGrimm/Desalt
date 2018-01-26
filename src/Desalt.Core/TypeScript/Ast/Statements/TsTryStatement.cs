@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a try/catch/finally statement.
     /// </summary>
-    internal class TsTryStatement : AstNode<TsVisitor>, ITsTryStatement
+    internal class TsTryStatement : AstNode, ITsTryStatement
     {
         //// ===========================================================================================================
         //// Constructors

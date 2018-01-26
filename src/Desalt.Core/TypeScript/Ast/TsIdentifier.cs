@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : AstNode<TsVisitor>, ITsIdentifier
+    internal class TsIdentifier : AstNode, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables

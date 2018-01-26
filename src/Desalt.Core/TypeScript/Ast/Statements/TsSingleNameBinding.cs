@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
     /// </summary>
-    internal class TsSingleNameBinding : AstNode<TsVisitor>, ITsSingleNameBinding
+    internal class TsSingleNameBinding : AstNode, ITsSingleNameBinding
     {
         //// ===========================================================================================================
         //// Constructors

@@ -8,6 +8,7 @@
 namespace Desalt.Core.Ast
 {
     using Desalt.Core.Emit;
+    using Desalt.Core.TypeScript.Ast;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
@@ -31,9 +32,8 @@ namespace Desalt.Core.Ast
         /// <summary>
         /// Accepts the visitor by calling into a specific method on the visitor for this type of AST node.
         /// </summary>
-        /// <typeparam name="TVisitor">The specific type of visitor to accept.</typeparam>
         /// <param name="visitor">The visitor to visit.</param>
-        void Accept<TVisitor>(TVisitor visitor) where TVisitor : IAstVisitor;
+        void Accept(TsVisitor visitor);
 
         /// <summary>
         /// Emits this AST node into code using the specified <see cref="Emitter"/>.

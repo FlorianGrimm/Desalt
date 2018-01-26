@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a null literal.
     /// </summary>
-    internal class TsNullLiteral : AstNode<TsVisitor>, ITsNullLiteral
+    internal class TsNullLiteral : AstNode, ITsNullLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

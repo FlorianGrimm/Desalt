@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a 'with' statement of the form, 'with (expression) statement'.
     /// </summary>
-    internal class TsWithStatement : AstNode<TsVisitor>, ITsWithStatement
+    internal class TsWithStatement : AstNode, ITsWithStatement
     {
         //// ===========================================================================================================
         //// Constructors

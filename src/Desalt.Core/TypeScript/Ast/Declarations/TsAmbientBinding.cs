@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an ambient variable binding of the form 'name: type'.
     /// </summary>
-    internal class TsAmbientBinding : AstNode<TsVisitor>, ITsAmbientBinding
+    internal class TsAmbientBinding : AstNode, ITsAmbientBinding
     {
         //// ===========================================================================================================
         //// Constructors

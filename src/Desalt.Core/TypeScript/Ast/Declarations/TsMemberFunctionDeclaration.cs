@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a member function declaration in a class.
     /// </summary>
-    internal class TsFunctionMemberDeclaration : AstNode<TsVisitor>,
+    internal class TsFunctionMemberDeclaration : AstNode,
         ITsFunctionMemberDeclaration, ITsAmbientFunctionMemberDeclaration
     {
         //// ===========================================================================================================

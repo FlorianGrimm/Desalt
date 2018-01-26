@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.
     /// </summary>
-    internal class TsFunctionDeclaration : AstNode<TsVisitor>, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
+    internal class TsFunctionDeclaration : AstNode, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

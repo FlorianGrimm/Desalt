@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a class declaration.
     /// </summary>
-    internal class TsClassDeclaration : AstNode<TsVisitor>, ITsClassDeclaration
+    internal class TsClassDeclaration : AstNode, ITsClassDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

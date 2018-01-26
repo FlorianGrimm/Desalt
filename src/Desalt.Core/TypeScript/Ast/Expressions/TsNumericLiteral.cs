@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsNumericLiteral : AstNode<TsVisitor>, ITsNumericLiteral
+    internal class TsNumericLiteral : AstNode, ITsNumericLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
     /// </summary>
-    internal class TsSwitchStatement : AstNode<TsVisitor>, ITsSwitchStatement
+    internal class TsSwitchStatement : AstNode, ITsSwitchStatement
     {
         //// ===========================================================================================================
         //// Constructors

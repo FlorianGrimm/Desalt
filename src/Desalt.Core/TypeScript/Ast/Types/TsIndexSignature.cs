@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : AstNode<TsVisitor>, ITsIndexSignature
+    internal class TsIndexSignature : AstNode, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors

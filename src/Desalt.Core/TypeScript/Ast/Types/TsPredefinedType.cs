@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : AstNode<TsVisitor>, ITsType
+    internal class TsPredefinedType : AstNode, ITsType
     {
         //// ===========================================================================================================
         //// Member Variables

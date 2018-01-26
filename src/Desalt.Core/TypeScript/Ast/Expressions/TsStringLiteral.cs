@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : AstNode<TsVisitor>, ITsStringLiteral
+    internal class TsStringLiteral : AstNode, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a binary expression.
     /// </summary>
-    internal class TsBinaryExpression : AstNode<TsVisitor>, ITsBinaryExpression
+    internal class TsBinaryExpression : AstNode, ITsBinaryExpression
     {
         //// ===========================================================================================================
         //// Constructors

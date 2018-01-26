@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a simple variable declaration of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleVariableDeclaration : AstNode<TsVisitor>, ITsSimpleVariableDeclaration
+    internal class TsSimpleVariableDeclaration : AstNode, ITsSimpleVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

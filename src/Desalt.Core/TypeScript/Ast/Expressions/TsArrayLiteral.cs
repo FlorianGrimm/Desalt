@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteral : AstNode<TsVisitor>, ITsArrayLiteral
+    internal class TsArrayLiteral : AstNode, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors

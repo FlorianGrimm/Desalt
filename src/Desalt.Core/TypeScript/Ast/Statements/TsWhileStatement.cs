@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a while loop.
     /// </summary>
-    internal class TsWhileStatement : AstNode<TsVisitor>, ITsWhileStatement
+    internal class TsWhileStatement : AstNode, ITsWhileStatement
     {
         //// ===========================================================================================================
         //// Constructors

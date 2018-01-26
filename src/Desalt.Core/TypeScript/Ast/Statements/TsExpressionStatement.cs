@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents an expression in statement form.
     /// </summary>
-    internal class TsExpressionStatement : AstNode<TsVisitor>, ITsExpressionStatement
+    internal class TsExpressionStatement : AstNode, ITsExpressionStatement
     {
         //// ===========================================================================================================
         //// Constructors

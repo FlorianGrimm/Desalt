@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : AstNode<TsVisitor>, ITsTypeReference
+    internal class TsTypeReference : AstNode, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors

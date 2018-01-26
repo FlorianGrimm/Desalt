@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsDestructuringLexicalBinding : AstNode<TsVisitor>, ITsDestructuringLexicalBinding
+    internal class TsDestructuringLexicalBinding : AstNode, ITsDestructuringLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors

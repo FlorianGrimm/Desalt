@@ -19,7 +19,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a 'for' loop.
     /// </summary>
-    internal class TsForStatement : AstNode<TsVisitor>, ITsForStatement
+    internal class TsForStatement : AstNode, ITsForStatement
     {
         //// ===========================================================================================================
         //// Constructors

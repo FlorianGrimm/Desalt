@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an expression of the form 'new.target'.
     /// </summary>
-    internal class TsNewTargetExpression : AstNode<TsVisitor>, ITsNewTargetExpression
+    internal class TsNewTargetExpression : AstNode, ITsNewTargetExpression
     {
         //// ===========================================================================================================
         //// Member Variables

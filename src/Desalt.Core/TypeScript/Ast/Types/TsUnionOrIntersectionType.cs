@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// Represents a union type of the form 'type1 | type2' or an intersection type of the form
     /// 'type1 &amp; type2'.
     /// </summary>
-    internal class TsUnionOrIntersectionType : AstNode<TsVisitor>, ITsUnionType, ITsIntersectionType
+    internal class TsUnionOrIntersectionType : AstNode, ITsUnionType, ITsIntersectionType
     {
         //// ===========================================================================================================
         //// Constructors

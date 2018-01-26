@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents the 'this' type.
     /// </summary>
-    internal class TsThisType : AstNode<TsVisitor>, ITsThisType
+    internal class TsThisType : AstNode, ITsThisType
     {
         //// ===========================================================================================================
         //// Member Variables

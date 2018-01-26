@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a from clause in an import or export statement, of the form 'from moduleName'.
     /// </summary>
-    internal class TsFromClause : AstNode<TsVisitor>, ITsFromClause
+    internal class TsFromClause : AstNode, ITsFromClause
     {
         //// ===========================================================================================================
         //// Constructors

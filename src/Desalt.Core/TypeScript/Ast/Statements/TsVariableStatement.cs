@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x = y;'.
     /// </summary>
-    internal class TsVariableStatement : AstNode<TsVisitor>, ITsVariableStatement
+    internal class TsVariableStatement : AstNode, ITsVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a unary cast expression of the form, '&lt;Type&gt;.
     /// </summary>
-    internal class TsCastExpression : AstNode<TsVisitor>, ITsCastExpression
+    internal class TsCastExpression : AstNode, ITsCastExpression
     {
         //// ===========================================================================================================
         //// Constructors

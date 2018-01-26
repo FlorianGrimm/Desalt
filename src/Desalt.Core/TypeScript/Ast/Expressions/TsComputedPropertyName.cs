@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property name inside of an object of the form '[ expression ]'.
     /// </summary>
-    internal class TsComputedPropertyName : AstNode<TsVisitor>, ITsComputedPropertyName
+    internal class TsComputedPropertyName : AstNode, ITsComputedPropertyName
     {
         //// ===========================================================================================================
         //// Constructors

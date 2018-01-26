@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
     /// </summary>
-    internal class TsTypeParameters : AstNode<TsVisitor>, ITsTypeParameters
+    internal class TsTypeParameters : AstNode, ITsTypeParameters
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TsThis : AstNode<TsVisitor>, ITsThis
+    internal class TsThis : AstNode, ITsThis
     {
         //// ===========================================================================================================
         //// Member Variables

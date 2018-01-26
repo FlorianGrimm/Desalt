@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : AstNode<TsVisitor>, ITsPropertySignature
+    internal class TsPropertySignature : AstNode, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors

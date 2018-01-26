@@ -18,7 +18,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }',
     /// 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
     /// </summary>
-    internal class TsImportClause : AstNode<TsVisitor>, ITsImportClause
+    internal class TsImportClause : AstNode, ITsImportClause
     {
         //// ===========================================================================================================
         //// Constructors

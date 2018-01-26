@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents an array binding pattern of the form '[x = y, z, ...p]'.
     /// </summary>
-    internal class TsArrayBindingPattern : AstNode<TsVisitor>, ITsArrayBindingPattern
+    internal class TsArrayBindingPattern : AstNode, ITsArrayBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors

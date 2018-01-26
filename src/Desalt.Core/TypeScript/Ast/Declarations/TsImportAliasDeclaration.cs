@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
     /// </summary>
-    internal class TsImportAliasDeclaration : AstNode<TsVisitor>, ITsImportAliasDeclaration
+    internal class TsImportAliasDeclaration : AstNode, ITsImportAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

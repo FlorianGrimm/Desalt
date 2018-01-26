@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : AstNode<TsVisitor>, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors

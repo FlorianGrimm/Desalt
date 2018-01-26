@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a for-in or for-of loop of the form 'for (const x: type in|of expression) statement'.
     /// </summary>
-    internal class TsForInOrOfStatement : AstNode<TsVisitor>, ITsForInStatement, ITsForOfStatement
+    internal class TsForInOrOfStatement : AstNode, ITsForInStatement, ITsForOfStatement
     {
         //// ===========================================================================================================
         //// Constructors

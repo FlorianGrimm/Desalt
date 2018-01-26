@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a part of a template literal.
     /// </summary>
-    internal class TsTemplatePart : AstNode<TsVisitor>, ITsTemplatePart
+    internal class TsTemplatePart : AstNode, ITsTemplatePart
     {
         //// ===========================================================================================================
         //// Constructors

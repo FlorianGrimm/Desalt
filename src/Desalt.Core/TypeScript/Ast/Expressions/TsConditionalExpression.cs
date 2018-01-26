@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsConditionalExpression : AstNode<TsVisitor>, ITsConditionalExpression
+    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors

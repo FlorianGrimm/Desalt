@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : AstNode<TsVisitor>, ITsPropertyAssignment
+    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

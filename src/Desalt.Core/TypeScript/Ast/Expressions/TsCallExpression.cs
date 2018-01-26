@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a call epression of the form 'expression(arguments)'.
     /// </summary>
-    internal class TsCallExpression : AstNode<TsVisitor>, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
+    internal class TsCallExpression : AstNode, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
     {
         //// ===========================================================================================================
         //// Constructors

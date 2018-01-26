@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    internal class TsAssignmentExpression : AstNode<TsVisitor>, ITsAssignmentExpression
+    internal class TsAssignmentExpression : AstNode, ITsAssignmentExpression
     {
         //// ===========================================================================================================
         //// Constructors

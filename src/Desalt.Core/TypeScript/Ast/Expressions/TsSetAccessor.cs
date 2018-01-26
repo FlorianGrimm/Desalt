@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property set accessor of the form 'set name(value: type) { body }'.
     /// </summary>
-    internal class TsSetAccessor : AstNode<TsVisitor>, ITsSetAccessor
+    internal class TsSetAccessor : AstNode, ITsSetAccessor
     {
         //// ===========================================================================================================
         //// Constructors

@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
     /// </summary>
-    internal class TsQualifiedName : AstNode<TsVisitor>, ITsQualifiedName
+    internal class TsQualifiedName : AstNode, ITsQualifiedName
     {
         //// ===========================================================================================================
         //// Constructors

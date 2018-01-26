@@ -15,6 +15,7 @@ namespace Desalt.Core.Tests.Emit
     using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
+    using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -38,8 +39,7 @@ namespace Desalt.Core.Tests.Emit
 
             public string CodeDisplay => Name;
 
-            public void Accept<TVisitor>(TVisitor visitor) where TVisitor : IAstVisitor =>
-                throw new NotImplementedException();
+            public void Accept(TsVisitor visitor) => throw new NotImplementedException();
 
             public void Emit(Emitter emitter) => emitter.Write(Name);
         }

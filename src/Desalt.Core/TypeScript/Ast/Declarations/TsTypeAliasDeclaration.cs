@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
     /// </summary>
-    internal class TsTypeAliasDeclaration : AstNode<TsVisitor>, ITsTypeAliasDeclaration
+    internal class TsTypeAliasDeclaration : AstNode, ITsTypeAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

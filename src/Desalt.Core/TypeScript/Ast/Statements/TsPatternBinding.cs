@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a recursive pattern binding in an object or array binding.
     /// </summary>
-    internal class TsPatternBinding : AstNode<TsVisitor>, ITsPatternBinding
+    internal class TsPatternBinding : AstNode, ITsPatternBinding
     {
         //// ===========================================================================================================
         //// Constructors

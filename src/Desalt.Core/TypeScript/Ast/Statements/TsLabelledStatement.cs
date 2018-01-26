@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a labelled statement.
     /// </summary>
-    internal class TsLabelledStatement : AstNode<TsVisitor>, ITsLabelledStatement
+    internal class TsLabelledStatement : AstNode, ITsLabelledStatement
     {
         //// ===========================================================================================================
         //// Constructors

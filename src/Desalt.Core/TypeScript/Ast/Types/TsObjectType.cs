@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsObjectType : AstNode, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors

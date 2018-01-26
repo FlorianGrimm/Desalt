@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a member variable declaration in a class.
     /// </summary>
-    internal class TsVariableMemberDeclaration : AstNode<TsVisitor>,
+    internal class TsVariableMemberDeclaration : AstNode,
         ITsVariableMemberDeclaration, ITsAmbientVariableMemberDeclaration
     {
         //// ===========================================================================================================

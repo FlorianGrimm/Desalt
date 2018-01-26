@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression, ITsSuperBracketExpression
+    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression, ITsSuperBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors

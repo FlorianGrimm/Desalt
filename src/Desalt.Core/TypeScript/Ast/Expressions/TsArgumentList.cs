@@ -15,7 +15,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
     /// </summary>
-    internal class TsArgumentList : AstNode<TsVisitor>, ITsArgumentList
+    internal class TsArgumentList : AstNode, ITsArgumentList
     {
         //// ===========================================================================================================
         //// Constructors

@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents a simple lexical binding of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleLexicalBinding : AstNode<TsVisitor>, ITsSimpleLexicalBinding
+    internal class TsSimpleLexicalBinding : AstNode, ITsSimpleLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors

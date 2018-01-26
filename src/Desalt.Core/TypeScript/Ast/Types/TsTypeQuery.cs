@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a 'typeof' query.
     /// </summary>
-    internal class TsTypeQuery : AstNode<TsVisitor>, ITsTypeQuery
+    internal class TsTypeQuery : AstNode, ITsTypeQuery
     {
         //// ===========================================================================================================
         //// Constructors

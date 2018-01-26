@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
     /// </summary>
-    internal class TsImportRequireDeclaration : AstNode<TsVisitor>, ITsImportRequireDeclaration
+    internal class TsImportRequireDeclaration : AstNode, ITsImportRequireDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

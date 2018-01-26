@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents an arrow function expression of the form '() => body'.
     /// </summary>
-    internal class TsArrowFunction : AstNode<TsVisitor>, ITsArrowFunction
+    internal class TsArrowFunction : AstNode, ITsArrowFunction
     {
         //// ===========================================================================================================
         //// Constructors

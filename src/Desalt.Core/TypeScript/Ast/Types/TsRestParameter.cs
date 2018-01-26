@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    internal class TsRestParameter : AstNode<TsVisitor>, ITsRestParameter
+    internal class TsRestParameter : AstNode, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors

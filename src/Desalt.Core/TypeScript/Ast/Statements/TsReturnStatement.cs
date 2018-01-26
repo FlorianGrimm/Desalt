@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     /// <summary>
     /// Represents a 'return' statement.
     /// </summary>
-    internal class TsReturnStatement : AstNode<TsVisitor>, ITsReturnStatement
+    internal class TsReturnStatement : AstNode, ITsReturnStatement
     {
         //// ===========================================================================================================
         //// Constructors

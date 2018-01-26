@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// <summary>
     /// Represents an interface declaration.
     /// </summary>
-    internal class TsInterfaceDeclaration : AstNode<TsVisitor>, ITsInterfaceDeclaration
+    internal class TsInterfaceDeclaration : AstNode, ITsInterfaceDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

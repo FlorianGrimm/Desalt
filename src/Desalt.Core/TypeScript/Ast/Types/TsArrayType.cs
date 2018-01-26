@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : AstNode<TsVisitor>, ITsArrayType
+    internal class TsArrayType : AstNode, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors

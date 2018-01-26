@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
     /// </summary>
-    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
+    internal class TsGetAccessor : AstNode, ITsGetAccessor
     {
         //// ===========================================================================================================
         //// Constructors

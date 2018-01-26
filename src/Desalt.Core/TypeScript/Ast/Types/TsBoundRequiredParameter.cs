@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
     /// <summary>
     /// Represents a bound required parameter in a parameter list for a function.
     /// </summary>
-    internal class TsBoundRequiredParameter : AstNode<TsVisitor>, ITsBoundRequiredParameter
+    internal class TsBoundRequiredParameter : AstNode, ITsBoundRequiredParameter
     {
         //// ===========================================================================================================
         //// Constructors
