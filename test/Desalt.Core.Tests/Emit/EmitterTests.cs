@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Emit
             new Identifier("Three")
         };
 
-        private class Identifier : IAstNode
+        private sealed class Identifier : IAstNode
         {
             public Identifier(string name) => Name = name;
 

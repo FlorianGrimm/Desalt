@@ -116,7 +116,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         {
             get
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
 
                 if (DefaultBinding != null)
                 {

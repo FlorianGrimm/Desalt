@@ -190,12 +190,12 @@ namespace Desalt.Core.Emit
             }
 
             bool newlineAfterItems = false;
-            if (itemDelimiter.EndsWith("\r\n"))
+            if (itemDelimiter.EndsWith("\r\n", StringComparison.Ordinal))
             {
                 newlineAfterItems = true;
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 2);
             }
-            else if (itemDelimiter.EndsWith("\r") || itemDelimiter.EndsWith("\n"))
+            else if (itemDelimiter.EndsWith("\r", StringComparison.Ordinal) || itemDelimiter.EndsWith("\n", StringComparison.Ordinal))
             {
                 newlineAfterItems = true;
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 1);
