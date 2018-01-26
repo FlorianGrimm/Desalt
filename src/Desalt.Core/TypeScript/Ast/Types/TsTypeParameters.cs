@@ -8,7 +8,6 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>

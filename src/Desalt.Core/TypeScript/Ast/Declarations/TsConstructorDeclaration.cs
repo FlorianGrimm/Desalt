@@ -10,7 +10,6 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>

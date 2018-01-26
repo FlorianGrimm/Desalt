@@ -12,7 +12,6 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System.Collections.Immutable;
     using System.IO;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
 

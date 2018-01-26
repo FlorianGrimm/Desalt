@@ -9,7 +9,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>

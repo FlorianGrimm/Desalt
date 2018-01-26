@@ -12,7 +12,6 @@ namespace Desalt.Core.Tests.Emit
     using System.IO;
     using System.Linq;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;

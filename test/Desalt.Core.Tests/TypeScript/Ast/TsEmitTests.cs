@@ -8,7 +8,6 @@
 namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using System.IO;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;

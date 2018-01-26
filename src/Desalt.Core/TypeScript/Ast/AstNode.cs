@@ -5,11 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Ast
+namespace Desalt.Core.TypeScript.Ast
 {
     using System.Diagnostics;
     using Desalt.Core.Emit;
-    using Desalt.Core.TypeScript.Ast;
 
     /// <summary>
     /// Abstract base class for all abstract syntax tree (AST) nodes.

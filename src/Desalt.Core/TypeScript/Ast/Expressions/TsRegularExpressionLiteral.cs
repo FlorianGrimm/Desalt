@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 

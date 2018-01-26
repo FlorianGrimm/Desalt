@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>

@@ -9,7 +9,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
     using System.Globalization;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
 

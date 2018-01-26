@@ -9,7 +9,6 @@ namespace Desalt.Core.TypeScript.Ast
 {
     using System;
     using System.Collections.Generic;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 

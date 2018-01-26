@@ -7,8 +7,6 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
-    using Desalt.Core.Ast;
-
     /// <summary>
     /// Represents an <see cref="IAstNode"/> visitor that visits only the single node passed
     /// into its Visit method.

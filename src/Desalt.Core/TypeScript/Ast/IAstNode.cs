@@ -5,10 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Ast
+namespace Desalt.Core.TypeScript.Ast
 {
     using Desalt.Core.Emit;
-    using Desalt.Core.TypeScript.Ast;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.

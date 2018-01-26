@@ -8,7 +8,6 @@
 namespace Desalt.Core.TypeScript.Ast
 {
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
 
     /***********************************************************************************************

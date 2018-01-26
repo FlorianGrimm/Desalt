@@ -11,7 +11,6 @@ namespace Desalt.Core.TypeScript.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
