@@ -55,7 +55,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             VariableName.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);

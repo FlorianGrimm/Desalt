@@ -41,6 +41,6 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => ";";
 
-        public override void Emit(Emitter emitter) => emitter.WriteLine(";");
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteLine(";");
     }
 }

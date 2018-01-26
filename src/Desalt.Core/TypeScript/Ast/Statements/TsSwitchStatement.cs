@@ -43,7 +43,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"switch ({Condition}) {{ {Clauses.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("switch (");
             Condition.Emit(emitter);

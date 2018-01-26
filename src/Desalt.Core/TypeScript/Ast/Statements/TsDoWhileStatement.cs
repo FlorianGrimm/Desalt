@@ -41,7 +41,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"do {DoStatement} while ({WhileCondition});";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("do");
             DoStatement.EmitIndentedOrInBlock(emitter, prefixForIndentedStatement: "", prefixForBlock: " ");

@@ -43,6 +43,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

@@ -50,7 +50,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             OptionalParameters.ToElidedList() +
             RestParameter.CodeDisplay;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
             if (RequiredParameters.Length > 0 && OptionalParameters.Length > 0 || RestParameter != null)

@@ -47,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.OptionalTypeAnnotation();
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             if (IsOptional)

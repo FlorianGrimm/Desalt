@@ -46,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Condition.Emit(emitter);
             emitter.Write(" ? ");

@@ -90,7 +90,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
             $"{VariableName}{TypeAnnotation.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);

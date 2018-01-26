@@ -37,6 +37,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => "null";
 
-        public override void Emit(Emitter emitter) => emitter.Write("null");
+        protected override void EmitInternal(Emitter emitter) => emitter.Write("null");
     }
 }

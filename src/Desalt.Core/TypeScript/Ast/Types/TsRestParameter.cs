@@ -41,7 +41,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"... {ParameterName}{ParameterType.OptionalTypeAnnotation()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("... ");
             ParameterName.Emit(emitter);

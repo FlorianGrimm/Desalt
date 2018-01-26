@@ -47,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => (IsConst ? "const " : "let ") + $"{Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write(IsConst ? "const " : "let ");
             emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");

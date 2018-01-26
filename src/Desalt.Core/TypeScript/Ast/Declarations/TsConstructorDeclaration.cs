@@ -88,7 +88,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
 

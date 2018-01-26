@@ -42,6 +42,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

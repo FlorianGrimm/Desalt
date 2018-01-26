@@ -45,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("var ");
             emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");

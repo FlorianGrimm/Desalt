@@ -92,7 +92,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (SingleParameterName != null)
             {

@@ -45,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"namespace {NamespaceName} {{ {Body.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("namespace ");
             NamespaceName.Emit(emitter);

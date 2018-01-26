@@ -39,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{Type.CodeDisplay}[]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Type.Emit(emitter);
             emitter.Write("[]");

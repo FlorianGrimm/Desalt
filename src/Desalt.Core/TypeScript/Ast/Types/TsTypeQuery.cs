@@ -39,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"typeof {Query}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("typeof ");
             Query.Emit(emitter);

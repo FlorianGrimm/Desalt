@@ -41,7 +41,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"while ({WhileCondition}) {WhileStatement}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("while (");
             WhileCondition.Emit(emitter);

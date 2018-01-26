@@ -45,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => TypeParameters.IsEmpty ? "" : $"<{TypeParameters.ToElidedList()}>";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(
                 TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ", emptyContents: "");

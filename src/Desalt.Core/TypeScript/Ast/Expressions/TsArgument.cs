@@ -45,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Argument;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (IsSpreadArgument)
             {

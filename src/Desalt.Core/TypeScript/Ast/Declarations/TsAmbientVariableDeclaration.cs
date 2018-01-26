@@ -45,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"{DeclarationKind.CodeDisplay()}{Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             DeclarationKind.Emit(emitter);
             Declarations.EmitCommaList(emitter);

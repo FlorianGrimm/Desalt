@@ -46,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($" {Operator.ToCodeDisplay()} ");

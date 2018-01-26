@@ -59,7 +59,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (Modifier.HasValue)
             {

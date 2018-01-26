@@ -42,6 +42,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
-        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
     }
 }

@@ -40,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        public override void Emit(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter) =>
             emitter.WriteList(
                 TypeMembers,
                 indent: true,

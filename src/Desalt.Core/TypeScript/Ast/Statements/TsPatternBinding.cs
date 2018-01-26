@@ -41,7 +41,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"{BindingPattern}{Initializer.OptionalAssignment()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
             Initializer.EmitOptionalAssignment(emitter);

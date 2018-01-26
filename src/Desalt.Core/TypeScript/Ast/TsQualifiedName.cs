@@ -44,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast
 
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {

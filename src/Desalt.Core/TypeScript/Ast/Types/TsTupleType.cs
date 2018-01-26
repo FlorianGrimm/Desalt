@@ -42,7 +42,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

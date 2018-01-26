@@ -61,15 +61,24 @@ namespace Desalt.Core.Ast
         public abstract void Accept(TVisitor visitor);
 
         /// <summary>
-        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
-        /// </summary>
-        /// <param name="emitter">The emitter to use.</param>
-        public abstract void Emit(Emitter emitter);
-
-        /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString() => CodeDisplay;
+
+        /// <summary>
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// </summary>
+        /// <param name="emitter">The emitter to use.</param>
+        public void Emit(Emitter emitter)
+        {
+            EmitInternal(emitter);
+        }
+
+        /// <summary>
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// </summary>
+        /// <param name="emitter">The emitter to use.</param>
+        protected abstract void EmitInternal(Emitter emitter);
     }
 }
