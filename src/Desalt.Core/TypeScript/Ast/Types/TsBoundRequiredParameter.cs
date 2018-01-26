@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a bound required parameter in a parameter list for a function.
     /// </summary>
-    internal class TsBoundRequiredParameter : AstNode<TsVisitor>, ITsBoundRequiredParameter
+    internal class TsBoundRequiredParameter : AstNode, ITsBoundRequiredParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -59,7 +58,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (Modifier.HasValue)
             {

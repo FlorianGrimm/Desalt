@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsBooleanLiteral : AstNode<TsVisitor>, ITsBooleanLiteral
+    internal class TsBooleanLiteral : AstNode, ITsBooleanLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -46,6 +45,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => Value ? "true" : "false";
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

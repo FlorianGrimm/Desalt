@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Types
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : AstNode<TsVisitor>, ITsTypeReference
+    internal class TsTypeReference : AstNode, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +43,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay =>
             TypeArguments.Length == 0 ? TypeName.CodeDisplay : $"{TypeName}<{TypeArguments.ToElidedList()}>";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

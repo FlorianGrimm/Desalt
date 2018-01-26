@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.
     /// </summary>
-    internal class TsImportSpecifier : AstNode<TsVisitor>, ITsImportSpecifier
+    internal class TsImportSpecifier : AstNode, ITsImportSpecifier
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"${Name}" + (AsName != null ? $" as {AsName}" : "");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Name.Emit(emitter);
             if (AsName != null)

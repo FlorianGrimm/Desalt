@@ -10,14 +10,13 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents an interface declaration.
     /// </summary>
-    internal class TsInterfaceDeclaration : AstNode<TsVisitor>, ITsInterfaceDeclaration
+    internal class TsInterfaceDeclaration : AstNode, ITsInterfaceDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -54,7 +53,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             $"interface {InterfaceName}{TypeParameters}" +
             (ExtendsClause.IsEmpty ? "" : $" extends {ExtendsClause.ToElidedList()}") + Body;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("interface ");
             InterfaceName.Emit(emitter);

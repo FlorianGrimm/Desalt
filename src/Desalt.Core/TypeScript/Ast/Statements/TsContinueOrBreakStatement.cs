@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a continue or break statement of the form, 'continue|break [label]'.
     /// </summary>
-    internal class TsContinueOrBreakStatement : AstNode<TsVisitor>, ITsContinueStatement, ITsBreakStatement
+    internal class TsContinueOrBreakStatement : AstNode, ITsContinueStatement, ITsBreakStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -51,7 +50,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         public override string CodeDisplay =>
             (IsContinue ? "continue" : "break") + (Label == null ? "" : $" {Label}") + ";";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write(IsContinue ? "continue" : "break");
 

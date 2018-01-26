@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x = y;'.
     /// </summary>
-    internal class TsVariableStatement : AstNode<TsVisitor>, ITsVariableStatement
+    internal class TsVariableStatement : AstNode, ITsVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("var ");
             emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");

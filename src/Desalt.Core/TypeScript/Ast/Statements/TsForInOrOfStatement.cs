@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a for-in or for-of loop of the form 'for (const x: type in|of expression) statement'.
     /// </summary>
-    internal class TsForInOrOfStatement : AstNode<TsVisitor>, ITsForInStatement, ITsForOfStatement
+    internal class TsForInOrOfStatement : AstNode, ITsForInStatement, ITsForOfStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -108,7 +107,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("for (");
 

@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode<TsVisitor>, ITsMemberBracketExpression, ITsSuperBracketExpression
+    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression, ITsSuperBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -59,7 +58,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write("[");

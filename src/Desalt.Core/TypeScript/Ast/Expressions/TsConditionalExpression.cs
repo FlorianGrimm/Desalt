@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsConditionalExpression : AstNode<TsVisitor>, ITsConditionalExpression
+    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -46,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Condition.Emit(emitter);
             emitter.Write(" ? ");

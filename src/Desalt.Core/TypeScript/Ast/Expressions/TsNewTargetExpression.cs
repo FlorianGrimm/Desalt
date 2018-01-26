@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an expression of the form 'new.target'.
     /// </summary>
-    internal class TsNewTargetExpression : AstNode<TsVisitor>, ITsNewTargetExpression
+    internal class TsNewTargetExpression : AstNode, ITsNewTargetExpression
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -41,6 +40,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => "new.target";
 
-        public override void Emit(Emitter emitter) => emitter.Write("new.target");
+        protected override void EmitInternal(Emitter emitter) => emitter.Write("new.target");
     }
 }

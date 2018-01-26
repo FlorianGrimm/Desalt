@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
     /// </summary>
-    internal class TsObjectBindingPattern : AstNode<TsVisitor>, ITsObjectBindingPattern
+    internal class TsObjectBindingPattern : AstNode, ITsObjectBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"{{{Properties.ToElidedList()}}}";
 
-        public override void Emit(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter) =>
             emitter.WriteList(
                 Properties, indent: false, prefix: "{", suffix: "}", itemDelimiter: ", ", emptyContents: "{}");
     }

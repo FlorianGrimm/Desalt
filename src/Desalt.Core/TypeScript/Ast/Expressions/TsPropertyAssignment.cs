@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : AstNode<TsVisitor>, ITsPropertyAssignment
+    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             emitter.Write(": ");

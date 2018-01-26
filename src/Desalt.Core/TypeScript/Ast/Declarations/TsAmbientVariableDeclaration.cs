@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    internal class TsAmbientVariableDeclaration : AstNode<TsVisitor>, ITsAmbientVariableDeclaration
+    internal class TsAmbientVariableDeclaration : AstNode, ITsAmbientVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"{DeclarationKind.CodeDisplay()}{Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             DeclarationKind.Emit(emitter);
             Declarations.EmitCommaList(emitter);

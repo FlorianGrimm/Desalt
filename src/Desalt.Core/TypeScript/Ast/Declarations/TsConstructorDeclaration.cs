@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a constructor declaration in a class.
     /// </summary>
-    internal class TsConstructorDeclaration : AstNode<TsVisitor>,
+    internal class TsConstructorDeclaration : AstNode,
         ITsConstructorDeclaration, ITsAmbientConstructorDeclaration
     {
         //// ===========================================================================================================
@@ -88,7 +87,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
 

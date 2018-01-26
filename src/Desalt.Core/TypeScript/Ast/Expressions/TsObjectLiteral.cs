@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents on object literal of the form '{ PropertyDefinition... }'.
     /// </summary>
-    internal class TsObjectLiteral : AstNode<TsVisitor>, ITsObjectLiteral
+    internal class TsObjectLiteral : AstNode, ITsObjectLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,6 +41,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
-        public override void Emit(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
     }
 }

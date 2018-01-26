@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : AstNode<TsVisitor>, ITsType
+    internal class TsPredefinedType : AstNode, ITsType
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -50,6 +49,6 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => Name;
 
-        public override void Emit(Emitter emitter) => emitter.Write(Name);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(Name);
     }
 }

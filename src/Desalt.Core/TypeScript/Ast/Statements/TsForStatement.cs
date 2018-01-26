@@ -12,14 +12,13 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System.Collections.Immutable;
     using System.IO;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
 
     /// <summary>
     /// Represents a 'for' loop.
     /// </summary>
-    internal class TsForStatement : AstNode<TsVisitor>, ITsForStatement
+    internal class TsForStatement : AstNode, ITsForStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -135,7 +134,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("for (");
 

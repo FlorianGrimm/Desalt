@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
     /// </summary>
-    internal class TsImportDeclaration : AstNode<TsVisitor>, ITsImportDeclaration
+    internal class TsImportDeclaration : AstNode, ITsImportDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -48,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public override string CodeDisplay =>
             $"import {Module?.CodeDisplay}{ImportClause?.CodeDisplay} {FromClause?.CodeDisplay} ;";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("import ");
 

@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an array binding pattern of the form '[x = y, z, ...p]'.
     /// </summary>
-    internal class TsArrayBindingPattern : AstNode<TsVisitor>, ITsArrayBindingPattern
+    internal class TsArrayBindingPattern : AstNode, ITsArrayBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +42,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         public override string CodeDisplay =>
             "[" + Elements.ToElidedList() + (RestElement != null ? $", ... {RestElement}" : "") + "]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (RestElement != null)
             {

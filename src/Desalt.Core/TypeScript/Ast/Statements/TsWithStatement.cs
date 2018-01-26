@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'with' statement of the form, 'with (expression) statement'.
     /// </summary>
-    internal class TsWithStatement : AstNode<TsVisitor>, ITsWithStatement
+    internal class TsWithStatement : AstNode, ITsWithStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"with ({Expression}) {Statement}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("with (");
             Expression.Emit(emitter);

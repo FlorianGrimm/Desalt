@@ -8,7 +8,6 @@
 namespace Desalt.Core.TypeScript.Ast
 {
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
 
     /***********************************************************************************************
      * TypeScript Grammar, version 1.8 (Jan 2016)

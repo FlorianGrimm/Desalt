@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
     /// </summary>
-    internal class TsTypeParameter : AstNode<TsVisitor>, ITsTypeParameter
+    internal class TsTypeParameter : AstNode, ITsTypeParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

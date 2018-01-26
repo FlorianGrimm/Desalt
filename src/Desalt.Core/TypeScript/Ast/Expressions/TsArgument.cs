@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an argument in a call expression.
     /// </summary>
-    internal class TsArgument : AstNode<TsVisitor>, ITsArgument
+    internal class TsArgument : AstNode, ITsArgument
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Argument;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (IsSpreadArgument)
             {

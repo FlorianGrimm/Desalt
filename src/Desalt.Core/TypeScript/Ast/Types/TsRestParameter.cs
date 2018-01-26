@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    internal class TsRestParameter : AstNode<TsVisitor>, ITsRestParameter
+    internal class TsRestParameter : AstNode, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"... {ParameterName}{ParameterType.OptionalTypeAnnotation()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("... ");
             ParameterName.Emit(emitter);

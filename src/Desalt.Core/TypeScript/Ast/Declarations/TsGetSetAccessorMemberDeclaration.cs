@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents either a 'get' or a 'set' member accessor declaration in a class.
     /// </summary>
-    internal class TsGetSetAccessorMemberDeclaration : AstNode<TsVisitor>,
+    internal class TsGetSetAccessorMemberDeclaration : AstNode,
         ITsGetAccessorMemberDeclaration, ITsSetAccessorMemberDeclaration
     {
         //// ===========================================================================================================
@@ -70,7 +69,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
             (GetAccessor != null ? GetAccessor.CodeDisplay : SetAccessor.CodeDisplay);
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);

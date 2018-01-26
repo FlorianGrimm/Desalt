@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringParameter : AstNode<TsVisitor>, ITsStringRequiredParameter, ITsStringOptionalParameter
+    internal class TsStringParameter : AstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -57,7 +56,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             ParameterName.Emit(emitter);
             if (IsOptional)

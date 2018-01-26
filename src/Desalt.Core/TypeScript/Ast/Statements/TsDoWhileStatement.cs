@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a do/while statement.
     /// </summary>
-    internal class TsDoWhileStatement : AstNode<TsVisitor>, ITsDoWhileStatement
+    internal class TsDoWhileStatement : AstNode, ITsDoWhileStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"do {DoStatement} while ({WhileCondition});";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("do");
             DoStatement.EmitIndentedOrInBlock(emitter, prefixForIndentedStatement: "", prefixForBlock: " ");

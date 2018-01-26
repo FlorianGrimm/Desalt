@@ -11,13 +11,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.
     /// </summary>
-    internal class TsFunctionDeclaration : AstNode<TsVisitor>, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
+    internal class TsFunctionDeclaration : AstNode, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -109,7 +108,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("function");
 

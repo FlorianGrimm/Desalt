@@ -7,14 +7,13 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : AstNode<TsVisitor>, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,6 +42,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

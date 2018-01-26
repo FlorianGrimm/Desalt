@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a unary cast expression of the form, '&lt;Type&gt;.
     /// </summary>
-    internal class TsCastExpression : AstNode<TsVisitor>, ITsCastExpression
+    internal class TsCastExpression : AstNode, ITsCastExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +43,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"<{CastType}>{Expression}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("<");
             CastType.Emit(emitter);

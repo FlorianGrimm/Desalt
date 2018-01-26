@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an enum declaration.
     /// </summary>
-    internal class TsEnumDeclaration : AstNode<TsVisitor>, ITsEnumDeclaration
+    internal class TsEnumDeclaration : AstNode, ITsEnumDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -49,7 +48,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public override string CodeDisplay =>
             (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (IsConst)
             {

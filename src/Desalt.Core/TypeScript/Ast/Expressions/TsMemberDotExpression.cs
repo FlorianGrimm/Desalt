@@ -8,14 +8,13 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode<TsVisitor>, ITsMemberDotExpression, ITsSuperDotExpression
+    internal class TsMemberDotExpression : AstNode, ITsMemberDotExpression, ITsSuperDotExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -62,7 +61,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide}.{DotName}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($".{DotName}");

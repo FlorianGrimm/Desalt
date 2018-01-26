@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a lexical declaration of the form 'const|let x: type, y: type = z;'.
     /// </summary>
-    internal class TsLexicalDeclaration : AstNode<TsVisitor>, ITsLexicalDeclaration
+    internal class TsLexicalDeclaration : AstNode, ITsLexicalDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => (IsConst ? "const " : "let ") + $"{Declarations.ToElidedList()};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write(IsConst ? "const " : "let ");
             emitter.WriteList(Declarations, indent: false, itemDelimiter: ", ");

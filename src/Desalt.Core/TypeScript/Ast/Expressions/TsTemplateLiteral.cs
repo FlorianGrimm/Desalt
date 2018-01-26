@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode<TsVisitor>, ITsTemplateLiteral
+    internal class TsTemplateLiteral : AstNode, ITsTemplateLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"`{Parts.ToElidedList()}`";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("`");
             emitter.WriteList(Parts, indent: false);

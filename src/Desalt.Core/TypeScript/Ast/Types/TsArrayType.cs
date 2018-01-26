@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : AstNode<TsVisitor>, ITsArrayType
+    internal class TsArrayType : AstNode, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{Type.CodeDisplay}[]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Type.Emit(emitter);
             emitter.Write("[]");

@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a function declaration acting as an expression.
     /// </summary>
-    internal class TsFunctionExpression : AstNode<TsVisitor>, ITsFunctionExpression
+    internal class TsFunctionExpression : AstNode, ITsFunctionExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -50,7 +49,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             $"function {FunctionName.CodeDisplay}{CallSignature} " +
             $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("function");
 

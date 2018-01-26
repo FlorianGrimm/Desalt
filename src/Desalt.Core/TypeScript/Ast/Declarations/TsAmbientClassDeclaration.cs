@@ -10,14 +10,13 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents an ambient class declaration.
     /// </summary>
-    internal class TsAmbientClassDeclaration : AstNode<TsVisitor>, ITsAmbientClassDeclaration
+    internal class TsAmbientClassDeclaration : AstNode, ITsAmbientClassDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -53,7 +52,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public override string CodeDisplay =>
             $"class {ClassName}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("class ");
             ClassName.Emit(emitter);

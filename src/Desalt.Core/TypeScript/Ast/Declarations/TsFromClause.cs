@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a from clause in an import or export statement, of the form 'from moduleName'.
     /// </summary>
-    internal class TsFromClause : AstNode<TsVisitor>, ITsFromClause
+    internal class TsFromClause : AstNode, ITsFromClause
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"from {Module}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("from ");
             Module.Emit(emitter);

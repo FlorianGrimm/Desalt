@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a try/catch/finally statement.
     /// </summary>
-    internal class TsTryStatement : AstNode<TsVisitor>, ITsTryStatement
+    internal class TsTryStatement : AstNode, ITsTryStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -105,7 +104,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("try ");
             TryBlock.Emit(emitter);

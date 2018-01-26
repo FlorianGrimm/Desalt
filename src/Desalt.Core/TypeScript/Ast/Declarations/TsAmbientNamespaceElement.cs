@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an element in an ambient namespace declaration.
     /// </summary>
-    internal class TsAmbientNamespaceElement : AstNode<TsVisitor>, ITsAmbientNamespaceElement
+    internal class TsAmbientNamespaceElement : AstNode, ITsAmbientNamespaceElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -60,7 +59,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             HasExportKeyword ? "export " : "" +
             $"{Declaration?.CodeDisplay}{InterfaceDeclaration?.CodeDisplay}{ImportAliasDeclaration?.CodeDisplay}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (HasExportKeyword)
             {

@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : AstNode<TsVisitor>, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors
@@ -51,7 +50,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             $"{Modifier.OptionalCodeDisplay()}" +
             $"{ParameterName}${ParameterType.OptionalTypeAnnotation()} = {Initializer}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Modifier.EmitOptional(emitter);
 

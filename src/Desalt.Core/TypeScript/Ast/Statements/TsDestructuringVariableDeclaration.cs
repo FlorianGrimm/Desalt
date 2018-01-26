@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsDestructuringVariableDeclaration : AstNode<TsVisitor>, ITsDestructuringVariableDeclaration
+    internal class TsDestructuringVariableDeclaration : AstNode, ITsDestructuringVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         public override string CodeDisplay =>
             $"{BindingPattern}{VariableType.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
             VariableType.EmitOptionalTypeAnnotation(emitter);

@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an exported variable statement.
     /// </summary>
-    internal class TsExportedVariableStatement : AstNode<TsVisitor>, ITsExportedVariableStatement
+    internal class TsExportedVariableStatement : AstNode, ITsExportedVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"export {ExportedStatement}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("export ");
             ExportedStatement.Emit(emitter);

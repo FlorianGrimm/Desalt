@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
     /// </summary>
-    internal class TsTypeParameters : AstNode<TsVisitor>, ITsTypeParameters
+    internal class TsTypeParameters : AstNode, ITsTypeParameters
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => TypeParameters.IsEmpty ? "" : $"<{TypeParameters.ToElidedList()}>";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(
                 TypeParameters, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ", emptyContents: "");

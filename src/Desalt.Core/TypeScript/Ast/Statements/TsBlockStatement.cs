@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a block statement of the form '{ statements }'.
     /// </summary>
-    internal class TsBlockStatement : AstNode<TsVisitor>, ITsBlockStatement
+    internal class TsBlockStatement : AstNode, ITsBlockStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,6 +40,6 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
-        public override void Emit(Emitter emitter) => emitter.WriteBlock(Statements, skipNewlines: true);
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteBlock(Statements, skipNewlines: true);
     }
 }

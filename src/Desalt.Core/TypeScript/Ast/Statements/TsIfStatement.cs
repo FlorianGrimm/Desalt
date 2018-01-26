@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
     /// </summary>
-    internal class TsIfStatement : AstNode<TsVisitor>, ITsIfStatement
+    internal class TsIfStatement : AstNode, ITsIfStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +43,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         public override string CodeDisplay =>
             $"if ({IfCondition}) {IfStatement}" + (ElseStatement != null ? $" else {ElseStatement}" : "");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("if (");
             IfCondition.Emit(emitter);

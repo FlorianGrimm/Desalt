@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an element in an array.
     /// </summary>
-    internal class TsArrayElement : AstNode<TsVisitor>, ITsArrayElement
+    internal class TsArrayElement : AstNode, ITsArrayElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (IsSpreadElement)
             {

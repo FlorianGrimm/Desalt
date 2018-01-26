@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a method signature, which is a shorthand for declaring a property of a function type.
     /// </summary>
-    internal class TsMethodSignature : AstNode<TsVisitor>, ITsMethodSignature
+    internal class TsMethodSignature : AstNode, ITsMethodSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -56,7 +55,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             if (IsOptional)

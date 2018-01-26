@@ -9,14 +9,13 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
     using System.Globalization;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsNumericLiteral : AstNode<TsVisitor>, ITsNumericLiteral
+    internal class TsNumericLiteral : AstNode, ITsNumericLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -97,6 +96,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

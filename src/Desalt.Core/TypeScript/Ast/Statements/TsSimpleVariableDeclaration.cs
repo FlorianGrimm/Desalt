@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a simple variable declaration of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleVariableDeclaration : AstNode<TsVisitor>, ITsSimpleVariableDeclaration
+    internal class TsSimpleVariableDeclaration : AstNode, ITsSimpleVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -55,7 +54,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             VariableName.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);

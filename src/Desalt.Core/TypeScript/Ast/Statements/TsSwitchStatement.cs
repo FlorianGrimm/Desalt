@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
     /// </summary>
-    internal class TsSwitchStatement : AstNode<TsVisitor>, ITsSwitchStatement
+    internal class TsSwitchStatement : AstNode, ITsSwitchStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +42,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"switch ({Condition}) {{ {Clauses.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("switch (");
             Condition.Emit(emitter);

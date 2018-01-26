@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a class heritage of the form ' extends type implements type, type'.
     /// </summary>
-    internal class TsClassHeritage : AstNode<TsVisitor>, ITsClassHeritage
+    internal class TsClassHeritage : AstNode, ITsClassHeritage
     {
         //// ===========================================================================================================
         //// Constructors
@@ -48,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
             (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (ExtendsClause != null)
             {

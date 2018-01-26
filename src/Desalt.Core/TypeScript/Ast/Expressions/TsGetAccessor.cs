@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
     /// </summary>
-    internal class TsGetAccessor : AstNode<TsVisitor>, ITsGetAccessor
+    internal class TsGetAccessor : AstNode, ITsGetAccessor
     {
         //// ===========================================================================================================
         //// Constructors
@@ -50,7 +49,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             $"get {PropertyName}(){PropertyType.OptionalTypeAnnotation()} " +
             $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("get ");
             PropertyName.Emit(emitter);

@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Types
     using System;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript tuple type.
     /// </summary>
-    internal class TsTupleType : AstNode<TsVisitor>, ITsTupleType
+    internal class TsTupleType : AstNode, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,7 +41,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

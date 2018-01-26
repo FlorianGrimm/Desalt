@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteral : AstNode<TsVisitor>, ITsArrayLiteral
+    internal class TsArrayLiteral : AstNode, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : AstNode<TsVisitor>, ITsParenthesizedType
+    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"({Type.CodeDisplay})";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("(");
             Type.Emit(emitter);

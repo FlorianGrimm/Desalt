@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
     /// </summary>
-    internal class TsSingleNameBinding : AstNode<TsVisitor>, ITsSingleNameBinding
+    internal class TsSingleNameBinding : AstNode, ITsSingleNameBinding
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"{Name}{DefaultValue.OptionalAssignment()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Name.Emit(emitter);
             DefaultValue.EmitOptionalAssignment(emitter);

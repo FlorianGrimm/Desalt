@@ -118,11 +118,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\AstNode.cs" />
-    <Compile Include="Ast\AstNodeExtensions.cs" />
-    <Compile Include="Ast\AstVisitor.cs" />
-    <Compile Include="Ast\IAstNode.cs" />
-    <Compile Include="Ast\IAstVisitor.cs" />
     <Compile Include="CompilationRequest.cs" />
     <Compile Include="CompilerOptions.cs" />
     <Compile Include="Compiler\CompileProjectToTypeScriptStage.cs" />
@@ -142,6 +137,8 @@
     <Compile Include="Pipeline\SimplePipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SuccessResult.cs" />
+    <Compile Include="TypeScript\Ast\AstNode.cs" />
+    <Compile Include="TypeScript\Ast\AstNodeExtensions.cs" />
     <Compile Include="TypeScript\Ast\Declarations\TsAmbientBinding.cs" />
     <Compile Include="TypeScript\Ast\Declarations\TsAmbientClassDeclaration.cs" />
     <Compile Include="TypeScript\Ast\Declarations\TsAmbientNamespaceDeclaration.cs" />
@@ -209,6 +206,7 @@
     <Compile Include="TypeScript\Ast\Expressions\TsThis.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryOperator.cs" />
+    <Compile Include="TypeScript\Ast\IAstNode.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsContinueOrBreakStatement.cs" />

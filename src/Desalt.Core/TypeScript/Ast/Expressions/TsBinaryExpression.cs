@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a binary expression.
     /// </summary>
-    internal class TsBinaryExpression : AstNode<TsVisitor>, ITsBinaryExpression
+    internal class TsBinaryExpression : AstNode, ITsBinaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -46,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             LeftSide.Emit(emitter);
             emitter.Write($" {Operator.ToCodeDisplay()} ");

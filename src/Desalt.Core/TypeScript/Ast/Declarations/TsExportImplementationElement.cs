@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an exported element in a module file.
     /// </summary>
-    internal class TsExportImplementationElement : AstNode<TsVisitor>, ITsExportImplementationElement
+    internal class TsExportImplementationElement : AstNode, ITsExportImplementationElement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"export {ExportedElement}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("export ");
             ExportedElement.Emit(emitter);

@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an enum member of the form, 'name = value'.
     /// </summary>
-    internal class TsEnumMember : AstNode<TsVisitor>, ITsEnumMember
+    internal class TsEnumMember : AstNode, ITsEnumMember
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"{Name}{Value.OptionalAssignment()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             Name.Emit(emitter);
             Value.EmitOptionalAssignment(emitter);

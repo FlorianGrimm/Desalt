@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a null literal.
     /// </summary>
-    internal class TsNullLiteral : AstNode<TsVisitor>, ITsNullLiteral
+    internal class TsNullLiteral : AstNode, ITsNullLiteral
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -37,6 +36,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => "null";
 
-        public override void Emit(Emitter emitter) => emitter.Write("null");
+        protected override void EmitInternal(Emitter emitter) => emitter.Write("null");
     }
 }

@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'debugger' statement.
     /// </summary>
-    internal class TsDebuggerStatement : AstNode<TsVisitor>, ITsDebuggerStatement
+    internal class TsDebuggerStatement : AstNode, ITsDebuggerStatement
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -41,6 +40,6 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => "debugger;";
 
-        public override void Emit(Emitter emitter) => emitter.WriteLine("debugger;");
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteLine("debugger;");
     }
 }

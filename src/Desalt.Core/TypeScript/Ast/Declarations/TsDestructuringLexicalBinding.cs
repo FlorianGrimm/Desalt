@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
     /// </summary>
-    internal class TsDestructuringLexicalBinding : AstNode<TsVisitor>, ITsDestructuringLexicalBinding
+    internal class TsDestructuringLexicalBinding : AstNode, ITsDestructuringLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public override string CodeDisplay =>
             $"{BindingPattern}{VariableType.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
             VariableType.EmitOptionalTypeAnnotation(emitter);

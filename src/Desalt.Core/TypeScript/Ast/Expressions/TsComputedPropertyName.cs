@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property name inside of an object of the form '[ expression ]'.
     /// </summary>
-    internal class TsComputedPropertyName : AstNode<TsVisitor>, ITsComputedPropertyName
+    internal class TsComputedPropertyName : AstNode, ITsComputedPropertyName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("[");
             Expression.Emit(emitter);

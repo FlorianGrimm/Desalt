@@ -10,14 +10,13 @@ namespace Desalt.Core.TypeScript.Ast.Types
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a union type of the form 'type1 | type2' or an intersection type of the form
     /// 'type1 &amp; type2'.
     /// </summary>
-    internal class TsUnionOrIntersectionType : AstNode<TsVisitor>, ITsUnionType, ITsIntersectionType
+    internal class TsUnionOrIntersectionType : AstNode, ITsUnionType, ITsIntersectionType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -63,6 +62,6 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => Types.ToElidedList(Delimiter);
 
-        public override void Emit(Emitter emitter) => emitter.WriteList(Types, indent: false, itemDelimiter: Delimiter);
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteList(Types, indent: false, itemDelimiter: Delimiter);
     }
 }

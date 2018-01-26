@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a class declaration acting as an expression.
     /// </summary>
-    internal class TsClassExpression : AstNode<TsVisitor>, ITsClassExpression
+    internal class TsClassExpression : AstNode, ITsClassExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -48,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             $"class {ClassName}{Heritage?.CodeDisplay} {{ {ClassBody.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("class ");
             ClassName?.Emit(emitter);

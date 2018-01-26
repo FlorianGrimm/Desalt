@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Statements
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a case clause in a switch statement.
     /// </summary>
-    internal class TsSwitchClause : AstNode<TsVisitor>, ITsCaseClause, ITsDefaultClause
+    internal class TsSwitchClause : AstNode, ITsCaseClause, ITsDefaultClause
     {
         //// ===========================================================================================================
         //// Constructors
@@ -60,7 +59,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         public override string CodeDisplay =>
             Expression == null ? "default: " : "case {Expression}: " + $"{Statements.ToElidedList()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (Expression != null)
             {

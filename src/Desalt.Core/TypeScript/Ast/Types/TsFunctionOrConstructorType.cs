@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript function or constructor type.
     /// </summary>
-    internal class TsFunctionOrConstructorType : AstNode<TsVisitor>, ITsFunctionType, ITsConstructorType
+    internal class TsFunctionOrConstructorType : AstNode, ITsFunctionType, ITsConstructorType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -70,7 +69,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay =>
             (IsConstructorType ? "new " : "") + $"{TypeParameters}({Parameters?.CodeDisplay}) => {ReturnType}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (IsConstructorType)
             {

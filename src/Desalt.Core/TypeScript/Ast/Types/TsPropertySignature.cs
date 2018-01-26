@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : AstNode<TsVisitor>, ITsPropertySignature
+    internal class TsPropertySignature : AstNode, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.OptionalTypeAnnotation();
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             if (IsOptional)

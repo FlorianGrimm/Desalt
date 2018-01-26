@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : AstNode<TsVisitor>, ITsStringLiteral
+    internal class TsStringLiteral : AstNode, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors
@@ -42,6 +41,6 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 
         public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 
-        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
     }
 }

@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    internal class TsEmptyStatement : AstNode<TsVisitor>, ITsEmptyStatement
+    internal class TsEmptyStatement : AstNode, ITsEmptyStatement
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -41,6 +40,6 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => ";";
 
-        public override void Emit(Emitter emitter) => emitter.WriteLine(";");
+        protected override void EmitInternal(Emitter emitter) => emitter.WriteLine(";");
     }
 }

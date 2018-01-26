@@ -8,14 +8,13 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.TypeScript.Ast.Types;
 
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
     /// </summary>
-    internal class TsTypeAliasDeclaration : AstNode<TsVisitor>, ITsTypeAliasDeclaration
+    internal class TsTypeAliasDeclaration : AstNode, ITsTypeAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -47,7 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"type {AliasName}{TypeParameters} = {Type};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("type ");
             AliasName.Emit(emitter);

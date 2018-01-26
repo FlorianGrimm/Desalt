@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Ast
+namespace Desalt.Core.TypeScript.Ast
 {
     using System.Collections.Generic;
     using System.Text;

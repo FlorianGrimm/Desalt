@@ -7,15 +7,13 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
-    using Desalt.Core.Ast;
-
     /// <summary>
     /// Represents an <see cref="IAstNode"/> visitor that visits only the single node passed
     /// into its Visit method.
     /// </summary>
-    public abstract partial class TsVisitor : AstVisitor
+    public abstract partial class TsVisitor
     {
-        public override void Visit(IAstNode node) => node?.Accept(this);
+        public virtual void Visit(IAstNode node) => node?.Accept(this);
 
         /// <summary>
         /// Visits a TypeScript identifier.

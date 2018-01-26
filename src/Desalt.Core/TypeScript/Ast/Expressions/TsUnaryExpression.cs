@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    internal class TsUnaryExpression : AstNode<TsVisitor>, ITsUnaryExpression
+    internal class TsUnaryExpression : AstNode, ITsUnaryExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -68,7 +67,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             switch (Operator)
             {

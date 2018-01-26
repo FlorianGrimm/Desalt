@@ -9,14 +9,13 @@ namespace Desalt.Core.TypeScript.Ast
 {
     using System;
     using System.Collections.Generic;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : AstNode<TsVisitor>, ITsIdentifier
+    internal class TsIdentifier : AstNode, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -70,6 +69,6 @@ namespace Desalt.Core.TypeScript.Ast
 
         public override string CodeDisplay => Text;
 
-        public override void Emit(Emitter emitter) => emitter.Write(Text);
+        protected override void EmitInternal(Emitter emitter) => emitter.Write(Text);
     }
 }

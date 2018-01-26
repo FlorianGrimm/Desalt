@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a simple lexical binding of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleLexicalBinding : AstNode<TsVisitor>, ITsSimpleLexicalBinding
+    internal class TsSimpleLexicalBinding : AstNode, ITsSimpleLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors
@@ -55,7 +54,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             VariableName.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);

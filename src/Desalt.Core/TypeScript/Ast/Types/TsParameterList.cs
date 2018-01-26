@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a parameter list of the form '(parameter: type)'.
     /// </summary>
-    internal class TsParameterList : AstNode<TsVisitor>, ITsParameterList
+    internal class TsParameterList : AstNode, ITsParameterList
     {
         //// ===========================================================================================================
         //// Constructors
@@ -50,7 +49,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             OptionalParameters.ToElidedList() +
             RestParameter.CodeDisplay;
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
             if (RequiredParameters.Length > 0 && OptionalParameters.Length > 0 || RestParameter != null)

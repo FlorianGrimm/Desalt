@@ -9,14 +9,13 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing exported
     /// statements and declarations.
     /// </summary>
-    internal class TsImplementationModule : AstNode<TsVisitor>, ITsImplementationModule
+    internal class TsImplementationModule : AstNode, ITsImplementationModule
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"{GetType().Name}, Elements.Length = {Elements.Length}";
 
-        public override void Emit(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter) =>
             emitter.WriteList(Elements, indent: false, itemDelimiter: emitter.Options.Newline);
     }
 }

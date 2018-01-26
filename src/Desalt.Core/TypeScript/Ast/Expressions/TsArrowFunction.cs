@@ -11,13 +11,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an arrow function expression of the form '() => body'.
     /// </summary>
-    internal class TsArrowFunction : AstNode<TsVisitor>, ITsArrowFunction
+    internal class TsArrowFunction : AstNode, ITsArrowFunction
     {
         //// ===========================================================================================================
         //// Constructors
@@ -92,7 +91,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (SingleParameterName != null)
             {

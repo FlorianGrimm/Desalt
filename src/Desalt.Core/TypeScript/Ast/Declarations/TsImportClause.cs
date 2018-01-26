@@ -11,14 +11,13 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }',
     /// 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
     /// </summary>
-    internal class TsImportClause : AstNode<TsVisitor>, ITsImportClause
+    internal class TsImportClause : AstNode, ITsImportClause
     {
         //// ===========================================================================================================
         //// Constructors
@@ -141,7 +140,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (DefaultBinding != null)
             {

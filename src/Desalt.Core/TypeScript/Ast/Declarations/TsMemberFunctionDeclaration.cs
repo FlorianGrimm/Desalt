@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a member function declaration in a class.
     /// </summary>
-    internal class TsFunctionMemberDeclaration : AstNode<TsVisitor>,
+    internal class TsFunctionMemberDeclaration : AstNode,
         ITsFunctionMemberDeclaration, ITsAmbientFunctionMemberDeclaration
     {
         //// ===========================================================================================================
@@ -92,7 +91,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             $"{FunctionName}{CallSignature.CodeDisplay}" +
             (FunctionBody?.ToElidedList() ?? ";");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);

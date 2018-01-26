@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a part of a template literal.
     /// </summary>
-    internal class TsTemplatePart : AstNode<TsVisitor>, ITsTemplatePart
+    internal class TsTemplatePart : AstNode, ITsTemplatePart
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             (Template ?? "") + (Expression != null ? "${" + Expression + "}" : "");
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (Template != null)
             {

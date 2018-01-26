@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a call epression of the form 'expression(arguments)'.
     /// </summary>
-    internal class TsCallExpression : AstNode<TsVisitor>, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
+    internal class TsCallExpression : AstNode, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
     {
         //// ===========================================================================================================
         //// Constructors
@@ -84,7 +83,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             (Kind == CallKind.New ? "new " : "") + $"{LeftSide}{Arguments}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (Kind == CallKind.New)
             {

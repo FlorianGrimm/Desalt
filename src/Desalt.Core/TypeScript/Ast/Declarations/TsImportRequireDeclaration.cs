@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
     /// </summary>
-    internal class TsImportRequireDeclaration : AstNode<TsVisitor>, ITsImportRequireDeclaration
+    internal class TsImportRequireDeclaration : AstNode, ITsImportRequireDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"import {Name} = require({Require});";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("import ");
             Name.Emit(emitter);

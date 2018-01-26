@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a labelled statement.
     /// </summary>
-    internal class TsLabelledStatement : AstNode<TsVisitor>, ITsLabelledStatement
+    internal class TsLabelledStatement : AstNode, ITsLabelledStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -48,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"{Label}: {Statement?.CodeDisplay}{FunctionDeclaration?.CodeDisplay}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             int currentIndentLevel = emitter.IndentLevel;
 

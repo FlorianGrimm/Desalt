@@ -11,13 +11,12 @@ namespace Desalt.Core.TypeScript.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
     /// </summary>
-    internal class TsQualifiedName : AstNode<TsVisitor>, ITsQualifiedName
+    internal class TsQualifiedName : AstNode, ITsQualifiedName
     {
         //// ===========================================================================================================
         //// Constructors
@@ -44,7 +43,7 @@ namespace Desalt.Core.TypeScript.Ast
 
         public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {

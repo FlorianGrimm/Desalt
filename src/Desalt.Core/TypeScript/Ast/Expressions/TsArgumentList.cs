@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
     /// </summary>
-    internal class TsArgumentList : AstNode<TsVisitor>, ITsArgumentList
+    internal class TsArgumentList : AstNode, ITsArgumentList
     {
         //// ===========================================================================================================
         //// Constructors
@@ -43,7 +42,7 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
         public override string CodeDisplay =>
             (TypeArguments.IsEmpty ? "" : $"<{TypeArguments.ToElidedList()}>") + $"({Arguments.ToElidedList()})";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             if (!TypeArguments.IsEmpty)
             {

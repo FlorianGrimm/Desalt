@@ -10,13 +10,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an ambient namespace declaration.
     /// </summary>
-    internal class TsAmbientNamespaceDeclaration : AstNode<TsVisitor>, ITsAmbientNamespaceDeclaration
+    internal class TsAmbientNamespaceDeclaration : AstNode, ITsAmbientNamespaceDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -45,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"namespace {NamespaceName} {{ {Body.ToElidedList()} }}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("namespace ");
             NamespaceName.Emit(emitter);

@@ -7,13 +7,12 @@
 
 namespace Desalt.Core.TypeScript.Ast.Types
 {
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
     /// </summary>
-    internal class TsConstructSignature : AstNode<TsVisitor>, ITsConstructSignature
+    internal class TsConstructSignature : AstNode, ITsConstructSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -46,7 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay =>
             $"new {TypeParameters}(${ParameterList}){ReturnType.OptionalTypeAnnotation()}";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("new ");
             TypeParameters.Emit(emitter);

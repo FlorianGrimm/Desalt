@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
     /// </summary>
-    internal class TsImportAliasDeclaration : AstNode<TsVisitor>, ITsImportAliasDeclaration
+    internal class TsImportAliasDeclaration : AstNode, ITsImportAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -41,7 +40,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay => $"import {Alias} = {ImportedName};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("import ");
             Alias.Emit(emitter);

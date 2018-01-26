@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a 'throw' statement.
     /// </summary>
-    internal class TsThrowStatement : AstNode<TsVisitor>, ITsThrowStatement
+    internal class TsThrowStatement : AstNode, ITsThrowStatement
     {
         //// ===========================================================================================================
         //// Constructors
@@ -39,7 +38,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
         public override string CodeDisplay => $"throw {Expression};";
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("throw ");
             Expression.Emit(emitter);

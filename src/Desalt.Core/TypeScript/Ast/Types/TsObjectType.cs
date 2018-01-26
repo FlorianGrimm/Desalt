@@ -9,13 +9,12 @@ namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : AstNode<TsVisitor>, ITsObjectType
+    internal class TsObjectType : AstNode, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors
@@ -40,7 +39,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        public override void Emit(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter) =>
             emitter.WriteList(
                 TypeMembers,
                 indent: true,

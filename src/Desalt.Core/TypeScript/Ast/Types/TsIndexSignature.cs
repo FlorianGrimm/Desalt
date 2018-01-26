@@ -8,13 +8,12 @@
 namespace Desalt.Core.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Ast;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : AstNode<TsVisitor>, ITsIndexSignature
+    internal class TsIndexSignature : AstNode, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors
@@ -52,7 +51,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
             }
         }
 
-        public override void Emit(Emitter emitter)
+        protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("[");
             ParameterName.Emit(emitter);
