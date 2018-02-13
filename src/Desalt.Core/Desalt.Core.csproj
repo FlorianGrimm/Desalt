@@ -118,6 +118,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TypeScript\Ast\AstTriviaNode.cs" />
+    <Compile Include="TypeScript\Ast\IAstTriviaNode.cs" />
     <Compile Include="CompilationRequest.cs" />
     <Compile Include="CompilerOptions.cs" />
     <Compile Include="Compiler\CompileProjectToTypeScriptStage.cs" />
@@ -207,6 +209,8 @@
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="TypeScript\Ast\IAstNode.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsContinueOrBreakStatement.cs" />
@@ -234,6 +238,7 @@
     <Compile Include="TypeScript\Ast\TsAstFactory.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Declarations.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Expressions.cs" />
+    <Compile Include="TypeScript\Ast\TsAstFactory.Lexical.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.SourceFile.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Statements.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Types.cs" />
