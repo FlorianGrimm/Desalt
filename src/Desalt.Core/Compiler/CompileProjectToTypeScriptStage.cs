@@ -59,25 +59,39 @@ namespace Desalt.Core.Compiler
                 options.OutputPath,
                 Path.GetFileNameWithoutExtension(document.FilePath) + ".ts");
 
-            var diagnostics = new List<DiagnosticMessage>();
-
-            if (!(await document.GetSyntaxTreeAsync(cancellationToken) is CSharpSyntaxTree syntaxTree))
-            {
-                return new ExtendedResult<bool>(
-                    true,
-                    new[] { DiagnosticMessage.Info($"File does not contain a syntax tree: {document.FilePath}") });
-            }
-
-            diagnostics.AddRange(syntaxTree.GetDiagnostics().ToDiagnosticMessages());
-
             // TEMP - copy the original .cs file for easy comparing
             // ReSharper disable once AssignNullToNotNullAttribute
             File.Copy(document.FilePath, Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)));
 
+            var diagnostics = new List<DiagnosticMessage>();
+
+            // try to get the syntax tree
+            SyntaxTree rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
+            if (rawSyntaxTree == null || !(rawSyntaxTree is CSharpSyntaxTree syntaxTree))
+            {
+                return new ExtendedResult<bool>(
+                    false,
+                    DiagnosticMessage.Error($"File does not contain a syntax tree: {document.FilePath}")
+                        .ToSingleEnumerable());
+            }
+
+            // try to get the semantic model
+            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            if (semanticModel == null)
+            {
+                diagnostics.AddRange(syntaxTree.GetDiagnostics().ToDiagnosticMessages());
+                diagnostics.Add(
+                    DiagnosticMessage.Error($"File does not contain a semantic model: {document.FilePath}"));
+                return new ExtendedResult<bool>(false, diagnostics);
+            }
+
+            // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
+            diagnostics.AddRange(semanticModel.GetDiagnostics(null, cancellationToken).ToDiagnosticMessages());
+
             // translate the C# syntax tree to TypeScript
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<ITsImplementationSourceFile> translation =
-                await translator.TranslateSyntaxTreeAsync(syntaxTree, cancellationToken);
+                translator.TranslateSyntaxTreeAsync(syntaxTree, semanticModel, cancellationToken);
             diagnostics.AddRange(translation.Messages);
 
             using (var stream = new FileStream(

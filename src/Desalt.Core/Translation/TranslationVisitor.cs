@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Desalt.Core.Extensions;
@@ -15,9 +16,18 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    /// <summary>
+    /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.
+    /// </summary>
     internal sealed class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<IAstNode>>
     {
         private readonly List<DiagnosticMessage> _messages = new List<DiagnosticMessage>();
+        private readonly SemanticModel _semanticModel;
+
+        public TranslationVisitor(SemanticModel semanticModel)
+        {
+            _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
+        }
 
         public IEnumerable<DiagnosticMessage> Messages => _messages.AsEnumerable();
 
@@ -32,15 +42,14 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitCompilationUnit(CompilationUnitSyntax node)
         {
-            var elements = new List<ITsImplementationScriptElement>();
+            var elements = new List<ITsImplementationModuleElement>();
             foreach (MemberDeclarationSyntax member in node.Members)
             {
-                var element = Visit(member).Single() as ITsDeclaration;
+                var element = (ITsImplementationModuleElement)Visit(member).Single();
                 elements.Add(element);
             }
 
-            ITsImplementationScript implementationScript = TsAstFactory.ImplementationScript(elements.ToArray());
-
+            ITsImplementationModule implementationScript = TsAstFactory.ImplementationModule(elements.ToArray());
             return implementationScript.ToSingleEnumerable();
         }
 
@@ -49,15 +58,15 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-            var declarations = new List<ITsDeclaration>();
+            var elements = new List<ITsImplementationModuleElement>();
 
             foreach (MemberDeclarationSyntax member in node.Members)
             {
-                var declaration = Visit(member).Single() as ITsDeclaration;
-                declarations.Add(declaration);
+                var element = (ITsImplementationModuleElement)Visit(member).Single();
+                elements.Add(element);
             }
 
-            return declarations;
+            return elements;
         }
 
         /// <summary>
@@ -76,6 +85,14 @@ namespace Desalt.Core.Translation
                 body,
                 typeParameters,
                 extendsClause);
+
+            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility == Accessibility.Public)
+            {
+                ITsExportImplementationElement exportedInterfaceDeclaration =
+                    TsAstFactory.ExportImplementationElement(interfaceDeclaration);
+                return exportedInterfaceDeclaration.ToSingleEnumerable();
+            }
 
             return interfaceDeclaration.ToSingleEnumerable();
         }

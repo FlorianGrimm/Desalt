@@ -9,8 +9,8 @@ namespace Desalt.Core.Translation
 {
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,16 +23,16 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public async Task<IExtendedResult<ITsImplementationSourceFile>> TranslateSyntaxTreeAsync(
+        public IExtendedResult<ITsImplementationSourceFile> TranslateSyntaxTreeAsync(
             CSharpSyntaxTree syntaxTree,
+            SemanticModel semanticModel,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var walker = new TranslationVisitor();
+            var walker = new TranslationVisitor(semanticModel);
             CompilationUnitSyntax rootSyntaxNode = syntaxTree.GetCompilationUnitRoot(cancellationToken);
-            var typeScriptSourceFile = walker.Visit(rootSyntaxNode).Single() as ITsImplementationSourceFile;
+            var typeScriptSourceFile = (ITsImplementationSourceFile)walker.Visit(rootSyntaxNode).Single();
 
-            return await Task.FromResult<IExtendedResult<ITsImplementationSourceFile>>(
-                new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Messages));
+            return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Messages);
         }
     }
 }
