@@ -8,7 +8,7 @@
 namespace Desalt.Core
 {
     using System.Threading.Tasks;
-    using Desalt.Core.Compiler;
+    using Desalt.Core.CompilerStages;
     using Desalt.Core.Pipeline;
 
     public class DesaltCompiler

@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Compiler
+namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
