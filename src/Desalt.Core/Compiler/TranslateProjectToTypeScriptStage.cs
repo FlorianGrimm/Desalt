@@ -8,6 +8,7 @@
 namespace Desalt.Core.Compiler
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -18,7 +19,6 @@ namespace Desalt.Core.Compiler
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
 
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
@@ -61,38 +61,16 @@ namespace Desalt.Core.Compiler
 
             // TEMP - copy the original .cs file for easy comparing
             // ReSharper disable once AssignNullToNotNullAttribute
-            File.Copy(document.FilePath, Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)), overwrite: true);
-
-            var diagnostics = new List<DiagnosticMessage>();
-
-            // try to get the syntax tree
-            SyntaxTree rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
-            if (rawSyntaxTree == null || !(rawSyntaxTree is CSharpSyntaxTree syntaxTree))
-            {
-                return new ExtendedResult<bool>(
-                    false,
-                    DiagnosticMessage.Error($"File does not contain a syntax tree: {document.FilePath}")
-                        .ToSingleEnumerable());
-            }
-
-            // try to get the semantic model
-            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            if (semanticModel == null)
-            {
-                diagnostics.AddRange(syntaxTree.GetDiagnostics().ToDiagnosticMessages());
-                diagnostics.Add(
-                    DiagnosticMessage.Error($"File does not contain a semantic model: {document.FilePath}"));
-                return new ExtendedResult<bool>(false, diagnostics);
-            }
-
-            // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
-            diagnostics.AddRange(semanticModel.GetDiagnostics(null, cancellationToken).ToDiagnosticMessages());
+            File.Copy(
+                document.FilePath,
+                Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)),
+                overwrite: true);
 
             // translate the C# syntax tree to TypeScript
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<ITsImplementationSourceFile> translation =
-                translator.TranslateSyntaxTreeAsync(syntaxTree, semanticModel, cancellationToken);
-            diagnostics.AddRange(translation.Messages);
+                await translator.TranslateDocumentAsync(document, cancellationToken);
+            ImmutableArray<DiagnosticMessage> diagnostics = translation.Messages;
 
             using (var stream = new FileStream(
                 typeScriptFilePath,
