@@ -53,6 +53,12 @@ namespace Desalt.Core.Tests.Translation
             {
                 AssertTranslation("public interface ITest {}", "export interface ITest {\n}\n");
             }
+
+            [TestMethod]
+            public void An_interface_with_simple_methods_should_be_translated()
+            {
+                AssertTranslation("interface ITest { void DoSomething(); }", "interface ITest {\n  DoSomething(): void;\n}\n");
+            }
         }
     }
 }

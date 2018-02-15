@@ -15,21 +15,38 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.
     /// </summary>
     internal sealed class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<IAstNode>>
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
         private readonly List<DiagnosticMessage> _messages = new List<DiagnosticMessage>();
         private readonly SemanticModel _semanticModel;
+
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
 
         public TranslationVisitor(SemanticModel semanticModel)
         {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
         }
 
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
         public IEnumerable<DiagnosticMessage> Messages => _messages.AsEnumerable();
+
+        //// ===========================================================================================================
+        //// Visit Methods
+        //// ===========================================================================================================
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
@@ -45,11 +62,14 @@ namespace Desalt.Core.Translation
             var elements = new List<ITsImplementationModuleElement>();
             foreach (MemberDeclarationSyntax member in node.Members)
             {
-                var element = (ITsImplementationModuleElement)Visit(member).Single();
-                elements.Add(element);
+                var element = (ITsImplementationModuleElement)Visit(member).SingleOrDefault();
+                if (element != null)
+                {
+                    elements.Add(element);
+                }
             }
 
-            ITsImplementationModule implementationScript = TsAstFactory.ImplementationModule(elements.ToArray());
+            ITsImplementationModule implementationScript = Factory.ImplementationModule(elements.ToArray());
             return implementationScript.ToSingleEnumerable();
         }
 
@@ -62,8 +82,11 @@ namespace Desalt.Core.Translation
 
             foreach (MemberDeclarationSyntax member in node.Members)
             {
-                var element = (ITsImplementationModuleElement)Visit(member).Single();
-                elements.Add(element);
+                var element = (ITsImplementationModuleElement)Visit(member).SingleOrDefault();
+                if (element != null)
+                {
+                    elements.Add(element);
+                }
             }
 
             return elements;
@@ -74,13 +97,24 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
-            ITsIdentifier interfaceName = TsAstFactory.Identifier(node.Identifier.Text);
+            ITsIdentifier interfaceName = Factory.Identifier(node.Identifier.Text);
 
-            ITsObjectType body = TsAstFactory.ObjectType();
-            ITsTypeParameters typeParameters = TsAstFactory.TypeParameters();
+            // get the interface body
+            var typeMembers = new List<ITsTypeMember>();
+            foreach (MemberDeclarationSyntax member in node.Members)
+            {
+                var typeMember = (ITsTypeMember)Visit(member).SingleOrDefault();
+                if (typeMember != null)
+                {
+                    typeMembers.Add(typeMember);
+                }
+            }
+
+            ITsObjectType body = Factory.ObjectType(typeMembers.ToArray());
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
             IEnumerable<ITsTypeReference> extendsClause = Enumerable.Empty<ITsTypeReference>();
 
-            ITsInterfaceDeclaration interfaceDeclaration = TsAstFactory.InterfaceDeclaration(
+            ITsInterfaceDeclaration interfaceDeclaration = Factory.InterfaceDeclaration(
                 interfaceName,
                 body,
                 typeParameters,
@@ -90,11 +124,33 @@ namespace Desalt.Core.Translation
             if (symbol.DeclaredAccessibility == Accessibility.Public)
             {
                 ITsExportImplementationElement exportedInterfaceDeclaration =
-                    TsAstFactory.ExportImplementationElement(interfaceDeclaration);
+                    Factory.ExportImplementationElement(interfaceDeclaration);
                 return exportedInterfaceDeclaration.ToSingleEnumerable();
             }
 
             return interfaceDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a MethodDeclarationSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            ITsIdentifier functionName = Factory.Identifier(node.Identifier.Text);
+
+            // create the call signature
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+            ITsParameterList parameters = Factory.ParameterList();
+            ITsType returnType = Factory.VoidType;
+
+            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+
+            ITsMethodSignature functionDeclaration = Factory.MethodSignature(
+                functionName,
+                isOptional: false,
+                callSignature: callSignature);
+
+            return functionDeclaration.ToSingleEnumerable();
         }
     }
 }
