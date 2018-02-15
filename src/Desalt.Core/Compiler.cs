@@ -7,19 +7,26 @@
 
 namespace Desalt.Core
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Threading.Tasks;
     using Desalt.Core.CompilerStages;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
 
     public class Compiler
     {
         public async Task<IExtendedResult<bool>> ExecuteAsync(CompilationRequest compilationRequest)
         {
-            var pipeline = new SimplePipeline<CompilationRequest, bool>();
+            var pipeline = new SimplePipeline<CompilationRequest, IEnumerable<string>>();
             pipeline.AddStage(new OpenProjectStage());
+            pipeline.AddStage(new DetermineTranslatableDocumentsStage());
             pipeline.AddStage(new TranslateProjectStage());
 
-            return await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
+            IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
+
+            ImmutableArray<DiagnosticMessage> diagnostics = result.Messages.ToImmutableArray();
+            return new ExtendedResult<bool>(diagnostics.IsSuccess(compilationRequest.Options), diagnostics);
         }
     }
 }

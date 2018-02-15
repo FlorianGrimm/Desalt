@@ -14,16 +14,14 @@ namespace Desalt.Core.CompilerStages
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
-    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
     /// </summary>
-    internal class TranslateProjectStage : PipelineStage<Project, bool>
+    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContext>, IEnumerable<string>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -34,54 +32,53 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<bool>> ExecuteAsync(
-            Project input,
+        public override async Task<IExtendedResult<IEnumerable<string>>> ExecuteAsync(
+            IEnumerable<DocumentTranslationContext> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Directory.CreateDirectory(options.OutputPath);
-            IEnumerable<Task<IExtendedResult<string>>> tasks = input.Documents
-                .Where(document => document.Name == "ILogAppender.cs")
-                .Select(document => TranslateDocument(document, options, cancellationToken));
-            IExtendedResult<string>[] results = await Task.WhenAll(tasks);
+            await Task.Yield();
 
-            DiagnosticMessage[] mergedDiagnostics = results.SelectMany(result => result.Messages).ToArray();
-            return new ExtendedResult<bool>(mergedDiagnostics.IsSuccess(options), mergedDiagnostics);
+            Directory.CreateDirectory(options.OutputPath);
+
+            ImmutableArray<IExtendedResult<string>> results = input.Where(context => context.Document.Name == "ILogAppender.cs")
+                .AsParallel()
+                .Select(context => TranslateDocument(context, cancellationToken))
+                .ToImmutableArray();
+
+            IEnumerable<string> translatedFilePaths = results.Select(result => result.Result);
+            IEnumerable<DiagnosticMessage> mergedDiagnostics = results.SelectMany(result => result.Messages);
+
+            return new ExtendedResult<IEnumerable<string>>(translatedFilePaths, mergedDiagnostics);
         }
 
         /// <summary>
         /// Translates a single C# document into TypeScript.
         /// </summary>
-        /// <param name="document">The document to translate.</param>
-        /// <param name="options">The compiler options to use when translating.</param>
+        /// <param name="context">The document to translate.</param>
         /// <param name="cancellationToken">
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The file path to the translated TypeScript file.</returns>
-        private static async Task<IExtendedResult<string>> TranslateDocument(
-            Document document,
-            CompilerOptions options,
+        private static IExtendedResult<string> TranslateDocument(
+            DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            string typeScriptFilePath = Path.Combine(
-                options.OutputPath,
-                Path.GetFileNameWithoutExtension(document.FilePath) + ".ts");
-
             // TEMP - copy the original .cs file for easy comparing
             // ReSharper disable once AssignNullToNotNullAttribute
             File.Copy(
-                document.FilePath,
-                Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)),
+                context.Document.FilePath,
+                Path.Combine(context.Options.OutputPath, Path.GetFileName(context.Document.FilePath)),
                 overwrite: true);
 
             // translate the C# syntax tree to TypeScript
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<ITsImplementationSourceFile> translation =
-                await translator.TranslateDocumentAsync(document, cancellationToken);
+                translator.TranslateDocument(context, cancellationToken);
             ImmutableArray<DiagnosticMessage> diagnostics = translation.Messages;
 
             using (var stream = new FileStream(
-                typeScriptFilePath,
+                context.TypeScriptFilePath,
                 FileMode.Create,
                 FileAccess.ReadWrite,
                 FileShare.Read))
@@ -91,7 +88,7 @@ namespace Desalt.Core.CompilerStages
                 typeScriptImplementationFile?.Emit(emitter);
             }
 
-            return new ExtendedResult<string>(typeScriptFilePath, diagnostics);
+            return new ExtendedResult<string>(context.TypeScriptFilePath, diagnostics);
         }
     }
 }

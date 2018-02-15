@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Extensions;
@@ -44,6 +45,12 @@ namespace Desalt.Core.Translation
 
         public CSharpSyntaxTree SyntaxTree { get; }
         public SemanticModel SemanticModel { get; }
+
+        /// <summary>
+        /// Gets the output path for the translated TypeScript file.
+        /// </summary>
+        public string TypeScriptFilePath =>
+            Path.Combine(Options.OutputPath, Path.GetFileNameWithoutExtension(Document.FilePath) + ".ts");
 
         //// ===========================================================================================================
         //// Methods
