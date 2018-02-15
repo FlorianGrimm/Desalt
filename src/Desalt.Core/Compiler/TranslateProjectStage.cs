@@ -40,17 +40,25 @@ namespace Desalt.Core.Compiler
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Directory.CreateDirectory(options.OutputPath);
-            IEnumerable<Task<IExtendedResult<bool>>> tasks = input.Documents
+            IEnumerable<Task<IExtendedResult<string>>> tasks = input.Documents
                 .Where(document => document.Name == "ILogAppender.cs")
-                .Select(document => CompileToTypeScript(document, options, cancellationToken));
-            IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
+                .Select(document => TranslateDocument(document, options, cancellationToken));
+            IExtendedResult<string>[] results = await Task.WhenAll(tasks);
 
-            return new ExtendedResult<bool>(
-                results.All(result => result.Result),
-                results.SelectMany(result => result.Messages));
+            DiagnosticMessage[] mergedDiagnostics = results.SelectMany(result => result.Messages).ToArray();
+            return new ExtendedResult<bool>(mergedDiagnostics.IsSuccess(options), mergedDiagnostics);
         }
 
-        private async Task<IExtendedResult<bool>> CompileToTypeScript(
+        /// <summary>
+        /// Translates a single C# document into TypeScript.
+        /// </summary>
+        /// <param name="document">The document to translate.</param>
+        /// <param name="options">The compiler options to use when translating.</param>
+        /// <param name="cancellationToken">
+        /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
+        /// </param>
+        /// <returns>The file path to the translated TypeScript file.</returns>
+        private static async Task<IExtendedResult<string>> TranslateDocument(
             Document document,
             CompilerOptions options,
             CancellationToken cancellationToken)
@@ -83,7 +91,7 @@ namespace Desalt.Core.Compiler
                 typeScriptImplementationFile?.Emit(emitter);
             }
 
-            return new ExtendedResult<bool>(diagnostics.IsSuccess(options), diagnostics);
+            return new ExtendedResult<string>(typeScriptFilePath, diagnostics);
         }
     }
 }
