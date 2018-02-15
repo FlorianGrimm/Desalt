@@ -119,10 +119,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompilationRequest.cs" />
+    <Compile Include="Compiler.cs" />
     <Compile Include="CompilerOptions.cs" />
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
-    <Compile Include="DesaltCompiler.cs" />
     <Compile Include="DiagnosticMessage.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />

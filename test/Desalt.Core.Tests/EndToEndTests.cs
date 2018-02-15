@@ -31,7 +31,7 @@ namespace Desalt.Core.Tests
 
             var options = new CompilerOptions(outputPath);
             var request = new CompilationRequest(projectFilePath, options);
-            var compiler = new DesaltCompiler();
+            var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
 
             result.Messages.Should().BeEmpty();

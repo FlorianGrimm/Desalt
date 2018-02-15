@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="DesaltCompiler.cs" company="Justin Rockwood">
+// <copyright file="Compiler.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Desalt.Core
     using Desalt.Core.CompilerStages;
     using Desalt.Core.Pipeline;
 
-    public class DesaltCompiler
+    public class Compiler
     {
         public async Task<IExtendedResult<bool>> ExecuteAsync(CompilationRequest compilationRequest)
         {
