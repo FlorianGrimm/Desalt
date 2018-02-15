@@ -20,27 +20,24 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public class TranslationVisitorTests
     {
-        private static (CSharpSyntaxTree syntaxTree, TranslationVisitor visitor) CreateVisitorFromCode(string code)
-        {
-            var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(code);
-            CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly").AddSyntaxTrees(syntaxTree);
-            SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
-            return (syntaxTree, new TranslationVisitor(semanticModel));
-        }
-
         private static void AssertTranslation(string csharpCode, string expectedTypeScriptCode)
         {
-            (CSharpSyntaxTree syntaxTree, TranslationVisitor visitor) syntaxAndVisitor =
-                CreateVisitorFromCode(csharpCode);
-            CompilationUnitSyntax compilationUnit = syntaxAndVisitor.syntaxTree.GetCompilationUnitRoot();
-            IAstNode result = syntaxAndVisitor.visitor.Visit(compilationUnit).Single();
+            var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(csharpCode);
+            CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly").AddSyntaxTrees(syntaxTree);
+            SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
+            var visitor = new TranslationVisitor(semanticModel);
+
+            CompilationUnitSyntax compilationUnit = syntaxTree.GetCompilationUnitRoot();
+            IAstNode result = visitor.Visit(compilationUnit).Single();
+
+            visitor.Messages.Should().BeEmpty();
 
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
             result.EmitAsString(emitOptions: EmitOptions.UnixSpaces).Should().Be(expectedTypeScriptCode);
         }
 
         [TestClass]
-        public class VisitInterfaceDeclarationTests
+        public class InterfaceDeclarationTests
         {
             [TestMethod]
             public void Bare_interface_declaration_without_accessibility_should_not_be_exported()
@@ -55,9 +52,17 @@ namespace Desalt.Core.Tests.Translation
             }
 
             [TestMethod]
-            public void An_interface_with_simple_methods_should_be_translated()
+            public void A_method_declaration_with_no_parameters_and_a_void_return_type_should_be_translated()
             {
-                AssertTranslation("interface ITest { void DoSomething(); }", "interface ITest {\n  DoSomething(): void;\n}\n");
+                AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  Do(): void;\n}\n");
+            }
+
+            [TestMethod]
+            public void A_method_declaration_with_simple_parameters_and_a_void_return_type_should_be_translated()
+            {
+                AssertTranslation(
+                    "interface ITest { void Do(string x, string y); }",
+                    "interface ITest {\n  Do(x: string, y: string): void;\n}\n");
             }
         }
     }

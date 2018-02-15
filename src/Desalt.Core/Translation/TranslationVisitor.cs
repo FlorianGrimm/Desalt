@@ -134,14 +134,15 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a MethodDeclarationSyntax node.
         /// </summary>
+        /// <returns>A <see cref="ITsMethodSignature"/>.</returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             ITsIdentifier functionName = Factory.Identifier(node.Identifier.Text);
 
             // create the call signature
             ITsTypeParameters typeParameters = Factory.TypeParameters();
-            ITsParameterList parameters = Factory.ParameterList();
-            ITsType returnType = Factory.VoidType;
+            var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
+            ITsType returnType = TypeTranslator.TranslateSymbol(node.ReturnType.GetTypeSymbol(_semanticModel));
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
@@ -151,6 +152,56 @@ namespace Desalt.Core.Translation
                 callSignature: callSignature);
 
             return functionDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ParameterListSyntax node.
+        /// </summary>
+        /// <returns>A <see cref="ITsParameterList"/>.</returns>
+        public override IEnumerable<IAstNode> VisitParameterList(ParameterListSyntax node)
+        {
+            var requiredParameters = new List<ITsRequiredParameter>();
+            var optionalParameters = new List<ITsOptionalParameter>();
+            ITsRestParameter restParameter = null;
+
+            foreach (ParameterSyntax parameterNode in node.Parameters)
+            {
+                IAstNode parameter = Visit(parameterNode).Single();
+                if (parameter is ITsRequiredParameter requiredParameter)
+                {
+                    requiredParameters.Add(requiredParameter);
+                }
+                else
+                {
+                    optionalParameters.Add((ITsOptionalParameter)parameter);
+                }
+            }
+
+            ITsParameterList parameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
+            return parameterList.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ParameterSyntax node.
+        /// </summary>
+        /// <returns>Either a <see cref="ITsBoundRequiredParameter"/> or a <see cref="ITsBoundOptionalParameter"/>.</returns>
+        public override IEnumerable<IAstNode> VisitParameter(ParameterSyntax node)
+        {
+            ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
+            ITsType parameterType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel));
+            IAstNode parameter;
+
+            if (node.Default == null)
+            {
+                parameter = Factory.BoundRequiredParameter(parameterName, parameterType);
+            }
+            else
+            {
+                var initializer = (ITsExpression)Visit(node.Default).Single();
+                parameter = Factory.BoundOptionalParameter(parameterName, initializer, parameterType);
+            }
+
+            return parameter.ToSingleEnumerable();
         }
     }
 }
