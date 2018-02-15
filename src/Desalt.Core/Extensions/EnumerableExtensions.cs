@@ -28,6 +28,7 @@ namespace Desalt.Core.Extensions
         /// </returns>
         public static T[] ToSafeArray<T>(this T item)
         {
+            // ReSharper disable once CompareNonConstrainedGenericWithNull
             if (item == null)
             {
                 return new T[0];
@@ -75,8 +76,7 @@ namespace Desalt.Core.Extensions
         /// <param name="items">The items to add.</param>
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
-            var list = collection as List<T>;
-            if (list != null)
+            if (collection is List<T> list)
             {
                 list.AddRange(items);
             }
