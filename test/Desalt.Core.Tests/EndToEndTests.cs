@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Tests
 {
-    using System.IO;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,10 +24,10 @@ namespace Desalt.Core.Tests
             const string outputPath = @"D:\github\Desalt\TestResults\CoreSubset";
             const string projectFilePath = @"D:\github\Desalt\test\SaltarelleProjectTests\CoreSubset\CoreSubset.csproj";
 
-            foreach (string file in Directory.EnumerateFiles(outputPath))
-            {
-                File.Delete(file);
-            }
+            //foreach (string file in Directory.EnumerateFiles(outputPath))
+            //{
+            //    File.Delete(file);
+            //}
 
             var options = new CompilerOptions(outputPath);
             var request = new CompilationRequest(projectFilePath, options);
