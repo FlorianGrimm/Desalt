@@ -105,8 +105,7 @@ namespace Desalt.Core.Compiler
                 typeScriptImplementationFile?.Emit(emitter);
             }
 
-            bool successful = options.WarningsAsErrors ? diagnostics.NoErrorsOrWarnings() : diagnostics.NoErrors();
-            return new ExtendedResult<bool>(successful, diagnostics);
+            return new ExtendedResult<bool>(diagnostics.IsSuccess(options), diagnostics);
         }
     }
 }

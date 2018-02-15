@@ -55,5 +55,23 @@ namespace Desalt.Core.Extensions
         {
             return diagnostics.All(diagnostic => !diagnostic.IsError && !diagnostic.IsWarning);
         }
+
+        /// <summary>
+        /// Returns a value indicating whether none of the messages indicate a failure. If <see
+        /// cref="CompilerOptions.WarningsAsErrors"/> is true, then "success" means that there are no
+        /// error or warning messages. Otherwise, "success" means the absence of error messages.
+        /// </summary>
+        /// <param name="diagnostics">A list of <see cref="DiagnosticMessage"/> messages.</param>
+        /// <param name="options">The compiler options to use for determining "success".</param>
+        /// <returns>
+        /// true if there are no error messages and if <see cref="CompilerOptions.WarningsAsErrors"/>
+        /// is true, then also no warning messages; false if there are any error messages or warning
+        /// messages (if <see cref="CompilerOptions.WarningsAsErrors"/> is true).
+        /// </returns>
+        public static bool IsSuccess(this IEnumerable<DiagnosticMessage> diagnostics, CompilerOptions options)
+        {
+            bool successful = options.WarningsAsErrors ? diagnostics.NoErrorsOrWarnings() : diagnostics.NoErrors();
+            return successful;
+        }
     }
 }
