@@ -17,7 +17,7 @@ namespace Desalt.Core
         {
             var pipeline = new SimplePipeline<CompilationRequest, bool>();
             pipeline.AddStage(new OpenProjectStage());
-            pipeline.AddStage(new CompileProjectToTypeScriptStage());
+            pipeline.AddStage(new TranslateProjectToTypeScriptStage());
 
             return await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
         }

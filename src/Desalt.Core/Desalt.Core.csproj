@@ -120,8 +120,8 @@
   <ItemGroup>
     <Compile Include="CompilationRequest.cs" />
     <Compile Include="CompilerOptions.cs" />
-    <Compile Include="Compiler\CompileProjectToTypeScriptStage.cs" />
     <Compile Include="Compiler\OpenProjectStage.cs" />
+    <Compile Include="Compiler\TranslateProjectToTypeScriptStage.cs" />
     <Compile Include="DesaltCompiler.cs" />
     <Compile Include="DiagnosticMessage.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
