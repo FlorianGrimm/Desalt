@@ -17,6 +17,27 @@ namespace Desalt.Core.Extensions
     public static class EnumerableExtensions
     {
         /// <summary>
+        /// Converts an item into an enumerable of one item.
+        /// </summary>
+        /// <typeparam name="T">The type of the element.</typeparam>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> ToSingleEnumerable<T>(this T item)
+        {
+            if (item is IEnumerable<T> enumerable)
+            {
+                foreach (T element in enumerable)
+                {
+                    yield return element;
+                }
+            }
+            else
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>
         /// Converts an item to an array if it's not already.
         /// </summary>
         /// <typeparam name="T">The type of the element.</typeparam>
