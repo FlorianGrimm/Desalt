@@ -17,6 +17,27 @@ namespace Desalt.Core.Extensions
     public static class EnumerableExtensions
     {
         /// <summary>
+        /// Converts an item into an enumerable of one item.
+        /// </summary>
+        /// <typeparam name="T">The type of the element.</typeparam>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> ToSingleEnumerable<T>(this T item)
+        {
+            if (item is IEnumerable<T> enumerable)
+            {
+                foreach (T element in enumerable)
+                {
+                    yield return element;
+                }
+            }
+            else
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>
         /// Converts an item to an array if it's not already.
         /// </summary>
         /// <typeparam name="T">The type of the element.</typeparam>
@@ -28,6 +49,7 @@ namespace Desalt.Core.Extensions
         /// </returns>
         public static T[] ToSafeArray<T>(this T item)
         {
+            // ReSharper disable once CompareNonConstrainedGenericWithNull
             if (item == null)
             {
                 return new T[0];
@@ -75,8 +97,7 @@ namespace Desalt.Core.Extensions
         /// <param name="items">The items to add.</param>
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
-            var list = collection as List<T>;
-            if (list != null)
+            if (collection is List<T> list)
             {
                 list.AddRange(items);
             }

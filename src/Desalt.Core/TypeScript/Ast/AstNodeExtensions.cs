@@ -9,7 +9,9 @@ namespace Desalt.Core.TypeScript.Ast
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Text;
+    using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -74,6 +76,28 @@ namespace Desalt.Core.TypeScript.Ast
         {
             AstNode classNode = node as AstNode ?? throw new InvalidCastException();
             return (T)(object)classNode.WithLeadingTrivia<AstNode>(trivia);
+        }
+
+        /// <summary>
+        /// Emits a node using a string stream. Useful for unit tests and debugging.
+        /// </summary>
+        /// <param name="node">The node to emit.</param>
+        /// <param name="emitOptions">The optional emit options.</param>
+        /// <returns>The node emitted to a string stream.</returns>
+        public static string EmitAsString(this IAstNode node, EmitOptions emitOptions = null)
+        {
+            using (var stream = new MemoryStream())
+            using (var emitter = new Emitter(stream, options: emitOptions))
+            {
+                node.Emit(emitter);
+                stream.Flush();
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream, emitter.Encoding))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
         }
     }
 }

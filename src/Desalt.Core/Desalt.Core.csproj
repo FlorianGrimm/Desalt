@@ -118,6 +118,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
+    <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="TypeScript\Ast\AstTriviaNode.cs" />
     <Compile Include="TypeScript\Ast\IAstTriviaNode.cs" />
     <Compile Include="CompilationRequest.cs" />

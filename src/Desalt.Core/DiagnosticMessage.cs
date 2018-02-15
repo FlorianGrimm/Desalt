@@ -98,6 +98,35 @@ namespace Desalt.Core
             return new DiagnosticMessage(DiagnosticSeverity.Error, message);
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            string prefix;
+            switch (_severity)
+            {
+                case DiagnosticSeverity.Error:
+                    prefix = "error";
+                    break;
+
+                case DiagnosticSeverity.Warning:
+                    prefix = "warning";
+                    break;
+
+                case DiagnosticSeverity.Info:
+                    prefix = "info";
+                    break;
+
+                default:
+                    prefix = "";
+                    break;
+            }
+
+            return $"{prefix}: {Message}";
+        }
+
         internal static DiagnosticMessage FromDiagnostic(Diagnostic diagnostic)
         {
             return new DiagnosticMessage(diagnostic.Severity, diagnostic.ToString());

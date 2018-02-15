@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Compiler
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
@@ -28,7 +27,7 @@ namespace Desalt.Core.Compiler
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Project project = await workspace.OpenProjectAsync(input.ProjectFilePath, cancellationToken);
 
-            return new ExtendedResult<Project>(project, new List<DiagnosticMessage>());
+            return new ExtendedResult<Project>(project);
         }
     }
 }

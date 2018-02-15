@@ -7,7 +7,9 @@
 
 namespace Desalt.Core.Tests
 {
+    using System.IO;
     using System.Threading.Tasks;
+    using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -20,11 +22,20 @@ namespace Desalt.Core.Tests
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
             // TODO: generalize this so that it's not an absolute path
+            const string outputPath = @"D:\github\Desalt\TestResults\CoreSubset";
             const string projectFilePath = @"D:\github\Desalt\test\SaltarelleProjectTests\CoreSubset\CoreSubset.csproj";
-            var options = new CompilerOptions(@"D:\github\Desalt\TestResults\CoreSubset");
+
+            foreach (string file in Directory.EnumerateFiles(outputPath))
+            {
+                File.Delete(file);
+            }
+
+            var options = new CompilerOptions(outputPath);
             var request = new CompilationRequest(projectFilePath, options);
             var compiler = new DesaltCompiler();
-            await compiler.ExecuteAsync(request);
+            IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
+
+            result.Messages.Should().BeEmpty();
         }
     }
 }

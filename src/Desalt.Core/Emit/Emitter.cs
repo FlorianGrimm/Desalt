@@ -23,6 +23,10 @@ namespace Desalt.Core.Emit
         //// Member Variables
         //// ===========================================================================================================
 
+        public static readonly Encoding DefaultEncoding = new UTF8Encoding(
+            encoderShouldEmitUTF8Identifier: false,
+            throwOnInvalidBytes: true);
+
         private readonly StreamWriter _streamWriter;
         private readonly IndentedTextWriter _writer;
 
@@ -37,7 +41,7 @@ namespace Desalt.Core.Emit
                 throw new ArgumentNullException(nameof(outputStream));
             }
 
-            Encoding = encoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+            Encoding = encoding ?? DefaultEncoding;
             Options = options ?? EmitOptions.Default;
 
             _streamWriter = new StreamWriter(outputStream, Encoding, bufferSize: 1024, leaveOpen: true)

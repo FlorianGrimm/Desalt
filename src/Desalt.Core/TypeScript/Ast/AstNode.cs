@@ -92,12 +92,6 @@ namespace Desalt.Core.TypeScript.Ast
         }
 
         /// <summary>
-        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
-        /// </summary>
-        /// <param name="emitter">The emitter to use.</param>
-        protected abstract void EmitInternal(Emitter emitter);
-
-        /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
         public T WithLeadingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : AstNode
@@ -116,5 +110,11 @@ namespace Desalt.Core.TypeScript.Ast
             copy.TrailingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;
         }
+
+        /// <summary>
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// </summary>
+        /// <param name="emitter">The emitter to use.</param>
+        protected abstract void EmitInternal(Emitter emitter);
     }
 }
