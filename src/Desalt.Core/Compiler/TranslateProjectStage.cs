@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TranslateProjectToTypeScriptStage.cs" company="Justin Rockwood">
+// <copyright file="TranslateProjectStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -23,7 +23,7 @@ namespace Desalt.Core.Compiler
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
     /// </summary>
-    internal class TranslateProjectToTypeScriptStage : PipelineStage<Project, bool>
+    internal class TranslateProjectStage : PipelineStage<Project, bool>
     {
         /// <summary>
         /// Executes the pipeline stage.
