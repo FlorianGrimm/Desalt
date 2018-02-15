@@ -61,7 +61,7 @@ namespace Desalt.Core.Compiler
 
             // TEMP - copy the original .cs file for easy comparing
             // ReSharper disable once AssignNullToNotNullAttribute
-            File.Copy(document.FilePath, Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)));
+            File.Copy(document.FilePath, Path.Combine(options.OutputPath, Path.GetFileName(document.FilePath)), overwrite: true);
 
             var diagnostics = new List<DiagnosticMessage>();
 

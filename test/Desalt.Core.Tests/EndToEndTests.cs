@@ -16,7 +16,7 @@ namespace Desalt.Core.Tests
     {
         public TestContext TestContext { get; set; }
 
-        // [Ignore]
+        [Ignore]
         [TestMethod]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
