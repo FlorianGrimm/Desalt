@@ -162,7 +162,7 @@ namespace Desalt.Core.Tests.Pipeline
 
             IExtendedResult<string> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
             result.Success.Should().BeFalse();
-            result.Messages.Select(m => m.ToString())
+            result.Diagnostics.Select(m => m.ToString())
                 .Should()
                 .Equal("info ID0001: First", "error DSC0001: Internal error: Failed Message");
         }

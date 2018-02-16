@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
             CompilationUnitSyntax compilationUnit = syntaxTree.GetCompilationUnitRoot();
             IAstNode result = visitor.Visit(compilationUnit).Single();
 
-            visitor.Messages.Should().BeEmpty();
+            visitor.Diagnostics.Should().BeEmpty();
 
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
             result.EmitAsString(emitOptions: EmitOptions.UnixSpaces).Should().Be(expectedTypeScriptCode);

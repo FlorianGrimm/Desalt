@@ -48,7 +48,7 @@ namespace Desalt.Core.CompilerStages
                 .ToImmutableArray();
 
             IEnumerable<string> translatedFilePaths = results.Select(result => result.Result);
-            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Messages);
+            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
 
             return new ExtendedResult<IEnumerable<string>>(translatedFilePaths, mergedDiagnostics);
         }
@@ -76,7 +76,7 @@ namespace Desalt.Core.CompilerStages
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<ITsImplementationSourceFile> translation =
                 translator.TranslateDocument(context, cancellationToken);
-            ImmutableArray<Diagnostic> diagnostics = translation.Messages;
+            ImmutableArray<Diagnostic> diagnostics = translation.Diagnostics;
 
             using (var stream = new FileStream(
                 context.TypeScriptFilePath,

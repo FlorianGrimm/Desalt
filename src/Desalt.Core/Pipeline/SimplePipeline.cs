@@ -87,7 +87,7 @@ namespace Desalt.Core.Pipeline
 
             var previousOutputs = new List<object> { input };
 
-            var messages = new List<Diagnostic>();
+            var diagnostics = new List<Diagnostic>();
             foreach (IPipelineStage stage in StagesInner)
             {
                 // find the next input, which is the latest previous output of a compatible type
@@ -100,13 +100,13 @@ namespace Desalt.Core.Pipeline
 
                 IExtendedResult stageResult = await stage.ExecuteAsync(nextInput, options);
                 previousOutputs.Add(stageResult.Result);
-                messages.AddRange(stageResult.Messages);
+                diagnostics.AddRange(stageResult.Diagnostics);
 
                 // don't continue the pipeline if there are errors
                 if (stageResult.HasErrors) { break; }
             }
 
-            return new ExtendedResult<TOutput>((TOutput)previousOutputs.Last(), messages);
+            return new ExtendedResult<TOutput>((TOutput)previousOutputs.Last(), diagnostics);
         }
 
         /// <summary>

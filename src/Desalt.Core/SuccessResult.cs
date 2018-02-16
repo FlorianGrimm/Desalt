@@ -14,7 +14,7 @@ namespace Desalt.Core
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Represents a success/fail result from executing a process that can produce messages.
+    /// Represents a success/fail result from executing a process that can produce diagnostics.
     /// </summary>
     public class SuccessResult : ExtendedResult<bool>
     {
@@ -22,24 +22,24 @@ namespace Desalt.Core
         //// Constructors
         //// ===========================================================================================================
 
-        public SuccessResult(bool result, IEnumerable<Diagnostic> messages = null)
-            : base(result, messages)
+        public SuccessResult(bool result, IEnumerable<Diagnostic> diagnostics = null)
+            : base(result, diagnostics)
         {
         }
 
-        public SuccessResult(bool result, params Diagnostic[] messages)
-            : base(result, messages)
+        public SuccessResult(bool result, params Diagnostic[] diagnostics)
+            : base(result, diagnostics)
         {
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public SuccessResult(CompilerOptions options, IEnumerable<Diagnostic> messages)
-            : base(IsSuccess(options.WarningsAsErrors, messages), messages)
+        public SuccessResult(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
+            : base(IsSuccess(options.WarningsAsErrors, diagnostics), diagnostics)
         {
         }
 
-        public SuccessResult(CompilerOptions options, params Diagnostic[] messages)
-            : base(IsSuccess(options.WarningsAsErrors, messages), messages)
+        public SuccessResult(CompilerOptions options, params Diagnostic[] diagnostics)
+            : base(IsSuccess(options.WarningsAsErrors, diagnostics), diagnostics)
         {
         }
 
@@ -55,7 +55,7 @@ namespace Desalt.Core
         /// <returns>A new <see cref="SuccessResult"/> with the merged results.</returns>
         public SuccessResult MergeWith(IExtendedResult<bool> other)
         {
-            return new SuccessResult(Result && other.Result, Messages.Concat(other.Messages));
+            return new SuccessResult(Result && other.Result, Diagnostics.Concat(other.Diagnostics));
         }
 
         private static bool IsSuccess(bool warningsAsErrors, IEnumerable<Diagnostic> diagnostics)

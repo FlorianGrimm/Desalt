@@ -26,7 +26,7 @@ namespace Desalt.Core
 
             IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
 
-            ImmutableArray<Diagnostic> diagnostics = result.Messages.ToImmutableArray();
+            ImmutableArray<Diagnostic> diagnostics = result.Diagnostics.ToImmutableArray();
             return new SuccessResult(compilationRequest.Options, diagnostics);
         }
     }

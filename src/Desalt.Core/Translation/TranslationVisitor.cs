@@ -26,7 +26,7 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly List<Diagnostic> _messages = new List<Diagnostic>();
+        private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
         private readonly SemanticModel _semanticModel;
 
         //// ===========================================================================================================
@@ -42,7 +42,7 @@ namespace Desalt.Core.Translation
         //// Properties
         //// ===========================================================================================================
 
-        public IEnumerable<Diagnostic> Messages => _messages.AsEnumerable();
+        public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
 
         //// ===========================================================================================================
         //// Visit Methods
@@ -50,7 +50,7 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
-            _messages.Add(Diagnostics.TranslationNotSupported(node));
+            _diagnostics.Add(Core.Diagnostics.TranslationNotSupported(node));
             return Enumerable.Empty<IAstNode>();
         }
 

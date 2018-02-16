@@ -33,7 +33,7 @@ namespace Desalt.Core.Translation
             CompilationUnitSyntax rootSyntaxNode = context.SyntaxTree.GetCompilationUnitRoot(cancellationToken);
             var typeScriptSourceFile = (ITsImplementationSourceFile)walker.Visit(rootSyntaxNode).Single();
 
-            return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Messages);
+            return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Diagnostics);
         }
     }
 }

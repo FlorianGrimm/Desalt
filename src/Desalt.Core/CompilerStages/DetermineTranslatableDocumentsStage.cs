@@ -40,7 +40,7 @@ namespace Desalt.Core.CompilerStages
 
             IEnumerable<DocumentTranslationContext> onlyValidDocuments =
                 results.Where(result => result.Result != null).Select(result => result.Result);
-            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Messages);
+            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
 
             return new ExtendedResult<IEnumerable<DocumentTranslationContext>>(onlyValidDocuments, mergedDiagnostics);
         }

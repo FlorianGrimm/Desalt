@@ -11,7 +11,7 @@ namespace Desalt.Core
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Represents the results from executing a process that can produce messages.
+    /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     public interface IExtendedResult
     {
@@ -21,9 +21,9 @@ namespace Desalt.Core
         object Result { get; }
 
         /// <summary>
-        /// Gets all of the messages in the order in which they were generated.
+        /// Gets all of the diagnostics in the order in which they were generated.
         /// </summary>
-        ImmutableArray<Diagnostic> Messages { get; }
+        ImmutableArray<Diagnostic> Diagnostics { get; }
 
         /// <summary>
         /// Gets the count of errors.
@@ -48,7 +48,7 @@ namespace Desalt.Core
     }
 
     /// <summary>
-    /// Represents the results from executing a process that can produce messages.
+    /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     public interface IExtendedResult<out T> : IExtendedResult
     {

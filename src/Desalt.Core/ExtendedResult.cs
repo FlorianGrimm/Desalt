@@ -14,7 +14,7 @@ namespace Desalt.Core
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Represents the results from executing a process that can produce messages.
+    /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class ExtendedResult<T> : IExtendedResult<T>
@@ -23,10 +23,10 @@ namespace Desalt.Core
         //// Constructors
         //// ===========================================================================================================
 
-        public ExtendedResult(T result, IEnumerable<Diagnostic> messages = null)
+        public ExtendedResult(T result, IEnumerable<Diagnostic> diagnostics = null)
         {
             Result = result;
-            Messages = messages?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
+            Diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
         //// ===========================================================================================================
@@ -44,24 +44,24 @@ namespace Desalt.Core
         public T Result { get; }
 
         /// <summary>
-        /// Gets all of the messages in the order in which they were generated.
+        /// Gets all of the diagnostics in the order in which they were generated.
         /// </summary>
-        public ImmutableArray<Diagnostic> Messages { get; }
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
 
         /// <summary>
         /// Gets the count of errors.
         /// </summary>
-        public int ErrorCount => Messages.Count(m => m.Severity == DiagnosticSeverity.Error);
+        public int ErrorCount => Diagnostics.Count(m => m.Severity == DiagnosticSeverity.Error);
 
         /// <summary>
         /// Gets a value indicating if there are any errors.
         /// </summary>
-        public bool HasErrors => Messages.Any(m => m.Severity == DiagnosticSeverity.Error);
+        public bool HasErrors => Diagnostics.Any(m => m.Severity == DiagnosticSeverity.Error);
 
         /// <summary>
         /// Gets a value indicating if there are any warnings.
         /// </summary>
-        public bool HasWarnings => Messages.Any(m => m.Severity == DiagnosticSeverity.Warning);
+        public bool HasWarnings => Diagnostics.Any(m => m.Severity == DiagnosticSeverity.Warning);
 
         /// <summary>
         /// Gets a value indicating if the overall result is a success, meaning that there are no
