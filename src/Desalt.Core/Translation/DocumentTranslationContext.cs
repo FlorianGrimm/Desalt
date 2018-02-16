@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
