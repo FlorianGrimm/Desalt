@@ -8,6 +8,7 @@
 namespace Desalt.Core
 {
     using System.Collections.Immutable;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Represents the results from executing a process that can produce messages.
@@ -22,7 +23,7 @@ namespace Desalt.Core
         /// <summary>
         /// Gets all of the messages in the order in which they were generated.
         /// </summary>
-        ImmutableArray<DiagnosticMessage> Messages { get; }
+        ImmutableArray<Diagnostic> Messages { get; }
 
         /// <summary>
         /// Gets the count of errors.

@@ -11,8 +11,8 @@ namespace Desalt.Core
     using System.Collections.Immutable;
     using System.Threading.Tasks;
     using Desalt.Core.CompilerStages;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
+    using Microsoft.CodeAnalysis;
 
     public class Compiler
     {
@@ -26,8 +26,8 @@ namespace Desalt.Core
 
             IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
 
-            ImmutableArray<DiagnosticMessage> diagnostics = result.Messages.ToImmutableArray();
-            return new ExtendedResult<bool>(diagnostics.IsSuccess(compilationRequest.Options), diagnostics);
+            ImmutableArray<Diagnostic> diagnostics = result.Messages.ToImmutableArray();
+            return new SuccessResult(compilationRequest.Options, diagnostics);
         }
     }
 }

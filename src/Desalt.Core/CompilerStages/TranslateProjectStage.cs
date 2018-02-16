@@ -17,6 +17,7 @@ namespace Desalt.Core.CompilerStages
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
@@ -47,7 +48,7 @@ namespace Desalt.Core.CompilerStages
                 .ToImmutableArray();
 
             IEnumerable<string> translatedFilePaths = results.Select(result => result.Result);
-            IEnumerable<DiagnosticMessage> mergedDiagnostics = results.SelectMany(result => result.Messages);
+            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Messages);
 
             return new ExtendedResult<IEnumerable<string>>(translatedFilePaths, mergedDiagnostics);
         }
@@ -75,7 +76,7 @@ namespace Desalt.Core.CompilerStages
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<ITsImplementationSourceFile> translation =
                 translator.TranslateDocument(context, cancellationToken);
-            ImmutableArray<DiagnosticMessage> diagnostics = translation.Messages;
+            ImmutableArray<Diagnostic> diagnostics = translation.Messages;
 
             using (var stream = new FileStream(
                 context.TypeScriptFilePath,

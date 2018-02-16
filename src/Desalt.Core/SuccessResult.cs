@@ -10,6 +10,8 @@ namespace Desalt.Core
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Desalt.Core.Extensions;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Represents a success/fail result from executing a process that can produce messages.
@@ -20,24 +22,24 @@ namespace Desalt.Core
         //// Constructors
         //// ===========================================================================================================
 
-        public SuccessResult(bool result, IEnumerable<DiagnosticMessage> messages = null)
+        public SuccessResult(bool result, IEnumerable<Diagnostic> messages = null)
             : base(result, messages)
         {
         }
 
-        public SuccessResult(bool result, params DiagnosticMessage[] messages)
+        public SuccessResult(bool result, params Diagnostic[] messages)
             : base(result, messages)
         {
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public SuccessResult(IEnumerable<DiagnosticMessage> messages)
-            : base(messages?.All(m => !m.IsError) ?? true, messages)
+        public SuccessResult(CompilerOptions options, IEnumerable<Diagnostic> messages)
+            : base(IsSuccess(options.WarningsAsErrors, messages), messages)
         {
         }
 
-        public SuccessResult(params DiagnosticMessage[] messages)
-            : this((IEnumerable<DiagnosticMessage>)messages)
+        public SuccessResult(CompilerOptions options, params Diagnostic[] messages)
+            : base(IsSuccess(options.WarningsAsErrors, messages), messages)
         {
         }
 
@@ -54,6 +56,19 @@ namespace Desalt.Core
         public SuccessResult MergeWith(IExtendedResult<bool> other)
         {
             return new SuccessResult(Result && other.Result, Messages.Concat(other.Messages));
+        }
+
+        private static bool IsSuccess(bool warningsAsErrors, IEnumerable<Diagnostic> diagnostics)
+        {
+            diagnostics = diagnostics ?? Enumerable.Empty<Diagnostic>();
+
+            if (warningsAsErrors)
+            {
+                return diagnostics.All(
+                    diagnostic => !diagnostic.Severity.IsOneOf(DiagnosticSeverity.Error, DiagnosticSeverity.Warning));
+            }
+
+            return diagnostics.All(diagnostic => diagnostic.Severity != DiagnosticSeverity.Error);
         }
     }
 }

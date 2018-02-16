@@ -11,6 +11,7 @@ namespace Desalt.Core
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Represents the results from executing a process that can produce messages.
@@ -22,10 +23,10 @@ namespace Desalt.Core
         //// Constructors
         //// ===========================================================================================================
 
-        public ExtendedResult(T result, IEnumerable<DiagnosticMessage> messages = null)
+        public ExtendedResult(T result, IEnumerable<Diagnostic> messages = null)
         {
             Result = result;
-            Messages = messages?.ToImmutableArray() ?? ImmutableArray<DiagnosticMessage>.Empty;
+            Messages = messages?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
         //// ===========================================================================================================
@@ -45,22 +46,22 @@ namespace Desalt.Core
         /// <summary>
         /// Gets all of the messages in the order in which they were generated.
         /// </summary>
-        public ImmutableArray<DiagnosticMessage> Messages { get; }
+        public ImmutableArray<Diagnostic> Messages { get; }
 
         /// <summary>
         /// Gets the count of errors.
         /// </summary>
-        public int ErrorCount => Messages.Count(m => m.IsError);
+        public int ErrorCount => Messages.Count(m => m.Severity == DiagnosticSeverity.Error);
 
         /// <summary>
         /// Gets a value indicating if there are any errors.
         /// </summary>
-        public bool HasErrors => Messages.Any(m => m.IsError);
+        public bool HasErrors => Messages.Any(m => m.Severity == DiagnosticSeverity.Error);
 
         /// <summary>
         /// Gets a value indicating if there are any warnings.
         /// </summary>
-        public bool HasWarnings => Messages.Any(m => m.IsWarning);
+        public bool HasWarnings => Messages.Any(m => m.Severity == DiagnosticSeverity.Warning);
 
         /// <summary>
         /// Gets a value indicating if the overall result is a success, meaning that there are no
