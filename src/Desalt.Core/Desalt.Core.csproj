@@ -125,7 +125,7 @@
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
     <Compile Include="CompilerStages\ValidateProjectStage.cs" />
-    <Compile Include="Diagnostics.cs" />
+    <Compile Include="DiagnosticFactory.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="ExtendedResult.cs" />

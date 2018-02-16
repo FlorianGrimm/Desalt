@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="Diagnostics.cs" company="Justin Rockwood">
+// <copyright file="DiagnosticFactory.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Desalt.Core
     /// <summary>
     /// Contains all of the diagnostics that the program can emit.
     /// </summary>
-    internal static class Diagnostics
+    internal static class DiagnosticFactory
     {
         public const string TranslationCategory = "Desalt.Translation";
 

@@ -50,7 +50,7 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
-            _diagnostics.Add(Core.Diagnostics.TranslationNotSupported(node));
+            _diagnostics.Add(DiagnosticFactory.TranslationNotSupported(node));
             return Enumerable.Empty<IAstNode>();
         }
 
@@ -177,6 +177,7 @@ namespace Desalt.Core.Translation
                 }
             }
 
+            // ReSharper disable once ExpressionIsAlwaysNull
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
             return parameterList.ToSingleEnumerable();
         }

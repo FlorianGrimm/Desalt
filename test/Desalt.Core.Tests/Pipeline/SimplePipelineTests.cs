@@ -130,7 +130,7 @@ namespace Desalt.Core.Tests.Pipeline
                             {
                                 Diagnostic.Create(
                                     "ID0001",
-                                    Diagnostics.TranslationCategory,
+                                    DiagnosticFactory.TranslationCategory,
                                     "First",
                                     DiagnosticSeverity.Info,
                                     DiagnosticSeverity.Info,
@@ -142,7 +142,7 @@ namespace Desalt.Core.Tests.Pipeline
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
                         new ExtendedResult<string>(
                             "Failed",
-                            new[] { Diagnostics.InternalError(new Exception("Failed Message")) }))));
+                            new[] { DiagnosticFactory.InternalError(new Exception("Failed Message")) }))));
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
@@ -152,7 +152,7 @@ namespace Desalt.Core.Tests.Pipeline
                             {
                                 Diagnostic.Create(
                                     "ID1ID0003",
-                                    Diagnostics.TranslationCategory,
+                                    DiagnosticFactory.TranslationCategory,
                                     "Third",
                                     DiagnosticSeverity.Info,
                                     DiagnosticSeverity.Info,

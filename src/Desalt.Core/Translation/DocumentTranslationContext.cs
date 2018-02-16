@@ -69,7 +69,7 @@ namespace Desalt.Core.Translation
             {
                 return new ExtendedResult<DocumentTranslationContext>(
                     null,
-                    Diagnostics.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
+                    DiagnosticFactory.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
             }
 
             // try to get the semantic model
@@ -77,7 +77,7 @@ namespace Desalt.Core.Translation
             if (semanticModel == null)
             {
                 List<Diagnostic> syntaxDiagnostics = syntaxTree.GetDiagnostics().ToList();
-                syntaxDiagnostics.Add(Diagnostics.DocumentContainsNoSemanticModel(document));
+                syntaxDiagnostics.Add(DiagnosticFactory.DocumentContainsNoSemanticModel(document));
                 return new ExtendedResult<DocumentTranslationContext>(null, syntaxDiagnostics);
             }
 
