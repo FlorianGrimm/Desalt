@@ -7,29 +7,29 @@
 
 namespace Desalt.Core.Translation
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using Desalt.Core.TypeScript.Ast;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// Converts a CSharp syntax tree into a TypeScript syntax tree.
     /// </summary>
-    public class CSharpToTypeScriptTranslator
+    internal class CSharpToTypeScriptTranslator
     {
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public IExtendedResult<ITsImplementationSourceFile> TranslateSyntaxTreeAsync(
-            CSharpSyntaxTree syntaxTree,
-            SemanticModel semanticModel,
+        public IExtendedResult<ITsImplementationSourceFile> TranslateDocument(
+            DocumentTranslationContext context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var walker = new TranslationVisitor(semanticModel);
-            CompilationUnitSyntax rootSyntaxNode = syntaxTree.GetCompilationUnitRoot(cancellationToken);
+            var diagnostics = new List<DiagnosticMessage>();
+
+            var walker = new TranslationVisitor(context.SemanticModel);
+            CompilationUnitSyntax rootSyntaxNode = context.SyntaxTree.GetCompilationUnitRoot(cancellationToken);
             var typeScriptSourceFile = (ITsImplementationSourceFile)walker.Visit(rootSyntaxNode).Single();
 
             return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Messages);
