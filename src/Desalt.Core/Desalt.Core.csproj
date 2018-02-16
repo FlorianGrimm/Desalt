@@ -125,11 +125,10 @@
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
     <Compile Include="CompilerStages\ValidateProjectStage.cs" />
-    <Compile Include="DiagnosticMessage.cs" />
+    <Compile Include="Diagnostics.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="ExtendedResult.cs" />
-    <Compile Include="Extensions\DiagnosticExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />

@@ -34,7 +34,7 @@ namespace Desalt.Core.Tests
             var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
 
-            result.Messages.Should().BeEmpty();
+            result.Diagnostics.Should().BeEmpty();
         }
     }
 }

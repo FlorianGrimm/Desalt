@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -26,13 +27,13 @@ namespace Desalt.Core.Translation
             DocumentTranslationContext context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var diagnostics = new List<DiagnosticMessage>();
+            var diagnostics = new List<Diagnostic>();
 
             var walker = new TranslationVisitor(context.SemanticModel);
             CompilationUnitSyntax rootSyntaxNode = context.SyntaxTree.GetCompilationUnitRoot(cancellationToken);
             var typeScriptSourceFile = (ITsImplementationSourceFile)walker.Visit(rootSyntaxNode).Single();
 
-            return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Messages);
+            return new ExtendedResult<ITsImplementationSourceFile>(typeScriptSourceFile, walker.Diagnostics);
         }
     }
 }

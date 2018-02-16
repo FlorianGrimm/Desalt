@@ -8,7 +8,9 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Extensions;
@@ -61,30 +63,26 @@ namespace Desalt.Core.Translation
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var diagnostics = new List<DiagnosticMessage>();
-
             // try to get the syntax tree
             SyntaxTree rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
             if (rawSyntaxTree == null || !(rawSyntaxTree is CSharpSyntaxTree syntaxTree))
             {
                 return new ExtendedResult<DocumentTranslationContext>(
                     null,
-                    DiagnosticMessage.Error($"File does not contain a syntax tree: {document.FilePath}")
-                        .ToSingleEnumerable());
+                    Diagnostics.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
             }
 
             // try to get the semantic model
             SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (semanticModel == null)
             {
-                diagnostics.AddRange(syntaxTree.GetDiagnostics().ToDiagnosticMessages());
-                diagnostics.Add(
-                    DiagnosticMessage.Error($"File does not contain a semantic model: {document.FilePath}"));
-                return new ExtendedResult<DocumentTranslationContext>(null, diagnostics);
+                List<Diagnostic> syntaxDiagnostics = syntaxTree.GetDiagnostics().ToList();
+                syntaxDiagnostics.Add(Diagnostics.DocumentContainsNoSemanticModel(document));
+                return new ExtendedResult<DocumentTranslationContext>(null, syntaxDiagnostics);
             }
 
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
-            diagnostics.AddRange(semanticModel.GetDiagnostics(null, cancellationToken).ToDiagnosticMessages());
+            ImmutableArray<Diagnostic> diagnostics = semanticModel.GetDiagnostics(null, cancellationToken);
 
             var context = new DocumentTranslationContext(document, options, syntaxTree, semanticModel);
             return new ExtendedResult<DocumentTranslationContext>(context, diagnostics);

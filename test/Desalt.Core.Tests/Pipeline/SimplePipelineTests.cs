@@ -14,6 +14,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -78,12 +79,18 @@ namespace Desalt.Core.Tests.Pipeline
         {
             var pipeline = new SimplePipeline<int, DateTime>();
             pipeline.AddStage(new IntToStringStage());
-            try { await pipeline.ExecuteAsync(123, new CompilerOptions("out")); }
+            try
+            {
+                await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
+            }
             catch (InvalidOperationException e)
             {
                 e.Message.Should().Be("The last stage outputs type 'String' but it should output type 'DateTime'.");
             }
-            catch (Exception e) { Assert.Fail($"Expecting InvalidOperationException but got {e.GetType()}"); }
+            catch (Exception e)
+            {
+                Assert.Fail($"Expecting InvalidOperationException but got {e.GetType()}");
+            }
         }
 
         [TestMethod]
@@ -117,21 +124,47 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(
                 new FakePipelineStage<int, string>(
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
-                        new ExtendedResult<string>("output", new[] { DiagnosticMessage.Info("First") }))));
+                        new ExtendedResult<string>(
+                            "output",
+                            new[]
+                            {
+                                Diagnostic.Create(
+                                    "ID0001",
+                                    Diagnostics.TranslationCategory,
+                                    "First",
+                                    DiagnosticSeverity.Info,
+                                    DiagnosticSeverity.Info,
+                                    isEnabledByDefault: true,
+                                    warningLevel: 1)
+                            }))));
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
                         new ExtendedResult<string>(
                             "Failed",
-                            new[] { DiagnosticMessage.FromException(new Exception("Failed Message")) }))));
+                            new[] { Diagnostics.InternalError(new Exception("Failed Message")) }))));
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
-                        new ExtendedResult<string>("Succeeded", new[] { DiagnosticMessage.Info("Third") }))));
+                        new ExtendedResult<string>(
+                            "Succeeded",
+                            new[]
+                            {
+                                Diagnostic.Create(
+                                    "ID1ID0003",
+                                    Diagnostics.TranslationCategory,
+                                    "Third",
+                                    DiagnosticSeverity.Info,
+                                    DiagnosticSeverity.Info,
+                                    isEnabledByDefault: true,
+                                    warningLevel: 1)
+                            }))));
 
             IExtendedResult<string> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
             result.Success.Should().BeFalse();
-            result.Messages.Select(m => m.Message).Should().Equal("First", "Failed Message");
+            result.Diagnostics.Select(m => m.ToString())
+                .Should()
+                .Equal("info ID0001: First", "error DSC0001: Internal error: Failed Message");
         }
     }
 }
