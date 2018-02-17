@@ -12,7 +12,6 @@ namespace Desalt.Core.Tests.Pipeline
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -131,7 +130,7 @@ namespace Desalt.Core.Tests.Pipeline
                             {
                                 Diagnostic.Create(
                                     "ID0001",
-                                    DiagnosticFactory.TranslationCategory,
+                                    "Category",
                                     "First",
                                     DiagnosticSeverity.Info,
                                     DiagnosticSeverity.Info,
@@ -143,7 +142,18 @@ namespace Desalt.Core.Tests.Pipeline
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
                         new ExtendedResult<string>(
                             "Failed",
-                            new[] { DiagnosticFactory.InternalError(new Exception("Failed Message")) }))));
+                            new[]
+                            {
+                                Diagnostic.Create(
+                                    "ID0002",
+                                    "Category",
+                                    "Failed Message",
+                                    DiagnosticSeverity.Error,
+                                    DiagnosticSeverity.Error,
+                                    isEnabledByDefault: true,
+                                    warningLevel: 0)
+                            }))));
+
             pipeline.AddStage(
                 new FakePipelineStage<string, string>(
                     (input, token) => Task.FromResult<IExtendedResult<string>>(
@@ -152,8 +162,8 @@ namespace Desalt.Core.Tests.Pipeline
                             new[]
                             {
                                 Diagnostic.Create(
-                                    "ID1ID0003",
-                                    DiagnosticFactory.TranslationCategory,
+                                    "ID0003",
+                                    "Category",
                                     "Third",
                                     DiagnosticSeverity.Info,
                                     DiagnosticSeverity.Info,
@@ -165,7 +175,7 @@ namespace Desalt.Core.Tests.Pipeline
             result.Success.Should().BeFalse();
             result.Diagnostics.Select(m => m.ToString())
                 .Should()
-                .Equal("info ID0001: First", "error DSC0001: Internal error: Failed Message");
+                .Equal("info ID0001: First", "error ID0002: Failed Message");
         }
     }
 }
