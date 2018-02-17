@@ -7,6 +7,7 @@
 
 namespace Desalt.Core
 {
+    using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -22,15 +23,32 @@ namespace Desalt.Core
         /// <summary>
         /// Default constructor contains the default values of all of the options.
         /// </summary>
-        public CompilerOptions(string outputPath, WarningLevel warningLevel = WarningLevel.Informational)
+        public CompilerOptions(
+            string outputPath,
+            WarningLevel warningLevel = WarningLevel.Informational,
+            ReportDiagnostic generalDiagnosticOption = ReportDiagnostic.Default,
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
+            GeneralDiagnosticOption = generalDiagnosticOption;
+            SpecificDiagnosticOptions =
+                specificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
+
+        /// <summary>
+        /// Global warning report option.
+        /// </summary>
+        public ReportDiagnostic GeneralDiagnosticOption { get; }
+
+        /// <summary>
+        /// Warning report option for each warning.
+        /// </summary>
+        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
 
         /// <summary>
         /// Gets the directory where the compiled TypeScript files will be generated.
@@ -48,7 +66,11 @@ namespace Desalt.Core
 
         internal CSharpCompilationOptions ToCSharpCompilationOptions()
         {
-            return new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: (int)WarningLevel);
+            return new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                warningLevel: (int)WarningLevel,
+                generalDiagnosticOption: GeneralDiagnosticOption,
+                specificDiagnosticOptions: SpecificDiagnosticOptions);
         }
     }
 }
