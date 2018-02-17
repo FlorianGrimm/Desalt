@@ -14,7 +14,6 @@ namespace Desalt.Core.Translation
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -70,7 +69,7 @@ namespace Desalt.Core.Translation
             {
                 return new ExtendedResult<DocumentTranslationContext>(
                     null,
-                    DiagnosticFactory.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
+                    DiagnosticFactory.DocumentContainsNoSyntaxTree(document));
             }
 
             // try to get the semantic model

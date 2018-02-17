@@ -29,6 +29,10 @@ namespace Desalt.Core
             Diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
+        public ExtendedResult(T result, Diagnostic diagnostic) : this(result, new[] { diagnostic })
+        {
+        }
+
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
