@@ -22,7 +22,7 @@ namespace Desalt.Core
         /// <summary>
         /// Default constructor contains the default values of all of the options.
         /// </summary>
-        public CompilerOptions(string outputPath, int warningLevel = 4)
+        public CompilerOptions(string outputPath, WarningLevel warningLevel = WarningLevel.Informational)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
@@ -40,7 +40,7 @@ namespace Desalt.Core
         /// <summary>
         /// Gets the global warning level (from 0 to 4).
         /// </summary>
-        public int WarningLevel { get; }
+        public WarningLevel WarningLevel { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -48,7 +48,7 @@ namespace Desalt.Core
 
         internal CSharpCompilationOptions ToCSharpCompilationOptions()
         {
-            return new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: WarningLevel);
+            return new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: (int)WarningLevel);
         }
     }
 }
