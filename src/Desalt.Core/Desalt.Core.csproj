@@ -131,6 +131,7 @@
     <Compile Include="ExtendedResult.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\ImmutableExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IExtendedResult.cs" />
     <Compile Include="Pipeline\IPipelineStage.cs" />
