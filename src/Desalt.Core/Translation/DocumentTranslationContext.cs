@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 

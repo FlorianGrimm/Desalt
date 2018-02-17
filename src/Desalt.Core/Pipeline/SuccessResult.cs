@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Pipeline
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;

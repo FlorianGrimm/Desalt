@@ -8,6 +8,7 @@
 namespace Desalt.Core.Validation
 {
     using System.Threading.Tasks;
+    using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
