@@ -15,7 +15,7 @@ namespace Desalt.Core
     /// <summary>
     /// Represents a success/fail result from executing a process that can produce diagnostics.
     /// </summary>
-    public class SuccessResult : ExtendedResult<bool>
+    internal class SuccessResult : ExtendedResult<bool>
     {
         //// ===========================================================================================================
         //// Constructors

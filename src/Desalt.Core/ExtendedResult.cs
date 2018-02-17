@@ -17,7 +17,7 @@ namespace Desalt.Core
     /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public class ExtendedResult<T> : IExtendedResult<T>
+    internal class ExtendedResult<T> : IExtendedResult<T>
     {
         //// ===========================================================================================================
         //// Constructors
