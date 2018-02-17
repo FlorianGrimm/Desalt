@@ -10,7 +10,6 @@ namespace Desalt.Core
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -33,13 +32,13 @@ namespace Desalt.Core
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public SuccessResult(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
-            : base(IsSuccess(options.WarningsAsErrors, diagnostics), diagnostics)
+        public SuccessResult(IEnumerable<Diagnostic> diagnostics)
+            : base(IsSuccess(diagnostics), diagnostics)
         {
         }
 
-        public SuccessResult(CompilerOptions options, params Diagnostic[] diagnostics)
-            : base(IsSuccess(options.WarningsAsErrors, diagnostics), diagnostics)
+        public SuccessResult(params Diagnostic[] diagnostics)
+            : base(IsSuccess(diagnostics), diagnostics)
         {
         }
 
@@ -58,16 +57,9 @@ namespace Desalt.Core
             return new SuccessResult(Result && other.Result, Diagnostics.Concat(other.Diagnostics));
         }
 
-        private static bool IsSuccess(bool warningsAsErrors, IEnumerable<Diagnostic> diagnostics)
+        private static bool IsSuccess(IEnumerable<Diagnostic> diagnostics)
         {
             diagnostics = diagnostics ?? Enumerable.Empty<Diagnostic>();
-
-            if (warningsAsErrors)
-            {
-                return diagnostics.All(
-                    diagnostic => !diagnostic.Severity.IsOneOf(DiagnosticSeverity.Error, DiagnosticSeverity.Warning));
-            }
-
             return diagnostics.All(diagnostic => diagnostic.Severity != DiagnosticSeverity.Error);
         }
     }
