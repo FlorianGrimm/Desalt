@@ -127,6 +127,7 @@
     <Compile Include="CompilerStages\ValidateProjectStage.cs" />
     <Compile Include="Diagnostics\DiagnosticExtensions.cs" />
     <Compile Include="Diagnostics\DiagnosticFactory.cs" />
+    <Compile Include="Diagnostics\DiagnosticFactory.Descriptors.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="ExtendedResult.cs" />

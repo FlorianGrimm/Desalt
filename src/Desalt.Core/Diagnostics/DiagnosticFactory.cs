@@ -8,91 +8,136 @@
 namespace Desalt.Core.Diagnostics
 {
     using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
 
     /// <summary>
-    /// Contains all of the diagnostics that the program can emit.
+    /// Factory to create <see cref="Diagnostic"/> messages, based on the compiler options and source suppressions.
     /// </summary>
-    internal static class DiagnosticFactory
+    internal static partial class DiagnosticFactory
     {
-        public const string TranslationCategory = "Desalt.Translation";
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
 
-        private static readonly DiagnosticDescriptor s_internalError = new DiagnosticDescriptor(
-            id: "DSC0001",
-            title: "Internal Desalt compiler error",
-            messageFormat: "Internal error: {0}",
-            category: "Desalt.Internal",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            customTags: WellKnownDiagnosticTags.Compiler);
-
-        /// <summary>
-        /// Returns a diagnostic of the form "Internal error: {0}"
-        /// </summary>
-        /// <param name="e">The <see cref="Exception"/> that represents the error.</param>
-        public static Diagnostic InternalError(Exception e)
+        private static DiagnosticInfoAttribute InfoFromDiagnosticKind(DiagnosticId diagnosticId)
         {
-            return Diagnostic.Create(s_internalError, Location.None, e.Message);
+            MemberInfo memberInfo = typeof(DiagnosticId).GetMember(diagnosticId.ToString()).First();
+            var info = memberInfo.GetCustomAttribute<DiagnosticInfoAttribute>();
+            return info;
         }
 
-        private static readonly DiagnosticDescriptor s_documentContainsNoSyntaxTree = new DiagnosticDescriptor(
-            id: "DSC1000",
-            title: "Document has no C# syntax tree",
-            messageFormat: "Document does not contain a syntax tree",
-            category: TranslationCategory,
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            customTags: WellKnownDiagnosticTags.Build);
-
-        /// <summary>
-        /// Returns a diagnostic of the form "Document does not contain a syntax tree".
-        /// </summary>
-        /// <param name="document">The document that does not contain a syntax tree.</param>
-        public static Diagnostic DocumentContainsNoSyntaxTree(Document document)
+        private static DiagnosticDescriptor CreateDescriptor(DiagnosticInfoAttribute info)
         {
-            return Diagnostic.Create(
-                s_documentContainsNoSyntaxTree,
-                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+            return new DiagnosticDescriptor(
+                id: info.Id,
+                title: info.Title,
+                messageFormat: info.MessageFormat,
+                category: info.Category,
+                defaultSeverity: info.DefaultSeverity,
+                isEnabledByDefault: info.IsEnabledByDefault,
+                description: info.Description,
+                customTags: info.CustomTags);
         }
 
-        private static readonly DiagnosticDescriptor s_documentContainsNoSemanticModel = new DiagnosticDescriptor(
-            id: "DSC1001",
-            title: "Document has no C# semantic model",
-            messageFormat: "Document does not contain a semantic model",
-            category: TranslationCategory,
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            customTags: WellKnownDiagnosticTags.Build);
-
         /// <summary>
-        /// Returns a diagnostic of the form "Document does not contain a semantic model".
+        /// Creates a new <see cref="Diagnostic"/>, taking the compiler options into account on how
+        /// to report specific diagnostic messages. A null return value indicates that the diagnostic
+        /// should not be reported.
         /// </summary>
-        /// <param name="document">The document that does not contain a syntax tree.</param>
-        public static Diagnostic DocumentContainsNoSemanticModel(Document document)
+        /// <param name="diagnosticId">The diagnostic to create.</param>
+        /// <param name="location">The source code location of the diagnostic, if there is one.</param>
+        /// <param name="messageArgs">The arguments to pass to <c>string.Format</c>.</param>
+        /// <returns>
+        /// A <see cref="Diagnostic"/> to report, or null if the diagnostic should not be reported.
+        /// </returns>
+        private static Diagnostic Create(DiagnosticId diagnosticId, Location location, params object[] messageArgs)
         {
-            return Diagnostic.Create(
-                s_documentContainsNoSemanticModel,
-                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+            DiagnosticInfoAttribute info = InfoFromDiagnosticKind(diagnosticId);
+            DiagnosticDescriptor descriptor = CreateDescriptor(info);
+
+            return Diagnostic.Create(descriptor, location, messageArgs);
         }
 
-        private static readonly DiagnosticDescriptor s_translationNodeNotSupported = new DiagnosticDescriptor(
-            id: "DSC1002",
-            title: "TypeScript translation does not understand a C# syntax node",
-            messageFormat: "Node of type '{0}' not supported: {1}",
-            category: TranslationCategory,
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            customTags: WellKnownDiagnosticTags.Build);
+        //// ===========================================================================================================
+        //// Classes
+        //// ===========================================================================================================
 
-        /// <summary>
-        /// Returns a diagnostic of the form "Node of type '{0}' not supported: {1}".
-        /// </summary>
-        /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic TranslationNotSupported(SyntaxNode node)
+        private abstract class DiagnosticInfoAttribute : Attribute
         {
-            return Diagnostic.Create(s_translationNodeNotSupported, node.GetLocation(), node.GetType().Name, node);
+            protected DiagnosticInfoAttribute(
+                int id,
+                string title,
+                string messageFormat,
+                DiagnosticSeverity defaultSeverity,
+                string category,
+                string[] customTags,
+                bool isEnabledByDefault = true,
+                int warningLevel = 0,
+                string description = null)
+            {
+                Id = $"{IdPrefix}{id.ToString("0000", CultureInfo.InvariantCulture)}";
+                Title = title;
+                MessageFormat = messageFormat;
+                DefaultSeverity = defaultSeverity;
+                Category = category;
+                CustomTags = customTags;
+                IsEnabledByDefault = isEnabledByDefault;
+                WarningLevel = warningLevel;
+                Description = description;
+            }
+
+            public string Id { get; }
+            public string Category { get; }
+            public string[] CustomTags { get; }
+            public DiagnosticSeverity DefaultSeverity { get; }
+            public string Description { get; }
+            public bool IsEnabledByDefault { get; }
+            public string MessageFormat { get; }
+            public string Title { get; }
+            public int WarningLevel { get; }
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        private sealed class ErrorAttribute : DiagnosticInfoAttribute
+        {
+            public ErrorAttribute(
+                int id,
+                string title,
+                string messageFormat,
+                string category = TranslationCategory,
+                string[] customTags = null) : base(
+                id,
+                title,
+                messageFormat,
+                DiagnosticSeverity.Error,
+                category,
+                customTags ?? new[] { WellKnownDiagnosticTags.Compiler })
+            {
+            }
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        private sealed class WarningAttribute : DiagnosticInfoAttribute
+        {
+            public WarningAttribute(
+                int id,
+                string title,
+                string messageFormat = null,
+                WarningLevel warningLevel = Core.WarningLevel.Severe,
+                string category = TranslationCategory,
+                string[] customTags = null) : base(
+                id,
+                title,
+                messageFormat ?? title,
+                DiagnosticSeverity.Warning,
+                category,
+                customTags ?? new[] { WellKnownDiagnosticTags.Compiler },
+                warningLevel: (int)warningLevel)
+            {
+            }
         }
     }
 }
