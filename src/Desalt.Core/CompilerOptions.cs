@@ -22,21 +22,15 @@ namespace Desalt.Core
         /// <summary>
         /// Default constructor contains the default values of all of the options.
         /// </summary>
-        public CompilerOptions(string outputPath, int warningLevel = 4, bool warningsAsErrors = false)
+        public CompilerOptions(string outputPath, int warningLevel = 4)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
-            WarningsAsErrors = warningsAsErrors;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Returns a value indicating whether warnings should be treated as errors.
-        /// </summary>
-        public bool WarningsAsErrors { get; }
 
         /// <summary>
         /// Gets the directory where the compiled TypeScript files will be generated.
