@@ -284,6 +284,7 @@
     <Compile Include="Utility\Param.cs" />
     <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
+    <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
