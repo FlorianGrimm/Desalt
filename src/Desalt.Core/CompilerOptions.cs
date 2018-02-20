@@ -7,6 +7,7 @@
 
 namespace Desalt.Core
 {
+    using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -22,11 +23,17 @@ namespace Desalt.Core
         /// <summary>
         /// Default constructor contains the default values of all of the options.
         /// </summary>
-        public CompilerOptions(string outputPath, int warningLevel = 4, bool warningsAsErrors = false)
+        public CompilerOptions(
+            string outputPath,
+            WarningLevel warningLevel = WarningLevel.Informational,
+            ReportDiagnostic generalDiagnosticOption = ReportDiagnostic.Default,
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
-            WarningsAsErrors = warningsAsErrors;
+            GeneralDiagnosticOption = generalDiagnosticOption;
+            SpecificDiagnosticOptions =
+                specificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
         }
 
         //// ===========================================================================================================
@@ -34,9 +41,14 @@ namespace Desalt.Core
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a value indicating whether warnings should be treated as errors.
+        /// Global warning report option.
         /// </summary>
-        public bool WarningsAsErrors { get; }
+        public ReportDiagnostic GeneralDiagnosticOption { get; }
+
+        /// <summary>
+        /// Warning report option for each warning.
+        /// </summary>
+        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
 
         /// <summary>
         /// Gets the directory where the compiled TypeScript files will be generated.
@@ -46,7 +58,7 @@ namespace Desalt.Core
         /// <summary>
         /// Gets the global warning level (from 0 to 4).
         /// </summary>
-        public int WarningLevel { get; }
+        public WarningLevel WarningLevel { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -54,7 +66,11 @@ namespace Desalt.Core
 
         internal CSharpCompilationOptions ToCSharpCompilationOptions()
         {
-            return new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: WarningLevel);
+            return new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                warningLevel: (int)WarningLevel,
+                generalDiagnosticOption: GeneralDiagnosticOption,
+                specificDiagnosticOptions: SpecificDiagnosticOptions);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Desalt.Core.CompilerStages
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
@@ -34,13 +35,15 @@ namespace Desalt.Core.CompilerStages
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = input.Documents
-                .Select(document => DocumentTranslationContext.TryCreateAsync(document, options, cancellationToken));
+            var tasks = input.Documents.Select(
+                document => DocumentTranslationContext.TryCreateAsync(document, options, cancellationToken));
             IExtendedResult<DocumentTranslationContext>[] results = await Task.WhenAll(tasks);
 
             IEnumerable<DocumentTranslationContext> onlyValidDocuments =
                 results.Where(result => result.Result != null).Select(result => result.Result);
-            IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
+            DiagnosticList mergedDiagnostics = DiagnosticList.From(
+                options,
+                results.SelectMany(result => result.Diagnostics));
 
             return new ExtendedResult<IEnumerable<DocumentTranslationContext>>(onlyValidDocuments, mergedDiagnostics);
         }

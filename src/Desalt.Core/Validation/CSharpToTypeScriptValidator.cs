@@ -7,8 +7,8 @@
 
 namespace Desalt.Core.Validation
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -18,10 +18,8 @@ namespace Desalt.Core.Validation
     {
         public async Task<IExtendedResult<bool>> ValidateDocumentAsync(Document document, CompilerOptions options)
         {
-            var diagnostics = new List<Diagnostic>();
             await Task.Yield();
-
-            return new SuccessResult(options, diagnostics);
+            return new ExtendedResult<bool>(true);
         }
     }
 }

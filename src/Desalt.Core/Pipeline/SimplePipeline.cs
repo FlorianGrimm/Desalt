@@ -11,7 +11,7 @@ namespace Desalt.Core.Pipeline
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.CodeAnalysis;
+    using Desalt.Core.Diagnostics;
 
     /// <summary>
     /// Represents a simple pipeline that keeps track of stages to be run in order.
@@ -87,7 +87,7 @@ namespace Desalt.Core.Pipeline
 
             var previousOutputs = new List<object> { input };
 
-            var diagnostics = new List<Diagnostic>();
+            DiagnosticList diagnostics = DiagnosticList.Create(options);
             foreach (IPipelineStage stage in StagesInner)
             {
                 // find the next input, which is the latest previous output of a compatible type

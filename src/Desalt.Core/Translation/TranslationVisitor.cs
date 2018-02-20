@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
@@ -26,15 +27,16 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
+        private readonly DiagnosticList _diagnostics;
         private readonly SemanticModel _semanticModel;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TranslationVisitor(SemanticModel semanticModel)
+        public TranslationVisitor(CompilerOptions options, SemanticModel semanticModel)
         {
+            _diagnostics = DiagnosticList.Create(options);
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
         }
 
@@ -50,7 +52,7 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
-            _diagnostics.Add(Core.Diagnostics.TranslationNotSupported(node));
+            _diagnostics.Add(DiagnosticFactory.TranslationNotSupported(node));
             return Enumerable.Empty<IAstNode>();
         }
 
@@ -177,6 +179,7 @@ namespace Desalt.Core.Translation
                 }
             }
 
+            // ReSharper disable once ExpressionIsAlwaysNull
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
             return parameterList.ToSingleEnumerable();
         }

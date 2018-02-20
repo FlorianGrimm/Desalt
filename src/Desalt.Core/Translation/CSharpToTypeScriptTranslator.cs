@@ -7,11 +7,10 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -27,9 +26,7 @@ namespace Desalt.Core.Translation
             DocumentTranslationContext context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var diagnostics = new List<Diagnostic>();
-
-            var walker = new TranslationVisitor(context.SemanticModel);
+            var walker = new TranslationVisitor(context.Options, context.SemanticModel);
             CompilationUnitSyntax rootSyntaxNode = context.SyntaxTree.GetCompilationUnitRoot(cancellationToken);
             var typeScriptSourceFile = (ITsImplementationSourceFile)walker.Visit(rootSyntaxNode).Single();
 

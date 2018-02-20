@@ -125,19 +125,23 @@
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
     <Compile Include="CompilerStages\ValidateProjectStage.cs" />
-    <Compile Include="Diagnostics.cs" />
+    <Compile Include="Diagnostics\DiagnosticExtensions.cs" />
+    <Compile Include="Diagnostics\DiagnosticFactory.cs" />
+    <Compile Include="Diagnostics\DiagnosticFactory.Descriptors.cs" />
+    <Compile Include="Diagnostics\DiagnosticList.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
-    <Compile Include="ExtendedResult.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\ImmutableExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IExtendedResult.cs" />
+    <Compile Include="Pipeline\ExtendedResult.cs" />
     <Compile Include="Pipeline\IPipelineStage.cs" />
     <Compile Include="Pipeline\PipelineStage.cs" />
     <Compile Include="Pipeline\SimplePipeline.cs" />
+    <Compile Include="Pipeline\SuccessResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SuccessResult.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
@@ -284,6 +288,7 @@
     <Compile Include="Utility\Param.cs" />
     <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
+    <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

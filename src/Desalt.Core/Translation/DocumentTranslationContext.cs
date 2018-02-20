@@ -7,13 +7,11 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.Core.Extensions;
+    using Desalt.Core.Diagnostics;
+    using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -69,20 +67,20 @@ namespace Desalt.Core.Translation
             {
                 return new ExtendedResult<DocumentTranslationContext>(
                     null,
-                    Diagnostics.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
+                    DiagnosticList.Create(options, DiagnosticFactory.DocumentContainsNoSyntaxTree(document)));
             }
 
             // try to get the semantic model
             SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (semanticModel == null)
             {
-                List<Diagnostic> syntaxDiagnostics = syntaxTree.GetDiagnostics().ToList();
-                syntaxDiagnostics.Add(Diagnostics.DocumentContainsNoSemanticModel(document));
+                DiagnosticList syntaxDiagnostics = DiagnosticList.From(options, syntaxTree.GetDiagnostics());
+                syntaxDiagnostics.Add(DiagnosticFactory.DocumentContainsNoSemanticModel(document));
                 return new ExtendedResult<DocumentTranslationContext>(null, syntaxDiagnostics);
             }
 
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
-            ImmutableArray<Diagnostic> diagnostics = semanticModel.GetDiagnostics(null, cancellationToken);
+            DiagnosticList diagnostics = DiagnosticList.From(options, semanticModel.GetDiagnostics(null, cancellationToken));
 
             var context = new DocumentTranslationContext(document, options, syntaxTree, semanticModel);
             return new ExtendedResult<DocumentTranslationContext>(context, diagnostics);

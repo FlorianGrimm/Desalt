@@ -25,7 +25,7 @@ namespace Desalt.Core.Tests.Translation
             var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(csharpCode);
             CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly").AddSyntaxTrees(syntaxTree);
             SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
-            var visitor = new TranslationVisitor(semanticModel);
+            var visitor = new TranslationVisitor(new CompilerOptions("out"), semanticModel);
 
             CompilationUnitSyntax compilationUnit = syntaxTree.GetCompilationUnitRoot();
             IAstNode result = visitor.Visit(compilationUnit).Single();

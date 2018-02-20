@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Pipeline
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -17,16 +17,16 @@ namespace Desalt.Core
     /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public class ExtendedResult<T> : IExtendedResult<T>
+    internal class ExtendedResult<T> : IExtendedResult<T>
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public ExtendedResult(T result, IEnumerable<Diagnostic> diagnostics = null)
+        public ExtendedResult(T result, IEnumerable<Diagnostic> filteredDiagnostics = null)
         {
             Result = result;
-            Diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
+            Diagnostics = filteredDiagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
         //// ===========================================================================================================
@@ -44,7 +44,8 @@ namespace Desalt.Core
         public T Result { get; }
 
         /// <summary>
-        /// Gets all of the diagnostics in the order in which they were generated.
+        /// Gets all of the diagnostics, filtered according to the compiler options, in the order in
+        /// which they were generated.
         /// </summary>
         public ImmutableArray<Diagnostic> Diagnostics { get; }
 
