@@ -19,8 +19,7 @@ namespace Desalt.Core.Validation
         public async Task<IExtendedResult<bool>> ValidateDocumentAsync(Document document, CompilerOptions options)
         {
             await Task.Yield();
-
-            return new SuccessResult(true);
+            return new ExtendedResult<bool>(true);
         }
     }
 }

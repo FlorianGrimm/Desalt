@@ -128,6 +128,7 @@
     <Compile Include="Diagnostics\DiagnosticExtensions.cs" />
     <Compile Include="Diagnostics\DiagnosticFactory.cs" />
     <Compile Include="Diagnostics\DiagnosticFactory.Descriptors.cs" />
+    <Compile Include="Diagnostics\DiagnosticList.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

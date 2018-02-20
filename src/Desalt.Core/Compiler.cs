@@ -10,6 +10,7 @@ namespace Desalt.Core
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Desalt.Core.CompilerStages;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
 
     public class Compiler
@@ -22,9 +23,11 @@ namespace Desalt.Core
             pipeline.AddStage(new ValidateProjectStage());
             pipeline.AddStage(new TranslateProjectStage());
 
-            IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(compilationRequest, compilationRequest.Options);
+            IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(
+                compilationRequest,
+                compilationRequest.Options);
 
-            return new SuccessResult(result.Diagnostics);
+            return new SuccessResult(DiagnosticList.From(compilationRequest.Options, result.Diagnostics));
         }
     }
 }

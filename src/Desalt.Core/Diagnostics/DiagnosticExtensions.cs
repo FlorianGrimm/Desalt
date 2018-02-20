@@ -8,54 +8,36 @@
 namespace Desalt.Core.Diagnostics
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using Microsoft.CodeAnalysis;
 
+    /// <summary>
+    /// Contains extension methods for working with <see cref="Diagnostic"/> objects.
+    /// </summary>
     internal static class DiagnosticExtensions
     {
-        public static DiagnosticSeverity ToSeverity(
-            this ReportDiagnostic reportDiagnostic,
-            DiagnosticSeverity defaultSeverity)
-        {
-            switch (reportDiagnostic)
-            {
-                case ReportDiagnostic.Default:
-                    return defaultSeverity;
-
-                case ReportDiagnostic.Error:
-                    return DiagnosticSeverity.Error;
-
-                case ReportDiagnostic.Warn:
-                    return DiagnosticSeverity.Warning;
-
-                case ReportDiagnostic.Info:
-                    return DiagnosticSeverity.Info;
-
-                case ReportDiagnostic.Hidden:
-                case ReportDiagnostic.Suppress:
-                    return DiagnosticSeverity.Hidden;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(reportDiagnostic), reportDiagnostic, null);
-            }
-        }
-
         /// <summary>
         /// Calculates the severity of a diagnostic based on the compiler options.
         /// </summary>
         /// <param name="diagnostic">The diagnostic information from the attribute on the enum member.</param>
         /// <param name="options">The compiler options to use to determine whether to report the specified diagnostic.</param>
-        /// <param name="hasPragmaSuppression">
-        /// Indicates whether the diagnostic is suppressed in the source with a `#pragma warning
-        /// disable` preprocessor instruction.
-        /// </param>
         /// <remarks>Much of this code has been adapted from the Roslyn source at <see href="http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp/Compilation/CSharpDiagnosticFilter.cs"/>.</remarks>
+        ///// <param name="hasPragmaSuppression">
+        ///// Indicates whether the diagnostic is suppressed in the source with a `#pragma warning
+        ///// disable` preprocessor instruction.
+        ///// </param>
         public static ReportDiagnostic CalculateReportAction(
             this Diagnostic diagnostic,
-            CompilerOptions options,
-            out bool hasPragmaSuppression)
+            CompilerOptions options /*,
+            out bool hasPragmaSuppression*/)
         {
-            hasPragmaSuppression = false;
+            if (diagnostic == null)
+            {
+                throw new ArgumentNullException(nameof(diagnostic));
+            }
+
+            //hasPragmaSuppression = false;
 
             // diagnostics that are not configurable will be reported based on the enabled state
             if (diagnostic.IsNotConfigurable())
@@ -98,6 +80,85 @@ namespace Desalt.Core.Diagnostics
         }
 
         /// <summary>
+        /// Creates a copy of the specified diagnostic and changes the severity to match the
+        /// specified report action. If the severity level is the same, no copy is made. If the
+        /// report action is <see cref="ReportDiagnostic.Suppress"/>, null is returned.
+        /// </summary>
+        /// <param name="diagnostic">The <see cref="Diagnostic"/> to copy.</param>
+        /// <param name="reportAction">The severity level in which the diagnostic should be reported.</param>
+        /// <returns>
+        /// Either a copy or the original <see cref="Diagnostic"/>, or null if the diagnostic should
+        /// be suppressed.
+        /// </returns>
+        public static Diagnostic WithReportDiagnostic(this Diagnostic diagnostic, ReportDiagnostic reportAction)
+        {
+            if (diagnostic == null)
+            {
+                return null;
+            }
+
+            switch (reportAction)
+            {
+                case ReportDiagnostic.Default:
+                    return diagnostic;
+
+                case ReportDiagnostic.Error:
+                    return diagnostic.WithSeverity(DiagnosticSeverity.Error);
+
+                case ReportDiagnostic.Warn:
+                    return diagnostic.WithSeverity(DiagnosticSeverity.Warning);
+
+                case ReportDiagnostic.Info:
+                    return diagnostic.WithSeverity(DiagnosticSeverity.Info);
+
+                case ReportDiagnostic.Hidden:
+                    return diagnostic.WithSeverity(DiagnosticSeverity.Hidden);
+
+                case ReportDiagnostic.Suppress:
+                    return null;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(reportAction), reportAction, null);
+            }
+        }
+
+        /// <summary>
+        /// Creates a copy of the specified diagnostic with the specified severity level. If the
+        /// severity level is the same, no copy is made.
+        /// </summary>
+        /// <param name="diagnostic">The <see cref="Diagnostic"/> to copy.</param>
+        /// <param name="severity">The new severity level.</param>
+        /// <returns></returns>
+        public static Diagnostic WithSeverity(this Diagnostic diagnostic, DiagnosticSeverity severity)
+        {
+            if (diagnostic == null)
+            {
+                return null;
+            }
+
+            if (diagnostic.Severity == severity)
+            {
+                return diagnostic;
+            }
+
+            return Diagnostic.Create(
+                diagnostic.Id,
+                diagnostic.Descriptor.Category,
+                diagnostic.GetMessage(CultureInfo.InvariantCulture),
+                severity,
+                diagnostic.DefaultSeverity,
+                diagnostic.Descriptor.IsEnabledByDefault,
+                diagnostic.WarningLevel,
+                diagnostic.Descriptor.Title,
+                diagnostic.Descriptor.Description,
+                diagnostic.Descriptor.HelpLinkUri,
+                diagnostic.Location,
+                diagnostic.AdditionalLocations,
+                diagnostic.Descriptor.CustomTags,
+                diagnostic.Properties);
+        }
+
+        /// <summary>
         /// Returns a value indicating whether the specified <see cref="Diagnostic"/> is
         /// configurable, i.e. the severity can be changed. A diagnostic is not configurable if it
         /// has the <see cref="WellKnownDiagnosticTags.NotConfigurable"/> custom tag.
@@ -107,7 +168,7 @@ namespace Desalt.Core.Diagnostics
         /// true if the Diagnostic is not configurable, meaning that the severity cannot be changed;
         /// otherwise, false.
         /// </returns>
-        public static bool IsNotConfigurable(this Diagnostic diagnostic) =>
+        private static bool IsNotConfigurable(this Diagnostic diagnostic) =>
             diagnostic.Descriptor.CustomTags.Contains(WellKnownDiagnosticTags.NotConfigurable);
     }
 }

@@ -27,15 +27,16 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
+        private readonly DiagnosticList _diagnostics;
         private readonly SemanticModel _semanticModel;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TranslationVisitor(SemanticModel semanticModel)
+        public TranslationVisitor(CompilerOptions options, SemanticModel semanticModel)
         {
+            _diagnostics = DiagnosticList.Create(options);
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
         }
 
