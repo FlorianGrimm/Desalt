@@ -143,6 +143,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\DiagnosticExtensionsTests.cs" />
+    <Compile Include="Diagnostics\DiagnosticListTests.cs" />
+    <Compile Include="Diagnostics\DiagnosticsTestFactories.cs" />
     <Compile Include="Emit\EmitterTests.cs" />
     <Compile Include="Extensions\StreamExtensionsTests.cs" />
     <Compile Include="EndToEndTests.cs" />

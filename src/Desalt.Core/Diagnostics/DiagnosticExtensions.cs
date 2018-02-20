@@ -37,6 +37,11 @@ namespace Desalt.Core.Diagnostics
                 throw new ArgumentNullException(nameof(diagnostic));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             //hasPragmaSuppression = false;
 
             // diagnostics that are not configurable will be reported based on the enabled state
@@ -69,11 +74,41 @@ namespace Desalt.Core.Diagnostics
 
             // Unless specific warning options are defined (/warnaserror[+|-]:<n> or /nowarn:<n>,
             // follow the global option (/warnaserror[+|-] or /nowarn).
-            if (report == ReportDiagnostic.Default &&
-                options.GeneralDiagnosticOption == ReportDiagnostic.Error &&
-                diagnostic.DefaultSeverity == DiagnosticSeverity.Warning)
+            if (report == ReportDiagnostic.Default)
             {
-                report = ReportDiagnostic.Error;
+                switch (options.GeneralDiagnosticOption)
+                {
+                    case ReportDiagnostic.Error:
+
+                        // If we've been asked to do warn-as-error then don't raise severity for
+                        // anything below warning (info or hidden).
+                        if (diagnostic.Severity == DiagnosticSeverity.Warning)
+                        {
+                            // In the case where /warnaserror+ is followed by /warnaserror-:<n> on the command line,
+                            // do not promote the warning specified in <n> to an error.
+                            if (!isSpecified && report == ReportDiagnostic.Default)
+                            {
+                                return ReportDiagnostic.Error;
+                            }
+                        }
+
+                        break;
+
+                    case ReportDiagnostic.Suppress:
+
+                        // When doing suppress-all-warnings, don't lower severity for anything other
+                        // than warning and info. We shouldn't suppress hidden diagnostics here
+                        // because then features that use hidden diagnostics to display a lightbulb
+                        // would stop working if someone has suppress-all-warnings (/nowarn)
+                        // specified in their project.
+                        if (diagnostic.Severity == DiagnosticSeverity.Warning ||
+                            diagnostic.Severity == DiagnosticSeverity.Info)
+                        {
+                            return ReportDiagnostic.Suppress;
+                        }
+
+                        break;
+                }
             }
 
             return report;
