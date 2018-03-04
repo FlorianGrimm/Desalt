@@ -23,7 +23,7 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, ITsType> s_typeMap = new Dictionary<string, ITsType>
+        private static readonly ImmutableDictionary<string, ITsType> s_nativeTypeMap = new Dictionary<string, ITsType>
         {
             ["System.Void"] = Factory.VoidType,
             ["System.Boolean"] = Factory.BooleanType,
@@ -58,9 +58,9 @@ namespace Desalt.Core.Translation
             }
 
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
-            if (s_typeMap.ContainsKey(fullTypeName))
+            if (s_nativeTypeMap.ContainsKey(fullTypeName))
             {
-                return s_typeMap[fullTypeName];
+                return s_nativeTypeMap[fullTypeName];
             }
 
             if (fullTypeName == "System.Func")
