@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// Contains information about how to validate or translate a C# document into TypeScript.
@@ -28,11 +29,13 @@ namespace Desalt.Core.Translation
             Document document,
             CompilerOptions options,
             CSharpSyntaxTree syntaxTree,
+            CompilationUnitSyntax rootSyntax,
             SemanticModel semanticModel)
         {
             Document = document;
             Options = options;
             SyntaxTree = syntaxTree;
+            RootSyntax = rootSyntax;
             SemanticModel = semanticModel;
         }
 
@@ -44,6 +47,7 @@ namespace Desalt.Core.Translation
         public CompilerOptions Options { get; }
 
         public CSharpSyntaxTree SyntaxTree { get; }
+        public CompilationUnitSyntax RootSyntax { get; }
         public SemanticModel SemanticModel { get; }
 
         /// <summary>
@@ -70,6 +74,8 @@ namespace Desalt.Core.Translation
                     DiagnosticList.Create(options, DiagnosticFactory.DocumentContainsNoSyntaxTree(document)));
             }
 
+            CompilationUnitSyntax rootSyntax = syntaxTree.GetCompilationUnitRoot(cancellationToken);
+
             // try to get the semantic model
             SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (semanticModel == null)
@@ -82,7 +88,7 @@ namespace Desalt.Core.Translation
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
             DiagnosticList diagnostics = DiagnosticList.From(options, semanticModel.GetDiagnostics(null, cancellationToken));
 
-            var context = new DocumentTranslationContext(document, options, syntaxTree, semanticModel);
+            var context = new DocumentTranslationContext(document, options, syntaxTree, rootSyntax, semanticModel);
             return new ExtendedResult<DocumentTranslationContext>(context, diagnostics);
         }
     }

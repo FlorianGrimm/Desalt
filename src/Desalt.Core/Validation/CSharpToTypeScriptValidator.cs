@@ -7,8 +7,11 @@
 
 namespace Desalt.Core.Validation
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
+    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -16,10 +19,16 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal class CSharpToTypeScriptValidator
     {
-        public async Task<IExtendedResult<bool>> ValidateDocumentAsync(Document document, CompilerOptions options)
+        public async Task<IExtendedResult<bool>> ValidateDocumentAsync(DocumentTranslationContext context)
         {
-            await Task.Yield();
-            return new ExtendedResult<bool>(true);
+            IValidator[] validators = { new NoDefaultParametersInInterfacesValidator() };
+
+            // run all of the validators in parallel
+            var tasks = validators.Select(v => Task.Run(() => v.Validate(context)));
+            IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
+
+            IEnumerable<Diagnostic> diagnostics = results.SelectMany(result => result.Diagnostics);
+            return new SuccessResult(diagnostics);
         }
     }
 }
