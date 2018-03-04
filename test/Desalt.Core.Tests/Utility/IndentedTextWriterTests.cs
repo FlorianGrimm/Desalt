@@ -48,10 +48,10 @@ namespace Desalt.Core.Tests.Utility
         {
             // ReSharper disable ObjectCreationAsStatement
             Action action = () => new IndentedTextWriter(null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
 
             action = () => new IndentedTextWriter(null, " ");
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
             // ReSharper restore ObjectCreationAsStatement
         }
 

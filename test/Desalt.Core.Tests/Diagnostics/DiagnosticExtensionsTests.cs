@@ -26,10 +26,10 @@ namespace Desalt.Core.Tests.Diagnostics
         public void CalculateReportAction_should_throw_on_null_parameters()
         {
             Action action = () => DiagnosticExtensions.CalculateReportAction(null, new CompilerOptions("out"));
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostic");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostic");
 
             action = () => DiagnosticExtensions.CalculateReportAction(DiagnosticsTestFactories.CreateDiagnostic(), null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -169,7 +169,7 @@ namespace Desalt.Core.Tests.Diagnostics
         {
             Diagnostic diagnostic = DiagnosticsTestFactories.CreateDiagnostic();
             Action action = () => DiagnosticExtensions.WithReportDiagnostic(diagnostic, (ReportDiagnostic)3000);
-            action.ShouldThrowExactly<ArgumentOutOfRangeException>().And.ParamName.Should().Be("reportAction");
+            action.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ParamName.Should().Be("reportAction");
         }
 
         [TestMethod]

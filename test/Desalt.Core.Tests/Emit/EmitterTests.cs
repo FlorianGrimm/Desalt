@@ -55,7 +55,7 @@ namespace Desalt.Core.Tests.Emit
         {
             // ReSharper disable ObjectCreationAsStatement
             Action action = () => new Emitter(outputStream: null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
             // ReSharper restore ObjectCreationAsStatement
         }
 
@@ -89,7 +89,7 @@ namespace Desalt.Core.Tests.Emit
             {
                 var emitter = new Emitter(stream);
                 Action action = () => emitter.WriteBlock(items: null);
-                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
+                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
             }
         }
 
@@ -144,7 +144,7 @@ namespace Desalt.Core.Tests.Emit
             {
                 var emitter = new Emitter(stream);
                 Action action = () => emitter.WriteCommaNewlineSeparatedBlock(null);
-                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
+                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
             }
         }
 
@@ -166,7 +166,7 @@ namespace Desalt.Core.Tests.Emit
             {
                 var emitter = new Emitter(stream);
                 Action action = () => emitter.WriteParameterList(null);
-                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
+                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
             }
         }
 
@@ -188,7 +188,7 @@ namespace Desalt.Core.Tests.Emit
             {
                 var emitter = new Emitter(stream);
                 Action action = () => emitter.WriteList(null, true);
-                action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
+                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
             }
         }
 
