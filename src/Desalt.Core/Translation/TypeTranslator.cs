@@ -49,25 +49,29 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsType TranslateSymbol(ITypeSymbol symbol)
+        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<string> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType);
+                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, typesToImport);
                 return Factory.ArrayType(elementType);
             }
 
+            // native types are easy to translate
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             if (s_nativeTypeMap.ContainsKey(fullTypeName))
             {
                 return s_nativeTypeMap[fullTypeName];
             }
 
+            // Func<T1, ...> is a special case
             if (fullTypeName == "System.Func")
             {
-                return TranslateFunc((INamedTypeSymbol)symbol);
+                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport);
             }
 
+            // this is a type that we'll need to import since it's not a native type
+            typesToImport.Add(symbol.Name);
             return Factory.TypeReference(Factory.Identifier(symbol.Name));
         }
 
@@ -75,7 +79,7 @@ namespace Desalt.Core.Translation
         /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
         /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
         /// </summary>
-        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol)
+        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<string> typesToImport)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
 
@@ -84,13 +88,13 @@ namespace Desalt.Core.Translation
                 string parameterName = typeArgument.Name;
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
-                var parameterType = TranslateSymbol(typeArgument);
+                var parameterType = TranslateSymbol(typeArgument, typesToImport);
                 ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(Factory.Identifier(parameterName), parameterType);
                 requiredParameters.Add(requiredParameter);
             }
 
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
-            ITsType returnType = TranslateSymbol(symbol.TypeArguments.Last());
+            ITsType returnType = TranslateSymbol(symbol.TypeArguments.Last(), typesToImport);
             return Factory.FunctionType(parameterList, returnType);
         }
     }

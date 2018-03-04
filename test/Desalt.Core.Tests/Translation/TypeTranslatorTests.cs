@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
@@ -37,7 +38,7 @@ namespace Desalt.Core.Tests.Translation
                 root.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
             ITypeSymbol typeSymbol = semanticModel.GetTypeInfo(variableDeclaration.Type).Type;
 
-            TypeTranslator.TranslateSymbol(typeSymbol).Should().Be(expectedType);
+            TypeTranslator.TranslateSymbol(typeSymbol, new HashSet<string>()).Should().Be(expectedType);
         }
 
         [TestMethod]
