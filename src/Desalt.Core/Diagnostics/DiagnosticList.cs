@@ -113,7 +113,15 @@ namespace Desalt.Core.Diagnostics
         private static Diagnostic Filter(CompilerOptions options, Diagnostic diagnostic)
         {
             ReportDiagnostic reportAction = diagnostic.CalculateReportAction(options);
-            return diagnostic.WithReportDiagnostic(reportAction);
+            Diagnostic filteredDiagnostic = diagnostic.WithReportDiagnostic(reportAction);
+
+            // don't add hidden diagnostics
+            if (filteredDiagnostic?.Severity == DiagnosticSeverity.Hidden)
+            {
+                filteredDiagnostic = null;
+            }
+
+            return filteredDiagnostic;
         }
 
         private static IEnumerable<Diagnostic> Filter(
