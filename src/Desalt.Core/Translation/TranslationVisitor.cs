@@ -29,6 +29,7 @@ namespace Desalt.Core.Translation
 
         private readonly DiagnosticList _diagnostics;
         private readonly SemanticModel _semanticModel;
+        private readonly ISet<string> _typesToImport = new HashSet<string>();
 
         //// ===========================================================================================================
         //// Constructors
@@ -46,6 +47,8 @@ namespace Desalt.Core.Translation
 
         public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
 
+        public IEnumerable<string> TypesToImport => _typesToImport.AsEnumerable();
+
         //// ===========================================================================================================
         //// Visit Methods
         //// ===========================================================================================================
@@ -59,6 +62,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a CompilationUnitSyntax node.
         /// </summary>
+        /// <returns>An <see cref="ITsImplementationModule"/>.</returns>
         public override IEnumerable<IAstNode> VisitCompilationUnit(CompilationUnitSyntax node)
         {
             var elements = new List<ITsImplementationModuleElement>();
@@ -144,7 +148,7 @@ namespace Desalt.Core.Translation
             // create the call signature
             ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
-            ITsType returnType = TypeTranslator.TranslateSymbol(node.ReturnType.GetTypeSymbol(_semanticModel));
+            ITsType returnType = TypeTranslator.TranslateSymbol(node.ReturnType.GetTypeSymbol(_semanticModel), _typesToImport);
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
@@ -191,7 +195,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
-            ITsType parameterType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel));
+            ITsType parameterType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
             IAstNode parameter;
 
             if (node.Default == null)

@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -19,24 +20,24 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Contains information about how to validate or translate a C# document into TypeScript.
     /// </summary>
-    internal sealed class DocumentTranslationContext
+    internal class DocumentTranslationContext
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private DocumentTranslationContext(
+        protected DocumentTranslationContext(
             Document document,
             CompilerOptions options,
             CSharpSyntaxTree syntaxTree,
             CompilationUnitSyntax rootSyntax,
             SemanticModel semanticModel)
         {
-            Document = document;
-            Options = options;
-            SyntaxTree = syntaxTree;
-            RootSyntax = rootSyntax;
-            SemanticModel = semanticModel;
+            Document = document ?? throw new ArgumentNullException(nameof(document));
+            Options = options ?? throw new ArgumentNullException(nameof(options));
+            SyntaxTree = syntaxTree ?? throw new ArgumentNullException(nameof(syntaxTree));
+            RootSyntax = rootSyntax ?? throw new ArgumentNullException(nameof(rootSyntax));
+            SemanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
         }
 
         //// ===========================================================================================================
@@ -86,10 +87,41 @@ namespace Desalt.Core.Translation
             }
 
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
-            DiagnosticList diagnostics = DiagnosticList.From(options, semanticModel.GetDiagnostics(null, cancellationToken));
+            DiagnosticList diagnostics = DiagnosticList.From(
+                options,
+                semanticModel.GetDiagnostics(null, cancellationToken));
 
             var context = new DocumentTranslationContext(document, options, syntaxTree, rootSyntax, semanticModel);
             return new ExtendedResult<DocumentTranslationContext>(context, diagnostics);
         }
+    }
+
+    /// <summary>
+    /// Contains information about how to validate or translate a C# document into TypeScript, with a
+    /// valid <see cref="ImportSymbolTable"/>.
+    /// </summary>
+    internal sealed class DocumentTranslationContextWithSymbolTable : DocumentTranslationContext
+    {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public DocumentTranslationContextWithSymbolTable(
+            DocumentTranslationContext context,
+            ImportSymbolTable symbolTable) : base(
+            context.Document,
+            context.Options,
+            context.SyntaxTree,
+            context.RootSyntax,
+            context.SemanticModel)
+        {
+            SymbolTable = symbolTable ?? throw new ArgumentNullException(nameof(symbolTable));
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public ImportSymbolTable SymbolTable { get; }
     }
 }

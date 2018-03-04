@@ -9,6 +9,7 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Linq;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScript.Ast.TsAstFactory;
@@ -22,7 +23,7 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, ITsType> s_typeMap = new Dictionary<string, ITsType>
+        private static readonly ImmutableDictionary<string, ITsType> s_nativeTypeMap = new Dictionary<string, ITsType>
         {
             ["System.Void"] = Factory.VoidType,
             ["System.Boolean"] = Factory.BooleanType,
@@ -38,6 +39,7 @@ namespace Desalt.Core.Translation
             ["System.Decimal"] = Factory.NumberType,
             ["System.Single"] = Factory.NumberType,
             ["System.Double"] = Factory.NumberType,
+            ["System.Object"] = Factory.AnyType,
         }.ToImmutableDictionary();
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
@@ -47,15 +49,53 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsType TranslateSymbol(INamedTypeSymbol symbol)
+        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<string> typesToImport)
         {
-            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
-            if (s_typeMap.ContainsKey(fullTypeName))
+            if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                return s_typeMap[fullTypeName];
+                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, typesToImport);
+                return Factory.ArrayType(elementType);
             }
 
+            // native types are easy to translate
+            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
+            if (s_nativeTypeMap.ContainsKey(fullTypeName))
+            {
+                return s_nativeTypeMap[fullTypeName];
+            }
+
+            // Func<T1, ...> is a special case
+            if (fullTypeName == "System.Func")
+            {
+                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport);
+            }
+
+            // this is a type that we'll need to import since it's not a native type
+            typesToImport.Add(symbol.Name);
             return Factory.TypeReference(Factory.Identifier(symbol.Name));
+        }
+
+        /// <summary>
+        /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
+        /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
+        /// </summary>
+        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<string> typesToImport)
+        {
+            var requiredParameters = new List<ITsRequiredParameter>();
+
+            foreach (ITypeSymbol typeArgument in symbol.TypeArguments.Take(symbol.TypeArguments.Length - 1))
+            {
+                string parameterName = typeArgument.Name;
+                parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
+
+                var parameterType = TranslateSymbol(typeArgument, typesToImport);
+                ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(Factory.Identifier(parameterName), parameterType);
+                requiredParameters.Add(requiredParameter);
+            }
+
+            ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
+            ITsType returnType = TranslateSymbol(symbol.TypeArguments.Last(), typesToImport);
+            return Factory.FunctionType(parameterList, returnType);
         }
     }
 }
