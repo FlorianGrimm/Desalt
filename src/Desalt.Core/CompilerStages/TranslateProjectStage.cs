@@ -22,7 +22,8 @@ namespace Desalt.Core.CompilerStages
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
     /// </summary>
-    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContext>, IEnumerable<string>>
+    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTable>,
+        IEnumerable<string>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -34,7 +35,7 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The result of the stage.</returns>
         public override async Task<IExtendedResult<IEnumerable<string>>> ExecuteAsync(
-            IEnumerable<DocumentTranslationContext> input,
+            IEnumerable<DocumentTranslationContextWithSymbolTable> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -42,7 +43,8 @@ namespace Desalt.Core.CompilerStages
 
             Directory.CreateDirectory(options.OutputPath);
 
-            ImmutableArray<IExtendedResult<string>> results = input.Where(context => context.Document.Name == "ILogAppender.cs")
+            ImmutableArray<IExtendedResult<string>> results = input
+                .Where(context => context.Document.Name == "ILogAppender.cs")
                 .AsParallel()
                 .Select(context => TranslateDocument(context, cancellationToken))
                 .ToImmutableArray();
@@ -62,7 +64,7 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The file path to the translated TypeScript file.</returns>
         private static IExtendedResult<string> TranslateDocument(
-            DocumentTranslationContext context,
+            DocumentTranslationContextWithSymbolTable context,
             CancellationToken cancellationToken)
         {
             // TEMP - copy the original .cs file for easy comparing

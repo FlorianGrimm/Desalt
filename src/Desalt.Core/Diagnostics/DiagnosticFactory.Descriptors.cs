@@ -46,7 +46,10 @@ namespace Desalt.Core.Diagnostics
                 1003,
                 "Interfaces with default parameters are not supported in TypeScript",
                 "Interface method '{0}.{1}' contains parameter '{2}' with a default value")]
-            InterfaceWithDefaultParameter
+            InterfaceWithDefaultParameter,
+
+            [Error(1004, "Cannot import an unknown type", "Type '{0}' is unknown and cannot be imported.")]
+            UnknownType,
         }
 
         //// ===========================================================================================================
@@ -103,6 +106,16 @@ namespace Desalt.Core.Diagnostics
                 interfaceName,
                 methodName,
                 parameterSyntax.Identifier.Text);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Type '{0}' is unknown and cannot be imported."
+        /// </summary>
+        /// <param name="typeName">The name of the uknown type.</param>
+        /// <param name="location">The location of the error.</param>
+        public static Diagnostic UnknownType(string typeName, Location location = null)
+        {
+            return Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
         }
     }
 }
