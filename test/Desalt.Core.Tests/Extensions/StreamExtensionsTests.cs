@@ -21,7 +21,7 @@ namespace Desalt.Core.Tests.Extensions
         public void ReadAllText_should_throw_on_null_args()
         {
             Action action = () => StreamExtensions.ReadAllText(null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace Desalt.Core.Tests.Extensions
         public void ReadToEnd_should_throw_on_null_args()
         {
             Action action = () => StreamExtensions.ReadToEnd(null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 
         [TestMethod]

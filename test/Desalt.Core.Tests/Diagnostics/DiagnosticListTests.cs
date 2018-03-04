@@ -29,10 +29,10 @@ namespace Desalt.Core.Tests.Diagnostics
         public void Create_and_From_should_throw_on_null_options()
         {
             Action action = () => DiagnosticList.Create(null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
 
             action = () => DiagnosticList.From(null, Enumerable.Empty<Diagnostic>());
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Desalt.Core.Tests.Diagnostics
         {
             var options = new CompilerOptions("out");
             Action action = () => DiagnosticList.From(options, null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostics");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostics");
         }
 
         [TestMethod]

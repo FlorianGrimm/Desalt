@@ -25,7 +25,7 @@ namespace Desalt.Core.Tests.Pipeline
         {
             var pipeline = new SimplePipeline<object, object>();
             Action action = () => pipeline.AddStage(null);
-            action.ShouldThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stage");
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stage");
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace Desalt.Core.Tests.Pipeline
         {
             var pipeline = new SimplePipeline<string, string>();
             Action action = () => pipeline.AddStage(new IntToStringStage());
-            action.ShouldThrowExactly<ArgumentException>().And.Message.Should().Contain(typeof(string).Name);
+            action.Should().ThrowExactly<ArgumentException>().And.Message.Should().Contain(typeof(string).Name);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace Desalt.Core.Tests.Pipeline
             var pipeline = new SimplePipeline<int, string>();
             pipeline.AddStage(new IntToStringStage());
             Action action = () => pipeline.AddStage(new CharArrayToStringStage());
-            action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("stage");
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("stage");
         }
 
         [TestMethod]

@@ -44,16 +44,16 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         public void Number_literals_should_be_positive()
         {
             Action action = () => Factory.Number(-123);
-            action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
             action = () => Factory.BinaryInteger(-123);
-            action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
             action = () => Factory.OctalInteger(-123);
-            action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
 
             action = () => Factory.HexInteger(-123);
-            action.ShouldThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
         }
 
         [TestMethod]

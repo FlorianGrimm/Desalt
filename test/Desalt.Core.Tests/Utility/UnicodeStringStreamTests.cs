@@ -24,7 +24,7 @@ namespace Desalt.Core.Tests.Utility
         {
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new UnicodeStringStream(null);
-            action.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("contents");
+            action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("contents");
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace Desalt.Core.Tests.Utility
 
                 foreach (var tuple in actions)
                 {
-                    tuple.Action.ShouldThrow<NotSupportedException>(tuple.MethodName);
+                    tuple.Action.Should().Throw<NotSupportedException>(tuple.MethodName);
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace Desalt.Core.Tests.Utility
 
                 foreach (var tuple in actions)
                 {
-                    tuple.Function.ShouldThrow<NotSupportedException>(tuple.MethodName);
+                    tuple.Function.Should().Throw<NotSupportedException>(tuple.MethodName);
                 }
             }
 
@@ -103,7 +103,7 @@ namespace Desalt.Core.Tests.Utility
 
                 foreach (var tuple in actions)
                 {
-                    tuple.Action.ShouldThrow<ObjectDisposedException>(tuple.MethodName);
+                    tuple.Action.Should().Throw<ObjectDisposedException>(tuple.MethodName);
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Desalt.Core.Tests.Utility
 
                 foreach (var tuple in actions)
                 {
-                    tuple.Function.ShouldThrow<ObjectDisposedException>(tuple.MethodName);
+                    tuple.Function.Should().Throw<ObjectDisposedException>(tuple.MethodName);
                 }
             }
 
@@ -156,7 +156,7 @@ namespace Desalt.Core.Tests.Utility
 
                 foreach (var tuple in actions)
                 {
-                    tuple.Function.ShouldThrow<NotSupportedException>(tuple.MethodName);
+                    tuple.Function.Should().Throw<NotSupportedException>(tuple.MethodName);
                 }
             }
 
@@ -222,19 +222,19 @@ namespace Desalt.Core.Tests.Utility
         {
             _stream.CanWrite.Should().BeFalse();
             // ReSharper disable once AssignNullToNotNullAttribute
-            new Action(() => _stream.Write(null, 0, 0)).ShouldThrow<NotSupportedException>();
+            new Action(() => _stream.Write(null, 0, 0)).Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
         public void Should_not_support_flusing()
         {
-            new Action(() => _stream.Flush()).ShouldThrow<NotSupportedException>();
+            new Action(() => _stream.Flush()).Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
         public void Should_not_support_setting_the_length()
         {
-            new Action(() => _stream.SetLength(10)).ShouldThrow<NotSupportedException>();
+            new Action(() => _stream.SetLength(10)).Should().Throw<NotSupportedException>();
         }
     }
 
@@ -260,7 +260,7 @@ namespace Desalt.Core.Tests.Utility
         [TestMethod]
         public void Should_only_return_the_unicode_preamble()
         {
-            byte[] buffer = new byte[_preamble.Length];
+            var buffer = new byte[_preamble.Length];
             _stream.Read(buffer, 0, buffer.Length);
             buffer.Should().ContainInOrder(_preamble);
         }
