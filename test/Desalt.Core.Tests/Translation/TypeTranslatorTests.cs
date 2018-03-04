@@ -35,7 +35,7 @@ namespace Desalt.Core.Tests.Translation
             // find the type symbol for the class member
             VariableDeclarationSyntax variableDeclaration =
                 root.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
-            var typeSymbol = (INamedTypeSymbol)semanticModel.GetTypeInfo(variableDeclaration.Type).Type;
+            ITypeSymbol typeSymbol = semanticModel.GetTypeInfo(variableDeclaration.Type).Type;
 
             TypeTranslator.TranslateSymbol(typeSymbol).Should().Be(expectedType);
         }
