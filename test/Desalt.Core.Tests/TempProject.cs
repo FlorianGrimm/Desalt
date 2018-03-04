@@ -10,18 +10,16 @@ namespace Desalt.Core.Tests
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.MSBuild;
+    using Microsoft.CodeAnalysis.Text;
 
     /// <summary>
-    /// Represents a temporary C# project that can be compiled using the Roslyn object model.
+    /// Represents a temporary in-memory C# project that can be compiled using the Roslyn object model.
     /// </summary>
     internal sealed class TempProject : IDisposable
     {
@@ -29,30 +27,16 @@ namespace Desalt.Core.Tests
         //// Member Variables
         //// ===========================================================================================================
 
-        private Lazy<MSBuildWorkspace> _workspace;
-        private Lazy<Task<Project>> _project;
+        private AdhocWorkspace _workspace;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TempProject(string projectDirectory, string projectFilePath)
+        private TempProject(AdhocWorkspace workspace)
         {
-            ProjectDirectory = projectDirectory;
-            ProjectFilePath = projectFilePath;
-
-            _workspace = new Lazy<MSBuildWorkspace>(MSBuildWorkspace.Create, isThreadSafe: true);
-            _project = new Lazy<Task<Project>>(
-                () => _workspace.Value.OpenProjectAsync(projectFilePath),
-                isThreadSafe: true);
+            _workspace = workspace;
         }
-
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        public string ProjectDirectory { get; }
-        public string ProjectFilePath { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -60,12 +44,6 @@ namespace Desalt.Core.Tests
 
         public static TempProject Create(string projectName, params TempProjectFile[] sourceFiles)
         {
-            // create the project directory
-            string projectDirectory = Path.Combine(Path.GetTempPath(), projectName);
-            Directory.CreateDirectory(projectDirectory);
-
-            string projectFilePath = Path.Combine(projectDirectory, projectName + ".csproj");
-
             // create the .csproj file
             var settings = new XmlWriterSettings
             {
@@ -75,7 +53,8 @@ namespace Desalt.Core.Tests
                 NewLineChars = Environment.NewLine
             };
 
-            using (var writer = XmlWriter.Create(projectFilePath, settings))
+            var csprojContents = new StringBuilder(1024);
+            using (var writer = XmlWriter.Create(csprojContents, settings))
             {
                 writer.WriteProcessingInstruction("xml", @"version=""1.0"" encoding=""utf-8""");
 
@@ -104,14 +83,19 @@ namespace Desalt.Core.Tests
                 writer.WriteEndElement();
             }
 
-            // create all of the project source files
+            // create a new ad-hoc workspace
+            var workspace = new AdhocWorkspace();
+
+            // add a new project
+            var project = workspace.AddProject(projectName, "C#");
+
+            // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
-                string filePath = Path.Combine(projectDirectory, sourceFile.FileName + ".cs");
-                File.WriteAllText(filePath, sourceFile.FileContents);
+                workspace.AddDocument(project.Id, sourceFile.FileName, SourceText.From(sourceFile.FileContents));
             }
 
-            return new TempProject(projectDirectory, projectFilePath);
+            return new TempProject(workspace);
         }
 
         public async Task<DocumentTranslationContext> CreateContextForFileAsync(
@@ -119,10 +103,8 @@ namespace Desalt.Core.Tests
             CompilerOptions options = null)
         {
             options = options ?? new CompilerOptions("outputPath");
-
-            Project project = await _project.Value;
-            Document document =
-                project.Documents.Single(doc => doc.FilePath == Path.Combine(ProjectDirectory, fileName + ".cs"));
+            Project project = _workspace.CurrentSolution.Projects.Single();
+            Document document = project.Documents.Single(doc => doc.Name == fileName);
 
             IExtendedResult<DocumentTranslationContext> result =
                 await DocumentTranslationContext.TryCreateAsync(document, options);
@@ -136,21 +118,8 @@ namespace Desalt.Core.Tests
         /// </summary>
         public void Dispose()
         {
-            Lazy<MSBuildWorkspace> ws = Interlocked.Exchange(ref _workspace, null);
-            if (ws?.IsValueCreated == true)
-            {
-                ws.Value.Dispose();
-            }
-
-            Interlocked.Exchange(ref _project, null);
-
-            try
-            {
-                Directory.Delete(ProjectDirectory, recursive: true);
-            }
-            catch (IOException)
-            {
-            }
+            _workspace?.Dispose();
+            _workspace = null;
         }
 
         private static void WritePropertyGroup(XmlWriter writer, string projectName)
