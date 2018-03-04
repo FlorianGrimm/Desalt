@@ -289,6 +289,8 @@
     <Compile Include="Utility\Param.cs" />
     <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
+    <Compile Include="Validation\IValidator.cs" />
+    <Compile Include="Validation\NoDefaultParametersInInterfacesValidator.cs" />
     <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>
