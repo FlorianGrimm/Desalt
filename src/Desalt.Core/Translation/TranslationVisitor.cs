@@ -230,12 +230,9 @@ namespace Desalt.Core.Translation
                 return translatedNode;
             }
 
-            var symbol = _semanticModel.GetDeclaredSymbol(syntaxNode);
-            var documentationComment = symbol.GetDocumentationComment();
-
-            var jsDocComment = Factory.MultiLineComment(
-                isJsDoc: true,
-                lines: new[] { documentationComment.SummaryText.Trim() });
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(syntaxNode);
+            DocumentationComment documentationComment = symbol.GetDocumentationComment();
+            var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
 
             return translatedNode.WithLeadingTrivia(jsDocComment);
         }
