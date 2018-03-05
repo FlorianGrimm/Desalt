@@ -2,7 +2,7 @@
 // <copyright file="ILogAppender.cs" company="Tableau Software">
 //   This file is the copyrighted property of Tableau Software and is protected by registered patents and other
 //   applicable U.S. and international laws and regulations.
-//   
+//
 //   Unlicensed use of the contents of this file is prohibited. Please refer to the NOTICES.txt file for further details.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ namespace Tableau.JavaScript.Vql.Core
     {
         /// <summary>
         /// Adds a function used to filter calls to <see cref="Log"/>.  Should return <c>true</c>
-        /// to include a log message or <c>false</c> to exclude.
+        /// to include a log message or <see langword="false" /> to exclude.
         /// </summary>
         void AddFilter(Func<Logger, LoggerLevel, bool> f);
 
