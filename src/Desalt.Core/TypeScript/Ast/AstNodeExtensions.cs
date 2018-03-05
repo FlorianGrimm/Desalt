@@ -79,6 +79,15 @@ namespace Desalt.Core.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates a copy of this node with the specified leading trivia.
+        /// </summary>
+        public static T WithLeadingTrivia<T>(this T node, IAstTriviaNode trivia) where T : IAstNode
+        {
+            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithLeadingTrivia<AstNode>(trivia);
+        }
+
+        /// <summary>
         /// Emits a node using a string stream. Useful for unit tests and debugging.
         /// </summary>
         /// <param name="node">The node to emit.</param>
