@@ -169,6 +169,7 @@
     <Compile Include="TypeScript\Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
+    <Compile Include="Utility\XmlFragmentParserTests.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
