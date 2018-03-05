@@ -28,6 +28,10 @@ namespace Desalt.Core.Translation
             RegexOptions.ExplicitCapture |
             RegexOptions.Singleline;
 
+        private static readonly Regex s_seeCrefMemberRegex = new Regex(
+            @"<see\s+cref\s*=\s*""M:(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            InlineElementOptions);
+
         private static readonly Regex s_seeLangwordRegex = new Regex(
             @"<see\s+langword\s*=\s*""(?<langword>[^""]+)""\s*/>",
             InlineElementOptions);
@@ -100,7 +104,17 @@ namespace Desalt.Core.Translation
             // translate <c>x</c> to `x`.
             translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
 
+            // translate <see cref="M:Type.Member" /> to [[Type.Member]]
+            translated = s_seeCrefMemberRegex.Replace(
+                translated,
+                match => $"[[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
+
             return translated;
+        }
+
+        private static string RemoveNamespace(string fullTypeName)
+        {
+            return fullTypeName.TrimEnd('.').Split('.').Last();
         }
     }
 }
