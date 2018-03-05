@@ -51,7 +51,7 @@ namespace Desalt.Core.Translation
             TranslationVisitor walker,
             ITsImplementationModule translatedModule)
         {
-            var importTypes = walker.TypesToImport.ToArray();
+            string[] importTypes = walker.TypesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
             string[] undefinedTypes = importTypes.Where(import => !context.SymbolTable.HasSymbol(import)).ToArray();

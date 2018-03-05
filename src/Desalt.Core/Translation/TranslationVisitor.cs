@@ -76,6 +76,7 @@ namespace Desalt.Core.Translation
             }
 
             ITsImplementationModule implementationScript = Factory.ImplementationModule(elements.ToArray());
+
             return implementationScript.ToSingleEnumerable();
         }
 
@@ -131,9 +132,12 @@ namespace Desalt.Core.Translation
             {
                 ITsExportImplementationElement exportedInterfaceDeclaration =
                     Factory.ExportImplementationElement(interfaceDeclaration);
+
+                exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
                 return exportedInterfaceDeclaration.ToSingleEnumerable();
             }
 
+            interfaceDeclaration = AddDocumentationCommentIfNecessary(node, interfaceDeclaration);
             return interfaceDeclaration.ToSingleEnumerable();
         }
 
@@ -148,7 +152,9 @@ namespace Desalt.Core.Translation
             // create the call signature
             ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
-            ITsType returnType = TypeTranslator.TranslateSymbol(node.ReturnType.GetTypeSymbol(_semanticModel), _typesToImport);
+            ITsType returnType = TypeTranslator.TranslateSymbol(
+                node.ReturnType.GetTypeSymbol(_semanticModel),
+                _typesToImport);
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
@@ -156,6 +162,7 @@ namespace Desalt.Core.Translation
                 functionName,
                 isOptional: false,
                 callSignature: callSignature);
+            functionDeclaration = AddDocumentationCommentIfNecessary(node, functionDeclaration);
 
             return functionDeclaration.ToSingleEnumerable();
         }
@@ -184,7 +191,10 @@ namespace Desalt.Core.Translation
             }
 
             // ReSharper disable once ExpressionIsAlwaysNull
-            ITsParameterList parameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
+            ITsParameterList parameterList = Factory.ParameterList(
+                requiredParameters,
+                optionalParameters,
+                restParameter);
             return parameterList.ToSingleEnumerable();
         }
 
@@ -195,7 +205,9 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
-            ITsType parameterType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
+            ITsType parameterType = TypeTranslator.TranslateSymbol(
+                node.Type.GetTypeSymbol(_semanticModel),
+                _typesToImport);
             IAstNode parameter;
 
             if (node.Default == null)
@@ -209,6 +221,20 @@ namespace Desalt.Core.Translation
             }
 
             return parameter.ToSingleEnumerable();
+        }
+
+        private T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
+        {
+            if (!syntaxNode.HasStructuredTrivia)
+            {
+                return translatedNode;
+            }
+
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(syntaxNode);
+            DocumentationComment documentationComment = symbol.GetDocumentationComment();
+            var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
+
+            return translatedNode.WithLeadingTrivia(jsDocComment);
         }
     }
 }
