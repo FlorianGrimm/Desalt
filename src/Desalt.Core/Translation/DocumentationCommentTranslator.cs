@@ -7,6 +7,9 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.RegularExpressions;
     using Desalt.Core.TypeScript.Ast;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
@@ -31,25 +34,62 @@ namespace Desalt.Core.Translation
 
         private static readonly Regex s_ctagRegex = new Regex(@"<c>(?<content>[^>]*)</c>", InlineElementOptions);
 
+        /// <summary>
+        /// Used for <see cref="TranslateElementText"/> method, to prevent new allocation of string
+        /// </summary>
+        private static readonly string[] s_newLineAsStringArray = { Environment.NewLine };
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         public static ITsMultiLineComment Translate(DocumentationComment documentationComment)
         {
-            ITsMultiLineComment jsDocComment = Factory.MultiLineComment(
-                isJsDoc: true,
-                lines: new[] { TranslateElementText(documentationComment.SummaryText) });
+            var lines = new List<string>();
+
+            // translate the <summary> first
+            lines.AddRange(TranslateElementText(documentationComment.SummaryText));
+
+            // translate each <param> tag
+            foreach (string parameterName in documentationComment.ParameterNames)
+            {
+                string parameterText = documentationComment.GetParameterText(parameterName);
+                lines.AddRange(TranslateParam(parameterName, parameterText));
+            }
+
+            ITsMultiLineComment jsDocComment = Factory.MultiLineComment(isJsDoc: true, lines: lines.ToArray());
 
             return jsDocComment;
         }
 
-        private static string TranslateElementText(string text)
+        /// <summary>
+        /// Converts a &lt;param name="name"&gt; tag to a JsDoc @param tag.
+        /// </summary>
+        private static IEnumerable<string> TranslateParam(string parameterName, string parameterText)
         {
-            string translated = TranslateKnownXmlTags(text).Trim();
+            string[] parameterTextLines = TranslateElementText(parameterText);
+
+            yield return $"@param {parameterName} {parameterTextLines[0]}";
+            foreach (string parameterLine in parameterTextLines.Skip(1))
+            {
+                yield return parameterLine;
+            }
+        }
+
+        private static string[] TranslateElementText(string text)
+        {
+            string[] translated = TranslateKnownXmlTags(text)
+                .Trim()
+                .Split(s_newLineAsStringArray, StringSplitOptions.RemoveEmptyEntries);
+
             return translated;
         }
 
+        /// <summary>
+        /// Converts known XML documentation tags (see, seealso, etc.) to the TypeScript equivalent.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         private static string TranslateKnownXmlTags(string text)
         {
             string translated = text;
