@@ -49,35 +49,33 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         public override void Emit(Emitter emitter)
         {
             int count = Lines.Count();
-            switch (count)
+            if (count == 0)
             {
-                case 0:
-                    emitter.Write($"{Prefix}*/");
-                    break;
+                emitter.Write($"{Prefix}*/");
+            }
+            else if (count == 1 && !IsJsDoc)
+            {
+                emitter.Write($"{Prefix} {Lines.First()} */");
+            }
+            else
+            {
+                if (IsJsDoc)
+                {
+                    emitter.WriteLine(Prefix);
+                    emitter.WriteLine($" * {Lines.First()}");
+                }
+                else
+                {
+                    emitter.WriteLine($"{Prefix} {Lines.First()}");
+                }
 
-                case 1:
-                    emitter.Write($"{Prefix} {Lines.First()} */");
-                    break;
+                foreach (string line in Lines.Skip(1))
+                {
+                    emitter.Write(" * ");
+                    emitter.WriteLine(line);
+                }
 
-                default:
-                    if (IsJsDoc)
-                    {
-                        emitter.WriteLine(Prefix);
-                        emitter.WriteLine($" * {Lines.First()}");
-                    }
-                    else
-                    {
-                        emitter.WriteLine($"{Prefix} {Lines.First()}");
-                    }
-
-                    foreach (string line in Lines.Skip(1))
-                    {
-                        emitter.Write(" * ");
-                        emitter.WriteLine(line);
-                    }
-
-                    emitter.WriteLine(" */");
-                    break;
+                emitter.WriteLine(" */");
             }
         }
     }

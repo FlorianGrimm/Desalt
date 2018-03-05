@@ -30,16 +30,20 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         public void Emit_a_multi_line_comment_with_a_single_line()
         {
             VerifyOutput(Factory.MultiLineComment("line 1"), "/* line 1 */");
-            VerifyOutput(Factory.MultiLineComment(isJsDoc: true, lines: "line 1"), "/** line 1 */");
         }
 
         [TestMethod]
         public void Emit_a_multi_line_comment_with_multiple_lines()
         {
             VerifyOutput(Factory.MultiLineComment("line 1", "line 2"), "/* line 1\n * line 2\n */\n");
+        }
+
+        [TestMethod]
+        public void Emit_a_single_line_JsDoc_comment_on_three_lines()
+        {
             VerifyOutput(
-                Factory.MultiLineComment(isJsDoc: true, lines: new[] { "line 1", "line 2" }),
-                "/**\n * line 1\n * line 2\n */\n");
+                Factory.MultiLineComment(isJsDoc: true, lines: "line 1"),
+                "/**\n * line 1\n */\n");
         }
     }
 }
