@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
@@ -163,6 +162,7 @@ namespace Desalt.Core.Translation
                 functionName,
                 isOptional: false,
                 callSignature: callSignature);
+            functionDeclaration = AddDocumentationCommentIfNecessary(node, functionDeclaration);
 
             return functionDeclaration.ToSingleEnumerable();
         }
@@ -223,28 +223,20 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
-        private static T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
+        private T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
         {
             if (!syntaxNode.HasStructuredTrivia)
             {
                 return translatedNode;
             }
 
-            var documentationComments = syntaxNode.GetLeadingTrivia()
-                .Where(trivia => trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
-                .ToImmutableArray();
+            var symbol = _semanticModel.GetDeclaredSymbol(syntaxNode);
+            var documentationComment = symbol.GetDocumentationComment();
 
-            if (documentationComments.Length == 0)
-            {
-                return translatedNode;
-            }
-
-            SyntaxTrivia documentationComment = documentationComments[0];
-            var xmlComment = (DocumentationCommentTriviaSyntax)documentationComment.GetStructure();
-
-            ITsMultiLineComment jsDocComment = Factory.MultiLineComment(
+            var jsDocComment = Factory.MultiLineComment(
                 isJsDoc: true,
-                lines: xmlComment.GetText().Lines.Select(line => line.Text.ToString()).ToArray());
+                lines: new[] { documentationComment.SummaryText.Trim() });
+
             return translatedNode.WithLeadingTrivia(jsDocComment);
         }
     }
