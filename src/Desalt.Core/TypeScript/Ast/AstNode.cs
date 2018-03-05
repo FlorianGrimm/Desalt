@@ -96,6 +96,12 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         public T WithLeadingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : AstNode
         {
+            // when there are no trivia nodes to append, return the original object
+            if (triviaNodes == null || triviaNodes.Length == 0)
+            {
+                return (T)this;
+            }
+
             var copy = (AstNode)MemberwiseClone();
             copy.LeadingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;
@@ -106,6 +112,12 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         public T WithTrailingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : AstNode
         {
+            // when there are no trivia nodes to append, return the original object
+            if (triviaNodes == null || triviaNodes.Length == 0)
+            {
+                return (T)this;
+            }
+
             var copy = (AstNode)MemberwiseClone();
             copy.TrailingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;
