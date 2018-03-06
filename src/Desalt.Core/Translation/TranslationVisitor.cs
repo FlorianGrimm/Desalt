@@ -225,12 +225,14 @@ namespace Desalt.Core.Translation
 
         private ITsIdentifier TranslateIdentifier(BaseTypeDeclarationSyntax node)
         {
-            return Factory.Identifier(node.Identifier.Text);
+            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
+            return Factory.Identifier(scriptName);
         }
 
         private ITsIdentifier TranslateIdentifier(MethodDeclarationSyntax node)
         {
-            return Factory.Identifier(node.Identifier.Text);
+            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
+            return Factory.Identifier(scriptName);
         }
 
         /// <summary>

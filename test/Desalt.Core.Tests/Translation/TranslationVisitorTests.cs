@@ -51,7 +51,7 @@ namespace Desalt.Core.Tests.Translation
             [TestMethod]
             public async Task A_method_declaration_with_no_parameters_and_a_void_return_type_should_be_translated()
             {
-                await AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  Do(): void;\n}\n");
+                await AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  do(): void;\n}\n");
             }
 
             [TestMethod]
@@ -59,7 +59,7 @@ namespace Desalt.Core.Tests.Translation
             {
                 await AssertTranslation(
                     "interface ITest { void Do(string x, string y); }",
-                    "interface ITest {\n  Do(x: string, y: string): void;\n}\n");
+                    "interface ITest {\n  do(x: string, y: string): void;\n}\n");
             }
         }
     }

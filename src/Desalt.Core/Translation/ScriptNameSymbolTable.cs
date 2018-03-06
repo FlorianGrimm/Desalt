@@ -8,7 +8,10 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -27,6 +30,24 @@ namespace Desalt.Core.Translation
             new ConcurrentDictionary<string, string>();
 
         //// ===========================================================================================================
+        //// Indexers
+        //// ===========================================================================================================
+
+        public string this[string symbolName]
+        {
+            get
+            {
+                if (!_symbolToNameMap.TryGetValue(symbolName, out string scriptName))
+                {
+                    throw new KeyNotFoundException(
+                        $"There is no symbol '{symbolName}' defined in the script name symbol table");
+                }
+
+                return scriptName;
+            }
+        }
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
@@ -38,9 +59,27 @@ namespace Desalt.Core.Translation
             var allTypeDeclarations = context.RootSyntax.DescendantNodes().OfType<BaseTypeDeclarationSyntax>();
             foreach (BaseTypeDeclarationSyntax node in allTypeDeclarations)
             {
-                string typeName = node.Identifier.Text;
+                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+                string typeName = symbol.Name;
                 _symbolToNameMap.AddOrUpdate(typeName, _ => typeName, (_, __) => typeName);
+
+                // add all of the members of the declared type
+                foreach (ISymbol member in symbol.GetMembers())
+                {
+                    string memberName = member.Name;
+                    string scriptName = char.ToLowerInvariant(memberName[0]) + memberName.Substring(1);
+                    _symbolToNameMap.AddOrUpdate(memberName, _ => scriptName, (_, __) => scriptName);
+                }
             }
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the symbol table contains a definition for the
+        /// specified symbol name.
+        /// </summary>
+        public bool HasSymbol(string symbolName)
+        {
+            return _symbolToNameMap.TryGetValue(symbolName, out string _);
         }
     }
 }
