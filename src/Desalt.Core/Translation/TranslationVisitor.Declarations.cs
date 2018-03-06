@@ -14,26 +14,17 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     internal sealed partial class TranslationVisitor
     {
         /// <summary>
         /// Called when the visitor visits a NamespaceDeclarationSyntax node.
         /// </summary>
+        /// <returns>A list of <see cref="ITsImplementationModuleElement"/> elements.</returns>
         public override IEnumerable<IAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-            var elements = new List<ITsImplementationModuleElement>();
-
-            foreach (MemberDeclarationSyntax member in node.Members)
-            {
-                var element = (ITsImplementationModuleElement)Visit(member).SingleOrDefault();
-                if (element != null)
-                {
-                    elements.Add(element);
-                }
-            }
-
-            return elements;
+            return node.Members.SelectMany(Visit).Cast<ITsImplementationModuleElement>();
         }
 
         /// <summary>
@@ -43,32 +34,29 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier interfaceName = TranslateIdentifier(node);
 
-            // get the interface body
-            var typeMembers = new List<ITsTypeMember>();
-            foreach (MemberDeclarationSyntax member in node.Members)
-            {
-                var typeMember = (ITsTypeMember)Visit(member).SingleOrDefault();
-                if (typeMember != null)
-                {
-                    typeMembers.Add(typeMember);
-                }
-            }
+            // translate the interface body
+            var translatedMembers = node.Members.SelectMany(Visit).Cast<ITsTypeMember>();
+            ITsObjectType body = Factory.ObjectType(translatedMembers.ToArray());
 
-            ITsObjectType body = TsAstFactory.ObjectType(typeMembers.ToArray());
-            ITsTypeParameters typeParameters = TsAstFactory.TypeParameters();
+            // translate the generic type parameters
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+
+            // translate the extends clause
             IEnumerable<ITsTypeReference> extendsClause = Enumerable.Empty<ITsTypeReference>();
 
-            ITsInterfaceDeclaration interfaceDeclaration = TsAstFactory.InterfaceDeclaration(
+            // create the interface declaration
+            ITsInterfaceDeclaration interfaceDeclaration = Factory.InterfaceDeclaration(
                 interfaceName,
                 body,
                 typeParameters,
                 extendsClause);
 
+            // determine if this declaration should be exported
             INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
             if (symbol.DeclaredAccessibility == Accessibility.Public)
             {
                 ITsExportImplementationElement exportedInterfaceDeclaration =
-                    TsAstFactory.ExportImplementationElement(interfaceDeclaration);
+                    Factory.ExportImplementationElement(interfaceDeclaration);
 
                 exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
                 return exportedInterfaceDeclaration.ToSingleEnumerable();
@@ -93,9 +81,9 @@ namespace Desalt.Core.Translation
                 node.ReturnType.GetTypeSymbol(_context.SemanticModel),
                 _typesToImport);
 
-            ITsCallSignature callSignature = TsAstFactory.CallSignature(typeParameters, parameters, returnType);
+            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
-            ITsMethodSignature functionDeclaration = TsAstFactory.MethodSignature(
+            ITsMethodSignature functionDeclaration = Factory.MethodSignature(
                 functionName,
                 isOptional: false,
                 callSignature: callSignature);

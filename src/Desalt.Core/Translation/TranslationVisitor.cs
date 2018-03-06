@@ -65,16 +65,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsImplementationModule"/>.</returns>
         public override IEnumerable<IAstNode> VisitCompilationUnit(CompilationUnitSyntax node)
         {
-            var elements = new List<ITsImplementationModuleElement>();
-            foreach (MemberDeclarationSyntax member in node.Members)
-            {
-                var element = (ITsImplementationModuleElement)Visit(member).SingleOrDefault();
-                if (element != null)
-                {
-                    elements.Add(element);
-                }
-            }
-
+            var elements = node.Members.SelectMany(Visit).Cast<ITsImplementationModuleElement>();
             ITsImplementationModule implementationScript = Factory.ImplementationModule(elements.ToArray());
 
             return implementationScript.ToSingleEnumerable();
