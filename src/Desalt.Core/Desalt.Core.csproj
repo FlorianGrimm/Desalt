@@ -122,7 +122,7 @@
     <Compile Include="CompilationRequest.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="CompilerOptions.cs" />
-    <Compile Include="CompilerStages\CreateSymbolTableStage.cs" />
+    <Compile Include="CompilerStages\CreateSymbolTablesStage.cs" />
     <Compile Include="CompilerStages\DetermineTranslatableDocumentsStage.cs" />
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
