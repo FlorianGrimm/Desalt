@@ -78,6 +78,22 @@ namespace Desalt.Core.Tests.Translation
             {
                 await AssertTranslation("public enum LoggerLevel { All }", "export enum LoggerLevel {\n  all,\n}\n");
             }
+
+            [TestMethod]
+            public async Task Enum_declarations_with_literal_values_should_be_translated()
+            {
+                await AssertTranslation(
+                    "enum LoggerLevel { All = 123 }",
+                    "enum LoggerLevel {\n  all = 123,\n}\n");
+            }
+
+            [TestMethod]
+            public async Task Enum_declarations_with_hex_values_should_be_translated_as_hex()
+            {
+                await AssertTranslation(
+                    "enum LoggerLevel { Hex = 0x100 }",
+                    "enum LoggerLevel {\n  hex = 0x100,\n}\n");
+            }
         }
     }
 }

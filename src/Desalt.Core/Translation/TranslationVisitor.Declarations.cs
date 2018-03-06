@@ -99,8 +99,13 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             ITsIdentifier scriptName = TranslateIdentifier(node);
-            ITsEnumMember translatedMember = Factory.EnumMember(scriptName);
+            ITsExpression value = null;
+            if (node.EqualsValue != null)
+            {
+                value = Visit(node.EqualsValue.Value).Cast<ITsExpression>().Single();
+            }
 
+            ITsEnumMember translatedMember = Factory.EnumMember(scriptName, value);
             return translatedMember.ToSingleEnumerable();
         }
 
