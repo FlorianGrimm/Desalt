@@ -29,7 +29,11 @@ namespace Desalt.Core.Translation
             RegexOptions.Singleline;
 
         private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see\s+cref\s*=\s*""M:(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            @"<see\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            InlineElementOptions);
+
+        private static readonly Regex s_seeAlsoMemberRegex = new Regex(
+            @"<seealso\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeLangwordRegex = new Regex(
@@ -108,6 +112,11 @@ namespace Desalt.Core.Translation
             translated = s_seeCrefMemberRegex.Replace(
                 translated,
                 match => $"[[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
+
+            // translate <seealso cref="M:Type.Member" /> to 'See [[Type.Member]]'
+            translated = s_seeAlsoMemberRegex.Replace(
+                translated,
+                match => $"See [[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
 
             return translated;
         }
