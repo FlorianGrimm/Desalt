@@ -27,10 +27,10 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public IExtendedResult<ITsImplementationModule> TranslateDocument(
-            DocumentTranslationContextWithSymbolTable context,
+            DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var walker = new TranslationVisitor(context.Options, context.SemanticModel);
+            var walker = new TranslationVisitor(context);
             var implementationModule = (ITsImplementationModule)walker.Visit(context.RootSyntax).Single();
 
             IExtendedResult<ITsImplementationModule> addImportsResult = AddImports(
@@ -47,14 +47,14 @@ namespace Desalt.Core.Translation
         /// Adds all of the import statements to the top of the file.
         /// </summary>
         private static IExtendedResult<ITsImplementationModule> AddImports(
-            DocumentTranslationContextWithSymbolTable context,
+            DocumentTranslationContextWithSymbolTables context,
             TranslationVisitor walker,
             ITsImplementationModule translatedModule)
         {
             string[] importTypes = walker.TypesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
-            string[] undefinedTypes = importTypes.Where(import => !context.SymbolTable.HasSymbol(import)).ToArray();
+            string[] undefinedTypes = importTypes.Where(import => !context.ImportSymbolTable.HasSymbol(import)).ToArray();
             var undefinedTypeErrors = undefinedTypes.Select(importType => DiagnosticFactory.UnknownType(importType));
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 
@@ -66,7 +66,7 @@ namespace Desalt.Core.Translation
                 .GroupBy(
                     import =>
                     {
-                        string tsPath = context.SymbolTable[import];
+                        string tsPath = context.ImportSymbolTable[import];
                         string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
 
                         // remove the file extension

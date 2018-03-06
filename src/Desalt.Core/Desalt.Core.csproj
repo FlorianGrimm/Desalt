@@ -122,7 +122,7 @@
     <Compile Include="CompilationRequest.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="CompilerOptions.cs" />
-    <Compile Include="CompilerStages\CreateSymbolTableStage.cs" />
+    <Compile Include="CompilerStages\CreateSymbolTablesStage.cs" />
     <Compile Include="CompilerStages\DetermineTranslatableDocumentsStage.cs" />
     <Compile Include="CompilerStages\OpenProjectStage.cs" />
     <Compile Include="CompilerStages\TranslateProjectStage.cs" />
@@ -151,6 +151,7 @@
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\ImportSymbolTable.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
+    <Compile Include="Translation\ScriptNameSymbolTable.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TypeTranslator.cs" />
     <Compile Include="TypeScript\Ast\AstNode.cs" />

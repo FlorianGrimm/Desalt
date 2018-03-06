@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CreateSymbolTableStage.cs" company="Justin Rockwood">
+// <copyright file="CreateSymbolTablesStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -19,8 +19,8 @@ namespace Desalt.Core.CompilerStages
     /// symbols and which file they live in so that each file can correctly add <c>import</c>
     /// statements at the top of the translated file.
     /// </summary>
-    internal class CreateSymbolTableStage : PipelineStage<IEnumerable<DocumentTranslationContext>,
-        IEnumerable<DocumentTranslationContextWithSymbolTable>>
+    internal class CreateSymbolTablesStage : PipelineStage<IEnumerable<DocumentTranslationContext>,
+        IEnumerable<DocumentTranslationContextWithSymbolTables>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -31,25 +31,38 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTable>>>
+        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
                 IEnumerable<DocumentTranslationContext> input,
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var symbolTable = new ImportSymbolTable();
-            var contexts = input as DocumentTranslationContext[] ?? input.ToArray();
+            var importSymbolTable = new ImportSymbolTable();
+            var scriptNameSymbolTable = new ScriptNameSymbolTable();
 
-            // add all of the symbols in parallel (the symbol table is thread-safe)
+            var contexts = input.ToArray();
+
+            // add all of the import symbols in parallel (the symbol table is thread-safe)
             var tasks = contexts.Select(
-                context => Task.Run(() => symbolTable.AddDefinedTypesInDocument(context), cancellationToken));
+                context => Task.Run(() => importSymbolTable.AddDefinedTypesInDocument(context), cancellationToken));
+
+            // populate the script name symbol table
+            tasks = tasks.Concat(
+                contexts.Select(
+                    context => Task.Run(
+                        () => scriptNameSymbolTable.AddDefinedTypesInDocument(context),
+                        cancellationToken)));
+
             await Task.WhenAll(tasks);
 
             // create new context objects with the symbol table
             var newContexts = contexts.Select(
-                context => new DocumentTranslationContextWithSymbolTable(context, symbolTable));
+                context => new DocumentTranslationContextWithSymbolTables(
+                    context,
+                    importSymbolTable,
+                    scriptNameSymbolTable));
 
-            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTable>>(newContexts);
+            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }
     }
 }

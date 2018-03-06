@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ImportSymbolTable.cs" company="Justin Rockwood">
+// <copyright file="ScriptNameSymbolTable.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,21 +10,23 @@ namespace Desalt.Core.Translation
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
-    /// Contains mappings of defined types in a C# project to the files in which they're defined.
-    /// This is needed in order to correctly generate <c>import</c> statements at the top of each
-    /// translated TypeScript file.
+    /// Contains mappings of defined types in a C# project to the translated names (what they will be
+    /// called in the TypeScript file). By default, Saltarelle converts type members to `camelCase`
+    /// names. It can also be changed using the [PreserveName] and [ScriptName] attributes.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable
+    internal class ScriptNameSymbolTable
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ConcurrentDictionary<string, string> _typeToFileMap =
+        private readonly ConcurrentDictionary<string, string> _symbolToNameMap =
             new ConcurrentDictionary<string, string>();
 
         //// ===========================================================================================================
@@ -35,12 +37,13 @@ namespace Desalt.Core.Translation
         {
             get
             {
-                if (!_typeToFileMap.TryGetValue(symbolName, out string fileName))
+                if (!_symbolToNameMap.TryGetValue(symbolName, out string scriptName))
                 {
-                    throw new KeyNotFoundException();
+                    throw new KeyNotFoundException(
+                        $"There is no symbol '{symbolName}' defined in the script name symbol table");
                 }
 
-                return fileName;
+                return scriptName;
             }
         }
 
@@ -53,15 +56,20 @@ namespace Desalt.Core.Translation
         /// </summary>
         public void AddDefinedTypesInDocument(DocumentTranslationContext context)
         {
-            string filePath = context.TypeScriptFilePath;
-
-            var allTypeDeclarations = context.RootSyntax.DescendantNodes()
-                .OfType<BaseTypeDeclarationSyntax>()
-                .Select(node => node.Identifier.Text);
-
-            foreach (string typeName in allTypeDeclarations)
+            var allTypeDeclarations = context.RootSyntax.DescendantNodes().OfType<BaseTypeDeclarationSyntax>();
+            foreach (BaseTypeDeclarationSyntax node in allTypeDeclarations)
             {
-                _typeToFileMap.AddOrUpdate(typeName, _ => filePath, (_, __) => filePath);
+                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+                string typeName = symbol.Name;
+                _symbolToNameMap.AddOrUpdate(typeName, _ => typeName, (_, __) => typeName);
+
+                // add all of the members of the declared type
+                foreach (ISymbol member in symbol.GetMembers())
+                {
+                    string memberName = member.Name;
+                    string scriptName = char.ToLowerInvariant(memberName[0]) + memberName.Substring(1);
+                    _symbolToNameMap.AddOrUpdate(memberName, _ => scriptName, (_, __) => scriptName);
+                }
             }
         }
 
@@ -71,7 +79,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public bool HasSymbol(string symbolName)
         {
-            return _typeToFileMap.TryGetValue(symbolName, out string _);
+            return _symbolToNameMap.TryGetValue(symbolName, out string _);
         }
     }
 }
