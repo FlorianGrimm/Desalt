@@ -30,6 +30,10 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a InterfaceDeclarationSyntax node.
         /// </summary>
+        /// <returns>
+        /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
+        /// cref="ITsInterfaceDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             ITsIdentifier interfaceName = TranslateIdentifier(node);
@@ -51,25 +55,19 @@ namespace Desalt.Core.Translation
                 typeParameters,
                 extendsClause);
 
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility == Accessibility.Public)
-            {
-                ITsExportImplementationElement exportedInterfaceDeclaration =
-                    Factory.ExportImplementationElement(interfaceDeclaration);
-
-                exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
-                return exportedInterfaceDeclaration.ToSingleEnumerable();
-            }
-
-            interfaceDeclaration = AddDocumentationCommentIfNecessary(node, interfaceDeclaration);
-            return interfaceDeclaration.ToSingleEnumerable();
+            // export if necessary and add documentation comments
+            ITsImplementationModuleElement final =
+                ExportAndAddDocumentationCommentIfNecessary(node, interfaceDeclaration);
+            return final.ToSingleEnumerable();
         }
 
         /// <summary>
         /// Called when the visitor visits a EnumDeclarationSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsEnumDeclaration"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
+        /// cref="ITsEnumDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             ITsIdentifier enumName = TranslateIdentifier(node);
@@ -78,19 +76,9 @@ namespace Desalt.Core.Translation
             var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
             ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
 
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility == Accessibility.Public)
-            {
-                ITsExportImplementationElement exportedEnumDeclaration =
-                    Factory.ExportImplementationElement(enumDeclaration);
-
-                exportedEnumDeclaration = AddDocumentationCommentIfNecessary(node, exportedEnumDeclaration);
-                return exportedEnumDeclaration.ToSingleEnumerable();
-            }
-
-            enumDeclaration = AddDocumentationCommentIfNecessary(node, enumDeclaration);
-            return enumDeclaration.ToSingleEnumerable();
+            // export if necessary and add documentation comments
+            ITsImplementationModuleElement final = ExportAndAddDocumentationCommentIfNecessary(node, enumDeclaration);
+            return final.ToSingleEnumerable();
         }
 
         /// <summary>
@@ -118,7 +106,7 @@ namespace Desalt.Core.Translation
             ITsIdentifier functionName = TranslateIdentifier(node);
 
             // create the call signature
-            ITsTypeParameters typeParameters = TsAstFactory.TypeParameters();
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
             ITsType returnType = TypeTranslator.TranslateSymbol(
                 node.ReturnType.GetTypeSymbol(_context.SemanticModel),
@@ -133,6 +121,41 @@ namespace Desalt.Core.Translation
             functionDeclaration = AddDocumentationCommentIfNecessary(node, functionDeclaration);
 
             return functionDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
+        /// </summary>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
+        /// </returns>
+        private ITsImplementationModuleElement ExportIfNecessary(
+            BaseTypeDeclarationSyntax node,
+            ITsImplementationElement translatedDeclaration)
+        {
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+            {
+                return translatedDeclaration;
+            }
+
+            ITsExportImplementationElement exportedInterfaceDeclaration =
+                Factory.ExportImplementationElement(translatedDeclaration);
+
+            exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
+            return exportedInterfaceDeclaration;
+        }
+
+        private ITsImplementationModuleElement ExportAndAddDocumentationCommentIfNecessary(
+            BaseTypeDeclarationSyntax node,
+            ITsImplementationElement translatedDeclaration)
+        {
+            ITsImplementationModuleElement exported = ExportIfNecessary(node, translatedDeclaration);
+            return AddDocumentationCommentIfNecessary(node, exported);
         }
     }
 }
