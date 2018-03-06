@@ -153,6 +153,8 @@
     <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
+    <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
+    <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
     <Compile Include="Translation\TypeTranslator.cs" />
     <Compile Include="TypeScript\Ast\AstNode.cs" />
     <Compile Include="TypeScript\Ast\AstNodeExtensions.cs" />

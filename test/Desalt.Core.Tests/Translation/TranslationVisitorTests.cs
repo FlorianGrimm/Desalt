@@ -29,7 +29,8 @@ namespace Desalt.Core.Tests.Translation
                 visitor.Diagnostics.Should().BeEmpty();
 
                 // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-                result.EmitAsString(emitOptions: EmitOptions.UnixSpaces).Should().Be(expectedTypeScriptCode);
+                string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+                translated.Should().Be(expectedTypeScriptCode);
             }
         }
 
@@ -60,6 +61,38 @@ namespace Desalt.Core.Tests.Translation
                 await AssertTranslation(
                     "interface ITest { void Do(string x, string y); }",
                     "interface ITest {\n  do(x: string, y: string): void;\n}\n");
+            }
+        }
+
+        [TestClass]
+        public class EnumDeclarationTests
+        {
+            [TestMethod]
+            public async Task Bare_enum_declaration_without_accessibility_should_not_be_exported()
+            {
+                await AssertTranslation("enum LoggerLevel { All }", "enum LoggerLevel {\n  all,\n}\n");
+            }
+
+            [TestMethod]
+            public async Task Public_enum_declaration_should_be_exported()
+            {
+                await AssertTranslation("public enum LoggerLevel { All }", "export enum LoggerLevel {\n  all,\n}\n");
+            }
+
+            [TestMethod]
+            public async Task Enum_declarations_with_literal_values_should_be_translated()
+            {
+                await AssertTranslation(
+                    "enum LoggerLevel { All = 123 }",
+                    "enum LoggerLevel {\n  all = 123,\n}\n");
+            }
+
+            [TestMethod]
+            public async Task Enum_declarations_with_hex_values_should_be_translated_as_hex()
+            {
+                await AssertTranslation(
+                    "enum LoggerLevel { Hex = 0x100 }",
+                    "enum LoggerLevel {\n  hex = 0x100,\n}\n");
             }
         }
     }
