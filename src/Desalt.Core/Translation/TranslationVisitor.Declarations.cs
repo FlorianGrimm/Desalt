@@ -67,6 +67,44 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a EnumDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsEnumDeclaration"/>.</returns>
+        public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
+        {
+            ITsIdentifier enumName = TranslateIdentifier(node);
+
+            // translate the enum body
+            var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
+            ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
+
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility == Accessibility.Public)
+            {
+                ITsExportImplementationElement exportedEnumDeclaration =
+                    Factory.ExportImplementationElement(enumDeclaration);
+
+                exportedEnumDeclaration = AddDocumentationCommentIfNecessary(node, exportedEnumDeclaration);
+                return exportedEnumDeclaration.ToSingleEnumerable();
+            }
+
+            enumDeclaration = AddDocumentationCommentIfNecessary(node, enumDeclaration);
+            return enumDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a EnumMemberDeclarationSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        {
+            ITsIdentifier scriptName = TranslateIdentifier(node);
+            ITsEnumMember translatedMember = Factory.EnumMember(scriptName);
+
+            return translatedMember.ToSingleEnumerable();
+        }
+
+        /// <summary>
         /// Called when the visitor visits a MethodDeclarationSyntax node.
         /// </summary>
         /// <returns>A <see cref="ITsMethodSignature"/>.</returns>

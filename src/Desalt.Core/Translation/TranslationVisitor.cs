@@ -139,6 +139,12 @@ namespace Desalt.Core.Translation
             return Factory.Identifier(scriptName);
         }
 
+        private ITsIdentifier TranslateIdentifier(EnumMemberDeclarationSyntax node)
+        {
+            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
+            return Factory.Identifier(scriptName);
+        }
+
         /// <summary>
         /// Translates the C# XML documentation comment into a JSDoc comment if there is a
         /// documentation comment on the specified node.
