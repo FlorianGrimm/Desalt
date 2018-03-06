@@ -134,21 +134,29 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
-        private ITsIdentifier TranslateIdentifier(BaseTypeDeclarationSyntax node)
+        private ITsIdentifier TranslateIdentifier(SyntaxNode node)
         {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
-            return Factory.Identifier(scriptName);
-        }
+            string identifier;
+            switch (node)
+            {
+                case BaseTypeDeclarationSyntax baseTypeDeclaration:
+                    identifier = baseTypeDeclaration.Identifier.Text;
+                    break;
 
-        private ITsIdentifier TranslateIdentifier(MethodDeclarationSyntax node)
-        {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
-            return Factory.Identifier(scriptName);
-        }
+                case MethodDeclarationSyntax methodDeclaration:
+                    identifier = methodDeclaration.Identifier.Text;
+                    break;
 
-        private ITsIdentifier TranslateIdentifier(EnumMemberDeclarationSyntax node)
-        {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
+                case EnumMemberDeclarationSyntax enumMemberDeclaration:
+                    identifier = enumMemberDeclaration.Identifier.Text;
+                    break;
+
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported node type for retrieving an identifier: {node.GetType().Name}");
+            }
+
+            string scriptName = _context.ScriptNameSymbolTable[identifier];
             return Factory.Identifier(scriptName);
         }
 
