@@ -151,6 +151,14 @@ namespace Desalt.Core.Translation
                     identifier = enumMemberDeclaration.Identifier.Text;
                     break;
 
+                case VariableDeclaratorSyntax variableDeclarator:
+                    identifier = variableDeclarator.Identifier.Text;
+                    break;
+
+                case PropertyDeclarationSyntax propertyDeclaration:
+                    identifier = propertyDeclaration.Identifier.Text;
+                    break;
+
                 default:
                     throw new InvalidOperationException(
                         $"Unsupported node type for retrieving an identifier: {node.GetType().Name}");

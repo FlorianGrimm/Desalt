@@ -25,6 +25,11 @@ namespace Desalt.Core.Translation
             return semanticModel.GetTypeInfo(typeSyntax).Type;
         }
 
+        public static bool IsInterfaceType(this ITypeSymbol symbol)
+        {
+            return symbol?.TypeKind == TypeKind.Interface;
+        }
+
         /// <summary>
         /// Parses an XML documentation comment belonging to the specified symbol.
         /// </summary>
