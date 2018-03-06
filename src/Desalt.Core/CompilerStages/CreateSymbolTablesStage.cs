@@ -37,17 +37,30 @@ namespace Desalt.Core.CompilerStages
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var symbolTable = new ImportSymbolTable();
-            var contexts = input as DocumentTranslationContext[] ?? input.ToArray();
+            var importSymbolTable = new ImportSymbolTable();
+            var scriptNameSymbolTable = new ScriptNameSymbolTable();
 
-            // add all of the symbols in parallel (the symbol table is thread-safe)
+            var contexts = input.ToArray();
+
+            // add all of the import symbols in parallel (the symbol table is thread-safe)
             var tasks = contexts.Select(
-                context => Task.Run(() => symbolTable.AddDefinedTypesInDocument(context), cancellationToken));
+                context => Task.Run(() => importSymbolTable.AddDefinedTypesInDocument(context), cancellationToken));
+
+            // populate the script name symbol table
+            tasks = tasks.Concat(
+                contexts.Select(
+                    context => Task.Run(
+                        () => scriptNameSymbolTable.AddDefinedTypesInDocument(context),
+                        cancellationToken)));
+
             await Task.WhenAll(tasks);
 
             // create new context objects with the symbol table
             var newContexts = contexts.Select(
-                context => new DocumentTranslationContextWithSymbolTables(context, symbolTable));
+                context => new DocumentTranslationContextWithSymbolTables(
+                    context,
+                    importSymbolTable,
+                    scriptNameSymbolTable));
 
             return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }

@@ -54,7 +54,7 @@ namespace Desalt.Core.Translation
             string[] importTypes = walker.TypesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
-            string[] undefinedTypes = importTypes.Where(import => !context.SymbolTable.HasSymbol(import)).ToArray();
+            string[] undefinedTypes = importTypes.Where(import => !context.ImportSymbolTable.HasSymbol(import)).ToArray();
             var undefinedTypeErrors = undefinedTypes.Select(importType => DiagnosticFactory.UnknownType(importType));
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 
@@ -66,7 +66,7 @@ namespace Desalt.Core.Translation
                 .GroupBy(
                     import =>
                     {
-                        string tsPath = context.SymbolTable[import];
+                        string tsPath = context.ImportSymbolTable[import];
                         string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
 
                         // remove the file extension

@@ -55,19 +55,9 @@ namespace Desalt.Core.Translation
         {
             string filePath = context.TypeScriptFilePath;
 
-            var interfaces = context.RootSyntax.DescendantNodes()
-                .OfType<InterfaceDeclarationSyntax>()
+            var allTypeDeclarations = context.RootSyntax.DescendantNodes()
+                .OfType<BaseTypeDeclarationSyntax>()
                 .Select(node => node.Identifier.Text);
-
-            var enums = context.RootSyntax.DescendantNodes()
-                .OfType<EnumDeclarationSyntax>()
-                .Select(node => node.Identifier.Text);
-
-            var classes = context.RootSyntax.DescendantNodes()
-                .OfType<ClassDeclarationSyntax>()
-                .Select(node => node.Identifier.Text);
-
-            var allTypeDeclarations = interfaces.Concat(enums).Concat(classes);
 
             foreach (string typeName in allTypeDeclarations)
             {

@@ -104,7 +104,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
-            ITsIdentifier interfaceName = Factory.Identifier(node.Identifier.Text);
+            ITsIdentifier interfaceName = TranslateIdentifier(node);
 
             // get the interface body
             var typeMembers = new List<ITsTypeMember>();
@@ -147,7 +147,7 @@ namespace Desalt.Core.Translation
         /// <returns>A <see cref="ITsMethodSignature"/>.</returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            ITsIdentifier functionName = Factory.Identifier(node.Identifier.Text);
+            ITsIdentifier functionName = TranslateIdentifier(node);
 
             // create the call signature
             ITsTypeParameters typeParameters = Factory.TypeParameters();
@@ -223,6 +223,27 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
+        private ITsIdentifier TranslateIdentifier(BaseTypeDeclarationSyntax node)
+        {
+            return Factory.Identifier(node.Identifier.Text);
+        }
+
+        private ITsIdentifier TranslateIdentifier(MethodDeclarationSyntax node)
+        {
+            return Factory.Identifier(node.Identifier.Text);
+        }
+
+        /// <summary>
+        /// Translates the C# XML documentation comment into a JSDoc comment if there is a
+        /// documentation comment on the specified node.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated node.</typeparam>
+        /// <param name="syntaxNode">The C# syntax node to get documentation comments from.</param>
+        /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
+        /// <returns>
+        /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
+        /// comments prepended. If there are no documentation comments, the same node is returned.
+        /// </returns>
         private T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
         {
             if (!syntaxNode.HasStructuredTrivia)

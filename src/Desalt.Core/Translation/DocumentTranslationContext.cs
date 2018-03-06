@@ -108,20 +108,25 @@ namespace Desalt.Core.Translation
 
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
-            ImportSymbolTable symbolTable) : base(
+            ImportSymbolTable importSymbolTable,
+            ScriptNameSymbolTable scriptNameSymbolTable) : base(
             context.Document,
             context.Options,
             context.SyntaxTree,
             context.RootSyntax,
             context.SemanticModel)
         {
-            SymbolTable = symbolTable ?? throw new ArgumentNullException(nameof(symbolTable));
+            ImportSymbolTable = importSymbolTable ?? throw new ArgumentNullException(nameof(importSymbolTable));
+            ScriptNameSymbolTable =
+                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImportSymbolTable SymbolTable { get; }
+        public ImportSymbolTable ImportSymbolTable { get; }
+
+        public ScriptNameSymbolTable ScriptNameSymbolTable { get; }
     }
 }
