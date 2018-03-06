@@ -9,7 +9,9 @@ namespace Desalt.Core.Translation
 {
     using System.Globalization;
     using System.Threading;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -22,12 +24,21 @@ namespace Desalt.Core.Translation
         /// </summary>
         public static ITypeSymbol GetTypeSymbol(this TypeSyntax typeSyntax, SemanticModel semanticModel)
         {
-            return semanticModel.GetTypeInfo(typeSyntax).Type;
+            return ModelExtensions.GetTypeInfo(semanticModel, typeSyntax).Type;
         }
 
         public static bool IsInterfaceType(this ITypeSymbol symbol)
         {
             return symbol?.TypeKind == TypeKind.Interface;
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified trivia node is either a single- or multi-line comment.
+        /// </summary>
+        /// <param name="trivia">The trivia node to test.</param>
+        public static bool IsComment(this SyntaxTrivia trivia)
+        {
+            return trivia.Kind().IsOneOf(SyntaxKind.MultiLineCommentTrivia, SyntaxKind.SingleLineCommentTrivia);
         }
 
         /// <summary>

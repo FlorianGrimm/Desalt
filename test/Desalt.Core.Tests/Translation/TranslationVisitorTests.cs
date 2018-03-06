@@ -94,6 +94,14 @@ namespace Desalt.Core.Tests.Translation
                     "enum LoggerLevel { Hex = 0x100 }",
                     "enum LoggerLevel {\n  hex = 0x100,\n}\n");
             }
+
+            [TestMethod]
+            public async Task Enum_declarations_should_preserve_comments()
+            {
+                await AssertTranslation(
+                    "/*A*/ enum /*B*/ LoggerLevel //C\n { /*D*/All, One /*E*/, }",
+                    "/*A*/ enum /*B*/ LoggerLevel /*C*/ {\n  /*D*/ all,\n  one /*E*/,\n}\n");
+            }
         }
 
         [TestClass]

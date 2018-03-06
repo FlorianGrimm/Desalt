@@ -52,10 +52,10 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         {
             if (IsConst)
             {
-                emitter.Write("const ");
+                emitter.WriteKeyword("const");
             }
 
-            emitter.Write("enum ");
+            emitter.WriteKeyword("enum");
             EnumName.Emit(emitter);
             emitter.Write(" ");
 

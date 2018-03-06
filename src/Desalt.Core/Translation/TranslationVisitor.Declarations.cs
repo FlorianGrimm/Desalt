@@ -71,11 +71,15 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
-            ITsIdentifier enumName = TranslateIdentifier(node);
+            ITsIdentifier enumName = TranslateIdentifier(node)
+                .AndAddTrailingComments(node.EnumKeyword)
+                .AndAddLeadingComments(node.Identifier)
+                .AndAddTrailingComments(node.Identifier, convertToMultiLine: true);
 
             // translate the enum body
             var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
-            ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
+            ITsEnumDeclaration enumDeclaration =
+                Factory.EnumDeclaration(enumName, enumMembers).AndAddLeadingComments(node.EnumKeyword);
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final = ExportAndAddDocComment(enumDeclaration, node);
@@ -87,14 +91,18 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
-            ITsIdentifier scriptName = TranslateIdentifier(node);
+            ITsIdentifier scriptName = TranslateIdentifier(node).AndAddComments(node.Identifier);
             ITsExpression value = null;
             if (node.EqualsValue != null)
             {
-                value = Visit(node.EqualsValue.Value).Cast<ITsExpression>().Single();
+                value = Visit(node.EqualsValue.Value)
+                    .Cast<ITsExpression>()
+                    .Single()
+                    .AndAddComments(node.EqualsValue.Value);
             }
 
-            ITsEnumMember translatedMember = Factory.EnumMember(scriptName, value);
+            ITsEnumMember translatedMember =
+                Factory.EnumMember(scriptName, value).AndAddLeadingComments(node.GetFirstToken());
             return translatedMember.ToSingleEnumerable();
         }
 
