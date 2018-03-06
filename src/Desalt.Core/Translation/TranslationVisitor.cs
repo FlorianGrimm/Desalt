@@ -21,7 +21,7 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.
     /// </summary>
-    internal sealed class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<IAstNode>>
+    internal sealed partial class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<IAstNode>>
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -78,93 +78,6 @@ namespace Desalt.Core.Translation
             ITsImplementationModule implementationScript = Factory.ImplementationModule(elements.ToArray());
 
             return implementationScript.ToSingleEnumerable();
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a NamespaceDeclarationSyntax node.
-        /// </summary>
-        public override IEnumerable<IAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
-        {
-            var elements = new List<ITsImplementationModuleElement>();
-
-            foreach (MemberDeclarationSyntax member in node.Members)
-            {
-                var element = (ITsImplementationModuleElement)Visit(member).SingleOrDefault();
-                if (element != null)
-                {
-                    elements.Add(element);
-                }
-            }
-
-            return elements;
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a InterfaceDeclarationSyntax node.
-        /// </summary>
-        public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
-        {
-            ITsIdentifier interfaceName = TranslateIdentifier(node);
-
-            // get the interface body
-            var typeMembers = new List<ITsTypeMember>();
-            foreach (MemberDeclarationSyntax member in node.Members)
-            {
-                var typeMember = (ITsTypeMember)Visit(member).SingleOrDefault();
-                if (typeMember != null)
-                {
-                    typeMembers.Add(typeMember);
-                }
-            }
-
-            ITsObjectType body = Factory.ObjectType(typeMembers.ToArray());
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
-            IEnumerable<ITsTypeReference> extendsClause = Enumerable.Empty<ITsTypeReference>();
-
-            ITsInterfaceDeclaration interfaceDeclaration = Factory.InterfaceDeclaration(
-                interfaceName,
-                body,
-                typeParameters,
-                extendsClause);
-
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility == Accessibility.Public)
-            {
-                ITsExportImplementationElement exportedInterfaceDeclaration =
-                    Factory.ExportImplementationElement(interfaceDeclaration);
-
-                exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
-                return exportedInterfaceDeclaration.ToSingleEnumerable();
-            }
-
-            interfaceDeclaration = AddDocumentationCommentIfNecessary(node, interfaceDeclaration);
-            return interfaceDeclaration.ToSingleEnumerable();
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a MethodDeclarationSyntax node.
-        /// </summary>
-        /// <returns>A <see cref="ITsMethodSignature"/>.</returns>
-        public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            ITsIdentifier functionName = TranslateIdentifier(node);
-
-            // create the call signature
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
-            var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
-            ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_context.SemanticModel),
-                _typesToImport);
-
-            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
-
-            ITsMethodSignature functionDeclaration = Factory.MethodSignature(
-                functionName,
-                isOptional: false,
-                callSignature: callSignature);
-            functionDeclaration = AddDocumentationCommentIfNecessary(node, functionDeclaration);
-
-            return functionDeclaration.ToSingleEnumerable();
         }
 
         /// <summary>
