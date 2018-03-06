@@ -69,6 +69,23 @@ namespace Desalt.Core.Tests
             return result.Result;
         }
 
+        public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
+            string fileName,
+            CompilerOptions options = null)
+        {
+            DocumentTranslationContext context = await CreateContextForFileAsync(fileName, options);
+
+            // create the import symbol table
+            var importTable = new ImportSymbolTable();
+            importTable.AddDefinedTypesInDocument(context);
+
+            // create the script name symbol table
+            var scriptNameTable = new ScriptNameSymbolTable();
+            scriptNameTable.AddDefinedTypesInDocument(context);
+
+            return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting
         /// unmanaged resources.

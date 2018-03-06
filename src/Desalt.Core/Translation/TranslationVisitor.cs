@@ -28,17 +28,17 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private readonly DiagnosticList _diagnostics;
-        private readonly SemanticModel _semanticModel;
+        private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly ISet<string> _typesToImport = new HashSet<string>();
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TranslationVisitor(CompilerOptions options, SemanticModel semanticModel)
+        public TranslationVisitor(DocumentTranslationContextWithSymbolTables context)
         {
-            _diagnostics = DiagnosticList.Create(options);
-            _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _diagnostics = DiagnosticList.Create(context.Options);
         }
 
         //// ===========================================================================================================
@@ -127,7 +127,7 @@ namespace Desalt.Core.Translation
                 typeParameters,
                 extendsClause);
 
-            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
             if (symbol.DeclaredAccessibility == Accessibility.Public)
             {
                 ITsExportImplementationElement exportedInterfaceDeclaration =
@@ -153,7 +153,7 @@ namespace Desalt.Core.Translation
             ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
             ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_semanticModel),
+                node.ReturnType.GetTypeSymbol(_context.SemanticModel),
                 _typesToImport);
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
@@ -206,7 +206,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITsType parameterType = TypeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
+                node.Type.GetTypeSymbol(_context.SemanticModel),
                 _typesToImport);
             IAstNode parameter;
 
@@ -251,7 +251,7 @@ namespace Desalt.Core.Translation
                 return translatedNode;
             }
 
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(syntaxNode);
+            ISymbol symbol = _context.SemanticModel.GetDeclaredSymbol(syntaxNode);
             DocumentationComment documentationComment = symbol.GetDocumentationComment();
             var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
 

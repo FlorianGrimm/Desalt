@@ -30,7 +30,7 @@ namespace Desalt.Core.Translation
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var walker = new TranslationVisitor(context.Options, context.SemanticModel);
+            var walker = new TranslationVisitor(context);
             var implementationModule = (ITsImplementationModule)walker.Visit(context.RootSyntax).Single();
 
             IExtendedResult<ITsImplementationModule> addImportsResult = AddImports(

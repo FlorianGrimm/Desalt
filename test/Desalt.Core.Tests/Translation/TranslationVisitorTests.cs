@@ -8,59 +8,56 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using Desalt.Core.Emit;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class TranslationVisitorTests
     {
-        private static void AssertTranslation(string csharpCode, string expectedTypeScriptCode)
+        private static async Task AssertTranslation(string csharpCode, string expectedTypeScriptCode)
         {
-            var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(csharpCode);
-            CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly").AddSyntaxTrees(syntaxTree);
-            SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
-            var visitor = new TranslationVisitor(new CompilerOptions("out"), semanticModel);
+            using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("File", csharpCode)))
+            {
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File");
+                var visitor = new TranslationVisitor(context);
+                IAstNode result = visitor.Visit(context.RootSyntax).Single();
 
-            CompilationUnitSyntax compilationUnit = syntaxTree.GetCompilationUnitRoot();
-            IAstNode result = visitor.Visit(compilationUnit).Single();
+                visitor.Diagnostics.Should().BeEmpty();
 
-            visitor.Diagnostics.Should().BeEmpty();
-
-            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-            result.EmitAsString(emitOptions: EmitOptions.UnixSpaces).Should().Be(expectedTypeScriptCode);
+                // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+                result.EmitAsString(emitOptions: EmitOptions.UnixSpaces).Should().Be(expectedTypeScriptCode);
+            }
         }
 
         [TestClass]
         public class InterfaceDeclarationTests
         {
             [TestMethod]
-            public void Bare_interface_declaration_without_accessibility_should_not_be_exported()
+            public async Task Bare_interface_declaration_without_accessibility_should_not_be_exported()
             {
-                AssertTranslation("interface ITest {}", "interface ITest {\n}\n");
+                await AssertTranslation("interface ITest {}", "interface ITest {\n}\n");
             }
 
             [TestMethod]
-            public void Public_interface_declaration_should_be_exported()
+            public async Task Public_interface_declaration_should_be_exported()
             {
-                AssertTranslation("public interface ITest {}", "export interface ITest {\n}\n");
+                await AssertTranslation("public interface ITest {}", "export interface ITest {\n}\n");
             }
 
             [TestMethod]
-            public void A_method_declaration_with_no_parameters_and_a_void_return_type_should_be_translated()
+            public async Task A_method_declaration_with_no_parameters_and_a_void_return_type_should_be_translated()
             {
-                AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  Do(): void;\n}\n");
+                await AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  Do(): void;\n}\n");
             }
 
             [TestMethod]
-            public void A_method_declaration_with_simple_parameters_and_a_void_return_type_should_be_translated()
+            public async Task A_method_declaration_with_simple_parameters_and_a_void_return_type_should_be_translated()
             {
-                AssertTranslation(
+                await AssertTranslation(
                     "interface ITest { void Do(string x, string y); }",
                     "interface ITest {\n  Do(x: string, y: string): void;\n}\n");
             }
