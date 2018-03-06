@@ -20,7 +20,7 @@ namespace Desalt.Core.CompilerStages
     /// statements at the top of the translated file.
     /// </summary>
     internal class CreateSymbolTablesStage : PipelineStage<IEnumerable<DocumentTranslationContext>,
-        IEnumerable<DocumentTranslationContextWithSymbolTable>>
+        IEnumerable<DocumentTranslationContextWithSymbolTables>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -31,7 +31,7 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTable>>>
+        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
                 IEnumerable<DocumentTranslationContext> input,
                 CompilerOptions options,
@@ -47,9 +47,9 @@ namespace Desalt.Core.CompilerStages
 
             // create new context objects with the symbol table
             var newContexts = contexts.Select(
-                context => new DocumentTranslationContextWithSymbolTable(context, symbolTable));
+                context => new DocumentTranslationContextWithSymbolTables(context, symbolTable));
 
-            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTable>>(newContexts);
+            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }
     }
 }

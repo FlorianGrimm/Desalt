@@ -22,7 +22,7 @@ namespace Desalt.Core.CompilerStages
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
     /// </summary>
-    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTable>,
+    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTables>,
         IEnumerable<string>>
     {
         /// <summary>
@@ -35,7 +35,7 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The result of the stage.</returns>
         public override async Task<IExtendedResult<IEnumerable<string>>> ExecuteAsync(
-            IEnumerable<DocumentTranslationContextWithSymbolTable> input,
+            IEnumerable<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -64,7 +64,7 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The file path to the translated TypeScript file.</returns>
         private static IExtendedResult<string> TranslateDocument(
-            DocumentTranslationContextWithSymbolTable context,
+            DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken)
         {
             // TEMP - copy the original .cs file for easy comparing

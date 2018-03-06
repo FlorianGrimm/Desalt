@@ -27,7 +27,7 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public IExtendedResult<ITsImplementationModule> TranslateDocument(
-            DocumentTranslationContextWithSymbolTable context,
+            DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var walker = new TranslationVisitor(context.Options, context.SemanticModel);
@@ -47,7 +47,7 @@ namespace Desalt.Core.Translation
         /// Adds all of the import statements to the top of the file.
         /// </summary>
         private static IExtendedResult<ITsImplementationModule> AddImports(
-            DocumentTranslationContextWithSymbolTable context,
+            DocumentTranslationContextWithSymbolTables context,
             TranslationVisitor walker,
             ITsImplementationModule translatedModule)
         {
