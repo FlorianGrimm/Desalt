@@ -59,6 +59,7 @@ namespace Desalt.Core.Translation
             _diagnostics.Add(diagnostic);
 
 #if DEBUG
+
             // throwing an exception lets us fail fast and see the problem in the unit test failure window
             throw new Exception(diagnostic.ToString());
 #else
@@ -179,7 +180,7 @@ namespace Desalt.Core.Translation
         /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
         /// comments prepended. If there are no documentation comments, the same node is returned.
         /// </returns>
-        private T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
+        private T TranslateAndPrependDocumentationComment<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
         {
             if (!syntaxNode.HasStructuredTrivia)
             {

@@ -185,7 +185,7 @@ namespace Desalt.Core.Translation
                     functionName,
                     isOptional: false,
                     callSignature: callSignature);
-                methodSignature = AddDocumentationCommentIfNecessary(node, methodSignature);
+                methodSignature = TranslateAndPrependDocumentationComment(node, methodSignature);
                 return methodSignature.ToSingleEnumerable();
             }
 
@@ -197,7 +197,7 @@ namespace Desalt.Core.Translation
                 accessibilityModifier,
                 functionBody: null);
 
-            methodDeclaration = AddDocumentationCommentIfNecessary(node, methodDeclaration);
+            methodDeclaration = TranslateAndPrependDocumentationComment(node, methodDeclaration);
             return methodDeclaration.ToSingleEnumerable();
         }
 
@@ -215,7 +215,7 @@ namespace Desalt.Core.Translation
                 parameterList,
                 functionBody: null);
 
-            constructorDeclaration = AddDocumentationCommentIfNecessary(node, constructorDeclaration);
+            constructorDeclaration = TranslateAndPrependDocumentationComment(node, constructorDeclaration);
             return constructorDeclaration.ToSingleEnumerable();
         }
 
@@ -319,7 +319,7 @@ namespace Desalt.Core.Translation
             ITsExportImplementationElement exportedInterfaceDeclaration =
                 Factory.ExportImplementationElement(translatedDeclaration);
 
-            exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
+            exportedInterfaceDeclaration = TranslateAndPrependDocumentationComment(node, exportedInterfaceDeclaration);
             return exportedInterfaceDeclaration;
         }
 
@@ -328,7 +328,7 @@ namespace Desalt.Core.Translation
             ITsImplementationElement translatedDeclaration)
         {
             ITsImplementationModuleElement exported = ExportIfNecessary(node, translatedDeclaration);
-            return AddDocumentationCommentIfNecessary(node, exported);
+            return TranslateAndPrependDocumentationComment(node, exported);
         }
     }
 }
