@@ -55,8 +55,15 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
-            _diagnostics.Add(DiagnosticFactory.TranslationNotSupported(node));
+            var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
+            _diagnostics.Add(diagnostic);
+
+#if DEBUG
+            // throwing an exception lets us fail fast and see the problem in the unit test failure window
+            throw new Exception(diagnostic.ToString());
+#else
             return Enumerable.Empty<IAstNode>();
+#endif
         }
 
         /// <summary>
