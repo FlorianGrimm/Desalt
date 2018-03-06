@@ -21,7 +21,8 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         //// Constructors
         //// ===========================================================================================================
 
-        public TsMultiLineComment(IEnumerable<string> lines, bool isJsDoc = false)
+        public TsMultiLineComment(IEnumerable<string> lines, bool isJsDoc = false, bool preserveSpacing = false)
+            : base(preserveSpacing)
         {
             Lines = lines.ToImmutableArray();
             IsJsDoc = isJsDoc;
@@ -55,7 +56,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             }
             else if (count == 1 && !IsJsDoc)
             {
-                emitter.Write($"{Prefix} {Lines.First()} */");
+                emitter.Write($"{Prefix}{Space}{Lines.First()}{Space}*/");
             }
             else
             {
@@ -66,7 +67,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 }
                 else
                 {
-                    emitter.WriteLine($"{Prefix} {Lines.First()}");
+                    emitter.WriteLine($"{Prefix}{Space}{Lines.First()}");
                 }
 
                 foreach (string line in Lines.Skip(1))

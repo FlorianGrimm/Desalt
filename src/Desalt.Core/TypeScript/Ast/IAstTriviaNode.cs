@@ -20,6 +20,12 @@ namespace Desalt.Core.TypeScript.Ast
         //// ===========================================================================================================
 
         /// <summary>
+        /// Indicates whether to preserve the leading and trailing spacing and not add spaces around
+        /// the beginning and ending markers.
+        /// </summary>
+        bool PreserveSpacing { get; }
+
+        /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
         /// <value>A string representation of this AST node.</value>

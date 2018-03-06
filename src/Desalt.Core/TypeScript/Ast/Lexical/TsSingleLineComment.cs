@@ -18,7 +18,8 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         //// Constructors
         //// ===========================================================================================================
 
-        public TsSingleLineComment(string comment, bool omitNewLineAtEnd = false)
+        public TsSingleLineComment(string comment, bool preserveSpacing = false, bool omitNewLineAtEnd = false)
+            : base(preserveSpacing)
         {
             Comment = comment;
             OmitNewLineAtEnd = omitNewLineAtEnd;
@@ -42,11 +43,11 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         {
             if (OmitNewLineAtEnd)
             {
-                emitter.Write($"// {Comment}");
+                emitter.Write($"//{Space}{Comment}");
             }
             else
             {
-                emitter.WriteLine($"// {Comment}");
+                emitter.WriteLine($"//{Space}{Comment}");
             }
         }
     }
