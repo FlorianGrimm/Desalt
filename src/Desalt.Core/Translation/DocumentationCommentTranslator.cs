@@ -56,13 +56,19 @@ namespace Desalt.Core.Translation
             var lines = new List<string>();
 
             // translate the <summary> first
-            lines.AddRange(TranslateElementText(documentationComment.SummaryText));
+            if (documentationComment.SummaryText != null)
+            {
+                lines.AddRange(TranslateElementText(documentationComment.SummaryText));
+            }
 
             // translate each <param> tag
             foreach (string parameterName in documentationComment.ParameterNames)
             {
                 string parameterText = documentationComment.GetParameterText(parameterName);
-                lines.AddRange(TranslateParam(parameterName, parameterText));
+                if (parameterText != null)
+                {
+                    lines.AddRange(TranslateParam(parameterName, parameterText));
+                }
             }
 
             ITsMultiLineComment jsDocComment = Factory.MultiLineComment(isJsDoc: true, lines: lines.ToArray());
