@@ -40,6 +40,11 @@ namespace Desalt.Core.Translation
             }
 
             ISymbol symbol = semanticModel.GetDeclaredSymbol(syntaxNode);
+            if (symbol == null)
+            {
+                return translatedNode;
+            }
+
             DocumentationComment documentationComment = symbol.GetDocumentationComment();
             var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
 
