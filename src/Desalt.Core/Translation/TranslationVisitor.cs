@@ -167,7 +167,8 @@ namespace Desalt.Core.Translation
                         $"Unsupported node type for retrieving an identifier: {node.GetType().Name}");
             }
 
-            string scriptName = _context.ScriptNameSymbolTable[identifier];
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            string scriptName = _context.ScriptNameSymbolTable[symbol];
             return Factory.Identifier(scriptName);
         }
     }
