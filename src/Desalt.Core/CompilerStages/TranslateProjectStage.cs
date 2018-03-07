@@ -45,7 +45,7 @@ namespace Desalt.Core.CompilerStages
             Directory.CreateDirectory(options.OutputPath);
 
             ImmutableArray<IExtendedResult<string>> results = input
-                .Where(context => context.Document.Name.IsOneOf("ILogAppender.csx", "Logger.cs"))
+                .Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs"))
                 .AsParallel()
                 .Select(context => TranslateDocument(context, cancellationToken))
                 .ToImmutableArray();
