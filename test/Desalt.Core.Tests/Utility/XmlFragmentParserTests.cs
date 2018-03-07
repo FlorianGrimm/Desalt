@@ -29,7 +29,8 @@ namespace Desalt.Core.Tests.Utility
                 reader.Read();
             }
 
-            XmlFragmentParser.ParseFragment("text", ParseCallback, new object());
+            var parser = new XmlFragmentParser();
+            parser.ParseFragment("text", ParseCallback, new object());
             callCount.Should().Be(1);
         }
 
@@ -46,7 +47,8 @@ namespace Desalt.Core.Tests.Utility
                 reader.ReadInnerXml().Should().Be("Value");
             }
 
-            XmlFragmentParser.ParseFragment("<summary>Value</summary>", ParseCallback, new object());
+            var parser = new XmlFragmentParser();
+            parser.ParseFragment("<summary>Value</summary>", ParseCallback, new object());
             callCount.Should().Be(1);
         }
 
@@ -64,7 +66,8 @@ namespace Desalt.Core.Tests.Utility
                 reader.ReadInnerXml().Should().Be("value");
             }
 
-            XmlFragmentParser.ParseFragment(@"<param name=""arg"">value</param>", ParseCallback, new object());
+            var parser = new XmlFragmentParser();
+            parser.ParseFragment(@"<param name=""arg"">value</param>", ParseCallback, new object());
             callCount.Should().Be(1);
         }
 
@@ -76,7 +79,7 @@ namespace Desalt.Core.Tests.Utility
                 reader.ReadInnerXml();
             }
 
-            Action action = () => XmlFragmentParser.ParseFragment(@"<invalidTag>a</tag>", ParseCallback, new object());
+            Action action = () => new XmlFragmentParser().ParseFragment(@"<invalidTag>a</tag>", ParseCallback, new object());
             action.Should().Throw<XmlException>();
         }
     }
