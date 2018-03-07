@@ -59,7 +59,7 @@ namespace Desalt.Core.Translation
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final =
-                ExportAndAddDocumentationCommentIfNecessary(node, interfaceDeclaration);
+                interfaceDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
             return final.ToSingleEnumerable();
         }
 
@@ -79,7 +79,8 @@ namespace Desalt.Core.Translation
             ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
 
             // export if necessary and add documentation comments
-            ITsImplementationModuleElement final = ExportAndAddDocumentationCommentIfNecessary(node, enumDeclaration);
+            ITsImplementationModuleElement final =
+                enumDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
             return final.ToSingleEnumerable();
         }
 
@@ -126,7 +127,8 @@ namespace Desalt.Core.Translation
                 classBody);
 
             // export if necessary and add documentation comments
-            ITsImplementationModuleElement final = ExportAndAddDocumentationCommentIfNecessary(node, classDeclaration);
+            ITsImplementationModuleElement final =
+                classDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
             return final.ToSingleEnumerable();
         }
 
@@ -139,12 +141,12 @@ namespace Desalt.Core.Translation
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
             {
                 var variableName = TranslateIdentifier(variableDeclaration);
-                ISymbol symbol = _context.SemanticModel.GetDeclaredSymbol(variableDeclaration);
+                ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
                 var typeAnnotation = TypeTranslator.TranslateSymbol(
-                    node.Declaration.Type.GetTypeSymbol(_context.SemanticModel),
+                    node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
                 ITsVariableMemberDeclaration fieldDeclaration = Factory.VariableMemberDeclaration(
@@ -173,19 +175,19 @@ namespace Desalt.Core.Translation
             ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
             ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_context.SemanticModel),
+                node.ReturnType.GetTypeSymbol(_semanticModel),
                 _typesToImport);
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
             // if we're defining an interface, then we need to return a ITsMethodSignature
-            if (_context.SemanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
+            if (_semanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
             {
                 ITsMethodSignature methodSignature = Factory.MethodSignature(
                     functionName,
                     isOptional: false,
                     callSignature: callSignature);
-                methodSignature = TranslateAndPrependDocumentationComment(node, methodSignature);
+                methodSignature = methodSignature.WithDocumentationComment(_semanticModel, node);
                 return methodSignature.ToSingleEnumerable();
             }
 
@@ -197,7 +199,7 @@ namespace Desalt.Core.Translation
                 accessibilityModifier,
                 functionBody: null);
 
-            methodDeclaration = TranslateAndPrependDocumentationComment(node, methodDeclaration);
+            methodDeclaration = methodDeclaration.WithDocumentationComment(_semanticModel, node);
             return methodDeclaration.ToSingleEnumerable();
         }
 
@@ -215,7 +217,7 @@ namespace Desalt.Core.Translation
                 parameterList,
                 functionBody: null);
 
-            constructorDeclaration = TranslateAndPrependDocumentationComment(node, constructorDeclaration);
+            constructorDeclaration = constructorDeclaration.WithDocumentationComment(_semanticModel, node);
             return constructorDeclaration.ToSingleEnumerable();
         }
 
@@ -225,7 +227,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             ITsIdentifier propertyName = TranslateIdentifier(node);
-            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_context.SemanticModel);
+            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
             var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
@@ -263,7 +265,7 @@ namespace Desalt.Core.Translation
 
         private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
         {
-            ISymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             return GetAccessibilityModifier(symbol, node.GetLocation);
         }
 
@@ -294,41 +296,6 @@ namespace Desalt.Core.Translation
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        /// <summary>
-        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
-        /// </summary>
-        /// <param name="node">The C# syntax node to inspect.</param>
-        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
-        /// <returns>
-        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
-        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
-        /// </returns>
-        private ITsImplementationModuleElement ExportIfNecessary(
-            BaseTypeDeclarationSyntax node,
-            ITsImplementationElement translatedDeclaration)
-        {
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility != Accessibility.Public)
-            {
-                return translatedDeclaration;
-            }
-
-            ITsExportImplementationElement exportedInterfaceDeclaration =
-                Factory.ExportImplementationElement(translatedDeclaration);
-
-            exportedInterfaceDeclaration = TranslateAndPrependDocumentationComment(node, exportedInterfaceDeclaration);
-            return exportedInterfaceDeclaration;
-        }
-
-        private ITsImplementationModuleElement ExportAndAddDocumentationCommentIfNecessary(
-            BaseTypeDeclarationSyntax node,
-            ITsImplementationElement translatedDeclaration)
-        {
-            ITsImplementationModuleElement exported = ExportIfNecessary(node, translatedDeclaration);
-            return TranslateAndPrependDocumentationComment(node, exported);
         }
     }
 }
