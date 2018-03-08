@@ -16,9 +16,6 @@ namespace Desalt.Core.Utility
     /// </summary>
     /// <remarks>
     /// Heavily borrowed from the Roslyn source at <see href="http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/Shared/Utilities/XmlFragmentParser.cs"/>.
-    ///
-    /// PERF: We try to re-use the same underlying <see cref="XmlReader"/> to reduce the allocation
-    ///       costs of multiple parses.
     /// </remarks>
     internal partial class XmlFragmentParser
     {
@@ -31,11 +28,8 @@ namespace Desalt.Core.Utility
             DtdProcessing = DtdProcessing.Prohibit,
         };
 
-        private static readonly Lazy<XmlFragmentParser> s_instance =
-            new Lazy<XmlFragmentParser>(() => new XmlFragmentParser());
-
         private XmlReader _xmlReader;
-        private readonly XmlFragmentParser.Reader _textReader = new XmlFragmentParser.Reader();
+        private readonly Reader _textReader = new Reader();
 
         //// ===========================================================================================================
         //// Methods
@@ -55,15 +49,9 @@ namespace Desalt.Core.Utility
         /// It is important that the <paramref name="callback"/> action advances the <see
         /// cref="XmlReader"/>, otherwise parsing will never complete.
         /// </remarks>
-        public static void ParseFragment<TArg>(string xmlFragment, Action<XmlReader, TArg> callback, TArg arg)
+        public void ParseFragment<TArg>(string xmlFragment, Action<XmlReader, TArg> callback, TArg arg)
         {
-            var instance = s_instance.Value;
-            instance.ParseInternal(xmlFragment, callback, arg);
-        }
-
-        private void ParseInternal<TArg>(string text, Action<XmlReader, TArg> callback, TArg arg)
-        {
-            _textReader.SetText(text);
+            _textReader.SetText(xmlFragment);
 
             if (_xmlReader == null)
             {
@@ -107,6 +95,6 @@ namespace Desalt.Core.Utility
         private bool ReachedEnd =>
             _xmlReader.Depth == 1 &&
             _xmlReader.NodeType == XmlNodeType.EndElement &&
-            _xmlReader.LocalName == XmlFragmentParser.Reader.CurrentElementName;
+            _xmlReader.LocalName == Reader.CurrentElementName;
     }
 }

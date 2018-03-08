@@ -29,6 +29,7 @@ namespace Desalt.Core.Translation
 
         private readonly DiagnosticList _diagnostics;
         private readonly DocumentTranslationContextWithSymbolTables _context;
+        private readonly SemanticModel _semanticModel;
         private readonly ISet<string> _typesToImport = new HashSet<string>();
 
         //// ===========================================================================================================
@@ -38,6 +39,7 @@ namespace Desalt.Core.Translation
         public TranslationVisitor(DocumentTranslationContextWithSymbolTables context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _semanticModel = context.SemanticModel;
             _diagnostics = DiagnosticList.Create(context.Options);
         }
 
@@ -55,8 +57,16 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
-            _diagnostics.Add(DiagnosticFactory.TranslationNotSupported(node));
+            var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
+            _diagnostics.Add(diagnostic);
+
+#if DEBUG
+
+            // throwing an exception lets us fail fast and see the problem in the unit test failure window
+            throw new Exception(diagnostic.ToString());
+#else
             return Enumerable.Empty<IAstNode>();
+#endif
         }
 
         /// <summary>
@@ -110,7 +120,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITsType parameterType = TypeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_context.SemanticModel),
+                node.Type.GetTypeSymbol(_semanticModel),
                 _typesToImport);
             IAstNode parameter;
 
@@ -127,47 +137,39 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
-        private ITsIdentifier TranslateIdentifier(BaseTypeDeclarationSyntax node)
+        private ITsIdentifier TranslateIdentifier(SyntaxNode node)
         {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
-            return Factory.Identifier(scriptName);
-        }
-
-        private ITsIdentifier TranslateIdentifier(MethodDeclarationSyntax node)
-        {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
-            return Factory.Identifier(scriptName);
-        }
-
-        private ITsIdentifier TranslateIdentifier(EnumMemberDeclarationSyntax node)
-        {
-            string scriptName = _context.ScriptNameSymbolTable[node.Identifier.Text];
-            return Factory.Identifier(scriptName);
-        }
-
-        /// <summary>
-        /// Translates the C# XML documentation comment into a JSDoc comment if there is a
-        /// documentation comment on the specified node.
-        /// </summary>
-        /// <typeparam name="T">The type of the translated node.</typeparam>
-        /// <param name="syntaxNode">The C# syntax node to get documentation comments from.</param>
-        /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
-        /// <returns>
-        /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
-        /// comments prepended. If there are no documentation comments, the same node is returned.
-        /// </returns>
-        private T AddDocumentationCommentIfNecessary<T>(SyntaxNode syntaxNode, T translatedNode) where T : IAstNode
-        {
-            if (!syntaxNode.HasStructuredTrivia)
+            string identifier;
+            switch (node)
             {
-                return translatedNode;
+                case BaseTypeDeclarationSyntax baseTypeDeclaration:
+                    identifier = baseTypeDeclaration.Identifier.Text;
+                    break;
+
+                case MethodDeclarationSyntax methodDeclaration:
+                    identifier = methodDeclaration.Identifier.Text;
+                    break;
+
+                case EnumMemberDeclarationSyntax enumMemberDeclaration:
+                    identifier = enumMemberDeclaration.Identifier.Text;
+                    break;
+
+                case VariableDeclaratorSyntax variableDeclarator:
+                    identifier = variableDeclarator.Identifier.Text;
+                    break;
+
+                case PropertyDeclarationSyntax propertyDeclaration:
+                    identifier = propertyDeclaration.Identifier.Text;
+                    break;
+
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported node type for retrieving an identifier: {node.GetType().Name}");
             }
 
-            ISymbol symbol = _context.SemanticModel.GetDeclaredSymbol(syntaxNode);
-            DocumentationComment documentationComment = symbol.GetDocumentationComment();
-            var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
-
-            return translatedNode.WithLeadingTrivia(jsDocComment);
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            string scriptName = _context.ScriptNameSymbolTable[symbol];
+            return Factory.Identifier(scriptName);
         }
     }
 }

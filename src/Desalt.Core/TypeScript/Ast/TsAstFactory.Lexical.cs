@@ -14,9 +14,12 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a TypeScript single-line comment of the form '// comment'.
         /// </summary>
-        public static ITsSingleLineComment SingleLineComment(string comment, bool omitNewLineAtEnd = false)
+        public static ITsSingleLineComment SingleLineComment(
+            string comment,
+            bool preserveSpacing = false,
+            bool omitNewLineAtEnd = false)
         {
-            return new TsSingleLineComment(comment, omitNewLineAtEnd);
+            return new TsSingleLineComment(comment, preserveSpacing, omitNewLineAtEnd);
         }
 
         /// <summary>
@@ -30,9 +33,12 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a TypeScript multi-line comment of the form '/* lines */'.
         /// </summary>
-        public static ITsMultiLineComment MultiLineComment(bool isJsDoc, params string[] lines)
+        public static ITsMultiLineComment MultiLineComment(
+            bool isJsDoc,
+            bool preserveSpacing = false,
+            params string[] lines)
         {
-            return new TsMultiLineComment(lines, isJsDoc);
+            return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
         }
     }
 }

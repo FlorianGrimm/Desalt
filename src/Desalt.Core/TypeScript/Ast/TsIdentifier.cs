@@ -8,7 +8,7 @@
 namespace Desalt.Core.TypeScript.Ast
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using Desalt.Core.Emit;
     using Desalt.Core.Utility;
 
@@ -23,8 +23,8 @@ namespace Desalt.Core.TypeScript.Ast
 
         private static readonly StringComparer s_keyComparer = StringComparer.Ordinal;
 
-        private static readonly Dictionary<string, TsIdentifier> s_cache =
-            new Dictionary<string, TsIdentifier>(s_keyComparer);
+        private static readonly ConcurrentDictionary<string, TsIdentifier> s_cache =
+            new ConcurrentDictionary<string, TsIdentifier>(s_keyComparer);
 
         //// ===========================================================================================================
         //// Constructors

@@ -50,6 +50,13 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1004, "Cannot import an unknown type", "Type '{0}' is unknown and cannot be imported.")]
             UnknownType,
+
+            [Warning(
+                1005,
+                "Unsupported accessibility",
+                "TypeScript has no equivalent to C#'s {0} accessibility. Falling back to {1} accessibility",
+                WarningLevel.Important)]
+            UnsupportedAccessibility
         }
 
         //// ===========================================================================================================
@@ -116,6 +123,25 @@ namespace Desalt.Core.Diagnostics
         public static Diagnostic UnknownType(string typeName, Location location = null)
         {
             return Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "TypeScript has no equivalent to C#'s {0} accessibility.
+        /// Falling back to {1} accessibility".
+        /// </summary>
+        /// <param name="unsupportedAccessibility">The accessibilty level that is not supported.</param>
+        /// <param name="fallbackAccessibility">The accessibility level that will be used instead.</param>
+        /// <param name="location">The location of the error.</param>
+        public static Diagnostic UnsupportedAccessibility(
+            string unsupportedAccessibility,
+            string fallbackAccessibility,
+            Location location)
+        {
+            return Create(
+                DiagnosticId.UnsupportedAccessibility,
+                location,
+                unsupportedAccessibility,
+                fallbackAccessibility);
         }
     }
 }

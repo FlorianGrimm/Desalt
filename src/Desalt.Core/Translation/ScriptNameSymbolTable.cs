@@ -29,14 +29,18 @@ namespace Desalt.Core.Translation
         private readonly ConcurrentDictionary<string, string> _symbolToNameMap =
             new ConcurrentDictionary<string, string>();
 
+        private static readonly SymbolDisplayFormat
+            s_symbolDisplayFormat = SymbolDisplayFormat.MinimallyQualifiedFormat;
+
         //// ===========================================================================================================
         //// Indexers
         //// ===========================================================================================================
 
-        public string this[string symbolName]
+        public string this[ISymbol symbol]
         {
             get
             {
+                string symbolName = symbol.ToDisplayString(s_symbolDisplayFormat);
                 if (!_symbolToNameMap.TryGetValue(symbolName, out string scriptName))
                 {
                     throw new KeyNotFoundException(
@@ -60,15 +64,17 @@ namespace Desalt.Core.Translation
             foreach (BaseTypeDeclarationSyntax node in allTypeDeclarations)
             {
                 INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+                string typeKey = symbol.ToDisplayString(s_symbolDisplayFormat);
                 string typeName = symbol.Name;
-                _symbolToNameMap.AddOrUpdate(typeName, _ => typeName, (_, __) => typeName);
+                _symbolToNameMap.AddOrUpdate(typeKey, _ => typeName, (_, __) => typeName);
 
                 // add all of the members of the declared type
                 foreach (ISymbol member in symbol.GetMembers())
                 {
+                    string memberKey = member.ToDisplayString(s_symbolDisplayFormat);
                     string memberName = member.Name;
                     string scriptName = char.ToLowerInvariant(memberName[0]) + memberName.Substring(1);
-                    _symbolToNameMap.AddOrUpdate(memberName, _ => scriptName, (_, __) => scriptName);
+                    _symbolToNameMap.AddOrUpdate(memberKey, _ => scriptName, (_, __) => scriptName);
                 }
             }
         }
@@ -77,8 +83,9 @@ namespace Desalt.Core.Translation
         /// Returns a value indicating whether the symbol table contains a definition for the
         /// specified symbol name.
         /// </summary>
-        public bool HasSymbol(string symbolName)
+        public bool HasSymbol(ISymbol symbol)
         {
+            string symbolName = symbol.ToDisplayString(s_symbolDisplayFormat);
             return _symbolToNameMap.TryGetValue(symbolName, out string _);
         }
     }

@@ -30,6 +30,9 @@ namespace Desalt.Core.Emit
         private readonly StreamWriter _streamWriter;
         private readonly IndentedTextWriter _writer;
 
+        private bool _lastWriteWasWhitespace = true;
+        private bool _nextWriteRequiresSpace;
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -72,16 +75,51 @@ namespace Desalt.Core.Emit
         //// Methods
         //// ===========================================================================================================
 
-        public void Write(string text) => _writer.Write(text);
+        public void Write(string text)
+        {
+            WriteLeadingSpaceIfNeeded(text);
+            _writer.Write(text);
+            SetLastWriteWasWhitespace(text);
+        }
 
-        public void WriteLine() => _writer.WriteLine();
+        public void WriteLine()
+        {
+            _writer.WriteLine();
+            _lastWriteWasWhitespace = true;
+            _nextWriteRequiresSpace = false;
+        }
 
-        public void WriteLine(string text) => _writer.WriteLine(text);
+        public void WriteLine(string text)
+        {
+            WriteLeadingSpaceIfNeeded(text);
+            _writer.WriteLine(text);
+            _lastWriteWasWhitespace = true;
+        }
 
         /// <summary>
         /// Writes the specified string to a line without tabs.
         /// </summary>
-        public void WriteLineWithoutIndentation() => _writer.WriteLineWithoutIndentation();
+        public void WriteLineWithoutIndentation()
+        {
+            _writer.WriteLineWithoutIndentation();
+            _lastWriteWasWhitespace = true;
+            _nextWriteRequiresSpace = false;
+        }
+
+        /// <summary>
+        /// Writes the keyword, ensuring that it is surrounded by spaces.
+        /// </summary>
+        /// <param name="keyword"></param>
+        public void WriteKeyword(string keyword)
+        {
+            _nextWriteRequiresSpace = true;
+            WriteLeadingSpaceIfNeeded(keyword);
+
+            _writer.Write(keyword);
+
+            SetLastWriteWasWhitespace(keyword);
+            _nextWriteRequiresSpace = true;
+        }
 
         /// <summary>
         /// Writes a list of items wrapped in a {} block.
@@ -295,6 +333,42 @@ namespace Desalt.Core.Emit
                 _writer.Dispose();
                 _streamWriter.Dispose();
             }
+        }
+
+        private void WriteLeadingSpaceIfNeeded(string text)
+        {
+            // don't do anything if we don't need to write a space
+            if (!_nextWriteRequiresSpace)
+            {
+                return;
+            }
+
+            // if we already wrote a whitespace, don't do anything
+            if (_lastWriteWasWhitespace)
+            {
+                return;
+            }
+
+            // if the first character that we're going to write is whitespace, then we don't need to write another space
+            if (!string.IsNullOrEmpty(text) && char.IsWhiteSpace(text, 0))
+            {
+                return;
+            }
+
+            _writer.Write(" ");
+            _nextWriteRequiresSpace = false;
+            _lastWriteWasWhitespace = true;
+        }
+
+        private void SetLastWriteWasWhitespace(string text)
+        {
+            // don't set the flag if we didn't write anything
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            _lastWriteWasWhitespace = char.IsWhiteSpace(text, text.Length - 1);
         }
     }
 }

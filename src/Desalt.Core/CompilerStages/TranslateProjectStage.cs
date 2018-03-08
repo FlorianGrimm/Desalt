@@ -14,6 +14,7 @@ namespace Desalt.Core.CompilerStages
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
@@ -44,7 +45,7 @@ namespace Desalt.Core.CompilerStages
             Directory.CreateDirectory(options.OutputPath);
 
             ImmutableArray<IExtendedResult<string>> results = input
-                .Where(context => context.Document.Name == "ILogAppender.cs")
+                .Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs"))
                 .AsParallel()
                 .Select(context => TranslateDocument(context, cancellationToken))
                 .ToImmutableArray();

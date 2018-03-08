@@ -18,8 +18,23 @@ namespace Desalt.Core.TypeScript.Ast
     public abstract class AstTriviaNode : IAstTriviaNode
     {
         //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        protected AstTriviaNode(bool preserveSpacing)
+        {
+            PreserveSpacing = preserveSpacing;
+        }
+
+        //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
+
+        /// <summary>
+        /// Indicates whether to preserve the leading and trailing spacing and not add spaces around
+        /// the beginning and ending markers.
+        /// </summary>
+        public bool PreserveSpacing { get; }
 
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
@@ -32,6 +47,11 @@ namespace Desalt.Core.TypeScript.Ast
         /// variable window.
         /// </summary>
         protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
+
+        /// <summary>
+        /// Returns either a space or an empty string depending on the value of <see cref="PreserveSpacing"/>.
+        /// </summary>
+        protected string Space => PreserveSpacing ? string.Empty : " ";
 
         //// ===========================================================================================================
         //// Methods

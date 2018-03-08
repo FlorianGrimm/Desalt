@@ -119,11 +119,12 @@ namespace Desalt.Core.TypeScript.Ast
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isReadOnly = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
             return TsVariableMemberDeclaration.Create(
-                variableName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+                variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation, initializer);
         }
 
         /// <summary>
@@ -316,10 +317,11 @@ namespace Desalt.Core.TypeScript.Ast
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isReadOnly = false,
             ITsType typeAnnotation = null)
         {
             return TsVariableMemberDeclaration.CreateAmbient(
-                variableName, accessibilityModifier, isStatic, typeAnnotation);
+                variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation);
         }
 
         /// <summary>

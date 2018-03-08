@@ -14,7 +14,8 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
     /// Represents a member variable declaration in a class.
     /// </summary>
     internal class TsVariableMemberDeclaration : AstNode,
-        ITsVariableMemberDeclaration, ITsAmbientVariableMemberDeclaration
+        ITsVariableMemberDeclaration,
+        ITsAmbientVariableMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
@@ -25,6 +26,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isReadOnly = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
@@ -32,6 +34,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
+            IsReadOnly = isReadOnly;
             TypeAnnotation = typeAnnotation;
             Initializer = initializer;
         }
@@ -42,6 +45,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
         public bool IsStatic { get; }
+        public bool IsReadOnly { get; }
         public ITsPropertyName VariableName { get; }
         public ITsType TypeAnnotation { get; }
         public ITsExpression Initializer { get; }
@@ -56,21 +60,34 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isReadOnly = false,
             ITsType typeAnnotation = null,
             ITsExpression initializer = null)
         {
             return new TsVariableMemberDeclaration(
-                false, variableName, accessibilityModifier, isStatic, typeAnnotation, initializer);
+                false,
+                variableName,
+                accessibilityModifier,
+                isStatic,
+                isReadOnly,
+                typeAnnotation,
+                initializer);
         }
 
         public static ITsAmbientVariableMemberDeclaration CreateAmbient(
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isReadOnly = false,
             ITsType typeAnnotation = null)
         {
             return new TsVariableMemberDeclaration(
-                true, variableName, accessibilityModifier, isStatic, typeAnnotation);
+                true,
+                variableName,
+                accessibilityModifier,
+                isStatic,
+                isReadOnly,
+                typeAnnotation);
         }
 
         public override void Accept(TsVisitor visitor)
@@ -86,13 +103,19 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         }
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
-            $"{VariableName}{TypeAnnotation.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()};";
+            AccessibilityModifier.OptionalCodeDisplay() +
+            IsStatic.OptionalStaticDeclaration() +
+            IsReadOnly.OptionalReadOnlyDeclaration() +
+            VariableName +
+            TypeAnnotation.OptionalTypeAnnotation() +
+            Initializer.OptionalAssignment() +
+            ";";
 
         protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             IsStatic.EmitOptionalStaticDeclaration(emitter);
+            IsReadOnly.EmitOptionalReadOnlyDeclaration(emitter);
             VariableName.Emit(emitter);
             TypeAnnotation.EmitOptionalTypeAnnotation(emitter);
             Initializer.EmitOptionalAssignment(emitter);

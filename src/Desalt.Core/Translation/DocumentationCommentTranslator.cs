@@ -29,7 +29,11 @@ namespace Desalt.Core.Translation
             RegexOptions.Singleline;
 
         private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see\s+cref\s*=\s*""M:(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            @"<see\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            InlineElementOptions);
+
+        private static readonly Regex s_seeAlsoMemberRegex = new Regex(
+            @"<seealso\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeLangwordRegex = new Regex(
@@ -52,13 +56,19 @@ namespace Desalt.Core.Translation
             var lines = new List<string>();
 
             // translate the <summary> first
-            lines.AddRange(TranslateElementText(documentationComment.SummaryText));
+            if (documentationComment.SummaryText != null)
+            {
+                lines.AddRange(TranslateElementText(documentationComment.SummaryText));
+            }
 
             // translate each <param> tag
             foreach (string parameterName in documentationComment.ParameterNames)
             {
                 string parameterText = documentationComment.GetParameterText(parameterName);
-                lines.AddRange(TranslateParam(parameterName, parameterText));
+                if (parameterText != null)
+                {
+                    lines.AddRange(TranslateParam(parameterName, parameterText));
+                }
             }
 
             ITsMultiLineComment jsDocComment = Factory.MultiLineComment(isJsDoc: true, lines: lines.ToArray());
@@ -108,6 +118,11 @@ namespace Desalt.Core.Translation
             translated = s_seeCrefMemberRegex.Replace(
                 translated,
                 match => $"[[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
+
+            // translate <seealso cref="M:Type.Member" /> to 'See [[Type.Member]]'
+            translated = s_seeAlsoMemberRegex.Replace(
+                translated,
+                match => $"See [[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
 
             return translated;
         }

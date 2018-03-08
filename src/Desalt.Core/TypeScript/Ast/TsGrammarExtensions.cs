@@ -269,5 +269,16 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         public static void EmitOptionalStaticDeclaration(this bool isStatic, Emitter emitter) =>
             emitter.Write(isStatic ? "static " : "");
+
+        /// <summary>
+        /// Returns "static " if <paramref name="isReadOnly"/> is true or an empty string if not.
+        /// </summary>
+        public static string OptionalReadOnlyDeclaration(this bool isReadOnly) => isReadOnly ? "readonly " : "";
+
+        /// <summary>
+        /// Writes "readonly " if <paramref name="isReadOnly"/> is true or an empty string if not.
+        /// </summary>
+        public static void EmitOptionalReadOnlyDeclaration(this bool isReadOnly, Emitter emitter) =>
+            emitter.Write(isReadOnly ? "readonly " : "");
     }
 }

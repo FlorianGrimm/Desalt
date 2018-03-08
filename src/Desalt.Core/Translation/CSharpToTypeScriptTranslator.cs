@@ -61,12 +61,12 @@ namespace Desalt.Core.Translation
             // get rid of all of the undefined imports
             var validImportTypes = importTypes.Except(undefinedTypes);
 
-            // group each valid import by file name
+            // group each valid import by file name (but don't include the types that are defined in this class).
             var groupedByFileName = validImportTypes.OrderBy(_ => _)
-                .GroupBy(
-                    import =>
+                .Select(
+                    importTypeName =>
                     {
-                        string tsPath = context.ImportSymbolTable[import];
+                        string tsPath = context.ImportSymbolTable[importTypeName];
                         string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
 
                         // remove the file extension
@@ -82,16 +82,22 @@ namespace Desalt.Core.Translation
                             relativePath = "./" + relativePath;
                         }
 
-                        return relativePath;
-                    });
+                        return new
+                        {
+                            TypeName = importTypeName,
+                            RelativePath = relativePath
+                        };
+                    })
+                .Where(item => item.RelativePath != "./")
+                .GroupBy(item => item.RelativePath);
 
             // add an import statement for each group
             var importDeclarations = new List<ITsImportDeclaration>();
-            foreach (IGrouping<string, string> grouping in groupedByFileName)
+            foreach (var grouping in groupedByFileName)
             {
                 // create the list inside of `import { list } from 'file'`
                 ITsImportSpecifier[] importNames = grouping
-                    .Select(importName => Factory.ImportSpecifier(Factory.Identifier(importName)))
+                    .Select(item => Factory.ImportSpecifier(Factory.Identifier(item.TypeName)))
                     .ToArray();
                 var importClause = Factory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
 

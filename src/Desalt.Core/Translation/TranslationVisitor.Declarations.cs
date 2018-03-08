@@ -7,8 +7,10 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
@@ -30,6 +32,10 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a InterfaceDeclarationSyntax node.
         /// </summary>
+        /// <returns>
+        /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
+        /// cref="ITsInterfaceDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             ITsIdentifier interfaceName = TranslateIdentifier(node);
@@ -51,25 +57,19 @@ namespace Desalt.Core.Translation
                 typeParameters,
                 extendsClause);
 
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility == Accessibility.Public)
-            {
-                ITsExportImplementationElement exportedInterfaceDeclaration =
-                    Factory.ExportImplementationElement(interfaceDeclaration);
-
-                exportedInterfaceDeclaration = AddDocumentationCommentIfNecessary(node, exportedInterfaceDeclaration);
-                return exportedInterfaceDeclaration.ToSingleEnumerable();
-            }
-
-            interfaceDeclaration = AddDocumentationCommentIfNecessary(node, interfaceDeclaration);
-            return interfaceDeclaration.ToSingleEnumerable();
+            // export if necessary and add documentation comments
+            ITsImplementationModuleElement final =
+                interfaceDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            return final.ToSingleEnumerable();
         }
 
         /// <summary>
         /// Called when the visitor visits a EnumDeclarationSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsEnumDeclaration"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
+        /// cref="ITsEnumDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             ITsIdentifier enumName = TranslateIdentifier(node);
@@ -78,19 +78,10 @@ namespace Desalt.Core.Translation
             var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
             ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
 
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _context.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility == Accessibility.Public)
-            {
-                ITsExportImplementationElement exportedEnumDeclaration =
-                    Factory.ExportImplementationElement(enumDeclaration);
-
-                exportedEnumDeclaration = AddDocumentationCommentIfNecessary(node, exportedEnumDeclaration);
-                return exportedEnumDeclaration.ToSingleEnumerable();
-            }
-
-            enumDeclaration = AddDocumentationCommentIfNecessary(node, enumDeclaration);
-            return enumDeclaration.ToSingleEnumerable();
+            // export if necessary and add documentation comments
+            ITsImplementationModuleElement final =
+                enumDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            return final.ToSingleEnumerable();
         }
 
         /// <summary>
@@ -110,29 +101,206 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a ClassDeclarationSyntax node.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
+        /// cref="ITsClassElement"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// </returns>
+        public override IEnumerable<IAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            ITsIdentifier className = TranslateIdentifier(node);
+
+            // translate the generic type parameters
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+
+            // translate the class heritage
+            ITsClassHeritage heritage = Factory.ClassHeritage(implementsTypes: null);
+
+            // translate the interface body
+            var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>();
+
+            ITsClassDeclaration classDeclaration = Factory.ClassDeclaration(
+                className,
+                typeParameters,
+                heritage,
+                classBody);
+
+            // export if necessary and add documentation comments
+            ITsImplementationModuleElement final =
+                classDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            return final.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a FieldDeclarationSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            var fieldDeclarations = new List<ITsVariableMemberDeclaration>();
+            foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
+            {
+                var variableName = TranslateIdentifier(variableDeclaration);
+                ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
+                TsAccessibilityModifier accessibilityModifier =
+                    GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
+
+                bool isReadOnly = node.Modifiers.Any(token => token.IsKind(SyntaxKind.ReadOnlyKeyword));
+
+                var typeAnnotation = TypeTranslator.TranslateSymbol(
+                    node.Declaration.Type.GetTypeSymbol(_semanticModel),
+                    _typesToImport);
+
+                ITsVariableMemberDeclaration fieldDeclaration = Factory
+                    .VariableMemberDeclaration(
+                        variableName,
+                        accessibilityModifier,
+                        symbol.IsStatic,
+                        isReadOnly,
+                        typeAnnotation)
+                    .WithDocumentationComment(_semanticModel, node, variableDeclaration);
+                fieldDeclarations.Add(fieldDeclaration);
+            }
+
+            return fieldDeclarations;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a MethodDeclarationSyntax node.
         /// </summary>
-        /// <returns>A <see cref="ITsMethodSignature"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsMethodSignature"/> if we're within an interface declaration; otherwise
+        /// an <see cref="ITsFunctionMemberDeclaration"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             ITsIdentifier functionName = TranslateIdentifier(node);
 
             // create the call signature
-            ITsTypeParameters typeParameters = TsAstFactory.TypeParameters();
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
             var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
             ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_context.SemanticModel),
+                node.ReturnType.GetTypeSymbol(_semanticModel),
                 _typesToImport);
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
 
-            ITsMethodSignature functionDeclaration = Factory.MethodSignature(
-                functionName,
-                isOptional: false,
-                callSignature: callSignature);
-            functionDeclaration = AddDocumentationCommentIfNecessary(node, functionDeclaration);
+            // if we're defining an interface, then we need to return a ITsMethodSignature
+            if (_semanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
+            {
+                ITsMethodSignature methodSignature = Factory.MethodSignature(
+                    functionName,
+                    isOptional: false,
+                    callSignature: callSignature);
+                methodSignature = methodSignature.WithDocumentationComment(_semanticModel, node);
+                return methodSignature.ToSingleEnumerable();
+            }
 
-            return functionDeclaration.ToSingleEnumerable();
+            // we're within a class, so return a method declaration
+            TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
+            ITsFunctionMemberDeclaration methodDeclaration = Factory.FunctionMemberDeclaration(
+                functionName,
+                callSignature,
+                accessibilityModifier,
+                functionBody: null);
+
+            methodDeclaration = methodDeclaration.WithDocumentationComment(_semanticModel, node);
+            return methodDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ConstructorDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsConstructorDeclaration"/>.</returns>
+        public override IEnumerable<IAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
+            var parameterList = Factory.ParameterList();
+
+            ITsConstructorDeclaration constructorDeclaration = Factory.ConstructorDeclaration(
+                accessibilityModifier,
+                parameterList,
+                functionBody: null);
+
+            constructorDeclaration = constructorDeclaration.WithDocumentationComment(_semanticModel, node);
+            return constructorDeclaration.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PropertyDeclarationSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        {
+            ITsIdentifier propertyName = TranslateIdentifier(node);
+            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+
+            foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
+            {
+                TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(accessor);
+
+                switch (accessor.Kind())
+                {
+                    case SyntaxKind.GetAccessorDeclaration:
+                        ITsGetAccessor getAccessor = Factory.GetAccessor(
+                            propertyName,
+                            propertyType,
+                            functionBody: null);
+                        ITsGetAccessorMemberDeclaration getAccessorDeclaration =
+                            Factory.GetAccessorMemberDeclaration(getAccessor, accessibilityModifier);
+                        yield return getAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
+                        break;
+
+                    case SyntaxKind.SetAccessorDeclaration:
+                        ITsSetAccessor setAccessor = Factory.SetAccessor(
+                            propertyName,
+                            Factory.Identifier("value"),
+                            propertyType,
+                            functionBody: null);
+                        ITsSetAccessorMemberDeclaration setAccessorDeclaration =
+                            Factory.SetAccessorMemberDeclaration(setAccessor, accessibilityModifier);
+                        yield return setAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unknown accessor kind '{accessor.Kind()}'");
+                }
+            }
+        }
+
+        private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
+        {
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            return GetAccessibilityModifier(symbol, node.GetLocation);
+        }
+
+        private TsAccessibilityModifier GetAccessibilityModifier(ISymbol symbol, Func<Location> getLocationFunc)
+        {
+            switch (symbol.DeclaredAccessibility)
+            {
+                case Accessibility.Private:
+                    return TsAccessibilityModifier.Private;
+
+                case Accessibility.Protected:
+                    return TsAccessibilityModifier.Protected;
+
+                case Accessibility.Public:
+                    return TsAccessibilityModifier.Public;
+
+                case Accessibility.NotApplicable:
+                case Accessibility.Internal:
+                case Accessibility.ProtectedAndInternal:
+                case Accessibility.ProtectedOrInternal:
+                    _diagnostics.Add(
+                        DiagnosticFactory.UnsupportedAccessibility(
+                            symbol.DeclaredAccessibility.ToString(),
+                            "public",
+                            getLocationFunc()));
+                    return TsAccessibilityModifier.Public;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

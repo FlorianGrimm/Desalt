@@ -10,14 +10,17 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using System.Linq;
     using System.Xml;
+    using Desalt.Core.Utility;
     using XmlNames = DocumentationCommentXmlNames;
 
     /// <summary>
     /// A documentation comment derived from either source text or metadata.
     /// </summary>
     /// <remarks>Modified from the Roslyn source code at <see href="http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/Shared/Utilities/DocumentationComment.cs"/></remarks>
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     internal sealed class DocumentationComment
     {
         //// ===========================================================================================================
@@ -105,6 +108,24 @@ namespace Desalt.Core.Translation
         /// Null if the tag or cref attribute didn't exist.
         /// </summary>
         public string CompletionListCref { get; private set; }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                if (SummaryText != null)
+                {
+                    return $"<summary>{SummaryText}</summary>";
+                }
+
+                if (RemarksText != null)
+                {
+                    return $"<remarks>{RemarksText}</remarks>";
+                }
+
+                return FullXmlFragment;
+            }
+        }
 
         //// ===========================================================================================================
         //// Methods
@@ -205,7 +226,8 @@ namespace Desalt.Core.Translation
 
             private DocumentationComment ParseInternal(string xml)
             {
-                Utility.XmlFragmentParser.ParseFragment(xml, ParseCallback, this);
+                var fragmentParser = new XmlFragmentParser();
+                fragmentParser.ParseFragment(xml, ParseCallback, this);
 
                 if (_exceptionTextBuilders != null)
                 {

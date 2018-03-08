@@ -95,5 +95,21 @@ namespace Desalt.Core.Tests.Translation
                     "enum LoggerLevel {\n  hex = 0x100,\n}\n");
             }
         }
+
+        [TestClass]
+        public class ClassDeclarationTests
+        {
+            [TestMethod]
+            public async Task Bare_class_declaration_without_accessibility_should_not_be_exported()
+            {
+                await AssertTranslation("class C { }", "class C {\n}\n");
+            }
+
+            [TestMethod]
+            public async Task Public_class_declaration_should_be_exported()
+            {
+                await AssertTranslation("public class C { }", "export class C {\n}\n");
+            }
+        }
     }
 }
