@@ -149,11 +149,9 @@ namespace Desalt.Core.Translation
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
-                ITsVariableMemberDeclaration fieldDeclaration = Factory.VariableMemberDeclaration(
-                    variableName,
-                    accessibilityModifier,
-                    symbol.IsStatic,
-                    typeAnnotation);
+                ITsVariableMemberDeclaration fieldDeclaration = Factory
+                    .VariableMemberDeclaration(variableName, accessibilityModifier, symbol.IsStatic, typeAnnotation)
+                    .WithDocumentationComment(_semanticModel, node, variableDeclaration);
                 fieldDeclarations.Add(fieldDeclaration);
             }
 
@@ -243,7 +241,7 @@ namespace Desalt.Core.Translation
                             functionBody: null);
                         ITsGetAccessorMemberDeclaration getAccessorDeclaration =
                             Factory.GetAccessorMemberDeclaration(getAccessor, accessibilityModifier);
-                        yield return getAccessorDeclaration;
+                        yield return getAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
                         break;
 
                     case SyntaxKind.SetAccessorDeclaration:
@@ -254,7 +252,7 @@ namespace Desalt.Core.Translation
                             functionBody: null);
                         ITsSetAccessorMemberDeclaration setAccessorDeclaration =
                             Factory.SetAccessorMemberDeclaration(setAccessor, accessibilityModifier);
-                        yield return setAccessorDeclaration;
+                        yield return setAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
                         break;
 
                     default:

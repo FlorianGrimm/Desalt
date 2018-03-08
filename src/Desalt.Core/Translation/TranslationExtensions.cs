@@ -24,7 +24,11 @@ namespace Desalt.Core.Translation
         /// <typeparam name="T">The type of the translated node.</typeparam>
         /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
         /// <param name="semanticModel">The C# semantic model.</param>
-        /// <param name="syntaxNode">The C# syntax node to get documentation comments from.</param>
+        /// <param name="node">The C# syntax node to get documentation comments from.</param>
+        /// <param name="symbolNode">
+        /// The C# syntax node to use for retrieving the symbol. If not supplied <paramref
+        /// name="node"/> is used.
+        /// </param>
         /// <returns>
         /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
         /// comments prepended. If there are no documentation comments, the same node is returned.
@@ -32,14 +36,15 @@ namespace Desalt.Core.Translation
         public static T WithDocumentationComment<T>(
             this T translatedNode,
             SemanticModel semanticModel,
-            SyntaxNode syntaxNode) where T : IAstNode
+            SyntaxNode node,
+            SyntaxNode symbolNode = null) where T : IAstNode
         {
-            if (!syntaxNode.HasStructuredTrivia)
+            if (!node.HasStructuredTrivia)
             {
                 return translatedNode;
             }
 
-            ISymbol symbol = semanticModel.GetDeclaredSymbol(syntaxNode);
+            ISymbol symbol = semanticModel.GetDeclaredSymbol(symbolNode ?? node);
             if (symbol == null)
             {
                 return translatedNode;
