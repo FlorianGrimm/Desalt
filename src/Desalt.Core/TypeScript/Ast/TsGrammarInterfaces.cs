@@ -660,6 +660,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsReadOnly { get; }
         ITsPropertyName VariableName { get; }
         ITsType TypeAnnotation { get; }
         ITsExpression Initializer { get; }
@@ -1078,6 +1079,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsReadOnly { get; }
         ITsPropertyName VariableName { get; }
         ITsType TypeAnnotation { get; }
     }

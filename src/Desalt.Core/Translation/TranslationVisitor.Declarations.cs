@@ -145,12 +145,19 @@ namespace Desalt.Core.Translation
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
+                bool isReadOnly = node.Modifiers.Any(token => token.IsKind(SyntaxKind.ReadOnlyKeyword));
+
                 var typeAnnotation = TypeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
                 ITsVariableMemberDeclaration fieldDeclaration = Factory
-                    .VariableMemberDeclaration(variableName, accessibilityModifier, symbol.IsStatic, typeAnnotation)
+                    .VariableMemberDeclaration(
+                        variableName,
+                        accessibilityModifier,
+                        symbol.IsStatic,
+                        isReadOnly,
+                        typeAnnotation)
                     .WithDocumentationComment(_semanticModel, node, variableDeclaration);
                 fieldDeclarations.Add(fieldDeclaration);
             }
