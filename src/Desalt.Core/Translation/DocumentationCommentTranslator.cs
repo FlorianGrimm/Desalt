@@ -29,8 +29,12 @@ namespace Desalt.Core.Translation
             RegexOptions.ExplicitCapture |
             RegexOptions.Singleline;
 
+        private static readonly Regex s_seeCrefTypeRegex = new Regex(
+            @"<see(also)?\s+cref\s*=\s*""T:(?<typeFullName>(\w+\.?)+)""\s*/>",
+            InlineElementOptions);
+
         private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see(also)?\s+cref\s*=\s*""(T|M|\!):(?<fullName>(\w+\.?)+).*""\s*/>",
+            @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<typeFullName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeLangwordRegex = new Regex(
@@ -163,10 +167,15 @@ namespace Desalt.Core.Translation
             // translate <c>x</c> to `x`.
             translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
 
-            // translate <see/seealso cref="M:Type.Member" /> to '@see Type.Member'
+            // translate <see/seealso cref="T:Type"/> to '@see Type'
+            translated = s_seeCrefTypeRegex.Replace(
+                translated,
+                match => $"@see {RemoveNamespace(match.Groups["typeFullName"].Value)}");
+
+            // translate <see/seealso cref="M:Type.Member"/> to '@see Type.Member'
             translated = s_seeCrefMemberRegex.Replace(
                 translated,
-                match => $"@see {RemoveNamespace(match.Groups["fullName"].Value)}");
+                match => $"@see {RemoveNamespace(match.Groups["typeFullName"].Value)}.{match.Groups["memberName"]}");
 
             return translated;
         }
@@ -174,6 +183,12 @@ namespace Desalt.Core.Translation
         private static string RemoveNamespace(string fullTypeName)
         {
             return fullTypeName.TrimEnd('.').Split('.').Last();
+        }
+
+        private string SimplifyTypeName(string fullTypeName)
+        {
+            // check out CSharpNameReducer (http://source.roslyn.io/#Microsoft.CodeAnalysis.CSharp.Workspaces/Simplification/Reducers/CSharpNameReducer.cs)
+            return fullTypeName;
         }
     }
 }

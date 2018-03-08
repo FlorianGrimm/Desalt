@@ -7,8 +7,6 @@
 
 namespace Desalt.Core.Tests.Translation
 {
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using Desalt.Core.Emit;
@@ -27,8 +25,19 @@ namespace Desalt.Core.Tests.Translation
         private static void AssertTranslation(string csharpComment, params string[] expectedJsDocLines)
         {
             // parse the C# code and get the root syntax node
-            string csharpCode =
-                $"using System; class Foo {{ {csharpComment}\npublic int Bar<T>(string p1, double p2) {{ }} }}";
+            string csharpCode = @"
+using System;
+using System.Text;
+using System.Collections.Generic;
+
+class Foo
+{
+    " + csharpComment + @"
+    public int Bar<T>(string p1, double p2) { }
+
+    public string Prop { get; }
+}";
+
             var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(csharpCode);
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
 
@@ -36,8 +45,9 @@ namespace Desalt.Core.Tests.Translation
             CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly")
                 .AddSyntaxTrees(syntaxTree)
                 .AddReferences(
-                    MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(IEnumerable<int>).Assembly.Location));
+                    MetadataReference.CreateFromFile(typeof(System.Console).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(System.Text.StringBuilder).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(System.Collections.Generic.HashSet<int>).Assembly.Location));
 
             SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
 
@@ -133,14 +143,14 @@ namespace Desalt.Core.Tests.Translation
         public void Translate_should_convert_see_references()
         {
             AssertTranslation(@"///<summary><see cref=""Console""/></summary>", "@see Console");
-            AssertTranslation(@"///<summary><see cref=""IEnumerable""/></summary>", "@see IEnumerable");
+            AssertTranslation(@"///<summary><see cref=""StringBuilder""/></summary>", "@see StringBuilder");
         }
 
         [TestMethod]
         public void Translate_should_convert_a_seealso_reference_to_a_JSDoc_see_reference()
         {
             AssertTranslation(@"///<summary><seealso cref=""Console""/></summary>", "@see Console");
-            AssertTranslation(@"///<summary><seealso cref=""IEnumerable""/></summary>", "@see IEnumerable");
+            AssertTranslation(@"///<summary><seealso cref=""StringBuilder""/></summary>", "@see StringBuilder");
         }
 
         [TestMethod]
@@ -169,6 +179,47 @@ namespace Desalt.Core.Tests.Translation
             };
 
             AssertTranslation(csharpComment, jsDocLines);
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_crefs_of_types_to_a_shortened_name()
+        {
+            AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "@see IDisposable");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_crefs_of_methods_to_a_shortened_name()
+        {
+            AssertTranslation("///<summary><see cref=\"IDisposable.Dispose\"/></summary>", "@see IDisposable.Dispose");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_crefs_of_properties_to_a_shortened_name()
+        {
+            AssertTranslation("///<summary><see cref=\"Environment.NewLine\"/></summary>", "@see Environment.NewLine");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_crefs_of_events_to_a_shortened_name()
+        {
+            AssertTranslation(
+                "///<summary><see cref=\"Console.CancelKeyPress\"/></summary>",
+                "@see Console.CancelKeyPress");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_nested_types_without_shortening_the_containing_type()
+        {
+            AssertTranslation(
+                "///<summary><see cref=\"Environment.SpecialFolder\"/></summary>",
+                "@see Environment.SpecialFolder");
+        }
+
+        [TestMethod]
+        public void
+            Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
+        {
+            AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "@see Prop");
         }
     }
 }
