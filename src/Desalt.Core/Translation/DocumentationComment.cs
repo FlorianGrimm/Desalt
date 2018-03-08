@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Xml;
     using Desalt.Core.Utility;
+    using Microsoft.CodeAnalysis;
     using XmlNames = DocumentationCommentXmlNames;
 
     /// <summary>
@@ -104,6 +105,11 @@ namespace Desalt.Core.Translation
         public ImmutableArray<string> ExceptionTypes { get; private set; }
 
         /// <summary>
+        /// The C# symbol associated with this documentation comment.
+        /// </summary>
+        public ISymbol Symbol { get; private set; }
+
+        /// <summary>
         /// The item named in the &lt;completionlist&gt; tag's cref attribute.
         /// Null if the tag or cref attribute didn't exist.
         /// </summary>
@@ -135,10 +141,12 @@ namespace Desalt.Core.Translation
         /// Parses and constructs a <see cref="DocumentationComment"/> from the given fragment of XML.
         /// </summary>
         /// <param name="xml">The fragment of XML to parse.</param>
+        /// <param name="symbol">The symbol associated with the fragment.</param>
         /// <returns>A DocumentationComment instance.</returns>
-        public static DocumentationComment FromXmlFragment(string xml)
+        public static DocumentationComment FromXmlFragment(string xml, ISymbol symbol)
         {
             DocumentationComment result = CommentBuilder.Parse(xml);
+            result.Symbol = symbol;
             return result;
         }
 
@@ -161,7 +169,8 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Returns the texts for a given exception, or an empty <see cref="ImmutableArray"/> if no documentation was given for the exception.
+        /// Returns the texts for a given exception, or an empty <see cref="ImmutableArray"/> if no
+        /// documentation was given for the exception.
         /// </summary>
         public ImmutableArray<string> GetExceptionTexts(string exceptionName)
         {
