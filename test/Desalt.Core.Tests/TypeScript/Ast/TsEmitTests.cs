@@ -37,7 +37,8 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
             {
                 node.Emit(emitter);
-                stream.ReadAllText(emitter.Encoding).Should().Be(expected);
+                string actualOutput = stream.ReadAllText(emitter.Encoding);
+                actualOutput.Should().Be(expected);
             }
         }
 
@@ -47,7 +48,8 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
             {
                 node.Emit(emitter);
-                stream.ReadAllText(emitter.Encoding).Should().Be(expected);
+                string actualOutput = stream.ReadAllText(emitter.Encoding);
+                actualOutput.Should().Be(expected);
             }
         }
     }
