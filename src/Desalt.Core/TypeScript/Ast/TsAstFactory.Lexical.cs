@@ -15,11 +15,11 @@ namespace Desalt.Core.TypeScript.Ast
         /// Creates a TypeScript single-line comment of the form '// comment'.
         /// </summary>
         public static ITsSingleLineComment SingleLineComment(
-            string comment,
+            string text,
             bool preserveSpacing = false,
             bool omitNewLineAtEnd = false)
         {
-            return new TsSingleLineComment(comment, preserveSpacing, omitNewLineAtEnd);
+            return new TsSingleLineComment(text, preserveSpacing, omitNewLineAtEnd);
         }
 
         /// <summary>
