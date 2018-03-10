@@ -69,7 +69,22 @@ namespace Desalt.Core.TypeScript.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(AstTriviaNode left, AstTriviaNode right)
+        public static bool operator ==(IAstTriviaNode left, AstTriviaNode right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Returns a value that indicates whether the values of two <see cref="AstTriviaNode"/>
+        /// objects are equal.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
+        /// value; otherwise, false.
+        /// </returns>
+        public static bool operator ==(AstTriviaNode left, IAstTriviaNode right)
         {
             return Equals(left, right);
         }
@@ -83,7 +98,21 @@ namespace Desalt.Core.TypeScript.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(AstTriviaNode left, AstTriviaNode right)
+        public static bool operator !=(IAstTriviaNode left, AstTriviaNode right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <summary>
+        /// Returns a value that indicates whether two <see cref="AstTriviaNode"/> objects have
+        /// different values.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
+        /// </returns>
+        public static bool operator !=(AstTriviaNode left, IAstTriviaNode right)
         {
             return !Equals(left, right);
         }
@@ -139,7 +168,7 @@ namespace Desalt.Core.TypeScript.Ast
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((IAstTriviaNode)obj);
+            return obj.GetType() == GetType() && ((IAstTriviaNode)this).Equals((IAstTriviaNode)obj);
         }
 
         /// <summary>
