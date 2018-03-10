@@ -10,6 +10,78 @@ namespace Desalt.Core.TypeScript.Ast
     using System.Collections.Immutable;
 
     /// <summary>
+    /// Represents a JSDoc structured multi-line comment.
+    /// </summary>
+    /// <remarks>The comment is emitted in a set order:<code>
+    /// /**
+    ///  * Description
+    ///  * @summary text
+    ///  * @file text
+    ///  * @copyright text
+    ///  * @package
+    ///  * @param name - text
+    ///  * @returns text
+    ///  * @throws {type} text
+    ///  * @example text
+    ///  * @see text
+    ///  */
+    /// </code></remarks>
+    public interface ITsJsDocComment : IAstTriviaNode
+    {
+        /// <summary>
+        /// Gets the main description.
+        /// </summary>
+        ITsJsDocBlock Description { get; }
+
+        /// <summary>
+        /// Gets the @summary tag, which is a shorter version of the full description.
+        /// </summary>
+        ITsJsDocBlock SummaryTag { get; }
+
+        /// <summary>
+        /// Gets the @file tag.
+        /// </summary>
+        ITsJsDocBlock FileTag { get; }
+
+        /// <summary>
+        /// Gets the @copyright tag.
+        /// </summary>
+        ITsJsDocBlock CopyrightTag { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the symbol to which this JSDoc is attached is meant to be
+        /// package-private (@package), which is the best we can do when translating 'internal'
+        /// accessibility from C#.
+        /// </summary>
+        bool IsPackagePrivate { get; }
+
+        /// <summary>
+        /// Gets an array of @param tags. Each param is emitted in the form '@param name - text'.
+        /// </summary>
+        ImmutableArray<(string paramName, ITsJsDocBlock text)> ParamsTags { get; }
+
+        /// <summary>
+        /// Gets the @returns tag text.
+        /// </summary>
+        ITsJsDocBlock ReturnsTag { get; }
+
+        /// <summary>
+        /// Gets an array of @throws tags. Each @throws is emitted in the form '@throws {type} text'.
+        /// </summary>
+        ImmutableArray<(string typeName, ITsJsDocBlock text)> ThrowsTags { get; }
+
+        /// <summary>
+        /// Gets an array of @example tags.
+        /// </summary>
+        ImmutableArray<ITsJsDocBlock> ExampleTags { get; }
+
+        /// <summary>
+        /// Gets an array of @see tags.
+        /// </summary>
+        ImmutableArray<ITsJsDocBlock> SeeTags { get; }
+    }
+
+    /// <summary>
     /// Represents a JSDoc block tag, for example @see, @example, and description.
     /// </summary>
     public interface ITsJsDocBlock : IAstTriviaNode
