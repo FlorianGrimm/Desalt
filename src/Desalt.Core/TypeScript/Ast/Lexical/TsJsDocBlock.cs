@@ -22,16 +22,16 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         //// Constructors
         //// ===========================================================================================================
 
-        public TsJsDocBlock(IEnumerable<ITsJsDocInlineContent> content) : base(preserveSpacing: true)
+        public TsJsDocBlock(IEnumerable<ITsJsDocInlineText> content) : base(preserveSpacing: true)
         {
-            Content = content?.ToImmutableArray() ?? ImmutableArray<ITsJsDocInlineContent>.Empty;
+            Content = content?.ToImmutableArray() ?? ImmutableArray<ITsJsDocInlineText>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsJsDocInlineContent> Content { get; }
+        public ImmutableArray<ITsJsDocInlineText> Content { get; }
 
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
@@ -53,7 +53,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         /// <param name="emitter">The emitter to use.</param>
         public override void Emit(Emitter emitter)
         {
-            foreach (ITsJsDocInlineContent content in Content)
+            foreach (ITsJsDocInlineText content in Content)
             {
                 content.Emit(emitter);
             }
