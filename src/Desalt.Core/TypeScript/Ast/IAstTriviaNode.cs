@@ -7,13 +7,14 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) trivia node types. A trivia node is a
     /// comment or whitespace.
     /// </summary>
-    public interface IAstTriviaNode
+    public interface IAstTriviaNode : IEquatable<IAstTriviaNode>
     {
         //// ===========================================================================================================
         //// Properties
