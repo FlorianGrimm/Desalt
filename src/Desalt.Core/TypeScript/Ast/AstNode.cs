@@ -10,6 +10,7 @@ namespace Desalt.Core.TypeScript.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.IO;
     using Desalt.Core.Emit;
 
     /// <summary>
@@ -88,6 +89,27 @@ namespace Desalt.Core.TypeScript.Ast
             foreach (IAstTriviaNode trivia in TrailingTrivia)
             {
                 trivia.Emit(emitter);
+            }
+        }
+
+        /// <summary>
+        /// Emits a node using a string stream. Useful for unit tests and debugging.
+        /// </summary>
+        /// <param name="emitOptions">The optional emit options.</param>
+        /// <returns>The node emitted to a string stream.</returns>
+        public virtual string EmitAsString(EmitOptions emitOptions = null)
+        {
+            using (var stream = new MemoryStream())
+            using (var emitter = new Emitter(stream, options: emitOptions))
+            {
+                Emit(emitter);
+                stream.Flush();
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream, emitter.Encoding))
+                {
+                    return reader.ReadToEnd();
+                }
             }
         }
 
