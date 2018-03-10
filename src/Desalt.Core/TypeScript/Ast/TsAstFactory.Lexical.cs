@@ -80,7 +80,7 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a JSDoc block tag, for example @see, @example, and description.
         /// </summary>
-        public static ITsJsDocBlock JsDocBlock(params ITsJsDocInlineContent[] content)
+        public static ITsJsDocBlock JsDocBlock(params ITsJsDocInlineText[] content)
         {
             return new TsJsDocBlock(content);
         }

@@ -86,20 +86,13 @@ namespace Desalt.Core.TypeScript.Ast
     /// </summary>
     public interface ITsJsDocBlock : IAstTriviaNode
     {
-        ImmutableArray<ITsJsDocInlineContent> Content { get; }
+        ImmutableArray<ITsJsDocInlineText> Content { get; }
     }
 
     /// <summary>
     /// Represents either plain text or structured inline contents within a JSDoc block tag.
     /// </summary>
-    public interface ITsJsDocInlineContent : IAstTriviaNode
-    {
-    }
-
-    /// <summary>
-    /// Represents plain text as content within a JSDoc block tag.
-    /// </summary>
-    public interface ITsJsDocInlineText : ITsJsDocInlineContent
+    public interface ITsJsDocInlineText : IAstTriviaNode
     {
         string Text { get; }
     }
@@ -107,9 +100,8 @@ namespace Desalt.Core.TypeScript.Ast
     /// <summary>
     /// Represents a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
     /// </summary>
-    public interface ITsJsDocLinkTag : ITsJsDocInlineContent
+    public interface ITsJsDocLinkTag : ITsJsDocInlineText
     {
         string NamepathOrUrl { get; }
-        string Text { get; }
     }
 }
