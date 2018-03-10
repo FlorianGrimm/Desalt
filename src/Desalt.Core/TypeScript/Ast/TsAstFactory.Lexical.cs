@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System.Linq;
     using Desalt.Core.TypeScript.Ast.Lexical;
 
     public static partial class TsAstFactory
@@ -40,6 +41,11 @@ namespace Desalt.Core.TypeScript.Ast
         {
             return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
         }
+
+        /// <summary>
+        /// Creates plain text within a JSDoc block tag.
+        /// </summary>
+        public static ITsJsDocInlineText JsDocInlineText(string text) => new TsJsDocInlineText(text);
 
         /// <summary>
         /// Cretes a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.

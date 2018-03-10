@@ -230,6 +230,7 @@
     <Compile Include="TypeScript\Ast\IAstNode.cs" />
     <Compile Include="TypeScript\Ast\IAstTriviaNode.cs" />
     <Compile Include="TypeScript\Ast\ITsJsDocCommentInterfaces.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocInlineText.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocLinkTag.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
