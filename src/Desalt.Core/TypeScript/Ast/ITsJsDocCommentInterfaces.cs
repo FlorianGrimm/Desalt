@@ -79,6 +79,26 @@ namespace Desalt.Core.TypeScript.Ast
         /// Gets an array of @see tags.
         /// </summary>
         ImmutableArray<ITsJsDocBlock> SeeTags { get; }
+
+        ITsJsDocComment WithDescription(ITsJsDocBlock value);
+
+        ITsJsDocComment WithSummaryTag(ITsJsDocBlock value);
+
+        ITsJsDocComment WithFileTag(ITsJsDocBlock value);
+
+        ITsJsDocComment WithCopyrightTag(ITsJsDocBlock value);
+
+        ITsJsDocComment WithIsPackagePrivate(bool value);
+
+        ITsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value);
+
+        ITsJsDocComment WithReturnsTag(ITsJsDocBlock value);
+
+        ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value);
+
+        ITsJsDocComment WithExampleTags(ImmutableArray<ITsJsDocBlock> value);
+
+        ITsJsDocComment WithSeeTags(ImmutableArray<ITsJsDocBlock> value);
     }
 
     /// <summary>
