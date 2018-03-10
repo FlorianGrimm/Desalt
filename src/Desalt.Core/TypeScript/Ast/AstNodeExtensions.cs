@@ -108,5 +108,14 @@ namespace Desalt.Core.TypeScript.Ast
                 }
             }
         }
+
+        /// <summary>
+        /// Emits a node using a string stream. Useful for unit tests and debugging.
+        /// </summary>
+        /// <param name="node">The node to emit.</param>
+        /// <param name="emitOptions">The optional emit options.</param>
+        /// <returns>The node emitted to a string stream.</returns>
+        public static string EmitAsString(this IAstTriviaNode node, EmitOptions emitOptions = null) =>
+            ((AstTriviaNode)node).EmitAsString(emitOptions);
     }
 }

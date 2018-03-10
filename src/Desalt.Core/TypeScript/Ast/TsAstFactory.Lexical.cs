@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Desalt.Core.TypeScript.Ast.Lexical;
 
@@ -40,6 +41,40 @@ namespace Desalt.Core.TypeScript.Ast
             params string[] lines)
         {
             return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
+        }
+
+        /// <summary>
+        /// Creates a structured JSDoc comment before a declaration.
+        /// </summary>
+        public static ITsJsDocComment JsDocComment(string description) =>
+            new TsJsDocComment(description: new TsJsDocBlock(new[] { new TsJsDocInlineText(description) }));
+
+        /// <summary>
+        /// Creates a structured JSDoc comment before a declaration.
+        /// </summary>
+        public static ITsJsDocComment JsDocComment(
+            ITsJsDocBlock fileTag = null,
+            ITsJsDocBlock copyrightTag = null,
+            bool isPackagePrivate = false,
+            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
+            ITsJsDocBlock returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
+            IEnumerable<ITsJsDocBlock> exampleTags = null,
+            ITsJsDocBlock description = null,
+            ITsJsDocBlock summaryTag = null,
+            IEnumerable<ITsJsDocBlock> seeTags = null)
+        {
+            return new TsJsDocComment(
+                fileTag: fileTag,
+                copyrightTag: copyrightTag,
+                isPackagePrivate: isPackagePrivate,
+                paramsTags: paramsTags,
+                returnsTag: returnsTag,
+                throwsTags: throwsTags,
+                exampleTags: exampleTags,
+                description: description,
+                summaryTag: summaryTag,
+                seeTags: seeTags);
         }
 
         /// <summary>
