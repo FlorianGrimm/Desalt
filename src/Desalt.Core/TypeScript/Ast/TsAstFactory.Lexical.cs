@@ -43,6 +43,22 @@ namespace Desalt.Core.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates a JSDoc block tag, for example @see, @example, and description.
+        /// </summary>
+        public static ITsJsDocBlock JsDocBlock(params ITsJsDocInlineContent[] content)
+        {
+            return new TsJsDocBlock(content);
+        }
+
+        /// <summary>
+        /// Creates a JSDoc block tag, for example @see, @example, and description.
+        /// </summary>
+        public static ITsJsDocBlock JsDocBlock(params string[] content)
+        {
+            return new TsJsDocBlock(content.Select(x => new TsJsDocInlineText(x)));
+        }
+
+        /// <summary>
         /// Creates plain text within a JSDoc block tag.
         /// </summary>
         public static ITsJsDocInlineText JsDocInlineText(string text) => new TsJsDocInlineText(text);
