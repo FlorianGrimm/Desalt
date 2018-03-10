@@ -15,6 +15,14 @@ namespace Desalt.Core.TypeScript.Ast
     }
 
     /// <summary>
+    /// Represents plain text as content within a JSDoc block tag.
+    /// </summary>
+    public interface ITsJsDocInlineText : ITsJsDocInlineContent
+    {
+        string Text { get; }
+    }
+
+    /// <summary>
     /// Represents a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
     /// </summary>
     public interface ITsJsDocLinkTag : ITsJsDocInlineContent
