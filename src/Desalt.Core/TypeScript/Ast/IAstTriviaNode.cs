@@ -40,5 +40,12 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
         void Emit(Emitter emitter);
+
+        /// <summary>
+        /// Emits a node using a string stream. Useful for unit tests and debugging.
+        /// </summary>
+        /// <param name="emitOptions">The optional emit options.</param>
+        /// <returns>The node emitted to a string stream.</returns>
+        string EmitAsString(EmitOptions emitOptions = null);
     }
 }
