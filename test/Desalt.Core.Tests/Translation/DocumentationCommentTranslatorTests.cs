@@ -7,10 +7,8 @@
 
 namespace Desalt.Core.Tests.Translation
 {
-    using System.IO;
     using System.Linq;
     using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
@@ -61,15 +59,9 @@ class Foo
 
             // translate the documentation comment
             ITsMultiLineComment jsdocComment = DocumentationCommentTranslator.Translate(docComment);
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter(stream, options: EmitOptions.UnixSpaces))
-            {
-                jsdocComment.Emit(emitter);
-                string actualJsDoc = stream.ReadAllText(emitter.Encoding);
-                string expectedJsDoc =
-                    "/**\n" + string.Join("\n", expectedJsDocLines.Select(x => $" * {x}")) + "\n */\n";
-                actualJsDoc.Should().Be(expectedJsDoc);
-            }
+            string actualJsDoc = jsdocComment.EmitAsString(EmitOptions.UnixSpaces);
+            string expectedJsDoc = "/**\n" + string.Join("\n", expectedJsDocLines.Select(x => $" * {x}")) + "\n */\n";
+            actualJsDoc.Should().Be(expectedJsDoc);
         }
 
         [TestMethod]
