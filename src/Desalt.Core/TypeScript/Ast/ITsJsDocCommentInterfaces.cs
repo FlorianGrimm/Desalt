@@ -102,6 +102,52 @@ namespace Desalt.Core.TypeScript.Ast
     }
 
     /// <summary>
+    /// Service contract for a builder for <see cref="ITsJsDocComment"/> objects.
+    /// </summary>
+    public interface ITsJsDocCommentBuilder
+    {
+        ITsJsDocCommentBuilder SetDescription(string descriptionText);
+
+        ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock descriptionTag);
+
+        ITsJsDocCommentBuilder SetSummaryTag(string summaryText);
+
+        ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock summaryTag);
+
+        ITsJsDocCommentBuilder SetFileTag(string fileText);
+
+        ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock fileTag);
+
+        ITsJsDocCommentBuilder SetCopyrightTag(string copyrightText);
+
+        ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock copyrightTag);
+
+        ITsJsDocCommentBuilder SetIsPackagePrivate(bool isPackagePrivate);
+
+        ITsJsDocCommentBuilder AddParamTag(string paramName, string paramText);
+
+        ITsJsDocCommentBuilder AddParamTag(string paramName, ITsJsDocBlock paramTag);
+
+        ITsJsDocCommentBuilder SetReturnsTag(string returnsText);
+
+        ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock returnsTag);
+
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, string throwsText);
+
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock throwsTag);
+
+        ITsJsDocCommentBuilder AddExampleTag(string exampleText);
+
+        ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock exampleTag);
+
+        ITsJsDocCommentBuilder AddSeeTag(string seeText);
+
+        ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock seeTag);
+
+        ITsJsDocComment Build();
+    }
+
+    /// <summary>
     /// Represents a JSDoc block tag, for example @see, @example, and description.
     /// </summary>
     public interface ITsJsDocBlock : IAstTriviaNode

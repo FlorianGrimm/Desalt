@@ -44,6 +44,11 @@ namespace Desalt.Core.TypeScript.Ast
         }
 
         /// <summary>
+        /// Creates a builder for <see cref="ITsJsDocComment"/> objects.
+        /// </summary>
+        public static ITsJsDocCommentBuilder JsDocCommentBuilder() => new TsJsDocCommentBuilder();
+
+        /// <summary>
         /// Creates a structured JSDoc comment before a declaration.
         /// </summary>
         public static ITsJsDocComment JsDocComment(string description) =>
