@@ -232,6 +232,7 @@
     <Compile Include="TypeScript\Ast\ITsJsDocCommentInterfaces.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocBlock.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocComment.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentBuilder.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocInlineText.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocLinkTag.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocTagNames.cs" />
