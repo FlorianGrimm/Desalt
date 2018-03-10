@@ -47,18 +47,57 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             IEnumerable<ITsJsDocBlock> exampleTags = null,
             ITsJsDocBlock description = null,
             ITsJsDocBlock summaryTag = null,
-            IEnumerable<ITsJsDocBlock> seeTags = null) : base(preserveSpacing: true)
+            IEnumerable<ITsJsDocBlock> seeTags = null)
+            : this(
+                instanceToCopy: null,
+                fileTag: fileTag,
+                copyrightTag: copyrightTag,
+                isPackagePrivate: isPackagePrivate,
+                paramsTags: paramsTags,
+                returnsTag: returnsTag,
+                throwsTags: throwsTags,
+                exampleTags: exampleTags,
+                description: description,
+                summaryTag: summaryTag,
+                seeTags: seeTags)
         {
-            FileTag = fileTag;
-            CopyrightTag = copyrightTag;
-            IsPackagePrivate = isPackagePrivate;
-            ParamsTags = paramsTags?.ToImmutableArray() ?? ImmutableArray<(string paramName, ITsJsDocBlock text)>.Empty;
-            ReturnsTag = returnsTag;
-            ThrowsTags = throwsTags?.ToImmutableArray() ?? ImmutableArray<(string typeName, ITsJsDocBlock text)>.Empty;
-            ExampleTags = exampleTags?.ToImmutableArray() ?? ImmutableArray<ITsJsDocBlock>.Empty;
-            Description = description;
-            SummaryTag = summaryTag;
-            SeeTags = seeTags?.ToImmutableArray() ?? ImmutableArray<ITsJsDocBlock>.Empty;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="TsJsDocComment"/> class. Values are set using the
+        /// following precedence:
+        /// * The named parameter, if specified
+        /// * Otherwise, the value of <paramref name="instanceToCopy"/>, if specified
+        /// * Otherwise, the default value of the parameter's type
+        /// </summary>
+        // ReSharper disable once FunctionComplexityOverflow
+        private TsJsDocComment(
+            ITsJsDocComment instanceToCopy = null,
+            ITsJsDocBlock fileTag = null,
+            ITsJsDocBlock copyrightTag = null,
+            bool? isPackagePrivate = null,
+            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
+            ITsJsDocBlock returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
+            IEnumerable<ITsJsDocBlock> exampleTags = null,
+            ITsJsDocBlock description = null,
+            ITsJsDocBlock summaryTag = null,
+            IEnumerable<ITsJsDocBlock> seeTags = null)
+            : base(preserveSpacing: true)
+        {
+            FileTag = fileTag ?? instanceToCopy?.FileTag;
+            CopyrightTag = copyrightTag ?? instanceToCopy?.CopyrightTag;
+            IsPackagePrivate = isPackagePrivate.GetValueOrDefault(instanceToCopy?.IsPackagePrivate ?? false);
+            ParamsTags = paramsTags?.ToImmutableArray() ??
+                instanceToCopy?.ParamsTags ?? ImmutableArray<(string paramName, ITsJsDocBlock text)>.Empty;
+            ReturnsTag = returnsTag ?? instanceToCopy?.ReturnsTag;
+            ThrowsTags = throwsTags?.ToImmutableArray() ??
+                instanceToCopy?.ThrowsTags ?? ImmutableArray<(string typeName, ITsJsDocBlock text)>.Empty;
+            ExampleTags = exampleTags?.ToImmutableArray() ??
+                instanceToCopy?.ExampleTags ?? ImmutableArray<ITsJsDocBlock>.Empty;
+            Description = description ?? instanceToCopy?.Description;
+            SummaryTag = summaryTag ?? instanceToCopy?.SummaryTag;
+            SeeTags = seeTags?.ToImmutableArray() ?? instanceToCopy?.SeeTags ?? ImmutableArray<ITsJsDocBlock>.Empty;
         }
 
         //// ===========================================================================================================
@@ -70,20 +109,32 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         /// </summary>
         public ITsJsDocBlock Description { get; }
 
+        public TsJsDocComment WithDescription(ITsJsDocBlock value) =>
+            Description == value ? this : new TsJsDocComment(this, description: value);
+
         /// <summary>
         /// Gets the @summary tag, which is a shorter version of the full description.
         /// </summary>
         public ITsJsDocBlock SummaryTag { get; }
+
+        public TsJsDocComment WithSummaryTag(ITsJsDocBlock value) =>
+            SummaryTag == value ? this : new TsJsDocComment(this, summaryTag: value);
 
         /// <summary>
         /// Gets the @file tag.
         /// </summary>
         public ITsJsDocBlock FileTag { get; }
 
+        public TsJsDocComment WithFileTag(ITsJsDocBlock value) =>
+            FileTag == value ? this : new TsJsDocComment(this, fileTag: value);
+
         /// <summary>
         /// Gets the @copyright tag.
         /// </summary>
         public ITsJsDocBlock CopyrightTag { get; }
+
+        public TsJsDocComment WithCopyrightTag(ITsJsDocBlock value) =>
+            CopyrightTag == value ? this : new TsJsDocComment(this, copyrightTag: value);
 
         /// <summary>
         /// Gets a value indicating whether the symbol to which this JSDoc is attached is meant to be
@@ -92,30 +143,48 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         /// </summary>
         public bool IsPackagePrivate { get; }
 
+        public TsJsDocComment WithIsPackagePrivate(bool value) =>
+            IsPackagePrivate == value ? this : new TsJsDocComment(this, isPackagePrivate: value);
+
         /// <summary>
         /// Gets an array of @param tags. Each param is emitted in the form '@param name - text'.
         /// </summary>
         public ImmutableArray<(string paramName, ITsJsDocBlock text)> ParamsTags { get; }
+
+        public TsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value) =>
+            ParamsTags == value ? this : new TsJsDocComment(this, paramsTags: value);
 
         /// <summary>
         /// Gets the @returns tag text.
         /// </summary>
         public ITsJsDocBlock ReturnsTag { get; }
 
+        public TsJsDocComment WithReturnsTag(ITsJsDocBlock value) =>
+            ReturnsTag == value ? this : new TsJsDocComment(this, returnsTag: value);
+
         /// <summary>
         /// Gets an array of @throws tags. Each @throws is emitted in the form '@throws {type} text'.
         /// </summary>
         public ImmutableArray<(string typeName, ITsJsDocBlock text)> ThrowsTags { get; }
+
+        public TsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value) =>
+            ThrowsTags == value ? this : new TsJsDocComment(this, throwsTags: value);
 
         /// <summary>
         /// Gets an array of @example tags.
         /// </summary>
         public ImmutableArray<ITsJsDocBlock> ExampleTags { get; }
 
+        public TsJsDocComment WithExampleTags(ImmutableArray<ITsJsDocBlock> value) =>
+            ExampleTags == value ? this : new TsJsDocComment(this, exampleTags: value);
+
         /// <summary>
         /// Gets an array of @see tags.
         /// </summary>
         public ImmutableArray<ITsJsDocBlock> SeeTags { get; }
+
+        public TsJsDocComment WithSeeTags(ImmutableArray<ITsJsDocBlock> value) =>
+            SeeTags == value ? this : new TsJsDocComment(this, seeTags: value);
 
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
@@ -202,7 +271,8 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
 
             // @throws
             lines.AddRange(
-                ThrowsTags.Select(tuple => $"{TagNames.Throws} {{{tuple.typeName}}} {tuple.text.EmitAsString(options)}"));
+                ThrowsTags.Select(
+                    tuple => $"{TagNames.Throws} {{{tuple.typeName}}} {tuple.text.EmitAsString(options)}"));
 
             // @example
             lines.AddRange(ExampleTags.Select(example => $"{TagNames.Example} {example.EmitAsString(options)}"));
