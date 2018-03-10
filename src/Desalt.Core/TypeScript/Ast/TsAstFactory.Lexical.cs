@@ -40,5 +40,11 @@ namespace Desalt.Core.TypeScript.Ast
         {
             return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
         }
+
+        /// <summary>
+        /// Cretes a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
+        /// </summary>
+        public static ITsJsDocLinkTag JsDocLinkTag(string namepathOrUrl, string text = null) =>
+            new TsJsDocLinkTag(namepathOrUrl, text);
     }
 }

@@ -41,9 +41,24 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         [TestMethod]
         public void Emit_a_single_line_JsDoc_comment_on_three_lines()
         {
-            VerifyOutput(
-                Factory.MultiLineComment(isJsDoc: true, lines: "line 1"),
-                "/**\n * line 1\n */\n");
+            VerifyOutput(Factory.MultiLineComment(isJsDoc: true, lines: "line 1"), "/**\n * line 1\n */\n");
+        }
+
+        public void Emit_a_JSDoc_link_with_no_text()
+        {
+            VerifyOutput(Factory.JsDocLinkTag("http"), "{@link http}");
+        }
+
+        [TestMethod]
+        public void Emit_a_JSDoc_link_with_text()
+        {
+            VerifyOutput(Factory.JsDocLinkTag("http", "Text"), "[Text]{@link http}");
+        }
+
+        [TestMethod]
+        public void Emit_should_strip_out_illegal_characters_for_JSDoc_links()
+        {
+            VerifyOutput(Factory.JsDocLinkTag("{ht{tp}", "[Te][xt]"), "[Text]{@link http}");
         }
     }
 }
