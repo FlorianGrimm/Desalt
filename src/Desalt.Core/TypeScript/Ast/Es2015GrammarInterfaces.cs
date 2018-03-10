@@ -49,6 +49,9 @@ namespace Desalt.Core.TypeScript.Ast
      *   SourceCharacter but not LineTerminator
      */
 
+    /// <summary>
+    /// Represents a TypeScript multi-line comment of the form '/* lines */'.
+    /// </summary>
     public interface ITsMultiLineComment : IAstTriviaNode
     {
         /// <summary>
@@ -59,9 +62,12 @@ namespace Desalt.Core.TypeScript.Ast
         ImmutableArray<string> Lines { get; }
     }
 
+    /// <summary>
+    /// Represents a TypeScript single-line comment of the form '// comment'.
+    /// </summary>
     public interface ITsSingleLineComment : IAstTriviaNode
     {
-        string Comment { get; }
+        string Text { get; }
     }
 
     /* 12.1 Identifiers
