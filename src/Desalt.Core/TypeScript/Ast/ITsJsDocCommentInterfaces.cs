@@ -7,6 +7,16 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System.Collections.Immutable;
+
+    /// <summary>
+    /// Represents a JSDoc block tag, for example @see, @example, and description.
+    /// </summary>
+    public interface ITsJsDocBlock : IAstTriviaNode
+    {
+        ImmutableArray<ITsJsDocInlineContent> Content { get; }
+    }
+
     /// <summary>
     /// Represents either plain text or structured inline contents within a JSDoc block tag.
     /// </summary>
