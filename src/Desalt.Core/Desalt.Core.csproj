@@ -229,6 +229,8 @@
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="TypeScript\Ast\IAstNode.cs" />
     <Compile Include="TypeScript\Ast\IAstTriviaNode.cs" />
+    <Compile Include="TypeScript\Ast\ITsJsDocCommentInterfaces.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocLinkTag.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
