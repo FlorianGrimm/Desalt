@@ -8,6 +8,7 @@
 namespace Desalt.Core.TypeScript.Ast
 {
     using System.Collections.Immutable;
+    using Desalt.Core.Emit;
 
     /// <summary>
     /// Represents a JSDoc structured multi-line comment.
@@ -61,6 +62,13 @@ namespace Desalt.Core.TypeScript.Ast
         ImmutableArray<(string paramName, ITsJsDocBlock text)> ParamsTags { get; }
 
         /// <summary>
+        /// Gets an array of @typeparam tags. Each param is emitted in the form '@typeparam name -
+        /// text'. Note that @typeparam is not a valid JSDoc tag, but it's useful in TypeScript.
+        /// Emitting can be controlled via <see cref="EmitOptions"/>.
+        /// </summary>
+        ImmutableArray<(string paramName, ITsJsDocBlock text)> TypeParamsTags { get; }
+
+        /// <summary>
         /// Gets the @returns tag text.
         /// </summary>
         ITsJsDocBlock ReturnsTag { get; }
@@ -91,6 +99,8 @@ namespace Desalt.Core.TypeScript.Ast
         ITsJsDocComment WithIsPackagePrivate(bool value);
 
         ITsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value);
+
+        ITsJsDocComment WithTypeParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value);
 
         ITsJsDocComment WithReturnsTag(ITsJsDocBlock value);
 
@@ -127,6 +137,10 @@ namespace Desalt.Core.TypeScript.Ast
         ITsJsDocCommentBuilder AddParamTag(string paramName, string paramText);
 
         ITsJsDocCommentBuilder AddParamTag(string paramName, ITsJsDocBlock paramTag);
+
+        ITsJsDocCommentBuilder AddTypeParamTag(string paramName, string paramText);
+
+        ITsJsDocCommentBuilder AddTypeParamTag(string paramName, ITsJsDocBlock paramTag);
 
         ITsJsDocCommentBuilder SetReturnsTag(string returnsText);
 

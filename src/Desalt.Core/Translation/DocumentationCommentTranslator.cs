@@ -8,8 +8,6 @@
 namespace Desalt.Core.Translation
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Text.RegularExpressions;
     using Desalt.Core.TypeScript.Ast;
@@ -30,11 +28,11 @@ namespace Desalt.Core.Translation
             RegexOptions.Singleline;
 
         private static readonly Regex s_seeCrefTypeRegex = new Regex(
-            @"<see(also)?\s+cref\s*=\s*""T:(?<typeFullName>(\w+\.?)+)""\s*/>",
+            @"<see(also)?\s+cref\s*=\s*""T:(?<fullTypeName>(\w+\.?)+)""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<typeFullName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<fullTypeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeLangwordRegex = new Regex(
@@ -67,88 +65,68 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsMultiLineComment Translate(DocumentationComment documentationComment)
+        public static ITsJsDocComment Translate(DocumentationComment documentationComment)
         {
             var translator = new DocumentationCommentTranslator(documentationComment);
             return translator.TranslateInternal();
         }
 
-        private ITsMultiLineComment TranslateInternal()
+        private ITsJsDocComment TranslateInternal()
         {
-            var lines = new List<string>();
+            ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 
-            void AddSection(string text, string jsdocPrefix = "")
+            // if there is <summary> and <remarks>, then append the remarks after the summary,
+            // otherwise just use one or the other as the description
+            string description = Comment.SummaryText;
+            if (!string.IsNullOrEmpty(Comment.RemarksText))
             {
-                if (text != null)
+                if (description == null)
                 {
-                    lines.AddRange(TranslateElementText(jsdocPrefix + text));
+                    description = Comment.RemarksText;
+                }
+                else
+                {
+                    description += "\n" + Comment.RemarksText;
                 }
             }
 
-            // translate the <summary> first
-            AddSection(Comment.SummaryText);
+            builder.SetDescription(TranslateElementText(description));
 
-            // then any <remarks>
-            AddSection(Comment.RemarksText);
-
-            // then <example>
-            AddSection(Comment.ExampleText, "@example ");
-
-            // translate each <typeparam> tags, even though there is no JSDoc equivalent
-            foreach (string typeParameterName in Comment.TypeParameterNames)
-            {
-                string parameterText = Comment.GetTypeParameterText(typeParameterName);
-                lines.AddRange(TranslateParam(typeParameterName, parameterText, isTypeParam: true));
-            }
+            // <example>
+            builder.AddExampleTag(Comment.ExampleText);
 
             // translate each <param> tag
             foreach (string parameterName in Comment.ParameterNames)
             {
                 string parameterText = Comment.GetParameterText(parameterName);
-                lines.AddRange(TranslateParam(parameterName, parameterText));
+                builder.AddParamTag(parameterName, TranslateElementText(parameterText));
             }
 
-            // <returns> after the params
-            AddSection(Comment.ReturnsText, "@returns ");
+            // translate each <typeparam> tags, even though there is no JSDoc equivalent
+            foreach (string typeParameterName in Comment.TypeParameterNames)
+            {
+                string parameterText = Comment.GetTypeParameterText(typeParameterName);
+                builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText));
+            }
+
+            // <returns>
+            builder.SetReturnsTag(TranslateElementText(Comment.ReturnsText));
 
             // translate each <exception> tag
-            foreach (string exceptionType in Comment.ExceptionTypes)
+            foreach (string typeName in Comment.ExceptionTypes)
             {
-                string shortExceptionType = RemoveNamespace(exceptionType);
-
-                ImmutableArray<string> exceptionTexts = Comment.GetExceptionTexts(exceptionType);
-                foreach (string exceptionText in exceptionTexts)
+                foreach (string exceptionText in Comment.GetExceptionTexts(typeName))
                 {
-                    AddSection(exceptionText, $"@throws {{{shortExceptionType}}} ");
+                    builder.AddThrowsTag(RemoveNamespace(typeName), TranslateElementText(exceptionText));
                 }
             }
 
-            ITsMultiLineComment jsDocComment = Factory.MultiLineComment(isJsDoc: true, lines: lines.ToArray());
-
-            return jsDocComment;
+            return builder.Build();
         }
 
-        /// <summary>
-        /// Converts a &lt;param name="name"&gt; tag to a JsDoc @param tag.
-        /// </summary>
-        private IEnumerable<string> TranslateParam(string parameterName, string parameterText, bool isTypeParam = false)
+        private static ITsJsDocBlock TranslateElementText(string text)
         {
-            string[] parameterTextLines = TranslateElementText(parameterText);
-            string prefix = isTypeParam ? "typeparam" : "@param";
-
-            yield return $"{prefix} {parameterName} - {parameterTextLines[0]}";
-            foreach (string parameterLine in parameterTextLines.Skip(1))
-            {
-                yield return parameterLine;
-            }
-        }
-
-        private string[] TranslateElementText(string text)
-        {
-            string[] translated = TranslateKnownXmlTags(text)
-                .Trim()
-                .Split(s_newLineAsStringArray, StringSplitOptions.RemoveEmptyEntries);
-
+            ITsJsDocBlock translated = TranslateKnownXmlTags(text);
             return translated;
         }
 
@@ -157,8 +135,13 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        private string TranslateKnownXmlTags(string text)
+        private static ITsJsDocBlock TranslateKnownXmlTags(string text)
         {
+            if (text == null)
+            {
+                return null;
+            }
+
             string translated = text;
 
             // translate <see langword="x"/> to `x`.
@@ -167,28 +150,22 @@ namespace Desalt.Core.Translation
             // translate <c>x</c> to `x`.
             translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
 
-            // translate <see/seealso cref="T:Type"/> to '@see Type'
+            // translate <see/seealso cref="Type"/> to '{@link Type}'
             translated = s_seeCrefTypeRegex.Replace(
                 translated,
-                match => $"@see {RemoveNamespace(match.Groups["typeFullName"].Value)}");
+                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}}}");
 
             // translate <see/seealso cref="M:Type.Member"/> to '@see Type.Member'
             translated = s_seeCrefMemberRegex.Replace(
                 translated,
-                match => $"@see {RemoveNamespace(match.Groups["typeFullName"].Value)}.{match.Groups["memberName"]}");
+                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}.{match.Groups["memberName"]}}}");
 
-            return translated;
+            return Factory.JsDocBlock(translated);
         }
 
         private static string RemoveNamespace(string fullTypeName)
         {
             return fullTypeName.TrimEnd('.').Split('.').Last();
-        }
-
-        private string SimplifyTypeName(string fullTypeName)
-        {
-            // check out CSharpNameReducer (http://source.roslyn.io/#Microsoft.CodeAnalysis.CSharp.Workspaces/Simplification/Reducers/CSharpNameReducer.cs)
-            return fullTypeName;
         }
     }
 }

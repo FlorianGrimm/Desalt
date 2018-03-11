@@ -28,6 +28,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         private bool _isPackagePrivate;
 
         private List<(string paramName, ITsJsDocBlock paramTag)> _paramTags;
+        private List<(string paramName, ITsJsDocBlock paramTag)> _typeparamTags;
         private List<(string typeName, ITsJsDocBlock throwsTag)> _throwsTags;
         private List<ITsJsDocBlock> _exampleTags;
         private List<ITsJsDocBlock> _seeTags;
@@ -96,6 +97,25 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             }
 
             _paramTags.Add((paramName, paramTag ?? Factory.JsDocBlock(string.Empty)));
+            return this;
+        }
+
+        public ITsJsDocCommentBuilder AddTypeParamTag(string paramName, string paramText) =>
+            AddTypeParamTag(paramName, Factory.JsDocBlock(paramText ?? string.Empty));
+
+        public ITsJsDocCommentBuilder AddTypeParamTag(string paramName, ITsJsDocBlock paramTag)
+        {
+            if (string.IsNullOrEmpty(paramName))
+            {
+                return this;
+            }
+
+            if (_typeparamTags == null)
+            {
+                _typeparamTags = new List<(string paramName, ITsJsDocBlock paramTag)>();
+            }
+
+            _typeparamTags.Add((paramName, paramTag ?? Factory.JsDocBlock(string.Empty)));
             return this;
         }
 
@@ -173,6 +193,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 copyrightTag: _copyrightTag,
                 isPackagePrivate: _isPackagePrivate,
                 paramsTags: _paramTags,
+                typeParamTags: _typeparamTags,
                 returnsTag: _returnsTag,
                 throwsTags: _throwsTags,
                 exampleTags: _exampleTags,
