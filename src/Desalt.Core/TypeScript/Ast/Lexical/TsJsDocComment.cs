@@ -7,11 +7,13 @@
 
 namespace Desalt.Core.TypeScript.Ast.Lexical
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Text;
     using Desalt.Core.Emit;
+    using Desalt.Core.Extensions;
     using TagNames = TsJsDocTagNames;
 
     /// <summary>
@@ -34,6 +36,12 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
     internal class TsJsDocComment : AstTriviaNode, ITsJsDocComment
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private static readonly string[] s_newLineAsArray = { "\n" };
+
+        //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
@@ -42,6 +50,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             ITsJsDocBlock copyrightTag = null,
             bool isPackagePrivate = false,
             IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
+            IEnumerable<(string paramName, ITsJsDocBlock text)> typeParamTags = null,
             ITsJsDocBlock returnsTag = null,
             IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
             IEnumerable<ITsJsDocBlock> exampleTags = null,
@@ -54,6 +63,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 copyrightTag: copyrightTag,
                 isPackagePrivate: isPackagePrivate,
                 paramsTags: paramsTags,
+                typeParamTags: typeParamTags,
                 returnsTag: returnsTag,
                 throwsTags: throwsTags,
                 exampleTags: exampleTags,
@@ -77,6 +87,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             ITsJsDocBlock copyrightTag = null,
             bool? isPackagePrivate = null,
             IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
+            IEnumerable<(string paramName, ITsJsDocBlock text)> typeParamTags = null,
             ITsJsDocBlock returnsTag = null,
             IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
             IEnumerable<ITsJsDocBlock> exampleTags = null,
@@ -90,6 +101,8 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             IsPackagePrivate = isPackagePrivate.GetValueOrDefault(instanceToCopy?.IsPackagePrivate ?? false);
             ParamsTags = paramsTags?.ToImmutableArray() ??
                 instanceToCopy?.ParamsTags ?? ImmutableArray<(string paramName, ITsJsDocBlock text)>.Empty;
+            TypeParamsTags = typeParamTags?.ToImmutableArray() ??
+                instanceToCopy?.TypeParamsTags ?? ImmutableArray<(string paramName, ITsJsDocBlock text)>.Empty;
             ReturnsTag = returnsTag ?? instanceToCopy?.ReturnsTag;
             ThrowsTags = throwsTags?.ToImmutableArray() ??
                 instanceToCopy?.ThrowsTags ?? ImmutableArray<(string typeName, ITsJsDocBlock text)>.Empty;
@@ -135,6 +148,13 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         /// Gets an array of @param tags. Each param is emitted in the form '@param name - text'.
         /// </summary>
         public ImmutableArray<(string paramName, ITsJsDocBlock text)> ParamsTags { get; }
+
+        /// <summary>
+        /// Gets an array of @typeparam tags. Each param is emitted in the form '@typeparam name -
+        /// text'. Note that @typeparam is not a valid JSDoc tag, but it's useful in TypeScript.
+        /// Emitting can be controlled via <see cref="EmitOptions"/>.
+        /// </summary>
+        public ImmutableArray<(string paramName, ITsJsDocBlock text)> TypeParamsTags { get; }
 
         /// <summary>
         /// Gets the @returns tag text.
@@ -207,6 +227,11 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 ? this
                 : new TsJsDocComment(this, paramsTags: value);
 
+        public ITsJsDocComment WithTypeParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value) =>
+            TypeParamsTags.SequenceEqual(value, (x, y) => x.paramName == y.paramName && x.text.Equals(y.text))
+                ? this
+                : new TsJsDocComment(this, typeParamTags: value);
+
         public ITsJsDocComment WithReturnsTag(ITsJsDocBlock value) =>
             ReturnsTag.Equals(value) ? this : new TsJsDocComment(this, returnsTag: value);
 
@@ -257,10 +282,10 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         {
             var lines = new List<string>();
 
-            AddLine(Description, string.Empty, lines, options);
-            AddLine(SummaryTag, TagNames.Summary, lines, options);
-            AddLine(FileTag, TagNames.File, lines, options);
-            AddLine(CopyrightTag, TagNames.Copyright, lines, options);
+            AddLines(Description, string.Empty, lines, options);
+            AddLines(SummaryTag, TagNames.Summary, lines, options);
+            AddLines(FileTag, TagNames.File, lines, options);
+            AddLines(CopyrightTag, TagNames.Copyright, lines, options);
 
             // @package
             if (IsPackagePrivate)
@@ -268,40 +293,61 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 lines.Add(TagNames.Package);
             }
 
+            // @typeparam
+            foreach (var (paramName, text) in TypeParamsTags)
+            {
+                AddLines(text, $"@typeparam {paramName} -", lines, options);
+            }
+
             // @param
-            lines.AddRange(
-                ParamsTags.Select(tuple => $"{TagNames.Param} {tuple.paramName} - {tuple.text.EmitAsString(options)}"));
+            foreach (var (paramName, text) in ParamsTags)
+            {
+                AddLines(text, $"{TagNames.Param} {paramName} -", lines, options);
+            }
 
             // @returns
-            AddLine(ReturnsTag, TagNames.Returns, lines, options);
+            AddLines(ReturnsTag, TagNames.Returns, lines, options);
 
             // @throws
-            lines.AddRange(
-                ThrowsTags.Select(
-                    tuple => $"{TagNames.Throws} {{{tuple.typeName}}} {tuple.text.EmitAsString(options)}"));
+            foreach (var (typeName, text) in ThrowsTags)
+            {
+                AddLines(text, $"{TagNames.Throws} {{{typeName}}}", lines, options);
+            }
 
             // @example
-            lines.AddRange(ExampleTags.Select(example => $"{TagNames.Example} {example.EmitAsString(options)}"));
+            foreach (ITsJsDocBlock exampleTag in ExampleTags)
+            {
+                AddLines(exampleTag, TagNames.Example, lines, options);
+            }
 
             // @see
-            lines.AddRange(SeeTags.Select(text => $"{TagNames.See} {text.EmitAsString(options)}"));
+            foreach (ITsJsDocBlock seeTag in SeeTags)
+            {
+                AddLines(seeTag, TagNames.See, lines, options);
+            }
 
             return lines;
         }
 
-        private static void AddLine(
-            IAstTriviaNode tagBlock,
+        private static void AddLines(
+            ITsJsDocBlock tagBlock,
             string tagName,
             ICollection<string> list,
             EmitOptions options)
         {
-            if (tagBlock != null)
+            if (tagBlock == null)
             {
-                string item = string.IsNullOrEmpty(tagName)
-                    ? tagBlock.EmitAsString(options)
-                    : $"{tagName} {tagBlock.EmitAsString(options)}";
-                list.Add(item);
+                return;
             }
+
+            string[] embeddedLines = tagBlock.EmitAsString(options)
+                .Replace("\r\n", "\n")
+                .Split(s_newLineAsArray, StringSplitOptions.None);
+
+            IEnumerable<string> items = string.IsNullOrEmpty(tagName)
+                ? embeddedLines
+                : $"{tagName} {embeddedLines[0]}".ToSafeArray().Concat(embeddedLines.Skip(1));
+            list.AddRange(items);
         }
     }
 }

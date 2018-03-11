@@ -58,14 +58,14 @@ class Foo
             docComment.Should().NotBeSameAs(DocumentationComment.Empty);
 
             // translate the documentation comment
-            ITsMultiLineComment jsdocComment = DocumentationCommentTranslator.Translate(docComment);
+            ITsJsDocComment jsdocComment = DocumentationCommentTranslator.Translate(docComment);
             string actualJsDoc = jsdocComment.EmitAsString(EmitOptions.UnixSpaces);
             string expectedJsDoc = "/**\n" + string.Join("\n", expectedJsDocLines.Select(x => $" * {x}")) + "\n */\n";
             actualJsDoc.Should().Be(expectedJsDoc);
         }
 
         [TestMethod]
-        public void Translate_should_convert_a_summary_section_to_the_JSDoc_header()
+        public void Translate_should_convert_a_summary_section()
         {
             AssertTranslation("///<summary>Test</summary>", "Test");
         }
@@ -86,18 +86,17 @@ class Foo
         public void Translate_should_convert_type_param_tags()
         {
             AssertTranslation(
-                "///<typeparam name=\"T\">This is T\n///With two lines</typeparam>",
-                "typeparam T - This is T",
-                "With two lines");
+                "///<typeparam name=\"T\">TypeParam1</typeparam><typeparam name=\"TResult\">TypeParam2</typeparam>",
+                "@typeparam T - TypeParam1",
+                "@typeparam TResult - TypeParam2");
         }
 
         [TestMethod]
         public void Translate_should_convert_param_tags()
         {
             AssertTranslation(
-                "///<param name=\"p2\">This is p2\n///With two lines</param><param name=\"p1\">This is p1</param>",
+                "///<param name=\"p2\">This is p2</param><param name=\"p1\">This is p1</param>",
                 "@param p2 - This is p2",
-                "With two lines",
                 "@param p1 - This is p1");
         }
 
@@ -134,15 +133,15 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_see_references()
         {
-            AssertTranslation(@"///<summary><see cref=""Console""/></summary>", "@see Console");
-            AssertTranslation(@"///<summary><see cref=""StringBuilder""/></summary>", "@see StringBuilder");
+            AssertTranslation(@"///<summary><see cref=""Console""/></summary>", "{@link Console}");
+            AssertTranslation(@"///<summary><see cref=""StringBuilder""/></summary>", "{@link StringBuilder}");
         }
 
         [TestMethod]
         public void Translate_should_convert_a_seealso_reference_to_a_JSDoc_see_reference()
         {
-            AssertTranslation(@"///<summary><seealso cref=""Console""/></summary>", "@see Console");
-            AssertTranslation(@"///<summary><seealso cref=""StringBuilder""/></summary>", "@see StringBuilder");
+            AssertTranslation(@"///<summary><seealso cref=""Console""/></summary>", "{@link Console}");
+            AssertTranslation(@"///<summary><seealso cref=""StringBuilder""/></summary>", "{@link StringBuilder}");
         }
 
         [TestMethod]
@@ -162,12 +161,12 @@ class Foo
             {
                 "Summary",
                 "Remarks",
-                "@example Example",
                 "@param p2 - P2",
                 "@param p1 - P1",
                 "@returns Returns",
                 "@throws {Exception} Error 1",
-                "@throws {Exception} Error 2"
+                "@throws {Exception} Error 2",
+                "@example Example",
             };
 
             AssertTranslation(csharpComment, jsDocLines);
@@ -176,19 +175,19 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_crefs_of_types_to_a_shortened_name()
         {
-            AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "@see IDisposable");
+            AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "{@link IDisposable}");
         }
 
         [TestMethod]
         public void Translate_should_convert_crefs_of_methods_to_a_shortened_name()
         {
-            AssertTranslation("///<summary><see cref=\"IDisposable.Dispose\"/></summary>", "@see IDisposable.Dispose");
+            AssertTranslation("///<summary><see cref=\"IDisposable.Dispose\"/></summary>", "{@link IDisposable.Dispose}");
         }
 
         [TestMethod]
         public void Translate_should_convert_crefs_of_properties_to_a_shortened_name()
         {
-            AssertTranslation("///<summary><see cref=\"Environment.NewLine\"/></summary>", "@see Environment.NewLine");
+            AssertTranslation("///<summary><see cref=\"Environment.NewLine\"/></summary>", "{@link Environment.NewLine}");
         }
 
         [TestMethod]
@@ -196,7 +195,7 @@ class Foo
         {
             AssertTranslation(
                 "///<summary><see cref=\"Console.CancelKeyPress\"/></summary>",
-                "@see Console.CancelKeyPress");
+                "{@link Console.CancelKeyPress}");
         }
 
         [TestMethod]
@@ -204,14 +203,14 @@ class Foo
         {
             AssertTranslation(
                 "///<summary><see cref=\"Environment.SpecialFolder\"/></summary>",
-                "@see Environment.SpecialFolder");
+                "{@link Environment.SpecialFolder}");
         }
 
         [TestMethod]
         public void
             Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
         {
-            AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "@see Prop");
+            AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "{@link Prop}");
         }
     }
 }
