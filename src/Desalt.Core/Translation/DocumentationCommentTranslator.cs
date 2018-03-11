@@ -142,7 +142,7 @@ namespace Desalt.Core.Translation
                 return null;
             }
 
-            string translated = text;
+            string translated = text.Trim();
 
             // translate <see langword="x"/> to `x`.
             translated = s_seeLangwordRegex.Replace(translated, match => $"`{match.Groups["langword"]}`");

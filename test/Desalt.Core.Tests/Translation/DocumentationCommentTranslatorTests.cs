@@ -67,7 +67,7 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_a_summary_section()
         {
-            AssertTranslation("///<summary>Test</summary>", "Test");
+            AssertTranslation("///<summary>\n/// Test\n/// </summary>", "Test");
         }
 
         [TestMethod]
