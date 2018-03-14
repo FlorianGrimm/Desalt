@@ -56,7 +56,14 @@ namespace Desalt.Core.Diagnostics
                 "Unsupported accessibility",
                 "TypeScript has no equivalent to C#'s {0} accessibility. Falling back to {1} accessibility",
                 WarningLevel.Important)]
-            UnsupportedAccessibility
+            UnsupportedAccessibility,
+
+            [Warning(
+                1006,
+                "Unstructured XML text not supported",
+                "Unstructured text within XML documentation comments is not currently supported. Add it to a <remarks> element. Text: '{0}'",
+                WarningLevel.Minor)]
+            UnstructuredXmlTextNotSupported,
         }
 
         //// ===========================================================================================================
@@ -120,10 +127,8 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="typeName">The name of the uknown type.</param>
         /// <param name="location">The location of the error.</param>
-        public static Diagnostic UnknownType(string typeName, Location location = null)
-        {
-            return Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
-        }
+        public static Diagnostic UnknownType(string typeName, Location location = null) =>
+            Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
 
         /// <summary>
         /// Returns a diagnostic of the form "TypeScript has no equivalent to C#'s {0} accessibility.
@@ -143,5 +148,14 @@ namespace Desalt.Core.Diagnostics
                 unsupportedAccessibility,
                 fallbackAccessibility);
         }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Unstructured text within XML documentation comments is
+        /// not currently supported. Add it to a &lt;remarks&gt; element. Text: '{0}'".
+        /// </summary>
+        /// <param name="text">The unstructured text.</param>
+        /// <param name="location">The location of the error.</param>
+        public static Diagnostic UnstructuredXmlTextNotSupported(string text, Location location) =>
+            Create(DiagnosticId.UnstructuredXmlTextNotSupported, location, text);
     }
 }
