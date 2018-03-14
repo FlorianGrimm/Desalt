@@ -166,7 +166,7 @@ class Foo
                 "@returns Returns",
                 "@throws {Exception} Error 1",
                 "@throws {Exception} Error 2",
-                "@example Example",
+                "@example Example"
             };
 
             AssertTranslation(csharpComment, jsDocLines);
@@ -181,13 +181,17 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_crefs_of_methods_to_a_shortened_name()
         {
-            AssertTranslation("///<summary><see cref=\"IDisposable.Dispose\"/></summary>", "{@link IDisposable.Dispose}");
+            AssertTranslation(
+                "///<summary><see cref=\"IDisposable.Dispose\"/></summary>",
+                "{@link IDisposable.Dispose}");
         }
 
         [TestMethod]
         public void Translate_should_convert_crefs_of_properties_to_a_shortened_name()
         {
-            AssertTranslation("///<summary><see cref=\"Environment.NewLine\"/></summary>", "{@link Environment.NewLine}");
+            AssertTranslation(
+                "///<summary><see cref=\"Environment.NewLine\"/></summary>",
+                "{@link Environment.NewLine}");
         }
 
         [TestMethod]
@@ -211,6 +215,35 @@ class Foo
             Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
         {
             AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "{@link Prop}");
+        }
+
+        public void Translate_should_recognize_text_within_a_see_or_seealso_tag()
+        {
+            AssertTranslation(
+                "///<summary><see cref=\"Console\">the console</see></summary>",
+                "[the console]{@link Console}");
+        }
+
+        [TestMethod]
+        public void Translate_should_recognize_see_with_href_as_empty_element()
+        {
+            AssertTranslation("///<summary><see href=\"http://something\"/></summary>", "{@link http://something}");
+        }
+
+        [TestMethod]
+        public void Translate_should_recognize_see_with_href_as_element()
+        {
+            AssertTranslation(
+                "///<summary><see href=\"http://something\">Text</see></summary>",
+                "[Text]{@link http://something}");
+        }
+
+        [TestMethod]
+        public void Translate_should_add_spaces_around_translated_link_tags()
+        {
+            AssertTranslation(
+                "///<summary>This is a <see cref=\"Console\"/> tag</summary>",
+                "This is a {@link Console} tag");
         }
     }
 }
