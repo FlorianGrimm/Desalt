@@ -30,6 +30,11 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         //// Properties
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Returns a value indicating whether this content node is empty.
+        /// </summary>
+        public bool IsEmpty => string.IsNullOrEmpty(NamepathOrUrl) && string.IsNullOrEmpty(Text);
+
         public string NamepathOrUrl { get; }
         public string Text { get; }
 

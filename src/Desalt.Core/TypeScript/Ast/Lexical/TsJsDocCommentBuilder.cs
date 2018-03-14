@@ -209,7 +209,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             {
                 tag = null;
             }
-            else if (value.Content.All(x => string.IsNullOrEmpty(x.Text)))
+            else if (value.Content.IsEmpty || value.Content.All(x => x.IsEmpty))
             {
                 tag = null;
             }
