@@ -58,7 +58,10 @@ class Foo
             docComment.Should().NotBeSameAs(DocumentationComment.Empty);
 
             // translate the documentation comment
-            ITsJsDocComment jsdocComment = DocumentationCommentTranslator.Translate(docComment);
+            var result = DocumentationCommentTranslator.Translate(docComment);
+            result.Diagnostics.Should().BeEmpty();
+
+            ITsJsDocComment jsdocComment = result.Result;
             string actualJsDoc = jsdocComment.EmitAsString(EmitOptions.UnixSpaces);
             string expectedJsDoc = "/**\n" + string.Join("\n", expectedJsDocLines.Select(x => $" * {x}")) + "\n */\n";
             actualJsDoc.Should().Be(expectedJsDoc);
