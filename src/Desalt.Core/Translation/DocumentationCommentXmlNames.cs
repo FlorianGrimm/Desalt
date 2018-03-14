@@ -21,6 +21,7 @@ namespace Desalt.Core.Translation
         public const string DescriptionElementName = "description";
         public const string ExampleElementName = "example";
         public const string ExceptionElementName = "exception";
+        public const string HrefAttributeName = "href";
         public const string IncludeElementName = "include";
         public const string ItemElementName = "item";
         public const string ListElementName = "list";
