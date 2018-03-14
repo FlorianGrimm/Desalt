@@ -152,7 +152,6 @@
     <Compile Include="Translation\ImportSymbolTable.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />
-    <Compile Include="Translation\TranslationExtensions.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />

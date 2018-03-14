@@ -58,8 +58,7 @@ namespace Desalt.Core.Translation
                 extendsClause);
 
             // export if necessary and add documentation comments
-            ITsImplementationModuleElement final =
-                interfaceDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            ITsImplementationModuleElement final = ExportAndAddDocComment(interfaceDeclaration, node);
             return final.ToSingleEnumerable();
         }
 
@@ -79,8 +78,7 @@ namespace Desalt.Core.Translation
             ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
 
             // export if necessary and add documentation comments
-            ITsImplementationModuleElement final =
-                enumDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            ITsImplementationModuleElement final = ExportAndAddDocComment(enumDeclaration, node);
             return final.ToSingleEnumerable();
         }
 
@@ -127,8 +125,7 @@ namespace Desalt.Core.Translation
                 classBody);
 
             // export if necessary and add documentation comments
-            ITsImplementationModuleElement final =
-                classDeclaration.AndExportIfNeededWithDocumentationComment(_semanticModel, node);
+            ITsImplementationModuleElement final = ExportAndAddDocComment(classDeclaration, node);
             return final.ToSingleEnumerable();
         }
 
@@ -151,14 +148,15 @@ namespace Desalt.Core.Translation
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
-                ITsVariableMemberDeclaration fieldDeclaration = Factory
-                    .VariableMemberDeclaration(
+                ITsVariableMemberDeclaration fieldDeclaration = AddDocumentationComment(
+                    Factory.VariableMemberDeclaration(
                         variableName,
                         accessibilityModifier,
                         symbol.IsStatic,
                         isReadOnly,
-                        typeAnnotation)
-                    .WithDocumentationComment(_semanticModel, node, variableDeclaration);
+                        typeAnnotation),
+                    node,
+                    variableDeclaration);
                 fieldDeclarations.Add(fieldDeclaration);
             }
 
@@ -192,7 +190,7 @@ namespace Desalt.Core.Translation
                     functionName,
                     isOptional: false,
                     callSignature: callSignature);
-                methodSignature = methodSignature.WithDocumentationComment(_semanticModel, node);
+                methodSignature = AddDocumentationComment(methodSignature, node);
                 return methodSignature.ToSingleEnumerable();
             }
 
@@ -204,7 +202,7 @@ namespace Desalt.Core.Translation
                 accessibilityModifier,
                 functionBody: null);
 
-            methodDeclaration = methodDeclaration.WithDocumentationComment(_semanticModel, node);
+            methodDeclaration = AddDocumentationComment(methodDeclaration, node);
             return methodDeclaration.ToSingleEnumerable();
         }
 
@@ -222,7 +220,7 @@ namespace Desalt.Core.Translation
                 parameterList,
                 functionBody: null);
 
-            constructorDeclaration = constructorDeclaration.WithDocumentationComment(_semanticModel, node);
+            constructorDeclaration = AddDocumentationComment(constructorDeclaration, node);
             return constructorDeclaration.ToSingleEnumerable();
         }
 
@@ -248,7 +246,7 @@ namespace Desalt.Core.Translation
                             functionBody: null);
                         ITsGetAccessorMemberDeclaration getAccessorDeclaration =
                             Factory.GetAccessorMemberDeclaration(getAccessor, accessibilityModifier);
-                        yield return getAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
+                        yield return AddDocumentationComment(getAccessorDeclaration, node);
                         break;
 
                     case SyntaxKind.SetAccessorDeclaration:
@@ -259,7 +257,7 @@ namespace Desalt.Core.Translation
                             functionBody: null);
                         ITsSetAccessorMemberDeclaration setAccessorDeclaration =
                             Factory.SetAccessorMemberDeclaration(setAccessor, accessibilityModifier);
-                        yield return setAccessorDeclaration.WithDocumentationComment(_semanticModel, node);
+                        yield return AddDocumentationComment(setAccessorDeclaration, node);
                         break;
 
                     default:

@@ -143,5 +143,84 @@ namespace Desalt.Core.Translation
             string scriptName = _context.ScriptNameSymbolTable[symbol];
             return Factory.Identifier(scriptName);
         }
+
+        /// <summary>
+        /// Translates the C# XML documentation comment into a JSDoc comment if there is a
+        /// documentation comment on the specified node.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated node.</typeparam>
+        /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
+        /// <param name="node">The C# syntax node to get documentation comments from.</param>
+        /// <param name="symbolNode">
+        /// The C# syntax node to use for retrieving the symbol. If not supplied <paramref
+        /// name="node"/> is used.
+        /// </param>
+        /// <returns>
+        /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
+        /// comments prepended. If there are no documentation comments, the same node is returned.
+        /// </returns>
+        private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode symbolNode = null)
+            where T : IAstNode
+        {
+            if (!node.HasStructuredTrivia)
+            {
+                return translatedNode;
+            }
+
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(symbolNode ?? node);
+            if (symbol == null)
+            {
+                return translatedNode;
+            }
+
+            DocumentationComment documentationComment = symbol.GetDocumentationComment();
+            var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
+
+            return translatedNode.WithLeadingTrivia(jsDocComment);
+        }
+
+        /// <summary>
+        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
+        /// </returns>
+        private ITsImplementationModuleElement ExportIfNeeded(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+            {
+                return translatedDeclaration;
+            }
+
+            ITsExportImplementationElement exportedInterfaceDeclaration =
+                Factory.ExportImplementationElement(translatedDeclaration);
+            return exportedInterfaceDeclaration;
+        }
+
+        /// <summary>
+        /// Calls <see cref="ExportIfNeeded"/> followed by <see cref="AddDocumentationComment{T}"/>.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is
+        /// returned. Whichever element is returned, it includes any documentation comment.
+        /// </returns>
+        private ITsImplementationModuleElement ExportAndAddDocComment(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
+            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
+            return withDocComment;
+        }
     }
 }
