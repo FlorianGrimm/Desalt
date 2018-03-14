@@ -174,9 +174,10 @@ namespace Desalt.Core.Translation
             }
 
             DocumentationComment documentationComment = symbol.GetDocumentationComment();
-            var jsDocComment = DocumentationCommentTranslator.Translate(documentationComment);
+            var result = DocumentationCommentTranslator.Translate(documentationComment);
+            _diagnostics.AddRange(result.Diagnostics);
 
-            return translatedNode.WithLeadingTrivia(jsDocComment);
+            return translatedNode.WithLeadingTrivia(result.Result);
         }
 
         /// <summary>

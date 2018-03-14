@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
@@ -50,7 +51,7 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsJsDocComment Translate(DocumentationComment documentationComment)
+        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
         {
             var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
@@ -101,7 +102,8 @@ namespace Desalt.Core.Translation
                 }
             }
 
-            return builder.Build();
+            ITsJsDocComment translatedComment = builder.Build();
+            return new ExtendedResult<ITsJsDocComment>(translatedComment);
         }
 
         private static ITsJsDocBlock TranslateElementText(string text)
