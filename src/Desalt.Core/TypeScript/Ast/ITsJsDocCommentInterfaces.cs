@@ -116,47 +116,53 @@ namespace Desalt.Core.TypeScript.Ast
     /// </summary>
     public interface ITsJsDocCommentBuilder
     {
-        ITsJsDocCommentBuilder SetDescription(string descriptionText);
+        ITsJsDocCommentBuilder PrependDescription(ITsJsDocBlock text, bool separateWithBlankLine);
 
-        ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock descriptionTag);
+        ITsJsDocCommentBuilder AppendDescription(string text, bool separateWithBlankLine);
 
-        ITsJsDocCommentBuilder SetSummaryTag(string summaryText);
+        ITsJsDocCommentBuilder AppendDescription(ITsJsDocBlock block, bool separateWithBlankLine);
 
-        ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock summaryTag);
+        ITsJsDocCommentBuilder SetDescription(string text);
 
-        ITsJsDocCommentBuilder SetFileTag(string fileText);
+        ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock fileTag);
+        ITsJsDocCommentBuilder SetSummaryTag(string text);
 
-        ITsJsDocCommentBuilder SetCopyrightTag(string copyrightText);
+        ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock copyrightTag);
+        ITsJsDocCommentBuilder SetFileTag(string text);
 
-        ITsJsDocCommentBuilder SetIsPackagePrivate(bool isPackagePrivate);
+        ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder AddParamTag(string paramName, string paramText);
+        ITsJsDocCommentBuilder SetCopyrightTag(string text);
 
-        ITsJsDocCommentBuilder AddParamTag(string paramName, ITsJsDocBlock paramTag);
+        ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder AddTypeParamTag(string paramName, string paramText);
+        ITsJsDocCommentBuilder SetIsPackagePrivate(bool value);
 
-        ITsJsDocCommentBuilder AddTypeParamTag(string paramName, ITsJsDocBlock paramTag);
+        ITsJsDocCommentBuilder AddParamTag(string name, string text);
 
-        ITsJsDocCommentBuilder SetReturnsTag(string returnsText);
+        ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock returnsTag);
+        ITsJsDocCommentBuilder AddTypeParamTag(string name, string text);
 
-        ITsJsDocCommentBuilder AddThrowsTag(string typeName, string throwsText);
+        ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock throwsTag);
+        ITsJsDocCommentBuilder SetReturnsTag(string text);
 
-        ITsJsDocCommentBuilder AddExampleTag(string exampleText);
+        ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock exampleTag);
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text);
 
-        ITsJsDocCommentBuilder AddSeeTag(string seeText);
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock seeTag);
+        ITsJsDocCommentBuilder AddExampleTag(string text);
+
+        ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock text);
+
+        ITsJsDocCommentBuilder AddSeeTag(string text);
+
+        ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock text);
 
         ITsJsDocComment Build();
     }

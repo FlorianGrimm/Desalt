@@ -41,52 +41,84 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
         //// Methods
         //// ===========================================================================================================
 
-        public ITsJsDocCommentBuilder SetDescription(string descriptionText)
+        public ITsJsDocCommentBuilder PrependDescription(ITsJsDocBlock text, bool separateWithBlankLine)
         {
-            _description = string.IsNullOrEmpty(descriptionText) ? null : Factory.JsDocBlock(descriptionText);
+            if (_description == null)
+            {
+                _description = text;
+                return this;
+            }
+
+            var newContentBuilder = text.Content.ToBuilder();
+            if (separateWithBlankLine && !_description.Content.IsEmpty)
+            {
+                newContentBuilder.Add(Factory.JsDocInlineText("\n"));
+            }
+
+            newContentBuilder.AddRange(_description.Content);
+            _description = Factory.JsDocBlock(newContentBuilder.ToArray());
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock descriptionTag) =>
-            Set(ref _description, descriptionTag);
-
-        public ITsJsDocCommentBuilder SetSummaryTag(string summaryText)
+        public ITsJsDocCommentBuilder AppendDescription(string text, bool separateWithBlankLine)
         {
-            _summaryTag = string.IsNullOrEmpty(summaryText) ? null : Factory.JsDocBlock(summaryText);
+            _description = _description?.WithAppendedContent(text, separateWithBlankLine) ??
+                Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock summaryTag) => Set(ref _summaryTag, summaryTag);
-
-        public ITsJsDocCommentBuilder SetFileTag(string fileText)
+        public ITsJsDocCommentBuilder AppendDescription(ITsJsDocBlock block, bool separateWithBlankLine)
         {
-            _fileTag = string.IsNullOrEmpty(fileText) ? null : Factory.JsDocBlock(fileText);
+            _description = _description?.WithAppendedContent(block, separateWithBlankLine) ?? block;
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock fileTag) => Set(ref _fileTag, fileTag);
-
-        public ITsJsDocCommentBuilder SetCopyrightTag(string copyrightText)
+        public ITsJsDocCommentBuilder SetDescription(string text)
         {
-            _copyrightTag = string.IsNullOrEmpty(copyrightText) ? null : Factory.JsDocBlock(copyrightText);
+            _description = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock copyrightTag) =>
-            Set(ref _copyrightTag, copyrightTag);
+        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text) =>
+            Set(ref _description, text);
 
-        public ITsJsDocCommentBuilder SetIsPackagePrivate(bool isPackagePrivate)
+        public ITsJsDocCommentBuilder SetSummaryTag(string text)
         {
-            _isPackagePrivate = isPackagePrivate;
+            _summaryTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddParamTag(string paramName, string paramText) =>
-            AddParamTag(paramName, Factory.JsDocBlock(paramText ?? string.Empty));
+        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text) => Set(ref _summaryTag, text);
 
-        public ITsJsDocCommentBuilder AddParamTag(string paramName, ITsJsDocBlock paramTag)
+        public ITsJsDocCommentBuilder SetFileTag(string text)
         {
-            if (string.IsNullOrEmpty(paramName))
+            _fileTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
+            return this;
+        }
+
+        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text) => Set(ref _fileTag, text);
+
+        public ITsJsDocCommentBuilder SetCopyrightTag(string text)
+        {
+            _copyrightTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
+            return this;
+        }
+
+        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text) =>
+            Set(ref _copyrightTag, text);
+
+        public ITsJsDocCommentBuilder SetIsPackagePrivate(bool value)
+        {
+            _isPackagePrivate = value;
+            return this;
+        }
+
+        public ITsJsDocCommentBuilder AddParamTag(string name, string text) =>
+            AddParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
+
+        public ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock text)
+        {
+            if (string.IsNullOrEmpty(name))
             {
                 return this;
             }
@@ -96,16 +128,16 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 _paramTags = new List<(string paramName, ITsJsDocBlock paramTag)>();
             }
 
-            _paramTags.Add((paramName, paramTag ?? Factory.JsDocBlock(string.Empty)));
+            _paramTags.Add((name, text ?? Factory.JsDocBlock(string.Empty)));
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddTypeParamTag(string paramName, string paramText) =>
-            AddTypeParamTag(paramName, Factory.JsDocBlock(paramText ?? string.Empty));
+        public ITsJsDocCommentBuilder AddTypeParamTag(string name, string text) =>
+            AddTypeParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
 
-        public ITsJsDocCommentBuilder AddTypeParamTag(string paramName, ITsJsDocBlock paramTag)
+        public ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text)
         {
-            if (string.IsNullOrEmpty(paramName))
+            if (string.IsNullOrEmpty(name))
             {
                 return this;
             }
@@ -115,22 +147,22 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 _typeparamTags = new List<(string paramName, ITsJsDocBlock paramTag)>();
             }
 
-            _typeparamTags.Add((paramName, paramTag ?? Factory.JsDocBlock(string.Empty)));
+            _typeparamTags.Add((name, text ?? Factory.JsDocBlock(string.Empty)));
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetReturnsTag(string returnsText)
+        public ITsJsDocCommentBuilder SetReturnsTag(string text)
         {
-            _returnsTag = string.IsNullOrEmpty(returnsText) ? null : Factory.JsDocBlock(returnsText);
+            _returnsTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock returnsTag) => Set(ref _returnsTag, returnsTag);
+        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text) => Set(ref _returnsTag, text);
 
-        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string throwsText) =>
-            AddThrowsTag(typeName, Factory.JsDocBlock(throwsText ?? string.Empty));
+        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text) =>
+            AddThrowsTag(typeName, Factory.JsDocBlock(text ?? string.Empty));
 
-        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock throwsTag)
+        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock text)
         {
             if (string.IsNullOrEmpty(typeName))
             {
@@ -142,17 +174,17 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 _throwsTags = new List<(string typeName, ITsJsDocBlock throwsTag)>();
             }
 
-            _throwsTags.Add((typeName, throwsTag ?? Factory.JsDocBlock(string.Empty)));
+            _throwsTags.Add((typeName, text ?? Factory.JsDocBlock(string.Empty)));
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddExampleTag(string exampleText) =>
-            AddExampleTag(Factory.JsDocBlock(exampleText ?? string.Empty));
+        public ITsJsDocCommentBuilder AddExampleTag(string text) =>
+            AddExampleTag(Factory.JsDocBlock(text ?? string.Empty));
 
-        public ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock exampleTag)
+        public ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock text)
         {
-            Set(ref exampleTag, exampleTag);
-            if (exampleTag == null)
+            Set(ref text, text);
+            if (text == null)
             {
                 return this;
             }
@@ -162,17 +194,17 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 _exampleTags = new List<ITsJsDocBlock>();
             }
 
-            _exampleTags.Add(exampleTag);
+            _exampleTags.Add(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddSeeTag(string seeText) =>
-            AddSeeTag(Factory.JsDocBlock(seeText ?? string.Empty));
+        public ITsJsDocCommentBuilder AddSeeTag(string text) =>
+            AddSeeTag(Factory.JsDocBlock(text ?? string.Empty));
 
-        public ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock seeTag)
+        public ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock text)
         {
-            Set(ref seeTag, seeTag);
-            if (seeTag == null)
+            Set(ref text, text);
+            if (text == null)
             {
                 return this;
             }
@@ -182,7 +214,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 _seeTags = new List<ITsJsDocBlock>();
             }
 
-            _seeTags.Add(seeTag);
+            _seeTags.Add(text);
             return this;
         }
 
