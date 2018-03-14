@@ -114,25 +114,28 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
             s_fullComment.WithDescription(Factory.JsDocBlock("DescriptionX")).Should().NotBe(s_fullComment);
             s_fullComment.WithSummaryTag(Factory.JsDocBlock("SummaryX")).Should().NotBe(s_fullComment);
 
-            s_fullComment.WithExampleTags(
-                new[] { Factory.JsDocBlock("Example1X"), Factory.JsDocBlock("Example2X") }.ToImmutableArray())
+            s_fullComment
+                .WithExampleTags(
+                    new[] { Factory.JsDocBlock("Example1X"), Factory.JsDocBlock("Example2X") }.ToImmutableArray())
                 .Should()
                 .NotBe(s_fullComment);
 
-            s_fullComment.WithSeeTags(
-                new[] { Factory.JsDocBlock("See1X"), Factory.JsDocBlock("See2X") }.ToImmutableArray())
+            s_fullComment
+                .WithSeeTags(new[] { Factory.JsDocBlock("See1X"), Factory.JsDocBlock("See2X") }.ToImmutableArray())
                 .Should()
                 .NotBe(s_fullComment);
 
-            s_fullComment.WithParamTags(
-                new[] { ("p1", Factory.JsDocBlock("Param1X")), ("p2", Factory.JsDocBlock("Param2X")) }
-                    .ToImmutableArray())
+            s_fullComment
+                .WithParamTags(
+                    new[] { ("p1", Factory.JsDocBlock("Param1X")), ("p2", Factory.JsDocBlock("Param2X")) }
+                        .ToImmutableArray())
                 .Should()
                 .NotBe(s_fullComment);
 
-            s_fullComment.WithThrowsTags(
-                new[] { ("Error", Factory.JsDocBlock("Error1X")), ("ErrorEx", Factory.JsDocBlock("Error2X")) }
-                    .ToImmutableArray())
+            s_fullComment
+                .WithThrowsTags(
+                    new[] { ("Error", Factory.JsDocBlock("Error1X")), ("ErrorEx", Factory.JsDocBlock("Error2X")) }
+                        .ToImmutableArray())
                 .Should()
                 .NotBe(s_fullComment);
 
@@ -142,40 +145,40 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
         [TestMethod]
         public void With_methods_should_change_the_value()
         {
-            s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).FileTag.Content.First().Text.Should().Be("FileX");
+            s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).FileTag.EmitAsString().Should().Be("FileX");
 
             s_fullComment.WithCopyrightTag(Factory.JsDocBlock("CopyrightX"))
-                .CopyrightTag.Content.First().Text
+                .CopyrightTag.EmitAsString()
                 .Should()
                 .Be("CopyrightX");
 
             s_fullComment.WithIsPackagePrivate(false).IsPackagePrivate.Should().BeFalse();
 
             s_fullComment.WithReturnsTag(Factory.JsDocBlock("ReturnsX"))
-                .ReturnsTag.Content.First()
-                .Text.Should()
+                .ReturnsTag.EmitAsString()
+                .Should()
                 .Be("ReturnsX");
 
             s_fullComment.WithDescription(Factory.JsDocBlock("DescriptionX"))
-                .Description.Content.First()
-                .Text.Should()
+                .Description.EmitAsString()
+                .Should()
                 .Be("DescriptionX");
 
             s_fullComment.WithSummaryTag(Factory.JsDocBlock("SummaryX"))
-                .SummaryTag.Content.First()
-                .Text.Should()
+                .SummaryTag.EmitAsString()
+                .Should()
                 .Be("SummaryX");
 
             s_fullComment
                 .WithExampleTags(
                     new[] { Factory.JsDocBlock("Example1X"), Factory.JsDocBlock("Example2X") }.ToImmutableArray())
-                .ExampleTags.Select(x => x.Content.First().Text)
+                .ExampleTags.Select(x => x.EmitAsString())
                 .Should()
                 .BeEquivalentTo("Example1X", "Example2X");
 
             s_fullComment
                 .WithSeeTags(new[] { Factory.JsDocBlock("See1X"), Factory.JsDocBlock("See2X") }.ToImmutableArray())
-                .SeeTags.Select(x => x.Content.First().Text)
+                .SeeTags.Select(x => x.EmitAsString())
                 .Should()
                 .BeEquivalentTo("See1X", "See2X");
 
@@ -183,7 +186,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
                 .WithParamTags(
                     new[] { ("p1", Factory.JsDocBlock("Param1X")), ("p2", Factory.JsDocBlock("Param2X")) }
                         .ToImmutableArray())
-                .ParamsTags.Select(x => x.text.Content.First().Text)
+                .ParamsTags.Select(x => x.text.EmitAsString())
                 .Should()
                 .BeEquivalentTo("Param1X", "Param2X");
 
@@ -191,7 +194,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
                 .WithThrowsTags(
                     new[] { ("Error", Factory.JsDocBlock("Error1X")), ("ErrorEx", Factory.JsDocBlock("Error2X")) }
                         .ToImmutableArray())
-                .ThrowsTags.Select(x => x.text.Content.First().Text)
+                .ThrowsTags.Select(x => x.text.EmitAsString())
                 .Should()
                 .BeEquivalentTo("Error1X", "Error2X");
         }
