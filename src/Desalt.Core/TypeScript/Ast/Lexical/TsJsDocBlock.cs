@@ -12,6 +12,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
     using System.Linq;
     using System.Text;
     using Desalt.Core.Emit;
+    using Factory = TsAstFactory;
 
     /// <summary>
     /// Represents a JSDoc block tag, for example @see, @example, and description.
@@ -69,5 +70,58 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 new StringBuilder(),
                 (builder, inlineContent) => builder.Append(inlineContent.EmitAsString(emitOptions)),
                 builder => builder.ToString());
+
+        public ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return this;
+            }
+
+            if (separateWithBlankLine && !Content.IsEmpty)
+            {
+                text = "\n\n" + text;
+            }
+
+            return new TsJsDocBlock(Content.Add(Factory.JsDocInlineText(text)));
+        }
+
+        public ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine)
+        {
+            if (text == null)
+            {
+                return this;
+            }
+
+            ImmutableArray<ITsJsDocInlineContent> newContent;
+            if (separateWithBlankLine && !Content.IsEmpty)
+            {
+                newContent = Content.AddRange(new[] { Factory.JsDocInlineText("\n\n"), text });
+            }
+            else
+            {
+                newContent = Content.Add(text);
+            }
+
+            return new TsJsDocBlock(newContent);
+        }
+
+        public ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine)
+        {
+            if (block == null || block.Content.IsEmpty)
+            {
+                return this;
+            }
+
+            var newContentBuilder = Content.ToBuilder();
+            if (separateWithBlankLine && !Content.IsEmpty)
+            {
+                newContentBuilder.Add(Factory.JsDocInlineText("\n\n"));
+            }
+
+            newContentBuilder.AddRange(block.Content);
+
+            return new TsJsDocBlock(newContentBuilder);
+        }
     }
 }

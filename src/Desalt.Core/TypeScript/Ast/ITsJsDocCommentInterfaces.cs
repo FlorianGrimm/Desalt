@@ -167,6 +167,12 @@ namespace Desalt.Core.TypeScript.Ast
     public interface ITsJsDocBlock : IAstTriviaNode
     {
         ImmutableArray<ITsJsDocInlineContent> Content { get; }
+
+        ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine);
+
+        ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine);
+
+        ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine);
     }
 
     /// <summary>
