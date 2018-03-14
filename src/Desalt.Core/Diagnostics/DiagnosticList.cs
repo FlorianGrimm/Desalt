@@ -110,6 +110,14 @@ namespace Desalt.Core.Diagnostics
             _diagnostics.AddRange(Filter(Options, diagnostics));
         }
 
+        /// <summary>
+        /// Clears the list of diagnostics.
+        /// </summary>
+        public void Clear()
+        {
+            _diagnostics.Clear();
+        }
+
         private static Diagnostic Filter(CompilerOptions options, Diagnostic diagnostic)
         {
             ReportDiagnostic reportAction = diagnostic.CalculateReportAction(options);
