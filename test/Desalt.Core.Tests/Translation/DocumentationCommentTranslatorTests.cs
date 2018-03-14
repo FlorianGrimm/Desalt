@@ -220,10 +220,14 @@ class Foo
             AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "{@link Prop}");
         }
 
+        [TestMethod]
         public void Translate_should_recognize_text_within_a_see_or_seealso_tag()
         {
             AssertTranslation(
                 "///<summary><see cref=\"Console\">the console</see></summary>",
+                "[the console]{@link Console}");
+            AssertTranslation(
+                "///<summary><seealso cref=\"Console\">the console</seealso></summary>",
                 "[the console]{@link Console}");
         }
 
