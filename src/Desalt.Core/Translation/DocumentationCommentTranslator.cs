@@ -47,75 +47,55 @@ namespace Desalt.Core.Translation
         private static readonly string[] s_newLineAsStringArray = { Environment.NewLine };
 
         //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        private DocumentationCommentTranslator(DocumentationComment comment)
-        {
-            Comment = comment ?? throw new ArgumentNullException(nameof(comment));
-        }
-
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        public DocumentationComment Comment { get; }
-
-        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         public static ITsJsDocComment Translate(DocumentationComment documentationComment)
         {
-            var translator = new DocumentationCommentTranslator(documentationComment);
-            return translator.TranslateInternal();
-        }
-
-        private ITsJsDocComment TranslateInternal()
-        {
+            var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 
             // if there is <summary> and <remarks>, then append the remarks after the summary,
             // otherwise just use one or the other as the description
-            string description = Comment.SummaryText;
-            if (!string.IsNullOrEmpty(Comment.RemarksText))
+            string description = comment.SummaryText;
+            if (!string.IsNullOrEmpty(comment.RemarksText))
             {
                 if (description == null)
                 {
-                    description = Comment.RemarksText;
+                    description = comment.RemarksText;
                 }
                 else
                 {
-                    description += "\n" + Comment.RemarksText;
+                    description += "\n" + comment.RemarksText;
                 }
             }
 
             builder.SetDescription(TranslateElementText(description));
 
             // <example>
-            builder.AddExampleTag(Comment.ExampleText);
+            builder.AddExampleTag(comment.ExampleText);
 
             // translate each <param> tag
-            foreach (string parameterName in Comment.ParameterNames)
+            foreach (string parameterName in comment.ParameterNames)
             {
-                string parameterText = Comment.GetParameterText(parameterName);
+                string parameterText = comment.GetParameterText(parameterName);
                 builder.AddParamTag(parameterName, TranslateElementText(parameterText));
             }
 
             // translate each <typeparam> tags, even though there is no JSDoc equivalent
-            foreach (string typeParameterName in Comment.TypeParameterNames)
+            foreach (string typeParameterName in comment.TypeParameterNames)
             {
-                string parameterText = Comment.GetTypeParameterText(typeParameterName);
+                string parameterText = comment.GetTypeParameterText(typeParameterName);
                 builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText));
             }
 
             // <returns>
-            builder.SetReturnsTag(TranslateElementText(Comment.ReturnsText));
+            builder.SetReturnsTag(TranslateElementText(comment.ReturnsText));
 
             // translate each <exception> tag
-            foreach (string typeName in Comment.ExceptionTypes)
+            foreach (string typeName in comment.ExceptionTypes)
             {
-                foreach (string exceptionText in Comment.GetExceptionTexts(typeName))
+                foreach (string exceptionText in comment.GetExceptionTexts(typeName))
                 {
                     builder.AddThrowsTag(RemoveNamespace(typeName), TranslateElementText(exceptionText));
                 }
