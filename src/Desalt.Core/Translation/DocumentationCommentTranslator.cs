@@ -36,6 +36,10 @@ namespace Desalt.Core.Translation
             @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<fullTypeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
             InlineElementOptions);
 
+        private static readonly Regex s_seeHrefRegex = new Regex(
+            @"<see(also)?\s+href\s*=\s*""(?<href>[^""]*)""\s*/>",
+            InlineElementOptions);
+
         private static readonly Regex s_seeLangwordRegex = new Regex(
             @"<see\s+langword\s*=\s*""(?<langword>[^""]+)""\s*/>",
             InlineElementOptions);
@@ -131,6 +135,9 @@ namespace Desalt.Core.Translation
 
             // translate <c>x</c> to `x`.
             translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
+
+            // translate <see/seealso href="Href"/> to '{@link Href}'
+            translated = s_seeHrefRegex.Replace(translated, match => $"{{@link {match.Groups["href"].Value}}}");
 
             // translate <see/seealso cref="Type"/> to '{@link Type}'
             translated = s_seeCrefTypeRegex.Replace(
