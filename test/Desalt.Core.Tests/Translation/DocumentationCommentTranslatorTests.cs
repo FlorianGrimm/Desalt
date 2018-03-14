@@ -23,18 +23,18 @@ namespace Desalt.Core.Tests.Translation
         private static void AssertTranslation(string csharpComment, params string[] expectedJsDocLines)
         {
             // parse the C# code and get the root syntax node
-            string csharpCode = @"
+            string csharpCode = $@"
 using System;
 using System.Text;
 using System.Collections.Generic;
 
 class Foo
-{
-    " + csharpComment + @"
-    public int Bar<T>(string p1, double p2) { }
+{{
+    {csharpComment}
+    public int Bar<T>(string p1, double p2) {{ }}
 
-    public string Prop { get; }
-}";
+    public string Prop {{ get; }}
+}}";
 
             var syntaxTree = (CSharpSyntaxTree)CSharpSyntaxTree.ParseText(csharpCode);
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
