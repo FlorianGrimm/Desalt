@@ -139,34 +139,6 @@ namespace Desalt.Core.Translation
 
         private ITsIdentifier TranslateIdentifier(SyntaxNode node)
         {
-            string identifier;
-            switch (node)
-            {
-                case BaseTypeDeclarationSyntax baseTypeDeclaration:
-                    identifier = baseTypeDeclaration.Identifier.Text;
-                    break;
-
-                case MethodDeclarationSyntax methodDeclaration:
-                    identifier = methodDeclaration.Identifier.Text;
-                    break;
-
-                case EnumMemberDeclarationSyntax enumMemberDeclaration:
-                    identifier = enumMemberDeclaration.Identifier.Text;
-                    break;
-
-                case VariableDeclaratorSyntax variableDeclarator:
-                    identifier = variableDeclarator.Identifier.Text;
-                    break;
-
-                case PropertyDeclarationSyntax propertyDeclaration:
-                    identifier = propertyDeclaration.Identifier.Text;
-                    break;
-
-                default:
-                    throw new InvalidOperationException(
-                        $"Unsupported node type for retrieving an identifier: {node.GetType().Name}");
-            }
-
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             string scriptName = _context.ScriptNameSymbolTable[symbol];
             return Factory.Identifier(scriptName);
