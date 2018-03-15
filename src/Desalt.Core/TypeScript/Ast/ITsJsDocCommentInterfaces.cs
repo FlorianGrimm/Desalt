@@ -174,11 +174,11 @@ namespace Desalt.Core.TypeScript.Ast
     {
         ImmutableArray<ITsJsDocInlineContent> Content { get; }
 
-        ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine);
+        ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine = false);
 
-        ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine);
+        ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine = false);
 
-        ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine);
+        ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine = false);
     }
 
     /// <summary>

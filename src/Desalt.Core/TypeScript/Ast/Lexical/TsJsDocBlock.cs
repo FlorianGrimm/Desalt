@@ -71,7 +71,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 (builder, inlineContent) => builder.Append(inlineContent.EmitAsString(emitOptions)),
                 builder => builder.ToString());
 
-        public ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine)
+        public ITsJsDocBlock WithAppendedContent(string text, bool separateWithBlankLine = false)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -86,7 +86,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             return new TsJsDocBlock(Content.Add(Factory.JsDocInlineText(text)));
         }
 
-        public ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine)
+        public ITsJsDocBlock WithAppendedContent(ITsJsDocInlineContent text, bool separateWithBlankLine = false)
         {
             if (text == null)
             {
@@ -106,7 +106,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
             return new TsJsDocBlock(newContent);
         }
 
-        public ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine)
+        public ITsJsDocBlock WithAppendedContent(ITsJsDocBlock block, bool separateWithBlankLine = false)
         {
             if (block == null || block.Content.IsEmpty)
             {
