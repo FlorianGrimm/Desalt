@@ -151,15 +151,11 @@ namespace Desalt.Core.Translation
         /// <typeparam name="T">The type of the translated node.</typeparam>
         /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
         /// <param name="node">The C# syntax node to get documentation comments from.</param>
-        /// <param name="symbolNode">
-        /// The C# syntax node to use for retrieving the symbol. If not supplied <paramref
-        /// name="node"/> is used.
-        /// </param>
         /// <returns>
         /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
         /// comments prepended. If there are no documentation comments, the same node is returned.
         /// </returns>
-        private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode symbolNode = null)
+        private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node)
             where T : IAstNode
         {
             if (!node.HasStructuredTrivia)
@@ -167,17 +163,21 @@ namespace Desalt.Core.Translation
                 return translatedNode;
             }
 
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(symbolNode ?? node);
-            if (symbol == null)
+            DocumentationCommentTriviaSyntax docComment = node.GetLeadingTrivia()
+                .Where(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+                .Select(x => x.GetStructure())
+                .OfType<DocumentationCommentTriviaSyntax>()
+                .SingleOrDefault();
+
+            if (docComment == null)
             {
                 return translatedNode;
             }
 
-            DocumentationComment documentationComment = symbol.GetDocumentationComment();
-            var result = DocumentationCommentTranslator.Translate(documentationComment);
+            var result = DocumentationCommentTranslator.Translate(docComment);
             _diagnostics.AddRange(result.Diagnostics);
-
-            return translatedNode.WithLeadingTrivia(result.Result);
+            ITsJsDocComment jsDocComment = result.Result;
+            return translatedNode.WithLeadingTrivia(jsDocComment);
         }
 
         /// <summary>

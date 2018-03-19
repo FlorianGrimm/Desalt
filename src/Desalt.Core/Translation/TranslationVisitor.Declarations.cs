@@ -155,8 +155,7 @@ namespace Desalt.Core.Translation
                         symbol.IsStatic,
                         isReadOnly,
                         typeAnnotation),
-                    node,
-                    variableDeclaration);
+                    node);
                 fieldDeclarations.Add(fieldDeclaration);
             }
 

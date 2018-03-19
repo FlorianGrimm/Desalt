@@ -7,7 +7,10 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Desalt.Core.Emit;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
@@ -43,22 +46,20 @@ class Foo
             CSharpCompilation compilation = CSharpCompilation.Create("TestAssembly")
                 .AddSyntaxTrees(syntaxTree)
                 .AddReferences(
-                    MetadataReference.CreateFromFile(typeof(System.Console).Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(System.Text.StringBuilder).Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(System.Collections.Generic.HashSet<int>).Assembly.Location));
-
-            SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
+                    MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(StringBuilder).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(HashSet<int>).Assembly.Location));
 
             // find the type symbol for the class member
             var methodDeclaration = root.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
-            IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclaration);
 
-            // get the documentation comment
-            DocumentationComment docComment = methodSymbol.GetDocumentationComment();
-            docComment.Should().NotBeSameAs(DocumentationComment.Empty);
+            //IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclaration);
+            var docNode = (DocumentationCommentTriviaSyntax)methodDeclaration.GetLeadingTrivia()
+                .Single(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+                .GetStructure();
 
             // translate the documentation comment
-            var result = DocumentationCommentTranslator.Translate(docComment);
+            var result = DocumentationCommentTranslator.Translate(docNode);
             result.Diagnostics.Should().BeEmpty();
 
             ITsJsDocComment jsdocComment = result.Result;
@@ -70,7 +71,7 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_a_summary_section()
         {
-            AssertTranslation("///<summary>\n/// Test\n/// </summary>", "Test");
+            AssertTranslation("/// <summary>\n/// Test\n/// </summary>", "Test");
         }
 
         [TestMethod]
@@ -176,9 +177,9 @@ class Foo
         }
 
         [TestMethod]
-        public void Translate_should_convert_crefs_of_types_to_a_shortened_name()
+        public void Translate_should_preserve_the_cref_attribute()
         {
-            AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "{@link IDisposable}");
+            AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "{@link System.IDisposable}");
         }
 
         [TestMethod]
@@ -214,13 +215,6 @@ class Foo
         }
 
         [TestMethod]
-        public void
-            Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
-        {
-            AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "{@link Prop}");
-        }
-
-        [TestMethod]
         public void Translate_should_recognize_text_within_a_see_or_seealso_tag()
         {
             AssertTranslation(
@@ -251,6 +245,18 @@ class Foo
             AssertTranslation(
                 "///<summary>This is a <see cref=\"Console\"/> tag</summary>",
                 "This is a {@link Console} tag");
+        }
+
+        [TestMethod]
+        public void Translate_should_preserve_multiple_blank_lines()
+        {
+            const string comment = @"/// <summary>
+/// Line 1
+///
+/// Line 2
+/// </summary>";
+
+            AssertTranslation(comment, "Line 1", "", "Line 2");
         }
     }
 }

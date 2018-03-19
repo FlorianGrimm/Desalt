@@ -7,8 +7,6 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Globalization;
-    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -28,31 +26,6 @@ namespace Desalt.Core.Translation
         public static bool IsInterfaceType(this ITypeSymbol symbol)
         {
             return symbol?.TypeKind == TypeKind.Interface;
-        }
-
-        /// <summary>
-        /// Parses an XML documentation comment belonging to the specified symbol.
-        /// </summary>
-        /// <param name="symbol">The symbol containing a potential XML documentation comment.</param>
-        /// <param name="preferredCulture">Preferred culture or null for the default.</param>
-        /// <param name="expandIncludes">
-        /// Optionally, expand &lt;include&gt; elements. No impact on non-source documentation comments.
-        /// </param>
-        /// <param name="cancellationToken">Token allowing cancellation of request.</param>
-        /// <returns>
-        /// The parsed <see cref="DocumentationComment"/> or <see cref="DocumentationComment.Empty"/>
-        /// if there is no XML documentation comment for the specified symbol.
-        /// </returns>
-        public static DocumentationComment GetDocumentationComment(
-            this ISymbol symbol,
-            CultureInfo preferredCulture = null,
-            bool expandIncludes = false,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            string xmlText = symbol.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
-            return string.IsNullOrEmpty(xmlText)
-                ? DocumentationComment.Empty
-                : DocumentationComment.FromXmlFragment(xmlText, symbol);
         }
     }
 }
