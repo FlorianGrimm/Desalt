@@ -293,10 +293,10 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 lines.Add(TagNames.Package);
             }
 
-            // @typeparam
+            // typeparam (not a real jsdoc tag)
             foreach (var (paramName, text) in TypeParamsTags)
             {
-                AddLines(text, $"@typeparam {paramName}", lines, options);
+                AddLines(text, $"typeparam {paramName}", lines, options);
             }
 
             // @param

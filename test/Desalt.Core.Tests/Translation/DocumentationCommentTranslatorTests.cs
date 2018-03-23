@@ -108,8 +108,8 @@ class Foo
         {
             AssertTranslation(
                 "///<typeparam name=\"T\">TypeParam1</typeparam><typeparam name=\"TResult\">TypeParam2</typeparam>",
-                "@typeparam T TypeParam1",
-                "@typeparam TResult TypeParam2");
+                "typeparam T TypeParam1",
+                "typeparam TResult TypeParam2");
         }
 
         [TestMethod]
