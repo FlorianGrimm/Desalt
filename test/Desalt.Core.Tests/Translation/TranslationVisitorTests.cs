@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
+    using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;

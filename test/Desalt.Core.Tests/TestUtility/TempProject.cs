@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests
+namespace Desalt.Core.Tests.TestUtility
 {
     using System;
     using System.Linq;
