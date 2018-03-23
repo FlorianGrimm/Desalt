@@ -126,7 +126,7 @@ namespace Desalt.Core.Translation
             public override void VisitXmlText(XmlTextSyntax node)
             {
                 string text = node.TextTokens.ToString();
-                if (!string.IsNullOrEmpty(text))
+                if (_elementTexts.Count > 0 ? !string.IsNullOrEmpty(text) : !string.IsNullOrWhiteSpace(text))
                 {
                     AppendTextOnCurrentElement(Factory.JsDocInlineText(text), node);
                 }
