@@ -166,6 +166,13 @@ class Foo
         }
 
         [TestMethod]
+        public void Translate_should_convert_alink_tags()
+        {
+            AssertTranslation("///<summary><a href=\"http://somewhere\"/></summary>", "{@link http://somewhere}");
+            AssertTranslation("///<summary><a href=\"http://somewhere\">Text</a></summary>", "[Text]{@link http://somewhere}");
+        }
+
+        [TestMethod]
         public void Translate_should_write_sections_in_the_correct_order()
         {
             const string csharpComment = @"
