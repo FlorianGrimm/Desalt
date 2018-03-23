@@ -149,8 +149,12 @@ namespace Desalt.Core.Translation
                     builder.Append("`").Append(element.Attributes[XmlNames.LangwordAttributeName]).Append("`");
                 }
 
-                // translate <see(also) href="url">x</see(also)> to [x]{@link url}
-                else if (XmlNames.ElementIsOneOf(elementName, XmlNames.SeeElementName, XmlNames.SeeAlsoElementName) &&
+                // translate <see href="url">x</see> (or seealso or a) to [x]{@link url}
+                else if (XmlNames.ElementIsOneOf(
+                        elementName,
+                        XmlNames.SeeElementName,
+                        XmlNames.SeeAlsoElementName,
+                        XmlNames.AElementName) &&
                     element.Attributes.ContainsKey(XmlNames.HrefAttributeName))
                 {
                     ITsJsDocLinkTag linkTag = Factory.JsDocLinkTag(

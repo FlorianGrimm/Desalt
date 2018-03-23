@@ -15,6 +15,7 @@ namespace Desalt.Core.Translation
     /// <remarks>Taken from the Roslyn source at <see href="http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/InternalUtilities/DocumentationCommentXmlNames.cs"/>.</remarks>
     internal static class DocumentationCommentXmlNames
     {
+        public const string AElementName = "a";
         public const string CElementName = "c";
         public const string CodeElementName = "code";
         public const string CompletionListElementName = "completionlist";
