@@ -102,7 +102,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 
             VerifyOutput(
                 Factory.JsDocComment(paramsTags: ("p1", Factory.JsDocBlock("Param")).ToSafeArray()),
-                "/** @param p1 - Param */",
+                "/** @param p1 Param */",
                 options);
 
             VerifyOutput(
@@ -145,7 +145,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 
             VerifyOutput(
                 Factory.JsDocComment(paramsTags: ("p1", Factory.JsDocBlock("Param")).ToSafeArray()),
-                "/**\n * @param p1 - Param\n */\n");
+                "/**\n * @param p1 Param\n */\n");
 
             VerifyOutput(
                 Factory.JsDocComment(returnsTag: Factory.JsDocBlock("Returns")),
@@ -195,8 +195,8 @@ namespace Desalt.Core.Tests.TypeScript.Ast
  * @file File
  * @copyright Copyright
  * @package
- * @param p1 - Param 1
- * @param p2 - Param 2
+ * @param p1 Param 1
+ * @param p2 Param 2
  * @returns Returns
  * @throws {type1} Throws 1
  * @throws {type2} Throws 2

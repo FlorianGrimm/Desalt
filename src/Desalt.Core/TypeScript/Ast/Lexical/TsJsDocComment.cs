@@ -26,7 +26,7 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
     ///  * @file text
     ///  * @copyright text
     ///  * @package
-    ///  * @param name - text
+    ///  * @param name text
     ///  * @returns text
     ///  * @throws {type} text
     ///  * @example text
@@ -293,16 +293,16 @@ namespace Desalt.Core.TypeScript.Ast.Lexical
                 lines.Add(TagNames.Package);
             }
 
-            // @typeparam
+            // typeparam (not a real jsdoc tag)
             foreach (var (paramName, text) in TypeParamsTags)
             {
-                AddLines(text, $"@typeparam {paramName} -", lines, options);
+                AddLines(text, $"typeparam {paramName}", lines, options);
             }
 
             // @param
             foreach (var (paramName, text) in ParamsTags)
             {
-                AddLines(text, $"{TagNames.Param} {paramName} -", lines, options);
+                AddLines(text, $"{TagNames.Param} {paramName}", lines, options);
             }
 
             // @returns
