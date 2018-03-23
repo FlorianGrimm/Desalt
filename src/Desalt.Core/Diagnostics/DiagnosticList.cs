@@ -26,6 +26,7 @@ namespace Desalt.Core.Diagnostics
         //// ===========================================================================================================
 
         private readonly List<Diagnostic> _diagnostics;
+        private readonly CompilerOptions _options;
 
         //// ===========================================================================================================
         //// Constructors
@@ -33,7 +34,7 @@ namespace Desalt.Core.Diagnostics
 
         private DiagnosticList(CompilerOptions options, IEnumerable<Diagnostic> diagnostics = null)
         {
-            Options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
         }
 
@@ -54,8 +55,6 @@ namespace Desalt.Core.Diagnostics
         public ImmutableArray<Diagnostic> FilteredDiagnostics => _diagnostics.ToImmutableArray();
 
         public bool HasErrors => _diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error);
-
-        public CompilerOptions Options { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -92,7 +91,7 @@ namespace Desalt.Core.Diagnostics
         /// </returns>
         public Diagnostic Add(Diagnostic diagnostic)
         {
-            diagnostic = Filter(Options, diagnostic);
+            diagnostic = Filter(_options, diagnostic);
             if (diagnostic != null)
             {
                 _diagnostics.Add(diagnostic);
@@ -107,7 +106,7 @@ namespace Desalt.Core.Diagnostics
         /// <param name="diagnostics">The diagnostics to add.</param>
         public void AddRange(IEnumerable<Diagnostic> diagnostics)
         {
-            _diagnostics.AddRange(Filter(Options, diagnostics));
+            _diagnostics.AddRange(Filter(_options, diagnostics));
         }
 
         private static Diagnostic Filter(CompilerOptions options, Diagnostic diagnostic)

@@ -18,14 +18,6 @@ namespace Desalt.Core.Tests.Diagnostics
     public class DiagnosticListTests
     {
         [TestMethod]
-        public void Create_and_From_should_store_the_options()
-        {
-            var options = new CompilerOptions("out");
-            DiagnosticList.Create(options).Options.Should().BeSameAs(options);
-            DiagnosticList.From(options, Enumerable.Empty<Diagnostic>()).Options.Should().BeSameAs(options);
-        }
-
-        [TestMethod]
         public void Create_and_From_should_throw_on_null_options()
         {
             Action action = () => DiagnosticList.Create(null);
