@@ -25,6 +25,8 @@ namespace Desalt.Core.Diagnostics
         //// Member Variables
         //// ===========================================================================================================
 
+        public static readonly DiagnosticList Empty = new DiagnosticList(null);
+
         private readonly List<Diagnostic> _diagnostics;
         private readonly CompilerOptions _options;
 
@@ -34,18 +36,20 @@ namespace Desalt.Core.Diagnostics
 
         private DiagnosticList(CompilerOptions options, IEnumerable<Diagnostic> diagnostics = null)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options;
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
         }
 
         public static DiagnosticList Create(CompilerOptions options, params Diagnostic[] diagnostics)
         {
-            return new DiagnosticList(options, diagnostics);
+            return new DiagnosticList(options ?? throw new ArgumentNullException(nameof(options)), diagnostics);
         }
 
         public static DiagnosticList From(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
         {
-            return new DiagnosticList(options, diagnostics ?? throw new ArgumentNullException(nameof(diagnostics)));
+            return new DiagnosticList(
+                options ?? throw new ArgumentNullException(nameof(options)),
+                diagnostics ?? throw new ArgumentNullException(nameof(diagnostics)));
         }
 
         //// ===========================================================================================================
@@ -91,6 +95,12 @@ namespace Desalt.Core.Diagnostics
         /// </returns>
         public Diagnostic Add(Diagnostic diagnostic)
         {
+            // don't add anything if we're Empty
+            if (_options == null)
+            {
+                return diagnostic;
+            }
+
             diagnostic = Filter(_options, diagnostic);
             if (diagnostic != null)
             {
@@ -106,6 +116,12 @@ namespace Desalt.Core.Diagnostics
         /// <param name="diagnostics">The diagnostics to add.</param>
         public void AddRange(IEnumerable<Diagnostic> diagnostics)
         {
+            // don't add anything if we're Empty
+            if (_options == null)
+            {
+                return;
+            }
+
             _diagnostics.AddRange(Filter(_options, diagnostics));
         }
 
