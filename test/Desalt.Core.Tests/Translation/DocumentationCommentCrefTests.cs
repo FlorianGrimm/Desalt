@@ -31,10 +31,16 @@ namespace Desalt.Core.Tests.Translation
     ///     => P:System.Collections.ArrayList.Item(System.Int32)
     /// Event:      <see cref="INotifyPropertyChanged.PropertyChanged"/>
     ///     => E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged
+    /// Field:      <see cref="_thisField"/>
+    ///     => F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField
     /// </summary>
     [TestClass]
     public class DocumentationCommentCrefTests
     {
+#pragma warning disable 169, 414
+        private string _thisField = null;
+#pragma warning restore 169, 414
+
         [TestMethod]
         public void Parse_should_throw_on_an_unkonwn_cref_type()
         {
@@ -106,6 +112,16 @@ namespace Desalt.Core.Tests.Translation
         }
 
         [TestMethod]
+        public void Parse_should_accept_a_field_reference()
+        {
+            var cref = Cref.Parse("F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField");
+            cref.FullTypeName.Should().Be("Desalt.Core.Tests.Translation.DocumentationCommentCrefTests");
+            cref.TypeName.Should().Be("DocumentationCommentCrefTests");
+            cref.MemberName.Should().Be("_thisField");
+            cref.Kind.Should().Be(DocumentationCommentCrefKind.Field);
+        }
+
+        [TestMethod]
         public void ToString_should_return_the_short_form_of_the_reference()
         {
             var cref = Cref.Parse("T:System.Console");
@@ -119,6 +135,9 @@ namespace Desalt.Core.Tests.Translation
 
             cref = Cref.Parse("E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged");
             cref.ToString().Should().Be("INotifyPropertyChanged.PropertyChanged");
+
+            cref = Cref.Parse("F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField");
+            cref.ToString().Should().Be("DocumentationCommentCrefTests._thisField");
         }
 
         [TestMethod]
@@ -135,6 +154,9 @@ namespace Desalt.Core.Tests.Translation
 
             cref = Cref.Parse("E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged");
             cref.ToFullString().Should().Be("System.ComponentModel.INotifyPropertyChanged.PropertyChanged");
+
+            cref = Cref.Parse("F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField");
+            cref.ToFullString().Should().Be("Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField");
         }
     }
 }

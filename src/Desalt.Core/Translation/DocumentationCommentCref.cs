@@ -8,9 +8,12 @@
 namespace Desalt.Core.Translation
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
+    using CrefKind = DocumentationCommentCrefKind;
 
     /// <summary>
     /// Represents a parsed cref attribute in an XML documentation comment. The fully-qualified form
@@ -22,11 +25,25 @@ namespace Desalt.Core.Translation
     internal sealed class DocumentationCommentCref
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private static readonly ImmutableDictionary<char, CrefKind> s_charToKindMap =
+            new Dictionary<char, CrefKind>
+            {
+                ['T'] = CrefKind.Type,
+                ['F'] = CrefKind.Field,
+                ['M'] = CrefKind.Method,
+                ['P'] = CrefKind.Property,
+                ['E'] = CrefKind.Event,
+            }.ToImmutableDictionary();
+
+        //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         private DocumentationCommentCref(
-            DocumentationCommentCrefKind kind,
+            CrefKind kind,
             string fullTypeName,
             string typeName,
             string memberName)
@@ -44,7 +61,7 @@ namespace Desalt.Core.Translation
         public string FullTypeName { get; }
         public string TypeName { get; }
         public string MemberName { get; }
-        public DocumentationCommentCrefKind Kind { get; }
+        public CrefKind Kind { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -54,7 +71,7 @@ namespace Desalt.Core.Translation
         {
             string fullTypeName;
             string memberName = null;
-            DocumentationCommentCrefKind kind;
+            CrefKind kind;
 
             using (var reader = new PeekingTextReader(cref))
             {
@@ -63,15 +80,15 @@ namespace Desalt.Core.Translation
                 switch (prefix)
                 {
                     case 'T':
-                        kind = DocumentationCommentCrefKind.Type;
+                        kind = CrefKind.Type;
                         fullTypeName = reader.ReadToEnd();
                         break;
 
                     case 'M':
                     case 'P':
                     case 'E':
-                        kind = prefix == 'M' ? DocumentationCommentCrefKind.Method :
-                            prefix == 'P' ? DocumentationCommentCrefKind.Property : DocumentationCommentCrefKind.Event;
+                    case 'F':
+                        kind = s_charToKindMap[prefix];
                         string qualifiedName = reader.ReadUntil('(');
                         (fullTypeName, memberName) = SplitQualifiedName(qualifiedName);
                         break;
@@ -90,27 +107,9 @@ namespace Desalt.Core.Translation
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString()
-        {
-            switch (Kind)
-            {
-                case DocumentationCommentCrefKind.Type:
-                    return TypeName;
+        public override string ToString() => Kind == CrefKind.Type ? TypeName : $"{TypeName}.{MemberName}";
 
-                case DocumentationCommentCrefKind.Method:
-                case DocumentationCommentCrefKind.Property:
-                case DocumentationCommentCrefKind.Event:
-                    return $"{TypeName}.{MemberName}";
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public string ToFullString()
-        {
-            return Kind == DocumentationCommentCrefKind.Type ? FullTypeName : $"{FullTypeName}.{MemberName}";
-        }
+        public string ToFullString() => Kind == CrefKind.Type ? FullTypeName : $"{FullTypeName}.{MemberName}";
 
         private static (string typeName, string memberName) SplitQualifiedName(string qualifiedName)
         {
@@ -125,5 +124,6 @@ namespace Desalt.Core.Translation
         Method,
         Property,
         Event,
+        Field,
     }
 }
