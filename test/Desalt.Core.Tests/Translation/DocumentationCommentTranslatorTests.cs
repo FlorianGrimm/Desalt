@@ -108,8 +108,8 @@ class Foo
         {
             AssertTranslation(
                 "///<typeparam name=\"T\">TypeParam1</typeparam><typeparam name=\"TResult\">TypeParam2</typeparam>",
-                "@typeparam T - TypeParam1",
-                "@typeparam TResult - TypeParam2");
+                "@typeparam T TypeParam1",
+                "@typeparam TResult TypeParam2");
         }
 
         [TestMethod]
@@ -117,8 +117,8 @@ class Foo
         {
             AssertTranslation(
                 "///<param name=\"p2\">This is p2</param><param name=\"p1\">This is p1</param>",
-                "@param p2 - This is p2",
-                "@param p1 - This is p1");
+                "@param p2 This is p2",
+                "@param p1 This is p1");
         }
 
         [TestMethod]
@@ -182,8 +182,8 @@ class Foo
             {
                 "Summary",
                 "Remarks",
-                "@param p2 - P2",
-                "@param p1 - P1",
+                "@param p2 P2",
+                "@param p1 P1",
                 "@returns Returns",
                 "@throws {Exception} Error 1",
                 "@throws {Exception} Error 2",
