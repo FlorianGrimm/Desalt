@@ -26,14 +26,18 @@ namespace Desalt.Core.Emit
         /// <summary>
         /// Represents options that use Unix line endings (\n) and tabs for indentation.
         /// </summary>
-        public static readonly EmitOptions UnixTabs =
-            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "\t");
+        public static readonly EmitOptions UnixTabs = new EmitOptions(
+            instanceToCopy: null,
+            newline: "\n",
+            indentationPrefix: "\t");
 
         /// <summary>
         /// Represents options that use Unix line endings (\n) and two spaces for indentation.
         /// </summary>
-        public static readonly EmitOptions UnixSpaces =
-            new EmitOptions(instanceToCopy: null, newline: "\n", indentationPrefix: "  ");
+        public static readonly EmitOptions UnixSpaces = new EmitOptions(
+            instanceToCopy: null,
+            newline: "\n",
+            indentationPrefix: "  ");
 
         //// ===========================================================================================================
         //// Constructors
@@ -48,8 +52,18 @@ namespace Desalt.Core.Emit
         /// <param name="indentationPrefix">
         /// The prefix to use for indenting blocks. Defaults to two spaces.
         /// </param>
-        public EmitOptions(string newline = null, string indentationPrefix = "  ")
-            : this(null, newline, indentationPrefix)
+        /// <param name="singleLineJsDocCommentsOnOneLine">
+        /// A value indicating whether single-line JSDoc comments should be emitted on a single line
+        /// ('/** text */') or multiple lines ('/**\n * text\n*/').
+        /// </param>
+        public EmitOptions(
+            string newline = null,
+            string indentationPrefix = "  ",
+            bool singleLineJsDocCommentsOnOneLine = false) : this(
+            null,
+            newline,
+            indentationPrefix,
+            singleLineJsDocCommentsOnOneLine)
         {
         }
 
@@ -63,10 +77,14 @@ namespace Desalt.Core.Emit
         private EmitOptions(
             EmitOptions instanceToCopy = null,
             string newline = null,
-            string indentationPrefix = null)
+            string indentationPrefix = null,
+            bool? singleLineJsDocCommentsOnOneLine = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? Environment.NewLine;
             IndentationPrefix = indentationPrefix ?? instanceToCopy?.IndentationPrefix ?? "  ";
+            SingleLineJsDocCommentsOnOneLine =
+                singleLineJsDocCommentsOnOneLine.GetValueOrDefault(
+                    instanceToCopy?.SingleLineJsDocCommentsOnOneLine ?? false);
         }
 
         //// ===========================================================================================================
@@ -86,5 +104,14 @@ namespace Desalt.Core.Emit
         public string IndentationPrefix { get; }
 
         public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
+
+        /// <summary>
+        /// Gets a value indicating whether single-line JSDoc comments should be emitted on a single
+        /// line ('/** text */') or multiple lines ('/**\n * text\n*/').
+        /// </summary>
+        public bool SingleLineJsDocCommentsOnOneLine { get; }
+
+        public EmitOptions WithSingleLineJsDocCommentsOnOneLine(bool value) =>
+            new EmitOptions(this, singleLineJsDocCommentsOnOneLine: value);
     }
 }

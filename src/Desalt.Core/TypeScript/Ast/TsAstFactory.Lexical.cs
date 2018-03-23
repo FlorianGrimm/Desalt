@@ -7,6 +7,8 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Desalt.Core.TypeScript.Ast.Lexical;
 
     public static partial class TsAstFactory
@@ -15,11 +17,11 @@ namespace Desalt.Core.TypeScript.Ast
         /// Creates a TypeScript single-line comment of the form '// comment'.
         /// </summary>
         public static ITsSingleLineComment SingleLineComment(
-            string comment,
+            string text,
             bool preserveSpacing = false,
             bool omitNewLineAtEnd = false)
         {
-            return new TsSingleLineComment(comment, preserveSpacing, omitNewLineAtEnd);
+            return new TsSingleLineComment(text, preserveSpacing, omitNewLineAtEnd);
         }
 
         /// <summary>
@@ -40,5 +42,71 @@ namespace Desalt.Core.TypeScript.Ast
         {
             return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
         }
+
+        /// <summary>
+        /// Creates a builder for <see cref="ITsJsDocComment"/> objects.
+        /// </summary>
+        public static ITsJsDocCommentBuilder JsDocCommentBuilder() => new TsJsDocCommentBuilder();
+
+        /// <summary>
+        /// Creates a structured JSDoc comment before a declaration.
+        /// </summary>
+        public static ITsJsDocComment JsDocComment(string description) =>
+            new TsJsDocComment(description: new TsJsDocBlock(new[] { new TsJsDocInlineText(description) }));
+
+        /// <summary>
+        /// Creates a structured JSDoc comment before a declaration.
+        /// </summary>
+        public static ITsJsDocComment JsDocComment(
+            ITsJsDocBlock fileTag = null,
+            ITsJsDocBlock copyrightTag = null,
+            bool isPackagePrivate = false,
+            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
+            ITsJsDocBlock returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
+            IEnumerable<ITsJsDocBlock> exampleTags = null,
+            ITsJsDocBlock description = null,
+            ITsJsDocBlock summaryTag = null,
+            IEnumerable<ITsJsDocBlock> seeTags = null)
+        {
+            return new TsJsDocComment(
+                fileTag: fileTag,
+                copyrightTag: copyrightTag,
+                isPackagePrivate: isPackagePrivate,
+                paramsTags: paramsTags,
+                returnsTag: returnsTag,
+                throwsTags: throwsTags,
+                exampleTags: exampleTags,
+                description: description,
+                summaryTag: summaryTag,
+                seeTags: seeTags);
+        }
+
+        /// <summary>
+        /// Creates a JSDoc block tag, for example @see, @example, and description.
+        /// </summary>
+        public static ITsJsDocBlock JsDocBlock(params ITsJsDocInlineContent[] content)
+        {
+            return new TsJsDocBlock(content);
+        }
+
+        /// <summary>
+        /// Creates a JSDoc block tag, for example @see, @example, and description.
+        /// </summary>
+        public static ITsJsDocBlock JsDocBlock(params string[] content)
+        {
+            return new TsJsDocBlock(content.Select(x => new TsJsDocInlineText(x)));
+        }
+
+        /// <summary>
+        /// Creates plain text within a JSDoc block tag.
+        /// </summary>
+        public static ITsJsDocInlineText JsDocInlineText(string text) => new TsJsDocInlineText(text);
+
+        /// <summary>
+        /// Cretes a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
+        /// </summary>
+        public static ITsJsDocLinkTag JsDocLinkTag(string namepathOrUrl, string text = null) =>
+            new TsJsDocLinkTag(namepathOrUrl, text);
     }
 }

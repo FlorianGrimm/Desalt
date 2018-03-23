@@ -45,6 +45,8 @@ namespace Desalt.Core.Tests.Emit
 
             public void Emit(Emitter emitter) => emitter.Write(Name);
 
+            public string EmitAsString(EmitOptions options = null) => Name;
+
             public IAstNode WithLeadingTrivia(params IAstTriviaNode[] triviaNodes) => throw new NotImplementedException();
 
             public IAstNode WithTrailingTrivia(params IAstTriviaNode[] triviaNodes) => throw new NotImplementedException();

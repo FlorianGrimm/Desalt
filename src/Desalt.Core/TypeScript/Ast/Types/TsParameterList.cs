@@ -47,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         public override string CodeDisplay =>
             RequiredParameters.ToElidedList() +
             OptionalParameters.ToElidedList() +
-            RestParameter.CodeDisplay;
+            RestParameter?.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {

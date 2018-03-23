@@ -1,61 +1,61 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAstNode.cs" company="Justin Rockwood">
+// <copyright file="TsJsDocInlineText.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace Desalt.Core.TypeScript.Ast.Lexical
 {
-    using System.Collections.Immutable;
+    using System;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Root interface for all abstract syntax tree (AST) node types.
+    /// Represents plain text within a JSDoc block tag.
     /// </summary>
-    public interface IAstNode
+    internal class TsJsDocInlineText : AstTriviaNode, ITsJsDocInlineText
     {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public TsJsDocInlineText(string text) : base(preserveSpacing: true)
+        {
+            Text = text ?? throw new ArgumentNullException(nameof(text));
+        }
+
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
         /// <summary>
+        /// Returns a value indicating whether this content node is empty.
+        /// </summary>
+        public bool IsEmpty => string.IsNullOrEmpty(Text);
+
+        public string Text { get; }
+
+        /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
         /// <value>A string representation of this AST node.</value>
-        string CodeDisplay { get; }
-
-        /// <summary>
-        /// Gets an array of trivia that appear before this node in the source code.
-        /// </summary>
-        ImmutableArray<IAstTriviaNode> LeadingTrivia { get; }
-
-        /// <summary>
-        /// Gets an array of trivia that appear after this node in the source code.
-        /// </summary>
-        ImmutableArray<IAstTriviaNode> TrailingTrivia { get; }
+        public override string CodeDisplay => Text;
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         /// <summary>
-        /// Accepts the visitor by calling into a specific method on the visitor for this type of AST node.
-        /// </summary>
-        /// <param name="visitor">The visitor to visit.</param>
-        void Accept(TsVisitor visitor);
-
-        /// <summary>
         /// Emits this AST node into code using the specified <see cref="Emitter"/>.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        void Emit(Emitter emitter);
+        public override void Emit(Emitter emitter) => emitter.Write(Text);
 
         /// <summary>
         /// Emits a node using a string stream. Useful for unit tests and debugging.
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        string EmitAsString(EmitOptions emitOptions = null);
+        public override string EmitAsString(EmitOptions emitOptions = null) => Text;
     }
 }

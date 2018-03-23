@@ -152,7 +152,6 @@
     <Compile Include="Translation\ImportSymbolTable.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />
-    <Compile Include="Translation\TranslationExtensions.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
@@ -229,6 +228,13 @@
     <Compile Include="TypeScript\Ast\Expressions\TsUnaryOperator.cs" />
     <Compile Include="TypeScript\Ast\IAstNode.cs" />
     <Compile Include="TypeScript\Ast\IAstTriviaNode.cs" />
+    <Compile Include="TypeScript\Ast\ITsJsDocCommentInterfaces.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocBlock.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocComment.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentBuilder.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocInlineText.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocLinkTag.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocTagNames.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />

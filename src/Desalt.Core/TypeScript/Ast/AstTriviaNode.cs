@@ -7,7 +7,9 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System;
     using System.Diagnostics;
+    using System.IO;
     using Desalt.Core.Emit;
 
     /// <summary>
@@ -15,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast
     /// comment or whitespace.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public abstract class AstTriviaNode : IAstTriviaNode
+    public abstract class AstTriviaNode : IAstTriviaNode, IEquatable<AstTriviaNode>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -54,6 +56,68 @@ namespace Desalt.Core.TypeScript.Ast
         protected string Space => PreserveSpacing ? string.Empty : " ";
 
         //// ===========================================================================================================
+        //// Operator Overloads
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Returns a value that indicates whether the values of two <see cref="AstTriviaNode"/>
+        /// objects are equal.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
+        /// value; otherwise, false.
+        /// </returns>
+        public static bool operator ==(IAstTriviaNode left, AstTriviaNode right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Returns a value that indicates whether the values of two <see cref="AstTriviaNode"/>
+        /// objects are equal.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
+        /// value; otherwise, false.
+        /// </returns>
+        public static bool operator ==(AstTriviaNode left, IAstTriviaNode right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Returns a value that indicates whether two <see cref="AstTriviaNode"/> objects have
+        /// different values.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
+        /// </returns>
+        public static bool operator !=(IAstTriviaNode left, AstTriviaNode right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <summary>
+        /// Returns a value that indicates whether two <see cref="AstTriviaNode"/> objects have
+        /// different values.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
+        /// </returns>
+        public static bool operator !=(AstTriviaNode left, IAstTriviaNode right)
+        {
+            return !Equals(left, right);
+        }
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
@@ -62,5 +126,89 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
         public abstract void Emit(Emitter emitter);
+
+        /// <summary>
+        /// Emits a node using a string stream. Useful for unit tests and debugging.
+        /// </summary>
+        /// <param name="emitOptions">The optional emit options.</param>
+        /// <returns>The node emitted to a string stream.</returns>
+        public virtual string EmitAsString(EmitOptions emitOptions = null)
+        {
+            using (var stream = new MemoryStream())
+            using (var emitter = new Emitter(stream, options: emitOptions))
+            {
+                Emit(emitter);
+                stream.Flush();
+                stream.Position = 0;
+
+                using (var reader = new StreamReader(stream, emitter.Encoding))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>
+        /// <see langword="true"/> if the specified object is equal to the current object; otherwise,
+        /// <see langword="false"/>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && ((IAstTriviaNode)this).Equals((IAstTriviaNode)obj);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
+        /// parameter; otherwise, <see langword="false"/>.
+        /// </returns>
+        bool IEquatable<IAstTriviaNode>.Equals(IAstTriviaNode other) => Equals(other as AstTriviaNode);
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
+        /// parameter; otherwise, <see langword="false"/>.
+        /// </returns>
+        public virtual bool Equals(AstTriviaNode other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return EmitAsString().Equals(other.EmitAsString(), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode() => EmitAsString().GetHashCode();
     }
 }

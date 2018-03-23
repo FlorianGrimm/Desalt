@@ -8,9 +8,9 @@
 namespace Desalt.Core.Translation
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
@@ -28,12 +28,16 @@ namespace Desalt.Core.Translation
             RegexOptions.ExplicitCapture |
             RegexOptions.Singleline;
 
-        private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+        private static readonly Regex s_seeCrefTypeRegex = new Regex(
+            @"<see(also)?\s+cref\s*=\s*""T:(?<fullTypeName>(\w+\.?)+)""\s*/>",
             InlineElementOptions);
 
-        private static readonly Regex s_seeAlsoMemberRegex = new Regex(
-            @"<seealso\s+cref\s*=\s*""(M|F):(?<typeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+        private static readonly Regex s_seeCrefMemberRegex = new Regex(
+            @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<fullTypeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
+            InlineElementOptions);
+
+        private static readonly Regex s_seeHrefRegex = new Regex(
+            @"<see(also)?\s+href\s*=\s*""(?<href>[^""]*)""\s*/>",
             InlineElementOptions);
 
         private static readonly Regex s_seeLangwordRegex = new Regex(
@@ -51,51 +55,64 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsMultiLineComment Translate(DocumentationComment documentationComment)
+        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
         {
-            var lines = new List<string>();
+            var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
+            ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 
-            // translate the <summary> first
-            if (documentationComment.SummaryText != null)
+            // if there is <summary> and <remarks>, then append the remarks after the summary,
+            // otherwise just use one or the other as the description
+            string description = comment.SummaryText;
+            if (!string.IsNullOrEmpty(comment.RemarksText))
             {
-                lines.AddRange(TranslateElementText(documentationComment.SummaryText));
-            }
-
-            // translate each <param> tag
-            foreach (string parameterName in documentationComment.ParameterNames)
-            {
-                string parameterText = documentationComment.GetParameterText(parameterName);
-                if (parameterText != null)
+                if (description == null)
                 {
-                    lines.AddRange(TranslateParam(parameterName, parameterText));
+                    description = comment.RemarksText;
+                }
+                else
+                {
+                    description += "\n" + comment.RemarksText;
                 }
             }
 
-            ITsMultiLineComment jsDocComment = Factory.MultiLineComment(isJsDoc: true, lines: lines.ToArray());
+            builder.SetDescription(TranslateElementText(description));
 
-            return jsDocComment;
-        }
+            // <example>
+            builder.AddExampleTag(comment.ExampleText);
 
-        /// <summary>
-        /// Converts a &lt;param name="name"&gt; tag to a JsDoc @param tag.
-        /// </summary>
-        private static IEnumerable<string> TranslateParam(string parameterName, string parameterText)
-        {
-            string[] parameterTextLines = TranslateElementText(parameterText);
-
-            yield return $"@param {parameterName} {parameterTextLines[0]}";
-            foreach (string parameterLine in parameterTextLines.Skip(1))
+            // translate each <param> tag
+            foreach (string parameterName in comment.ParameterNames)
             {
-                yield return parameterLine;
+                string parameterText = comment.GetParameterText(parameterName);
+                builder.AddParamTag(parameterName, TranslateElementText(parameterText));
             }
+
+            // translate each <typeparam> tags, even though there is no JSDoc equivalent
+            foreach (string typeParameterName in comment.TypeParameterNames)
+            {
+                string parameterText = comment.GetTypeParameterText(typeParameterName);
+                builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText));
+            }
+
+            // <returns>
+            builder.SetReturnsTag(TranslateElementText(comment.ReturnsText));
+
+            // translate each <exception> tag
+            foreach (string typeName in comment.ExceptionTypes)
+            {
+                foreach (string exceptionText in comment.GetExceptionTexts(typeName))
+                {
+                    builder.AddThrowsTag(RemoveNamespace(typeName), TranslateElementText(exceptionText));
+                }
+            }
+
+            ITsJsDocComment translatedComment = builder.Build();
+            return new ExtendedResult<ITsJsDocComment>(translatedComment);
         }
 
-        private static string[] TranslateElementText(string text)
+        private static ITsJsDocBlock TranslateElementText(string text)
         {
-            string[] translated = TranslateKnownXmlTags(text)
-                .Trim()
-                .Split(s_newLineAsStringArray, StringSplitOptions.RemoveEmptyEntries);
-
+            ITsJsDocBlock translated = TranslateKnownXmlTags(text);
             return translated;
         }
 
@@ -104,9 +121,14 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        private static string TranslateKnownXmlTags(string text)
+        private static ITsJsDocBlock TranslateKnownXmlTags(string text)
         {
-            string translated = text;
+            if (text == null)
+            {
+                return null;
+            }
+
+            string translated = text.Trim();
 
             // translate <see langword="x"/> to `x`.
             translated = s_seeLangwordRegex.Replace(translated, match => $"`{match.Groups["langword"]}`");
@@ -114,17 +136,20 @@ namespace Desalt.Core.Translation
             // translate <c>x</c> to `x`.
             translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
 
-            // translate <see cref="M:Type.Member" /> to [[Type.Member]]
+            // translate <see/seealso href="Href"/> to '{@link Href}'
+            translated = s_seeHrefRegex.Replace(translated, match => $"{{@link {match.Groups["href"].Value}}}");
+
+            // translate <see/seealso cref="Type"/> to '{@link Type}'
+            translated = s_seeCrefTypeRegex.Replace(
+                translated,
+                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}}}");
+
+            // translate <see/seealso cref="M:Type.Member"/> to '@see Type.Member'
             translated = s_seeCrefMemberRegex.Replace(
                 translated,
-                match => $"[[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
+                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}.{match.Groups["memberName"]}}}");
 
-            // translate <seealso cref="M:Type.Member" /> to 'See [[Type.Member]]'
-            translated = s_seeAlsoMemberRegex.Replace(
-                translated,
-                match => $"See [[{RemoveNamespace(match.Groups["typeName"].Value)}.{match.Groups["memberName"]}]]");
-
-            return translated;
+            return Factory.JsDocBlock(translated);
         }
 
         private static string RemoveNamespace(string fullTypeName)

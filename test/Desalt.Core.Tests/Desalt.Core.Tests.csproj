@@ -155,8 +155,10 @@
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TempProject.cs" />
+    <Compile Include="Translation\DocumentationCommentTranslatorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.AssignmentExpressions.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.Declarations.cs" />

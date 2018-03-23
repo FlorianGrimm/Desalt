@@ -52,7 +52,7 @@ namespace Desalt.Core.Translation
             string xmlText = symbol.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
             return string.IsNullOrEmpty(xmlText)
                 ? DocumentationComment.Empty
-                : DocumentationComment.FromXmlFragment(xmlText);
+                : DocumentationComment.FromXmlFragment(xmlText, symbol);
         }
     }
 }

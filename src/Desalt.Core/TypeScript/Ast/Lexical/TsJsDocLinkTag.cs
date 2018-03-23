@@ -1,36 +1,49 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAstTriviaNode.cs" company="Justin Rockwood">
+// <copyright file="TsJsDocLinkTag.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace Desalt.Core.TypeScript.Ast.Lexical
 {
     using System;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Root interface for all abstract syntax tree (AST) trivia node types. A trivia node is a
-    /// comment or whitespace.
+    /// Represents a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
     /// </summary>
-    public interface IAstTriviaNode : IEquatable<IAstTriviaNode>
+    internal class TsJsDocLinkTag : AstTriviaNode, ITsJsDocLinkTag
     {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public TsJsDocLinkTag(string namepathOrUrl, string text = null) : base(preserveSpacing: true)
+        {
+            NamepathOrUrl = namepathOrUrl?.Replace("{", string.Empty).Replace("}", string.Empty) ??
+                throw new ArgumentNullException(nameof(namepathOrUrl));
+            Text = text?.Replace("[", string.Empty).Replace("]", string.Empty);
+        }
+
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
         /// <summary>
-        /// Indicates whether to preserve the leading and trailing spacing and not add spaces around
-        /// the beginning and ending markers.
+        /// Returns a value indicating whether this content node is empty.
         /// </summary>
-        bool PreserveSpacing { get; }
+        public bool IsEmpty => string.IsNullOrEmpty(NamepathOrUrl) && string.IsNullOrEmpty(Text);
+
+        public string NamepathOrUrl { get; }
+        public string Text { get; }
 
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
         /// </summary>
         /// <value>A string representation of this AST node.</value>
-        string CodeDisplay { get; }
+        public override string CodeDisplay =>
+            string.IsNullOrEmpty(Text) ? $"{{@link {NamepathOrUrl}}}" : $"[{Text}]{{@link {NamepathOrUrl}}}";
 
         //// ===========================================================================================================
         //// Methods
@@ -40,13 +53,13 @@ namespace Desalt.Core.TypeScript.Ast
         /// Emits this AST node into code using the specified <see cref="Emitter"/>.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        void Emit(Emitter emitter);
+        public override void Emit(Emitter emitter) => emitter.Write(CodeDisplay);
 
         /// <summary>
         /// Emits a node using a string stream. Useful for unit tests and debugging.
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        string EmitAsString(EmitOptions emitOptions = null);
+        public override string EmitAsString(EmitOptions emitOptions = null) => CodeDisplay;
     }
 }
