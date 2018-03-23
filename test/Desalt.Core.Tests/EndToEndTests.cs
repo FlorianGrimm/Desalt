@@ -16,9 +16,8 @@ namespace Desalt.Core.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [Ignore]
-        [TestCategory("E2E")]
         [TestMethod]
+        [TestCategory("SkipWhenLiveUnitTesting")]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
             // TODO: generalize this so that it's not an absolute path
