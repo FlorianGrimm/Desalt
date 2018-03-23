@@ -56,8 +56,22 @@ namespace Desalt.Core.Translation
             string filePath = context.TypeScriptFilePath;
 
             var allTypeDeclarations = context.RootSyntax.DescendantNodes()
-                .OfType<BaseTypeDeclarationSyntax>()
-                .Select(node => node.Identifier.Text);
+                .Select(
+                    node =>
+                    {
+                        switch (node)
+                        {
+                            case BaseTypeDeclarationSyntax typeDeclaration:
+                                return typeDeclaration.Identifier.Text;
+
+                            case DelegateDeclarationSyntax delegateDeclaration:
+                                return delegateDeclaration.Identifier.Text;
+
+                            default:
+                                return null;
+                        }
+                    })
+                .Where(name => !string.IsNullOrWhiteSpace(name));
 
             foreach (string typeName in allTypeDeclarations)
             {

@@ -159,6 +159,7 @@
     <Compile Include="Translation\DocumentationCommentCrefTests.cs" />
     <Compile Include="Translation\DocumentationCommentTranslatorTests.cs" />
     <Compile Include="Translation\DocumentationCommentXmlElementTests.cs" />
+    <Compile Include="Translation\ImportSymbolTableTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentTests.cs" />

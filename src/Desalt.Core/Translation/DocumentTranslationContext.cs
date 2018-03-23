@@ -55,7 +55,9 @@ namespace Desalt.Core.Translation
         /// Gets the output path for the translated TypeScript file.
         /// </summary>
         public string TypeScriptFilePath =>
-            Path.Combine(Options.OutputPath, Path.GetFileNameWithoutExtension(Document.FilePath) + ".ts");
+            Path.Combine(
+                Options.OutputPath,
+                Path.GetFileNameWithoutExtension(Document.FilePath ?? Document.Name) + ".ts");
 
         //// ===========================================================================================================
         //// Methods
