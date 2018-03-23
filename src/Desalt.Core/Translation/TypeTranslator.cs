@@ -72,7 +72,17 @@ namespace Desalt.Core.Translation
 
             // this is a type that we'll need to import since it's not a native type
             typesToImport.Add(symbol.Name);
-            return Factory.TypeReference(Factory.Identifier(symbol.Name));
+
+            // check for generic type arguments
+            ITsType[] translatedTypeMembers = null;
+            if (symbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
+                translatedTypeMembers = typeMembers.Select(typeMember => TranslateSymbol(typeMember, typesToImport))
+                    .ToArray();
+            }
+
+            return Factory.TypeReference(Factory.Identifier(symbol.Name), translatedTypeMembers);
         }
 
         /// <summary>
@@ -89,7 +99,9 @@ namespace Desalt.Core.Translation
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
                 var parameterType = TranslateSymbol(typeArgument, typesToImport);
-                ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(Factory.Identifier(parameterName), parameterType);
+                ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(
+                    Factory.Identifier(parameterName),
+                    parameterType);
                 requiredParameters.Add(requiredParameter);
             }
 
