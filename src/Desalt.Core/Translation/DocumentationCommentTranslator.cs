@@ -169,26 +169,12 @@ namespace Desalt.Core.Translation
                                 new Exception("TODO: Missing cref attribute in documentation comment: {0}")));
                     }
 
-                    string cref = element.Attributes[XmlNames.CrefAttributeName];
-                    if (cref.StartsWith("T:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        cref = cref.Substring(2);
-                        cref = RemoveNamespace(cref);
-                    }
-                    else if (cref.Length < 2 || cref[1] != ':')
-                    {
-                        diagnostics.Add(
-                            DiagnosticFactory.InternalError(
-                                new Exception("TODO: Missing or invalid cref attribute in documentation comment: {0}")));
-                    }
-                    else
-                    {
-                        cref = cref.Substring(2);
-                        cref = RemoveNamespace(cref);
-                    }
+                    // parse cref type references
+                    var cref = DocumentationCommentCref.Parse(element.Attributes[XmlNames.CrefAttributeName]);
+                    string linkUrl = cref.ToString();
 
                     // create a new link
-                    AddJsDocLink(Factory.JsDocLinkTag(cref, element.Content));
+                    AddJsDocLink(Factory.JsDocLinkTag(linkUrl, element.Content));
                 }
             }
 

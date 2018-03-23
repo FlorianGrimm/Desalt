@@ -208,6 +208,14 @@ class Foo
         }
 
         [TestMethod]
+        public void Translate_should_convert_crefs_of_methods_with_a_full_signature_to_a_shortened_name()
+        {
+            AssertTranslation(
+                "///<summary><see cref=\"Console.WriteLine(char[], int, int)\"/></summary>",
+                "{@link Console.WriteLine}");
+        }
+
+        [TestMethod]
         public void Translate_should_convert_crefs_of_properties_to_a_shortened_name()
         {
             AssertTranslation(
