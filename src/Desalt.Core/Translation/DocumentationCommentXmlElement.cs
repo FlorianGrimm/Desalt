@@ -9,7 +9,9 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Linq;
     using System.Text;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
@@ -27,13 +29,17 @@ namespace Desalt.Core.Translation
 
         private DocumentationCommentXmlElement(
             string elementName,
-            IDictionary<string, string> attributes,
-            string content)
+            IEnumerable<KeyValuePair<string, string>> attributes = null,
+            string content = null)
         {
             ElementName = !string.IsNullOrWhiteSpace(elementName)
                 ? elementName
                 : throw new ArgumentNullException(nameof(elementName));
-            Attributes = attributes ?? new Dictionary<string, string>();
+
+            Attributes =
+                attributes?.ToImmutableDictionary(keyComparer: DocumentationCommentXmlNames.AttributeComparer) ??
+                ImmutableDictionary<string, string>.Empty;
+
             Content = content ?? string.Empty;
         }
 
@@ -42,7 +48,7 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public string ElementName { get; }
-        public IDictionary<string, string> Attributes { get; }
+        public ImmutableDictionary<string, string> Attributes { get; }
         public string Content { get; }
 
         private string DebuggerDisplay => ToString();
@@ -51,19 +57,29 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
+        public static DocumentationCommentXmlElement Create(
+            string elementName,
+            IEnumerable<KeyValuePair<string, string>> attributes = null,
+            string content = null)
+        {
+            return new DocumentationCommentXmlElement(elementName, attributes, content);
+        }
+
         /// <summary>
         /// Parses an XML element and returns the result.
         /// </summary>
         /// <param name="reader">The reader to use for parsing.</param>
-        /// <param name="diagnostics">The <see cref="DiagnosticList"/> to use for reporting errors.</param>
+        /// <param name="diagnostics">An optional <see cref="DiagnosticList"/> to use for reporting errors.</param>
         /// <returns>The parsed XML element or null if there were errors.</returns>
-        public static DocumentationCommentXmlElement Parse(PeekingTextReader reader, DiagnosticList diagnostics)
+        public static DocumentationCommentXmlElement Parse(PeekingTextReader reader, DiagnosticList diagnostics = null)
         {
             if (reader.Peek() != '<')
             {
                 throw new InvalidOperationException(
                     "Ummm... don't be calling this unless you're at an XML start character.");
             }
+
+            diagnostics = diagnostics ?? DiagnosticList.Empty;
 
             // skip the <
             reader.Read();
@@ -115,9 +131,19 @@ namespace Desalt.Core.Translation
             if (reader.Peek() == '>')
             {
                 reader.Read();
-                string closingTag = $"</{elementName}>";
+                string closingTag = $"</{elementName}";
                 content = reader.ReadUntil(closingTag);
                 reader.Read(closingTag.Length);
+                reader.SkipWhitespace();
+                // read the >
+                if (reader.Peek() != '>')
+                {
+                    diagnostics.Add(
+                        DiagnosticFactory.InternalError(
+                            new Exception("TODO: Malformed XML in documentation comment: {0}")));
+                }
+
+                reader.Read();
             }
 
             return new DocumentationCommentXmlElement(elementName, attributes, content);
@@ -129,7 +155,9 @@ namespace Desalt.Core.Translation
 
             if (Attributes.Count > 0)
             {
-                foreach (KeyValuePair<string, string> pair in Attributes)
+                foreach (KeyValuePair<string, string> pair in Attributes.OrderBy(
+                    pair => pair.Key,
+                    DocumentationCommentXmlNames.AttributeComparer))
                 {
                     builder.Append(" ").Append(pair.Key).Append("=\"").Append(pair.Value).Append("\"");
                 }
