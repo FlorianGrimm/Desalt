@@ -58,7 +58,7 @@ class Foo
             docComment.Should().NotBeSameAs(DocumentationComment.Empty);
 
             // translate the documentation comment
-            var result = DocumentationCommentTranslator.Translate(docComment);
+            var result = DocumentationCommentTranslator.Translate(docComment, new CompilerOptions("out"));
             result.Diagnostics.Should().BeEmpty();
 
             ITsJsDocComment jsdocComment = result.Result;
@@ -70,6 +70,12 @@ class Foo
         [TestMethod]
         public void Translate_should_convert_a_summary_section()
         {
+            AssertTranslation("///<summary>Test</summary>", "Test");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_a_summary_section_with_newlines()
+        {
             AssertTranslation("///<summary>\n/// Test\n/// </summary>", "Test");
         }
 
@@ -80,9 +86,21 @@ class Foo
         }
 
         [TestMethod]
+        public void Translate_should_convert_a_remarks_section_with_newlines()
+        {
+            AssertTranslation("///<remarks>\n/// Remarks\n/// </remarks>", "Remarks");
+        }
+
+        [TestMethod]
         public void Translate_should_convert_an_example_section()
         {
             AssertTranslation("///<example>Example</example>", "@example Example");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_an_example_section_with_newlines()
+        {
+            AssertTranslation("///<example>\n/// Example\n/// </example>", "@example Example");
         }
 
         [TestMethod]
@@ -187,6 +205,14 @@ class Foo
             AssertTranslation(
                 "///<summary><see cref=\"IDisposable.Dispose\"/></summary>",
                 "{@link IDisposable.Dispose}");
+        }
+
+        [TestMethod]
+        public void Translate_should_convert_crefs_of_methods_with_a_full_signature_to_a_shortened_name()
+        {
+            AssertTranslation(
+                "///<summary><see cref=\"Console.WriteLine(char[], int, int)\"/></summary>",
+                "{@link Console.WriteLine}");
         }
 
         [TestMethod]

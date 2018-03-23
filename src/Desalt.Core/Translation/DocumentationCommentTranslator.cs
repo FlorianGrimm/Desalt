@@ -8,11 +8,15 @@
 namespace Desalt.Core.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
+    using System.Text;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.Utility;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using XmlNames = DocumentationCommentXmlNames;
 
     /// <summary>
     /// Converts a CSharp XML documentation comment into a TypeScript JsDoc comment.
@@ -23,41 +27,17 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private const RegexOptions InlineElementOptions = RegexOptions.CultureInvariant |
-            RegexOptions.IgnoreCase |
-            RegexOptions.ExplicitCapture |
-            RegexOptions.Singleline;
-
-        private static readonly Regex s_seeCrefTypeRegex = new Regex(
-            @"<see(also)?\s+cref\s*=\s*""T:(?<fullTypeName>(\w+\.?)+)""\s*/>",
-            InlineElementOptions);
-
-        private static readonly Regex s_seeCrefMemberRegex = new Regex(
-            @"<see(also)?\s+cref\s*=\s*""(M|P|E):(?<fullTypeName>(\w+\.)+)(?<memberName>\w+).*""\s*/>",
-            InlineElementOptions);
-
-        private static readonly Regex s_seeHrefRegex = new Regex(
-            @"<see(also)?\s+href\s*=\s*""(?<href>[^""]*)""\s*/>",
-            InlineElementOptions);
-
-        private static readonly Regex s_seeLangwordRegex = new Regex(
-            @"<see\s+langword\s*=\s*""(?<langword>[^""]+)""\s*/>",
-            InlineElementOptions);
-
-        private static readonly Regex s_ctagRegex = new Regex(@"<c>(?<content>[^>]*)</c>", InlineElementOptions);
-
-        /// <summary>
-        /// Used for <see cref="TranslateElementText"/> method, to prevent new allocation of string
-        /// </summary>
-        private static readonly string[] s_newLineAsStringArray = { Environment.NewLine };
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
+        public static IExtendedResult<ITsJsDocComment> Translate(
+            DocumentationComment documentationComment,
+            CompilerOptions options)
         {
             var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
+
+            var diagnostics = DiagnosticList.Create(options);
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 
             // if there is <summary> and <remarks>, then append the remarks after the summary,
@@ -75,86 +55,148 @@ namespace Desalt.Core.Translation
                 }
             }
 
-            builder.SetDescription(TranslateElementText(description));
+            builder.SetDescription(TranslateElementText(description, diagnostics));
 
             // <example>
-            builder.AddExampleTag(comment.ExampleText);
+            builder.AddExampleTag(TranslateElementText(comment.ExampleText, diagnostics));
 
             // translate each <param> tag
             foreach (string parameterName in comment.ParameterNames)
             {
                 string parameterText = comment.GetParameterText(parameterName);
-                builder.AddParamTag(parameterName, TranslateElementText(parameterText));
+                builder.AddParamTag(parameterName, TranslateElementText(parameterText, diagnostics));
             }
 
             // translate each <typeparam> tags, even though there is no JSDoc equivalent
             foreach (string typeParameterName in comment.TypeParameterNames)
             {
                 string parameterText = comment.GetTypeParameterText(typeParameterName);
-                builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText));
+                builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText, diagnostics));
             }
 
             // <returns>
-            builder.SetReturnsTag(TranslateElementText(comment.ReturnsText));
+            builder.SetReturnsTag(TranslateElementText(comment.ReturnsText, diagnostics));
 
             // translate each <exception> tag
             foreach (string typeName in comment.ExceptionTypes)
             {
                 foreach (string exceptionText in comment.GetExceptionTexts(typeName))
                 {
-                    builder.AddThrowsTag(RemoveNamespace(typeName), TranslateElementText(exceptionText));
+                    builder.AddThrowsTag(RemoveNamespace(typeName), TranslateElementText(exceptionText, diagnostics));
                 }
             }
 
             ITsJsDocComment translatedComment = builder.Build();
-            return new ExtendedResult<ITsJsDocComment>(translatedComment);
-        }
-
-        private static ITsJsDocBlock TranslateElementText(string text)
-        {
-            ITsJsDocBlock translated = TranslateKnownXmlTags(text);
-            return translated;
-        }
-
-        /// <summary>
-        /// Converts known XML documentation tags (see, seealso, etc.) to the TypeScript equivalent.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private static ITsJsDocBlock TranslateKnownXmlTags(string text)
-        {
-            if (text == null)
-            {
-                return null;
-            }
-
-            string translated = text.Trim();
-
-            // translate <see langword="x"/> to `x`.
-            translated = s_seeLangwordRegex.Replace(translated, match => $"`{match.Groups["langword"]}`");
-
-            // translate <c>x</c> to `x`.
-            translated = s_ctagRegex.Replace(translated, match => $"`{match.Groups["content"]}`");
-
-            // translate <see/seealso href="Href"/> to '{@link Href}'
-            translated = s_seeHrefRegex.Replace(translated, match => $"{{@link {match.Groups["href"].Value}}}");
-
-            // translate <see/seealso cref="Type"/> to '{@link Type}'
-            translated = s_seeCrefTypeRegex.Replace(
-                translated,
-                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}}}");
-
-            // translate <see/seealso cref="M:Type.Member"/> to '@see Type.Member'
-            translated = s_seeCrefMemberRegex.Replace(
-                translated,
-                match => $"{{@link {RemoveNamespace(match.Groups["fullTypeName"].Value)}.{match.Groups["memberName"]}}}");
-
-            return Factory.JsDocBlock(translated);
+            return new ExtendedResult<ITsJsDocComment>(translatedComment, diagnostics);
         }
 
         private static string RemoveNamespace(string fullTypeName)
         {
             return fullTypeName.TrimEnd('.').Split('.').Last();
+        }
+
+        /// <summary>
+        /// Translates any embedded XML blocks into the relevant JSDoc equivalent.
+        /// </summary>
+        /// <param name="text">The XML documentation comment text to translate.</param>
+        /// <param name="diagnostics">The <see cref="DiagnosticList"/> to use for reporting errors.</param>
+        /// <returns>The translated text in JSDoc format.</returns>
+        private static ITsJsDocBlock TranslateElementText(string text, DiagnosticList diagnostics)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
+            var textItems = new List<ITsJsDocInlineContent>();
+            var builder = new StringBuilder();
+
+            // loop over all of the text items
+            using (var reader = new PeekingTextReader(text))
+            {
+                while (!reader.IsAtEnd)
+                {
+                    builder.Append(reader.ReadUntil('<'));
+
+                    if (reader.Peek() != '<')
+                    {
+                        break;
+                    }
+
+                    AddNextTextItem(reader);
+                }
+            }
+
+            // ReSharper disable once ImplicitlyCapturedClosure
+            void AddNextTextItem(PeekingTextReader reader)
+            {
+                DocumentationCommentXmlElement element = DocumentationCommentXmlElement.Parse(reader, diagnostics);
+                string elementName = element.ElementName;
+
+                // <c>x</c> and <code>x</code> translates to `x`
+                if (XmlNames.ElementIsOneOf(elementName, XmlNames.CElementName, XmlNames.CodeElementName))
+                {
+                    if (!string.IsNullOrWhiteSpace(element.Content))
+                    {
+                        builder.Append("`").Append(element.Content).Append("`");
+                    }
+                }
+
+                // <see langword="x"/> translates to `x`
+                else if (XmlNames.ElementEquals(elementName, XmlNames.SeeElementName) &&
+                    element.Attributes.ContainsKey(XmlNames.LangwordAttributeName))
+                {
+                    builder.Append("`").Append(element.Attributes[XmlNames.LangwordAttributeName]).Append("`");
+                }
+
+                // translate <see(also) href="url">x</see(also)> to [x]{@link url}
+                else if (XmlNames.ElementIsOneOf(elementName, XmlNames.SeeElementName, XmlNames.SeeAlsoElementName) &&
+                    element.Attributes.ContainsKey(XmlNames.HrefAttributeName))
+                {
+                    ITsJsDocLinkTag linkTag = Factory.JsDocLinkTag(
+                        element.Attributes[XmlNames.HrefAttributeName],
+                        element.Content);
+                    AddJsDocLink(linkTag);
+                }
+
+                // translate <see(also) cref="x">Text</see(also)> to [Text]{@link x}
+                else if (XmlNames.ElementIsOneOf(elementName, XmlNames.SeeElementName, XmlNames.SeeAlsoElementName))
+                {
+                    if (!element.Attributes.ContainsKey(XmlNames.CrefAttributeName))
+                    {
+                        diagnostics.Add(
+                            DiagnosticFactory.InternalError(
+                                new Exception("TODO: Missing cref attribute in documentation comment: {0}")));
+                    }
+
+                    // parse cref type references
+                    var cref = DocumentationCommentCref.Parse(element.Attributes[XmlNames.CrefAttributeName]);
+                    string linkUrl = cref.ToString();
+
+                    // create a new link
+                    AddJsDocLink(Factory.JsDocLinkTag(linkUrl, element.Content));
+                }
+            }
+
+            void AddJsDocLink(ITsJsDocLinkTag linkTag)
+            {
+                // add the current builder's contents to the text items
+                textItems.Add(Factory.JsDocInlineText(builder.ToString()));
+
+                // create a new link
+                textItems.Add(linkTag);
+
+                // clear out the builder for the next text run
+                builder.Clear();
+            }
+
+            // add the last run to the text items
+            if (builder.Length > 0)
+            {
+                textItems.Add(Factory.JsDocInlineText(builder.ToString().TrimEnd()));
+            }
+
+            return Factory.JsDocBlock(textItems.ToArray());
         }
     }
 }

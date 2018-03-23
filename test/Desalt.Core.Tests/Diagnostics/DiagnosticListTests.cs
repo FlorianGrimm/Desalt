@@ -106,6 +106,17 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
+        public void DiagnosticsList_Clear_should_empty_the_list()
+        {
+            DiagnosticList list = DiagnosticList.Create(new CompilerOptions("out"));
+            Diagnostic warning = DiagnosticsTestFactories.CreateWarning();
+            list.Add(warning);
+
+            list.Clear();
+            list.FilteredDiagnostics.Should().BeEmpty();
+        }
+
+        [TestMethod]
         public void DiagnosticList_Empty_should_not_store_anyting_on_Add()
         {
             DiagnosticList.Empty.Add(DiagnosticsTestFactories.CreateDiagnostic(id: "id1"));

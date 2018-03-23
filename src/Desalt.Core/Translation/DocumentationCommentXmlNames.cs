@@ -52,9 +52,25 @@ namespace Desalt.Core.Translation
         public const string StaticAttributeName = "static";
         public const string TypeAttributeName = "type";
 
-        public static bool ElementEquals(string name1, string name2, bool fromVb = false)
+        public static readonly StringComparer ElementComparer = StringComparer.OrdinalIgnoreCase;
+        public static readonly StringComparer AttributeComparer = StringComparer.Ordinal;
+
+        public static bool ElementEquals(string name1, string name2)
         {
-            return string.Equals(name1, name2, fromVb ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+            return string.Equals(name1, name2, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool ElementIsOneOf(string elementName, params string[] choices)
+        {
+            foreach (string choice in choices)
+            {
+                if (ElementEquals(elementName, choice))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool AttributeEquals(string name1, string name2)

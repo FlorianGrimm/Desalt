@@ -155,7 +155,9 @@
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TempProject.cs" />
+    <Compile Include="Translation\DocumentationCommentCrefTests.cs" />
     <Compile Include="Translation\DocumentationCommentTranslatorTests.cs" />
+    <Compile Include="Translation\DocumentationCommentXmlElementTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentTests.cs" />
@@ -170,6 +172,8 @@
     <Compile Include="TypeScript\Ast\TsEmitTests.Types.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
+    <Compile Include="Utility\PeekingTextReaderTests.cs" />
+    <Compile Include="Utility\TextReaderLocationTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
     <Compile Include="Utility\XmlFragmentParserTests.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
