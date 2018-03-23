@@ -103,6 +103,14 @@ namespace Desalt.Core.Translation
             }
 
             /// <summary>
+            /// Called when the visitor visits a XmlElementSyntax node.
+            /// </summary>
+            public override void VisitXmlElement(XmlElementSyntax node)
+            {
+                base.VisitXmlElement(node);
+            }
+
+            /// <summary>
             /// Called when the visitor visits a XmlCrefAttributeSyntax node.
             /// </summary>
             public override void VisitXmlCrefAttribute(XmlCrefAttributeSyntax node)
