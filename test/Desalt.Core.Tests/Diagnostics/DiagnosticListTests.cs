@@ -18,15 +18,7 @@ namespace Desalt.Core.Tests.Diagnostics
     public class DiagnosticListTests
     {
         [TestMethod]
-        public void Create_and_From_should_store_the_options()
-        {
-            var options = new CompilerOptions("out");
-            DiagnosticList.Create(options).Options.Should().BeSameAs(options);
-            DiagnosticList.From(options, Enumerable.Empty<Diagnostic>()).Options.Should().BeSameAs(options);
-        }
-
-        [TestMethod]
-        public void Create_and_From_should_throw_on_null_options()
+        public void DiagnosticList_Create_and_From_should_throw_on_null_options()
         {
             Action action = () => DiagnosticList.Create(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
@@ -36,7 +28,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void From_should_throw_on_null_diagnostics()
+        public void DiagnosticList_From_should_throw_on_null_diagnostics()
         {
             var options = new CompilerOptions("out");
             Action action = () => DiagnosticList.From(options, null);
@@ -44,7 +36,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void From_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
+        public void DiagnosticList_From_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
             var diagnostics = new[]
@@ -59,7 +51,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void HasErrors_should_return_true_if_there_is_at_least_one_error()
+        public void DiagnosticList_HasErrors_should_return_true_if_there_is_at_least_one_error()
         {
             DiagnosticList list = DiagnosticList.From(
                 new CompilerOptions("out"),
@@ -69,7 +61,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void HasErrors_should_return_false_if_there_are_no_errors()
+        public void DiagnosticList_HasErrors_should_return_false_if_there_are_no_errors()
         {
             DiagnosticList list = DiagnosticList.From(
                 new CompilerOptions("out"),
@@ -78,7 +70,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void Add_should_do_nothing_if_the_diagnostic_is_suppressed()
+        public void DiagnosticList_Add_should_do_nothing_if_the_diagnostic_is_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
             DiagnosticList list = DiagnosticList.Create(options);
@@ -88,7 +80,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void Add_should_add_the_diagnostic_if_it_passes_the_filter()
+        public void DiagnosticList_Add_should_add_the_diagnostic_if_it_passes_the_filter()
         {
             DiagnosticList list = DiagnosticList.Create(new CompilerOptions("out"));
             Diagnostic warning = DiagnosticsTestFactories.CreateWarning();
@@ -98,7 +90,7 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [TestMethod]
-        public void AddRange_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
+        public void DiagnosticList_AddRange_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
             DiagnosticList list = DiagnosticList.Create(options);
@@ -111,6 +103,26 @@ namespace Desalt.Core.Tests.Diagnostics
                 });
 
             list.FilteredDiagnostics.Select(d => d.Id).Should().BeEquivalentTo("id1", "id3");
+        }
+
+        [TestMethod]
+        public void DiagnosticList_Empty_should_not_store_anyting_on_Add()
+        {
+            DiagnosticList.Empty.Add(DiagnosticsTestFactories.CreateDiagnostic(id: "id1"));
+            DiagnosticList.Empty.FilteredDiagnostics.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void DiagnosticList_Empty_should_not_store_anyting_on_AddRanage()
+        {
+            DiagnosticList.Empty.AddRange(
+                new[]
+                {
+                    DiagnosticsTestFactories.CreateDiagnostic(id: "id1"),
+                    DiagnosticsTestFactories.CreateWarning(),
+                    DiagnosticsTestFactories.CreateDiagnostic(id: "id3")
+                });
+            DiagnosticList.Empty.FilteredDiagnostics.Should().BeEmpty();
         }
     }
 }
