@@ -155,6 +155,7 @@
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TempProject.cs" />
+    <Compile Include="Translation\DocumentationCommentCrefTests.cs" />
     <Compile Include="Translation\DocumentationCommentTranslatorTests.cs" />
     <Compile Include="Translation\DocumentationCommentXmlElementTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
