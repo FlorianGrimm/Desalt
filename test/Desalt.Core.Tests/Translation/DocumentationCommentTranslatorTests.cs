@@ -231,6 +231,7 @@ class Foo
                 "{@link Console.CancelKeyPress}");
         }
 
+        [Ignore("TODO")]
         [TestMethod]
         public void Translate_should_convert_nested_types_without_shortening_the_containing_type()
         {
@@ -239,6 +240,7 @@ class Foo
                 "{@link Environment.SpecialFolder}");
         }
 
+        [Ignore("TODO")]
         [TestMethod]
         public void
             Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
