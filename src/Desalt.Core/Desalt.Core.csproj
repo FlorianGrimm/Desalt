@@ -147,6 +147,7 @@
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
     <Compile Include="Translation\DocumentationComment.cs" />
     <Compile Include="Translation\DocumentationCommentTranslator.cs" />
+    <Compile Include="Translation\DocumentationCommentXmlElement.cs" />
     <Compile Include="Translation\DocumentationCommentXmlNames.cs" />
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\ImportSymbolTable.cs" />
