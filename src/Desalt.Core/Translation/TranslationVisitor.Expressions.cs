@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis.CSharp;
@@ -37,6 +38,86 @@ namespace Desalt.Core.Translation
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
             return ReportUnsupportedTranslataion(diagnostic);
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a IdentifierNameSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
+        public override IEnumerable<IAstNode> VisitIdentifierName(IdentifierNameSyntax node)
+        {
+            return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a GenericNameSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
+        public override IEnumerable<IAstNode> VisitGenericName(GenericNameSyntax node)
+        {
+            ITsType[] typeArguments = node.TypeArgumentList.Arguments
+                .Select(typeSyntax => typeSyntax.GetTypeSymbol(_semanticModel))
+                .Where(typeSymbol => typeSymbol != null)
+                .Select(typeSymbol => TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport))
+                .ToArray();
+
+            ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a EqualsValueClauseSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitEqualsValueClause(EqualsValueClauseSyntax node)
+        {
+            return Visit(node.Value);
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a InvocationExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsCallExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Expression).First();
+            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+            ITsCallExpression translated = Factory.Call(leftSide, arguments);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ObjectCreationExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Type).Single();
+            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+            ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ArgumentListSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArgumentList"/>.</returns>
+        public override IEnumerable<IAstNode> VisitArgumentList(ArgumentListSyntax node)
+        {
+            ITsArgument[] arguments = node.Arguments.SelectMany(Visit).Cast<ITsArgument>().ToArray();
+            ITsArgumentList translated = Factory.ArgumentList(arguments);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ArgumentSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArgument"/>.</returns>
+        public override IEnumerable<IAstNode> VisitArgument(ArgumentSyntax node)
+        {
+            var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
+            ITsArgument translated = Factory.Argument(argumentExpression);
+            return translated.ToSingleEnumerable();
         }
     }
 }

@@ -148,13 +148,20 @@ namespace Desalt.Core.Translation
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
+                ITsExpression initializer = null;
+                if (variableDeclaration.Initializer != null)
+                {
+                    initializer = (ITsExpression)Visit(variableDeclaration.Initializer).First();
+                }
+
                 ITsVariableMemberDeclaration fieldDeclaration = AddDocumentationComment(
                     Factory.VariableMemberDeclaration(
                         variableName,
                         accessibilityModifier,
                         symbol.IsStatic,
                         isReadOnly,
-                        typeAnnotation),
+                        typeAnnotation,
+                        initializer),
                     node,
                     variableDeclaration);
                 fieldDeclarations.Add(fieldDeclaration);
