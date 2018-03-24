@@ -19,25 +19,40 @@ namespace Desalt.Core.Tests.TestUtility
     /// </summary>
     internal static class RoslynExtensionsForTesting
     {
+        private static readonly string[] s_standardAssemblies =
+        {
+            "mscorlib.dll",
+            "NativeJsTypeDefs.dll",
+            "Saltarelle.jQuery.dll",
+            "Saltarelle.Web.dll",
+            "TypeDefs.dll",
+            "Underscore.dll"
+        };
+
         /// <summary>
         /// Adds all of the Saltarelle assemblies to the compilation.
         /// </summary>
         public static CSharpCompilation AddSaltarelleReferences(this CSharpCompilation compilation)
         {
-            string[] standardAssemblies = new[]
-            {
-                "mscorlib.dll",
-                "NativeJsTypeDefs.dll",
-                "Saltarelle.jQuery.dll",
-                "Saltarelle.Web.dll",
-                "TypeDefs.dll",
-                "Underscore.dll"
-            };
+            return compilation.AddReferences(GetSaltarelleMetadataReferences());
+        }
 
-            IEnumerable<PortableExecutableReference> references = standardAssemblies.Select(
+        /// <summary>
+        /// Replaces all of the existing metadata references in the project with the Saltarelle assemblies.
+        /// </summary>
+        public static ProjectInfo WithSaltarelleReferences(this ProjectInfo projectInfo)
+        {
+            return projectInfo.WithMetadataReferences(GetSaltarelleMetadataReferences());
+        }
+
+        /// <summary>
+        /// Gets all of the Saltarelle assembly references from the embedded resources in this test assembly.
+        /// </summary>
+        private static IEnumerable<MetadataReference> GetSaltarelleMetadataReferences()
+        {
+            IEnumerable<PortableExecutableReference> references = s_standardAssemblies.Select(
                 assemblyName => MetadataReference.CreateFromStream(GetSaltarelleAssemblyStream(assemblyName)));
-
-            return compilation.AddReferences(references);
+            return references;
         }
 
         /// <summary>
@@ -45,7 +60,7 @@ namespace Desalt.Core.Tests.TestUtility
         /// </summary>
         /// <param name="assemblyName">The assembly name to get, for example "mscorlib.dll".</param>
         /// <returns>The loaded assembly stream.</returns>
-        public static Stream GetSaltarelleAssemblyStream(string assemblyName)
+        private static Stream GetSaltarelleAssemblyStream(string assemblyName)
         {
             Assembly thisAssembly = Assembly.GetExecutingAssembly();
             return thisAssembly.GetManifestResourceStream(typeof(RoslynExtensionsForTesting), assemblyName);
