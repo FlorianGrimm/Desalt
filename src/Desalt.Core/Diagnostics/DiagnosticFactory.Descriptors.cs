@@ -64,6 +64,12 @@ namespace Desalt.Core.Diagnostics
                 "Unstructured text within XML documentation comments is not currently supported. Add it to a <remarks> element. Text: '{0}'",
                 WarningLevel.Minor)]
             UnstructuredXmlTextNotSupported,
+
+            [Error(
+                1007,
+                "TypeScript translation does not understand a C# literal expression",
+                "C# literal expression of kind '{0}' not supported: {1}")]
+            LiteralExpressionTranslationNotSupported,
         }
 
         //// ===========================================================================================================
@@ -104,6 +110,13 @@ namespace Desalt.Core.Diagnostics
             Create(DiagnosticId.TranslationNotSupported, node.GetLocation(), node.GetType().Name, node);
 
         /// <summary>
+        /// Returns a diagnostic of the form "C# literal expression of kind '{0}' not supported: {1}".
+        /// </summary>
+        /// <param name="node">The unsupported literal expression syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic LiteralExpressionTranslationNotSupported(LiteralExpressionSyntax node) =>
+            Create(DiagnosticId.LiteralExpressionTranslationNotSupported, node.GetLocation(), node.Kind(), node);
+
         /// Returns a diagnostic of the form "Interface method '{0}.{1}' contains parameter '{2}' with a default value.".
         /// </summary>
         /// <param name="interfaceName">The full name of the interface.</param>

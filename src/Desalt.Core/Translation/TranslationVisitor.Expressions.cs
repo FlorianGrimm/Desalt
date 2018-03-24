@@ -26,14 +26,17 @@ namespace Desalt.Core.Translation
         {
             switch (node.Kind())
             {
+                case SyntaxKind.StringLiteralExpression:
+                    return Factory.String(node.Token.Text.Trim('"')).ToSingleEnumerable();
+
                 case SyntaxKind.NumericLiteralExpression:
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                         ? Factory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
                         : Factory.Number(Convert.ToDouble(node.Token.Value)).ToSingleEnumerable();
             }
 
-            DefaultVisit(node);
-            return Enumerable.Empty<IAstNode>();
+            var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
+            return ReportUnsupportedTranslataion(diagnostic);
         }
     }
 }
