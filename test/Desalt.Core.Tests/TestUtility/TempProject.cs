@@ -5,10 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests
+namespace Desalt.Core.Tests.TestUtility
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
@@ -44,12 +45,16 @@ namespace Desalt.Core.Tests
             var workspace = new AdhocWorkspace();
 
             // add a new project
-            var project = workspace.AddProject(projectName, "C#");
+            ProjectId projectId = ProjectId.CreateNewId(projectName);
+            VersionStamp version = VersionStamp.Create();
+            var projectInfo = ProjectInfo.Create(projectId, version, projectName, projectName, LanguageNames.CSharp)
+                .WithSaltarelleReferences();
+            workspace.AddProject(projectInfo);
 
             // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
-                workspace.AddDocument(project.Id, sourceFile.FileName, SourceText.From(sourceFile.FileContents));
+                workspace.AddDocument(projectId, sourceFile.FileName, SourceText.From(sourceFile.FileContents));
             }
 
             return new TempProject(workspace);
@@ -77,11 +82,12 @@ namespace Desalt.Core.Tests
 
             // create the import symbol table
             var importTable = new ImportSymbolTable();
-            importTable.AddDefinedTypesInDocument(context);
+            importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+            importTable.AddExternallyReferencedTypes(context, CancellationToken.None);
 
             // create the script name symbol table
             var scriptNameTable = new ScriptNameSymbolTable();
-            scriptNameTable.AddDefinedTypesInDocument(context);
+            scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
 
             return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
         }

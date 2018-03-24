@@ -7,9 +7,11 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -18,32 +20,8 @@ namespace Desalt.Core.Translation
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable
+    internal partial class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly ConcurrentDictionary<string, string> _typeToFileMap =
-            new ConcurrentDictionary<string, string>();
-
-        //// ===========================================================================================================
-        //// Indexers
-        //// ===========================================================================================================
-
-        public string this[string symbolName]
-        {
-            get
-            {
-                if (!_typeToFileMap.TryGetValue(symbolName, out string fileName))
-                {
-                    throw new KeyNotFoundException();
-                }
-
-                return fileName;
-            }
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -51,27 +29,85 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public void AddDefinedTypesInDocument(DocumentTranslationContext context)
+        public override void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
         {
-            string filePath = context.TypeScriptFilePath;
+            ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
-            var allTypeDeclarations = context.RootSyntax.DescendantNodes()
-                .OfType<BaseTypeDeclarationSyntax>()
-                .Select(node => node.Identifier.Text);
+            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax.DescendantNodes()
+                .Select(
+                    node =>
+                    {
+                        switch (node)
+                        {
+                            case BaseTypeDeclarationSyntax typeDeclaration:
+                                return context.SemanticModel.GetDeclaredSymbol(typeDeclaration);
 
-            foreach (string typeName in allTypeDeclarations)
+                            case DelegateDeclarationSyntax delegateDeclaration:
+                                return context.SemanticModel.GetDeclaredSymbol(delegateDeclaration);
+
+                            default:
+                                return null;
+                        }
+                    })
+                .Where(symbol => symbol != null);
+
+            foreach (INamedTypeSymbol typeSymbol in allTypeDeclarationSymbols)
             {
-                _typeToFileMap.AddOrUpdate(typeName, _ => filePath, (_, __) => filePath);
+                AddOrUpdate(typeSymbol, symbolInfo);
             }
         }
 
-        /// <summary>
-        /// Returns a value indicating whether the symbol table contains a definition for the
-        /// specified symbol name.
-        /// </summary>
-        public bool HasSymbol(string symbolName)
+        public void AddExternallyReferencedTypes(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
         {
-            return _typeToFileMap.TryGetValue(symbolName, out string _);
+            // find all of the symbols that are being referenced outside of this assembly
+            var walker = new Walker(context.SemanticModel, AddOrUpdate);
+            walker.Visit(context.RootSyntax);
+        }
+    }
+
+    /// <summary>
+    /// Represents an imported symbol that is contained in an <see cref="ImportSymbolTable"/>.
+    /// </summary>
+    internal class ImportSymbolInfo
+    {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        private ImportSymbolInfo(string relativeTypeScriptFilePathOrModuleName, bool isInternalReference)
+        {
+            RelativeTypeScriptFilePathOrModuleName = relativeTypeScriptFilePathOrModuleName;
+            IsInternalReference = isInternalReference;
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public string RelativeTypeScriptFilePathOrModuleName { get; }
+
+        /// <summary>
+        /// Returns a value indicating whether this is an internal reference, meaning that the type
+        /// is defined within this project. An external reference is something from another assembly.
+        /// </summary>
+        public bool IsInternalReference { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public static ImportSymbolInfo CreateInternalReference(string typeScriptFilePath)
+        {
+            return new ImportSymbolInfo(typeScriptFilePath, isInternalReference: true);
+        }
+
+        public static ImportSymbolInfo CreateExternalReference(string moduleName)
+        {
+            return new ImportSymbolInfo(moduleName, isInternalReference: false);
         }
     }
 }

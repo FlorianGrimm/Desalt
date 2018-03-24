@@ -7,9 +7,8 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,37 +19,8 @@ namespace Desalt.Core.Translation
     /// names. It can also be changed using the [PreserveName] and [ScriptName] attributes.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ScriptNameSymbolTable
+    internal class ScriptNameSymbolTable : SymbolTable<string>
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly ConcurrentDictionary<string, string> _symbolToNameMap =
-            new ConcurrentDictionary<string, string>();
-
-        private static readonly SymbolDisplayFormat
-            s_symbolDisplayFormat = SymbolDisplayFormat.MinimallyQualifiedFormat;
-
-        //// ===========================================================================================================
-        //// Indexers
-        //// ===========================================================================================================
-
-        public string this[ISymbol symbol]
-        {
-            get
-            {
-                string symbolName = symbol.ToDisplayString(s_symbolDisplayFormat);
-                if (!_symbolToNameMap.TryGetValue(symbolName, out string scriptName))
-                {
-                    throw new KeyNotFoundException(
-                        $"There is no symbol '{symbolName}' defined in the script name symbol table");
-                }
-
-                return scriptName;
-            }
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -58,35 +28,25 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public void AddDefinedTypesInDocument(DocumentTranslationContext context)
+        public override void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
         {
             var allTypeDeclarations = context.RootSyntax.DescendantNodes().OfType<BaseTypeDeclarationSyntax>();
             foreach (BaseTypeDeclarationSyntax node in allTypeDeclarations)
             {
-                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
-                string typeKey = symbol.ToDisplayString(s_symbolDisplayFormat);
+                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node, cancellationToken);
                 string typeName = symbol.Name;
-                _symbolToNameMap.AddOrUpdate(typeKey, _ => typeName, (_, __) => typeName);
+                AddOrUpdate(symbol, typeName);
 
                 // add all of the members of the declared type
                 foreach (ISymbol member in symbol.GetMembers())
                 {
-                    string memberKey = member.ToDisplayString(s_symbolDisplayFormat);
                     string memberName = member.Name;
                     string scriptName = char.ToLowerInvariant(memberName[0]) + memberName.Substring(1);
-                    _symbolToNameMap.AddOrUpdate(memberKey, _ => scriptName, (_, __) => scriptName);
+                    AddOrUpdate(member, scriptName);
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns a value indicating whether the symbol table contains a definition for the
-        /// specified symbol name.
-        /// </summary>
-        public bool HasSymbol(ISymbol symbol)
-        {
-            string symbolName = symbol.ToDisplayString(s_symbolDisplayFormat);
-            return _symbolToNameMap.TryGetValue(symbolName, out string _);
         }
     }
 }

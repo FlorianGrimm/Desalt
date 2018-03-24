@@ -49,7 +49,18 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<string> typesToImport)
+        /// <summary>
+        /// Returns a value indicating whether the specified symbol has a native JavaScript type
+        /// equivalent. These types don't need to be imported, for example.
+        /// </summary>
+        /// <param name="symbol">The symbol to inspect.</param>
+        public static bool IsNativeJavaScriptType(ITypeSymbol symbol)
+        {
+            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
+            return s_nativeTypeMap.ContainsKey(fullTypeName);
+        }
+
+        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
@@ -71,15 +82,25 @@ namespace Desalt.Core.Translation
             }
 
             // this is a type that we'll need to import since it's not a native type
-            typesToImport.Add(symbol.Name);
-            return Factory.TypeReference(Factory.Identifier(symbol.Name));
+            typesToImport.Add(symbol);
+
+            // check for generic type arguments
+            ITsType[] translatedTypeMembers = null;
+            if (symbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
+                translatedTypeMembers = typeMembers.Select(typeMember => TranslateSymbol(typeMember, typesToImport))
+                    .ToArray();
+            }
+
+            return Factory.TypeReference(Factory.Identifier(symbol.Name), translatedTypeMembers);
         }
 
         /// <summary>
         /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
         /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
         /// </summary>
-        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<string> typesToImport)
+        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
 
@@ -89,7 +110,9 @@ namespace Desalt.Core.Translation
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
                 var parameterType = TranslateSymbol(typeArgument, typesToImport);
-                ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(Factory.Identifier(parameterName), parameterType);
+                ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(
+                    Factory.Identifier(parameterName),
+                    parameterType);
                 requiredParameters.Add(requiredParameter);
             }
 

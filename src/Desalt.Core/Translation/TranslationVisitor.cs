@@ -30,7 +30,7 @@ namespace Desalt.Core.Translation
         private readonly DiagnosticList _diagnostics;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
-        private readonly ISet<string> _typesToImport = new HashSet<string>();
+        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTable.KeyComparer);
 
         //// ===========================================================================================================
         //// Constructors
@@ -49,7 +49,7 @@ namespace Desalt.Core.Translation
 
         public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
 
-        public IEnumerable<string> TypesToImport => _typesToImport.AsEnumerable();
+        public IEnumerable<ISymbol> TypesToImport => _typesToImport.AsEnumerable();
 
         //// ===========================================================================================================
         //// Visit Methods
@@ -119,9 +119,8 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
-            ITsType parameterType = TypeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _typesToImport);
+            ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            ITsType parameterType = TypeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport);
             IAstNode parameter;
 
             if (node.Default == null)

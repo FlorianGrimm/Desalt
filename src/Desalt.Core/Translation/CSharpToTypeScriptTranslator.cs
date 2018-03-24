@@ -15,6 +15,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
@@ -51,45 +52,60 @@ namespace Desalt.Core.Translation
             TranslationVisitor walker,
             ITsImplementationModule translatedModule)
         {
-            string[] importTypes = walker.TypesToImport.ToArray();
+            ISymbol[] importTypes = walker.TypesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
-            string[] undefinedTypes = importTypes.Where(import => !context.ImportSymbolTable.HasSymbol(import)).ToArray();
-            var undefinedTypeErrors = undefinedTypes.Select(importType => DiagnosticFactory.UnknownType(importType));
+            ISymbol[] undefinedTypes =
+                importTypes.Where(symbol => !context.ImportSymbolTable.HasSymbol(symbol)).ToArray();
+
+            var undefinedTypeErrors = undefinedTypes.Select(importType =>
+                DiagnosticFactory.UnknownType(SymbolTable.KeyFromSymbol(importType)));
+
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 
             // get rid of all of the undefined imports
             var validImportTypes = importTypes.Except(undefinedTypes);
 
             // group each valid import by file name (but don't include the types that are defined in this class).
-            var groupedByFileName = validImportTypes.OrderBy(_ => _)
+            var groupedByFileName = validImportTypes.OrderBy(symbol => symbol.Name)
                 .Select(
-                    importTypeName =>
+                    symbol =>
                     {
-                        string tsPath = context.ImportSymbolTable[importTypeName];
-                        string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
-
-                        // remove the file extension
-                        relativePath = Path.GetFileNameWithoutExtension(relativePath) ??
-                            throw new InvalidOperationException("Something went wrong with path parsing");
-
-                        // TypeScript import paths can always use forward slashes
-                        relativePath = relativePath.Replace("\\", "/");
-
-                        // make sure the path start with ./ or ../
-                        if (!relativePath.StartsWith(".", StringComparison.Ordinal))
+                        ImportSymbolInfo importInfo = context.ImportSymbolTable[symbol];
+                        string relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
+                        if (importInfo.IsInternalReference)
                         {
-                            relativePath = "./" + relativePath;
+                            relativePathOrModuleName = MakeRelativePath(
+                                context.TypeScriptFilePath,
+                                relativePathOrModuleName);
+
+                            // remove the file extension
+                            relativePathOrModuleName = Path.GetFileNameWithoutExtension(relativePathOrModuleName) ??
+                                throw new InvalidOperationException("Something went wrong with path parsing");
+
+                            // TypeScript import paths can always use forward slashes
+                            relativePathOrModuleName = relativePathOrModuleName.Replace("\\", "/");
+
+                            // make sure the path start with ./ or ../
+                            if (!relativePathOrModuleName.StartsWith(".", StringComparison.Ordinal))
+                            {
+                                relativePathOrModuleName = "./" + relativePathOrModuleName;
+                            }
+                        }
+                        else
+                        {
+                            relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
                         }
 
                         return new
                         {
-                            TypeName = importTypeName,
-                            RelativePath = relativePath
+                            TypeName = symbol.Name,
+                            RelativePathOrModuleName = relativePathOrModuleName
                         };
                     })
-                .Where(item => item.RelativePath != "./")
-                .GroupBy(item => item.RelativePath);
+                .Where(item => item.RelativePathOrModuleName != "./")
+                .Distinct()
+                .GroupBy(item => item.RelativePathOrModuleName);
 
             // add an import statement for each group
             var importDeclarations = new List<ITsImportDeclaration>();
