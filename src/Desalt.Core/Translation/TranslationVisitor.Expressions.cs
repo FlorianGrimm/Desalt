@@ -20,7 +20,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a LiteralExpressionSyntax node.
         /// </summary>
-        /// <returns>A <see cref="ITsExpression"/>.</returns>
+        /// <returns>An <see cref="ITsExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitLiteralExpression(LiteralExpressionSyntax node)
         {
             switch (node.Kind())

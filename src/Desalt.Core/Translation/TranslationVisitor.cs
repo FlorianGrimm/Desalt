@@ -94,7 +94,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a ParameterListSyntax node.
         /// </summary>
-        /// <returns>A <see cref="ITsParameterList"/>.</returns>
+        /// <returns>An <see cref="ITsParameterList"/>.</returns>
         public override IEnumerable<IAstNode> VisitParameterList(ParameterListSyntax node)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
