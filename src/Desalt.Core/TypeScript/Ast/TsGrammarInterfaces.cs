@@ -134,6 +134,11 @@ namespace Desalt.Core.TypeScript.Ast
         ITsIdentifier Right { get; }
     }
 
+    public interface ITsGenericTypeName : ITsQualifiedName
+    {
+        ImmutableArray<ITsType> TypeArguments { get; }
+    }
+
     /* ObjectType:
      *   { TypeBodyOpt }
      *

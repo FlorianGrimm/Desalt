@@ -24,5 +24,10 @@ namespace Desalt.Core.TypeScript.Ast
         /// Visits a TypeScript qualified name, which is a full name with dots separating components.
         /// </summary>
         public virtual void VisitQualifiedName(ITsQualifiedName node) => Visit(node);
+
+        /// <summary>
+        /// Visits a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.
+        /// </summary>
+        public virtual void VisitGenericTypeName(ITsGenericTypeName node) => Visit(node);
     }
 }
