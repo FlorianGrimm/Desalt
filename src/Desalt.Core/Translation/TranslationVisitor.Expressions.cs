@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     internal sealed partial class TranslationVisitor
     {
@@ -27,8 +28,8 @@ namespace Desalt.Core.Translation
             {
                 case SyntaxKind.NumericLiteralExpression:
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-                        ? TsAstFactory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
-                        : TsAstFactory.Number(Convert.ToDouble(node.Token.Value)).ToSingleEnumerable();
+                        ? Factory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
+                        : Factory.Number(Convert.ToDouble(node.Token.Value)).ToSingleEnumerable();
             }
 
             DefaultVisit(node);
