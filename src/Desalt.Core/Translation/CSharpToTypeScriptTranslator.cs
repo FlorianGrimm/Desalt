@@ -15,6 +15,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
@@ -51,11 +52,13 @@ namespace Desalt.Core.Translation
             TranslationVisitor walker,
             ITsImplementationModule translatedModule)
         {
-            string[] importTypes = walker.TypesToImport.ToArray();
+            ISymbol[] importTypes = walker.TypesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
-            string[] undefinedTypes = importTypes.Where(import => !context.ImportSymbolTable.HasSymbol(import)).ToArray();
-            var undefinedTypeErrors = undefinedTypes.Select(importType => DiagnosticFactory.UnknownType(importType));
+            ISymbol[] undefinedTypes =
+                importTypes.Where(symbol => !context.ImportSymbolTable.HasSymbol(symbol)).ToArray();
+            var undefinedTypeErrors = undefinedTypes.Select(importType =>
+                DiagnosticFactory.UnknownType(SymbolTable.KeyFromSymbol(importType)));
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 
             // get rid of all of the undefined imports
@@ -64,9 +67,9 @@ namespace Desalt.Core.Translation
             // group each valid import by file name (but don't include the types that are defined in this class).
             var groupedByFileName = validImportTypes.OrderBy(_ => _)
                 .Select(
-                    importTypeName =>
+                    symbol =>
                     {
-                        string tsPath = context.ImportSymbolTable[importTypeName].RelativeTypeScriptFilePathOrAssemblyName;
+                        string tsPath = context.ImportSymbolTable[symbol].RelativeTypeScriptFilePathOrModuleName;
                         string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
 
                         // remove the file extension
@@ -84,7 +87,7 @@ namespace Desalt.Core.Translation
 
                         return new
                         {
-                            TypeName = importTypeName,
+                            TypeName = SymbolTable.KeyFromSymbol(symbol),
                             RelativePath = relativePath
                         };
                     })

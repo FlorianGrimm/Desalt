@@ -49,7 +49,7 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<string> typesToImport)
+        public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
@@ -71,7 +71,7 @@ namespace Desalt.Core.Translation
             }
 
             // this is a type that we'll need to import since it's not a native type
-            typesToImport.Add(symbol.Name);
+            typesToImport.Add(symbol);
 
             // check for generic type arguments
             ITsType[] translatedTypeMembers = null;
@@ -89,7 +89,7 @@ namespace Desalt.Core.Translation
         /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
         /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
         /// </summary>
-        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<string> typesToImport)
+        private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
 

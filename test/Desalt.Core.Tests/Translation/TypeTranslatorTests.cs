@@ -58,7 +58,7 @@ class Foo
                 throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
             }
 
-            TypeTranslator.TranslateSymbol(typeSymbol, new HashSet<string>()).Should().BeEquivalentTo(expectedType);
+            TypeTranslator.TranslateSymbol(typeSymbol, new HashSet<ISymbol>()).Should().BeEquivalentTo(expectedType);
         }
 
         [TestMethod]

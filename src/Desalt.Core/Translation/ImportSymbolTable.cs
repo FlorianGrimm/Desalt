@@ -7,9 +7,10 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -18,32 +19,8 @@ namespace Desalt.Core.Translation
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable
+    internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly ConcurrentDictionary<string, ImportSymbolInfo> _typeToFileMap =
-            new ConcurrentDictionary<string, ImportSymbolInfo>();
-
-        //// ===========================================================================================================
-        //// Indexers
-        //// ===========================================================================================================
-
-        public ImportSymbolInfo this[string symbolName]
-        {
-            get
-            {
-                if (!_typeToFileMap.TryGetValue(symbolName, out ImportSymbolInfo symbolInfo))
-                {
-                    throw new KeyNotFoundException();
-                }
-
-                return symbolInfo;
-            }
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -51,41 +28,32 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public void AddDefinedTypesInDocument(DocumentTranslationContext context)
+        public override void AddDefinedTypesInDocument(DocumentTranslationContext context)
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
-            var allTypeDeclarations = context.RootSyntax.DescendantNodes()
+            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax.DescendantNodes()
                 .Select(
                     node =>
                     {
                         switch (node)
                         {
                             case BaseTypeDeclarationSyntax typeDeclaration:
-                                return typeDeclaration.Identifier.Text;
+                                return context.SemanticModel.GetDeclaredSymbol(typeDeclaration);
 
                             case DelegateDeclarationSyntax delegateDeclaration:
-                                return delegateDeclaration.Identifier.Text;
+                                return context.SemanticModel.GetDeclaredSymbol(delegateDeclaration);
 
                             default:
                                 return null;
                         }
                     })
-                .Where(name => !string.IsNullOrWhiteSpace(name));
+                .Where(symbol => symbol != null);
 
-            foreach (string typeName in allTypeDeclarations)
+            foreach (INamedTypeSymbol typeSymbol in allTypeDeclarationSymbols)
             {
-                _typeToFileMap.AddOrUpdate(typeName, _ => symbolInfo, (_, __) => symbolInfo);
+                AddOrUpdate(typeSymbol, symbolInfo);
             }
-        }
-
-        /// <summary>
-        /// Returns a value indicating whether the symbol table contains a definition for the
-        /// specified symbol name.
-        /// </summary>
-        public bool HasSymbol(string symbolName)
-        {
-            return _typeToFileMap.TryGetValue(symbolName, out ImportSymbolInfo _);
         }
     }
 
