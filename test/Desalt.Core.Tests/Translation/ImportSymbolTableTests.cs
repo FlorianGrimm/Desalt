@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests.Translation
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
@@ -29,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
                 var importTable = new ImportSymbolTable();
-                importTable.AddDefinedTypesInDocument(context);
+                importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
 
                 assertAction(importTable, context);
             }

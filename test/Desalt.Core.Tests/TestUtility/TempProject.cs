@@ -9,6 +9,7 @@ namespace Desalt.Core.Tests.TestUtility
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
@@ -77,11 +78,11 @@ namespace Desalt.Core.Tests.TestUtility
 
             // create the import symbol table
             var importTable = new ImportSymbolTable();
-            importTable.AddDefinedTypesInDocument(context);
+            importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
 
             // create the script name symbol table
             var scriptNameTable = new ScriptNameSymbolTable();
-            scriptNameTable.AddDefinedTypesInDocument(context);
+            scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
 
             return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
         }

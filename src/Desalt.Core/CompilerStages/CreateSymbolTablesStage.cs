@@ -44,13 +44,19 @@ namespace Desalt.Core.CompilerStages
 
             // add all of the import symbols in parallel (the symbol table is thread-safe)
             var tasks = contexts.Select(
-                context => Task.Run(() => importSymbolTable.AddDefinedTypesInDocument(context), cancellationToken));
+
+                // ReSharper disable once ImplicitlyCapturedClosure
+                context => Task.Run(
+                    () => importSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
+                    cancellationToken));
 
             // populate the script name symbol table
             tasks = tasks.Concat(
                 contexts.Select(
+
+                    // ReSharper disable once ImplicitlyCapturedClosure
                     context => Task.Run(
-                        () => scriptNameSymbolTable.AddDefinedTypesInDocument(context),
+                        () => scriptNameSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
                         cancellationToken)));
 
             await Task.WhenAll(tasks);

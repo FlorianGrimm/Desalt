@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Linq;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,12 +28,14 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public override void AddDefinedTypesInDocument(DocumentTranslationContext context)
+        public override void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
         {
             var allTypeDeclarations = context.RootSyntax.DescendantNodes().OfType<BaseTypeDeclarationSyntax>();
             foreach (BaseTypeDeclarationSyntax node in allTypeDeclarations)
             {
-                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+                INamedTypeSymbol symbol = context.SemanticModel.GetDeclaredSymbol(node, cancellationToken);
                 string typeName = symbol.Name;
                 AddOrUpdate(symbol, typeName);
 

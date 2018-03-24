@@ -57,8 +57,10 @@ namespace Desalt.Core.Translation
             // find all of the imports that aren't defined anywhere and create an error
             ISymbol[] undefinedTypes =
                 importTypes.Where(symbol => !context.ImportSymbolTable.HasSymbol(symbol)).ToArray();
+
             var undefinedTypeErrors = undefinedTypes.Select(importType =>
                 DiagnosticFactory.UnknownType(SymbolTable.KeyFromSymbol(importType)));
+
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 
             // get rid of all of the undefined imports

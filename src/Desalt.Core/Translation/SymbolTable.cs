@@ -9,6 +9,7 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -79,7 +80,9 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public abstract void AddDefinedTypesInDocument(DocumentTranslationContext context);
+        public abstract void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken);
 
         protected T AddOrUpdate(ISymbol symbol, T value)
         {

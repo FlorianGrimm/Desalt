@@ -9,6 +9,7 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,7 +29,9 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public override void AddDefinedTypesInDocument(DocumentTranslationContext context)
+        public override void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
