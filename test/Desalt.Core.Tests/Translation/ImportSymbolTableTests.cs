@@ -72,7 +72,7 @@ namespace Desalt.Core.Tests.Translation
                                 return null;
                         }
                     })
-                .First(symbol => SymbolTable.KeyFromSymbol(symbol) == name);
+                .First(symbol => symbol.Name == name);
         }
 
         [TestMethod]
