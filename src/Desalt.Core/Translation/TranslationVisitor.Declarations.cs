@@ -38,7 +38,7 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
-            ITsIdentifier interfaceName = TranslateIdentifier(node);
+            ITsIdentifier interfaceName = TranslateDeclarationIdentifier(node);
 
             // translate the interface body
             var translatedMembers = node.Members.SelectMany(Visit).Cast<ITsTypeMember>();
@@ -71,7 +71,7 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
-            ITsIdentifier enumName = TranslateIdentifier(node);
+            ITsIdentifier enumName = TranslateDeclarationIdentifier(node);
 
             // translate the enum body
             var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
@@ -87,7 +87,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
-            ITsIdentifier scriptName = TranslateIdentifier(node);
+            ITsIdentifier scriptName = TranslateDeclarationIdentifier(node);
             ITsExpression value = null;
             if (node.EqualsValue != null)
             {
@@ -107,7 +107,7 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            ITsIdentifier className = TranslateIdentifier(node);
+            ITsIdentifier className = TranslateDeclarationIdentifier(node);
 
             // translate the generic type parameters
             ITsTypeParameters typeParameters = Factory.TypeParameters();
@@ -137,7 +137,7 @@ namespace Desalt.Core.Translation
             var fieldDeclarations = new List<ITsVariableMemberDeclaration>();
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
             {
-                var variableName = TranslateIdentifier(variableDeclaration);
+                var variableName = Factory.Identifier(variableDeclaration.Identifier.Text);
                 ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
@@ -148,13 +148,20 @@ namespace Desalt.Core.Translation
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport);
 
+                ITsExpression initializer = null;
+                if (variableDeclaration.Initializer != null)
+                {
+                    initializer = (ITsExpression)Visit(variableDeclaration.Initializer).First();
+                }
+
                 ITsVariableMemberDeclaration fieldDeclaration = AddDocumentationComment(
                     Factory.VariableMemberDeclaration(
                         variableName,
                         accessibilityModifier,
                         symbol.IsStatic,
                         isReadOnly,
-                        typeAnnotation),
+                        typeAnnotation,
+                        initializer),
                     node,
                     variableDeclaration);
                 fieldDeclarations.Add(fieldDeclaration);
@@ -172,7 +179,7 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            ITsIdentifier functionName = TranslateIdentifier(node);
+            ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
             ITsTypeParameters typeParameters = Factory.TypeParameters();
@@ -229,7 +236,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
-            ITsIdentifier propertyName = TranslateIdentifier(node);
+            ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
             var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
 

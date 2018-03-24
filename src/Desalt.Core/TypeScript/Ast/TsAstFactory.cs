@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Desalt.Core.TypeScript.Ast.Types;
@@ -35,27 +36,49 @@ namespace Desalt.Core.TypeScript.Ast
 
         public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
 
+        /// <summary>
+        /// Creates a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
+        /// </summary>
+        /// <param name="dottedName">A full name with or without dots that will be parsed.</param>
+        /// <returns>An <see cref="ITsQualifiedName"/>.</returns>
         public static ITsQualifiedName QualifiedName(string dottedName)
         {
-            string[] parts = dottedName.Split('.');
+            string[] parts = dottedName?.Split('.') ?? throw new ArgumentNullException(nameof(dottedName));
             if (parts.Length > 1)
             {
-                return QualifiedName(parts[0], parts.Skip(1).ToArray());
+                return QualifiedName(parts.ToArray());
             }
 
             return new TsQualifiedName(TsIdentifier.Get(parts[0]));
         }
 
-        public static ITsQualifiedName QualifiedName(string name, params string[] names)
+        /// <summary>
+        /// Creates a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
+        /// </summary>
+        /// <param name="names">The parts of the full name.</param>
+        /// <returns>An <see cref="ITsQualifiedName"/>.</returns>
+        public static ITsQualifiedName QualifiedName(params string[] names)
         {
             if (names == null || names.Length == 0)
             {
-                return new TsQualifiedName(TsIdentifier.Get(name));
+                throw new ArgumentException("Empty names array", nameof(names));
             }
 
             var right = TsIdentifier.Get(names.Last());
-            IEnumerable<TsIdentifier> left = new[] { name }.Concat(names.Take(names.Length - 1)).Select(TsIdentifier.Get);
+            IEnumerable<TsIdentifier> left = names.Take(names.Length - 1).Select(TsIdentifier.Get);
             return new TsQualifiedName(right, left);
+        }
+
+        /// <summary>
+        /// Creates a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.
+        /// </summary>
+        /// <param name="dottedName">A full name with or without dots that will be parsed.</param>
+        /// <param name="typeArguments">An optional list of type arguments.</param>
+        /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
+        public static ITsGenericTypeName GenericTypeName(string dottedName, params ITsType[] typeArguments)
+        {
+            var qualifiedName = QualifiedName(dottedName);
+            return new TsGenericTypeName(qualifiedName.Right, qualifiedName.Left, typeArguments);
         }
     }
 }

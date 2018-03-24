@@ -52,5 +52,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 actualOutput.Should().Be(expected);
             }
         }
+
+        [TestMethod]
+        public void Emit_generic_type_name()
+        {
+            VerifyOutput(
+                Factory.GenericTypeName("a.b.c", Factory.BooleanType, Factory.StringType),
+                "a.b.c<boolean, string>");
+        }
     }
 }

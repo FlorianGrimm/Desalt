@@ -64,6 +64,18 @@ namespace Desalt.Core.Diagnostics
                 "Unstructured text within XML documentation comments is not currently supported. Add it to a <remarks> element. Text: '{0}'",
                 WarningLevel.Minor)]
             UnstructuredXmlTextNotSupported,
+
+            [Error(
+                1007,
+                "TypeScript translation does not understand a C# literal expression",
+                "C# literal expression of kind '{0}' not supported: {1}")]
+            LiteralExpressionTranslationNotSupported,
+
+            [Error(
+                1008,
+                "TypeScript translation does not understand C# identifier node",
+                "C# identifier node of type '{0}' not supported: {1}")]
+            IdentifierNotSupported,
         }
 
         //// ===========================================================================================================
@@ -74,8 +86,17 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "Internal error: {0}"
         /// </summary>
         /// <param name="e">The <see cref="Exception"/> that represents the error.</param>
-        public static Diagnostic InternalError(Exception e) =>
-            Create(DiagnosticId.InternalError, Location.None, e.Message);
+        /// <param name="location">An optional associated location in the source code.</param>
+        public static Diagnostic InternalError(Exception e, Location location = null) =>
+            Create(DiagnosticId.InternalError, location ?? Location.None, e.Message);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Internal error: {0}"
+        /// </summary>
+        /// <param name="error">An error message.</param>
+        /// <param name="location">An optional associated location in the source code.</param>
+        public static Diagnostic InternalError(string error, Location location = null) =>
+            Create(DiagnosticId.InternalError, location ?? Location.None, error);
 
         /// <summary>
         /// Returns a diagnostic of the form "Document has no C# syntax tree".
@@ -102,6 +123,22 @@ namespace Desalt.Core.Diagnostics
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic TranslationNotSupported(SyntaxNode node) =>
             Create(DiagnosticId.TranslationNotSupported, node.GetLocation(), node.GetType().Name, node);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# literal expression of kind '{0}' not supported: {1}".
+        /// </summary>
+        /// <param name="node">The unsupported literal expression syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic LiteralExpressionTranslationNotSupported(LiteralExpressionSyntax node) =>
+            Create(DiagnosticId.LiteralExpressionTranslationNotSupported, node.GetLocation(), node.Kind(), node);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# identifier node of type '{0}' not supported: {1}".
+        /// </summary>
+        /// <param name="node">The unsupported syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic IdentifierNotSupported(SyntaxNode node) =>
+            Create(DiagnosticId.IdentifierNotSupported, node.GetLocation(), node.GetType().Name, node);
 
         /// <summary>
         /// Returns a diagnostic of the form "Interface method '{0}.{1}' contains parameter '{2}' with a default value.".

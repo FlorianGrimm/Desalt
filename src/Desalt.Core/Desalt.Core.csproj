@@ -272,6 +272,7 @@
     <Compile Include="TypeScript\Ast\TsAstFactory.SourceFile.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Statements.cs" />
     <Compile Include="TypeScript\Ast\TsAstFactory.Types.cs" />
+    <Compile Include="TypeScript\Ast\TsGenericTypeName.cs" />
     <Compile Include="TypeScript\Ast\TsGrammarExtensions.cs" />
     <Compile Include="TypeScript\Ast\TsGrammarInterfaces.cs" />
     <Compile Include="TypeScript\Ast\TsIdentifier.cs" />

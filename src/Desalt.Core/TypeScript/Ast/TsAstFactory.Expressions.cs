@@ -190,14 +190,23 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
             new TsArgument(argument, isSpreadArgument);
 
+        /// <summary>
+        /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
         public static ITsArgumentList ArgumentList(IEnumerable<ITsType> typeArguments, params ITsArgument[] arguments)
         {
             return new TsArgumentList(typeArguments, arguments);
         }
 
+        /// <summary>
+        /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
         public static ITsArgumentList ArgumentList(params ITsArgument[] arguments) =>
             new TsArgumentList(typeArguments: null, arguments: arguments);
 
+        /// <summary>
+        /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
         public static ITsArgumentList ArgumentList(params ITsIdentifier[] arguments) =>
             new TsArgumentList(typeArguments: null, arguments: arguments.Select(id => Argument(id)));
 
@@ -227,6 +236,9 @@ namespace Desalt.Core.TypeScript.Ast
             return new TsArrowFunction(callSignature, body);
         }
 
+        /// <summary>
+        /// Represents a function declaration acting as an expression.
+        /// </summary>
         public static ITsFunctionExpression FunctionExpression(
             ITsCallSignature callSignature,
             ITsIdentifier functionName = null,
