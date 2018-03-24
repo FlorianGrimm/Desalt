@@ -20,7 +20,7 @@ namespace Desalt.Core.Translation
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
         private static readonly SymbolDisplayFormat
-            s_symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat;
+            s_symbolDisplayFormat = SymbolDisplayFormat.MinimallyQualifiedFormat;
 
         public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
 

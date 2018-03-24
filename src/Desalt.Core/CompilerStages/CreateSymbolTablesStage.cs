@@ -8,6 +8,7 @@
 namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
+        [SuppressMessage("ReSharper", "ImplicitlyCapturedClosure")]
         public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
                 IEnumerable<DocumentTranslationContext> input,
@@ -44,17 +46,20 @@ namespace Desalt.Core.CompilerStages
 
             // add all of the import symbols in parallel (the symbol table is thread-safe)
             var tasks = contexts.Select(
-
-                // ReSharper disable once ImplicitlyCapturedClosure
                 context => Task.Run(
                     () => importSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
                     cancellationToken));
 
+            // add types from referenced assemblies
+            tasks = tasks.Concat(
+                contexts.Select(
+                    context => Task.Run(
+                        () => importSymbolTable.AddExternallyReferencedTypes(context, cancellationToken),
+                        cancellationToken)));
+
             // populate the script name symbol table
             tasks = tasks.Concat(
                 contexts.Select(
-
-                    // ReSharper disable once ImplicitlyCapturedClosure
                     context => Task.Run(
                         () => scriptNameSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
                         cancellationToken)));

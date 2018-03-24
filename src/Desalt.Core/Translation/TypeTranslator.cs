@@ -49,6 +49,17 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Returns a value indicating whether the specified symbol has a native JavaScript type
+        /// equivalent. These types don't need to be imported, for example.
+        /// </summary>
+        /// <param name="symbol">The symbol to inspect.</param>
+        public static bool IsNativeJavaScriptType(ITypeSymbol symbol)
+        {
+            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
+            return s_nativeTypeMap.ContainsKey(fullTypeName);
+        }
+
         public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)

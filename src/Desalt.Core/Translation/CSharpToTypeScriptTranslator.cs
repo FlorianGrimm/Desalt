@@ -67,34 +67,45 @@ namespace Desalt.Core.Translation
             var validImportTypes = importTypes.Except(undefinedTypes);
 
             // group each valid import by file name (but don't include the types that are defined in this class).
-            var groupedByFileName = validImportTypes.OrderBy(_ => _)
+            var groupedByFileName = validImportTypes.OrderBy(symbol => symbol.Name)
                 .Select(
                     symbol =>
                     {
-                        string tsPath = context.ImportSymbolTable[symbol].RelativeTypeScriptFilePathOrModuleName;
-                        string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
-
-                        // remove the file extension
-                        relativePath = Path.GetFileNameWithoutExtension(relativePath) ??
-                            throw new InvalidOperationException("Something went wrong with path parsing");
-
-                        // TypeScript import paths can always use forward slashes
-                        relativePath = relativePath.Replace("\\", "/");
-
-                        // make sure the path start with ./ or ../
-                        if (!relativePath.StartsWith(".", StringComparison.Ordinal))
+                        ImportSymbolInfo importInfo = context.ImportSymbolTable[symbol];
+                        string relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
+                        if (importInfo.IsInternalReference)
                         {
-                            relativePath = "./" + relativePath;
+                            relativePathOrModuleName = MakeRelativePath(
+                                context.TypeScriptFilePath,
+                                relativePathOrModuleName);
+
+                            // remove the file extension
+                            relativePathOrModuleName = Path.GetFileNameWithoutExtension(relativePathOrModuleName) ??
+                                throw new InvalidOperationException("Something went wrong with path parsing");
+
+                            // TypeScript import paths can always use forward slashes
+                            relativePathOrModuleName = relativePathOrModuleName.Replace("\\", "/");
+
+                            // make sure the path start with ./ or ../
+                            if (!relativePathOrModuleName.StartsWith(".", StringComparison.Ordinal))
+                            {
+                                relativePathOrModuleName = "./" + relativePathOrModuleName;
+                            }
+                        }
+                        else
+                        {
+                            relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
                         }
 
                         return new
                         {
-                            TypeName = SymbolTable.KeyFromSymbol(symbol),
-                            RelativePath = relativePath
+                            TypeName = symbol.Name,
+                            RelativePathOrModuleName = relativePathOrModuleName
                         };
                     })
-                .Where(item => item.RelativePath != "./")
-                .GroupBy(item => item.RelativePath);
+                .Where(item => item.RelativePathOrModuleName != "./")
+                .Distinct()
+                .GroupBy(item => item.RelativePathOrModuleName);
 
             // add an import statement for each group
             var importDeclarations = new List<ITsImportDeclaration>();

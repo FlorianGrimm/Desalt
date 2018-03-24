@@ -20,7 +20,7 @@ namespace Desalt.Core.Translation
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
+    internal partial class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
     {
         //// ===========================================================================================================
         //// Methods
@@ -58,6 +58,15 @@ namespace Desalt.Core.Translation
                 AddOrUpdate(typeSymbol, symbolInfo);
             }
         }
+
+        public void AddExternallyReferencedTypes(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            // find all of the symbols that are being referenced outside of this assembly
+            var walker = new Walker(context.SemanticModel, AddOrUpdate);
+            walker.Visit(context.RootSyntax);
+        }
     }
 
     /// <summary>
@@ -94,6 +103,11 @@ namespace Desalt.Core.Translation
         public static ImportSymbolInfo CreateInternalReference(string typeScriptFilePath)
         {
             return new ImportSymbolInfo(typeScriptFilePath, isInternalReference: true);
+        }
+
+        public static ImportSymbolInfo CreateExternalReference(string moduleName)
+        {
+            return new ImportSymbolInfo(moduleName, isInternalReference: false);
         }
     }
 }
