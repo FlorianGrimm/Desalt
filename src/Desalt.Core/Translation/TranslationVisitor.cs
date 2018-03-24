@@ -58,8 +58,18 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
-            _diagnostics.Add(diagnostic);
+            return ReportUnsupportedTranslataion(diagnostic);
+        }
 
+        /// <summary>
+        /// Adds the diagnostic to the diagnostics list and then throws an exception so we can get a
+        /// stack trace in debug mode and returns an empty enumerable.
+        /// </summary>
+        /// <param name="diagnostic">The <see cref="Diagnostic"/> to add and report.</param>
+        /// <returns>An empty <see cref="IEnumerable{IAstNode}"/>.</returns>
+        private IEnumerable<IAstNode> ReportUnsupportedTranslataion(Diagnostic diagnostic)
+        {
+            _diagnostics.Add(diagnostic);
 #if DEBUG
 
             // throwing an exception lets us fail fast and see the problem in the unit test failure window
