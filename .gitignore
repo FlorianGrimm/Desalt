@@ -4,6 +4,7 @@
 /src/**/obj/
 /test/**/bin/
 /test/**/obj/
+/test/SaltarelleProjectTests/CoreSubset/CoreSubset.dll
 /TestResults/
 
 *.csproj.user
