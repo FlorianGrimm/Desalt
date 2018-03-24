@@ -136,7 +136,7 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
-        private ITsIdentifier TranslateIdentifier(SyntaxNode node)
+        private ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             string scriptName = _context.ScriptNameSymbolTable[symbol];
