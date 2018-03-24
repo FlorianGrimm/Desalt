@@ -149,7 +149,21 @@ namespace Desalt.Core.Translation
         private ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
-            string scriptName = _context.ScriptNameSymbolTable[symbol];
+            if (symbol == null)
+            {
+                ReportUnsupportedTranslataion(DiagnosticFactory.IdentifierNotSupported(node));
+                return null;
+            }
+
+            if (!_context.ScriptNameSymbolTable.TryGetValue(symbol, out string scriptName))
+            {
+                ReportUnsupportedTranslataion(
+                    DiagnosticFactory.InternalError(
+                        $"Node should have been added to the ScriptNameSymbolTable: {node}",
+                        node.GetLocation()));
+                return null;
+            }
+
             return Factory.Identifier(scriptName);
         }
 
