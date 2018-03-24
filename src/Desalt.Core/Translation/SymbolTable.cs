@@ -71,10 +71,31 @@ namespace Desalt.Core.Translation
         /// Returns a value indicating whether the symbol table contains a definition for the
         /// specified symbol name.
         /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
         public bool HasSymbol(ISymbol symbol)
         {
             string symbolName = SymbolTable.KeyFromSymbol(symbol);
             return _symbolMap.TryGetValue(symbolName, out T _);
+        }
+
+        /// <summary>
+        /// Attempts to get the value associated with the specified key.
+        /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
+        /// <param name="value">
+        /// The value associated with the symbol if found; otherwise the default value for <c>T</c>.
+        /// </param>
+        /// <returns>true if the symbol was found; otherwise, false.</returns>
+        public bool TryGetValue(ISymbol symbol, out T value)
+        {
+            if (HasSymbol(symbol))
+            {
+                value = this[symbol];
+                return true;
+            }
+
+            value = default(T);
+            return false;
         }
 
         /// <summary>
