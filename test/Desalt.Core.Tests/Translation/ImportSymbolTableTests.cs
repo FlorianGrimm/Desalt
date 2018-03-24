@@ -59,7 +59,7 @@ delegate void MyDelegate();
             var importTable = new ImportSymbolTable();
             Action action = () =>
             {
-                string s = importTable["Unknown"];
+                var x = importTable["Unknown"];
             };
 
             action.Should().ThrowExactly<KeyNotFoundException>();
@@ -69,7 +69,7 @@ delegate void MyDelegate();
         public async Task Indexer_should_return_the_file_name_of_the_found_symbol()
         {
             ImportSymbolTable importTable = await AssertHasSymbolsAsync("class MyClass {}", "MyClass");
-            importTable["MyClass"].Should().Be(Path.Combine("outputPath", "File.ts"));
+            importTable["MyClass"].RelativeTypeScriptFilePathOrModuleName.Should().Be(Path.Combine("outputPath", "File.ts"));
         }
     }
 }

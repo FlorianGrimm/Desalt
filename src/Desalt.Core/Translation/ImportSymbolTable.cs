@@ -24,23 +24,23 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ConcurrentDictionary<string, string> _typeToFileMap =
-            new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, ImportSymbolInfo> _typeToFileMap =
+            new ConcurrentDictionary<string, ImportSymbolInfo>();
 
         //// ===========================================================================================================
         //// Indexers
         //// ===========================================================================================================
 
-        public string this[string symbolName]
+        public ImportSymbolInfo this[string symbolName]
         {
             get
             {
-                if (!_typeToFileMap.TryGetValue(symbolName, out string fileName))
+                if (!_typeToFileMap.TryGetValue(symbolName, out ImportSymbolInfo symbolInfo))
                 {
                     throw new KeyNotFoundException();
                 }
 
-                return fileName;
+                return symbolInfo;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public void AddDefinedTypesInDocument(DocumentTranslationContext context)
         {
-            string filePath = context.TypeScriptFilePath;
+            ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
             var allTypeDeclarations = context.RootSyntax.DescendantNodes()
                 .Select(
@@ -75,7 +75,7 @@ namespace Desalt.Core.Translation
 
             foreach (string typeName in allTypeDeclarations)
             {
-                _typeToFileMap.AddOrUpdate(typeName, _ => filePath, (_, __) => filePath);
+                _typeToFileMap.AddOrUpdate(typeName, _ => symbolInfo, (_, __) => symbolInfo);
             }
         }
 
@@ -85,7 +85,44 @@ namespace Desalt.Core.Translation
         /// </summary>
         public bool HasSymbol(string symbolName)
         {
-            return _typeToFileMap.TryGetValue(symbolName, out string _);
+            return _typeToFileMap.TryGetValue(symbolName, out ImportSymbolInfo _);
+        }
+    }
+
+    /// <summary>
+    /// Represents an imported symbol that is contained in an <see cref="ImportSymbolTable"/>.
+    /// </summary>
+    internal class ImportSymbolInfo
+    {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        private ImportSymbolInfo(string relativeTypeScriptFilePathOrModuleName, bool isInternalReference)
+        {
+            RelativeTypeScriptFilePathOrModuleName = relativeTypeScriptFilePathOrModuleName;
+            IsInternalReference = isInternalReference;
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public string RelativeTypeScriptFilePathOrModuleName { get; }
+
+        /// <summary>
+        /// Returns a value indicating whether this is an internal reference, meaning that the type
+        /// is defined within this project. An external reference is something from another assembly.
+        /// </summary>
+        public bool IsInternalReference { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public static ImportSymbolInfo CreateInternalReference(string typeScriptFilePath)
+        {
+            return new ImportSymbolInfo(typeScriptFilePath, isInternalReference: true);
         }
     }
 }

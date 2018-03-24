@@ -66,7 +66,7 @@ namespace Desalt.Core.Translation
                 .Select(
                     importTypeName =>
                     {
-                        string tsPath = context.ImportSymbolTable[importTypeName];
+                        string tsPath = context.ImportSymbolTable[importTypeName].RelativeTypeScriptFilePathOrAssemblyName;
                         string relativePath = MakeRelativePath(context.TypeScriptFilePath, tsPath);
 
                         // remove the file extension
