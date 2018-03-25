@@ -167,7 +167,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
 
             Incrementor.Emit(emitter);
 
-            Statement.EmitIndentedOrInBlock(emitter);
+            Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
         }
     }
 }

@@ -190,15 +190,19 @@ namespace Desalt.Core.TypeScript.Ast
         /// <param name="prefixForBlock">
         /// If supplied, the prefix is written before the statement when it's a block statement.
         /// </param>
+        /// <param name="newlineAfterBlock">
+        /// Indicates whether to add a newline after the block if it's a block statement.
+        /// </param>
         public static void EmitIndentedOrInBlock(
             this ITsStatement statement,
             Emitter emitter,
             string prefixForIndentedStatement = ")",
-            string prefixForBlock = ") ")
+            string prefixForBlock = ") ",
+            bool newlineAfterBlock = false)
         {
             bool isBlockStatement = statement is ITsBlockStatement;
             emitter.WriteStatementIndentedOrInBlock(
-                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock);
+                statement, isBlockStatement, prefixForIndentedStatement, prefixForBlock, newlineAfterBlock);
         }
 
         /// <summary>

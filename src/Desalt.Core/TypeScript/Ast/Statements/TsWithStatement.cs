@@ -44,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         {
             emitter.Write("with (");
             Expression.Emit(emitter);
-            Statement.EmitIndentedOrInBlock(emitter);
+            Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
         }
     }
 }

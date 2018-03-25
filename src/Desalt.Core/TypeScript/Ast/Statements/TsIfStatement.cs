@@ -47,7 +47,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         {
             emitter.Write("if (");
             IfCondition.Emit(emitter);
-            IfStatement.EmitIndentedOrInBlock(emitter);
+            IfStatement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: ElseStatement == null);
 
             if (ElseStatement != null)
             {
@@ -57,7 +57,11 @@ namespace Desalt.Core.TypeScript.Ast.Statements
                 }
 
                 emitter.Write("else");
-                ElseStatement.EmitIndentedOrInBlock(emitter, prefixForIndentedStatement: "", prefixForBlock: " ");
+                ElseStatement.EmitIndentedOrInBlock(
+                    emitter,
+                    prefixForIndentedStatement: "",
+                    prefixForBlock: " ",
+                    newlineAfterBlock: true);
             }
         }
     }
