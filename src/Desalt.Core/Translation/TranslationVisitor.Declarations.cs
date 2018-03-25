@@ -225,10 +225,12 @@ namespace Desalt.Core.Translation
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             var parameterList = Factory.ParameterList();
 
+            var functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+
             ITsConstructorDeclaration constructorDeclaration = Factory.ConstructorDeclaration(
                 accessibilityModifier,
                 parameterList,
-                functionBody: null);
+                functionBody.Statements);
 
             constructorDeclaration = AddDocumentationComment(constructorDeclaration, node);
             return constructorDeclaration.ToSingleEnumerable();
