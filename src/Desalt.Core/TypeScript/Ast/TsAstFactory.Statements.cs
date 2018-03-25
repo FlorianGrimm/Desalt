@@ -7,9 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast.Statements;
 
@@ -25,16 +23,9 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a variable declaration statement of the form 'var x = y;'.
         /// </summary>
-        public static ITsVariableStatement VariableStatement(
-            ITsVariableDeclaration declaration,
-            params ITsVariableDeclaration[] declarations)
+        public static ITsVariableStatement VariableStatement(params ITsVariableDeclaration[] declarations)
         {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
-
-            return new TsVariableStatement(declaration.ToSafeArray().Concat(declarations));
+            return new TsVariableStatement(declarations);
         }
 
         /// <summary>
