@@ -231,6 +231,23 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         }
 
         [TestMethod]
+        public void Emit_try_catch_with_no_parameter_statement()
+        {
+            VerifyOutput(
+                Factory.TryCatch(
+                    Factory.Assignment(
+                            s_x,
+                            TsAssignmentOperator.SimpleAssign,
+                            Factory.NewCall(Factory.Identifier("Widget")))
+                        .ToBlock(),
+                    Factory.Call(
+                            Factory.MemberDot(Factory.Identifier("console"), "log"),
+                            Factory.ArgumentList(Factory.Argument(Factory.Identifier("err"))))
+                        .ToBlock()),
+                "try {\n  x = new Widget();\n} catch {\n  console.log(err);\n}\n");
+        }
+
+        [TestMethod]
         public void Emit_try_finally_statement()
         {
             VerifyOutput(

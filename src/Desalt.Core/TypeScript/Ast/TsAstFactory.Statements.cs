@@ -142,6 +142,13 @@ namespace Desalt.Core.TypeScript.Ast
             return TsTryStatement.CreateTryCatch(tryBlock, catchParameter, catchBlock);
         }
 
+        public static ITsTryStatement TryCatch(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock)
+        {
+            return TsTryStatement.CreateTryCatch(tryBlock, catchBlock);
+        }
+
         public static ITsTryStatement TryFinally(
             ITsBlockStatement tryBlock,
             ITsBlockStatement finallyBlock)
@@ -156,6 +163,14 @@ namespace Desalt.Core.TypeScript.Ast
             ITsBlockStatement finallyBlock)
         {
             return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
+        }
+
+        public static ITsTryStatement TryCatchFinally(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock,
+            ITsBlockStatement finallyBlock)
+        {
+            return TsTryStatement.CreateTryCatchFinally(tryBlock, catchBlock, finallyBlock);
         }
 
         /// <summary>
