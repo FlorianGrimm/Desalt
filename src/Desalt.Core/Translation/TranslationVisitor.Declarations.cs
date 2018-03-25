@@ -115,7 +115,7 @@ namespace Desalt.Core.Translation
             // translate the class heritage
             ITsClassHeritage heritage = Factory.ClassHeritage(implementsTypes: null);
 
-            // translate the interface body
+            // translate the class body
             var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>();
 
             ITsClassDeclaration classDeclaration = Factory.ClassDeclaration(
@@ -223,7 +223,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
-            var parameterList = Factory.ParameterList();
+            var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
 
             var functionBody = (ITsBlockStatement)Visit(node.Body).Single();
 
