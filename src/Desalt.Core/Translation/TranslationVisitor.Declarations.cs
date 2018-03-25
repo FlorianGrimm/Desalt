@@ -237,15 +237,21 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a PropertyDeclarationSyntax node.
         /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> of one or both of <see
+        /// cref="ITsGetAccessorMemberDeclaration"/> or <see cref="ITsSetAccessorMemberDeclaration"/>.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
             var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+            bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
                 TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(accessor);
+                var functionBody = (ITsBlockStatement)Visit(accessor.Body).Single();
 
                 switch (accessor.Kind())
                 {
@@ -253,9 +259,11 @@ namespace Desalt.Core.Translation
                         ITsGetAccessor getAccessor = Factory.GetAccessor(
                             propertyName,
                             propertyType,
-                            functionBody: null);
-                        ITsGetAccessorMemberDeclaration getAccessorDeclaration =
-                            Factory.GetAccessorMemberDeclaration(getAccessor, accessibilityModifier);
+                            functionBody.Statements);
+                        ITsGetAccessorMemberDeclaration getAccessorDeclaration = Factory.GetAccessorMemberDeclaration(
+                            getAccessor,
+                            accessibilityModifier,
+                            isStatic);
                         yield return AddDocumentationComment(getAccessorDeclaration, node);
                         break;
 
@@ -264,9 +272,11 @@ namespace Desalt.Core.Translation
                             propertyName,
                             Factory.Identifier("value"),
                             propertyType,
-                            functionBody: null);
-                        ITsSetAccessorMemberDeclaration setAccessorDeclaration =
-                            Factory.SetAccessorMemberDeclaration(setAccessor, accessibilityModifier);
+                            functionBody.Statements);
+                        ITsSetAccessorMemberDeclaration setAccessorDeclaration = Factory.SetAccessorMemberDeclaration(
+                            setAccessor,
+                            accessibilityModifier,
+                            isStatic);
                         yield return AddDocumentationComment(setAccessorDeclaration, node);
                         break;
 
