@@ -44,7 +44,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         {
             emitter.Write("while (");
             WhileCondition.Emit(emitter);
-            WhileStatement.EmitIndentedOrInBlock(emitter);
+            WhileStatement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
         }
     }
 }

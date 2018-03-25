@@ -179,16 +179,11 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
-            var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
-            ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_semanticModel),
-                _typesToImport);
-
-            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList, node.ReturnType);
 
             // if we're defining an interface, then we need to return a ITsMethodSignature
             if (_semanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
@@ -201,13 +196,21 @@ namespace Desalt.Core.Translation
                 return methodSignature.ToSingleEnumerable();
             }
 
+            // a function body can be null in the case of an 'extern' declaration.
+            ITsBlockStatement functionBody = null;
+            if (node.Body != null)
+            {
+                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+            }
+
             // we're within a class, so return a method declaration
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             ITsFunctionMemberDeclaration methodDeclaration = Factory.FunctionMemberDeclaration(
                 functionName,
                 callSignature,
                 accessibilityModifier,
-                functionBody: null);
+                symbol.IsStatic,
+                functionBody?.Statements);
 
             methodDeclaration = AddDocumentationComment(methodDeclaration, node);
             return methodDeclaration.ToSingleEnumerable();
@@ -271,6 +274,72 @@ namespace Desalt.Core.Translation
                         throw new InvalidOperationException($"Unknown accessor kind '{accessor.Kind()}'");
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
+        /// </returns>
+        private ITsImplementationModuleElement ExportIfNeeded(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+            {
+                return translatedDeclaration;
+            }
+
+            ITsExportImplementationElement exportedInterfaceDeclaration =
+                Factory.ExportImplementationElement(translatedDeclaration);
+            return exportedInterfaceDeclaration;
+        }
+
+        /// <summary>
+        /// Calls <see cref="ExportIfNeeded"/> followed by <see cref="AddDocumentationComment{T}"/>.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is
+        /// returned. Whichever element is returned, it includes any documentation comment.
+        /// </returns>
+        private ITsImplementationModuleElement ExportAndAddDocComment(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
+            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
+            return withDocComment;
+        }
+
+        private ITsCallSignature TranslateCallSignature(
+            ParameterListSyntax parameterListNode,
+            TypeSyntax returnTypeNode = null)
+        {
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+
+            ITsParameterList parameters = parameterListNode == null
+                ? Factory.ParameterList()
+                : (ITsParameterList)Visit(parameterListNode).Single();
+
+            ITsType returnType = Factory.VoidType;
+            if (returnTypeNode != null)
+            {
+                returnType = TypeTranslator.TranslateSymbol(
+                    returnTypeNode.GetTypeSymbol(_semanticModel),
+                    _typesToImport);
+            }
+
+            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+            return callSignature;
         }
 
         private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)

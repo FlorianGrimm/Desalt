@@ -491,6 +491,9 @@ namespace Desalt.Core.TypeScript.Ast
         TsUnaryOperator Operator { get; }
     }
 
+    /// <summary>
+    /// Represents a unary cast expression of the form, '&lt;Type&gt;.
+    /// </summary>
     public interface ITsCastExpression : ITsUnaryExpression
     {
         ITsType CastType { get; }

@@ -9,6 +9,7 @@ namespace Desalt.Core.Diagnostics
 {
     using System;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
@@ -76,6 +77,24 @@ namespace Desalt.Core.Diagnostics
                 "TypeScript translation does not understand C# identifier node",
                 "C# identifier node of type '{0}' not supported: {1}")]
             IdentifierNotSupported,
+
+            [Error(
+                1009,
+                "TypeScript translation does not understand C# operator token",
+                "C# operator token of kind '{0}' not supported: {1}")]
+            OperatorKindNotSupported,
+
+            [Error(
+                1010,
+                "Element access with more than one expression is not supported",
+                "Element access with more than one expression is not supported: {0}")]
+            ElementAccessWithMoreThanOneExpressionNotAllowed,
+
+            [Error(
+                1011,
+                "Catch clauses with more than one parameter are not yet supported",
+                "Catch clauses with more than one parameter are not yet supported: {0}")]
+            CatchClausesWithMoreThanOneParameterNotYetSupported,
         }
 
         //// ===========================================================================================================
@@ -141,6 +160,14 @@ namespace Desalt.Core.Diagnostics
             Create(DiagnosticId.IdentifierNotSupported, node.GetLocation(), node.GetType().Name, node);
 
         /// <summary>
+        /// Returns a diagnostic of the form "C# operator token of kind '{0}' not supported: {1}".
+        /// </summary>
+        /// <param name="token">The unsupported syntax token.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic OperatorKindNotSupported(SyntaxToken token) =>
+            Create(DiagnosticId.OperatorKindNotSupported, token.GetLocation(), token.Kind(), token);
+
+        /// <summary>
         /// Returns a diagnostic of the form "Interface method '{0}.{1}' contains parameter '{2}' with a default value.".
         /// </summary>
         /// <param name="interfaceName">The full name of the interface.</param>
@@ -194,5 +221,21 @@ namespace Desalt.Core.Diagnostics
         /// <param name="location">The location of the error.</param>
         public static Diagnostic UnstructuredXmlTextNotSupported(string text, Location location) =>
             Create(DiagnosticId.UnstructuredXmlTextNotSupported, location, text);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Element access with more than one expression is not supported: {0}".
+        /// </summary>
+        /// <param name="node">The unsupported syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic ElementAccessWithMoreThanOneExpressionNotAllowed(BracketedArgumentListSyntax node) =>
+            Create(DiagnosticId.ElementAccessWithMoreThanOneExpressionNotAllowed, node.GetLocation(), node);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Catch clauses with more than one parameter are not yet supported: {0}".
+        /// </summary>
+        /// <param name="node">The unsupported syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic CatchClausesWithMoreThanOneParameterNotYetSupported(SyntaxNode node) =>
+            Create(DiagnosticId.CatchClausesWithMoreThanOneParameterNotYetSupported, node.GetLocation(), node);
     }
 }

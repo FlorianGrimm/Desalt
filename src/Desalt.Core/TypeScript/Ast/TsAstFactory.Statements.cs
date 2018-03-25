@@ -7,9 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast.Statements;
 
@@ -25,16 +23,9 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a variable declaration statement of the form 'var x = y;'.
         /// </summary>
-        public static ITsVariableStatement VariableStatement(
-            ITsVariableDeclaration declaration,
-            params ITsVariableDeclaration[] declarations)
+        public static ITsVariableStatement VariableStatement(params ITsVariableDeclaration[] declarations)
         {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
-
-            return new TsVariableStatement(declaration.ToSafeArray().Concat(declarations));
+            return new TsVariableStatement(declarations);
         }
 
         /// <summary>
@@ -142,6 +133,13 @@ namespace Desalt.Core.TypeScript.Ast
             return TsTryStatement.CreateTryCatch(tryBlock, catchParameter, catchBlock);
         }
 
+        public static ITsTryStatement TryCatch(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock)
+        {
+            return TsTryStatement.CreateTryCatch(tryBlock, catchBlock);
+        }
+
         public static ITsTryStatement TryFinally(
             ITsBlockStatement tryBlock,
             ITsBlockStatement finallyBlock)
@@ -156,6 +154,14 @@ namespace Desalt.Core.TypeScript.Ast
             ITsBlockStatement finallyBlock)
         {
             return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
+        }
+
+        public static ITsTryStatement TryCatchFinally(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock,
+            ITsBlockStatement finallyBlock)
+        {
+            return TsTryStatement.CreateTryCatchFinally(tryBlock, catchBlock, finallyBlock);
         }
 
         /// <summary>

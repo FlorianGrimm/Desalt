@@ -299,16 +299,24 @@ namespace Desalt.Core.Emit
         /// If supplied, the prefix is written before the statement when <paramref
         /// name="isBlockStatement"/> is true.
         /// </param>
+        /// <param name="newlineAfterBlock">
+        /// Indicates whether to add a newline after the block if it's a block statement.
+        /// </param>
         public void WriteStatementIndentedOrInBlock(
             IAstNode statement,
             bool isBlockStatement,
             string prefixForIndentedStatement = null,
-            string prefixForBlock = null)
+            string prefixForBlock = null,
+            bool newlineAfterBlock = false)
         {
             if (isBlockStatement)
             {
                 Write(prefixForBlock ?? string.Empty);
                 statement.Emit(this);
+                if (newlineAfterBlock)
+                {
+                    WriteLine();
+                }
             }
             else
             {

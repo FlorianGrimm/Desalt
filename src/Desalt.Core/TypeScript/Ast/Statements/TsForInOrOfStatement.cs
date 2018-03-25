@@ -124,7 +124,7 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             emitter.Write(OfLoop ? " of " : " in ");
             RightSide.Emit(emitter);
 
-            Statement.EmitIndentedOrInBlock(emitter);
+            Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
         }
     }
 }

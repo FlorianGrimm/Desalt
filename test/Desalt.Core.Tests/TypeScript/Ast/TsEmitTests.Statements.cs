@@ -165,7 +165,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                         Factory.Assignment(
                                 s_z, TsAssignmentOperator.SimpleAssign, Factory.True)
                             .ToStatement())),
-                "if (x === y) {\n  z = true;\n}");
+                "if (x === y) {\n  z = true;\n}\n");
         }
 
         [TestMethod]
@@ -190,7 +190,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                         Factory.Assignment(
                             s_z, TsAssignmentOperator.SimpleAssign, Factory.False).ToStatement()),
                     Factory.Block(Factory.UnaryExpression(s_p, TsUnaryOperator.PostfixIncrement).ToStatement())),
-                "if (x !== y) {\n  z = false;\n} else {\n  p++;\n}");
+                "if (x !== y) {\n  z = false;\n} else {\n  p++;\n}\n");
         }
 
         [TestMethod]
@@ -228,6 +228,23 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                         Factory.ArgumentList(Factory.Argument(Factory.Identifier("err"))))
                     .ToBlock()),
                 "try {\n  x = new Widget();\n} catch (err) {\n  console.log(err);\n}\n");
+        }
+
+        [TestMethod]
+        public void Emit_try_catch_with_no_parameter_statement()
+        {
+            VerifyOutput(
+                Factory.TryCatch(
+                    Factory.Assignment(
+                            s_x,
+                            TsAssignmentOperator.SimpleAssign,
+                            Factory.NewCall(Factory.Identifier("Widget")))
+                        .ToBlock(),
+                    Factory.Call(
+                            Factory.MemberDot(Factory.Identifier("console"), "log"),
+                            Factory.ArgumentList(Factory.Argument(Factory.Identifier("err"))))
+                        .ToBlock()),
+                "try {\n  x = new Widget();\n} catch {\n  console.log(err);\n}\n");
         }
 
         [TestMethod]
@@ -290,7 +307,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.While(
                     Factory.BinaryExpression(s_x, TsBinaryOperator.GreaterThanEqual, Factory.Zero),
                     Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement).ToBlock()),
-                "while (x >= 0) {\n  x--;\n}");
+                "while (x >= 0) {\n  x--;\n}\n");
         }
 
         [TestMethod]
@@ -340,7 +357,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         [TestMethod]
         public void Emit_basic_for_in_loop()
         {
-            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger.ToBlock()), "for (x in y) {\n  debugger;\n}");
+            VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger.ToBlock()), "for (x in y) {\n  debugger;\n}\n");
         }
 
         [TestMethod]
@@ -374,7 +391,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         [TestMethod]
         public void Emit_basic_for_of_loop()
         {
-            VerifyOutput(Factory.ForOf(s_x, s_y, Factory.Debugger.ToBlock()), "for (x of y) {\n  debugger;\n}");
+            VerifyOutput(Factory.ForOf(s_x, s_y, Factory.Debugger.ToBlock()), "for (x of y) {\n  debugger;\n}\n");
         }
 
         [TestMethod]

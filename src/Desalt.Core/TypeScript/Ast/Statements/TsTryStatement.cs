@@ -54,8 +54,18 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         {
             return new TsTryStatement(
                 tryBlock,
-                catchParameter ?? throw new ArgumentNullException(nameof(catchParameter)),
+                catchParameter,
                 catchBlock ?? throw new ArgumentNullException(nameof(catchBlock)));
+        }
+
+        public static TsTryStatement CreateTryCatch(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock)
+        {
+            return new TsTryStatement(
+                tryBlock,
+                catchParameter: null,
+                catchBlock: catchBlock ?? throw new ArgumentNullException(nameof(catchBlock)));
         }
 
         public static TsTryStatement CreateTryFinally(ITsBlockStatement tryBlock, ITsBlockStatement finallyBlock)
@@ -73,9 +83,21 @@ namespace Desalt.Core.TypeScript.Ast.Statements
         {
             return new TsTryStatement(
                 tryBlock,
-                catchParameter ?? throw new ArgumentNullException(nameof(catchParameter)),
+                catchParameter,
                 catchBlock ?? throw new ArgumentNullException(nameof(catchBlock)),
                 finallyBlock ?? throw new ArgumentNullException(nameof(finallyBlock)));
+        }
+
+        public static TsTryStatement CreateTryCatchFinally(
+            ITsBlockStatement tryBlock,
+            ITsBlockStatement catchBlock,
+            ITsBlockStatement finallyBlock)
+        {
+            return new TsTryStatement(
+                tryBlock,
+                catchParameter: null,
+                catchBlock: catchBlock ?? throw new ArgumentNullException(nameof(catchBlock)),
+                finallyBlock: finallyBlock ?? throw new ArgumentNullException(nameof(finallyBlock)));
         }
 
         public override void Accept(TsVisitor visitor) => visitor.VisitTryStatement(this);
@@ -87,10 +109,18 @@ namespace Desalt.Core.TypeScript.Ast.Statements
                 var builder = new StringBuilder();
                 builder.Append("try ").Append(TryBlock.CodeDisplay);
 
-                if (CatchParameter != null)
+                if (CatchBlock != null)
                 {
                     builder.AppendLine();
-                    builder.Append("catch (").Append(CatchParameter.CodeDisplay).Append(")");
+                    if (CatchParameter != null)
+                    {
+                        builder.Append("catch (").Append(CatchParameter.CodeDisplay).Append(") ");
+                    }
+                    else
+                    {
+                        builder.Append("catch ");
+                    }
+
                     builder.Append(CatchBlock);
                 }
 
@@ -109,11 +139,19 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             emitter.Write("try ");
             TryBlock.Emit(emitter);
 
-            if (CatchParameter != null)
+            if (CatchBlock != null)
             {
-                emitter.Write(" catch (");
-                CatchParameter.Emit(emitter);
-                emitter.Write(") ");
+                if (CatchParameter != null)
+                {
+                    emitter.Write(" catch (");
+                    CatchParameter.Emit(emitter);
+                    emitter.Write(") ");
+                }
+                else
+                {
+                    emitter.Write(" catch ");
+                }
+
                 CatchBlock.Emit(emitter);
             }
 
