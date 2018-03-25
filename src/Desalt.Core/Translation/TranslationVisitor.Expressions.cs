@@ -65,6 +65,20 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a TypeOfExpressionSyntax node.
+        /// </summary>
+        /// <remarks>An <see cref="ITsIdentifier"/>.</remarks>
+        public override IEnumerable<IAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
+        {
+            ITsType type = TypeTranslator.TranslateSymbol(
+                node.Type.GetTypeSymbol(_semanticModel),
+                _typesToImport);
+
+            ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
         /// Called when the visitor visits a IdentifierNameSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsIdentifier"/>.</returns>
