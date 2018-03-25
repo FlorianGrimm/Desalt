@@ -1,0 +1,444 @@
+﻿// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="TranslationVisitor.Statements.cs" company="Justin Rockwood">
+//   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+//   LICENSE.txt in the project root for license information.
+// </copyright>
+// ---------------------------------------------------------------------------------------------------------------------
+
+namespace Desalt.Core.Translation
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    using Desalt.Core.Diagnostics;
+    using Desalt.Core.Extensions;
+    using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.TypeScript.Ast.Declarations;
+    using Desalt.Core.TypeScript.Ast.Expressions;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+
+    internal sealed partial class TranslationVisitor
+    {
+        /// <summary>
+        /// Called when the visitor visits a ExpressionStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsExpressionStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitExpressionStatement(ExpressionStatementSyntax node)
+        {
+            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsExpressionStatement translated = Factory.ExpressionStatement(expression);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a BlockSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBlockStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBlock(BlockSyntax node)
+        {
+            ITsStatementListItem[] statements =
+                node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
+            return Factory.Block(statements).ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a MemberAccessExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+            ITsMemberDotExpression translated = Factory.MemberDot(leftSide, node.Name.Identifier.Text);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ElementAccessExpressionSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+            var bracketContents = (ITsExpression)Visit(node.ArgumentList).Single();
+            ITsMemberBracketExpression translation = Factory.MemberBracket(leftSide, bracketContents);
+            return translation.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a BracketedArgumentListSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBracketedArgumentList(BracketedArgumentListSyntax node)
+        {
+            if (node.Arguments.Count > 1)
+            {
+                _diagnostics.Add(DiagnosticFactory.ElementAccessWithMoreThanOneExpressionNotAllowed(node));
+            }
+
+            return node.Arguments.Count == 0
+                ? null
+                : ((ITsArgument)Visit(node.Arguments[0]).Single()).Argument.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a LocalDeclarationStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
+        public override IEnumerable<IAstNode> VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
+        {
+            // TODO: figure out if the parameter ever changes to determine if it's const vs. let
+            bool isConst = node.IsConst;
+
+            // get the type of all of the declarations
+            var typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
+            ITsType type = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+
+            ITsSimpleLexicalBinding[] declarations = node.Declaration.Variables.SelectMany(Visit)
+                .Cast<ITsSimpleLexicalBinding>()
+                .Select(binding => binding.WithVariableType(type))
+                .ToArray();
+
+            // ReSharper disable once CoVariantArrayConversion
+            ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, declarations);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a VariableDeclaratorSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsSimpleLexicalBinding"/>.</returns>
+        public override IEnumerable<IAstNode> VisitVariableDeclarator(VariableDeclaratorSyntax node)
+        {
+            var variableName = Factory.Identifier(node.Identifier.Text);
+
+            ITsExpression initializer = null;
+            if (node.Initializer != null)
+            {
+                initializer = (ITsExpression)Visit(node.Initializer).First();
+            }
+
+            ITsSimpleLexicalBinding translated = Factory.SimpleLexicalBinding(variableName, initializer: initializer);
+            return translated.ToSingleEnumerable();
+        }
+
+        //// ===========================================================================================================
+        //// Assignments, Unary, and Binary Expressions
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a AssignmentExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsAssignmentExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitAssignmentExpression(AssignmentExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Left).Single();
+            var rightSide = (ITsExpression)Visit(node.Right).Single();
+
+            ITsAssignmentExpression translated = Factory.Assignment(
+                leftSide,
+                TranslateAssignmentOperator(node.OperatorToken),
+                rightSide);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        {
+            var operand = (ITsExpression)Visit(node.Operand).Single();
+            ITsUnaryExpression translated = Factory.UnaryExpression(
+                operand,
+                TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PostfixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            var operand = (ITsExpression)Visit(node.Operand).Single();
+            ITsUnaryExpression translated = Factory.UnaryExpression(
+                operand,
+                TranslateUnaryOperator(node.OperatorToken, asPrefix: false));
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a BinaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBinaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Left).Single();
+            var rightSide = (ITsExpression)Visit(node.Right).Single();
+
+            ITsBinaryExpression translated = Factory.BinaryExpression(
+                leftSide,
+                TranslateBinaryOperator(node.OperatorToken),
+                rightSide);
+            return translated.ToSingleEnumerable();
+        }
+
+        private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
+        {
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.EqualsToken:
+                    return TsAssignmentOperator.SimpleAssign;
+
+                case SyntaxKind.AsteriskEqualsToken:
+                    return TsAssignmentOperator.MultiplyAssign;
+
+                case SyntaxKind.SlashEqualsToken:
+                    return TsAssignmentOperator.DivideAssign;
+
+                case SyntaxKind.PercentEqualsToken:
+                    return TsAssignmentOperator.ModuloAssign;
+
+                case SyntaxKind.PlusEqualsToken:
+                    return TsAssignmentOperator.AddAssign;
+
+                case SyntaxKind.MinusEqualsToken:
+                    return TsAssignmentOperator.SubtractAssign;
+
+                case SyntaxKind.LessThanLessThanEqualsToken:
+                    return TsAssignmentOperator.LeftShiftAssign;
+
+                case SyntaxKind.GreaterThanGreaterThanEqualsToken:
+                    return TsAssignmentOperator.SignedRightShiftAssign;
+
+                case SyntaxKind.AmpersandEqualsToken:
+                    return TsAssignmentOperator.BitwiseAndAssign;
+
+                case SyntaxKind.CaretEqualsToken:
+                    return TsAssignmentOperator.BitwiseXorAssign;
+
+                case SyntaxKind.BarEqualsToken:
+                    return TsAssignmentOperator.BitwiseOrAssign;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsAssignmentOperator.SimpleAssign;
+            }
+        }
+
+        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
+        {
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.PlusPlusToken:
+                    return asPrefix ? TsUnaryOperator.PrefixIncrement : TsUnaryOperator.PostfixIncrement;
+
+                case SyntaxKind.MinusMinusToken:
+                    return asPrefix ? TsUnaryOperator.PrefixDecrement : TsUnaryOperator.PostfixDecrement;
+
+                case SyntaxKind.PlusToken:
+                    return TsUnaryOperator.Plus;
+
+                case SyntaxKind.MinusToken:
+                    return TsUnaryOperator.Minus;
+
+                case SyntaxKind.TildeToken:
+                    return TsUnaryOperator.BitwiseNot;
+
+                case SyntaxKind.ExclamationToken:
+                    return TsUnaryOperator.LogicalNot;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsUnaryOperator.Plus;
+            }
+        }
+
+        private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
+        {
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.AsteriskToken:
+                    return TsBinaryOperator.Multiply;
+
+                case SyntaxKind.SlashToken:
+                    return TsBinaryOperator.Divide;
+
+                case SyntaxKind.PercentToken:
+                    return TsBinaryOperator.Modulo;
+
+                case SyntaxKind.PlusToken:
+                    return TsBinaryOperator.Add;
+
+                case SyntaxKind.MinusToken:
+                    return TsBinaryOperator.Subtract;
+
+                case SyntaxKind.LessThanLessThanToken:
+                    return TsBinaryOperator.LeftShift;
+
+                case SyntaxKind.GreaterThanGreaterThanToken:
+                    return TsBinaryOperator.SignedRightShift;
+
+                case SyntaxKind.LessThanToken:
+                    return TsBinaryOperator.LessThan;
+
+                case SyntaxKind.GreaterThanToken:
+                    return TsBinaryOperator.GreaterThan;
+
+                case SyntaxKind.LessThanEqualsToken:
+                    return TsBinaryOperator.LessThanEqual;
+
+                case SyntaxKind.GreaterThanEqualsToken:
+                    return TsBinaryOperator.GreaterThanEqual;
+
+                case SyntaxKind.EqualsEqualsToken:
+                    return TsBinaryOperator.StrictEquals;
+
+                case SyntaxKind.ExclamationEqualsToken:
+                    return TsBinaryOperator.StrictNotEquals;
+
+                case SyntaxKind.AmpersandToken:
+                    return TsBinaryOperator.BitwiseAnd;
+
+                case SyntaxKind.CaretToken:
+                    return TsBinaryOperator.BitwiseXor;
+
+                case SyntaxKind.BarToken:
+                    return TsBinaryOperator.BitwiseOr;
+
+                case SyntaxKind.AmpersandAmpersandToken:
+                    return TsBinaryOperator.LogicalAnd;
+
+                case SyntaxKind.BarBarToken:
+                    return TsBinaryOperator.LogicalOr;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsBinaryOperator.Add;
+            }
+        }
+
+        //// ===========================================================================================================
+        //// Conditional Statements
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a IfStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsIfStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitIfStatement(IfStatementSyntax node)
+        {
+            var ifCondition = (ITsExpression)Visit(node.Condition).Single();
+            var ifStatement = (ITsStatement)Visit(node.Statement).Single();
+            var elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
+
+            ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TryStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTryStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTryStatement(TryStatementSyntax node)
+        {
+            var tryBlock = (ITsBlockStatement)Visit(node.Block).Single();
+
+            // translate only the first catch clause
+            if (node.Catches.Count > 1)
+            {
+                _diagnostics.Add(DiagnosticFactory.CatchClausesWithMoreThanOneParameterNotYetSupported(node));
+            }
+
+            bool hasCatch = node.Catches.Count > 0;
+            CatchClauseSyntax catchClause = node.Catches[0];
+            ITsIdentifier catchParameter = hasCatch && catchClause.Declaration != null
+                ? Factory.Identifier(catchClause.Declaration.Identifier.Text)
+                : null;
+            var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
+
+            // translate the finally block if present
+            bool hasFinally = node.Finally != null;
+            var finallyBlock = hasFinally ? (ITsBlockStatement)Visit(node.Finally.Block).Single() : null;
+
+            // translate the try/catch/finally statement
+            ITsTryStatement translated;
+            if (hasCatch && hasFinally)
+            {
+                translated = Factory.TryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
+            }
+            else if (hasCatch)
+            {
+                translated = Factory.TryCatch(tryBlock, catchParameter, catchBlock);
+            }
+            else if (hasFinally)
+            {
+                translated = Factory.TryFinally(tryBlock, finallyBlock);
+            }
+            else
+            {
+                translated = Factory.Try(tryBlock);
+            }
+
+            return translated.ToSingleEnumerable();
+        }
+
+        //// ===========================================================================================================
+        //// Loops
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a ForEachStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsForOfStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitForEachStatement(ForEachStatementSyntax node)
+        {
+            // translate the variable declaration - the 'x' in 'for (const x of )'
+            // NOTE: in TypeScript you can't actually have a type annotation on the left hand side of
+            //       a for/of loop, so we just translate the variable name.
+            ITsIdentifier declaration = Factory.Identifier(node.Identifier.Text);
+            var rightSide = (ITsExpression)Visit(node.Expression).Single();
+            var statement = (ITsStatement)Visit(node.Statement).Single();
+
+            ITsForOfStatement translated = Factory.ForOf(
+                VariableDeclarationKind.Const,
+                declaration,
+                rightSide,
+                statement);
+            return translated.ToSingleEnumerable();
+        }
+
+        //// ===========================================================================================================
+        //// Functions and Methods
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a AnonymousMethodExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
+        public override IEnumerable<IAstNode> VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+        {
+            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
+            var body = (ITsBlockStatement)Visit(node.Block).Single();
+            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body.Statements.ToArray());
+            return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ReturnStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsReturnStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitReturnStatement(ReturnStatementSyntax node)
+        {
+            ITsExpression expression = null;
+            if (node.Expression != null)
+            {
+                expression = (ITsExpression)Visit(node.Expression).Single();
+            }
+
+            ITsReturnStatement translated = Factory.Return(expression);
+            return translated.ToSingleEnumerable();
+        }
+    }
+}

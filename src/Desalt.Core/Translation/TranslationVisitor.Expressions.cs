@@ -20,6 +20,15 @@ namespace Desalt.Core.Translation
     internal sealed partial class TranslationVisitor
     {
         /// <summary>
+        /// Called when the visitor visits a ThisExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsThis"/>.</returns>
+        public override IEnumerable<IAstNode> VisitThisExpression(ThisExpressionSyntax node)
+        {
+            return Factory.This.ToSingleEnumerable();
+        }
+
+        /// <summary>
         /// Called when the visitor visits a LiteralExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
@@ -30,6 +39,9 @@ namespace Desalt.Core.Translation
                 case SyntaxKind.StringLiteralExpression:
                     return Factory.String(node.Token.Text.Trim('"')).ToSingleEnumerable();
 
+                case SyntaxKind.CharacterLiteralExpression:
+                    return Factory.String(node.Token.Text).ToSingleEnumerable();
+
                 case SyntaxKind.NumericLiteralExpression:
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                         ? Factory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
@@ -38,6 +50,18 @@ namespace Desalt.Core.Translation
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
             return ReportUnsupportedTranslataion(diagnostic);
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a CastExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsCastExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitCastExpression(CastExpressionSyntax node)
+        {
+            ITsType castType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
+            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsCastExpression translated = Factory.Cast(castType, expression);
+            return translated.ToSingleEnumerable();
         }
 
         /// <summary>

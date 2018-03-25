@@ -179,16 +179,11 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
-            var parameters = (ITsParameterList)Visit(node.ParameterList).Single();
-            ITsType returnType = TypeTranslator.TranslateSymbol(
-                node.ReturnType.GetTypeSymbol(_semanticModel),
-                _typesToImport);
-
-            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList, node.ReturnType);
 
             // if we're defining an interface, then we need to return a ITsMethodSignature
             if (_semanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
@@ -201,13 +196,21 @@ namespace Desalt.Core.Translation
                 return methodSignature.ToSingleEnumerable();
             }
 
+            // a function body can be null in the case of an 'extern' declaration.
+            ITsBlockStatement functionBody = null;
+            if (node.Body != null)
+            {
+                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+            }
+
             // we're within a class, so return a method declaration
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             ITsFunctionMemberDeclaration methodDeclaration = Factory.FunctionMemberDeclaration(
                 functionName,
                 callSignature,
                 accessibilityModifier,
-                functionBody: null);
+                symbol.IsStatic,
+                functionBody?.Statements);
 
             methodDeclaration = AddDocumentationComment(methodDeclaration, node);
             return methodDeclaration.ToSingleEnumerable();
@@ -315,6 +318,28 @@ namespace Desalt.Core.Translation
             var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
             var withDocComment = AddDocumentationComment(exportedDeclaration, node);
             return withDocComment;
+        }
+
+        private ITsCallSignature TranslateCallSignature(
+            ParameterListSyntax parameterListNode,
+            TypeSyntax returnTypeNode = null)
+        {
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+
+            ITsParameterList parameters = parameterListNode == null
+                ? Factory.ParameterList()
+                : (ITsParameterList)Visit(parameterListNode).Single();
+
+            ITsType returnType = Factory.VoidType;
+            if (returnTypeNode != null)
+            {
+                returnType = TypeTranslator.TranslateSymbol(
+                    returnTypeNode.GetTypeSymbol(_semanticModel),
+                    _typesToImport);
+            }
+
+            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+            return callSignature;
         }
 
         private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)

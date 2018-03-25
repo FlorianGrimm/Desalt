@@ -61,4 +61,14 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             Initializer.EmitOptionalAssignment(emitter);
         }
     }
+
+    public static class SimpleLexicalBindingExtensions
+    {
+        public static ITsSimpleLexicalBinding WithVariableType(this ITsSimpleLexicalBinding source, ITsType value)
+        {
+            return source.VariableType == null && value == null || source.VariableType?.Equals(value) == true
+                ? source
+                : new TsSimpleLexicalBinding(source.VariableName, value, source.Initializer);
+        }
+    }
 }
