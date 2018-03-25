@@ -273,6 +273,50 @@ namespace Desalt.Core.Translation
             }
         }
 
+        /// <summary>
+        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
+        /// </returns>
+        private ITsImplementationModuleElement ExportIfNeeded(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+            {
+                return translatedDeclaration;
+            }
+
+            ITsExportImplementationElement exportedInterfaceDeclaration =
+                Factory.ExportImplementationElement(translatedDeclaration);
+            return exportedInterfaceDeclaration;
+        }
+
+        /// <summary>
+        /// Calls <see cref="ExportIfNeeded"/> followed by <see cref="AddDocumentationComment{T}"/>.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is
+        /// returned. Whichever element is returned, it includes any documentation comment.
+        /// </returns>
+        private ITsImplementationModuleElement ExportAndAddDocComment(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
+            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
+            return withDocComment;
+        }
+
         private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
         {
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
