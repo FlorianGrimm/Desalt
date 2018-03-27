@@ -154,7 +154,8 @@ namespace Desalt.Core.Translation
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
-                bool isReadOnly = node.Modifiers.Any(token => token.IsKind(SyntaxKind.ReadOnlyKeyword));
+                bool isReadOnly = node.Modifiers.Any(
+                    token => token.IsKind(SyntaxKind.ReadOnlyKeyword) || token.IsKind(SyntaxKind.ConstKeyword));
 
                 var typeAnnotation = TypeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
