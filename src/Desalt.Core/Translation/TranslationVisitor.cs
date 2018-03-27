@@ -32,6 +32,7 @@ namespace Desalt.Core.Translation
         private readonly DiagnosticList _diagnostics;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
+        private readonly ScriptNameSymbolTable _scriptNameTable;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTable.KeyComparer);
 
         //// ===========================================================================================================
@@ -42,6 +43,7 @@ namespace Desalt.Core.Translation
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _semanticModel = context.SemanticModel;
+            _scriptNameTable = context.ScriptNameSymbolTable;
             _diagnostics = DiagnosticList.Create(context.Options);
         }
 
@@ -157,7 +159,7 @@ namespace Desalt.Core.Translation
                 return null;
             }
 
-            if (!_context.ScriptNameSymbolTable.TryGetValue(symbol, out string scriptName))
+            if (!_scriptNameTable.TryGetValue(symbol, out string scriptName))
             {
                 ReportUnsupportedTranslataion(
                     DiagnosticFactory.InternalError(

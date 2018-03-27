@@ -119,31 +119,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            ITsExpression leftSide;
-
-            // try to get the script name of the expression
-            if (_semanticModel.GetSymbolInfo(node.Expression).Symbol is IMethodSymbol methodSymbol && _context.ScriptNameSymbolTable.HasSymbol(methodSymbol))
-            {
-                string scriptName = _context.ScriptNameSymbolTable[methodSymbol];
-
-                // in TypeScript, static references need to be fully qualified with the type name
-                if (methodSymbol.IsStatic)
-                {
-                    string containingTypeScriptName = _context.ScriptNameSymbolTable.GetValueOrDefault(
-                        methodSymbol.ContainingType,
-                        methodSymbol.ContainingType.Name);
-                    leftSide = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
-                }
-                else
-                {
-                    leftSide = Factory.Identifier(scriptName);
-                }
-            }
-            else
-            {
-                leftSide = (ITsExpression)Visit(node.Expression).First();
-            }
-
+            ITsExpression leftSide = TranslateExpressionWithScriptName(node.Expression);
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
             return translated.ToSingleEnumerable();
@@ -181,6 +157,42 @@ namespace Desalt.Core.Translation
             var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
             ITsArgument translated = Factory.Argument(argumentExpression);
             return translated.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Translates the specified expression node using translated script names.
+        /// </summary>
+        private ITsExpression TranslateExpressionWithScriptName(ExpressionSyntax node)
+        {
+            ITsExpression expression;
+
+            // try to get the script name of the expression
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            if (symbol != null && _scriptNameTable.TryGetValue(symbol, out string scriptName))
+            {
+                // in TypeScript, static references need to be fully qualified with the type name
+                if (symbol.IsStatic && symbol.ContainingType != null)
+                {
+                    string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
+                        symbol.ContainingType,
+                        symbol.ContainingType.Name);
+                    expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
+                }
+                else if (!symbol.IsStatic)
+                {
+                    expression = Factory.MemberDot(Factory.This, scriptName);
+                }
+                else
+                {
+                    expression = Factory.Identifier(scriptName);
+                }
+            }
+            else
+            {
+                expression = (ITsExpression)Visit(node).Single();
+            }
+
+            return expression;
         }
     }
 }
