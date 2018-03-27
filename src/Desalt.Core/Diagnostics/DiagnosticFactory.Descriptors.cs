@@ -22,7 +22,7 @@ namespace Desalt.Core.Diagnostics
         private const string IdPrefix = "DSC";
         private const string TranslationCategory = "Desalt.Translation";
 
-        private enum DiagnosticId
+        public enum DiagnosticId
         {
             [Error(
                 1,
