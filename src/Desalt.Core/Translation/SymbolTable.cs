@@ -99,6 +99,23 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Attempts to get the value associated with the specified key, returning a default value if
+        /// not found.
+        /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
+        /// <param name="defaultIfMissing">The value to return if the symbol was not found.</param>
+        /// <returns>Either the found value or the specified default value.</returns>
+        public T GetValueOrDefault(ISymbol symbol, T defaultIfMissing)
+        {
+            if (!TryGetValue(symbol, out T value))
+            {
+                value = defaultIfMissing;
+            }
+
+            return value;
+        }
+
+        /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
         public abstract void AddDefinedTypesInDocument(
