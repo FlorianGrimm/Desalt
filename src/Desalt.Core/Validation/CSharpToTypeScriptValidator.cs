@@ -22,7 +22,11 @@ namespace Desalt.Core.Validation
         public async Task<IExtendedResult<bool>> ValidateDocumentAsync(
             DocumentTranslationContextWithSymbolTables context)
         {
-            IValidator[] validators = { new NoDefaultParametersInInterfacesValidator() };
+            IValidator[] validators =
+            {
+                new NoDefaultParametersInInterfacesValidator(),
+                new NoDuplicateFieldAndPropertyNamesValidator(),
+            };
 
             // run all of the validators in parallel
             var tasks = validators.Select(v => Task.Run(() => v.Validate(context)));

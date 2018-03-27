@@ -95,6 +95,16 @@ namespace Desalt.Core.Diagnostics
                 "Catch clauses with more than one parameter are not yet supported",
                 "Catch clauses with more than one parameter are not yet supported: {0}")]
             CatchClausesWithMoreThanOneParameterNotYetSupported,
+
+            [Warning(
+                1012,
+                "Class contains a field and property name that will be the same compiled name",
+                "Class '{0}' contains a field and property, '{1}', that will be the same name in TypeScript",
+                description:
+                "Either change one of the names, add a [ScriptName] attribute to rename the compiled name, or " +
+                "remove the property and expose the field directly.",
+                warningLevel: WarningLevel.Important)]
+            ClassWithDuplicateFieldAndPropertyName,
         }
 
         //// ===========================================================================================================
@@ -237,5 +247,19 @@ namespace Desalt.Core.Diagnostics
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic CatchClausesWithMoreThanOneParameterNotYetSupported(SyntaxNode node) =>
             Create(DiagnosticId.CatchClausesWithMoreThanOneParameterNotYetSupported, node.GetLocation(), node);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Class '{0}' contains a field and property, '{1}', that
+        /// will be the same name in TypeScript. Please change one or the other name or add a
+        /// [ScriptName] attribute to rename the compiled name.".
+        /// </summary>
+        /// <returns></returns>
+        public static Diagnostic ClassWithDuplicateFieldAndPropertyName(
+            string className,
+            string duplicateName,
+            Location location)
+        {
+            return Create(DiagnosticId.ClassWithDuplicateFieldAndPropertyName, location, className, duplicateName);
+        }
     }
 }

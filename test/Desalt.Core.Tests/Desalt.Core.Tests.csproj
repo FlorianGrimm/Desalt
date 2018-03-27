@@ -180,6 +180,7 @@
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
     <Compile Include="Utility\XmlFragmentParserTests.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
+    <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
