@@ -60,7 +60,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
             ITsType castType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
-            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsExpression expression = TranslateExpressionWithScriptName(node.Expression);
             ITsCastExpression translated = Factory.Cast(castType, expression);
             return translated.ToSingleEnumerable();
         }

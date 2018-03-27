@@ -17,7 +17,7 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class TranslationVisitorTests
+    public partial class TranslationVisitorTests
     {
         private static async Task AssertTranslation(string csharpCode, string expectedTypeScriptCode)
         {

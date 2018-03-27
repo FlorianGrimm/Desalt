@@ -85,7 +85,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public string Name
         {
-            get { return this.name; }
+            get { return name; }
         }
 
         /// <summary>

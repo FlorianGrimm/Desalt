@@ -49,8 +49,12 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).Single();
-            ITsMemberDotExpression translated = Factory.MemberDot(leftSide, node.Name.Identifier.Text);
+            ITsExpression leftSide = TranslateExpressionWithScriptName(node.Expression);
+
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            string scriptName = _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
+
+            ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
             return translated.ToSingleEnumerable();
         }
 
@@ -59,7 +63,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<IAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+            ITsExpression leftSide = TranslateExpressionWithScriptName(node.Expression);
             var bracketContents = (ITsExpression)Visit(node.ArgumentList).Single();
             ITsMemberBracketExpression translation = Factory.MemberBracket(leftSide, bracketContents);
             return translation.ToSingleEnumerable();
@@ -434,7 +438,7 @@ namespace Desalt.Core.Translation
             ITsExpression expression = null;
             if (node.Expression != null)
             {
-                expression = (ITsExpression)Visit(node.Expression).Single();
+                expression = TranslateExpressionWithScriptName(node.Expression);
             }
 
             ITsReturnStatement translated = Factory.Return(expression);

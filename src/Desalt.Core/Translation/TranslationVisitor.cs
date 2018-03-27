@@ -156,7 +156,7 @@ namespace Desalt.Core.Translation
             if (symbol == null)
             {
                 ReportUnsupportedTranslataion(DiagnosticFactory.IdentifierNotSupported(node));
-                return null;
+                return Factory.Identifier("Error");
             }
 
             if (!_scriptNameTable.TryGetValue(symbol, out string scriptName))
@@ -165,7 +165,7 @@ namespace Desalt.Core.Translation
                     DiagnosticFactory.InternalError(
                         $"Node should have been added to the ScriptNameSymbolTable: {node}",
                         node.GetLocation()));
-                return null;
+                return Factory.Identifier("Error");
             }
 
             return Factory.Identifier(scriptName);
