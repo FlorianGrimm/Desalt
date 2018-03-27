@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
@@ -118,7 +119,31 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).First();
+            ITsExpression leftSide;
+
+            // try to get the script name of the expression
+            if (_semanticModel.GetSymbolInfo(node.Expression).Symbol is IMethodSymbol methodSymbol && _context.ScriptNameSymbolTable.HasSymbol(methodSymbol))
+            {
+                string scriptName = _context.ScriptNameSymbolTable[methodSymbol];
+
+                // in TypeScript, static references need to be fully qualified with the type name
+                if (methodSymbol.IsStatic)
+                {
+                    string containingTypeScriptName = _context.ScriptNameSymbolTable.GetValueOrDefault(
+                        methodSymbol.ContainingType,
+                        methodSymbol.ContainingType.Name);
+                    leftSide = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
+                }
+                else
+                {
+                    leftSide = Factory.Identifier(scriptName);
+                }
+            }
+            else
+            {
+                leftSide = (ITsExpression)Visit(node.Expression).First();
+            }
+
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
             return translated.ToSingleEnumerable();
