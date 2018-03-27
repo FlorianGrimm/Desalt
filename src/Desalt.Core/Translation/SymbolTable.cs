@@ -19,10 +19,7 @@ namespace Desalt.Core.Translation
     {
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
-        private static readonly SymbolDisplayFormat
-            s_symbolDisplayFormat = SymbolDisplayFormat.MinimallyQualifiedFormat;
-
-        public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+        public static string KeyFromSymbol(ISymbol symbol) => symbol.MetadataName;
 
         private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
         {
@@ -75,7 +72,7 @@ namespace Desalt.Core.Translation
         public bool HasSymbol(ISymbol symbol)
         {
             string symbolName = SymbolTable.KeyFromSymbol(symbol);
-            return _symbolMap.TryGetValue(symbolName, out T _);
+            return symbolName != null && _symbolMap.TryGetValue(symbolName, out T _);
         }
 
         /// <summary>
