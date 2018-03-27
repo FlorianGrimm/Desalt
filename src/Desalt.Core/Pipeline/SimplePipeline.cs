@@ -103,7 +103,11 @@ namespace Desalt.Core.Pipeline
                 diagnostics.AddRange(stageResult.Diagnostics);
 
                 // don't continue the pipeline if there are errors
-                if (stageResult.HasErrors) { break; }
+                if (stageResult.HasErrors)
+                {
+                    previousOutputs.Add(default(TOutput));
+                    break;
+                }
             }
 
             return new ExtendedResult<TOutput>((TOutput)previousOutputs.Last(), diagnostics);
