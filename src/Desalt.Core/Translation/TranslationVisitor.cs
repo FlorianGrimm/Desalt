@@ -27,6 +27,8 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
+        private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
+
         private readonly DiagnosticList _diagnostics;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;

@@ -103,7 +103,9 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <returns>
         /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
-        /// cref="ITsClassElement"/> or an <see cref="ITsExportImplementationElement"/>.
+        /// cref="ITsClassElement"/> or an <see cref="ITsExportImplementationElement"/>. If there is
+        /// a static constructor, an additional function call ( <see cref="ITsCallExpression"/>) to
+        /// the initializer is added immediately after the class declaration.
         /// </returns>
         public override IEnumerable<IAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
         {
@@ -115,7 +117,7 @@ namespace Desalt.Core.Translation
             // translate the class heritage
             ITsClassHeritage heritage = Factory.ClassHeritage(implementsTypes: null);
 
-            // translate the interface body
+            // translate the class body
             var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>();
 
             ITsClassDeclaration classDeclaration = Factory.ClassDeclaration(
@@ -126,7 +128,17 @@ namespace Desalt.Core.Translation
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final = ExportAndAddDocComment(classDeclaration, node);
-            return final.ToSingleEnumerable();
+            yield return final;
+
+            // if there's a static constructor, then we need to add a call to it right after the
+            // class declaration
+            if (classDeclaration.ClassBody.OfType<ITsFunctionMemberDeclaration>()
+                .Any(method => method.FunctionName == s_staticCtorName))
+            {
+                ITsCallExpression staticCtorCall = Factory.Call(Factory.MemberDot(className, s_staticCtorName.Text))
+                    .WithLeadingTrivia(Factory.SingleLineComment("Call the static constructor"));
+                yield return Factory.ExpressionStatement(staticCtorCall);
+            }
         }
 
         /// <summary>
@@ -219,19 +231,41 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a ConstructorDeclarationSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsConstructorDeclaration"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsConstructorDeclaration"/> or an <see
+        /// cref="ITsFunctionMemberDeclaration"/> in the case of a static constructor.
+        /// </returns>
         public override IEnumerable<IAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
-            var parameterList = Factory.ParameterList();
+            var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
+            var functionBody = (ITsBlockStatement)Visit(node.Body).Single();
 
-            ITsConstructorDeclaration constructorDeclaration = Factory.ConstructorDeclaration(
-                accessibilityModifier,
-                parameterList,
-                functionBody: null);
+            ITsClassElement translated;
+            if (node.Modifiers.Any(SyntaxKind.StaticKeyword))
+            {
+                translated = Factory.FunctionMemberDeclaration(
+                    s_staticCtorName,
+                    Factory.CallSignature(),
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    functionBody: functionBody.Statements);
 
-            constructorDeclaration = AddDocumentationComment(constructorDeclaration, node);
-            return constructorDeclaration.ToSingleEnumerable();
+                translated = translated.WithLeadingTrivia(
+                    Factory.SingleLineComment(
+                        "Converted from the C# static constructor - it would be good to convert this"),
+                    Factory.SingleLineComment("block to inline initializations."));
+            }
+            else
+            {
+                translated = Factory.ConstructorDeclaration(
+                    accessibilityModifier,
+                    parameterList,
+                    functionBody.Statements);
+            }
+
+            translated = AddDocumentationComment(translated, node);
+            return translated.ToSingleEnumerable();
         }
 
         /// <summary>
