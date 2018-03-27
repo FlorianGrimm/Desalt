@@ -7,17 +7,23 @@
 
 namespace Desalt.Core.Tests
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using DiagnosticId = Core.Diagnostics.DiagnosticFactory.DiagnosticId;
 
     [TestClass]
     public class EndToEndTests
     {
         public TestContext TestContext { get; set; }
 
+        // [TestCategory("SkipWhenLiveUnitTesting")]
         [TestMethod]
-        [TestCategory("SkipWhenLiveUnitTesting")]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
             // TODO: generalize this so that it's not an absolute path
@@ -29,7 +35,19 @@ namespace Desalt.Core.Tests
             //    File.Delete(file);
             //}
 
-            var options = new CompilerOptions(outputPath);
+            // for now, turn off some errors and warnings until we implement rewriters
+            var ignoredDiagnostics =
+                (from id in new[]
+                 {
+                     DiagnosticId.ClassWithDuplicateFieldAndPropertyName,
+                     DiagnosticId.InterfaceWithDefaultParameter
+                 }
+                 select new KeyValuePair<string, ReportDiagnostic>(
+                     DiagnosticFactory.IdFromDiagnosticId(id),
+                     ReportDiagnostic.Suppress)).ToImmutableDictionary();
+
+            var options = new CompilerOptions(outputPath, specificDiagnosticOptions: ignoredDiagnostics);
+
             var request = new CompilationRequest(projectFilePath, options);
             var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);

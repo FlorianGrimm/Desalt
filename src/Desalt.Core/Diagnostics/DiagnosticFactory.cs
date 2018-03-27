@@ -22,24 +22,20 @@ namespace Desalt.Core.Diagnostics
         //// Methods
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Returns the string identifier from the specified <see cref="DiagnosticId"/>
+        /// </summary>
+        public static string IdFromDiagnosticId(DiagnosticId diagnosticId)
+        {
+            DiagnosticInfoAttribute info = InfoFromDiagnosticKind(diagnosticId);
+            return info.Id;
+        }
+
         private static DiagnosticInfoAttribute InfoFromDiagnosticKind(DiagnosticId diagnosticId)
         {
             MemberInfo memberInfo = typeof(DiagnosticId).GetMember(diagnosticId.ToString()).First();
             var info = memberInfo.GetCustomAttribute<DiagnosticInfoAttribute>();
             return info;
-        }
-
-        private static DiagnosticDescriptor CreateDescriptor(DiagnosticInfoAttribute info)
-        {
-            return new DiagnosticDescriptor(
-                id: info.Id,
-                title: info.Title,
-                messageFormat: info.MessageFormat,
-                category: info.Category,
-                defaultSeverity: info.DefaultSeverity,
-                isEnabledByDefault: info.IsEnabledByDefault,
-                description: info.Description,
-                customTags: info.CustomTags);
         }
 
         /// <summary>
@@ -56,9 +52,21 @@ namespace Desalt.Core.Diagnostics
         private static Diagnostic Create(DiagnosticId diagnosticId, Location location, params object[] messageArgs)
         {
             DiagnosticInfoAttribute info = InfoFromDiagnosticKind(diagnosticId);
-            DiagnosticDescriptor descriptor = CreateDescriptor(info);
 
-            return Diagnostic.Create(descriptor, location, messageArgs);
+            return Diagnostic.Create(
+                id: info.Id,
+                category: info.Category,
+                message: string.Format(CultureInfo.InvariantCulture, info.MessageFormat, messageArgs),
+                severity: info.DefaultSeverity,
+                defaultSeverity: info.DefaultSeverity,
+                isEnabledByDefault: info.IsEnabledByDefault,
+                warningLevel: info.WarningLevel,
+                title: info.Title,
+                description: info.Description,
+                helpLink: null,
+                location: location,
+                additionalLocations: null,
+                customTags: info.CustomTags);
         }
 
         //// ===========================================================================================================
@@ -108,13 +116,15 @@ namespace Desalt.Core.Diagnostics
                 string title,
                 string messageFormat,
                 string category = TranslationCategory,
-                string[] customTags = null) : base(
-                id,
-                title,
-                messageFormat,
-                DiagnosticSeverity.Error,
-                category,
-                customTags ?? new[] { WellKnownDiagnosticTags.Compiler })
+                string[] customTags = null,
+                string description = null) : base(
+                id: id,
+                title: title,
+                messageFormat: messageFormat,
+                defaultSeverity: DiagnosticSeverity.Error,
+                category: category,
+                customTags: customTags ?? new[] { WellKnownDiagnosticTags.Compiler },
+                description: description)
             {
             }
         }
@@ -128,14 +138,15 @@ namespace Desalt.Core.Diagnostics
                 string messageFormat = null,
                 WarningLevel warningLevel = Core.WarningLevel.Severe,
                 string category = TranslationCategory,
-                string[] customTags = null) : base(
-                id,
-                title,
-                messageFormat ?? title,
-                DiagnosticSeverity.Warning,
-                category,
-                customTags ?? new[] { WellKnownDiagnosticTags.Compiler },
-                warningLevel: (int)warningLevel)
+                string[] customTags = null, string description = null) : base(
+                id: id,
+                title: title,
+                messageFormat: messageFormat ?? title,
+                defaultSeverity: DiagnosticSeverity.Warning,
+                category: category,
+                customTags: customTags ?? new[] { WellKnownDiagnosticTags.Compiler },
+                warningLevel: (int)warningLevel,
+                description: description)
             {
             }
         }

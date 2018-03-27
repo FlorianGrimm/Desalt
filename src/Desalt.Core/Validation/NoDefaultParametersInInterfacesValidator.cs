@@ -20,7 +20,7 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal class NoDefaultParametersInInterfacesValidator : IValidator
     {
-        public IExtendedResult<bool> Validate(DocumentTranslationContext context)
+        public IExtendedResult<bool> Validate(DocumentTranslationContextWithSymbolTables context)
         {
             IEnumerable<Diagnostic> query =
                 from iface in context.RootSyntax.DescendantNodes().OfType<InterfaceDeclarationSyntax>()

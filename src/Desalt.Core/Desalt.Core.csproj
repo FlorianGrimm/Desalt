@@ -317,6 +317,7 @@
     <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidator.cs" />
+    <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidator.cs" />
     <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>

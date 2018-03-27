@@ -19,9 +19,14 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal class CSharpToTypeScriptValidator
     {
-        public async Task<IExtendedResult<bool>> ValidateDocumentAsync(DocumentTranslationContext context)
+        public async Task<IExtendedResult<bool>> ValidateDocumentAsync(
+            DocumentTranslationContextWithSymbolTables context)
         {
-            IValidator[] validators = { new NoDefaultParametersInInterfacesValidator() };
+            IValidator[] validators =
+            {
+                new NoDefaultParametersInInterfacesValidator(),
+                new NoDuplicateFieldAndPropertyNamesValidator(),
+            };
 
             // run all of the validators in parallel
             var tasks = validators.Select(v => Task.Run(() => v.Validate(context)));
