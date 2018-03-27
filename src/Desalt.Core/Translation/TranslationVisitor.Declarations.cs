@@ -149,8 +149,8 @@ namespace Desalt.Core.Translation
             var fieldDeclarations = new List<ITsVariableMemberDeclaration>();
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
             {
-                var variableName = Factory.Identifier(variableDeclaration.Identifier.Text);
                 ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
+                var variableName = symbol.GetScriptName(_scriptNameTable, variableDeclaration.Identifier.Text);
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
