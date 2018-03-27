@@ -8,15 +8,18 @@
 namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
+    using Desalt.Core.Validation;
 
     /// <summary>
     /// Pipeline stage that validates a C# Project in preparation for translating to TypeScript.
     /// </summary>
-    internal class ValidateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContext>, bool>
+    internal class ValidateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTables>, bool>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -28,11 +31,18 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The result of the stage.</returns>
         public override async Task<IExtendedResult<bool>> ExecuteAsync(
-            IEnumerable<DocumentTranslationContext> input,
+            IEnumerable<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.FromResult(new ExtendedResult<bool>(true));
+            // validate all of the documents in parallel
+            IEnumerable<Task<IExtendedResult<bool>>> tasks = input.Select(
+                context => new CSharpToTypeScriptValidator().ValidateDocumentAsync(context));
+
+            IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
+
+            DiagnosticList diagnostics = DiagnosticList.From(options, results.SelectMany(result => result.Diagnostics));
+            return new SuccessResult(diagnostics.FilteredDiagnostics);
         }
     }
 }

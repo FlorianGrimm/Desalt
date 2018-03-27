@@ -31,7 +31,8 @@ public interface TestInterface
 
             using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("MyInterface", code)))
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("MyInterface");
+                DocumentTranslationContextWithSymbolTables context =
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync("MyInterface");
                 var validator = new NoDefaultParametersInInterfacesValidator();
                 IExtendedResult<bool> result = validator.Validate(context);
 

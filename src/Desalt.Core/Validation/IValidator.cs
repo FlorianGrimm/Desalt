@@ -14,6 +14,6 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal interface IValidator
     {
-        IExtendedResult<bool> Validate(DocumentTranslationContext context);
+        IExtendedResult<bool> Validate(DocumentTranslationContextWithSymbolTables context);
     }
 }

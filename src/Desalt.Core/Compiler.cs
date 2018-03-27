@@ -20,8 +20,8 @@ namespace Desalt.Core
             var pipeline = new SimplePipeline<CompilationRequest, IEnumerable<string>>();
             pipeline.AddStage(new OpenProjectStage());
             pipeline.AddStage(new DetermineTranslatableDocumentsStage());
-            pipeline.AddStage(new ValidateProjectStage());
             pipeline.AddStage(new CreateSymbolTablesStage());
+            pipeline.AddStage(new ValidateProjectStage());
             pipeline.AddStage(new TranslateProjectStage());
 
             IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(
