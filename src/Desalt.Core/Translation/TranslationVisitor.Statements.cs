@@ -26,7 +26,7 @@ namespace Desalt.Core.Translation
         {
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsExpressionStatement translated = Factory.ExpressionStatement(expression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Desalt.Core.Translation
 
             // ReSharper disable once CoVariantArrayConversion
             ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, declarations);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Desalt.Core.Translation
             }
 
             ITsSimpleLexicalBinding translated = Factory.SimpleLexicalBinding(variableName, initializer: initializer);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         //// ===========================================================================================================
@@ -112,7 +112,7 @@ namespace Desalt.Core.Translation
             var elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
 
             ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Desalt.Core.Translation
                 translated = Factory.Try(tryBlock);
             }
 
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         //// ===========================================================================================================
@@ -184,7 +184,7 @@ namespace Desalt.Core.Translation
                 declaration,
                 rightSide,
                 statement);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         //// ===========================================================================================================
@@ -200,7 +200,7 @@ namespace Desalt.Core.Translation
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
             var body = (ITsBlockStatement)Visit(node.Block).Single();
             ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body.Statements.ToArray());
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Desalt.Core.Translation
             }
 
             ITsReturnStatement translated = Factory.Return(expression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
     }
 }

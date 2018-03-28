@@ -265,7 +265,7 @@ namespace Desalt.Core.Translation
             }
 
             translated = AddDocumentationComment(translated, node);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>

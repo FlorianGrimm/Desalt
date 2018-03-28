@@ -27,7 +27,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsThis"/>.</returns>
         public override IEnumerable<IAstNode> VisitThisExpression(ThisExpressionSyntax node)
         {
-            return Factory.This.ToSingleEnumerable();
+            yield return Factory.This;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Desalt.Core.Translation
             ITsType castType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsCastExpression translated = Factory.Cast(castType, expression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Desalt.Core.Translation
                 _typesToImport);
 
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Desalt.Core.Translation
                 .ToArray();
 
             ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Desalt.Core.Translation
             string scriptName = _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
 
             ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Desalt.Core.Translation
         {
             ITsArgument[] arguments = node.Arguments.SelectMany(Visit).Cast<ITsArgument>().ToArray();
             ITsArgumentList translated = Factory.ArgumentList(arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Desalt.Core.Translation
         {
             var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
             ITsArgument translated = Factory.Argument(argumentExpression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         //// ===========================================================================================================
@@ -241,7 +241,7 @@ namespace Desalt.Core.Translation
                 leftSide,
                 TranslateAssignmentOperator(node.OperatorToken),
                 rightSide);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Desalt.Core.Translation
             ITsUnaryExpression translated = Factory.UnaryExpression(
                 operand,
                 TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Desalt.Core.Translation
             ITsUnaryExpression translated = Factory.UnaryExpression(
                 operand,
                 TranslateUnaryOperator(node.OperatorToken, asPrefix: false));
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace Desalt.Core.Translation
                 leftSide,
                 TranslateBinaryOperator(node.OperatorToken),
                 rightSide);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
