@@ -19,10 +19,7 @@ namespace Desalt.Core.Translation
     {
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
-        private static readonly SymbolDisplayFormat
-            s_symbolDisplayFormat = SymbolDisplayFormat.MinimallyQualifiedFormat;
-
-        public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+        public static string KeyFromSymbol(ISymbol symbol) => symbol.MetadataName;
 
         private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
         {
@@ -75,7 +72,7 @@ namespace Desalt.Core.Translation
         public bool HasSymbol(ISymbol symbol)
         {
             string symbolName = SymbolTable.KeyFromSymbol(symbol);
-            return _symbolMap.TryGetValue(symbolName, out T _);
+            return symbolName != null && _symbolMap.TryGetValue(symbolName, out T _);
         }
 
         /// <summary>
@@ -96,6 +93,23 @@ namespace Desalt.Core.Translation
 
             value = default(T);
             return false;
+        }
+
+        /// <summary>
+        /// Attempts to get the value associated with the specified key, returning a default value if
+        /// not found.
+        /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
+        /// <param name="defaultIfMissing">The value to return if the symbol was not found.</param>
+        /// <returns>Either the found value or the specified default value.</returns>
+        public T GetValueOrDefault(ISymbol symbol, T defaultIfMissing)
+        {
+            if (!TryGetValue(symbol, out T value))
+            {
+                value = defaultIfMissing;
+            }
+
+            return value;
         }
 
         /// <summary>

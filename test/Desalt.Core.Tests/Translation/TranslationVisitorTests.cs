@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
     using Desalt.Core.Tests.TestUtility;
@@ -17,14 +18,14 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class TranslationVisitorTests
+    public partial class TranslationVisitorTests
     {
         private static async Task AssertTranslation(string csharpCode, string expectedTypeScriptCode)
         {
             using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("File", csharpCode)))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File");
-                var visitor = new TranslationVisitor(context);
+                var visitor = new TranslationVisitor(context, CancellationToken.None);
                 IAstNode result = visitor.Visit(context.RootSyntax).Single();
 
                 visitor.Diagnostics.Should().BeEmpty();

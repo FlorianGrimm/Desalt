@@ -13,6 +13,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.TypeScript.Ast.Expressions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
@@ -25,7 +27,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsThis"/>.</returns>
         public override IEnumerable<IAstNode> VisitThisExpression(ThisExpressionSyntax node)
         {
-            return Factory.This.ToSingleEnumerable();
+            yield return Factory.This;
         }
 
         /// <summary>
@@ -34,6 +36,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitLiteralExpression(LiteralExpressionSyntax node)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (node.Kind())
             {
                 case SyntaxKind.StringLiteralExpression:
@@ -46,10 +49,17 @@ namespace Desalt.Core.Translation
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                         ? Factory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
                         : Factory.Number(Convert.ToDouble(node.Token.Value)).ToSingleEnumerable();
+
+                case SyntaxKind.TrueLiteralExpression:
+                    return Factory.True.ToSingleEnumerable();
+
+                case SyntaxKind.FalseLiteralExpression:
+                    return Factory.False.ToSingleEnumerable();
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
-            return ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslataion(diagnostic);
+            return Enumerable.Empty<IAstNode>();
         }
 
         /// <summary>
@@ -61,7 +71,7 @@ namespace Desalt.Core.Translation
             ITsType castType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsCastExpression translated = Factory.Cast(castType, expression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -75,16 +85,46 @@ namespace Desalt.Core.Translation
                 _typesToImport);
 
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
         /// Called when the visitor visits a IdentifierNameSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
+        /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
-            return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+            // try to get the script name of the expression
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+
+            // if there's no symbol then just return an identifier
+            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            {
+                return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+            }
+
+            ITsExpression expression;
+
+            // in TypeScript, static references need to be fully qualified with the type name
+            if (symbol.IsStatic && symbol.ContainingType != null)
+            {
+                string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
+                    symbol.ContainingType,
+                    symbol.ContainingType.Name);
+                expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
+            }
+            else if (!symbol.IsStatic &&
+                symbol.ContainingType ==
+                _semanticModel.GetEnclosingSymbol(node.SpanStart, _cancellationToken)?.ContainingType)
+            {
+                expression = Factory.MemberDot(Factory.This, scriptName);
+            }
+            else
+            {
+                expression = Factory.Identifier(scriptName);
+            }
+
+            return expression.ToSingleEnumerable();
         }
 
         /// <summary>
@@ -100,7 +140,33 @@ namespace Desalt.Core.Translation
                 .ToArray();
 
             ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a MemberAccessExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            string scriptName = _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
+
+            ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ElementAccessExpressionSyntax node.
+        /// </summary>
+        public override IEnumerable<IAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+            var bracketContents = (ITsExpression)Visit(node.ArgumentList).Single();
+            ITsMemberBracketExpression translation = Factory.MemberBracket(leftSide, bracketContents);
+            return translation.ToSingleEnumerable();
         }
 
         /// <summary>
@@ -118,10 +184,10 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).First();
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -133,7 +199,7 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -144,7 +210,7 @@ namespace Desalt.Core.Translation
         {
             ITsArgument[] arguments = node.Arguments.SelectMany(Visit).Cast<ITsArgument>().ToArray();
             ITsArgumentList translated = Factory.ArgumentList(arguments);
-            return translated.ToSingleEnumerable();
+            yield return translated;
         }
 
         /// <summary>
@@ -155,7 +221,207 @@ namespace Desalt.Core.Translation
         {
             var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
             ITsArgument translated = Factory.Argument(argumentExpression);
-            return translated.ToSingleEnumerable();
+            yield return translated;
+        }
+
+        //// ===========================================================================================================
+        //// Assignments, Unary, and Binary Expressions
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a AssignmentExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsAssignmentExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitAssignmentExpression(AssignmentExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Left).Single();
+            var rightSide = (ITsExpression)Visit(node.Right).Single();
+
+            ITsAssignmentExpression translated = Factory.Assignment(
+                leftSide,
+                TranslateAssignmentOperator(node.OperatorToken),
+                rightSide);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        {
+            var operand = (ITsExpression)Visit(node.Operand).Single();
+            ITsUnaryExpression translated = Factory.UnaryExpression(
+                operand,
+                TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PostfixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            var operand = (ITsExpression)Visit(node.Operand).Single();
+            ITsUnaryExpression translated = Factory.UnaryExpression(
+                operand,
+                TranslateUnaryOperator(node.OperatorToken, asPrefix: false));
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a BinaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBinaryExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
+        {
+            var leftSide = (ITsExpression)Visit(node.Left).Single();
+            var rightSide = (ITsExpression)Visit(node.Right).Single();
+
+            ITsBinaryExpression translated = Factory.BinaryExpression(
+                leftSide,
+                TranslateBinaryOperator(node.OperatorToken),
+                rightSide);
+            yield return translated;
+        }
+
+        private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.EqualsToken:
+                    return TsAssignmentOperator.SimpleAssign;
+
+                case SyntaxKind.AsteriskEqualsToken:
+                    return TsAssignmentOperator.MultiplyAssign;
+
+                case SyntaxKind.SlashEqualsToken:
+                    return TsAssignmentOperator.DivideAssign;
+
+                case SyntaxKind.PercentEqualsToken:
+                    return TsAssignmentOperator.ModuloAssign;
+
+                case SyntaxKind.PlusEqualsToken:
+                    return TsAssignmentOperator.AddAssign;
+
+                case SyntaxKind.MinusEqualsToken:
+                    return TsAssignmentOperator.SubtractAssign;
+
+                case SyntaxKind.LessThanLessThanEqualsToken:
+                    return TsAssignmentOperator.LeftShiftAssign;
+
+                case SyntaxKind.GreaterThanGreaterThanEqualsToken:
+                    return TsAssignmentOperator.SignedRightShiftAssign;
+
+                case SyntaxKind.AmpersandEqualsToken:
+                    return TsAssignmentOperator.BitwiseAndAssign;
+
+                case SyntaxKind.CaretEqualsToken:
+                    return TsAssignmentOperator.BitwiseXorAssign;
+
+                case SyntaxKind.BarEqualsToken:
+                    return TsAssignmentOperator.BitwiseOrAssign;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsAssignmentOperator.SimpleAssign;
+            }
+        }
+
+        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.PlusPlusToken:
+                    return asPrefix ? TsUnaryOperator.PrefixIncrement : TsUnaryOperator.PostfixIncrement;
+
+                case SyntaxKind.MinusMinusToken:
+                    return asPrefix ? TsUnaryOperator.PrefixDecrement : TsUnaryOperator.PostfixDecrement;
+
+                case SyntaxKind.PlusToken:
+                    return TsUnaryOperator.Plus;
+
+                case SyntaxKind.MinusToken:
+                    return TsUnaryOperator.Minus;
+
+                case SyntaxKind.TildeToken:
+                    return TsUnaryOperator.BitwiseNot;
+
+                case SyntaxKind.ExclamationToken:
+                    return TsUnaryOperator.LogicalNot;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsUnaryOperator.Plus;
+            }
+        }
+
+        private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (operatorToken.Kind())
+            {
+                case SyntaxKind.AsteriskToken:
+                    return TsBinaryOperator.Multiply;
+
+                case SyntaxKind.SlashToken:
+                    return TsBinaryOperator.Divide;
+
+                case SyntaxKind.PercentToken:
+                    return TsBinaryOperator.Modulo;
+
+                case SyntaxKind.PlusToken:
+                    return TsBinaryOperator.Add;
+
+                case SyntaxKind.MinusToken:
+                    return TsBinaryOperator.Subtract;
+
+                case SyntaxKind.LessThanLessThanToken:
+                    return TsBinaryOperator.LeftShift;
+
+                case SyntaxKind.GreaterThanGreaterThanToken:
+                    return TsBinaryOperator.SignedRightShift;
+
+                case SyntaxKind.LessThanToken:
+                    return TsBinaryOperator.LessThan;
+
+                case SyntaxKind.GreaterThanToken:
+                    return TsBinaryOperator.GreaterThan;
+
+                case SyntaxKind.LessThanEqualsToken:
+                    return TsBinaryOperator.LessThanEqual;
+
+                case SyntaxKind.GreaterThanEqualsToken:
+                    return TsBinaryOperator.GreaterThanEqual;
+
+                case SyntaxKind.EqualsEqualsToken:
+                    return TsBinaryOperator.StrictEquals;
+
+                case SyntaxKind.ExclamationEqualsToken:
+                    return TsBinaryOperator.StrictNotEquals;
+
+                case SyntaxKind.AmpersandToken:
+                    return TsBinaryOperator.BitwiseAnd;
+
+                case SyntaxKind.CaretToken:
+                    return TsBinaryOperator.BitwiseXor;
+
+                case SyntaxKind.BarToken:
+                    return TsBinaryOperator.BitwiseOr;
+
+                case SyntaxKind.AmpersandAmpersandToken:
+                    return TsBinaryOperator.LogicalAnd;
+
+                case SyntaxKind.BarBarToken:
+                    return TsBinaryOperator.LogicalOr;
+
+                default:
+                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    return TsBinaryOperator.Add;
+            }
         }
     }
 }

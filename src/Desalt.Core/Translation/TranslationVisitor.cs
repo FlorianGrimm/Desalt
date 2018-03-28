@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
@@ -30,18 +31,24 @@ namespace Desalt.Core.Translation
         private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
 
         private readonly DiagnosticList _diagnostics;
+        private readonly CancellationToken _cancellationToken;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
+        private readonly ScriptNameSymbolTable _scriptNameTable;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTable.KeyComparer);
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TranslationVisitor(DocumentTranslationContextWithSymbolTables context)
+        public TranslationVisitor(
+            DocumentTranslationContextWithSymbolTables context,
+            CancellationToken cancellationToken)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
+            _scriptNameTable = context.ScriptNameSymbolTable;
             _diagnostics = DiagnosticList.Create(context.Options);
         }
 
@@ -60,7 +67,8 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
-            return ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslataion(diagnostic);
+            return Enumerable.Empty<IAstNode>();
         }
 
         /// <summary>
@@ -69,15 +77,13 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to add and report.</param>
         /// <returns>An empty <see cref="IEnumerable{IAstNode}"/>.</returns>
-        private IEnumerable<IAstNode> ReportUnsupportedTranslataion(Diagnostic diagnostic)
+        private void ReportUnsupportedTranslataion(Diagnostic diagnostic)
         {
             _diagnostics.Add(diagnostic);
 #if DEBUG
 
             // throwing an exception lets us fail fast and see the problem in the unit test failure window
             throw new Exception(diagnostic.ToString());
-#else
-            return Enumerable.Empty<IAstNode>();
 #endif
         }
 
@@ -148,22 +154,28 @@ namespace Desalt.Core.Translation
             return parameter.ToSingleEnumerable();
         }
 
+        /// <summary>
+        /// Translates an identifier used in a declaration (class, interface, method, etc.) by
+        /// looking up the symbol and the associated script name.
+        /// </summary>
+        /// <param name="node">The node to translate.</param>
+        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
         private ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             if (symbol == null)
             {
                 ReportUnsupportedTranslataion(DiagnosticFactory.IdentifierNotSupported(node));
-                return null;
+                return Factory.Identifier("Error");
             }
 
-            if (!_context.ScriptNameSymbolTable.TryGetValue(symbol, out string scriptName))
+            if (!_scriptNameTable.TryGetValue(symbol, out string scriptName))
             {
                 ReportUnsupportedTranslataion(
                     DiagnosticFactory.InternalError(
                         $"Node should have been added to the ScriptNameSymbolTable: {node}",
                         node.GetLocation()));
-                return null;
+                return Factory.Identifier("Error");
             }
 
             return Factory.Identifier(scriptName);
@@ -203,6 +215,107 @@ namespace Desalt.Core.Translation
             _diagnostics.AddRange(result.Diagnostics);
 
             return translatedNode.WithLeadingTrivia(result.Result);
+        }
+
+        /// <summary>
+        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
+        /// </returns>
+        private ITsImplementationModuleElement ExportIfNeeded(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            // determine if this declaration should be exported
+            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+            {
+                return translatedDeclaration;
+            }
+
+            ITsExportImplementationElement exportedInterfaceDeclaration =
+                Factory.ExportImplementationElement(translatedDeclaration);
+            return exportedInterfaceDeclaration;
+        }
+
+        /// <summary>
+        /// Calls <see cref="ExportIfNeeded"/> followed by <see cref="AddDocumentationComment{T}"/>.
+        /// </summary>
+        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
+        /// <param name="node">The C# syntax node to inspect.</param>
+        /// <returns>
+        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
+        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is
+        /// returned. Whichever element is returned, it includes any documentation comment.
+        /// </returns>
+        private ITsImplementationModuleElement ExportAndAddDocComment(
+            ITsImplementationElement translatedDeclaration,
+            BaseTypeDeclarationSyntax node)
+        {
+            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
+            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
+            return withDocComment;
+        }
+
+        private ITsCallSignature TranslateCallSignature(
+            ParameterListSyntax parameterListNode,
+            TypeSyntax returnTypeNode = null)
+        {
+            ITsTypeParameters typeParameters = Factory.TypeParameters();
+
+            ITsParameterList parameters = parameterListNode == null
+                ? Factory.ParameterList()
+                : (ITsParameterList)Visit(parameterListNode).Single();
+
+            ITsType returnType = Factory.VoidType;
+            if (returnTypeNode != null)
+            {
+                returnType = TypeTranslator.TranslateSymbol(
+                    returnTypeNode.GetTypeSymbol(_semanticModel),
+                    _typesToImport);
+            }
+
+            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+            return callSignature;
+        }
+
+        private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
+        {
+            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            return GetAccessibilityModifier(symbol, node.GetLocation);
+        }
+
+        private TsAccessibilityModifier GetAccessibilityModifier(ISymbol symbol, Func<Location> getLocationFunc)
+        {
+            switch (symbol.DeclaredAccessibility)
+            {
+                case Accessibility.Private:
+                    return TsAccessibilityModifier.Private;
+
+                case Accessibility.Protected:
+                    return TsAccessibilityModifier.Protected;
+
+                case Accessibility.Public:
+                    return TsAccessibilityModifier.Public;
+
+                case Accessibility.NotApplicable:
+                case Accessibility.Internal:
+                case Accessibility.ProtectedAndInternal:
+                case Accessibility.ProtectedOrInternal:
+                    _diagnostics.Add(
+                        DiagnosticFactory.UnsupportedAccessibility(
+                            symbol.DeclaredAccessibility.ToString(),
+                            "public",
+                            getLocationFunc()));
+                    return TsAccessibilityModifier.Public;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

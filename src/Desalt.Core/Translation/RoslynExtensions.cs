@@ -9,8 +9,10 @@ namespace Desalt.Core.Translation
 {
     using System.Globalization;
     using System.Threading;
+    using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Contains extension methods for working with Roslyn data types.
@@ -28,6 +30,14 @@ namespace Desalt.Core.Translation
         public static bool IsInterfaceType(this ITypeSymbol symbol)
         {
             return symbol?.TypeKind == TypeKind.Interface;
+        }
+
+        public static ITsIdentifier GetScriptName(
+            this ISymbol symbol,
+            ScriptNameSymbolTable scriptNameSymbolTable,
+            string defaultName)
+        {
+            return Factory.Identifier(scriptNameSymbolTable.GetValueOrDefault(symbol, defaultName));
         }
 
         /// <summary>
