@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
     using Desalt.Core.Tests.TestUtility;
@@ -24,7 +25,7 @@ namespace Desalt.Core.Tests.Translation
             using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("File", csharpCode)))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File");
-                var visitor = new TranslationVisitor(context);
+                var visitor = new TranslationVisitor(context, CancellationToken.None);
                 IAstNode result = visitor.Visit(context.RootSyntax).Single();
 
                 visitor.Diagnostics.Should().BeEmpty();

@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
@@ -30,6 +31,7 @@ namespace Desalt.Core.Translation
         private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
 
         private readonly DiagnosticList _diagnostics;
+        private readonly CancellationToken _cancellationToken;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptNameSymbolTable _scriptNameTable;
@@ -39,9 +41,12 @@ namespace Desalt.Core.Translation
         //// Constructors
         //// ===========================================================================================================
 
-        public TranslationVisitor(DocumentTranslationContextWithSymbolTables context)
+        public TranslationVisitor(
+            DocumentTranslationContextWithSymbolTables context,
+            CancellationToken cancellationToken)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptNameTable = context.ScriptNameSymbolTable;
             _diagnostics = DiagnosticList.Create(context.Options);
