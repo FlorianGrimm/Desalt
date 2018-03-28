@@ -190,6 +190,7 @@ namespace Desalt.Core.Translation
 
         private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (operatorToken.Kind())
             {
                 case SyntaxKind.EqualsToken:
@@ -233,6 +234,7 @@ namespace Desalt.Core.Translation
 
         private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (operatorToken.Kind())
             {
                 case SyntaxKind.PlusPlusToken:
@@ -261,6 +263,7 @@ namespace Desalt.Core.Translation
 
         private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (operatorToken.Kind())
             {
                 case SyntaxKind.AsteriskToken:

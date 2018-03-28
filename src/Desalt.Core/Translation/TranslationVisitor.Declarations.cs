@@ -10,7 +10,6 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
@@ -318,107 +317,6 @@ namespace Desalt.Core.Translation
                     default:
                         throw new InvalidOperationException($"Unknown accessor kind '{accessor.Kind()}'");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Converts the translated declaration to an exported declaration if the C# declaration is public.
-        /// </summary>
-        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
-        /// <param name="node">The C# syntax node to inspect.</param>
-        /// <returns>
-        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
-        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is returned.
-        /// </returns>
-        private ITsImplementationModuleElement ExportIfNeeded(
-            ITsImplementationElement translatedDeclaration,
-            BaseTypeDeclarationSyntax node)
-        {
-            // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
-            if (symbol.DeclaredAccessibility != Accessibility.Public)
-            {
-                return translatedDeclaration;
-            }
-
-            ITsExportImplementationElement exportedInterfaceDeclaration =
-                Factory.ExportImplementationElement(translatedDeclaration);
-            return exportedInterfaceDeclaration;
-        }
-
-        /// <summary>
-        /// Calls <see cref="ExportIfNeeded"/> followed by <see cref="AddDocumentationComment{T}"/>.
-        /// </summary>
-        /// <param name="translatedDeclaration">The TypeScript declaration to conditionally export.</param>
-        /// <param name="node">The C# syntax node to inspect.</param>
-        /// <returns>
-        /// If the type does not need to be exported, <paramref name="translatedDeclaration"/> is
-        /// returned; otherwise a wrapped exported <see cref="ITsExportImplementationElement"/> is
-        /// returned. Whichever element is returned, it includes any documentation comment.
-        /// </returns>
-        private ITsImplementationModuleElement ExportAndAddDocComment(
-            ITsImplementationElement translatedDeclaration,
-            BaseTypeDeclarationSyntax node)
-        {
-            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
-            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
-            return withDocComment;
-        }
-
-        private ITsCallSignature TranslateCallSignature(
-            ParameterListSyntax parameterListNode,
-            TypeSyntax returnTypeNode = null)
-        {
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
-
-            ITsParameterList parameters = parameterListNode == null
-                ? Factory.ParameterList()
-                : (ITsParameterList)Visit(parameterListNode).Single();
-
-            ITsType returnType = Factory.VoidType;
-            if (returnTypeNode != null)
-            {
-                returnType = TypeTranslator.TranslateSymbol(
-                    returnTypeNode.GetTypeSymbol(_semanticModel),
-                    _typesToImport);
-            }
-
-            ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
-            return callSignature;
-        }
-
-        private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
-        {
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
-            return GetAccessibilityModifier(symbol, node.GetLocation);
-        }
-
-        private TsAccessibilityModifier GetAccessibilityModifier(ISymbol symbol, Func<Location> getLocationFunc)
-        {
-            switch (symbol.DeclaredAccessibility)
-            {
-                case Accessibility.Private:
-                    return TsAccessibilityModifier.Private;
-
-                case Accessibility.Protected:
-                    return TsAccessibilityModifier.Protected;
-
-                case Accessibility.Public:
-                    return TsAccessibilityModifier.Public;
-
-                case Accessibility.NotApplicable:
-                case Accessibility.Internal:
-                case Accessibility.ProtectedAndInternal:
-                case Accessibility.ProtectedOrInternal:
-                    _diagnostics.Add(
-                        DiagnosticFactory.UnsupportedAccessibility(
-                            symbol.DeclaredAccessibility.ToString(),
-                            "public",
-                            getLocationFunc()));
-                    return TsAccessibilityModifier.Public;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
     }

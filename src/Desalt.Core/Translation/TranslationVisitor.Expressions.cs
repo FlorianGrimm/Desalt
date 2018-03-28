@@ -13,7 +13,6 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
@@ -35,6 +34,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitLiteralExpression(LiteralExpressionSyntax node)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (node.Kind())
             {
                 case SyntaxKind.StringLiteralExpression:
@@ -50,7 +50,8 @@ namespace Desalt.Core.Translation
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
-            return ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslataion(diagnostic);
+            return Enumerable.Empty<IAstNode>();
         }
 
         /// <summary>
@@ -157,42 +158,6 @@ namespace Desalt.Core.Translation
             var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
             ITsArgument translated = Factory.Argument(argumentExpression);
             return translated.ToSingleEnumerable();
-        }
-
-        /// <summary>
-        /// Translates the specified expression node using translated script names.
-        /// </summary>
-        private ITsExpression TranslateExpressionWithScriptName(ExpressionSyntax node)
-        {
-            ITsExpression expression;
-
-            // try to get the script name of the expression
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            if (symbol != null && _scriptNameTable.TryGetValue(symbol, out string scriptName))
-            {
-                // in TypeScript, static references need to be fully qualified with the type name
-                if (symbol.IsStatic && symbol.ContainingType != null)
-                {
-                    string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
-                        symbol.ContainingType,
-                        symbol.ContainingType.Name);
-                    expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
-                }
-                else if (!symbol.IsStatic)
-                {
-                    expression = Factory.MemberDot(Factory.This, scriptName);
-                }
-                else
-                {
-                    expression = Factory.Identifier(scriptName);
-                }
-            }
-            else
-            {
-                expression = (ITsExpression)Visit(node).Single();
-            }
-
-            return expression;
         }
     }
 }
