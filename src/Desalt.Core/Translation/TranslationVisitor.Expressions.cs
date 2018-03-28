@@ -13,6 +13,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.TypeScript.Ast.Expressions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
@@ -61,7 +63,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
             ITsType castType = TypeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
-            ITsExpression expression = TranslateExpressionWithScriptName(node.Expression);
+            var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsCastExpression translated = Factory.Cast(castType, expression);
             return translated.ToSingleEnumerable();
         }
@@ -83,10 +85,40 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a IdentifierNameSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
+        /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
-            return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+            // try to get the script name of the expression
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+
+            // if there's no symbol then just return an identifier
+            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            {
+                return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+            }
+
+            ITsExpression expression;
+
+            // in TypeScript, static references need to be fully qualified with the type name
+            if (symbol.IsStatic && symbol.ContainingType != null)
+            {
+                string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
+                    symbol.ContainingType,
+                    symbol.ContainingType.Name);
+                expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
+            }
+            else if (!symbol.IsStatic &&
+                symbol.ContainingType ==
+                _semanticModel.GetEnclosingSymbol(node.SpanStart, _cancellationToken)?.ContainingType)
+            {
+                expression = Factory.MemberDot(Factory.This, scriptName);
+            }
+            else
+            {
+                expression = Factory.Identifier(scriptName);
+            }
+
+            return expression.ToSingleEnumerable();
         }
 
         /// <summary>
@@ -146,7 +178,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            ITsExpression leftSide = TranslateExpressionWithScriptName(node.Expression);
+            var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
             return translated.ToSingleEnumerable();

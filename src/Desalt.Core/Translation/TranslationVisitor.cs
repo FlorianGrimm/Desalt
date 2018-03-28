@@ -317,41 +317,5 @@ namespace Desalt.Core.Translation
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        /// <summary>
-        /// Translates the specified expression node using translated script names.
-        /// </summary>
-        private ITsExpression TranslateExpressionWithScriptName(ExpressionSyntax node)
-        {
-            ITsExpression expression;
-
-            // try to get the script name of the expression
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            if (symbol != null && _scriptNameTable.TryGetValue(symbol, out string scriptName))
-            {
-                // in TypeScript, static references need to be fully qualified with the type name
-                if (symbol.IsStatic && symbol.ContainingType != null)
-                {
-                    string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
-                        symbol.ContainingType,
-                        symbol.ContainingType.Name);
-                    expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
-                }
-                else if (!symbol.IsStatic)
-                {
-                    expression = Factory.MemberDot(Factory.This, scriptName);
-                }
-                else
-                {
-                    expression = Factory.Identifier(scriptName);
-                }
-            }
-            else
-            {
-                expression = (ITsExpression)Visit(node).Single();
-            }
-
-            return expression;
-        }
     }
 }

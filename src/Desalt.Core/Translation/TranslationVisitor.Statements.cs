@@ -212,7 +212,7 @@ namespace Desalt.Core.Translation
             ITsExpression expression = null;
             if (node.Expression != null)
             {
-                expression = TranslateExpressionWithScriptName(node.Expression);
+                expression = (ITsExpression)Visit(node.Expression).Single();
             }
 
             ITsReturnStatement translated = Factory.Return(expression);
