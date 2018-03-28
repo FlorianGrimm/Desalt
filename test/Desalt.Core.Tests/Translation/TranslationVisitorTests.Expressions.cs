@@ -93,6 +93,88 @@ class Logger {
 }
 ".Replace("\r\n", "\n"));
             }
+
+            [TestMethod]
+            public async Task Assignment_expressions()
+            {
+                foreach (string op in new[] { "=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "&=", "^=", "|=" })
+                {
+                    string code = $"class C {{ void Method() {{ int x = 1; x {op} 123; }} }}";
+                    string expected =
+                        $"class C {{\n  private method(): void {{\n    let x: number = 1;\n    x {op} 123;\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
+
+            [TestMethod]
+            public async Task Prefix_unary_expressions()
+            {
+                foreach (string op in new[] { "++", "--", "+", "-", "~", "!" })
+                {
+                    string code = $"class C {{ void Method() {{ int x = 123; {op}x; }} }}";
+                    string expected =
+                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    {op}x;\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
+
+            [TestMethod]
+            public async Task Postfix_unary_expressions()
+            {
+                foreach (string op in new[] { "++", "--" })
+                {
+                    string code = $"class C {{ void Method() {{ int x = 123; x{op}; }} }}";
+                    string expected =
+                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x{op};\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
+
+            [TestMethod]
+            public async Task Binary_expressions_on_numbers()
+            {
+                foreach (string op in new[] { "*", "/", "%", "+", "-", "<<", ">>", "&", "^", "|" })
+                {
+                    string code = $"class C {{ void Method() {{ int x = 1; int y = 2; x = x {op} y; }} }}";
+                    string expected =
+                        $"class C {{\n  private method(): void {{\n" +
+                        $"    let x: number = 1;\n    let y: number = 2;\n    x = x {op} y;\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
+
+            [TestMethod]
+            public async Task Binary_expressions_on_comparisons()
+            {
+                foreach (string op in new[] { "<", ">", "<=", ">=", "==", "!=" })
+                {
+                    string code = $"class C {{ void Method() {{ int x = 1; int y = 2; bool z = x {op} y; }} }}";
+
+                    string expectedOp = op == "==" ? "===" : op == "!=" ? "!==" : op;
+                    string expected = $"class C {{\n  private method(): void {{\n" +
+                        $"    let x: number = 1;\n    let y: number = 2;\n" +
+                        $"    let z: boolean = x {expectedOp} y;\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
+
+            [TestMethod]
+            public async Task Binary_expressions_on_booleans()
+            {
+                foreach (string op in new[] { "&&", "||" })
+                {
+                    string code = $"class C {{ void Method() {{ bool x = true; bool y = false; x = x {op} y; }} }}";
+                    string expected = $"class C {{\n  private method(): void {{\n" +
+                        $"    let x: boolean = true;\n    let y: boolean = false;\n    x = x {op} y;\n  }}\n}}\n";
+
+                    await AssertTranslation(code, expected);
+                }
+            }
         }
     }
 }

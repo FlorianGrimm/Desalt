@@ -49,6 +49,12 @@ namespace Desalt.Core.Translation
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                         ? Factory.HexInteger(Convert.ToInt64(node.Token.Value)).ToSingleEnumerable()
                         : Factory.Number(Convert.ToDouble(node.Token.Value)).ToSingleEnumerable();
+
+                case SyntaxKind.TrueLiteralExpression:
+                    return Factory.True.ToSingleEnumerable();
+
+                case SyntaxKind.FalseLiteralExpression:
+                    return Factory.False.ToSingleEnumerable();
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
