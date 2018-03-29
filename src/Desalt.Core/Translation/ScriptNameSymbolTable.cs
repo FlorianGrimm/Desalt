@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -39,6 +40,8 @@ namespace Desalt.Core.Translation
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
+            RenameRules renameRules = context.Options.RenameRules;
+
             IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax
                 .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
                 .Where(symbol => symbol.TypeKind != TypeKind.Delegate);
@@ -55,17 +58,8 @@ namespace Desalt.Core.Translation
 
                 foreach (ISymbol member in members)
                 {
-                    string memberName = member.Name;
-                    string scriptName = null;
-
-                    if (member.Kind == SymbolKind.Field &&
-                        member.DeclaredAccessibility == Accessibility.Private &&
-                        context.Options.RenameRules.FieldRule == FieldRenameRule.PrivateDollarPrefix)
-                    {
-                        scriptName = FindScriptName(member) ?? $"${ToCamelCase(memberName)}";
-                    }
-
-                    scriptName = scriptName ?? FindScriptName(member) ?? ToCamelCase(memberName);
+                    string scriptName = FindFieldScriptName(member, renameRules.FieldRule) ??
+                        FindScriptName(member) ?? ToCamelCase(member.Name);
 
                     AddOrUpdate(member, scriptName);
                 }
@@ -119,6 +113,50 @@ namespace Desalt.Core.Translation
                         "System.Runtime.CompilerServices.ScriptNameAttribute");
 
             return scriptNameAttributeData?.ConstructorArguments[0].Value.ToString();
+        }
+
+        private static string FindFieldScriptName(ISymbol member, FieldRenameRule renameRule)
+        {
+            if (member.Kind != SymbolKind.Field)
+            {
+                return null;
+            }
+
+            string scriptName;
+
+            switch (renameRule)
+            {
+                case FieldRenameRule.LowerCaseFirstChar:
+                default:
+                    scriptName = FindScriptName(member) ?? ToCamelCase(member.Name);
+                    break;
+
+                // add a $ prefix if the field is private OR when there's a duplicate name
+                case FieldRenameRule.PrivateDollarPrefix when member.DeclaredAccessibility == Accessibility.Private:
+                case FieldRenameRule.DollarPrefixOnlyForDuplicateName when IsDuplicateName(member):
+                    scriptName = FindScriptName(member) ?? $"${ToCamelCase(member.Name)}";
+                    break;
+            }
+
+            return scriptName;
+        }
+
+        private static bool IsDuplicateName(ISymbol fieldSymbol)
+        {
+            string fieldScriptName = FindScriptName(fieldSymbol) ?? ToCamelCase(fieldSymbol.Name);
+
+            var query = from member in fieldSymbol.ContainingType.GetMembers()
+                            // don't include the field we're searching against
+                        where !Equals(member, fieldSymbol)
+
+                        // find the potential script name of the member
+                        let scriptName = FindScriptName(member) ?? ToCamelCase(member.Name)
+
+                        // and only take the ones that are equal to the field's script name
+                        where string.Equals(scriptName, fieldScriptName, StringComparison.Ordinal)
+                        select member;
+
+            return query.Any();
         }
     }
 }

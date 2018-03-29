@@ -149,5 +149,19 @@ struct S
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.name", "$name"));
         }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_only_rename_fields_if_there_is_a_duplicate_name()
+        {
+            await AssertEntriesInSymbolTable(
+                "class C { private int x; private string name; public string Name { get; } }",
+                new CompilerOptions(
+                    "outPath",
+                    renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName)),
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.x", "x"),
+                new KeyValuePair<string, string>("C.name", "$name"),
+                new KeyValuePair<string, string>("C.Name", "name"));
+        }
     }
 }

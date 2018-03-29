@@ -63,5 +63,12 @@ namespace Desalt.Core
         /// Saltarelle naming.
         /// </summary>
         PrivateDollarPrefix,
+
+        /// <summary>
+        /// Indicates that fields should be prefixed with a '$' sign, but only when there is a
+        /// duplicate name in the compiled code. For example, if there is a field named <c>name</c>
+        /// and a property <c>Name</c>, when they are compiled it will be the same name, which is not allowed.
+        /// </summary>
+        DollarPrefixOnlyForDuplicateName,
     }
 }
