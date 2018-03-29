@@ -103,25 +103,37 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
             }
 
+            // get the containing type
+            INamedTypeSymbol containingType = symbol.ContainingType;
+
+            // see if the identifier is declared within this type
+            bool belongsToThisType = containingType ==
+                _semanticModel.GetEnclosingSymbol(node.SpanStart, _cancellationToken)?.ContainingType;
+
             ITsExpression expression;
 
             // in TypeScript, static references need to be fully qualified with the type name
-            if (symbol.IsStatic && symbol.ContainingType != null)
+            if (symbol.IsStatic && containingType != null)
             {
-                string containingTypeScriptName = _scriptNameTable.GetValueOrDefault(
-                    symbol.ContainingType,
-                    symbol.ContainingType.Name);
+                string containingTypeScriptName =
+                    _scriptNameTable.GetValueOrDefault(containingType, containingType.Name);
+
                 expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
             }
-            else if (!symbol.IsStatic &&
-                symbol.ContainingType ==
-                _semanticModel.GetEnclosingSymbol(node.SpanStart, _cancellationToken)?.ContainingType)
+            // add a "this." prefix if it's an instance symbol within our same type
+            else if (!symbol.IsStatic && belongsToThisType)
             {
                 expression = Factory.MemberDot(Factory.This, scriptName);
             }
             else
             {
                 expression = Factory.Identifier(scriptName);
+            }
+
+            // add this type to the import list if it doesn't belong to us
+            if (!belongsToThisType)
+            {
+                _typesToImport.Add(symbol);
             }
 
             return expression.ToSingleEnumerable();
