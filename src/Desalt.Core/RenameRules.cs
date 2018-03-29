@@ -18,7 +18,7 @@ namespace Desalt.Core
 
         public static readonly RenameRules Default = new RenameRules(instanceToCopy: null);
 
-        public static readonly RenameRules Saltarelle = new RenameRules(fieldRule: FieldRenameRule.DollarPrefix);
+        public static readonly RenameRules Saltarelle = new RenameRules(fieldRule: FieldRenameRule.PrivateDollarPrefix);
 
         //// ===========================================================================================================
         //// Constructors
@@ -31,8 +31,7 @@ namespace Desalt.Core
 
         private RenameRules(RenameRules instanceToCopy = null, FieldRenameRule? fieldRule = null)
         {
-            FieldRule = fieldRule ??
-                instanceToCopy?.FieldRule ?? FieldRenameRule.LowerCaseFirstChar;
+            FieldRule = fieldRule ?? instanceToCopy?.FieldRule ?? FieldRenameRule.LowerCaseFirstChar;
         }
 
         //// ===========================================================================================================
@@ -63,6 +62,6 @@ namespace Desalt.Core
         /// Indicates that private fields should be prefixed with a '$' sign, which matches the
         /// Saltarelle naming.
         /// </summary>
-        DollarPrefix
+        PrivateDollarPrefix,
     }
 }

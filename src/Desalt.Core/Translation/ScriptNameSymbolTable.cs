@@ -79,7 +79,7 @@ namespace Desalt.Core.Translation
                     }
                     else if (member.Kind == SymbolKind.Field &&
                         member.DeclaredAccessibility == Accessibility.Private &&
-                        context.Options.RenameRules.FieldRule == FieldRenameRule.DollarPrefix)
+                        context.Options.RenameRules.FieldRule == FieldRenameRule.PrivateDollarPrefix)
                     {
                         scriptName = FindScriptName(member) ?? $"${ToCamelCase(memberName)}";
                     }
