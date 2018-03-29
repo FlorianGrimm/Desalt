@@ -51,33 +51,14 @@ namespace Desalt.Core.Translation
                 // add all of the members of the declared type, but skip over compiler-generated
                 // stuff like auto-property backing fields, event add/remove functions, and property
                 // get/set methods.
-                foreach (ISymbol member in symbol.GetMembers().Where(sym => !sym.IsImplicitlyDeclared))
+                var members = symbol.GetMembers().Where(ShouldProcessMember);
+
+                foreach (ISymbol member in members)
                 {
                     string memberName = member.Name;
                     string scriptName = null;
 
-                    if (member is IMethodSymbol methodMember)
-                    {
-                        // ReSharper disable once SwitchStatementMissingSomeCases
-                        switch (methodMember.MethodKind)
-                        {
-                            // skip constructors
-                            case MethodKind.Constructor:
-                            case MethodKind.StaticConstructor:
-                                continue;
-
-                            // skip property get/set methods
-                            case MethodKind.PropertyGet:
-                            case MethodKind.PropertySet:
-                                continue;
-
-                            // skip event add/remove
-                            case MethodKind.EventAdd:
-                            case MethodKind.EventRemove:
-                                continue;
-                        }
-                    }
-                    else if (member.Kind == SymbolKind.Field &&
+                    if (member.Kind == SymbolKind.Field &&
                         member.DeclaredAccessibility == Accessibility.Private &&
                         context.Options.RenameRules.FieldRule == FieldRenameRule.PrivateDollarPrefix)
                     {
@@ -89,6 +70,43 @@ namespace Desalt.Core.Translation
                     AddOrUpdate(member, scriptName);
                 }
             }
+        }
+
+        private static bool ShouldProcessMember(ISymbol member)
+        {
+            // skip over compiler-generated stuff like auto-property backing fields, event add/remove
+            // functions, and property get/set methods
+            if (member.IsImplicitlyDeclared)
+            {
+                return false;
+            }
+
+            // don't skip non-method members
+            if (member.Kind != SymbolKind.Method || !(member is IMethodSymbol methodSymbol))
+            {
+                return true;
+            }
+
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (methodSymbol.MethodKind)
+            {
+                // skip constructors
+                case MethodKind.Constructor:
+                case MethodKind.StaticConstructor:
+                    return false;
+
+                // skip property get/set methods
+                case MethodKind.PropertyGet:
+                case MethodKind.PropertySet:
+                    return false;
+
+                // skip event add/remove
+                case MethodKind.EventAdd:
+                case MethodKind.EventRemove:
+                    return false;
+            }
+
+            return true;
         }
 
         private static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
