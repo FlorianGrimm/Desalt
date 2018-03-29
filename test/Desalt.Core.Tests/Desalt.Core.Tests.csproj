@@ -164,6 +164,7 @@
     <Compile Include="Translation\ScriptNameSymbolTableTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Expressions.cs" />
+    <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.AssignmentExpressions.cs" />
