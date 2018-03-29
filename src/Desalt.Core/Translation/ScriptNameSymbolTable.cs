@@ -53,6 +53,9 @@ namespace Desalt.Core.Translation
                 // get/set methods.
                 foreach (ISymbol member in symbol.GetMembers().Where(sym => !sym.IsImplicitlyDeclared))
                 {
+                    string memberName = member.Name;
+                    string scriptName = null;
+
                     if (member is IMethodSymbol methodMember)
                     {
                         // ReSharper disable once SwitchStatementMissingSomeCases
@@ -74,9 +77,14 @@ namespace Desalt.Core.Translation
                                 continue;
                         }
                     }
+                    else if (member.Kind == SymbolKind.Field &&
+                        member.DeclaredAccessibility == Accessibility.Private &&
+                        context.Options.RenameRules.PrivateFieldRule == PrivateFieldRenameRule.DollarPrefix)
+                    {
+                        scriptName = FindScriptName(member) ?? $"${ToCamelCase(memberName)}";
+                    }
 
-                    string memberName = member.Name;
-                    string scriptName = FindScriptName(member) ?? ToCamelCase(memberName);
+                    scriptName = scriptName ?? FindScriptName(member) ?? ToCamelCase(memberName);
 
                     AddOrUpdate(member, scriptName);
                 }

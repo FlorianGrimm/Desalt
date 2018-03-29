@@ -22,7 +22,7 @@ namespace Desalt.Core.Tests
     {
         public TestContext TestContext { get; set; }
 
-        // [TestCategory("SkipWhenLiveUnitTesting")]
+        [TestCategory("SkipWhenLiveUnitTesting")]
         [TestMethod]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
@@ -46,7 +46,13 @@ namespace Desalt.Core.Tests
                      DiagnosticFactory.IdFromDiagnosticId(id),
                      ReportDiagnostic.Suppress)).ToImmutableDictionary();
 
-            var options = new CompilerOptions(outputPath, specificDiagnosticOptions: ignoredDiagnostics);
+            // for now, add a $ prefix to private fields until we implement rewriters
+            var renameRules = RenameRules.Default.WithPrivateFieldRule(PrivateFieldRenameRule.DollarPrefix);
+
+            var options = new CompilerOptions(
+                outputPath,
+                specificDiagnosticOptions: ignoredDiagnostics,
+                renameRules: renameRules);
 
             var request = new CompilationRequest(projectFilePath, options);
             var compiler = new Compiler();

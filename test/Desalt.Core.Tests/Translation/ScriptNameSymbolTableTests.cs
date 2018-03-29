@@ -22,9 +22,17 @@ namespace Desalt.Core.Tests.Translation
             string code,
             params KeyValuePair<string, string>[] expectedEntries)
         {
+            await AssertEntriesInSymbolTable(code, null, expectedEntries);
+        }
+
+        private static async Task AssertEntriesInSymbolTable(
+            string code,
+            CompilerOptions options,
+            params KeyValuePair<string, string>[] expectedEntries)
+        {
             using (var tempProject = TempProject.Create("TempProject", new TempProjectFile("File.cs", code)))
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
                 var symbolTable = new ScriptNameSymbolTable();
                 symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
@@ -128,6 +136,18 @@ struct S
                 new KeyValuePair<string, string>("I.Method", "ScriptMethod"),
                 new KeyValuePair<string, string>("struct S", "ScriptStruct"),
                 new KeyValuePair<string, string>("S.Property", "ScriptProperty"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_rename_private_fields_if_specified_by_the_options()
+        {
+            await AssertEntriesInSymbolTable(
+                "class C { private string name; }",
+                new CompilerOptions(
+                    "outPath",
+                    renameRules: RenameRules.Default.WithPrivateFieldRule(PrivateFieldRenameRule.DollarPrefix)),
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.name", "$name"));
         }
     }
 }

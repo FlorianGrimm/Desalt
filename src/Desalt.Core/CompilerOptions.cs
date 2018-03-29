@@ -27,13 +27,15 @@ namespace Desalt.Core
             string outputPath,
             WarningLevel warningLevel = WarningLevel.Informational,
             ReportDiagnostic generalDiagnosticOption = ReportDiagnostic.Default,
-            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null)
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
+            RenameRules renameRules = null)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
             GeneralDiagnosticOption = generalDiagnosticOption;
             SpecificDiagnosticOptions =
                 specificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
+            RenameRules = renameRules ?? RenameRules.Default;
         }
 
         //// ===========================================================================================================
@@ -59,6 +61,11 @@ namespace Desalt.Core
         /// Gets the global warning level (from 0 to 4).
         /// </summary>
         public WarningLevel WarningLevel { get; }
+
+        /// <summary>
+        /// Gets the renaming rules to apply during TypeScript translation.
+        /// </summary>
+        public RenameRules RenameRules { get; }
 
         //// ===========================================================================================================
         //// Methods
