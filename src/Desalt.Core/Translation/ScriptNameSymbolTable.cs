@@ -21,6 +21,14 @@ namespace Desalt.Core.Translation
     internal class ScriptNameSymbolTable : SymbolTable<string>
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
+            SymbolDisplayGlobalNamespaceStyle.Omitted,
+            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
@@ -37,7 +45,7 @@ namespace Desalt.Core.Translation
 
             foreach (INamedTypeSymbol symbol in allTypeDeclarationSymbols)
             {
-                string typeName = symbol.Name;
+                string typeName = FindScriptName(symbol) ?? symbol.Name;
                 AddOrUpdate(symbol, typeName);
 
                 // add all of the members of the declared type, but skip over compiler-generated
@@ -45,9 +53,6 @@ namespace Desalt.Core.Translation
                 // get/set methods.
                 foreach (ISymbol member in symbol.GetMembers().Where(sym => !sym.IsImplicitlyDeclared))
                 {
-                    string memberName = member.Name;
-                    string scriptName = ToCamelCase(memberName);
-
                     if (member is IMethodSymbol methodMember)
                     {
                         // ReSharper disable once SwitchStatementMissingSomeCases
@@ -70,11 +75,24 @@ namespace Desalt.Core.Translation
                         }
                     }
 
+                    string memberName = member.Name;
+                    string scriptName = FindScriptName(member) ?? ToCamelCase(memberName);
+
                     AddOrUpdate(member, scriptName);
                 }
             }
         }
 
         private static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+
+        private static string FindScriptName(ISymbol symbol)
+        {
+            AttributeData scriptNameAttributeData = symbol.GetAttributes()
+                .FirstOrDefault(
+                    attributeData => attributeData.AttributeClass.ToDisplayString(s_symbolDisplayFormat) ==
+                        "System.Runtime.CompilerServices.ScriptNameAttribute");
+
+            return scriptNameAttributeData?.ConstructorArguments[0].Value.ToString();
+        }
     }
 }

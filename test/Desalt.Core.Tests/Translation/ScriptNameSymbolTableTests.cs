@@ -34,7 +34,7 @@ namespace Desalt.Core.Tests.Translation
         }
 
         [TestMethod]
-        public async Task ScriptNameSymbolTable_should_preserve_the_case_of_interfaces_classes_and_structs()
+        public async Task ScriptNameSymbolTable_should_preserve_the_case_of_interfaces_classes_structs_and_enums()
         {
             await AssertEntriesInSymbolTable(
                 "interface MyInterface {} class MyClass {} struct MyStruct {}",
@@ -61,10 +61,13 @@ namespace Desalt.Core.Tests.Translation
         public async Task ScriptNameSymbolTable_should_make_members_camelCase_by_default()
         {
             await AssertEntriesInSymbolTable(
-                "class C { int MyInt; void MyMethod() {} }",
+                "class C { int MyInt; } interface I { void MyMethod(); } enum MyEnum { One }",
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.MyInt", "myInt"),
-                new KeyValuePair<string, string>("C.MyMethod", "myMethod"));
+                new KeyValuePair<string, string>("interface I", "I"),
+                new KeyValuePair<string, string>("I.MyMethod", "myMethod"),
+                new KeyValuePair<string, string>("enum MyEnum", "MyEnum"),
+                new KeyValuePair<string, string>("MyEnum.One", "one"));
         }
 
         [TestMethod]
@@ -83,6 +86,48 @@ namespace Desalt.Core.Tests.Translation
                 "class C { bool MyProperty { get; set; } }",
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.MyProperty", "myProperty"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_respect_the_ScriptName_attribute()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+[ScriptName(""ScriptClass"")]
+class C
+{
+    [ScriptName(""ScriptField"")]
+    private int field;
+
+    [ScriptName(""ScriptEvent"")]
+    public event Action Event;
+}
+
+[ScriptName(""ScriptInterface"")]
+interface I
+{
+    [ScriptName(""ScriptMethod"")]
+    private void Method() { }
+}
+
+[ScriptName(""ScriptStruct"")]
+struct S
+{
+    [ScriptName(""ScriptProperty"")]
+    public bool Property { get; set; }
+}";
+
+            await AssertEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class C", "ScriptClass"),
+                new KeyValuePair<string, string>("C.field", "ScriptField"),
+                new KeyValuePair<string, string>("event C.Event", "ScriptEvent"),
+                new KeyValuePair<string, string>("interface I", "ScriptInterface"),
+                new KeyValuePair<string, string>("I.Method", "ScriptMethod"),
+                new KeyValuePair<string, string>("struct S", "ScriptStruct"),
+                new KeyValuePair<string, string>("S.Property", "ScriptProperty"));
         }
     }
 }
