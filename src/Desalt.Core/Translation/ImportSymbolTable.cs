@@ -8,11 +8,8 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// Contains mappings of defined types in a C# project to the files in which they're defined.
@@ -35,23 +32,8 @@ namespace Desalt.Core.Translation
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
-            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax.DescendantNodes()
-                .Select(
-                    node =>
-                    {
-                        switch (node)
-                        {
-                            case BaseTypeDeclarationSyntax typeDeclaration:
-                                return context.SemanticModel.GetDeclaredSymbol(typeDeclaration);
-
-                            case DelegateDeclarationSyntax delegateDeclaration:
-                                return context.SemanticModel.GetDeclaredSymbol(delegateDeclaration);
-
-                            default:
-                                return null;
-                        }
-                    })
-                .Where(symbol => symbol != null);
+            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols =
+                context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken);
 
             foreach (INamedTypeSymbol typeSymbol in allTypeDeclarationSymbols)
             {

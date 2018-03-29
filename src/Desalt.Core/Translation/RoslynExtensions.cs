@@ -7,10 +7,13 @@
 
 namespace Desalt.Core.Translation
 {
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
@@ -63,6 +66,42 @@ namespace Desalt.Core.Translation
             return string.IsNullOrEmpty(xmlText)
                 ? DocumentationComment.Empty
                 : DocumentationComment.FromXmlFragment(xmlText, symbol);
+        }
+
+        /// <summary>
+        /// Returns all of the declared types in the <see cref="SyntaxNode"/> children.
+        /// </summary>
+        /// <param name="rootSyntax">The root <see cref="CompilationUnitSyntax"/> node.</param>
+        /// <param name="semanticModel">The <see cref="SemanticModel"/> to use.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> to use for canceling the requests.
+        /// </param>
+        /// <returns>
+        /// An <see cref="IEnumerable{INamedTypeSymbol}"/> of all of the declared type symbols in the
+        /// syntax tree..
+        /// </returns>
+        public static IEnumerable<INamedTypeSymbol> GetAllDeclaredTypes(
+            this CompilationUnitSyntax rootSyntax,
+            SemanticModel semanticModel,
+            CancellationToken cancellationToken)
+        {
+            INamedTypeSymbol GetDeclaredSymbol(SyntaxNode node)
+            {
+                switch (node)
+                {
+                    case BaseTypeDeclarationSyntax typeDeclarationSyntax:
+                        return semanticModel.GetDeclaredSymbol(typeDeclarationSyntax, cancellationToken);
+
+                    case DelegateDeclarationSyntax delegateDeclarationSyntax:
+                        return semanticModel.GetDeclaredSymbol(delegateDeclarationSyntax, cancellationToken);
+
+                    default:
+                        return null;
+                }
+            }
+
+            var query = rootSyntax.DescendantNodes().Select(GetDeclaredSymbol).Where(symbol => symbol != null);
+            return query;
         }
     }
 }
