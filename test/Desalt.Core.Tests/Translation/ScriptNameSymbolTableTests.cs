@@ -145,7 +145,7 @@ struct S
                 "class C { private string name; }",
                 new CompilerOptions(
                     "outPath",
-                    renameRules: RenameRules.Default.WithPrivateFieldRule(PrivateFieldRenameRule.DollarPrefix)),
+                    renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefix)),
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.name", "$name"));
         }

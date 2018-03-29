@@ -47,7 +47,7 @@ namespace Desalt.Core.Tests
                      ReportDiagnostic.Suppress)).ToImmutableDictionary();
 
             // for now, add a $ prefix to private fields until we implement rewriters
-            var renameRules = RenameRules.Default.WithPrivateFieldRule(PrivateFieldRenameRule.DollarPrefix);
+            var renameRules = RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefix);
 
             var options = new CompilerOptions(
                 outputPath,

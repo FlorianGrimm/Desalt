@@ -18,22 +18,21 @@ namespace Desalt.Core
 
         public static readonly RenameRules Default = new RenameRules(instanceToCopy: null);
 
-        public static readonly RenameRules Saltarelle =
-            new RenameRules(privateFieldRule: PrivateFieldRenameRule.DollarPrefix);
+        public static readonly RenameRules Saltarelle = new RenameRules(fieldRule: FieldRenameRule.DollarPrefix);
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public RenameRules(PrivateFieldRenameRule privateFieldRule = PrivateFieldRenameRule.LowerCaseFirstChar)
-            : this(instanceToCopy: null, privateFieldRule: privateFieldRule)
+        public RenameRules(FieldRenameRule fieldRule = FieldRenameRule.LowerCaseFirstChar)
+            : this(instanceToCopy: null, fieldRule: fieldRule)
         {
         }
 
-        private RenameRules(RenameRules instanceToCopy = null, PrivateFieldRenameRule? privateFieldRule = null)
+        private RenameRules(RenameRules instanceToCopy = null, FieldRenameRule? fieldRule = null)
         {
-            PrivateFieldRule = privateFieldRule ??
-                instanceToCopy?.PrivateFieldRule ?? PrivateFieldRenameRule.LowerCaseFirstChar;
+            FieldRule = fieldRule ??
+                instanceToCopy?.FieldRule ?? FieldRenameRule.LowerCaseFirstChar;
         }
 
         //// ===========================================================================================================
@@ -41,18 +40,18 @@ namespace Desalt.Core
         //// ===========================================================================================================
 
         /// <summary>
-        /// Gets a value indicating how private fields are translated from C# to TypeScript.
+        /// Gets a value indicating how fields are translated from C# to TypeScript.
         /// </summary>
-        public PrivateFieldRenameRule PrivateFieldRule { get; }
+        public FieldRenameRule FieldRule { get; }
 
-        public RenameRules WithPrivateFieldRule(PrivateFieldRenameRule value) =>
-            value == PrivateFieldRule ? this : new RenameRules(this, privateFieldRule: value);
+        public RenameRules WithFieldRule(FieldRenameRule value) =>
+            value == FieldRule ? this : new RenameRules(this, fieldRule: value);
     }
 
     /// <summary>
     /// Controls how private fields are translated from C# to TypeScript.
     /// </summary>
-    public enum PrivateFieldRenameRule
+    public enum FieldRenameRule
     {
         /// <summary>
         /// Indicates that the first letter of the field name should be converted to lower case. For
