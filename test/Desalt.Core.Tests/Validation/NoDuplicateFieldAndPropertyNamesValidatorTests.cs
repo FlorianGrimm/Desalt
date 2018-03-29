@@ -60,5 +60,36 @@ public class C
                             .ToString());
             }
         }
+
+        [TestMethod]
+        public async Task Having_a_duplicate_field_and_property_but_with_a_ScriptName_should_prevent_a_diagnostic()
+        {
+            const string code = @"
+using System.Runtime.CompilerServices;
+
+public class C
+{
+    private string name;
+
+    [ScriptName(""differentName"")]
+    public string Name
+    {
+        get { return this.name; }
+        set { this.name = value; }
+    }
+}
+";
+
+            using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("File.cs", code)))
+            {
+                DocumentTranslationContextWithSymbolTables context =
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+
+                var validator = new NoDuplicateFieldAndPropertyNamesValidator();
+                IExtendedResult<bool> result = validator.Validate(context);
+
+                result.Diagnostics.Should().BeEmpty();
+            }
+        }
     }
 }

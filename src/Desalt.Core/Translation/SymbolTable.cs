@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
@@ -19,7 +20,21 @@ namespace Desalt.Core.Translation
     {
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
-        public static string KeyFromSymbol(ISymbol symbol) => symbol.MetadataName;
+        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
+            SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
+            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            SymbolDisplayMemberOptions.IncludeContainingType,
+            SymbolDisplayDelegateStyle.NameOnly,
+            SymbolDisplayExtensionMethodStyle.StaticMethod,
+            SymbolDisplayParameterOptions.IncludeType,
+            SymbolDisplayPropertyStyle.NameOnly,
+            SymbolDisplayLocalOptions.IncludeType,
+            SymbolDisplayKindOptions.IncludeNamespaceKeyword |
+            SymbolDisplayKindOptions.IncludeTypeKeyword |
+            SymbolDisplayKindOptions.IncludeMemberKeyword);
+
+        public static string KeyFromSymbol(ISymbol symbol) => symbol.ToDisplayString(s_symbolDisplayFormat);
 
         private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
         {
@@ -34,7 +49,7 @@ namespace Desalt.Core.Translation
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T>
+    internal abstract class SymbolTable<T> : IEnumerable<KeyValuePair<string, T>>
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -63,6 +78,21 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate
+        /// through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<KeyValuePair<string, T>> GetEnumerator() => _symbolMap.GetEnumerator();
 
         /// <summary>
         /// Returns a value indicating whether the symbol table contains a definition for the
