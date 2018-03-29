@@ -62,7 +62,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
         public override IEnumerable<IAstNode> VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
-            // TODO: figure out if the parameter ever changes to determine if it's const vs. let
+            // TODO: figure out if the variable ever changes to determine if it's const vs. let
             bool isConst = node.IsConst;
 
             // get the type of all of the declarations
@@ -93,6 +93,9 @@ namespace Desalt.Core.Translation
                 initializer = (ITsExpression)Visit(node.Initializer).First();
             }
 
+            // Note that we don't return the type here since in C# the type is declared first and
+            // then it can have multiple variable declarators. The type will get bound in the parent
+            // Visit callers.
             ITsSimpleLexicalBinding translated = Factory.SimpleLexicalBinding(variableName, initializer: initializer);
             yield return translated;
         }

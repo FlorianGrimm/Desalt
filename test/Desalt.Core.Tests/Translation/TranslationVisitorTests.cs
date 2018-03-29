@@ -22,6 +22,9 @@ namespace Desalt.Core.Tests.Translation
     {
         private static async Task AssertTranslation(string csharpCode, string expectedTypeScriptCode)
         {
+            // get rid of \r\n sequences in the expected output
+            expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n");
+
             using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("File", csharpCode)))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File");

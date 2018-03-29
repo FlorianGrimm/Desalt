@@ -91,7 +91,7 @@ class Logger {
     Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
   }
 }
-".Replace("\r\n", "\n"));
+");
             }
 
             [TestMethod]

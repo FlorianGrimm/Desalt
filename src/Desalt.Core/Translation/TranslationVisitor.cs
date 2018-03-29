@@ -271,7 +271,7 @@ namespace Desalt.Core.Translation
                 ? Factory.ParameterList()
                 : (ITsParameterList)Visit(parameterListNode).Single();
 
-            ITsType returnType = Factory.VoidType;
+            ITsType returnType = null;
             if (returnTypeNode != null)
             {
                 returnType = TypeTranslator.TranslateSymbol(
