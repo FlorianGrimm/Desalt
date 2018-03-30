@@ -117,14 +117,14 @@ class C
 interface I
 {
     [ScriptName(""ScriptMethod"")]
-    private void Method() { }
+    void Method();
 }
 
 [ScriptName(""ScriptStruct"")]
 struct S
 {
     [ScriptName(""ScriptProperty"")]
-    public bool Property { get; set; }
+    public bool Property { get { return true; } }
 }";
 
             await AssertEntriesInSymbolTable(
@@ -162,6 +162,66 @@ struct S
                 new KeyValuePair<string, string>("C.x", "x"),
                 new KeyValuePair<string, string>("C.name", "$name"),
                 new KeyValuePair<string, string>("C.Name", "name"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_respect_the_PreserveCase_attribute()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+class C
+{
+    [PreserveCase]
+    private int Field;
+
+    [PreserveCase]
+    public event Action Event;
+}
+
+interface I
+{
+    [PreserveCase]
+    private void Method() { }
+}
+
+struct S
+{
+    [PreserveCase]
+    public bool Property { get { return true; } }
+}";
+
+            await AssertEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.Field", "Field"),
+                new KeyValuePair<string, string>("event C.Event", "Event"),
+                new KeyValuePair<string, string>("interface I", "I"),
+                new KeyValuePair<string, string>("I.Method", "Method"),
+                new KeyValuePair<string, string>("struct S", "S"),
+                new KeyValuePair<string, string>("S.Property", "Property"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_use_ScriptName_over_PreserveCase()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+class C
+{
+    [PreserveCase]
+    [ScriptName(""trumped"")]
+    private int Field;
+}
+";
+
+            await AssertEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.Field", "trumped"));
         }
     }
 }
