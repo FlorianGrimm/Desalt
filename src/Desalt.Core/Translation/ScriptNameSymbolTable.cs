@@ -107,12 +107,54 @@ namespace Desalt.Core.Translation
 
         private static string FindScriptName(ISymbol symbol)
         {
-            AttributeData scriptNameAttributeData = symbol.GetAttributes()
-                .FirstOrDefault(
-                    attributeData => attributeData.AttributeClass.ToDisplayString(s_symbolDisplayFormat) ==
-                        "System.Runtime.CompilerServices.ScriptNameAttribute");
+            // use [ScriptName] if available (even if there's also a [PreserveCase])
+            AttributeData scriptNameAttributeData = FindSaltarelleAttribute(symbol, "ScriptNameAttribute");
+            if (scriptNameAttributeData != null)
+            {
+                return scriptNameAttributeData.ConstructorArguments[0].Value.ToString();
+            }
 
-            return scriptNameAttributeData?.ConstructorArguments[0].Value.ToString();
+            // for [PreserveCase], don't touch the original name as given in the C# code
+            AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCaseAttribute");
+            if (preserveCaseAttributeData != null)
+            {
+                return symbol.Name;
+            }
+
+            // see if there's a [PreserveMemberCase] on the containing type
+            if (symbol.ContainingType != null)
+            {
+                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
+                    symbol.ContainingType,
+                    "PreserveMemberCaseAttribute");
+                if (preserveMemberCaseAttributeData != null)
+                {
+                    return symbol.Name;
+                }
+            }
+
+            // see if there's a [PreserveMemberCase] on the containing assembly
+            if (symbol.ContainingAssembly != null)
+            {
+                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
+                    symbol.ContainingAssembly,
+                    "PreserveMemberCaseAttribute");
+                if (preserveMemberCaseAttributeData != null)
+                {
+                    return symbol.Name;
+                }
+            }
+
+            return null;
+        }
+
+        private static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeName)
+        {
+            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeName}";
+            AttributeData attributeData = symbol.GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(s_symbolDisplayFormat) == fullAttributeName);
+
+            return attributeData;
         }
 
         private static string FindFieldScriptName(ISymbol member, FieldRenameRule renameRule)
