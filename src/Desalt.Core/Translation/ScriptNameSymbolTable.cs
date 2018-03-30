@@ -121,6 +121,30 @@ namespace Desalt.Core.Translation
                 return symbol.Name;
             }
 
+            // see if there's a [PreserveMemberCase] on the containing type
+            if (symbol.ContainingType != null)
+            {
+                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
+                    symbol.ContainingType,
+                    "PreserveMemberCaseAttribute");
+                if (preserveMemberCaseAttributeData != null)
+                {
+                    return symbol.Name;
+                }
+            }
+
+            // see if there's a [PreserveMemberCase] on the containing assembly
+            if (symbol.ContainingAssembly != null)
+            {
+                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
+                    symbol.ContainingAssembly,
+                    "PreserveMemberCaseAttribute");
+                if (preserveMemberCaseAttributeData != null)
+                {
+                    return symbol.Name;
+                }
+            }
+
             return null;
         }
 

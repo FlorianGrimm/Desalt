@@ -204,24 +204,74 @@ struct S
         }
 
         [TestMethod]
-        public async Task ScriptNameSymbolTable_should_use_ScriptName_over_PreserveCase()
+        public async Task ScriptNameSymbolTable_should_respect_the_PreserveMemberCase_attribute_on_the_parent_declaration()
         {
             const string code = @"
 using System;
 using System.Runtime.CompilerServices;
 
+[PreserveMemberCase]
 class C
 {
-    [PreserveCase]
-    [ScriptName(""trumped"")]
     private int Field;
+    private void Method() {}
 }
 ";
 
             await AssertEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
-                new KeyValuePair<string, string>("C.Field", "trumped"));
+                new KeyValuePair<string, string>("C.Field", "Field"),
+                new KeyValuePair<string, string>("C.Method", "Method"));
+        }
+
+        [TestMethod]
+        public async Task
+            ScriptNameSymbolTable_should_respect_the_PreserveMemberCase_attribute_on_the_assembly()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+[assembly: PreserveMemberCase]
+class C
+{
+    private int Field;
+    private void Method() {}
+}
+";
+
+            await AssertEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.Field", "Field"),
+                new KeyValuePair<string, string>("C.Method", "Method"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_use_ScriptName_over_PreserveCase_or_PreserveMemberCase()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+[PreserveMemberCase]
+class C
+{
+    [PreserveCase]
+    [ScriptName(""trumpedField"")]
+    private int Field;
+
+    [ScriptName(""trumpedMethod"")]
+    private void Method() {}
+}
+";
+
+            await AssertEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C.Field", "trumpedField"),
+                new KeyValuePair<string, string>("C.Method", "trumpedMethod"));
         }
     }
 }
