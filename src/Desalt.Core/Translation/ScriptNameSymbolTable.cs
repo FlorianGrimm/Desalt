@@ -125,14 +125,14 @@ namespace Desalt.Core.Translation
         private static string FindScriptName(ISymbol symbol)
         {
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            AttributeData scriptNameAttributeData = FindSaltarelleAttribute(symbol, "ScriptNameAttribute");
+            AttributeData scriptNameAttributeData = FindSaltarelleAttribute(symbol, "ScriptName");
             if (scriptNameAttributeData != null)
             {
                 return scriptNameAttributeData.ConstructorArguments[0].Value.ToString();
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
-            AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCaseAttribute");
+            AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCase");
             if (preserveCaseAttributeData != null)
             {
                 return symbol.Name;
@@ -141,9 +141,8 @@ namespace Desalt.Core.Translation
             // see if there's a [PreserveMemberCase] on the containing type
             if (symbol.ContainingType != null)
             {
-                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
-                    symbol.ContainingType,
-                    "PreserveMemberCaseAttribute");
+                AttributeData preserveMemberCaseAttributeData =
+                    FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -155,7 +154,7 @@ namespace Desalt.Core.Translation
             {
                 AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
                     symbol.ContainingAssembly,
-                    "PreserveMemberCaseAttribute");
+                    "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -165,9 +164,9 @@ namespace Desalt.Core.Translation
             return null;
         }
 
-        private static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeName)
+        private static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
         {
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeName}";
+            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
             AttributeData attributeData = symbol.GetAttributes()
                 .FirstOrDefault(x => x.AttributeClass.ToDisplayString(s_symbolDisplayFormat) == fullAttributeName);
 
