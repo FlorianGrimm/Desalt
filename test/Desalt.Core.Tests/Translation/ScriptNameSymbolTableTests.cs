@@ -73,7 +73,7 @@ namespace Desalt.Core.Tests.Translation
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.MyInt", "myInt"),
                 new KeyValuePair<string, string>("interface I", "I"),
-                new KeyValuePair<string, string>("I.MyMethod", "myMethod"),
+                new KeyValuePair<string, string>("I.MyMethod()", "myMethod"),
                 new KeyValuePair<string, string>("enum MyEnum", "MyEnum"),
                 new KeyValuePair<string, string>("MyEnum.One", "one"));
         }
@@ -133,7 +133,7 @@ struct S
                 new KeyValuePair<string, string>("C.field", "ScriptField"),
                 new KeyValuePair<string, string>("event C.Event", "ScriptEvent"),
                 new KeyValuePair<string, string>("interface I", "ScriptInterface"),
-                new KeyValuePair<string, string>("I.Method", "ScriptMethod"),
+                new KeyValuePair<string, string>("I.Method()", "ScriptMethod"),
                 new KeyValuePair<string, string>("struct S", "ScriptStruct"),
                 new KeyValuePair<string, string>("S.Property", "ScriptProperty"));
         }
@@ -198,7 +198,7 @@ struct S
                 new KeyValuePair<string, string>("C.Field", "Field"),
                 new KeyValuePair<string, string>("event C.Event", "Event"),
                 new KeyValuePair<string, string>("interface I", "I"),
-                new KeyValuePair<string, string>("I.Method", "Method"),
+                new KeyValuePair<string, string>("I.Method()", "Method"),
                 new KeyValuePair<string, string>("struct S", "S"),
                 new KeyValuePair<string, string>("S.Property", "Property"));
         }
@@ -222,7 +222,7 @@ class C
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
-                new KeyValuePair<string, string>("C.Method", "Method"));
+                new KeyValuePair<string, string>("C.Method()", "Method"));
         }
 
         [TestMethod]
@@ -245,7 +245,7 @@ class C
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
-                new KeyValuePair<string, string>("C.Method", "Method"));
+                new KeyValuePair<string, string>("C.Method()", "Method"));
         }
 
         [TestMethod]
@@ -263,7 +263,7 @@ class C
     private int Field;
 
     [ScriptName(""trumpedMethod"")]
-    private void Method() {}
+    private void Method(int x) {}
 }
 ";
 
@@ -271,7 +271,7 @@ class C
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "trumpedField"),
-                new KeyValuePair<string, string>("C.Method", "trumpedMethod"));
+                new KeyValuePair<string, string>("C.Method(int)", "trumpedMethod"));
         }
 
         [TestMethod]
