@@ -34,23 +34,27 @@ namespace Desalt.Core.Translation
             var visitor = new TranslationVisitor(context, cancellationToken);
             var implementationModule = (ITsImplementationModule)visitor.Visit(context.RootSyntax).Single();
 
-            IExtendedResult<ITsImplementationModule> addImportsResult = AddImports(
+            IExtendedResult<IEnumerable<ITsImportDeclaration>> addImportsResult = TranslateImports(
                 context,
-                visitor.TypesToImport,
-                implementationModule);
+                visitor.TypesToImport);
+            IEnumerable<ITsImportDeclaration> importDeclarations = addImportsResult.Result;
+
+            // insert the imports at the top of the translated file
+            ITsImplementationModuleElement[] newElements =
+                implementationModule.Elements.InsertRange(0, importDeclarations).ToArray();
+            ITsImplementationModule moduleWithImports = Factory.ImplementationModule(newElements);
 
             return new ExtendedResult<ITsImplementationModule>(
-                addImportsResult.Result,
+                moduleWithImports,
                 visitor.Diagnostics.Concat(addImportsResult.Diagnostics));
         }
 
         /// <summary>
         /// Adds all of the import statements to the top of the file.
         /// </summary>
-        private static IExtendedResult<ITsImplementationModule> AddImports(
+        private static IExtendedResult<IEnumerable<ITsImportDeclaration>> TranslateImports(
             DocumentTranslationContextWithSymbolTables context,
-            IEnumerable<ISymbol> typesToImport,
-            ITsImplementationModule translatedModule)
+            IEnumerable<ISymbol> typesToImport)
         {
             ISymbol[] importTypes = typesToImport.ToArray();
 
@@ -124,11 +128,7 @@ namespace Desalt.Core.Translation
                 importDeclarations.Add(import);
             }
 
-            ITsImplementationModuleElement[] newElements =
-                translatedModule.Elements.InsertRange(0, importDeclarations).ToArray();
-            ITsImplementationModule moduleWithImports = Factory.ImplementationModule(newElements);
-
-            return new ExtendedResult<ITsImplementationModule>(moduleWithImports, diagnostics);
+            return new ExtendedResult<IEnumerable<ITsImportDeclaration>>(importDeclarations, diagnostics);
         }
 
         /// <summary>
