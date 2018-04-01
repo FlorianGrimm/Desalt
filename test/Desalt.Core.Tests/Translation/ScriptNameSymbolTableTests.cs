@@ -273,5 +273,37 @@ class C
                 new KeyValuePair<string, string>("C.Field", "trumpedField"),
                 new KeyValuePair<string, string>("C.Method", "trumpedMethod"));
         }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_use_ScriptName_from_referenced_assemblies()
+        {
+            const string code = @"
+using System;
+using Underscore;
+
+class C
+{
+    private void Method()
+    {
+        var value = new UnderscoreValue<int>();
+    }
+}
+";
+
+            using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
+            {
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+
+                var symbolTable = new ScriptNameSymbolTable();
+                symbolTable.AddExternallyReferencedTypes(context, CancellationToken.None);
+
+                symbolTable.Should()
+                    .BeEquivalentTo(
+                        new KeyValuePair<string, string>(
+                            "class Underscore.UnderscoreValue<int>",
+                            "UnderscoreValue"),
+                        new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value", "value"));
+            }
+        }
     }
 }

@@ -40,29 +40,46 @@ namespace Desalt.Core.Translation
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            RenameRules renameRules = context.Options.RenameRules;
-
             IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax
-                .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                .Where(symbol => symbol.TypeKind != TypeKind.Delegate);
+                 .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
+                 .Where(symbol => symbol.TypeKind != TypeKind.Delegate);
 
             foreach (INamedTypeSymbol symbol in allTypeDeclarationSymbols)
             {
-                string typeName = FindScriptName(symbol) ?? symbol.Name;
-                AddOrUpdate(symbol, typeName);
+                AddType(symbol, context);
+            }
+        }
 
-                // add all of the members of the declared type, but skip over compiler-generated
-                // stuff like auto-property backing fields, event add/remove functions, and property
-                // get/set methods.
-                var members = symbol.GetMembers().Where(ShouldProcessMember);
+        /// <summary>
+        /// Adds a single type defined in an external assembly.
+        /// </summary>
+        protected override void AddExternallyReferencedType(
+            ITypeSymbol typeSymbol,
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            AddType(typeSymbol, context);
+        }
 
-                foreach (ISymbol member in members)
-                {
-                    string scriptName = FindFieldScriptName(member, renameRules.FieldRule) ??
-                        FindScriptName(member) ?? ToCamelCase(member.Name);
+        // ReSharper disable once SuggestBaseTypeForParameter
+        private void AddType(ITypeSymbol typeSymbol, DocumentTranslationContext context)
+        {
+            string typeName = FindScriptName(typeSymbol) ?? typeSymbol.Name;
+            AddOrUpdate(typeSymbol, typeName);
 
-                    AddOrUpdate(member, scriptName);
-                }
+            // add all of the members of the declared type, but skip over compiler-generated
+            // stuff like auto-property backing fields, event add/remove functions, and property
+            // get/set methods.
+            var members = typeSymbol.GetMembers().Where(ShouldProcessMember);
+
+            RenameRules renameRules = context.Options.RenameRules;
+
+            foreach (ISymbol member in members)
+            {
+                string scriptName = FindFieldScriptName(member, renameRules.FieldRule) ??
+                    FindScriptName(member) ?? ToCamelCase(member.Name);
+
+                AddOrUpdate(member, scriptName);
             }
         }
 
