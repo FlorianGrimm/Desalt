@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using Microsoft.CodeAnalysis;
 
@@ -17,7 +18,7 @@ namespace Desalt.Core.Translation
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal partial class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
+    internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
     {
         //// ===========================================================================================================
         //// Methods
@@ -41,13 +42,24 @@ namespace Desalt.Core.Translation
             }
         }
 
-        public void AddExternallyReferencedTypes(
+        /// <summary>
+        /// Adds all of the defined types in external assembly references to the mapping.
+        /// </summary>
+        protected override void AddExternallyReferencedType(
+            ITypeSymbol typeSymbol,
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            // find all of the symbols that are being referenced outside of this assembly
-            var walker = new Walker(context.SemanticModel, AddOrUpdate);
-            walker.Visit(context.RootSyntax);
+            var containingAssembly = typeSymbol.ContainingAssembly;
+            Debug.Assert(containingAssembly != null, $"{typeSymbol.Name}.ContainingAssembly is null");
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (containingAssembly != null)
+            {
+                string moduleName = containingAssembly.Name;
+                var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
+                AddOrUpdate(typeSymbol, symbolInfo);
+            }
         }
     }
 

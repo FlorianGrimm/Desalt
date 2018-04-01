@@ -29,7 +29,9 @@ public interface TestInterface
     void InvalidMethod(int defaultValue = 0);
 }";
 
-            using (var tempProject = TempProject.Create("TestProject", new TempProjectFile("MyInterface", code)))
+            using (var tempProject = await TempProject.CreateAsync(
+                "TestProject",
+                new TempProjectFile("MyInterface", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync("MyInterface");

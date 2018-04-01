@@ -99,7 +99,7 @@ namespace Desalt.Core.Translation
 
                         return new
                         {
-                            TypeName = symbol.Name,
+                            TypeName = context.ScriptNameSymbolTable.GetValueOrDefault(symbol, symbol.Name),
                             RelativePathOrModuleName = relativePathOrModuleName
                         };
                     })

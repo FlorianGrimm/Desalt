@@ -14,7 +14,8 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Contains static utility methods for using a symbol table.
+    /// Contains static utility methods for using a symbol table. Pulled out into a separate class
+    /// because statics aren't shared between generic instances.
     /// </summary>
     internal static class SymbolTable
     {
@@ -32,7 +33,8 @@ namespace Desalt.Core.Translation
             SymbolDisplayLocalOptions.IncludeType,
             SymbolDisplayKindOptions.IncludeNamespaceKeyword |
             SymbolDisplayKindOptions.IncludeTypeKeyword |
-            SymbolDisplayKindOptions.IncludeMemberKeyword);
+            SymbolDisplayKindOptions.IncludeMemberKeyword,
+            SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         public static string KeyFromSymbol(ISymbol symbol) => symbol.ToDisplayString(s_symbolDisplayFormat);
 
@@ -45,11 +47,34 @@ namespace Desalt.Core.Translation
     }
 
     /// <summary>
+    /// Interface for a symbol table that holds different information.
+    /// </summary>
+    internal interface IConcurrentSymbolTable
+    {
+        /// <summary>
+        /// Returns a value indicating whether the symbol table contains a definition for the
+        /// specified symbol name.
+        /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
+        bool HasSymbol(ISymbol symbol);
+
+        /// <summary>
+        /// Adds all of the defined types in the document to the mapping.
+        /// </summary>
+        void AddDefinedTypesInDocument(DocumentTranslationContext context, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds all of the defined types in external assembly references to the mapping.
+        /// </summary>
+        void AddExternallyReferencedTypes(DocumentTranslationContext context, CancellationToken cancellationToken);
+    }
+
+    /// <summary>
     /// Abstract base class for a symbol table that holds different information.
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T> : IEnumerable<KeyValuePair<string, T>>
+    internal abstract partial class SymbolTable<T> : IConcurrentSymbolTable, IEnumerable<KeyValuePair<string, T>>
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -146,6 +171,31 @@ namespace Desalt.Core.Translation
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
         public abstract void AddDefinedTypesInDocument(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds all of the defined types in external assembly references to the mapping.
+        /// </summary>
+        public void AddExternallyReferencedTypes(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            ExternalTypeWalker walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
+            walker.Visit(context.RootSyntax);
+            IEnumerable<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+
+            foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
+            {
+                AddExternallyReferencedType(externalTypeSymbol, context, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Adds a single type defined in an external assembly.
+        /// </summary>
+        protected abstract void AddExternallyReferencedType(
+            ITypeSymbol typeSymbol,
             DocumentTranslationContext context,
             CancellationToken cancellationToken);
 

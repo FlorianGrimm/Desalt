@@ -8,7 +8,6 @@
 namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -32,7 +31,6 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        [SuppressMessage("ReSharper", "ImplicitlyCapturedClosure")]
         public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
                 IEnumerable<DocumentTranslationContext> input,
@@ -41,28 +39,28 @@ namespace Desalt.Core.CompilerStages
         {
             var importSymbolTable = new ImportSymbolTable();
             var scriptNameSymbolTable = new ScriptNameSymbolTable();
+            var symbolTables = new IConcurrentSymbolTable[] { importSymbolTable, scriptNameSymbolTable };
 
             var contexts = input.ToArray();
 
-            // add all of the import symbols in parallel (the symbol table is thread-safe)
-            var tasks = contexts.Select(
-                context => Task.Run(
-                    () => importSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
-                    cancellationToken));
+            // for each symbol table, add all of the types in the document in parallel (the symbol
+            // table is thread-safe)
+            List<Task> tasks = new List<Task>();
+            foreach (IConcurrentSymbolTable symbolTable in symbolTables)
+            {
+                foreach (DocumentTranslationContext context in contexts)
+                {
+                    var task = Task.Run(
+                        () => symbolTable.AddDefinedTypesInDocument(context, cancellationToken),
+                        cancellationToken);
+                    tasks.Add(task);
 
-            // add types from referenced assemblies
-            tasks = tasks.Concat(
-                contexts.Select(
-                    context => Task.Run(
-                        () => importSymbolTable.AddExternallyReferencedTypes(context, cancellationToken),
-                        cancellationToken)));
-
-            // populate the script name symbol table
-            tasks = tasks.Concat(
-                contexts.Select(
-                    context => Task.Run(
-                        () => scriptNameSymbolTable.AddDefinedTypesInDocument(context, cancellationToken),
-                        cancellationToken)));
+                    task = Task.Run(
+                        () => symbolTable.AddExternallyReferencedTypes(context, cancellationToken),
+                        cancellationToken);
+                    tasks.Add(task);
+                }
+            }
 
             await Task.WhenAll(tasks);
 

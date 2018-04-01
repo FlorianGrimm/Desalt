@@ -12,7 +12,9 @@ namespace Desalt.Core.Tests.TestUtility
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Translation;
+    using FluentAssertions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Text;
 
     /// <summary>
@@ -39,7 +41,7 @@ namespace Desalt.Core.Tests.TestUtility
         //// Methods
         //// ===========================================================================================================
 
-        public static TempProject Create(string projectName, params TempProjectFile[] sourceFiles)
+        public static async Task<TempProject> CreateAsync(string projectName, params TempProjectFile[] sourceFiles)
         {
             // create a new ad-hoc workspace
             var workspace = new AdhocWorkspace();
@@ -47,15 +49,27 @@ namespace Desalt.Core.Tests.TestUtility
             // add a new project
             ProjectId projectId = ProjectId.CreateNewId(projectName);
             VersionStamp version = VersionStamp.Create();
-            var projectInfo = ProjectInfo.Create(projectId, version, projectName, projectName, LanguageNames.CSharp)
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var projectInfo = ProjectInfo.Create(
+                    projectId,
+                    version,
+                    projectName,
+                    projectName,
+                    LanguageNames.CSharp,
+                    compilationOptions: compilationOptions)
                 .WithSaltarelleReferences();
-            workspace.AddProject(projectInfo);
+
+            var project = workspace.AddProject(projectInfo);
 
             // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
                 workspace.AddDocument(projectId, sourceFile.FileName, SourceText.From(sourceFile.FileContents));
             }
+
+            // try to compile the project and report any diagnostics
+            Compilation compilation = await project.GetCompilationAsync();
+            compilation.GetDiagnostics().Should().BeEmpty();
 
             return new TempProject(workspace);
         }
