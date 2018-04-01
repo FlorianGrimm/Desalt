@@ -25,7 +25,7 @@ namespace Desalt.Core.Translation
             SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
             SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            SymbolDisplayMemberOptions.IncludeContainingType,
+            SymbolDisplayMemberOptions.IncludeContainingType | SymbolDisplayMemberOptions.IncludeParameters,
             SymbolDisplayDelegateStyle.NameOnly,
             SymbolDisplayExtensionMethodStyle.StaticMethod,
             SymbolDisplayParameterOptions.IncludeType,
