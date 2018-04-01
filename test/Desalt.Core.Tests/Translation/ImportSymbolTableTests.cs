@@ -26,7 +26,7 @@ namespace Desalt.Core.Tests.Translation
             string csharpCode,
             Action<ImportSymbolTable, DocumentTranslationContext> assertAction)
         {
-            using (var tempProject = TempProject.Create("Test", new TempProjectFile("File.cs", csharpCode)))
+            using (var tempProject = await TempProject.CreateAsync("Test", new TempProjectFile("File.cs", csharpCode)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
                 var importTable = new ImportSymbolTable();

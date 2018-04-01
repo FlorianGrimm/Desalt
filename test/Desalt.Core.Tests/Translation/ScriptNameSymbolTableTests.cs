@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
             CompilerOptions options,
             params KeyValuePair<string, string>[] expectedEntries)
         {
-            using (var tempProject = TempProject.Create("TempProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
