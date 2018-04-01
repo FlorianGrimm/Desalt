@@ -131,6 +131,13 @@ namespace Desalt.Core.Translation
                 return scriptNameAttributeData.ConstructorArguments[0].Value.ToString();
             }
 
+            // use [ScriptAlias] if available
+            AttributeData scriptAliasAttributeData = FindSaltarelleAttribute(symbol, "ScriptAlias");
+            if (scriptAliasAttributeData != null)
+            {
+                return scriptAliasAttributeData.ConstructorArguments[0].Value.ToString();
+            }
+
             // for [PreserveCase], don't touch the original name as given in the C# code
             AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCase");
             if (preserveCaseAttributeData != null)

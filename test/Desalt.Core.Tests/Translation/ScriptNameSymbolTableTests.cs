@@ -338,6 +338,25 @@ class C
                 new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value()", "value"));
         }
 
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_respect_ScriptAlias()
+        {
+            const string code = @"
+using System;
+using jQueryApi;
+
+class C
+{
+    private void Method()
+    {
+        var element = jQuery.FromHtml(""<div>"");
+    }
+}
+";
+
+            await AssertExternalEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("jQueryApi.jQuery.FromHtml(string)", "$"));
         }
     }
 }
