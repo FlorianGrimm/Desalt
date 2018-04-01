@@ -36,7 +36,7 @@ namespace Desalt.Core.Translation
 
             IExtendedResult<ITsImplementationModule> addImportsResult = AddImports(
                 context,
-                visitor,
+                visitor.TypesToImport,
                 implementationModule);
 
             return new ExtendedResult<ITsImplementationModule>(
@@ -49,10 +49,10 @@ namespace Desalt.Core.Translation
         /// </summary>
         private static IExtendedResult<ITsImplementationModule> AddImports(
             DocumentTranslationContextWithSymbolTables context,
-            TranslationVisitor walker,
+            IEnumerable<ISymbol> typesToImport,
             ITsImplementationModule translatedModule)
         {
-            ISymbol[] importTypes = walker.TypesToImport.ToArray();
+            ISymbol[] importTypes = typesToImport.ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
             ISymbol[] undefinedTypes =
