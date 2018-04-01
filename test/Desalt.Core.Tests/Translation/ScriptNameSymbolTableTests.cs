@@ -18,16 +18,50 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public class ScriptNameSymbolTableTests
     {
-        private static async Task AssertEntriesInSymbolTable(
+        private enum AssertKind
+        {
+            AllDocumentTypes,
+            ExternalAssemblyTypes,
+        }
+
+        private static async Task AssertDocumentEntriesInSymbolTable(
             string code,
             params KeyValuePair<string, string>[] expectedEntries)
         {
-            await AssertEntriesInSymbolTable(code, null, expectedEntries);
+            await AssertEntriesInSymbolTable(
+                code,
+                options: null,
+                assertKind: AssertKind.AllDocumentTypes,
+                expectedEntries: expectedEntries);
+        }
+
+        private static async Task AssertDocumentEntriesInSymbolTable(
+            string code,
+            CompilerOptions options,
+            params KeyValuePair<string, string>[] expectedEntries)
+        {
+            await AssertEntriesInSymbolTable(
+                code,
+                options,
+                assertKind: AssertKind.AllDocumentTypes,
+                expectedEntries: expectedEntries);
+        }
+
+        private static async Task AssertExternalEntriesInSymbolTable(
+            string code,
+            params KeyValuePair<string, string>[] expectedEntries)
+        {
+            await AssertEntriesInSymbolTable(
+                code,
+                options: null,
+                assertKind: AssertKind.ExternalAssemblyTypes,
+                expectedEntries: expectedEntries);
         }
 
         private static async Task AssertEntriesInSymbolTable(
             string code,
             CompilerOptions options,
+            AssertKind assertKind,
             params KeyValuePair<string, string>[] expectedEntries)
         {
             using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
@@ -35,16 +69,24 @@ namespace Desalt.Core.Tests.Translation
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
                 var symbolTable = new ScriptNameSymbolTable();
-                symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
 
-                symbolTable.Should().BeEquivalentTo(expectedEntries);
+                if (assertKind == AssertKind.AllDocumentTypes)
+                {
+                    symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+                    symbolTable.Should().BeEquivalentTo(expectedEntries);
+                }
+                else
+                {
+                    symbolTable.AddExternallyReferencedTypes(context, CancellationToken.None);
+                    symbolTable.Should().Contain(expectedEntries);
+                }
             }
         }
 
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_preserve_the_case_of_interfaces_classes_structs_and_enums()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "interface MyInterface {} class MyClass {} struct MyStruct {}",
                 new KeyValuePair<string, string>("interface MyInterface", "MyInterface"),
                 new KeyValuePair<string, string>("class MyClass", "MyClass"),
@@ -54,7 +96,7 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_skip_instance_and_static_constructors()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { C(int x) { } static C() { }",
                 new KeyValuePair<string, string>("class C", "C"));
         }
@@ -62,13 +104,13 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_not_store_delegate_types()
         {
-            await AssertEntriesInSymbolTable("delegate void MyDelegate();");
+            await AssertDocumentEntriesInSymbolTable("delegate void MyDelegate();");
         }
 
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_make_members_camelCase_by_default()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { int MyInt; } interface I { void MyMethod(); } enum MyEnum { One }",
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.MyInt", "myInt"),
@@ -81,7 +123,7 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_handle_events_but_no_add_remove_methods()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { event System.Action MyEvent; }",
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("event C.MyEvent", "myEvent"));
@@ -90,7 +132,7 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_handle_properties_but_no_get_set_methods()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { bool MyProperty { get; set; } }",
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.MyProperty", "myProperty"));
@@ -127,7 +169,7 @@ struct S
     public bool Property { get { return true; } }
 }";
 
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "ScriptClass"),
                 new KeyValuePair<string, string>("C.field", "ScriptField"),
@@ -141,7 +183,7 @@ struct S
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_rename_private_fields_if_specified_by_the_options()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { private string name; }",
                 new CompilerOptions(
                     "outPath",
@@ -153,7 +195,7 @@ struct S
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_only_rename_fields_if_there_is_a_duplicate_name()
         {
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 "class C { private int x; private string name; public string Name { get; } }",
                 new CompilerOptions(
                     "outPath",
@@ -192,7 +234,7 @@ struct S
     public bool Property { get { return true; } }
 }";
 
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
@@ -218,7 +260,7 @@ class C
 }
 ";
 
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
@@ -241,7 +283,7 @@ class C
 }
 ";
 
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
@@ -267,7 +309,7 @@ class C
 }
 ";
 
-            await AssertEntriesInSymbolTable(
+            await AssertDocumentEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "trumpedField"),
@@ -290,20 +332,12 @@ class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+            await AssertExternalEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("class Underscore.UnderscoreValue<int>", "UnderscoreValue"),
+                new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value()", "value"));
+        }
 
-                var symbolTable = new ScriptNameSymbolTable();
-                symbolTable.AddExternallyReferencedTypes(context, CancellationToken.None);
-
-                symbolTable.Should()
-                    .BeEquivalentTo(
-                        new KeyValuePair<string, string>(
-                            "class Underscore.UnderscoreValue<int>",
-                            "UnderscoreValue"),
-                        new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value", "value"));
-            }
         }
     }
 }
