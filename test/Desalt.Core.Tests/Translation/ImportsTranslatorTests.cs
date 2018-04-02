@@ -38,6 +38,7 @@ namespace Desalt.Core.Tests.Translation
             string code = $@"
 using System;
 using System.Collections.Generic;
+using System.Html;
 using System.Text.RegularExpressions;
 
 class C
@@ -113,6 +114,12 @@ class C
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
             await AssertImports("Error err;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_types_from_Saltarelle_Web()
+        {
+            await AssertImports("HtmlElement div;");
         }
     }
 }

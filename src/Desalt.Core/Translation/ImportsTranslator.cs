@@ -28,7 +28,7 @@ namespace Desalt.Core.Translation
             DocumentTranslationContextWithSymbolTables context,
             IEnumerable<ISymbol> typesToImport)
         {
-            // we don't want to import native types or arrays
+            // get all of the types that we should import
             ISymbol[] importTypes = typesToImport.Where(symbol => ShouldImport(symbol, context)).ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
@@ -121,6 +121,12 @@ namespace Desalt.Core.Translation
             // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
             if (context.ScriptNameSymbolTable.TryGetValue(symbol, out string scriptName) &&
                 TypeTranslator.IsNativeTypeScriptTypeName(scriptName))
+            {
+                return false;
+            }
+
+            // don't import types from the Saltarelle.Web assembly, since those are already built-in to TypeScript
+            if (symbol.ContainingAssembly?.Name == "Saltarelle.Web")
             {
                 return false;
             }
