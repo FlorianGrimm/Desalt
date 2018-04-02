@@ -28,7 +28,11 @@ namespace Desalt.Core.Translation
             DocumentTranslationContextWithSymbolTables context,
             IEnumerable<ISymbol> typesToImport)
         {
-            ISymbol[] importTypes = typesToImport.ToArray();
+            // we don't want to import native types
+            ISymbol[] importTypes = typesToImport.Where(
+                    symbol => !(symbol is INamedTypeSymbol namedSymbol) ||
+                        !TypeTranslator.IsNativeTypeScriptType(namedSymbol))
+                .ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
             ISymbol[] undefinedTypes =
