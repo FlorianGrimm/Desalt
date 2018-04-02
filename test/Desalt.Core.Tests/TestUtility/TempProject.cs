@@ -103,6 +103,7 @@ namespace Desalt.Core.Tests.TestUtility
             // create the script name symbol table
             var scriptNameTable = new ScriptNameSymbolTable();
             scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+            scriptNameTable.AddExternallyReferencedTypes(context, CancellationToken.None);
 
             return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
         }

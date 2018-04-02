@@ -67,8 +67,8 @@ export interface MyInterface {
         public async Task TranslateDocument_should_find_types_defined_in_mscorlib()
         {
             await AssertTranslationAsync(
-                "class C { private List<string> _list; }",
-                "import { List } from 'mscorlib';\n\nclass C {\n  private _list: List<string>;\n}\n");
+                "using System.Text; class C { private StringBuilder _builder; }",
+                "import { StringBuilder } from 'mscorlib';\n\nclass C {\n  private _builder: StringBuilder;\n}\n");
         }
     }
 }
