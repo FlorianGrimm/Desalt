@@ -23,23 +23,24 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, ITsType> s_nativeTypeMap = new Dictionary<string, ITsType>
+        private static readonly ImmutableDictionary<string, (string nativeTypeName, ITsType translatedType)> s_nativeTypeMap = new Dictionary<string,
+            (string nativeTypeName, ITsType translatedType)>
         {
-            ["System.Void"] = Factory.VoidType,
-            ["System.Boolean"] = Factory.BooleanType,
-            ["System.String"] = Factory.StringType,
-            ["System.Byte"] = Factory.NumberType,
-            ["System.SByte"] = Factory.NumberType,
-            ["System.UInt16"] = Factory.NumberType,
-            ["System.Int16"] = Factory.NumberType,
-            ["System.UInt32"] = Factory.NumberType,
-            ["System.Int32"] = Factory.NumberType,
-            ["System.UInt64"] = Factory.NumberType,
-            ["System.Int64"] = Factory.NumberType,
-            ["System.Decimal"] = Factory.NumberType,
-            ["System.Single"] = Factory.NumberType,
-            ["System.Double"] = Factory.NumberType,
-            ["System.Object"] = Factory.AnyType,
+            ["System.Void"] = ("void", Factory.VoidType),
+            ["System.Boolean"] = ("boolean", Factory.BooleanType),
+            ["System.String"] = ("string", Factory.StringType),
+            ["System.Byte"] = ("number", Factory.NumberType),
+            ["System.SByte"] = ("number", Factory.NumberType),
+            ["System.UInt16"] = ("number", Factory.NumberType),
+            ["System.Int16"] = ("number", Factory.NumberType),
+            ["System.UInt32"] = ("number", Factory.NumberType),
+            ["System.Int32"] = ("number", Factory.NumberType),
+            ["System.UInt64"] = ("number", Factory.NumberType),
+            ["System.Int64"] = ("number", Factory.NumberType),
+            ["System.Decimal"] = ("number", Factory.NumberType),
+            ["System.Single"] = ("number", Factory.NumberType),
+            ["System.Double"] = ("number", Factory.NumberType),
+            ["System.Object"] = ("any", Factory.AnyType),
         }.ToImmutableDictionary();
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
@@ -60,6 +61,18 @@ namespace Desalt.Core.Translation
             return s_nativeTypeMap.ContainsKey(fullTypeName);
         }
 
+        /// <summary>
+        /// Returns the native type name of the specified symbol. Throws an exception if the symbol
+        /// is not a native TypeScript type.
+        /// </summary>
+        /// <param name="symbol">The symbol to inspect.</param>
+        /// <returns>The native type name. For example, "System.String" is a TypeScript "string".</returns>
+        public static string GetNativeTypeScriptTypeName(ITypeSymbol symbol)
+        {
+            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
+            return s_nativeTypeMap[fullTypeName].nativeTypeName;
+        }
+
         public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
@@ -72,7 +85,7 @@ namespace Desalt.Core.Translation
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             if (s_nativeTypeMap.ContainsKey(fullTypeName))
             {
-                return s_nativeTypeMap[fullTypeName];
+                return s_nativeTypeMap[fullTypeName].translatedType;
             }
 
             // Func<T1, ...> is a special case
