@@ -36,7 +36,7 @@ using System.Collections.Generic;
 
                 // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
                 string translated = result.Result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
-                translated.Should().Be(expectedTypeScriptCode);
+                translated.Should().Be(expectedTypeScriptCode.TrimStart().Replace("\r\n", "\n"));
             }
         }
 
@@ -60,7 +60,7 @@ public interface MyInterface
 export interface MyInterface {
   voidMethod(): void;
 }
-".TrimStart().Replace("\r\n", "\n"));
+");
         }
 
         [TestMethod]

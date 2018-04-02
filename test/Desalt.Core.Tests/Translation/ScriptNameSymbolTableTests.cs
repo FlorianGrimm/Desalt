@@ -97,7 +97,7 @@ namespace Desalt.Core.Tests.Translation
         public async Task ScriptNameSymbolTable_should_skip_instance_and_static_constructors()
         {
             await AssertDocumentEntriesInSymbolTable(
-                "class C { C(int x) { } static C() { }",
+                "class C { C(int x) { } static C() { } }",
                 new KeyValuePair<string, string>("class C", "C"));
         }
 
@@ -225,7 +225,7 @@ class C
 interface I
 {
     [PreserveCase]
-    private void Method() { }
+    void Method();
 }
 
 struct S

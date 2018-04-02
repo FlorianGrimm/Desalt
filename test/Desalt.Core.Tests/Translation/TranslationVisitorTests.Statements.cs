@@ -21,7 +21,7 @@ using System;
 
 class C {
     void Method() {
-        Func<string, boolean> func = delegate(string x) {
+        Func<string, bool> func = delegate(string x) {
             return x == ""y"";
         };
     }
