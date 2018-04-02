@@ -29,7 +29,7 @@ namespace Desalt.Core.Translation
             IEnumerable<ISymbol> typesToImport)
         {
             // we don't want to import native types or arrays
-            ISymbol[] importTypes = typesToImport.Where(ShouldImport).ToArray();
+            ISymbol[] importTypes = typesToImport.Where(symbol => ShouldImport(symbol, context)).ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
             ISymbol[] undefinedTypes =
@@ -104,7 +104,7 @@ namespace Desalt.Core.Translation
             return new ExtendedResult<IEnumerable<ITsImportDeclaration>>(importDeclarations, diagnostics);
         }
 
-        private static bool ShouldImport(ISymbol symbol)
+        private static bool ShouldImport(ISymbol symbol, DocumentTranslationContextWithSymbolTables context)
         {
             // don't import array types
             if (symbol is IArrayTypeSymbol)
@@ -114,6 +114,13 @@ namespace Desalt.Core.Translation
 
             // don't import native TypeScript types
             if (symbol is INamedTypeSymbol namedTypeSymbol && TypeTranslator.TranslatesToNativeTypeScriptType(namedTypeSymbol))
+            {
+                return false;
+            }
+
+            // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
+            if (context.ScriptNameSymbolTable.TryGetValue(symbol, out string scriptName) &&
+                TypeTranslator.IsNativeTypeScriptTypeName(scriptName))
             {
                 return false;
             }

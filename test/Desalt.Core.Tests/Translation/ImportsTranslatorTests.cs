@@ -37,6 +37,7 @@ namespace Desalt.Core.Tests.Translation
         {
             string code = $@"
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 class C
@@ -86,6 +87,32 @@ class C
         public async Task ImportsTranslator_should_not_import_RegExp_types()
         {
             await AssertImports("Regex r;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_Function_types()
+        {
+            await AssertImports("Func<int, bool> func;");
+            await AssertImports("Action<int, bool> action;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
+        {
+            await AssertImports("List<int> list;");
+            await AssertImports("JsArray<int> array;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
+        {
+            await AssertImports("JsDictionary<string, int> dict;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
+        {
+            await AssertImports("Error err;");
         }
     }
 }

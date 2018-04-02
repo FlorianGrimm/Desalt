@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -41,6 +42,8 @@ namespace Desalt.Core.Translation
             ["System.Single"] = ("number", Factory.NumberType),
             ["System.Double"] = ("number", Factory.NumberType),
             ["System.Object"] = ("any", Factory.AnyType),
+            ["System.Array"] = ("Array", null),
+            ["System.Action"] = ("Function", null),
             ["System.Func"] = ("Function", null),
             ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
         }.ToImmutableDictionary();
@@ -61,6 +64,27 @@ namespace Desalt.Core.Translation
         {
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             return s_nativeTypeMap.ContainsKey(fullTypeName);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified type name represents a native TypeScript
+        /// type. Examples include void, boolean, string, number, any, Function, Object, or RegExp.
+        /// </summary>
+        /// <param name="typeName">The name of the type to inspect.</param>
+        /// <returns>true if the type name is a native TypeScript type; otherwise, false.</returns>
+        public static bool IsNativeTypeScriptTypeName(string typeName)
+        {
+            // special cases that aren't in the table
+            switch (typeName)
+            {
+                case "Object":
+                case "Error":
+                    return true;
+
+                default:
+                    return s_nativeTypeMap.Values.Select(value => value.nativeTypeName)
+                        .Any(nativeTypeName => nativeTypeName.Equals(typeName, StringComparison.Ordinal));
+            }
         }
 
         /// <summary>
