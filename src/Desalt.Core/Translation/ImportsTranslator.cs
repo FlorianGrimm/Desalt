@@ -28,11 +28,8 @@ namespace Desalt.Core.Translation
             DocumentTranslationContextWithSymbolTables context,
             IEnumerable<ISymbol> typesToImport)
         {
-            // we don't want to import native types
-            ISymbol[] importTypes = typesToImport.Where(
-                    symbol => !(symbol is INamedTypeSymbol namedSymbol) ||
-                        !TypeTranslator.IsNativeTypeScriptType(namedSymbol))
-                .ToArray();
+            // we don't want to import native types or arrays
+            ISymbol[] importTypes = typesToImport.Where(ShouldImport).ToArray();
 
             // find all of the imports that aren't defined anywhere and create an error
             ISymbol[] undefinedTypes =
@@ -105,6 +102,23 @@ namespace Desalt.Core.Translation
             }
 
             return new ExtendedResult<IEnumerable<ITsImportDeclaration>>(importDeclarations, diagnostics);
+        }
+
+        private static bool ShouldImport(ISymbol symbol)
+        {
+            // don't import array types
+            if (symbol is IArrayTypeSymbol)
+            {
+                return false;
+            }
+
+            // don't import native TypeScript types
+            if (symbol is INamedTypeSymbol namedTypeSymbol && TypeTranslator.IsNativeTypeScriptType(namedTypeSymbol))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

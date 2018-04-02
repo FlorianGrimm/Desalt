@@ -41,6 +41,8 @@ namespace Desalt.Core.Translation
             ["System.Single"] = ("number", Factory.NumberType),
             ["System.Double"] = ("number", Factory.NumberType),
             ["System.Object"] = ("any", Factory.AnyType),
+            ["System.Func"] = ("Function", null),
+            ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
         }.ToImmutableDictionary();
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
@@ -83,9 +85,10 @@ namespace Desalt.Core.Translation
 
             // native types are easy to translate
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
-            if (s_nativeTypeMap.ContainsKey(fullTypeName))
+            if (s_nativeTypeMap.TryGetValue(fullTypeName, out (string nativeTypeName, ITsType translatedType) value) &&
+                value.translatedType != null)
             {
-                return s_nativeTypeMap[fullTypeName].translatedType;
+                return value.translatedType;
             }
 
             // Func<T1, ...> is a special case

@@ -10,7 +10,6 @@ namespace Desalt.Core.Tests.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
@@ -25,13 +24,20 @@ namespace Desalt.Core.Tests.Translation
     {
         private delegate IEnumerable<ISymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
 
-        private static async Task AssertImports(
-            string codeSnippet,
-            GetSymbolsFunc getSymbolsFunc,
-            params string[] expectedImportLines)
+        private static IEnumerable<ISymbol> GetFirstFieldDeclarationSymbol(
+            DocumentTranslationContextWithSymbolTables context)
+        {
+            FieldDeclarationSyntax fieldDeclaration =
+                context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().First();
+
+            yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+        }
+
+        private static async Task AssertImports(string codeSnippet, params string[] expectedImportLines)
         {
             string code = $@"
 using System;
+using System.Text.RegularExpressions;
 
 class C
 {{
@@ -39,9 +45,15 @@ class C
 }}
 ";
 
-            using (var tempProject = await TempProject.CreateAsync(
-                "TestProject",
-                new TempProjectFile("File.cs", code)))
+            await AssertImports(code, GetFirstFieldDeclarationSymbol, expectedImportLines);
+        }
+
+        private static async Task AssertImports(
+            string code,
+            GetSymbolsFunc getSymbolsFunc,
+            params string[] expectedImportLines)
+        {
+            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
@@ -61,13 +73,19 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_skip_native_types()
         {
-            IEnumerable<ISymbol> SymbolsFunc(DocumentTranslationContextWithSymbolTables context) =>
-                context.SemanticModel
-                    .GetTypeInfo(
-                        context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().First().Declaration.Type)
-                    .Type.ToSingleEnumerable();
+            await AssertImports("int x = 1; object o = null;");
+        }
 
-            await AssertImports("int x = 1; object o = null;", SymbolsFunc);
+        [TestMethod]
+        public async Task ImportsTranslator_should_skip_array_types()
+        {
+            await AssertImports("int[] array;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_not_import_RegExp_types()
+        {
+            await AssertImports("Regex r;");
         }
     }
 }
