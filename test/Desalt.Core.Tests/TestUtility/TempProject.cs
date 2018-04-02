@@ -49,7 +49,7 @@ namespace Desalt.Core.Tests.TestUtility
             // add a new project
             ProjectId projectId = ProjectId.CreateNewId(projectName);
             VersionStamp version = VersionStamp.Create();
-            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: 1);
             var projectInfo = ProjectInfo.Create(
                     projectId,
                     version,
@@ -84,6 +84,7 @@ namespace Desalt.Core.Tests.TestUtility
 
             IExtendedResult<DocumentTranslationContext> result =
                 await DocumentTranslationContext.TryCreateAsync(document, options);
+            result.Diagnostics.Should().BeEmpty();
 
             return result.Result;
         }
@@ -102,6 +103,7 @@ namespace Desalt.Core.Tests.TestUtility
             // create the script name symbol table
             var scriptNameTable = new ScriptNameSymbolTable();
             scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+            scriptNameTable.AddExternallyReferencedTypes(context, CancellationToken.None);
 
             return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
         }

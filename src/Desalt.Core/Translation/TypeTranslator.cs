@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -23,23 +24,28 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, ITsType> s_nativeTypeMap = new Dictionary<string, ITsType>
+        private static readonly ImmutableDictionary<string, (string nativeTypeName, ITsType translatedType)> s_nativeTypeMap = new Dictionary<string,
+            (string nativeTypeName, ITsType translatedType)>
         {
-            ["System.Void"] = Factory.VoidType,
-            ["System.Boolean"] = Factory.BooleanType,
-            ["System.String"] = Factory.StringType,
-            ["System.Byte"] = Factory.NumberType,
-            ["System.SByte"] = Factory.NumberType,
-            ["System.UInt16"] = Factory.NumberType,
-            ["System.Int16"] = Factory.NumberType,
-            ["System.UInt32"] = Factory.NumberType,
-            ["System.Int32"] = Factory.NumberType,
-            ["System.UInt64"] = Factory.NumberType,
-            ["System.Int64"] = Factory.NumberType,
-            ["System.Decimal"] = Factory.NumberType,
-            ["System.Single"] = Factory.NumberType,
-            ["System.Double"] = Factory.NumberType,
-            ["System.Object"] = Factory.AnyType,
+            ["System.Void"] = ("void", Factory.VoidType),
+            ["System.Boolean"] = ("boolean", Factory.BooleanType),
+            ["System.String"] = ("string", Factory.StringType),
+            ["System.Byte"] = ("number", Factory.NumberType),
+            ["System.SByte"] = ("number", Factory.NumberType),
+            ["System.UInt16"] = ("number", Factory.NumberType),
+            ["System.Int16"] = ("number", Factory.NumberType),
+            ["System.UInt32"] = ("number", Factory.NumberType),
+            ["System.Int32"] = ("number", Factory.NumberType),
+            ["System.UInt64"] = ("number", Factory.NumberType),
+            ["System.Int64"] = ("number", Factory.NumberType),
+            ["System.Decimal"] = ("number", Factory.NumberType),
+            ["System.Single"] = ("number", Factory.NumberType),
+            ["System.Double"] = ("number", Factory.NumberType),
+            ["System.Object"] = ("any", Factory.AnyType),
+            ["System.Array"] = ("Array", null),
+            ["System.Action"] = ("Function", null),
+            ["System.Func"] = ("Function", null),
+            ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
         }.ToImmutableDictionary();
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
@@ -54,10 +60,43 @@ namespace Desalt.Core.Translation
         /// equivalent. These types don't need to be imported, for example.
         /// </summary>
         /// <param name="symbol">The symbol to inspect.</param>
-        public static bool IsNativeJavaScriptType(ITypeSymbol symbol)
+        public static bool TranslatesToNativeTypeScriptType(ITypeSymbol symbol)
         {
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             return s_nativeTypeMap.ContainsKey(fullTypeName);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified type name represents a native TypeScript
+        /// type. Examples include void, boolean, string, number, any, Function, Object, or RegExp.
+        /// </summary>
+        /// <param name="typeName">The name of the type to inspect.</param>
+        /// <returns>true if the type name is a native TypeScript type; otherwise, false.</returns>
+        public static bool IsNativeTypeScriptTypeName(string typeName)
+        {
+            // special cases that aren't in the table
+            switch (typeName)
+            {
+                case "Object":
+                case "Error":
+                    return true;
+
+                default:
+                    return s_nativeTypeMap.Values.Select(value => value.nativeTypeName)
+                        .Any(nativeTypeName => nativeTypeName.Equals(typeName, StringComparison.Ordinal));
+            }
+        }
+
+        /// <summary>
+        /// Returns the native type name of the specified symbol. Throws an exception if the symbol
+        /// is not a native TypeScript type.
+        /// </summary>
+        /// <param name="symbol">The symbol to inspect.</param>
+        /// <returns>The native type name. For example, "System.String" is a TypeScript "string".</returns>
+        public static string GetNativeTypeScriptTypeName(ITypeSymbol symbol)
+        {
+            string fullTypeName = symbol.ToDisplayString(s_displayFormat);
+            return s_nativeTypeMap[fullTypeName].nativeTypeName;
         }
 
         public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
@@ -70,9 +109,10 @@ namespace Desalt.Core.Translation
 
             // native types are easy to translate
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
-            if (s_nativeTypeMap.ContainsKey(fullTypeName))
+            if (s_nativeTypeMap.TryGetValue(fullTypeName, out (string nativeTypeName, ITsType translatedType) value) &&
+                value.translatedType != null)
             {
-                return s_nativeTypeMap[fullTypeName];
+                return value.translatedType;
             }
 
             // Func<T1, ...> is a special case

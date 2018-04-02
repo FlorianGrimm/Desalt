@@ -28,7 +28,7 @@ namespace Desalt.Core.Translation
             SymbolDisplayMemberOptions.IncludeContainingType | SymbolDisplayMemberOptions.IncludeParameters,
             SymbolDisplayDelegateStyle.NameOnly,
             SymbolDisplayExtensionMethodStyle.StaticMethod,
-            SymbolDisplayParameterOptions.IncludeType,
+            SymbolDisplayParameterOptions.IncludeName | SymbolDisplayParameterOptions.IncludeType,
             SymbolDisplayPropertyStyle.NameOnly,
             SymbolDisplayLocalOptions.IncludeType,
             SymbolDisplayKindOptions.IncludeNamespaceKeyword |

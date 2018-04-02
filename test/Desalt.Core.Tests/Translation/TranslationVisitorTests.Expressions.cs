@@ -44,9 +44,9 @@ namespace Desalt.Core.Tests.Translation
             public async Task Cast_of_a_method_invocation_should_use_the_script_name()
             {
                 await AssertTranslation(
-                    "class C { public string Method() { var x = (string)Method(); } }",
+                    "class C { public string Method() { var x = (string)Method(); return \"\"; } }",
                     "class C {\n  public method(): string {\n    " +
-                    "let x: string = <string>this.method();\n  }\n}\n");
+                    "let x: string = <string>this.method();\n    return '';\n  }\n}\n");
             }
 
             [TestMethod]
@@ -61,8 +61,16 @@ namespace Desalt.Core.Tests.Translation
             public async Task Invocation_expression_on_static_method_should_prefix_class_name()
             {
                 await AssertTranslation(
-                    "class X { public static void A() { A(); }",
+                    "class X { public static void A() { A(); } }",
                     "class X {\n  public static a(): void {\n    X.a();\n  }\n}\n");
+            }
+
+            [TestMethod]
+            public async Task IdentifierName_as_a_parameter()
+            {
+                await AssertTranslation(
+                    "class C { string name; C(string name) { this.name = name; } }",
+                    "class C {\n  private name: string;\n\n  private constructor(name: string) {\n    this.name = name;\n  }\n}\n");
             }
 
             [TestMethod]
@@ -70,6 +78,8 @@ namespace Desalt.Core.Tests.Translation
             {
                 await AssertTranslation(
                     @"
+using System.Collections.Generic;
+
 enum LoggerLevel { All = 0 }
 class Logger
 {
@@ -99,9 +109,9 @@ class Logger {
             {
                 foreach (string op in new[] { "=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "&=", "^=", "|=" })
                 {
-                    string code = $"class C {{ void Method() {{ int x = 1; x {op} 123; }} }}";
+                    string code = $"class C {{ void Method() {{ int x = 1; x = x {op} 123; }} }}";
                     string expected =
-                        $"class C {{\n  private method(): void {{\n    let x: number = 1;\n    x {op} 123;\n  }}\n}}\n";
+                        $"class C {{\n  private method(): void {{\n    let x: number = 1;\n    x = x {op} 123;\n  }}\n}}\n";
 
                     await AssertTranslation(code, expected);
                 }
@@ -110,14 +120,22 @@ class Logger {
             [TestMethod]
             public async Task Prefix_unary_expressions()
             {
-                foreach (string op in new[] { "++", "--", "+", "-", "~", "!" })
+                string code, expected;
+
+                foreach (string op in new[] { "++", "--", "+", "-", "~" })
                 {
-                    string code = $"class C {{ void Method() {{ int x = 123; {op}x; }} }}";
-                    string expected =
-                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    {op}x;\n  }}\n}}\n";
+                    code = $"class C {{ void Method() {{ int x = 123; x = {op}x; }} }}";
+                    expected =
+                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x = {op}x;\n  }}\n}}\n";
 
                     await AssertTranslation(code, expected);
                 }
+
+                code = $"class C {{ void Method() {{ bool x = !true; }} }}";
+                expected =
+                    $"class C {{\n  private method(): void {{\n    let x: boolean = !true;\n  }}\n}}\n";
+
+                await AssertTranslation(code, expected);
             }
 
             [TestMethod]
@@ -125,9 +143,9 @@ class Logger {
             {
                 foreach (string op in new[] { "++", "--" })
                 {
-                    string code = $"class C {{ void Method() {{ int x = 123; x{op}; }} }}";
+                    string code = $"class C {{ void Method() {{ int x = 123; x = x{op}; }} }}";
                     string expected =
-                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x{op};\n  }}\n}}\n";
+                        $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x = x{op};\n  }}\n}}\n";
 
                     await AssertTranslation(code, expected);
                 }
