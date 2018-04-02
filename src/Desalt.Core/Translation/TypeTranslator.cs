@@ -57,7 +57,7 @@ namespace Desalt.Core.Translation
         /// equivalent. These types don't need to be imported, for example.
         /// </summary>
         /// <param name="symbol">The symbol to inspect.</param>
-        public static bool IsNativeTypeScriptType(ITypeSymbol symbol)
+        public static bool TranslatesToNativeTypeScriptType(ITypeSymbol symbol)
         {
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             return s_nativeTypeMap.ContainsKey(fullTypeName);

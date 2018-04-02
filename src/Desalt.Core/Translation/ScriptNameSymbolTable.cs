@@ -64,7 +64,7 @@ namespace Desalt.Core.Translation
         // ReSharper disable once SuggestBaseTypeForParameter
         private void AddType(ITypeSymbol typeSymbol, DocumentTranslationContext context)
         {
-            string typeName = TypeTranslator.IsNativeTypeScriptType(typeSymbol)
+            string typeName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
                 ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
                 : (FindScriptName(typeSymbol) ?? typeSymbol.Name);
 

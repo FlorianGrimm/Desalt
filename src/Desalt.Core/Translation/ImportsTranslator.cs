@@ -113,7 +113,7 @@ namespace Desalt.Core.Translation
             }
 
             // don't import native TypeScript types
-            if (symbol is INamedTypeSymbol namedTypeSymbol && TypeTranslator.IsNativeTypeScriptType(namedTypeSymbol))
+            if (symbol is INamedTypeSymbol namedTypeSymbol && TypeTranslator.TranslatesToNativeTypeScriptType(namedTypeSymbol))
             {
                 return false;
             }
