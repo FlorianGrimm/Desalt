@@ -313,7 +313,7 @@ class C
                 code,
                 new KeyValuePair<string, string>("class C", "C"),
                 new KeyValuePair<string, string>("C.Field", "trumpedField"),
-                new KeyValuePair<string, string>("C.Method(int)", "trumpedMethod"));
+                new KeyValuePair<string, string>("C.Method(int x)", "trumpedMethod"));
         }
 
         [TestMethod]
@@ -356,7 +356,7 @@ class C
 
             await AssertExternalEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("jQueryApi.jQuery.FromHtml(string)", "$"));
+                new KeyValuePair<string, string>("jQueryApi.jQuery.FromHtml(string html)", "$"));
         }
     }
 }

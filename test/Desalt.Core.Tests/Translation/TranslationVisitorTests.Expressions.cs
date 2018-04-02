@@ -66,6 +66,14 @@ namespace Desalt.Core.Tests.Translation
             }
 
             [TestMethod]
+            public async Task IdentifierName_as_a_parameter()
+            {
+                await AssertTranslation(
+                    "class C { string name; C(string name) { this.name = name; } }",
+                    "class C {\n  private name: string;\n\n  private constructor(name: string) {\n    this.name = name;\n  }\n}\n");
+            }
+
+            [TestMethod]
             public async Task Complex_example_involving_referencing_an_enum_value_inside_of_a_element_access_expression()
             {
                 await AssertTranslation(
