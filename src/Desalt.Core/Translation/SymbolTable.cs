@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using Microsoft.CodeAnalysis;
 
@@ -189,6 +190,27 @@ namespace Desalt.Core.Translation
             {
                 AddExternallyReferencedType(externalTypeSymbol, context, cancellationToken);
             }
+        }
+
+        protected static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
+        {
+            SymbolDisplayFormat format = new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
+            AttributeData attributeData = symbol?.GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
+
+            return attributeData;
+        }
+
+        protected static string GetSaltarelleAttributeValueOrDefault(
+            ISymbol symbol,
+            string attributeNameMinusSuffix,
+            string defaultValue)
+        {
+            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
+            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
         }
 
         /// <summary>

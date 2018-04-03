@@ -22,14 +22,6 @@ namespace Desalt.Core.Translation
     internal class ScriptNameSymbolTable : SymbolTable<string>
     {
         //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
-            SymbolDisplayGlobalNamespaceStyle.Omitted,
-            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-
-        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
@@ -128,17 +120,17 @@ namespace Desalt.Core.Translation
         private static string FindScriptName(ISymbol symbol)
         {
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            AttributeData scriptNameAttributeData = FindSaltarelleAttribute(symbol, "ScriptName");
-            if (scriptNameAttributeData != null)
+            string scriptName = GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
+            if (scriptName != null)
             {
-                return scriptNameAttributeData.ConstructorArguments[0].Value.ToString();
+                return scriptName;
             }
 
             // use [ScriptAlias] if available
-            AttributeData scriptAliasAttributeData = FindSaltarelleAttribute(symbol, "ScriptAlias");
-            if (scriptAliasAttributeData != null)
+            string scriptAlias = GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
+            if (scriptAlias != null)
             {
-                return scriptAliasAttributeData.ConstructorArguments[0].Value.ToString();
+                return scriptAlias;
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
@@ -172,15 +164,6 @@ namespace Desalt.Core.Translation
             }
 
             return null;
-        }
-
-        private static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
-        {
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(s_symbolDisplayFormat) == fullAttributeName);
-
-            return attributeData;
         }
 
         private static string FindFieldScriptName(ISymbol member, FieldRenameRule renameRule)
