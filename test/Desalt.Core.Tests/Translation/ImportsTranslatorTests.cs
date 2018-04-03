@@ -55,10 +55,18 @@ class C
             GetSymbolsFunc getSymbolsFunc,
             params string[] expectedImportLines)
         {
-            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
+            await AssertImports(new[] { new TempProjectFile("File.cs", code), }, getSymbolsFunc, expectedImportLines);
+        }
+
+        private static async Task AssertImports(
+            TempProjectFile[] codeFiles,
+            GetSymbolsFunc getSymbolsFunc,
+            params string[] expectedImportLinesForFirstFile)
+        {
+            using (var tempProject = await TempProject.CreateAsync("TestProject", codeFiles))
             {
                 DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync(codeFiles[0].FileName);
 
                 IEnumerable<ISymbol> typesToImport = getSymbolsFunc(context);
 
@@ -67,8 +75,8 @@ class C
 
                 results.Diagnostics.Should().BeEmpty();
 
-                var actualImportLines = results.Result.Select(import => import.EmitAsString());
-                actualImportLines.Should().BeEquivalentTo(expectedImportLines);
+                var actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
+                actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
             }
         }
 
@@ -120,6 +128,56 @@ class C
         public async Task ImportsTranslator_should_not_import_types_from_Saltarelle_Web()
         {
             await AssertImports("HtmlElement div;");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_alphabetize_symbol_names_within_a_group()
+        {
+            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            {
+                IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
+                    context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
+
+                foreach (FieldDeclarationSyntax fieldDeclaration in fieldDeclarations)
+                {
+                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+                }
+            }
+
+            await AssertImports(
+                new[]
+                {
+                    new TempProjectFile("Foo.cs", "class Foo { B b; A a; C c; }"),
+                    new TempProjectFile("Classes.cs", "class B {} class A {} class C {}")
+                },
+                GetSymbols,
+                "import { A, B, C } from './Classes';");
+        }
+
+        [TestMethod]
+        public async Task ImportsTranslator_should_get_all_of_the_referenced_files()
+        {
+            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            {
+                IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
+                    context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
+
+                foreach (FieldDeclarationSyntax fieldDeclaration in fieldDeclarations)
+                {
+                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+                }
+            }
+
+            await AssertImports(
+                new[]
+                {
+                    new TempProjectFile("Foo.cs", "class Foo { B b; A a; C c; }"),
+                    new TempProjectFile("AandB.cs", "class B {} class A {}"),
+                    new TempProjectFile("C.cs", "class C {}"),
+                },
+                GetSymbols,
+                "import { A, B } from './AandB';",
+                "import { C } from './C';");
         }
     }
 }

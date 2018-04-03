@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.TestUtility
 {
     using System;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -46,16 +47,19 @@ namespace Desalt.Core.Tests.TestUtility
             // create a new ad-hoc workspace
             var workspace = new AdhocWorkspace();
 
+            string projectDir = Path.Combine("C:\\", projectName);
+
             // add a new project
             ProjectId projectId = ProjectId.CreateNewId(projectName);
             VersionStamp version = VersionStamp.Create();
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: 1);
             var projectInfo = ProjectInfo.Create(
-                    projectId,
-                    version,
-                    projectName,
-                    projectName,
-                    LanguageNames.CSharp,
+                    id: projectId,
+                    filePath: Path.Combine(projectDir, $"{projectName}.csproj"),
+                    version: version,
+                    name: projectName,
+                    assemblyName: projectName,
+                    language: LanguageNames.CSharp,
                     compilationOptions: compilationOptions)
                 .WithSaltarelleReferences();
 
@@ -64,7 +68,22 @@ namespace Desalt.Core.Tests.TestUtility
             // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
-                workspace.AddDocument(projectId, sourceFile.FileName, SourceText.From(sourceFile.FileContents));
+                string filePath = Path.Combine(projectDir, sourceFile.FileName);
+
+                var docId = DocumentId.CreateNewId(projectId, sourceFile.FileName);
+                var loader = TextLoader.From(
+                    TextAndVersion.Create(
+                        text: SourceText.From(sourceFile.FileContents),
+                        version: VersionStamp.Create(),
+                        filePath: filePath));
+
+                var documentInfo = DocumentInfo.Create(
+                    id: docId,
+                    name: sourceFile.FileName,
+                    loader: loader,
+                    filePath: filePath);
+
+                workspace.AddDocument(documentInfo);
             }
 
             // try to compile the project and report any diagnostics
@@ -78,8 +97,12 @@ namespace Desalt.Core.Tests.TestUtility
             string fileName,
             CompilerOptions options = null)
         {
-            options = options ?? new CompilerOptions("outputPath");
             Project project = _workspace.CurrentSolution.Projects.Single();
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            options = options ??
+                new CompilerOptions(Path.Combine(Path.GetDirectoryName(project.FilePath), "outputPath"));
+
             Document document = project.Documents.Single(doc => doc.Name == fileName);
 
             IExtendedResult<DocumentTranslationContext> result =
@@ -93,19 +116,32 @@ namespace Desalt.Core.Tests.TestUtility
             string fileName,
             CompilerOptions options = null)
         {
-            DocumentTranslationContext context = await CreateContextForFileAsync(fileName, options);
+            DocumentTranslationContext thisContext = null;
 
             // create the import symbol table
             var importTable = new ImportSymbolTable();
-            importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
-            importTable.AddExternallyReferencedTypes(context, CancellationToken.None);
 
             // create the script name symbol table
             var scriptNameTable = new ScriptNameSymbolTable();
-            scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
-            scriptNameTable.AddExternallyReferencedTypes(context, CancellationToken.None);
 
-            return new DocumentTranslationContextWithSymbolTables(context, importTable, scriptNameTable);
+            // add all of the symbols from all of the documents in the project
+            foreach (string docName in _workspace.CurrentSolution.Projects.Single().Documents.Select(doc => doc.Name))
+            {
+                DocumentTranslationContext context = await CreateContextForFileAsync(docName, options);
+                if (docName == fileName)
+                {
+                    thisContext = context;
+                }
+
+                importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+                importTable.AddExternallyReferencedTypes(context, CancellationToken.None);
+
+                scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+                scriptNameTable.AddExternallyReferencedTypes(context, CancellationToken.None);
+            }
+
+            thisContext.Should().NotBeNull();
+            return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);
         }
 
         /// <summary>
