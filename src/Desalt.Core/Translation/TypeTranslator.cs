@@ -123,7 +123,7 @@ namespace Desalt.Core.Translation
                 return Factory.ArrayType(elementType);
             }
 
-            // native types are easy to translate
+            // raw native types are easy to translate
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
             if (s_nativeTypeMap.TryGetValue(fullTypeName, out (string nativeTypeName, ITsType translatedType) value) &&
                 value.translatedType != null)
@@ -137,12 +137,31 @@ namespace Desalt.Core.Translation
                 return TranslateFunc((INamedTypeSymbol)symbol, scriptNameSymbolTable, typesToImport);
             }
 
+            INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
+            string scriptName = scriptNameSymbolTable.GetValueOrDefault(symbol, null);
+
+            // check for a native type that requires special translation
+            switch (scriptName)
+            {
+                case "Array":
+                    ITsType elementType = Factory.AnyType;
+                    if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
+                    {
+                        elementType = TranslateSymbol(
+                            namedTypeSymbol.TypeArguments.First(),
+                            scriptNameSymbolTable,
+                            typesToImport);
+                    }
+
+                    return Factory.ArrayType(elementType);
+            }
+
             // this is a type that we'll need to import since it's not a native type
             typesToImport.Add(symbol);
 
             // check for generic type arguments
             ITsType[] translatedTypeMembers = null;
-            if (symbol is INamedTypeSymbol namedTypeSymbol)
+            if (namedTypeSymbol != null)
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
                 translatedTypeMembers = typeMembers
@@ -150,7 +169,7 @@ namespace Desalt.Core.Translation
                     .ToArray();
             }
 
-            return Factory.TypeReference(Factory.Identifier(symbol.Name), translatedTypeMembers);
+            return Factory.TypeReference(Factory.Identifier(scriptName), translatedTypeMembers);
         }
 
         /// <summary>

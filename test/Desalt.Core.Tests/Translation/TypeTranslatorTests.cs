@@ -125,5 +125,11 @@ class Foo
                 "Lazy<string>",
                 Factory.TypeReference(Factory.Identifier("Lazy"), Factory.StringType));
         }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_translate_a_symbol_that_gets_translated_to_an_array_to_an_array()
+        {
+            await AssertTypeTranslation("List<string>", Factory.ArrayType(Factory.StringType));
+        }
     }
 }

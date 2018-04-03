@@ -95,7 +95,7 @@ class Logger
 }
 
 class Logger {
-  public static loggerLevelNames: List<string> = new List<string>();
+  public static loggerLevelNames: string[] = new List<string>();
 
   private static init(): void {
     Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
