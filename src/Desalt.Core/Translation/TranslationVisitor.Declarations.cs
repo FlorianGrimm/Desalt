@@ -158,6 +158,7 @@ namespace Desalt.Core.Translation
 
                 var typeAnnotation = TypeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
+                    _scriptNameTable,
                     _typesToImport);
 
                 ITsExpression initializer = null;
@@ -279,7 +280,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+            var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _scriptNameTable, _typesToImport);
             bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)

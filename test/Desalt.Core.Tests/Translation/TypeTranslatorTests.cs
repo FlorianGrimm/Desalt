@@ -51,9 +51,10 @@ class Foo
                     throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
                 }
 
-                TypeTranslator.TranslateSymbol(typeSymbol, new HashSet<ISymbol>())
+                TypeTranslator.TranslateSymbol(typeSymbol, context.ScriptNameSymbolTable, new HashSet<ISymbol>())
+                    .EmitAsString()
                     .Should()
-                    .BeEquivalentTo(expectedType);
+                    .BeEquivalentTo(expectedType.EmitAsString());
             }
         }
 

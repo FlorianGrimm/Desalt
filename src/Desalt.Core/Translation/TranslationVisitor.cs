@@ -138,7 +138,11 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = TypeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport);
+            ITsType parameterType = TypeTranslator.TranslateSymbol(
+                parameterTypeSymbol,
+                _scriptNameTable,
+                _typesToImport);
+
             IAstNode parameter;
 
             if (node.Default == null)
@@ -276,6 +280,7 @@ namespace Desalt.Core.Translation
             {
                 returnType = TypeTranslator.TranslateSymbol(
                     returnTypeNode.GetTypeSymbol(_semanticModel),
+                    _scriptNameTable,
                     _typesToImport);
             }
 
