@@ -98,7 +98,7 @@ delegate void MyDelegate();
                     var symbol = GetSymbol("MyClass", context);
                     importTable[symbol]
                         .RelativeTypeScriptFilePathOrModuleName.Should()
-                        .Be(Path.Combine("outputPath", "File.ts"));
+                        .Be(Path.Combine(@"C:\Test\outputPath", "File.ts"));
                 });
         }
     }
