@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScript.Ast.TsAstFactory;
@@ -99,6 +100,14 @@ namespace Desalt.Core.Translation
             return s_nativeTypeMap[fullTypeName].nativeTypeName;
         }
 
+        /// <summary>
+        /// Translates a type symbol into the associated TypeScript equivalent.
+        /// </summary>
+        /// <param name="symbol">The type symbol to translate.</param>
+        /// <param name="typesToImport">
+        /// A set of symbols that will need to be imported. This method will add to the set if necessary.
+        /// </param>
+        /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
         public static ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
@@ -115,8 +124,8 @@ namespace Desalt.Core.Translation
                 return value.translatedType;
             }
 
-            // Func<T1, ...> is a special case
-            if (fullTypeName == "System.Func")
+            // Action<T1, ...> and Func<T1, ...> are special cases
+            if (fullTypeName.IsOneOf("System.Action", "System.Func"))
             {
                 return TranslateFunc((INamedTypeSymbol)symbol, typesToImport);
             }
@@ -143,8 +152,10 @@ namespace Desalt.Core.Translation
         private static ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
+            bool isFunc = symbol.Name == "Func";
+            var typeArgs = isFunc ? symbol.TypeArguments.Take(symbol.TypeArguments.Length - 1) : symbol.TypeArguments;
 
-            foreach (ITypeSymbol typeArgument in symbol.TypeArguments.Take(symbol.TypeArguments.Length - 1))
+            foreach (ITypeSymbol typeArgument in typeArgs)
             {
                 string parameterName = typeArgument.Name;
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
@@ -157,7 +168,9 @@ namespace Desalt.Core.Translation
             }
 
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
-            ITsType returnType = TranslateSymbol(symbol.TypeArguments.Last(), typesToImport);
+            ITsType returnType =
+                isFunc ? TranslateSymbol(symbol.TypeArguments.Last(), typesToImport) : Factory.VoidType;
+
             return Factory.FunctionType(parameterList, returnType);
         }
     }

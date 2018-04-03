@@ -62,7 +62,7 @@ class Foo
         }
 
         [TestMethod]
-        public void Translate_basic_CSharp_types()
+        public void TypeTranslator_should_translate_basic_CSharp_types()
         {
             AssertTypeTranslation("void", Factory.VoidType);
             AssertTypeTranslation("bool", Factory.BooleanType);
@@ -70,7 +70,7 @@ class Foo
         }
 
         [TestMethod]
-        public void Translate_number_CSharp_types()
+        public void TypeTranslator_should_translate_number_CSharp_types()
         {
             AssertTypeTranslation("byte", Factory.NumberType);
             AssertTypeTranslation("sbyte", Factory.NumberType);
@@ -86,19 +86,19 @@ class Foo
         }
 
         [TestMethod]
-        public void Translate_array_types()
+        public void TypeTranslator_should_translate_array_types()
         {
             AssertTypeTranslation("string[]", Factory.ArrayType(Factory.StringType));
         }
 
         [TestMethod]
-        public void Translate_nested_array_types()
+        public void TypeTranslator_should_translate_nested_array_types()
         {
             AssertTypeTranslation("int[][]", Factory.ArrayType(Factory.ArrayType(Factory.NumberType)));
         }
 
         [TestMethod]
-        public void Translate_function_types()
+        public void TypeTranslator_should_translate_function_types()
         {
             AssertTypeTranslation("Func<int>", Factory.FunctionType(Factory.NumberType));
             AssertTypeTranslation(
@@ -111,7 +111,19 @@ class Foo
         }
 
         [TestMethod]
-        public void Translate_concrete_generic_types()
+        public void TypeTranslator_should_TypeTranslator_should_translate_Action_types()
+        {
+            AssertTypeTranslation(
+                "Action<int, string>",
+                Factory.FunctionType(
+                    Factory.ParameterList(
+                        Factory.BoundRequiredParameter(Factory.Identifier("int32"), Factory.NumberType),
+                        Factory.BoundRequiredParameter(Factory.Identifier("string"), Factory.StringType)),
+                    Factory.VoidType));
+        }
+
+        [TestMethod]
+        public void TypeTranslator_should_translate_concrete_generic_types()
         {
             AssertTypeTranslation(
                 "List<string>",
