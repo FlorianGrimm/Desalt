@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Constructors
         //// ===========================================================================================================
 
-        private TsToken(TsTokenCode tokenCode, string text)
+        public TsToken(TsTokenCode tokenCode, string text)
         {
             TokenCode = tokenCode;
             Text = string.IsNullOrWhiteSpace(text) ? throw new ArgumentNullException(nameof(text)) : text;

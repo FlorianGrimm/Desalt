@@ -8,8 +8,10 @@
 namespace Desalt.Core.TypeScript.Ast.Parsing
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
@@ -23,12 +25,42 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Member Variables
         //// ===========================================================================================================
 
+        private static readonly ImmutableDictionary<string, TsToken> s_keywords;
+
         private readonly string _code;
         private PeekingTextReader _reader;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
+
+        static TsLexer()
+        {
+            string[] keywords =
+            {
+                // The following keywords are reserved and cannot be used as an Identifier:
+                "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do",
+                "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "import", "in",
+                "instanceof", "new", "null", "return", "super", "switch", "this", "throw", "true", "try", "typeof",
+                "var", "void", "while", "with",
+
+                // The following keywords cannot be used as identifiers in strict mode code, but are otherwise not restricted:
+                "implements", "interface", "let", "package", "private", "protected", "public", "static", "yield",
+
+                // The following keywords cannot be used as user defined type names, but are otherwise not restricted:
+                "any", "boolean", "number", "string", "symbol",
+
+                // The following keywords have special meaning in certain contexts, but are valid identifiers:
+                "abstract", "as", "async", "await", "constructor", "declare", "from", "get", "is", "module",
+                "namespace", "of", "require", "set", "type",
+            };
+
+            var items = from keyword in keywords
+                        let tokenCode = (TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true)
+                        let token = new TsToken(tokenCode, keyword)
+                        select new KeyValuePair<string, TsToken>(keyword, token);
+            s_keywords = ImmutableDictionary.CreateRange(StringComparer.Ordinal, items);
+        }
 
         private TsLexer(string code)
         {
@@ -151,26 +183,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         ///     IdentifierStart
         ///     IdentifierName IdentifierPart
         ///
-        /// ReservedWord ::
-        ///     Keyword
-        ///     FutureReservedWord
-        ///     NullLiteral
-        ///     BooleanLiteral
-        ///
         /// Keyword :: one of
-        ///     break do in typeof
-        ///     case else instanceof var
-        ///     catch export new void
-        ///     class extends return while
-        ///     const finally super with
-        ///     continue for switch yield
-        ///     debugger function this
-        ///     default if throw
-        ///     delete import try
-        ///
-        /// FutureReservedWord ::
-        ///     enum
-        ///     await
+        ///     see list above taken from the TypeScript spec
         /// </code></remarks>
         private TsToken LexIdentifierNameOrReservedWord()
         {
@@ -206,7 +220,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 }
             }
 
-            return TsToken.Identifier(builder.ToString());
+            string identifier = builder.ToString();
+            return s_keywords.TryGetValue(identifier, out TsToken token) ? token : TsToken.Identifier(identifier);
         }
 
         /// <remarks><code><![CDATA[
