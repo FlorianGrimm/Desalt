@@ -244,6 +244,9 @@
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocTagNames.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
+    <Compile Include="TypeScript\Ast\Parsing\TsLexer.cs" />
+    <Compile Include="TypeScript\Ast\Parsing\TsToken.cs" />
+    <Compile Include="TypeScript\Ast\Parsing\TsTokenCode.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsContinueOrBreakStatement.cs" />

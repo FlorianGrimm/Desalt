@@ -168,6 +168,7 @@
     <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocCommentTests.cs" />
+    <Compile Include="TypeScript\Ast\Parsing\TsLexerTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.AssignmentExpressions.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.cs" />
     <Compile Include="TypeScript\Ast\TsEmitTests.Declarations.cs" />
