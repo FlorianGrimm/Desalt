@@ -25,7 +25,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, TsToken> s_keywords;
+        private static readonly ImmutableDictionary<string, TsToken> s_keywords =
+            ImmutableDictionary.CreateRange(StringComparer.Ordinal, GetKeywords());
 
         private readonly string _code;
         private PeekingTextReader _reader;
@@ -34,7 +35,12 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Constructors
         //// ===========================================================================================================
 
-        static TsLexer()
+        private TsLexer(string code)
+        {
+            _code = code;
+        }
+
+        private static IEnumerable<KeyValuePair<string, TsToken>> GetKeywords()
         {
             string[] keywords =
             {
@@ -59,12 +65,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                         let tokenCode = (TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true)
                         let token = new TsToken(tokenCode, keyword)
                         select new KeyValuePair<string, TsToken>(keyword, token);
-            s_keywords = ImmutableDictionary.CreateRange(StringComparer.Ordinal, items);
-        }
-
-        private TsLexer(string code)
-        {
-            _code = code;
+            return items;
         }
 
         //// ===========================================================================================================
@@ -91,6 +92,29 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             }
 
             return builder.ToImmutable();
+        }
+
+        /// <remarks><code>
+        /// CommonToken ::
+        ///     IdentifierName
+        ///     Punctuator
+        ///     NumericLiteral
+        ///     StringLiteral
+        ///     Template
+        /// </code></remarks>>
+        private TsToken LexCommonToken()
+        {
+            switch ((char)_reader.Peek())
+            {
+                case char c when IsIdentifierStartChar(c):
+                    return LexIdentifierNameOrReservedWord();
+
+                case char c when IsPunctuatorStartChar(c):
+                    return LexPunctuator();
+
+                default:
+                    throw LexException($"Unknown character '{_reader.Peek()}.");
+            }
         }
 
         /// <summary>
@@ -159,26 +183,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         }
 
         /// <remarks><code>
-        /// CommonToken ::
-        ///     IdentifierName
-        ///     Punctuator
-        ///     NumericLiteral
-        ///     StringLiteral
-        ///     Template
-        /// </code></remarks>>
-        private TsToken LexCommonToken()
-        {
-            switch ((char)_reader.Peek())
-            {
-                case char c when IsIdentifierStartChar(c):
-                    return LexIdentifierNameOrReservedWord();
-
-                default:
-                    throw LexException($"Unknown character '{_reader.Peek()}.");
-            }
-        }
-
-        /// <remarks><code>
         /// IdentifierName ::
         ///     IdentifierStart
         ///     IdentifierName IdentifierPart
@@ -224,6 +228,13 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return s_keywords.TryGetValue(identifier, out TsToken token) ? token : TsToken.Identifier(identifier);
         }
 
+        private static bool IsPunctuatorStartChar(char c)
+        {
+            return c.IsOneOf(
+                '{', '}', '(', ')', '[', ']', '.', ';', ',', '<', '>', '=', '!', '+', '-', '*', '/',
+                '%', '&', '|', '^', '~', '?', ':');
+        }
+
         /// <remarks><code><![CDATA[
         /// Punctuator :: one of
         ///     {    (    )    [    ]    .
@@ -244,7 +255,171 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// ]]></code></remarks>
         private TsToken LexPunctuator()
         {
-            return default(TsToken);
+            if (_reader.Peek(4) == ">>>=")
+            {
+                return new TsToken(TsTokenCode.GreaterThanGreaterThanGreaterThanEquals, _reader.Read(4));
+            }
+
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (_reader.Peek(3))
+            {
+                case "...":
+                    return new TsToken(TsTokenCode.DotDotDot, _reader.Read(3));
+
+                case "===":
+                    return new TsToken(TsTokenCode.EqualsEqualsEquals, _reader.Read(3));
+
+                case "!==":
+                    return new TsToken(TsTokenCode.ExclamationEqualsEquals, _reader.Read(3));
+
+                case ">>>":
+                    return new TsToken(TsTokenCode.GreaterThanGreaterThanGreaterThan, _reader.Read(3));
+
+                case "<<=":
+                    return new TsToken(TsTokenCode.LessThanLessThanEquals, _reader.Read(3));
+
+                case ">>=":
+                    return new TsToken(TsTokenCode.GreaterThanGreaterThanEquals, _reader.Read(3));
+            }
+
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (_reader.Peek(2))
+            {
+                case "<=":
+                    return new TsToken(TsTokenCode.LessThanEquals, _reader.Read(2));
+
+                case ">=":
+                    return new TsToken(TsTokenCode.GreaterThanEquals, _reader.Read(2));
+
+                case "==":
+                    return new TsToken(TsTokenCode.EqualsEquals, _reader.Read(2));
+
+                case "!=":
+                    return new TsToken(TsTokenCode.ExclamationEquals, _reader.Read(2));
+
+                case "++":
+                    return new TsToken(TsTokenCode.PlusPlus, _reader.Read(2));
+
+                case "--":
+                    return new TsToken(TsTokenCode.MinusMinus, _reader.Read(2));
+
+                case "<<":
+                    return new TsToken(TsTokenCode.LessThanLessThan, _reader.Read(2));
+
+                case ">>":
+                    return new TsToken(TsTokenCode.GreaterThanGreaterThan, _reader.Read(2));
+
+                case "&&":
+                    return new TsToken(TsTokenCode.AmpersandAmpersand, _reader.Read(2));
+
+                case "||":
+                    return new TsToken(TsTokenCode.PipePipe, _reader.Read(2));
+
+                case "+=":
+                    return new TsToken(TsTokenCode.PlusEquals, _reader.Read(2));
+
+                case "-=":
+                    return new TsToken(TsTokenCode.MinusEquals, _reader.Read(2));
+
+                case "*=":
+                    return new TsToken(TsTokenCode.AsteriskEquals, _reader.Read(2));
+
+                case "/=":
+                    return new TsToken(TsTokenCode.SlashEquals, _reader.Read(2));
+
+                case "%=":
+                    return new TsToken(TsTokenCode.PercentEquals, _reader.Read(2));
+
+                case "&=":
+                    return new TsToken(TsTokenCode.AmpersandEquals, _reader.Read(2));
+
+                case "|=":
+                    return new TsToken(TsTokenCode.PipeEquals, _reader.Read(2));
+
+                case "^=":
+                    return new TsToken(TsTokenCode.CaretEquals, _reader.Read(2));
+
+                case "=>":
+                    return new TsToken(TsTokenCode.EqualsGreaterThan, _reader.Read(2));
+            }
+
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (_reader.Peek(1))
+            {
+                case "{":
+                    return new TsToken(TsTokenCode.LeftBrace, _reader.Read(1));
+
+                case "}":
+                    return new TsToken(TsTokenCode.RightBrace, _reader.Read(1));
+
+                case "(":
+                    return new TsToken(TsTokenCode.LeftParen, _reader.Read(1));
+
+                case ")":
+                    return new TsToken(TsTokenCode.RightParen, _reader.Read(1));
+
+                case "[":
+                    return new TsToken(TsTokenCode.LeftBracket, _reader.Read(1));
+
+                case "]":
+                    return new TsToken(TsTokenCode.RightBracket, _reader.Read(1));
+
+                case ".":
+                    return new TsToken(TsTokenCode.Dot, _reader.Read(1));
+
+                case ";":
+                    return new TsToken(TsTokenCode.Semicolon, _reader.Read(1));
+
+                case ",":
+                    return new TsToken(TsTokenCode.Comma, _reader.Read(1));
+
+                case "<":
+                    return new TsToken(TsTokenCode.LessThan, _reader.Read(1));
+
+                case ">":
+                    return new TsToken(TsTokenCode.GreaterThan, _reader.Read(1));
+
+                case "+":
+                    return new TsToken(TsTokenCode.Plus, _reader.Read(1));
+
+                case "-":
+                    return new TsToken(TsTokenCode.Minus, _reader.Read(1));
+
+                case "*":
+                    return new TsToken(TsTokenCode.Asterisk, _reader.Read(1));
+
+                case "/":
+                    return new TsToken(TsTokenCode.Slash, _reader.Read(1));
+
+                case "%":
+                    return new TsToken(TsTokenCode.Percent, _reader.Read(1));
+
+                case "&":
+                    return new TsToken(TsTokenCode.Ampersand, _reader.Read(1));
+
+                case "|":
+                    return new TsToken(TsTokenCode.Pipe, _reader.Read(1));
+
+                case "^":
+                    return new TsToken(TsTokenCode.Caret, _reader.Read(1));
+
+                case "!":
+                    return new TsToken(TsTokenCode.Exclamation, _reader.Read(1));
+
+                case "~":
+                    return new TsToken(TsTokenCode.Tilde, _reader.Read(1));
+
+                case "?":
+                    return new TsToken(TsTokenCode.Question, _reader.Read(1));
+
+                case ":":
+                    return new TsToken(TsTokenCode.Colon, _reader.Read(1));
+
+                case "=":
+                    return new TsToken(TsTokenCode.Equals, _reader.Read(1));
+            }
+
+            throw LexException($"Unknown punctuator '{(char)_reader.Read()}'");
         }
 
         /// <summary>
@@ -326,13 +501,15 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             }
         }
 
-        private void Read(Func<char, bool> expectedCharFunc)
+        private char Read(Func<char, bool> expectedCharFunc)
         {
             char c = (char)_reader.Read();
             if (!expectedCharFunc(c))
             {
                 throw LexException($"Did not expect '{c}' as the next character");
             }
+
+            return c;
         }
 
         private bool ReadIf(char expectedChar)

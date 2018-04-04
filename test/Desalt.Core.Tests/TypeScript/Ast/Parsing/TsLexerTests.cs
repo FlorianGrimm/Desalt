@@ -81,5 +81,68 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
                     new TsToken((TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true), keyword));
             }
         }
+
+        [TestMethod]
+        public void Lex_should_recognize_punctuators()
+        {
+            (string text, TsTokenCode tokenCode)[] punctuators =
+            {
+                ("{", TsTokenCode.LeftBrace),
+                ("}", TsTokenCode.RightBrace),
+                ("(", TsTokenCode.LeftParen),
+                (")", TsTokenCode.RightParen),
+                ("[", TsTokenCode.LeftBracket),
+                ("]", TsTokenCode.RightBracket),
+                (".", TsTokenCode.Dot),
+                ("...", TsTokenCode.DotDotDot),
+                (";", TsTokenCode.Semicolon),
+                (",", TsTokenCode.Comma),
+                ("<", TsTokenCode.LessThan),
+                (">", TsTokenCode.GreaterThan),
+                ("<=", TsTokenCode.LessThanEquals),
+                (">=", TsTokenCode.GreaterThanEquals),
+                ("==", TsTokenCode.EqualsEquals),
+                ("!=", TsTokenCode.ExclamationEquals),
+                ("===", TsTokenCode.EqualsEqualsEquals),
+                ("!==", TsTokenCode.ExclamationEqualsEquals),
+                ("+", TsTokenCode.Plus),
+                ("-", TsTokenCode.Minus),
+                ("*", TsTokenCode.Asterisk),
+                ("/", TsTokenCode.Slash),
+                ("%", TsTokenCode.Percent),
+                ("++", TsTokenCode.PlusPlus),
+                ("--", TsTokenCode.MinusMinus),
+                ("<<", TsTokenCode.LessThanLessThan),
+                (">>", TsTokenCode.GreaterThanGreaterThan),
+                (">>>", TsTokenCode.GreaterThanGreaterThanGreaterThan),
+                ("&", TsTokenCode.Ampersand),
+                ("|", TsTokenCode.Pipe),
+                ("^", TsTokenCode.Caret),
+                ("!", TsTokenCode.Exclamation),
+                ("~", TsTokenCode.Tilde),
+                ("&&", TsTokenCode.AmpersandAmpersand),
+                ("||", TsTokenCode.PipePipe),
+                ("?", TsTokenCode.Question),
+                (":", TsTokenCode.Colon),
+                ("=", TsTokenCode.Equals),
+                ("+=", TsTokenCode.PlusEquals),
+                ("-=", TsTokenCode.MinusEquals),
+                ("*=", TsTokenCode.AsteriskEquals),
+                ("/=", TsTokenCode.SlashEquals),
+                ("%=", TsTokenCode.PercentEquals),
+                ("<<=", TsTokenCode.LessThanLessThanEquals),
+                (">>=", TsTokenCode.GreaterThanGreaterThanEquals),
+                (">>>=", TsTokenCode.GreaterThanGreaterThanGreaterThanEquals),
+                ("&=", TsTokenCode.AmpersandEquals),
+                ("|=", TsTokenCode.PipeEquals),
+                ("^=", TsTokenCode.CaretEquals),
+                ("=>", TsTokenCode.EqualsGreaterThan),
+            };
+
+            foreach ((string text, TsTokenCode tokenCode) in punctuators)
+            {
+                AssertLex(text, new TsToken(tokenCode, text));
+            }
+        }
     }
 }
