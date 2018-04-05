@@ -9,9 +9,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
 {
     using System;
     using System.Collections.Immutable;
-    using System.Globalization;
-    using System.Text;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 
     /// <summary>
@@ -96,12 +93,14 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             }
         }
 
-        private void Read(char expectedChar)
+        private char Read(char expectedChar)
         {
             if (_reader.Read() != expectedChar)
             {
                 throw LexException($"Expected '{expectedChar}' as the next character");
             }
+
+            return expectedChar;
         }
 
         private char Read(Func<char, bool> expectedCharFunc)
