@@ -37,19 +37,19 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,1): error: Invalid Unicode escape sequence '123'");
+                .Be("(1,2): error: Invalid Unicode escape sequence '123'");
 
             action = () => TsLexer.Lex("\\uNo");
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,1): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
+                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
 
             action = () => TsLexer.Lex("\\u{12345}");
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,1): error: Unicode escape sequence '12345' is out of range");
+                .Be("(1,2): error: Unicode escape sequence '12345' is out of range");
         }
 
         [TestMethod]

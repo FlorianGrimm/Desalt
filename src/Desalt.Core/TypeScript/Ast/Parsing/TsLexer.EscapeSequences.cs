@@ -32,7 +32,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             var builder = new StringBuilder();
 
             var location = _reader.Location;
-            Read('\\');
             Read('u');
 
             void ReadHexChar()

@@ -188,7 +188,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
 
             // get the first character
             char firstC;
-            if (PeekIf('\\'))
+            if (ReadIf('\\'))
             {
                 firstC = LexUnicodeEscapeSequence();
             }
