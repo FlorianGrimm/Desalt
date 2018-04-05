@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Utility
 {
+    using System;
     using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -176,6 +177,32 @@ namespace Desalt.Core.Tests.Utility
             location.Line.Should().Be(100);
             location.Column.Should().Be(50);
             location.Source.Should().Be(string.Empty);
+        }
+
+        //// ===========================================================================================================
+        //// DecrementColumn Tests
+        //// ===========================================================================================================
+
+        [TestMethod]
+        public void
+            TextReaderLocation_DecrementColumn_should_return_a_new_object_with_the_column_decremented_and_the_line_the_same()
+        {
+            var location = new TextReaderLocation(100, 50, "source");
+            var decrement = location.DecrementColumn();
+            decrement.Line.Should().Be(100);
+            decrement.Column.Should().Be(49);
+            decrement.Source.Should().Be("source");
+        }
+
+        [TestMethod]
+        public void TextReaderLocation_DecrementColumn_should_throw_if_at_the_beginning_of_the_line()
+        {
+            var location = new TextReaderLocation(100, 1, "source");
+            Action action = () => location.DecrementColumn();
+            action.Should()
+                .ThrowExactly<InvalidOperationException>()
+                .And.Message.Should()
+                .Be("Cannot decrement the column before the beginning of the line.");
         }
     }
 }
