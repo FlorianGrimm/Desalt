@@ -144,5 +144,26 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
                 AssertLex(text, new TsToken(tokenCode, text));
             }
         }
+
+        [TestMethod]
+        public void Lex_should_recognize_decimal_integer_literals()
+        {
+            AssertLex("123", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123", 123));
+            AssertLex(".123", TsToken.WithValue(TsTokenCode.DecimalLiteral, ".123", .123));
+            AssertLex("123.e10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.e10", 123e10));
+            AssertLex("123.456e10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e10", 123.456e10));
+            AssertLex("123.456e+10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e+10", 123.456e10));
+            AssertLex("123.456e-10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e-10", 123.456e-10));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_an_error_if_the_literal_is_out_of_range()
+        {
+            Action action = () => TsLexer.Lex("1234e12345678901234567890");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,1): error: Invalid decimal literal '1234e12345678901234567890'");
+        }
     }
 }

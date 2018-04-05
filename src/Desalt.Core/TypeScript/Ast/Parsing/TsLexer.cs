@@ -78,6 +78,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return lexer.Lex();
         }
 
+        private static bool IsDecimalDigit(char c) => c >= '0' && c <= '9';
+
         private ImmutableArray<TsToken> Lex()
         {
             var builder = ImmutableArray.CreateBuilder<TsToken>();
@@ -104,13 +106,21 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// ]]></code></remarks>>
         private TsToken LexCommonToken()
         {
+            string next2 = _reader.Peek(2);
+
             switch ((char)_reader.Peek())
             {
                 case char c when IsIdentifierStartChar(c):
                     return LexIdentifierNameOrReservedWord();
 
-                case char c when IsPunctuatorStartChar(c):
+                // special case: '.' can either be a punctuator or the start of a numeric literal with no integer part
+                case char c when IsPunctuatorStartChar(c) && c != '.' ||
+                    c == '.' && next2.Length == 1 ||
+                    next2.Length == 2 && !IsDecimalDigit(_reader.Peek(2)[1]):
                     return LexPunctuator();
+
+                case char c when IsNumericLiteralStartChar(c):
+                    return LexNumericLiteral();
 
                 default:
                     throw LexException($"Unknown character '{_reader.Peek()}.");
@@ -496,12 +506,129 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         }
 
         /// <summary>
+        /// Returns a value indicating whether the character is a valid start character for a numeric literal.
         /// </summary>
+        private static bool IsNumericLiteralStartChar(char c) => c >= '0' && c <= '9' || c == '.';
+
+        /// <summary>
+        /// Lexes a numeric literal.
+        /// </summary>
+        /// <remarks><code><![CDATA[
+        /// NumericLiteral ::
+        ///     DecimalLiteral
+        ///     BinaryIntegerLiteral
+        ///     OctalIntegerLiteral
+        ///     HexIntegerLiteral
+        /// ]]></code></remarks>
+        private TsToken LexNumericLiteral()
         {
+            return LexDecimalLiteral();
+        }
 
+        /// <summary>
+        /// Lexes a decimal literal, which is a floating point number with an optional exponent.
+        /// </summary>
+        /// <remarks><code><![CDATA[
+        /// DecimalLiteral ::
+        ///     DecimalIntegerLiteral . DecimalDigitsOpt ExponentPartOpt
+        ///     . DecimalDigits ExponentPartOpt
+        ///     DecimalIntegerLiteral ExponentPartOpt
+        ///
+        /// DecimalIntegerLiteral ::
+        ///     0
+        ///     NonZeroDigit DecimalDigitsOpt
+        ///
+        /// DecimalDigits ::
+        ///     DecimalDigit
+        ///     DecimalDigits DecimalDigit
+        ///
+        /// DecimalDigit :: one of
+        ///     0 1 2 3 4 5 6 7 8 9
+        ///
+        /// NonZeroDigit :: one of
+        ///     1 2 3 4 5 6 7 8 9
+        ///
+        /// ExponentPart ::
+        ///     ExponentIndicator SignedInteger
+        ///
+        /// ExponentIndicator :: one of
+        ///     e E
+        ///
+        /// SignedInteger ::
+        ///     DecimalDigits
+        ///     +DecimalDigits
+        ///     -DecimalDigits
+        /// ]]></code></remarks>
+        private TsToken LexDecimalLiteral()
+        {
+            TextReaderLocation location = _reader.Location;
 
+            string ReadDecimalIntegerLiteral()
+            {
+                string decimalInteger = ReadIf('0') ? "0" : _reader.ReadWhile(IsDecimalDigit);
+                if (decimalInteger.Length == 0)
+                {
+                    throw LexException($"Expected a decimal literal");
+                }
 
+                return decimalInteger;
+            }
 
+            string integerPart;
+            string decimalPart = null;
+            string exponentPart = null;
+            var textBuilder = new StringBuilder();
+
+            // read the decimal part if there's no integer part
+            if (ReadIf('.'))
+            {
+                integerPart = "0";
+                decimalPart = Read(IsDecimalDigit) + _reader.ReadWhile(IsDecimalDigit);
+
+                textBuilder.Append('.').Append(decimalPart);
+            }
+            else
+            {
+                // read the integer.decimal number
+                integerPart = ReadDecimalIntegerLiteral();
+                textBuilder.Append(integerPart);
+
+                if (ReadIf('.'))
+                {
+                    decimalPart = _reader.ReadWhile(IsDecimalDigit);
+                    textBuilder.Append('.').Append(decimalPart);
+                }
+            }
+
+            // read the optional exponent
+            if (_reader.Peek().IsOneOf('e', 'E'))
+            {
+                textBuilder.Append((char)_reader.Read());
+
+                char sign = '+';
+                if (_reader.Peek().IsOneOf('+', '-'))
+                {
+                    sign = (char)_reader.Read();
+                    textBuilder.Append(sign);
+                }
+
+                exponentPart = _reader.ReadWhile(IsDecimalDigit);
+                textBuilder.Append(exponentPart);
+
+                exponentPart = sign + exponentPart;
+            }
+
+            string text = textBuilder.ToString();
+            string valueStr = integerPart +
+                (!string.IsNullOrEmpty(decimalPart) ? $".{decimalPart}" : string.Empty) +
+                (!string.IsNullOrEmpty(exponentPart) ? $"e{exponentPart}" : string.Empty);
+
+            if (!double.TryParse(valueStr, out double value))
+            {
+                throw LexException($"Invalid decimal literal '{text}'", location);
+            }
+
+            return TsToken.WithValue(TsTokenCode.DecimalLiteral, text, value);
         }
 
         private void Read(char expectedChar)

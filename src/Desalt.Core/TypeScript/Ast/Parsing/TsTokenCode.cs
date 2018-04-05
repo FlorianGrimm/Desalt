@@ -139,5 +139,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         PipeEquals,
         CaretEquals,
         EqualsGreaterThan,
+
+        /* Numeric Literals */
+        DecimalLiteral,
     }
 }
