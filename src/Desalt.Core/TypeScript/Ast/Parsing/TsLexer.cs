@@ -94,14 +94,14 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return builder.ToImmutable();
         }
 
-        /// <remarks><code>
+        /// <remarks><code><![CDATA[
         /// CommonToken ::
         ///     IdentifierName
         ///     Punctuator
         ///     NumericLiteral
         ///     StringLiteral
         ///     Template
-        /// </code></remarks>>
+        /// ]]></code></remarks>>
         private TsToken LexCommonToken()
         {
             switch ((char)_reader.Peek())
@@ -182,21 +182,21 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 c == '\u200d';
         }
 
-        /// <remarks><code>
+        /// <remarks><code><![CDATA[
         /// IdentifierName ::
         ///     IdentifierStart
         ///     IdentifierName IdentifierPart
         ///
         /// Keyword :: one of
         ///     see list above taken from the TypeScript spec
-        /// </code></remarks>
+        /// ]]></code></remarks>
         private TsToken LexIdentifierNameOrReservedWord()
         {
             var builder = new StringBuilder();
 
             // get the first character
             char firstC;
-            if (ReadIf('\\'))
+            if (PeekIf('\\'))
             {
                 firstC = LexUnicodeEscapeSequence();
             }
@@ -228,6 +228,79 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return s_keywords.TryGetValue(identifier, out TsToken token) ? token : TsToken.Identifier(identifier);
         }
 
+        /// <summary>
+        /// Lexes a unicode escape sequence.
+        /// </summary>
+        /// <returns>The character representing the escape sequence.</returns>
+        /// <remarks>
+        /// <code>
+        /// UnicodeEscapeSequence ::
+        ///     u Hex4Digits
+        ///     u { HexDigits }
+        ///
+        /// Hex4Digits ::
+        ///     HexDigit HexDigit HexDigit HexDigit
+        ///
+        /// HexDigit :: one of
+        ///     0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+        /// </code>
+        /// </remarks>
+        private char LexUnicodeEscapeSequence()
+        {
+            var builder = new StringBuilder();
+
+            var location = _reader.Location;
+            Read('\\');
+            Read('u');
+
+            bool IsHexChar(char c) => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+
+            void ReadHexChar()
+            {
+                if (_reader.IsAtEnd)
+                {
+                    throw LexException($"Invalid Unicode escape sequence '{builder}'", location);
+                }
+
+                char c = (char)_reader.Peek();
+                if (!IsHexChar(c))
+                {
+                    throw LexException(
+                        $"'{c}' is not a valid hexidecimal character as part of a Unicode escape sequence",
+                        location);
+                }
+
+                _reader.Read();
+                builder.Append(c);
+            }
+
+            if (ReadIf('{'))
+            {
+                while (_reader.Peek() != '}')
+                {
+                    ReadHexChar();
+                }
+
+                Read('}');
+            }
+            else
+            {
+                ReadHexChar();
+                ReadHexChar();
+                ReadHexChar();
+                ReadHexChar();
+            }
+
+            int charValue = int.Parse(builder.ToString(), NumberStyles.HexNumber);
+            string converted = char.ConvertFromUtf32(charValue);
+            if (converted.Length > 1)
+            {
+                throw LexException($"Unicode escape sequence '{builder}' is out of range", location);
+            }
+
+            return converted[0];
+        }
+
         private static bool IsPunctuatorStartChar(char c)
         {
             return c.IsOneOf(
@@ -246,11 +319,11 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         ///     =    +=   -=   *=   %=   <<=
         ///     >>=  >>>= &=   |=   ^=   =>
         ///
-        /// DivPunctuator::
+        /// DivPunctuator ::
         ///     /
         ///     /=
         ///
-        /// RightBracePunctuator::
+        /// RightBracePunctuator ::
         ///     }
         /// ]]></code></remarks>
         private TsToken LexPunctuator()
@@ -423,74 +496,12 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         }
 
         /// <summary>
-        /// Lexes a unicode escape sequence.
         /// </summary>
-        /// <returns>The character representing the escape sequence.</returns>
-        /// <remarks>
-        /// <code>
-        /// UnicodeEscapeSequence ::
-        ///     u Hex4Digits
-        ///     u { HexDigits }
-        ///
-        /// Hex4Digits ::
-        ///     HexDigit HexDigit HexDigit HexDigit
-        ///
-        /// HexDigit :: one of
-        ///     0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
-        /// </code>
-        /// </remarks>
-        private char LexUnicodeEscapeSequence()
         {
-            var builder = new StringBuilder();
 
-            Read('u');
-            var location = _reader.Location;
 
-            bool IsHexChar(char c) => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
 
-            void ReadHexChar()
-            {
-                if (_reader.IsAtEnd)
-                {
-                    throw LexException($"Invalid Unicode escape sequence '{builder}'", location);
-                }
 
-                char c = (char)_reader.Peek();
-                if (!IsHexChar(c))
-                {
-                    throw LexException(
-                        $"'{c}' is not a valid hexidecimal character as part of a Unicode escape sequence");
-                }
-
-                _reader.Read();
-                builder.Append(c);
-            }
-
-            if (ReadIf('{'))
-            {
-                while (_reader.Peek() != '}')
-                {
-                    ReadHexChar();
-                }
-
-                Read('}');
-            }
-            else
-            {
-                ReadHexChar();
-                ReadHexChar();
-                ReadHexChar();
-                ReadHexChar();
-            }
-
-            int charValue = int.Parse(builder.ToString(), NumberStyles.HexNumber);
-            string converted = char.ConvertFromUtf32(charValue);
-            if (converted.Length > 1)
-            {
-                throw LexException($"Unicode escape sequence '{builder}' is out of range", location);
-            }
-
-            return converted[0];
         }
 
         private void Read(char expectedChar)
@@ -511,6 +522,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
 
             return c;
         }
+
+        private bool PeekIf(char expectedChar) => _reader.Peek() == expectedChar;
 
         private bool ReadIf(char expectedChar)
         {
