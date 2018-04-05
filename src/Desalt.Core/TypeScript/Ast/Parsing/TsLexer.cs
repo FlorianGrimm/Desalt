@@ -114,13 +114,15 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                     return LexIdentifierNameOrReservedWord();
 
                 // special case: '.' can either be a punctuator or the start of a numeric literal with no integer part
-                case char c when IsPunctuatorStartChar(c) && c != '.' ||
-                    c == '.' && next2.Length == 1 ||
-                    next2.Length == 2 && !IsDecimalDigit(_reader.Peek(2)[1]):
+                case '.' when next2.Length == 1:
+                case '.' when !IsDecimalDigit(next2[1]):
                     return LexPunctuator();
 
                 case char c when IsNumericLiteralStartChar(c):
                     return LexNumericLiteral();
+
+                case char c when IsPunctuatorStartChar(c):
+                    return LexPunctuator();
 
                 default:
                     throw LexException($"Unknown character '{_reader.Peek()}.");
