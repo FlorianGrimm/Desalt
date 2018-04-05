@@ -142,5 +142,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
 
         /* Numeric Literals */
         DecimalLiteral,
+        BinaryIntegerLiteral,
+        OctalIntegerLiteral,
+        HexIntegerLiteral,
     }
 }

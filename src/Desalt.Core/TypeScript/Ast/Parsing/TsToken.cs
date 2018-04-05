@@ -8,6 +8,7 @@
 namespace Desalt.Core.TypeScript.Ast.Parsing
 {
     using System;
+
     /// <summary>
     /// Represents a token in TypeScript source code.
     /// </summary>
@@ -57,7 +58,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Operators
         //// ===========================================================================================================
 
-
         /// <summary>
         /// Returns a value that indicates whether the values of two <see
         /// cref="T:Desalt.Core.TypeScript.Ast.Parsing.TsToken"/> objects are equal.
@@ -87,7 +87,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return !Equals(left, right);
         }
 
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -101,7 +100,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{TokenCode} {Text}";
+        public override string ToString() => $"{TokenCode}: {Text} ({Value})";
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -182,7 +181,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
-
 
         public override object Value => ValueField;
 

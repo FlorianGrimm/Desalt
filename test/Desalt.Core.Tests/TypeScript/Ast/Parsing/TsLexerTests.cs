@@ -157,13 +157,73 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         }
 
         [TestMethod]
-        public void Lex_should_throw_an_error_if_the_literal_is_out_of_range()
+        public void Lex_should_throw_an_error_if_the_decimal_integer_is_out_of_range()
         {
             Action action = () => TsLexer.Lex("1234e12345678901234567890");
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
                 .Be("(1,1): error: Invalid decimal literal '1234e12345678901234567890'");
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_binary_integer_literals()
+        {
+            AssertLex("0b1101", TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0b1101", 13));
+            AssertLex("0B1101", TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_an_error_if_the_binary_integer_is_out_of_range()
+        {
+            Action action = () =>
+                TsLexer.Lex("0b111100001111000011110000111100001111000011110000111100001111000011110000");
+
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be(
+                    "(1,1): error: Invalid binary integer literal " +
+                    "'0b111100001111000011110000111100001111000011110000111100001111000011110000'");
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_octal_integer_literals()
+        {
+            AssertLex("0o01234567", TsToken.WithValue(TsTokenCode.OctalIntegerLiteral, "0o01234567", 001234567));
+            AssertLex("0O01234567", TsToken.WithValue(TsTokenCode.OctalIntegerLiteral, "0O01234567", 001234567));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_an_error_if_the_octal_integer_is_out_of_range()
+        {
+            Action action = () => TsLexer.Lex("0o12345670123456701234567012345670");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be(
+                    "(1,1): error: Invalid octal integer literal '0o12345670123456701234567012345670'");
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_hex_integer_literals()
+        {
+            AssertLex(
+                "0x0123456789abcdef",
+                TsToken.WithValue(TsTokenCode.HexIntegerLiteral, "0x0123456789abcdef", 0x0123456789abcdef));
+            AssertLex(
+                "0X0123456789ABCDEF",
+                TsToken.WithValue(TsTokenCode.HexIntegerLiteral, "0X0123456789ABCDEF", 0x0123456789abcdef));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_an_error_if_the_hex_integer_is_out_of_range()
+        {
+            Action action = () => TsLexer.Lex("0x0123456789abcdef0123456789abcdef0123456789abcdef");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,1): error: Invalid hex integer literal '0x0123456789abcdef0123456789abcdef0123456789abcdef'");
         }
     }
 }
