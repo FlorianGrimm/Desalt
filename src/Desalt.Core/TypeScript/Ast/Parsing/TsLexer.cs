@@ -119,8 +119,6 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             return c;
         }
 
-        private bool PeekIf(char expectedChar) => _reader.Peek() == expectedChar;
-
         private bool ReadIf(char expectedChar)
         {
             if (_reader.Peek() == expectedChar)
