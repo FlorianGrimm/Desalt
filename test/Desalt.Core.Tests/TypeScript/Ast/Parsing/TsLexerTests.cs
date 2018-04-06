@@ -45,7 +45,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,1): error: 'N' is not a valid hexidecimal character as part of Unicode escape sequence '\\uNo'");
+                .Be("(1,1): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
 
             action = () => TsLexer.Lex("\\u{12345}");
             action.Should()
@@ -285,6 +285,102 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
                 .Be("(1,1): error: Invalid hex integer literal '0x0123456789abcdef0123456789abcdef0123456789abcdef'");
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_string_literals()
+        {
+            AssertLex(
+                "'str'",
+                TsToken.StringLiteral("'str'", "str", new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "\"str\"",
+                TsToken.StringLiteral("\"str\"", "str", new TextReaderLocation(1, 1)));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_an_eerror_if_the_string_is_not_terminated()
+        {
+            Action action = () => TsLexer.Lex("'ab");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,1): error: Unterminated string literal: 'ab");
+        }
+
+        [DataTestMethod]
+        [DataRow("'ab\\'c'", "ab'c")]
+        [DataRow("'ab\\\"c'", "ab\"c")]
+        [DataRow("'ab\\\\c'", "ab\\c")]
+        [DataRow("'ab\\bc'", "ab\bc")]
+        [DataRow("'ab\\fc'", "ab\fc")]
+        [DataRow("'ab\\nc'", "ab\nc")]
+        [DataRow("'ab\\rc'", "ab\rc")]
+        [DataRow("'ab\\tc'", "ab\tc")]
+        [DataRow("'ab\\vc'", "ab\vc")]
+        public void Lex_should_recognize_string_literals_with_single_character_escape_sequences(string text, string value)
+        {
+            AssertLex(text, TsToken.StringLiteral(text, value, new TextReaderLocation(1, 1)));
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_string_literals_with_the_null_character()
+        {
+            AssertLex("'a\\0bc'", TsToken.StringLiteral("'a\\0bc'", "a\0bc", new TextReaderLocation(1, 1)));
+            AssertLex("'a\\01b'", TsToken.StringLiteral("'a\\01b'", "a01b", new TextReaderLocation(1, 1)));
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_string_literals_with_hex_escape_sequences()
+        {
+            AssertLex("'a\\x62c'", TsToken.StringLiteral("'a\\x62c'", "abc", new TextReaderLocation(1, 1)));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_on_an_invalid_hex_escape_sequence_in_a_string_literal()
+        {
+            Action action = () => TsLexer.Lex("'\\x1");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,2): error: Invalid hex escape sequence '\\x1'");
+
+            action = () => TsLexer.Lex("'\\xNo'");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a hex escape sequence");
+        }
+
+        [TestMethod]
+        public void Lex_should_recognize_string_literals_with_Unicode_escape_sequences()
+        {
+            AssertLex(
+                "'a\\u0062\\u0063d'",
+                TsToken.StringLiteral("'a\\u0062\\u0063d'", "abcd", new TextReaderLocation(1, 1)));
+        }
+
+        [TestMethod]
+        public void Lex_should_throw_on_an_invalid_Unicode_escape_sequence_in_a_string_literal()
+        {
+            Action action = () => TsLexer.Lex("'\\u123");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,2): error: Invalid Unicode escape sequence '\\u123'");
+
+            action = () => TsLexer.Lex("'\\uNo'");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
+
+            action = () => TsLexer.Lex("'\\u{12345}'");
+            action.Should()
+                .ThrowExactly<Exception>()
+                .And.Message.Should()
+                .Be("(1,2): error: Unicode escape sequence '\\u{12345}' is out of range");
         }
     }
 }

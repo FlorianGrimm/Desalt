@@ -249,6 +249,7 @@
     <Compile Include="TypeScript\Ast\Parsing\TsLexer.Identifiers.cs" />
     <Compile Include="TypeScript\Ast\Parsing\TsLexer.NumericLiterals.cs" />
     <Compile Include="TypeScript\Ast\Parsing\TsLexer.Punctuators.cs" />
+    <Compile Include="TypeScript\Ast\Parsing\TsLexer.StringLiterals.cs" />
     <Compile Include="TypeScript\Ast\Parsing\TsToken.cs" />
     <Compile Include="TypeScript\Ast\Parsing\TsTokenCode.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />

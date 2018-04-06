@@ -99,6 +99,9 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         public static TsToken Identifier(string text, string identifier, TextReaderLocation location) =>
             WithValue(TsTokenCode.Identifier, text, identifier, location);
 
+        public static TsToken StringLiteral(string text, string value, TextReaderLocation location) =>
+            WithValue(TsTokenCode.StringLiteral, text, value, location);
+
         public static TsToken NumericLiteral(
             TsTokenCode tokenCode,
             string text,

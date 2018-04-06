@@ -66,12 +66,13 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         ///     Punctuator
         ///     NumericLiteral
         ///     StringLiteral
-        ///     Template
+        ///     Template (Not supported yet)
         /// ]]></code></remarks>>
         private TsToken LexCommonToken()
         {
             string next2 = _reader.Peek(2);
 
+            // ReSharper disable PatternAlwaysMatches (ReSharper doesn't understand the new case syntax yet)
             switch ((char)_reader.Peek())
             {
                 case char c when IsIdentifierStartChar(c):
@@ -88,9 +89,13 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 case char c when IsPunctuatorStartChar(c):
                     return LexPunctuator();
 
+                case char c when IsStringLiteralStartChar(c):
+                    return LexStringLiteral();
+
                 default:
                     throw LexException($"Unknown character '{_reader.Peek()}.");
             }
+            // ReSharper restore PatternAlwaysMatches
         }
 
         private char Read(char expectedChar)
