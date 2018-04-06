@@ -185,42 +185,48 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         private TsToken LexIdentifierNameOrReservedWord()
         {
             TextReaderLocation location = _reader.Location;
-            var builder = new StringBuilder();
+            var valueBuilder = new StringBuilder();
+            var textBuilder = new StringBuilder();
 
             // get the first character
-            char firstC;
+            string rawText;
+            char value;
             if (ReadIf('\\'))
             {
-                firstC = LexUnicodeEscapeSequence();
+                (rawText, value) = LexUnicodeEscapeSequence();
+                textBuilder.Append('\\').Append(rawText);
+                valueBuilder.Append(value);
             }
             else
             {
-                firstC = (char)_reader.Read();
+                value = _reader.IsAtEnd ? '\0' : (char)_reader.Read();
+                textBuilder.Append(value);
+                valueBuilder.Append(value);
             }
 
-            if (!IsIdentifierStartChar(firstC))
+            if (!IsIdentifierStartChar(value))
             {
-                throw LexException($"Character '{firstC}' is not a valid start character for an identifier");
+                throw LexException($"Character '{value}' is not a valid start character for an identifier");
             }
-
-            builder.Append(firstC);
 
             while (!_reader.IsAtEnd && IsIdentifierPartChar((char)_reader.Peek()))
             {
                 string rest = _reader.ReadWhile(c => IsIdentifierPartChar(c) && c != '\\');
-                builder.Append(rest);
+                textBuilder.Append(rest);
+                valueBuilder.Append(rest);
 
                 if (ReadIf('\\'))
                 {
-                    char c = LexUnicodeEscapeSequence();
-                    builder.Append(c);
+                    (rawText, value) = LexUnicodeEscapeSequence();
+                    textBuilder.Append('\\').Append(rawText);
+                    valueBuilder.Append(value);
                 }
             }
 
-            string identifier = builder.ToString();
+            string identifier = valueBuilder.ToString();
             return s_keywords.TryGetValue(identifier, out TsTokenCode tokenCode)
                 ? new TsToken(tokenCode, identifier, location)
-                : TsToken.Identifier(builder.ToString(), identifier, location);
+                : TsToken.Identifier(textBuilder.ToString(), identifier, location);
         }
     }
 }

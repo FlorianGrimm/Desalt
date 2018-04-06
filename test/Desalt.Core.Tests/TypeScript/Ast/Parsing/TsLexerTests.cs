@@ -27,9 +27,9 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         {
             AssertLex("id", TsToken.Identifier("id", "id", new TextReaderLocation(1, 1)));
             AssertLex("$valid", TsToken.Identifier("$valid", "$valid", new TextReaderLocation(1, 1)));
-            AssertLex("\\u007a_bc", TsToken.Identifier("z_bc", "z_bc", new TextReaderLocation(1, 1)));
-            AssertLex("\\u{0061}", TsToken.Identifier("a", "a", new TextReaderLocation(1, 1)));
-            AssertLex("j\\u{0061}r", TsToken.Identifier("jar", "jar", new TextReaderLocation(1, 1)));
+            AssertLex("\\u007a_bc", TsToken.Identifier("\\u007a_bc", "z_bc", new TextReaderLocation(1, 1)));
+            AssertLex("\\u{0061}", TsToken.Identifier("\\u{0061}", "a", new TextReaderLocation(1, 1)));
+            AssertLex("j\\u{0061}r", TsToken.Identifier("j\\u{0061}r", "jar", new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -39,19 +39,19 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,2): error: Invalid Unicode escape sequence '123'");
+                .Be("(1,1): error: Invalid Unicode escape sequence '\\u123'");
 
             action = () => TsLexer.Lex("\\uNo");
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
+                .Be("(1,1): error: 'N' is not a valid hexidecimal character as part of Unicode escape sequence '\\uNo'");
 
             action = () => TsLexer.Lex("\\u{12345}");
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,2): error: Unicode escape sequence '12345' is out of range");
+                .Be("(1,1): error: Unicode escape sequence '\\u{12345}' is out of range");
         }
 
         [TestMethod]

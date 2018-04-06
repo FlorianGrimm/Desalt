@@ -140,10 +140,11 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         CaretEquals,
         EqualsGreaterThan,
 
-        /* Numeric Literals */
+        /* Literals */
         DecimalLiteral,
         BinaryIntegerLiteral,
         OctalIntegerLiteral,
         HexIntegerLiteral,
+        StringLiteral,
     }
 }
