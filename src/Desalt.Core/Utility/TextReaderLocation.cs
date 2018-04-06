@@ -38,75 +38,88 @@ namespace Desalt.Core.Utility
         //// Operators
         //// ===========================================================================================================
 
-        public static bool operator ==(TextReaderLocation x, TextReaderLocation y)
-        {
-            return x.Equals(y);
-        }
+        /// <summary>
+        /// Returns a value that indicates whether the values of two <see
+        /// cref="T:Desalt.Core.Utility.TextReaderLocation"/> objects are equal.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
+        /// value; otherwise, false.
+        /// </returns>
+        public static bool operator ==(TextReaderLocation left, TextReaderLocation right) => left.Equals(right);
 
-        public static bool operator !=(TextReaderLocation x, TextReaderLocation y)
-        {
-            return !(x == y);
-        }
+        /// <summary>
+        /// Returns a value that indicates whether two <see
+        /// cref="T:Desalt.Core.Utility.TextReaderLocation"/> objects have different values.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
+        /// </returns>
+        public static bool operator !=(TextReaderLocation left, TextReaderLocation right) => !left.Equals(right);
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public TextReaderLocation IncrementLine()
-        {
-            return new TextReaderLocation(Line + 1, 1, Source);
-        }
+        public TextReaderLocation IncrementLine() => new TextReaderLocation(Line + 1, 1, Source);
 
-        public TextReaderLocation IncrementColumn()
-        {
-            return new TextReaderLocation(Line, Column + 1, Source);
-        }
+        public TextReaderLocation IncrementColumn() => new TextReaderLocation(Line, Column + 1, Source);
 
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0}({1},{2})", Source, Line, Column);
-        }
+        public TextReaderLocation DecrementColumn() =>
+            Column == 1
+                ? throw new InvalidOperationException("Cannot decrement the column before the beginning of the line.")
+                : new TextReaderLocation(Line, Column - 1, Source);
 
+        public override string ToString() =>
+            string.Format(CultureInfo.InvariantCulture, "{0}({1},{2})", Source, Line, Column);
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
+        /// parameter; otherwise, <see langword="false"/>.
+        /// </returns>
+        public bool Equals(TextReaderLocation other) =>
+            string.Equals(Source, other.Source) && Line == other.Line && Column == other.Column;
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>
+        /// <see langword="true"/> if <paramref name="obj"/> and this instance are the same type and
+        /// represent the same value; otherwise, <see langword="false"/>.
+        /// </returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is TextReaderLocation))
+            if (obj is null)
             {
                 return false;
             }
 
-            return Equals((TextReaderLocation)obj);
-        }
-
-        public bool Equals(TextReaderLocation other)
-        {
-            return Source.Equals(other.Source, StringComparison.Ordinal) &&
-                Line == other.Line &&
-                Column == other.Column;
-        }
-
-        public override int GetHashCode()
-        {
-            return CombineHashCodes(Source.GetHashCode(), Line.GetHashCode(), Column.GetHashCode());
+            return obj is TextReaderLocation location && Equals(location);
         }
 
         /// <summary>
-        /// Combines multiple hash codes into one.
+        /// Returns the hash code for this instance.
         /// </summary>
-        /// <param name="hash1">The first hash code.</param>
-        /// <param name="hash2">The second hash code.</param>
-        /// <param name="hashes">More hash codes.</param>
-        /// <returns>A combined hash code.</returns>
-        /// <remarks>Taken from the .NET Framework code for Tuple and Array,
-        /// both having a function with the same name as this.</remarks>
-        private static int CombineHashCodes(int hash1, int hash2, params int[] hashes)
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        public override int GetHashCode()
         {
-            int combinedHash = ((hash1 << 5) + hash1) ^ hash2;
-            foreach (int hash in hashes)
+            unchecked
             {
-                combinedHash = ((combinedHash << 5) + combinedHash) ^ hash;
+                int hashCode = Source != null ? Source.GetHashCode() : 0;
+                hashCode = (hashCode * 397) ^ Line;
+                hashCode = (hashCode * 397) ^ Column;
+                return hashCode;
             }
-
-            return combinedHash;
         }
+
     }
 }
