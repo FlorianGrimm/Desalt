@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
     using System;
     using System.Linq;
     using Desalt.Core.TypeScript.Ast.Parsing;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -24,10 +25,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         [TestMethod]
         public void TsLexer_should_lex_identifiers()
         {
-            AssertLex("id", TsToken.Identifier("id"));
-            AssertLex("$valid", TsToken.Identifier("$valid"));
-            AssertLex("\\u007a_bc", TsToken.Identifier("z_bc"));
-            AssertLex("\\u{0061}", TsToken.Identifier("a"));
+            AssertLex("id", TsToken.Identifier("id", "id", new TextReaderLocation(1, 1)));
+            AssertLex("$valid", TsToken.Identifier("$valid", "$valid", new TextReaderLocation(1, 1)));
+            AssertLex("\\u007a_bc", TsToken.Identifier("z_bc", "z_bc", new TextReaderLocation(1, 1)));
+            AssertLex("\\u{0061}", TsToken.Identifier("a", "a", new TextReaderLocation(1, 1)));
+            AssertLex("j\\u{0061}r", TsToken.Identifier("jar", "jar", new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -78,7 +80,10 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
             {
                 AssertLex(
                     keyword,
-                    new TsToken((TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true), keyword));
+                    new TsToken(
+                        (TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true),
+                        keyword,
+                        new TextReaderLocation(1, 1)));
             }
         }
 
@@ -141,19 +146,38 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
 
             foreach ((string text, TsTokenCode tokenCode) in punctuators)
             {
-                AssertLex(text, new TsToken(tokenCode, text));
+                AssertLex(text, new TsToken(tokenCode, text, new TextReaderLocation(1, 1)));
             }
         }
 
         [TestMethod]
         public void Lex_should_recognize_decimal_integer_literals()
         {
-            AssertLex("123", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123", 123));
-            AssertLex(".123", TsToken.WithValue(TsTokenCode.DecimalLiteral, ".123", .123));
-            AssertLex("123.e10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.e10", 123e10));
-            AssertLex("123.456e10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e10", 123.456e10));
-            AssertLex("123.456e+10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e+10", 123.456e10));
-            AssertLex("123.456e-10", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e-10", 123.456e-10));
+            AssertLex("123", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123", 123, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                ".123",
+                TsToken.WithValue(TsTokenCode.DecimalLiteral, ".123", .123, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "123.e10",
+                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.e10", 123e10, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "123.456e10",
+                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e10", 123.456e10, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "123.456e+10",
+                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e+10", 123.456e10, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "123.456e-10",
+                TsToken.WithValue(
+                    TsTokenCode.DecimalLiteral,
+                    "123.456e-10",
+                    123.456e-10,
+                    new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -169,8 +193,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         [TestMethod]
         public void Lex_should_recognize_binary_integer_literals()
         {
-            AssertLex("0b1101", TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0b1101", 13));
-            AssertLex("0B1101", TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13));
+            AssertLex(
+                "0b1101",
+                TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0b1101", 13, new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "0B1101",
+                TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13, new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -190,8 +219,21 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         [TestMethod]
         public void Lex_should_recognize_octal_integer_literals()
         {
-            AssertLex("0o01234567", TsToken.WithValue(TsTokenCode.OctalIntegerLiteral, "0o01234567", 001234567));
-            AssertLex("0O01234567", TsToken.WithValue(TsTokenCode.OctalIntegerLiteral, "0O01234567", 001234567));
+            AssertLex(
+                "0o01234567",
+                TsToken.WithValue(
+                    TsTokenCode.OctalIntegerLiteral,
+                    "0o01234567",
+                    001234567,
+                    new TextReaderLocation(1, 1)));
+
+            AssertLex(
+                "0O01234567",
+                TsToken.WithValue(
+                    TsTokenCode.OctalIntegerLiteral,
+                    "0O01234567",
+                    001234567,
+                    new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -210,10 +252,19 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         {
             AssertLex(
                 "0x0123456789abcdef",
-                TsToken.WithValue(TsTokenCode.HexIntegerLiteral, "0x0123456789abcdef", 0x0123456789abcdef));
+                TsToken.WithValue(
+                    TsTokenCode.HexIntegerLiteral,
+                    "0x0123456789abcdef",
+                    0x0123456789abcdef,
+                    new TextReaderLocation(1, 1)));
+
             AssertLex(
                 "0X0123456789ABCDEF",
-                TsToken.WithValue(TsTokenCode.HexIntegerLiteral, "0X0123456789ABCDEF", 0x0123456789abcdef));
+                TsToken.WithValue(
+                    TsTokenCode.HexIntegerLiteral,
+                    "0X0123456789ABCDEF",
+                    0x0123456789abcdef,
+                    new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]

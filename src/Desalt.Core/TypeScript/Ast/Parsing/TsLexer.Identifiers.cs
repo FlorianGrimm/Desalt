@@ -14,6 +14,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
     using System.Linq;
     using System.Text;
     using Desalt.Core.Extensions;
+    using Desalt.Core.Utility;
 
     internal sealed partial class TsLexer
     {
@@ -21,10 +22,10 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, TsToken> s_keywords =
+        private static readonly ImmutableDictionary<string, TsTokenCode> s_keywords =
             ImmutableDictionary.CreateRange(StringComparer.Ordinal, GetKeywords());
 
-        private static IEnumerable<KeyValuePair<string, TsToken>> GetKeywords()
+        private static IEnumerable<KeyValuePair<string, TsTokenCode>> GetKeywords()
         {
             string[] keywords =
             {
@@ -104,8 +105,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
 
             var items = from keyword in keywords
                         let tokenCode = (TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true)
-                        let token = new TsToken(tokenCode, keyword)
-                        select new KeyValuePair<string, TsToken>(keyword, token);
+                        select new KeyValuePair<string, TsTokenCode>(keyword, tokenCode);
             return items;
         }
 
@@ -184,6 +184,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// ]]></code></remarks>
         private TsToken LexIdentifierNameOrReservedWord()
         {
+            TextReaderLocation location = _reader.Location;
             var builder = new StringBuilder();
 
             // get the first character
@@ -217,7 +218,9 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             }
 
             string identifier = builder.ToString();
-            return s_keywords.TryGetValue(identifier, out TsToken token) ? token : TsToken.Identifier(identifier);
+            return s_keywords.TryGetValue(identifier, out TsTokenCode tokenCode)
+                ? new TsToken(tokenCode, identifier, location)
+                : TsToken.Identifier(builder.ToString(), identifier, location);
         }
     }
 }

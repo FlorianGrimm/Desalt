@@ -8,6 +8,7 @@
 namespace Desalt.Core.TypeScript.Ast.Parsing
 {
     using System;
+    using Desalt.Core.Utility;
 
     /// <summary>
     /// Represents a token in TypeScript source code.
@@ -18,20 +19,30 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Constructors
         //// ===========================================================================================================
 
-        public TsToken(TsTokenCode tokenCode, string text)
+        public TsToken(TsTokenCode tokenCode, string text, TextReaderLocation location)
         {
             TokenCode = tokenCode;
             Text = string.IsNullOrWhiteSpace(text) ? throw new ArgumentNullException(nameof(text)) : text;
+            Location = location;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Gets the location in the source code where this token was present.
+        /// </summary>
+        public TextReaderLocation Location { get; }
+
         public TsTokenCode TokenCode { get; }
 
         public string Text { get; }
 
+        /// <summary>
+        /// Gets the value of the token. For example, if the token represents an integer literal,
+        /// then this property would return the actual integer.
+        /// </summary>
         public virtual object Value
         {
             get
@@ -68,10 +79,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(TsToken left, TsToken right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(TsToken left, TsToken right) => Equals(left, right);
 
         /// <summary>
         /// Returns a value that indicates whether two <see
@@ -82,19 +90,17 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(TsToken left, TsToken right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(TsToken left, TsToken right) => !Equals(left, right);
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static TsToken Identifier(string identifierName) => new TsToken(TsTokenCode.Identifier, identifierName);
+        public static TsToken Identifier(string text, string identifier, TextReaderLocation location) =>
+            WithValue(TsTokenCode.Identifier, text, identifier, location);
 
-        public static TsToken WithValue<T>(TsTokenCode tokenCode, string text, T value) =>
-            new TsTokenWithValue<T>(tokenCode, text, value);
+        public static TsToken WithValue<T>(TsTokenCode tokenCode, string text, T value, TextReaderLocation location) =>
+            new TsTokenWithValue<T>(tokenCode, text, value, location);
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -122,7 +128,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 return true;
             }
 
-            return TokenCode == other.TokenCode && string.Equals(Text, other.Text);
+            return Location.Equals(other.Location) && TokenCode == other.TokenCode && string.Equals(Text, other.Text);
         }
 
         /// <summary>
@@ -157,7 +163,10 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         {
             unchecked
             {
-                return ((int)TokenCode * 397) ^ Text.GetHashCode();
+                int hashCode = Location.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)TokenCode;
+                hashCode = (hashCode * 397) ^ (Text != null ? Text.GetHashCode() : 0);
+                return hashCode;
             }
         }
     }
@@ -172,8 +181,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTokenWithValue(TsTokenCode tokenCode, string text, T value)
-            : base(tokenCode, text)
+        public TsTokenWithValue(TsTokenCode tokenCode, string text, T value, TextReaderLocation location)
+            : base(tokenCode, text, location)
         {
             ValueField = value;
         }
