@@ -155,7 +155,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 throw LexException($"Invalid decimal literal '{text}'", location);
             }
 
-            return TsToken.WithValue(TsTokenCode.DecimalLiteral, text, value, location);
+            return TsToken.NumericLiteral(TsTokenCode.DecimalLiteral, text, value, location);
         }
 
         /// <summary>
@@ -189,7 +189,11 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             try
             {
                 double value = Convert.ToDouble(Convert.ToInt64(valueText, 2));
-                return TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, textBuilder.ToString(), value, location);
+                return TsToken.NumericLiteral(
+                    TsTokenCode.BinaryIntegerLiteral,
+                    textBuilder.ToString(),
+                    value,
+                    location);
             }
             catch (Exception)
             {
@@ -228,7 +232,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             try
             {
                 double value = Convert.ToDouble(Convert.ToInt64(valueText, 8));
-                return TsToken.WithValue(TsTokenCode.OctalIntegerLiteral, textBuilder.ToString(), value, location);
+                return TsToken.NumericLiteral(TsTokenCode.OctalIntegerLiteral, textBuilder.ToString(), value, location);
             }
             catch (Exception)
             {
@@ -265,7 +269,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
             try
             {
                 double value = Convert.ToDouble(Convert.ToInt64(valueText, 16));
-                return TsToken.WithValue(TsTokenCode.HexIntegerLiteral, textBuilder.ToString(), value, location);
+                return TsToken.NumericLiteral(TsTokenCode.HexIntegerLiteral, textBuilder.ToString(), value, location);
             }
             catch (Exception)
             {

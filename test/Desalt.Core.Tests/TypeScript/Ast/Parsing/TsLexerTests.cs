@@ -153,27 +153,37 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         [TestMethod]
         public void Lex_should_recognize_decimal_integer_literals()
         {
-            AssertLex("123", TsToken.WithValue(TsTokenCode.DecimalLiteral, "123", 123, new TextReaderLocation(1, 1)));
+            AssertLex(
+                "123",
+                TsToken.NumericLiteral(TsTokenCode.DecimalLiteral, "123", 123, new TextReaderLocation(1, 1)));
 
             AssertLex(
                 ".123",
-                TsToken.WithValue(TsTokenCode.DecimalLiteral, ".123", .123, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(TsTokenCode.DecimalLiteral, ".123", .123, new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "123.e10",
-                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.e10", 123e10, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(TsTokenCode.DecimalLiteral, "123.e10", 123e10, new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "123.456e10",
-                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e10", 123.456e10, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(
+                    TsTokenCode.DecimalLiteral,
+                    "123.456e10",
+                    123.456e10,
+                    new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "123.456e+10",
-                TsToken.WithValue(TsTokenCode.DecimalLiteral, "123.456e+10", 123.456e10, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(
+                    TsTokenCode.DecimalLiteral,
+                    "123.456e+10",
+                    123.456e10,
+                    new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "123.456e-10",
-                TsToken.WithValue(
+                TsToken.NumericLiteral(
                     TsTokenCode.DecimalLiteral,
                     "123.456e-10",
                     123.456e-10,
@@ -195,11 +205,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         {
             AssertLex(
                 "0b1101",
-                TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0b1101", 13, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(TsTokenCode.BinaryIntegerLiteral, "0b1101", 13, new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "0B1101",
-                TsToken.WithValue(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13, new TextReaderLocation(1, 1)));
+                TsToken.NumericLiteral(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13, new TextReaderLocation(1, 1)));
         }
 
         [TestMethod]
@@ -221,18 +231,18 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         {
             AssertLex(
                 "0o01234567",
-                TsToken.WithValue(
+                TsToken.NumericLiteral(
                     TsTokenCode.OctalIntegerLiteral,
                     "0o01234567",
-                    001234567,
+                    342391,
                     new TextReaderLocation(1, 1)));
 
             AssertLex(
                 "0O01234567",
-                TsToken.WithValue(
+                TsToken.NumericLiteral(
                     TsTokenCode.OctalIntegerLiteral,
                     "0O01234567",
-                    001234567,
+                    342391,
                     new TextReaderLocation(1, 1)));
         }
 
@@ -252,7 +262,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         {
             AssertLex(
                 "0x0123456789abcdef",
-                TsToken.WithValue(
+                TsToken.NumericLiteral(
                     TsTokenCode.HexIntegerLiteral,
                     "0x0123456789abcdef",
                     0x0123456789abcdef,
@@ -260,7 +270,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
 
             AssertLex(
                 "0X0123456789ABCDEF",
-                TsToken.WithValue(
+                TsToken.NumericLiteral(
                     TsTokenCode.HexIntegerLiteral,
                     "0X0123456789ABCDEF",
                     0x0123456789abcdef,

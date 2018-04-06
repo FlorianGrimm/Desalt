@@ -99,6 +99,15 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         public static TsToken Identifier(string text, string identifier, TextReaderLocation location) =>
             WithValue(TsTokenCode.Identifier, text, identifier, location);
 
+        public static TsToken NumericLiteral(
+            TsTokenCode tokenCode,
+            string text,
+            double value,
+            TextReaderLocation location)
+        {
+            return WithValue(tokenCode, text, value, location);
+        }
+
         public static TsToken WithValue<T>(TsTokenCode tokenCode, string text, T value, TextReaderLocation location) =>
             new TsTokenWithValue<T>(tokenCode, text, value, location);
 
@@ -128,7 +137,10 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 return true;
             }
 
-            return Location.Equals(other.Location) && TokenCode == other.TokenCode && string.Equals(Text, other.Text);
+            return Location.Equals(other.Location) &&
+                TokenCode == other.TokenCode &&
+                string.Equals(Text, other.Text) &&
+                (Value?.Equals(other.Value) ?? other.Value == null);
         }
 
         /// <summary>
@@ -166,6 +178,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
                 int hashCode = Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int)TokenCode;
                 hashCode = (hashCode * 397) ^ (Text != null ? Text.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
                 return hashCode;
             }
         }
