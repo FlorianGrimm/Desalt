@@ -48,6 +48,8 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsRegularExpressionLiteral RegularExpression(string body, string flags) =>
             new TsRegularExpressionLiteral(body, flags);
 
+        public static ITsArrayLiteral Array() => new TsArrayLiteral(null);
+
         public static ITsArrayLiteral Array(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
         public static ITsArrayLiteral Array(params ITsExpression[] elements) =>
