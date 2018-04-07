@@ -71,8 +71,10 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// <summary>
         /// Peeks ahead one token without advancing the reader.
         /// </summary>
-        /// <returns>The next token or null if there are no more tokens.</returns>
-        public TsToken Peek() => _index < _tokens.Length ? _tokens[_index] : null;
+        /// <returns>
+        /// The next token or <see cref="TsToken.EndOfTokens"/> if there are no more tokens.
+        /// </returns>
+        public TsToken Peek() => _index < _tokens.Length ? _tokens[_index] : TsToken.EndOfTokens;
 
         /// <summary>
         /// Peeks ahead <paramref name="count"/> tokens and returns those tokens without advancing the reader.
@@ -127,11 +129,18 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         /// Reads the next token, but only if the token code matches.
         /// </summary>
         /// <param name="tokenCode">The token code to match.</param>
+        /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
+        public bool ReadIf(TsTokenCode tokenCode) => ReadIf(tokenCode, out _);
+
+        /// <summary>
+        /// Reads the next token, but only if the token code matches.
+        /// </summary>
+        /// <param name="tokenCode">The token code to match.</param>
         /// <param name="token">The read token, or null if the next token does not match the token code.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
         public bool ReadIf(TsTokenCode tokenCode, out TsToken token)
         {
-            if (Peek()?.TokenCode == tokenCode)
+            if (Peek().TokenCode == tokenCode)
             {
                 token = Read();
                 return true;

@@ -22,10 +22,10 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         private static readonly TsToken[] s_tokens = { s_token1, s_token2, s_token3 };
 
         [TestMethod]
-        public void TsTokenReader_Peek_should_return_null_if_there_are_no_tokens_left()
+        public void TsTokenReader_Peek_should_return_EndOfTokens_if_there_are_no_tokens_left()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
-            reader.Peek().Should().BeNull();
+            reader.Peek().Should().Be(TsToken.EndOfTokens);
         }
 
         [TestMethod]
@@ -37,10 +37,10 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
         }
 
         [TestMethod]
-        public void TsTokenReader_Read_should_return_null_if_there_are_no_tokens_left()
+        public void TsTokenReader_Read_should_return_EndOfTokens_if_there_are_no_tokens_left()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
-            reader.Read().Should().BeNull();
+            reader.Read().Should().Be(TsToken.EndOfTokens);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
             reader.Read().Should().Be(s_token1);
             reader.Read().Should().Be(s_token2);
             reader.Read().Should().Be(s_token3);
-            reader.Read().Should().BeNull();
+            reader.Read().Should().Be(TsToken.EndOfTokens);
         }
 
         [TestMethod]
