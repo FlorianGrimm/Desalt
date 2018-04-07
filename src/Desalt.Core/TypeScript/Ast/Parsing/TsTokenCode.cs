@@ -12,7 +12,16 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
     /// </summary>
     internal enum TsTokenCode
     {
-        Unknown = 0,
+        /// <summary>
+        /// Represents a placeholder token that represents an error.
+        /// </summary>
+        ErrorPlaceholder = -2,
+
+        /// <summary>
+        /// Represents a placeholder token signifying the end of the token stream.
+        /// </summary>
+        EndOfTokens = -1,
+
         Identifier,
 
         /* The following keywords are reserved and cannot be used as an Identifier: */

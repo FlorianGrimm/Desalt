@@ -16,6 +16,20 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
     internal class TsToken : IEquatable<TsToken>
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly TsToken ErrorPlaceholder = new TsToken(
+            TsTokenCode.ErrorPlaceholder,
+            "ErrorPlaceholder",
+            TextReaderLocation.Empty);
+
+        public static readonly TsToken EndOfTokens = new TsToken(
+            TsTokenCode.EndOfTokens,
+            "EndOfTokens",
+            TextReaderLocation.Empty);
+
+        //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
