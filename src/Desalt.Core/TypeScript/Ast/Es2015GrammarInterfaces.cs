@@ -132,6 +132,14 @@ namespace Desalt.Core.TypeScript.Ast
      *   ( Expression )
      */
 
+    /// <summary>
+    /// Represents a parenthesized expression, of the form '(expression)'.
+    /// </summary>
+    public interface ITsParenthesizedExpression : ITsExpression
+    {
+        ITsExpression Expression { get; }
+    }
+
     /* 12.2.4 Literals
      * ---------------
      * Literal:

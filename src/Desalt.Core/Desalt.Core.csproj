@@ -223,6 +223,7 @@
     <Compile Include="TypeScript\Ast\Expressions\TsNullLiteral.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsNumericLiteral.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsObjectLiteral.cs" />
+    <Compile Include="TypeScript\Ast\Expressions\TsParenthesizedExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsPropertyAssignment.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsPropertyFunction.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsRegularExpressionLiteral.cs" />

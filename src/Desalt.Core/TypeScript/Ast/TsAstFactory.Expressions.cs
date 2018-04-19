@@ -63,6 +63,9 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsTemplatePart TemplatePart(string template = null, ITsExpression expression = null) =>
             new TsTemplatePart(template, expression);
 
+        public static ITsParenthesizedExpression ParenthesizedExpression(ITsExpression expression) =>
+            new TsParenthesizedExpression(expression);
+
         //// ===========================================================================================================
         //// Object Literal Expressions
         //// ===========================================================================================================
