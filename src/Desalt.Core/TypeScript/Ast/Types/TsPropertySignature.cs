@@ -20,7 +20,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         //// ===========================================================================================================
 
         public TsPropertySignature(
-            ITsLiteralPropertyName propertyName,
+            ITsPropertyName propertyName,
             bool isOptional = false,
             ITsType propertyType = null)
         {
@@ -33,7 +33,7 @@ namespace Desalt.Core.TypeScript.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsLiteralPropertyName PropertyName { get; }
+        public ITsPropertyName PropertyName { get; }
         public bool IsOptional { get; }
         public ITsType PropertyType { get; }
 

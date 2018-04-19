@@ -286,7 +286,7 @@ namespace Desalt.Core.TypeScript.Ast
         ImmutableArray<ITsPropertyDefinition> PropertyDefinitions { get; }
     }
 
-    public interface ITsPropertyDefinition : IAstNode { }
+    public interface ITsPropertyDefinition : ITsExpression { }
 
     public interface ITsCoverInitializedName : ITsPropertyDefinition
     {

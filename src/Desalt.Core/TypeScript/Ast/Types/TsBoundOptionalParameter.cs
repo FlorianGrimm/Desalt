@@ -21,12 +21,12 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public TsBoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsExpression initializer,
             ITsType parameterType = null,
+            ITsExpression initializer = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            Initializer = initializer;
             ParameterType = parameterType;
             Modifier = modifier;
         }
