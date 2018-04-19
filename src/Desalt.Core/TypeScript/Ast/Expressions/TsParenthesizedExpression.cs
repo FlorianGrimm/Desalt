@@ -1,60 +1,48 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsPropertySignature.cs" company="Justin Rockwood">
+// <copyright file="TsParenthesizedExpression.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Types
+namespace Desalt.Core.TypeScript.Ast.Expressions
 {
     using System;
     using Desalt.Core.Emit;
 
     /// <summary>
-    /// Represents a property signature.
+    /// Represents a parenthesized expression, of the form '(expression)'.
     /// </summary>
-    internal class TsPropertySignature : AstNode, ITsPropertySignature
+    internal class TsParenthesizedExpression : AstNode, ITsParenthesizedExpression
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsPropertySignature(
-            ITsPropertyName propertyName,
-            bool isOptional = false,
-            ITsType propertyType = null)
+        public TsParenthesizedExpression(ITsExpression expression)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            IsOptional = isOptional;
-            PropertyType = propertyType;
+            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPropertyName PropertyName { get; }
-        public bool IsOptional { get; }
-        public ITsType PropertyType { get; }
+        public ITsExpression Expression { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedExpression(this);
 
-        public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
-            PropertyType.OptionalTypeAnnotation();
+        public override string CodeDisplay => $"({Expression.CodeDisplay})";
 
         protected override void EmitInternal(Emitter emitter)
         {
-            PropertyName.Emit(emitter);
-            if (IsOptional)
-            {
-                emitter.Write("?");
-            }
-
-            PropertyType.EmitOptionalTypeAnnotation(emitter);
+            emitter.Write("(");
+            Expression.Emit(emitter);
+            emitter.Write(")");
         }
     }
 }

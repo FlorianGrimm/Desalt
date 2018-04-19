@@ -26,10 +26,15 @@ namespace Desalt.Core.TypeScript.Ast
         /// </summary>
         /// <param name="type">The type to wrap inside of parentheses.</param>
         /// <returns>A new <see cref="ITsParenthesizedType"/> wrapping the specified type.</returns>
-        public static ITsParenthesizedType WithParentheses(this ITsType type)
-        {
-            return new TsParenthesizedType(type);
-        }
+        public static ITsParenthesizedType WithParentheses(this ITsType type) => new TsParenthesizedType(type);
+
+        /// <summary>
+        /// Creates a new <see cref="ITsParenthesizedExpression"/> wrapping the specified expression.
+        /// </summary>
+        /// <param name="expression">The expression to wrap inside of parentheses.</param>
+        /// <returns>A new <see cref="ITsParenthesizedExpression"/> wrapping the specified expression.</returns>
+        public static ITsParenthesizedExpression WithParentheses(this ITsExpression expression) =>
+            new TsParenthesizedExpression(expression);
 
         /// <summary>
         /// Creates a new statement from the expression.

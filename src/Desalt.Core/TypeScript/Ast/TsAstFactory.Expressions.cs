@@ -48,6 +48,8 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsRegularExpressionLiteral RegularExpression(string body, string flags) =>
             new TsRegularExpressionLiteral(body, flags);
 
+        public static ITsArrayLiteral Array() => new TsArrayLiteral(null);
+
         public static ITsArrayLiteral Array(params ITsArrayElement[] elements) => new TsArrayLiteral(elements);
 
         public static ITsArrayLiteral Array(params ITsExpression[] elements) =>
@@ -61,6 +63,9 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsTemplatePart TemplatePart(string template = null, ITsExpression expression = null) =>
             new TsTemplatePart(template, expression);
 
+        public static ITsParenthesizedExpression ParenthesizedExpression(ITsExpression expression) =>
+            new TsParenthesizedExpression(expression);
+
         //// ===========================================================================================================
         //// Object Literal Expressions
         //// ===========================================================================================================
@@ -71,11 +76,17 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsObjectLiteral Object(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
+        /// <summary>
+        /// Creates an element in an object initializer of the form 'identifer = expression'.
+        /// </summary>
         public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
         {
             return new TsCoverInitializedName(identifier, initializer);
         }
 
+        /// <summary>
+        /// Creates a property assignment in the following form: 'propertyName: value'.
+        /// </summary>
         public static ITsPropertyAssignment PropertyAssignment(ITsPropertyName propertyName, ITsExpression initializer)
         {
             return new TsPropertyAssignment(propertyName, initializer);

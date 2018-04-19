@@ -256,9 +256,16 @@ namespace Desalt.Core.TypeScript.Ast
      *   PropertyName ?Opt TypeAnnotationOpt
      *
      * PropertyName:
+     *   LiteralPropertyName
+     *   ComputedPropertyName
+     *
+     * LiteralPropertyName:
      *   IdentifierName
      *   StringLiteral
      *   NumericLiteral
+     *
+     * ComputedPropertyName:
+     *   [ AssignmentExpression ]
      *
      * TypeAnnotation:
      *   : Type
@@ -266,7 +273,7 @@ namespace Desalt.Core.TypeScript.Ast
 
     public interface ITsPropertySignature : ITsTypeMember
     {
-        ITsLiteralPropertyName PropertyName { get; }
+        ITsPropertyName PropertyName { get; }
         bool IsOptional { get; }
         ITsType PropertyType { get; }
     }

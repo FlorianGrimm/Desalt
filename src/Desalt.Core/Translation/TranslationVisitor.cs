@@ -152,7 +152,7 @@ namespace Desalt.Core.Translation
             else
             {
                 var initializer = (ITsExpression)Visit(node.Default).Single();
-                parameter = Factory.BoundOptionalParameter(parameterName, initializer, parameterType);
+                parameter = Factory.BoundOptionalParameter(parameterName, parameterType, initializer);
             }
 
             return parameter.ToSingleEnumerable();

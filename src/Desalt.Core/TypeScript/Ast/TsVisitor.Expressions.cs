@@ -10,6 +10,12 @@ namespace Desalt.Core.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
+        /// Visits a parenthesized expression, of the form '(expression)'.
+        /// </summary>
+        /// <param name="node"></param>
+        public virtual void VisitParenthesizedExpression(ITsParenthesizedExpression node) => Visit(node);
+
+        /// <summary>
         /// Visits an expression representing the literal 'this'.
         /// </summary>
         public virtual void VisitThis(ITsThis node) => Visit(node);

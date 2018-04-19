@@ -279,7 +279,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                     optionalParameters: new ITsOptionalParameter[]
                     {
                         Factory.StringOptionalParameter(s_y, Factory.String("value")),
-                        Factory.BoundOptionalParameter(s_z, Factory.Zero, Factory.NumberType)
+                        Factory.BoundOptionalParameter(s_z, Factory.NumberType, Factory.Zero)
                     }),
                 "x, y?: 'value', z: number = 0");
         }
@@ -290,7 +290,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(
                 Factory.ParameterList(
                     requiredParameters: Factory.BoundRequiredParameter(s_x).ToSafeArray(),
-                    optionalParameters: Factory.BoundOptionalParameter(s_y, Factory.False, Factory.BooleanType)
+                    optionalParameters: Factory.BoundOptionalParameter(s_y, Factory.BooleanType, Factory.False)
                         .ToSafeArray(),
                     restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
                 "x, y: boolean = false, ... z: MyType");

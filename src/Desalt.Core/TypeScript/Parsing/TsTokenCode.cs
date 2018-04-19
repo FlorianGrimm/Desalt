@@ -5,14 +5,88 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Parsing
+namespace Desalt.Core.TypeScript.Parsing
 {
     /// <summary>
     /// Enumerates the different types of TypeScript tokens.
     /// </summary>
     internal enum TsTokenCode
     {
-        Unknown = 0,
+        /// <summary>
+        /// Represents a placeholder token that represents an error.
+        /// </summary>
+        ErrorPlaceholder = -2,
+
+        /// <summary>
+        /// Represents a placeholder token signifying the end of the token stream.
+        /// </summary>
+        EndOfTokens = -1,
+
+        /* Punctuators */
+        LeftBrace,
+        RightBrace,
+        LeftParen,
+        RightParen,
+        LeftBracket,
+        RightBracket,
+        Dot,
+        DotDotDot,
+        Semicolon,
+        Comma,
+        LessThan,
+        GreaterThan,
+        LessThanEquals,
+        GreaterThanEquals,
+        EqualsEquals,
+        ExclamationEquals,
+        EqualsEqualsEquals,
+        ExclamationEqualsEquals,
+        Plus,
+        Minus,
+        Asterisk,
+        Slash,
+        Percent,
+        PlusPlus,
+        MinusMinus,
+        LessThanLessThan,
+        GreaterThanGreaterThan,
+        GreaterThanGreaterThanGreaterThan,
+        Ampersand,
+        Pipe,
+        Caret,
+        Exclamation,
+        Tilde,
+        AmpersandAmpersand,
+        PipePipe,
+        Question,
+        Colon,
+        Equals,
+        PlusEquals,
+        MinusEquals,
+        AsteriskEquals,
+        SlashEquals,
+        PercentEquals,
+        LessThanLessThanEquals,
+        GreaterThanGreaterThanEquals,
+        GreaterThanGreaterThanGreaterThanEquals,
+        AmpersandEquals,
+        PipeEquals,
+        CaretEquals,
+        EqualsGreaterThan,
+
+        /* Literals */
+        DecimalLiteral,
+        BinaryIntegerLiteral,
+        OctalIntegerLiteral,
+        HexIntegerLiteral,
+        StringLiteral,
+        RegularExpressionLiteral,
+        TemplateLiteral,
+
+        //// ===========================================================================================================
+        //// Identifiers and keywords must be at the end
+        //// ===========================================================================================================
+
         Identifier,
 
         /* The following keywords are reserved and cannot be used as an Identifier: */
@@ -80,71 +154,14 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         Declare,
         From,
         Get,
+        Global,
         Is,
         Module,
         Namespace,
         Of,
+        Readonly,
         Require,
         Set,
         Type,
-
-        /* Punctuators */
-        LeftBrace,
-        RightBrace,
-        LeftParen,
-        RightParen,
-        LeftBracket,
-        RightBracket,
-        Dot,
-        DotDotDot,
-        Semicolon,
-        Comma,
-        LessThan,
-        GreaterThan,
-        LessThanEquals,
-        GreaterThanEquals,
-        EqualsEquals,
-        ExclamationEquals,
-        EqualsEqualsEquals,
-        ExclamationEqualsEquals,
-        Plus,
-        Minus,
-        Asterisk,
-        Slash,
-        Percent,
-        PlusPlus,
-        MinusMinus,
-        LessThanLessThan,
-        GreaterThanGreaterThan,
-        GreaterThanGreaterThanGreaterThan,
-        Ampersand,
-        Pipe,
-        Caret,
-        Exclamation,
-        Tilde,
-        AmpersandAmpersand,
-        PipePipe,
-        Question,
-        Colon,
-        Equals,
-        PlusEquals,
-        MinusEquals,
-        AsteriskEquals,
-        SlashEquals,
-        PercentEquals,
-        LessThanLessThanEquals,
-        GreaterThanGreaterThanEquals,
-        GreaterThanGreaterThanGreaterThanEquals,
-        AmpersandEquals,
-        PipeEquals,
-        CaretEquals,
-        EqualsGreaterThan,
-
-        /* Literals */
-        DecimalLiteral,
-        BinaryIntegerLiteral,
-        OctalIntegerLiteral,
-        HexIntegerLiteral,
-        StringLiteral,
     }
 }

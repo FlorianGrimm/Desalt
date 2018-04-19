@@ -58,7 +58,7 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsTypeQuery TypeQuery(ITsTypeName query) => new TsTypeQuery(query);
 
         public static ITsPropertySignature PropertySignature(
-            ITsLiteralPropertyName propertyName,
+            ITsPropertyName propertyName,
             ITsType propertyType = null,
             bool isOptional = false)
         {
@@ -84,6 +84,8 @@ namespace Desalt.Core.TypeScript.Ast
         {
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
+
+        public static ITsParameterList ParameterList() => new TsParameterList();
 
         public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters) =>
             new TsParameterList(requiredParameters.Select(p => BoundRequiredParameter(p)));
@@ -130,11 +132,11 @@ namespace Desalt.Core.TypeScript.Ast
 
         public static ITsBoundOptionalParameter BoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsExpression initializer,
             ITsType parameterType = null,
+            ITsExpression initializer = null,
             TsAccessibilityModifier? modifier = null)
         {
-            return new TsBoundOptionalParameter(parameterName, initializer, parameterType, modifier);
+            return new TsBoundOptionalParameter(parameterName, parameterType, initializer, modifier);
         }
 
         public static ITsStringOptionalParameter StringOptionalParameter(
