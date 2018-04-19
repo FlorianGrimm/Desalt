@@ -76,11 +76,17 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsObjectLiteral Object(params ITsPropertyDefinition[] propertyDefinitions) =>
             new TsObjectLiteral(propertyDefinitions);
 
+        /// <summary>
+        /// Creates an element in an object initializer of the form 'identifer = expression'.
+        /// </summary>
         public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
         {
             return new TsCoverInitializedName(identifier, initializer);
         }
 
+        /// <summary>
+        /// Creates a property assignment in the following form: 'propertyName: value'.
+        /// </summary>
         public static ITsPropertyAssignment PropertyAssignment(ITsPropertyName propertyName, ITsExpression initializer)
         {
             return new TsPropertyAssignment(propertyName, initializer);

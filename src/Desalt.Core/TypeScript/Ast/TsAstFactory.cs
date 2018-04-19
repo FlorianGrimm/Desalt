@@ -55,6 +55,16 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
         /// </summary>
+        /// <param name="identifiers">The parts of the full name.</param>
+        /// <returns>An <see cref="ITsQualifiedName"/>.</returns>
+        public static ITsQualifiedName QualifiedName(params ITsIdentifier[] identifiers)
+        {
+            return new TsQualifiedName(identifiers.Last(), identifiers.Take(identifiers.Length - 1));
+        }
+
+        /// <summary>
+        /// Creates a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
+        /// </summary>
         /// <param name="names">The parts of the full name.</param>
         /// <returns>An <see cref="ITsQualifiedName"/>.</returns>
         public static ITsQualifiedName QualifiedName(params string[] names)

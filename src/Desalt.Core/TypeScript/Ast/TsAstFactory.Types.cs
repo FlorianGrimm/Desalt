@@ -85,6 +85,8 @@ namespace Desalt.Core.TypeScript.Ast
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
 
+        public static ITsParameterList ParameterList() => new TsParameterList();
+
         public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters) =>
             new TsParameterList(requiredParameters.Select(p => BoundRequiredParameter(p)));
 
