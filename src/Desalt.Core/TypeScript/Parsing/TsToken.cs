@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Parsing
+namespace Desalt.Core.TypeScript.Parsing
 {
     using System;
     using Desalt.Core.Utility;
@@ -84,8 +84,8 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a value that indicates whether the values of two <see
-        /// cref="T:Desalt.Core.TypeScript.Ast.Parsing.TsToken"/> objects are equal.
+        /// Returns a value that indicates whether the values of two <see cref="TsToken"/> objects
+        /// are equal.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>
@@ -96,8 +96,7 @@ namespace Desalt.Core.TypeScript.Ast.Parsing
         public static bool operator ==(TsToken left, TsToken right) => Equals(left, right);
 
         /// <summary>
-        /// Returns a value that indicates whether two <see
-        /// cref="T:Desalt.Core.TypeScript.Ast.Parsing.TsToken"/> objects have different values.
+        /// Returns a value that indicates whether two <see cref="TsToken"/> objects have different values.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>

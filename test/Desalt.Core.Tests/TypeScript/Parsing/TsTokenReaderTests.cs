@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Ast.Parsing
+namespace Desalt.Core.Tests.TypeScript.Parsing
 {
     using System.Linq;
-    using Desalt.Core.TypeScript.Ast.Parsing;
+    using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

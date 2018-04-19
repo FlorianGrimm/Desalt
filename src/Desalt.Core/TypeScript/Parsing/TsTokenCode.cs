@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Parsing
+namespace Desalt.Core.TypeScript.Parsing
 {
     /// <summary>
     /// Enumerates the different types of TypeScript tokens.
