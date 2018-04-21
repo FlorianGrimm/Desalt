@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -184,7 +185,18 @@ namespace Desalt.Core.Translation
         {
             ExternalTypeWalker walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
             walker.Visit(context.RootSyntax);
-            IEnumerable<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+
+            // add in all of the symbols for referenced assemblies
+            ScriptableTypesSymbolVisitor visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
+            IEnumerable<IAssemblySymbol> assemblies =
+                externalTypeSymbols.Select(symbol => symbol.ContainingAssembly).Distinct();
+            foreach (IAssemblySymbol assemblySymbol in assemblies)
+            {
+                visitor.Visit(assemblySymbol);
+            }
+
+            externalTypeSymbols.AddRange(visitor.ExternalTypeSymbols);
 
             foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
             {

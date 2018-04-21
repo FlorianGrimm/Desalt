@@ -358,5 +358,13 @@ class C
                 code,
                 new KeyValuePair<string, string>("jQueryApi.jQuery.FromHtml(string html)", "$"));
         }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_bring_in_all_of_the_symbols_in_referenced_assemblies()
+        {
+            await AssertExternalEntriesInSymbolTable(
+                "using System; class C { bool x; }",
+                new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
+        }
     }
 }
