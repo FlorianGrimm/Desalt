@@ -36,7 +36,7 @@ namespace Desalt.Core.Translation
                 importTypes.Where(symbol => !context.ImportSymbolTable.HasSymbol(symbol)).ToArray();
 
             var undefinedTypeErrors = undefinedTypes.Select(
-                importType => DiagnosticFactory.UnknownType(SymbolTable.KeyFromSymbol(importType)));
+                importType => DiagnosticFactory.UnknownType(SymbolTableUtils.KeyFromSymbol(importType)));
 
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
 

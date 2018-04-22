@@ -19,7 +19,7 @@ namespace Desalt.Core.Translation
     /// Contains static utility methods for using a symbol table. Pulled out into a separate class
     /// because statics aren't shared between generic instances.
     /// </summary>
-    internal static class SymbolTable
+    internal static class SymbolTableUtils
     {
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
@@ -92,7 +92,7 @@ namespace Desalt.Core.Translation
         {
             get
             {
-                string symbolName = SymbolTable.KeyFromSymbol(symbol);
+                string symbolName = SymbolTableUtils.KeyFromSymbol(symbol);
                 if (!_symbolMap.TryGetValue(symbolName, out T scriptName))
                 {
                     throw new KeyNotFoundException($"There is no symbol '{symbolName}' defined in the symbol table");
@@ -128,7 +128,7 @@ namespace Desalt.Core.Translation
         /// <param name="symbol">The symbol to look up.</param>
         public bool HasSymbol(ISymbol symbol)
         {
-            string symbolName = SymbolTable.KeyFromSymbol(symbol);
+            string symbolName = SymbolTableUtils.KeyFromSymbol(symbol);
             return symbolName != null && _symbolMap.TryGetValue(symbolName, out T _);
         }
 
@@ -235,7 +235,7 @@ namespace Desalt.Core.Translation
 
         protected T AddOrUpdate(ISymbol symbol, T value)
         {
-            string key = SymbolTable.KeyFromSymbol(symbol);
+            string key = SymbolTableUtils.KeyFromSymbol(symbol);
             return _symbolMap.AddOrUpdate(key, _ => value, (_, __) => value);
         }
     }

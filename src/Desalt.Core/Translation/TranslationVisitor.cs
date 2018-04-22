@@ -35,7 +35,7 @@ namespace Desalt.Core.Translation
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptNameSymbolTable _scriptNameTable;
-        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTable.KeyComparer);
+        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
 
         //// ===========================================================================================================
         //// Constructors
