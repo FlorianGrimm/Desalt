@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -16,6 +17,10 @@ namespace Desalt.Core.Translation
     /// </summary>
     internal static class SymbolTableUtils
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
 
         private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
@@ -33,7 +38,64 @@ namespace Desalt.Core.Translation
             SymbolDisplayKindOptions.IncludeMemberKeyword,
             SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
-        public static string KeyFromSymbol(ISymbol symbol) => symbol.ToDisplayString(s_symbolDisplayFormat);
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+
+        /// <summary>
+        /// Finds a Saltarelle attribute attached to a specified symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to query.</param>
+        /// <param name="attributeNameMinusSuffix">
+        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
+        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
+        /// </param>
+        /// <returns>
+        /// The found attribute or null if the symbol does not have an attached attribute of the
+        /// given name.
+        /// </returns>
+        public static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
+        {
+            SymbolDisplayFormat format = new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
+            AttributeData attributeData = symbol?.GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
+
+            return attributeData;
+        }
+
+        /// <summary>
+        /// Gets the value of the Saltarelle attribute attached to a specified symbol or a default
+        /// value if the attribute is not present.
+        /// </summary>
+        /// <param name="symbol">The symbol to query.</param>
+        /// <param name="attributeNameMinusSuffix">
+        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
+        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
+        /// </param>
+        /// <param name="defaultValue">
+        /// The value to use if the attribute is not present on the symbol.
+        /// </param>
+        /// <returns>
+        /// Either the value of the attribute or the default value if the attribute is not present on
+        /// the symbol.
+        /// </returns>
+        public static string GetSaltarelleAttributeValueOrDefault(
+            ISymbol symbol,
+            string attributeNameMinusSuffix,
+            string defaultValue)
+        {
+            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
+            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
+        }
+
+        //// ===========================================================================================================
+        //// Classes
+        //// ===========================================================================================================
 
         private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
         {

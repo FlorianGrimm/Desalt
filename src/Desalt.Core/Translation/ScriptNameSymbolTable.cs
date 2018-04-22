@@ -120,21 +120,21 @@ namespace Desalt.Core.Translation
         private static string FindScriptName(ISymbol symbol)
         {
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            string scriptName = GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
+            string scriptName = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
             if (scriptName != null)
             {
                 return scriptName;
             }
 
             // use [ScriptAlias] if available
-            string scriptAlias = GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
+            string scriptAlias = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
             if (scriptAlias != null)
             {
                 return scriptAlias;
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
-            AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCase");
+            AttributeData preserveCaseAttributeData = SymbolTableUtils.FindSaltarelleAttribute(symbol, "PreserveCase");
             if (preserveCaseAttributeData != null)
             {
                 return symbol.Name;
@@ -144,7 +144,7 @@ namespace Desalt.Core.Translation
             if (symbol.ContainingType != null)
             {
                 AttributeData preserveMemberCaseAttributeData =
-                    FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
+                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -154,7 +154,7 @@ namespace Desalt.Core.Translation
             // see if there's a [PreserveMemberCase] on the containing assembly
             if (symbol.ContainingAssembly != null)
             {
-                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
+                AttributeData preserveMemberCaseAttributeData = SymbolTableUtils.FindSaltarelleAttribute(
                     symbol.ContainingAssembly,
                     "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)

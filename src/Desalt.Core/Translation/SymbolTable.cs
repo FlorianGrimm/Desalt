@@ -171,27 +171,6 @@ namespace Desalt.Core.Translation
             }
         }
 
-        protected static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
-        {
-            SymbolDisplayFormat format = new SymbolDisplayFormat(
-                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol?.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
-
-            return attributeData;
-        }
-
-        protected static string GetSaltarelleAttributeValueOrDefault(
-            ISymbol symbol,
-            string attributeNameMinusSuffix,
-            string defaultValue)
-        {
-            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
-            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
-        }
-
         /// <summary>
         /// Adds a single type defined in an external assembly.
         /// </summary>
