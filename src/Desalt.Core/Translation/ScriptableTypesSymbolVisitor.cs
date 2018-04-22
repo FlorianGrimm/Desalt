@@ -8,9 +8,13 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Threading;
     using Microsoft.CodeAnalysis;
 
+    /// <summary>
+    /// Visits a symbol and gathes all types that don't have a [NonScriptable] attribute on them.
+    /// </summary>
     internal sealed class ScriptableTypesSymbolVisitor : SymbolVisitor
     {
         //// ===========================================================================================================
@@ -18,7 +22,7 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private readonly CancellationToken _cancellationToken;
-        private readonly HashSet<ITypeSymbol> _typeSymbols = new HashSet<ITypeSymbol>();
+        private readonly List<INamedTypeSymbol> _typeSymbols = new List<INamedTypeSymbol>();
 
         //// ===========================================================================================================
         //// Constructors
@@ -33,7 +37,7 @@ namespace Desalt.Core.Translation
         //// Properties
         //// ===========================================================================================================
 
-        public ISet<ITypeSymbol> ExternalTypeSymbols => _typeSymbols;
+        public ImmutableArray<INamedTypeSymbol> ScriptableTypeSymbols => _typeSymbols.ToImmutableArray();
 
         //// ===========================================================================================================
         //// Methods
@@ -69,7 +73,11 @@ namespace Desalt.Core.Translation
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            if (!symbol.IsNamespace && symbol.MetadataName != "<Module>")
+            // skip namespaces, delegates, modules, and things that have a [NonScriptable] attribute
+            if (!symbol.IsNamespace &&
+                symbol.DelegateInvokeMethod == null &&
+                symbol.MetadataName != "<Module>" &&
+                SymbolTableUtils.FindSaltarelleAttribute(symbol, "NonScriptable") == null)
             {
                 _typeSymbols.Add(symbol);
             }

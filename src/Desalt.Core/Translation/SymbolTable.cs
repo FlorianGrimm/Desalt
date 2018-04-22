@@ -7,49 +7,45 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
-    using Desalt.Core.Extensions;
+    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
 
-    /// <summary>
-    /// Interface for a symbol table that holds different information.
-    /// </summary>
-    internal interface IConcurrentSymbolTable
-    {
-        /// <summary>
-        /// Returns a value indicating whether the symbol table contains a definition for the
-        /// specified symbol name.
-        /// </summary>
-        /// <param name="symbol">The symbol to look up.</param>
-        bool HasSymbol(ISymbol symbol);
+    internal delegate IEnumerable<KeyValuePair<ISymbol, T>> DiscoverSymbolsInDocumentFunc<T>(
+        DocumentTranslationContext context,
+        CancellationToken cancellationToken);
 
-        /// <summary>
-        /// Adds all of the defined types in the document to the mapping.
-        /// </summary>
-        void AddDefinedTypesInDocument(DocumentTranslationContext context, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds all of the defined types in external assembly references to the mapping.
-        /// </summary>
-        void AddExternallyReferencedTypes(DocumentTranslationContext context, CancellationToken cancellationToken);
-    }
+    internal delegate IEnumerable<KeyValuePair<ISymbol, T>> ProcessExternallyReferencedTypeFunc<T>(
+        ITypeSymbol externalType,
+        CompilerOptions options,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Abstract base class for a symbol table that holds different information.
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract partial class SymbolTable<T> : IConcurrentSymbolTable, IEnumerable<KeyValuePair<string, T>>
+    internal abstract class SymbolTable<T> : IEnumerable<KeyValuePair<string, T>>
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ConcurrentDictionary<string, T> _symbolMap = new ConcurrentDictionary<string, T>();
+        private readonly ImmutableDictionary<string, T> _symbolMap;
+
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        protected SymbolTable(IEnumerable<KeyValuePair<string, T>> values)
+        {
+            _symbolMap = values.ToImmutableDictionary();
+        }
 
         //// ===========================================================================================================
         //// Indexers
@@ -137,52 +133,81 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Adds all of the defined types in the document to the mapping.
+        /// Discovers all of the symbols needed for this symbol table.
         /// </summary>
-        public abstract void AddDefinedTypesInDocument(
-            DocumentTranslationContext context,
-            CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds all of the defined types in external assembly references to the mapping.
-        /// </summary>
-        public void AddExternallyReferencedTypes(
-            DocumentTranslationContext context,
-            CancellationToken cancellationToken)
+        /// <param name="documentsContexts">The documents to process.</param>
+        /// <param name="discoverSymbolsInDocumentFunc">
+        /// A function to call for each document to discover the symbols defined in the document to
+        /// add to the symbol table.
+        /// </param>
+        /// <param name="processExternallyReferencedTypeFunc">
+        /// An optional function to call for each externally referenced type.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        protected static async Task<IEnumerable<KeyValuePair<string, T>>> DiscoverSymbolsAsync(
+            IEnumerable<DocumentTranslationContext> documentsContexts,
+            DiscoverSymbolsInDocumentFunc<T> discoverSymbolsInDocumentFunc,
+            ProcessExternallyReferencedTypeFunc<T> processExternallyReferencedTypeFunc = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            ExternalTypeWalker walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
-            walker.Visit(context.RootSyntax);
-            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
-
-            // add in all of the symbols for referenced assemblies
-            ScriptableTypesSymbolVisitor visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
-            IEnumerable<IAssemblySymbol> assemblies =
-                externalTypeSymbols.Select(symbol => symbol.ContainingAssembly).Distinct();
-            foreach (IAssemblySymbol assemblySymbol in assemblies)
+            if (documentsContexts == null)
             {
-                visitor.Visit(assemblySymbol);
+                throw new ArgumentNullException(nameof(documentsContexts));
             }
 
-            externalTypeSymbols.AddRange(visitor.ExternalTypeSymbols);
-
-            foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
+            if (discoverSymbolsInDocumentFunc == null)
             {
-                AddExternallyReferencedType(externalTypeSymbol, context, cancellationToken);
+                throw new ArgumentNullException(nameof(discoverSymbolsInDocumentFunc));
             }
-        }
 
-        /// <summary>
-        /// Adds a single type defined in an external assembly.
-        /// </summary>
-        protected abstract void AddExternallyReferencedType(
-            ITypeSymbol typeSymbol,
-            DocumentTranslationContext context,
-            CancellationToken cancellationToken);
+            DocumentTranslationContext[] contexts = documentsContexts.ToArray();
+            var documentSymbols = new IEnumerable<KeyValuePair<ISymbol, T>>[contexts.Length];
+            var externalSymbols = new IEnumerable<KeyValuePair<ISymbol, T>>[contexts.Length];
+            var tasks = new Task[contexts.Length];
 
-        protected T AddOrUpdate(ISymbol symbol, T value)
-        {
-            string key = SymbolTableUtils.KeyFromSymbol(symbol);
-            return _symbolMap.AddOrUpdate(key, _ => value, (_, __) => value);
+            // process each document in parallel
+            for (int i = 0; i < contexts.Length; i++)
+            {
+                // define a local variable for the index so the closure works properly
+                int i1 = i;
+                tasks[i] = Task.Run(
+                    () =>
+                    {
+                        var context = contexts[i1];
+                        documentSymbols[i1] = discoverSymbolsInDocumentFunc(context, cancellationToken);
+
+                        // find all of the external type references in the document
+                        if (processExternallyReferencedTypeFunc != null)
+                        {
+                            var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
+                            walker.Visit(context.RootSyntax);
+                            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+
+                            var processedExternalTypes = new List<IEnumerable<KeyValuePair<ISymbol, T>>>();
+                            foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
+                            {
+                                IEnumerable<KeyValuePair<ISymbol, T>> processedExternalType =
+                                    processExternallyReferencedTypeFunc(
+                                        externalTypeSymbol,
+                                        context.Options,
+                                        cancellationToken);
+
+                                processedExternalTypes.Add(processedExternalType);
+                            }
+                            externalSymbols[i1] = processedExternalTypes.SelectMany(x => x);
+                        }
+                    },
+                    cancellationToken);
+            }
+
+            await Task.WhenAll(tasks);
+
+            var allSymbols = documentSymbols.Concat(externalSymbols.Where(x => x != null))
+                .SelectMany(x => x)
+                .Distinct(SymbolTableUtils.GetKeyValueComparer<T>())
+                .Select(pair => new KeyValuePair<string, T>(SymbolTableUtils.KeyFromSymbol(pair.Key), pair.Value));
+
+            return allSymbols;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -22,13 +23,38 @@ namespace Desalt.Core.Translation
     internal class ScriptNameSymbolTable : SymbolTable<string>
     {
         //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        private ScriptNameSymbolTable(IEnumerable<KeyValuePair<string, string>> values)
+            : base(values)
+        {
+        }
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public static async Task<ScriptNameSymbolTable> CreateAsync(
+            IEnumerable<DocumentTranslationContext> documentsContexts,
+            bool excludeExternalReferenceTypes = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var allSymbols = await DiscoverSymbolsAsync(
+                documentsContexts,
+                DiscoverSymbolsInDocument,
+                excludeExternalReferenceTypes
+                    ? (ProcessExternallyReferencedTypeFunc<string>)null
+                    : ProcessExternallyReferencedType,
+                cancellationToken);
+
+            return new ScriptNameSymbolTable(allSymbols);
+        }
 
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public override void AddDefinedTypesInDocument(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> DiscoverSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
@@ -36,45 +62,51 @@ namespace Desalt.Core.Translation
                  .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
                  .Where(symbol => symbol.TypeKind != TypeKind.Delegate);
 
+            var allScriptNames = new List<KeyValuePair<ISymbol, string>>();
             foreach (INamedTypeSymbol symbol in allTypeDeclarationSymbols)
             {
-                AddType(symbol, context);
+                var scriptNamesForType = GetScriptNameOnTypeAndMembers(symbol, context.Options);
+                allScriptNames.AddRange(scriptNamesForType);
             }
+
+            return allScriptNames;
         }
 
         /// <summary>
         /// Adds a single type defined in an external assembly.
         /// </summary>
-        protected override void AddExternallyReferencedType(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessExternallyReferencedType(
             ITypeSymbol typeSymbol,
-            DocumentTranslationContext context,
+            CompilerOptions options,
             CancellationToken cancellationToken)
         {
-            AddType(typeSymbol, context);
+            return GetScriptNameOnTypeAndMembers(typeSymbol, options);
         }
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        private void AddType(ITypeSymbol typeSymbol, DocumentTranslationContext context)
+        private static IEnumerable<KeyValuePair<ISymbol, string>> GetScriptNameOnTypeAndMembers(
+            ITypeSymbol typeSymbol,
+            CompilerOptions options)
         {
             string typeName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
                 ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
                 : (FindScriptName(typeSymbol) ?? typeSymbol.Name);
 
-            AddOrUpdate(typeSymbol, typeName);
+            yield return new KeyValuePair<ISymbol, string>(typeSymbol, typeName);
 
             // add all of the members of the declared type, but skip over compiler-generated
             // stuff like auto-property backing fields, event add/remove functions, and property
             // get/set methods.
             var members = typeSymbol.GetMembers().Where(ShouldProcessMember);
 
-            RenameRules renameRules = context.Options.RenameRules;
+            RenameRules renameRules = options.RenameRules;
 
             foreach (ISymbol member in members)
             {
                 string scriptName = FindFieldScriptName(member, renameRules.FieldRule) ??
                     FindScriptName(member) ?? ToCamelCase(member.Name);
 
-                AddOrUpdate(member, scriptName);
+                yield return new KeyValuePair<ISymbol, string>(member, scriptName);
             }
         }
 
@@ -154,9 +186,8 @@ namespace Desalt.Core.Translation
             // see if there's a [PreserveMemberCase] on the containing assembly
             if (symbol.ContainingAssembly != null)
             {
-                AttributeData preserveMemberCaseAttributeData = SymbolTableUtils.FindSaltarelleAttribute(
-                    symbol.ContainingAssembly,
-                    "PreserveMemberCase");
+                AttributeData preserveMemberCaseAttributeData =
+                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingAssembly, "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -177,6 +208,7 @@ namespace Desalt.Core.Translation
 
             switch (renameRule)
             {
+                // ReSharper disable once RedundantCaseLabel
                 case FieldRenameRule.LowerCaseFirstChar:
                 default:
                     scriptName = FindScriptName(member) ?? ToCamelCase(member.Name);

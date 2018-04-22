@@ -44,6 +44,9 @@ namespace Desalt.Core.Translation
 
         public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
 
+        public static IEqualityComparer<KeyValuePair<ISymbol, T>> GetKeyValueComparer<T>() =>
+            new SymbolKeyValuePairComparer<T>();
+
         /// <summary>
         /// Finds a Saltarelle attribute attached to a specified symbol.
         /// </summary>
@@ -102,6 +105,14 @@ namespace Desalt.Core.Translation
             public bool Equals(ISymbol x, ISymbol y) => KeyFromSymbol(x).Equals(KeyFromSymbol(y));
 
             public int GetHashCode(ISymbol obj) => KeyFromSymbol(obj).GetHashCode();
+        }
+
+        private sealed class SymbolKeyValuePairComparer<T> : IEqualityComparer<KeyValuePair<ISymbol, T>>
+        {
+            public bool Equals(KeyValuePair<ISymbol, T> x, KeyValuePair<ISymbol, T> y) =>
+                KeyFromSymbol(x.Key).Equals(KeyFromSymbol(y.Key));
+
+            public int GetHashCode(KeyValuePair<ISymbol, T> obj) => KeyFromSymbol(obj.Key).GetHashCode();
         }
     }
 }

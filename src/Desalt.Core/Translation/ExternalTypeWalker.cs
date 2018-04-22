@@ -15,7 +15,7 @@ namespace Desalt.Core.Translation
 
     /// <summary>
     /// Walks the C# syntax tree and gathers all of the type symbols that are declared in
-    /// reference assemblies.
+    /// externally-referenced assemblies.
     /// </summary>
     internal sealed class ExternalTypeWalker : CSharpSyntaxWalker
     {
@@ -26,7 +26,7 @@ namespace Desalt.Core.Translation
         private readonly IAssemblySymbol _assemblyBeingTranslated;
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
-        private readonly HashSet<ITypeSymbol> _typeSymbols = new HashSet<ITypeSymbol>();
+        private readonly HashSet<ITypeSymbol> _typeSymbols = new HashSet<ITypeSymbol>(SymbolTableUtils.KeyComparer);
 
         //// ===========================================================================================================
         //// Constructors

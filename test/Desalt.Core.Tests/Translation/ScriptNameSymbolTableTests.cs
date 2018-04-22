@@ -8,8 +8,8 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
@@ -68,16 +68,16 @@ namespace Desalt.Core.Tests.Translation
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
-                var symbolTable = new ScriptNameSymbolTable();
+                var symbolTable = await ScriptNameSymbolTable.CreateAsync(
+                    context.ToSafeArray(),
+                    excludeExternalReferenceTypes: assertKind == AssertKind.OnlyDocumentTypes);
 
                 if (assertKind == AssertKind.OnlyDocumentTypes)
                 {
-                    symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
                     symbolTable.Should().BeEquivalentTo(expectedEntries);
                 }
                 else
                 {
-                    symbolTable.AddExternallyReferencedTypes(context, CancellationToken.None);
                     symbolTable.Should().Contain(expectedEntries);
                 }
             }

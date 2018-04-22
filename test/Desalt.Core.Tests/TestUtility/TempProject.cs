@@ -8,9 +8,9 @@
 namespace Desalt.Core.Tests.TestUtility
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Translation;
     using FluentAssertions;
@@ -118,13 +118,8 @@ namespace Desalt.Core.Tests.TestUtility
         {
             DocumentTranslationContext thisContext = null;
 
-            // create the import symbol table
-            var importTable = new ImportSymbolTable();
-
-            // create the script name symbol table
-            var scriptNameTable = new ScriptNameSymbolTable();
-
             // add all of the symbols from all of the documents in the project
+            var contexts = new List<DocumentTranslationContext>();
             foreach (string docName in _workspace.CurrentSolution.Projects.Single().Documents.Select(doc => doc.Name))
             {
                 DocumentTranslationContext context = await CreateContextForFileAsync(docName, options);
@@ -133,12 +128,14 @@ namespace Desalt.Core.Tests.TestUtility
                     thisContext = context;
                 }
 
-                importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
-                importTable.AddExternallyReferencedTypes(context, CancellationToken.None);
-
-                scriptNameTable.AddDefinedTypesInDocument(context, CancellationToken.None);
-                scriptNameTable.AddExternallyReferencedTypes(context, CancellationToken.None);
+                contexts.Add(context);
             }
+
+            // create the import symbol table
+            var importTable = await ImportSymbolTable.CreateAsync(contexts);
+
+            // create the script name symbol table
+            var scriptNameTable = await ScriptNameSymbolTable.CreateAsync(contexts);
 
             thisContext.Should().NotBeNull();
             return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);

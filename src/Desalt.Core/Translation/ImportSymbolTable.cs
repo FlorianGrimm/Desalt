@@ -9,7 +9,10 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -21,33 +24,61 @@ namespace Desalt.Core.Translation
     internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
     {
         //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        private ImportSymbolTable(IEnumerable<KeyValuePair<string, ImportSymbolInfo>> values)
+            : base(values)
+        {
+        }
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public static Task<ImportSymbolTable> CreateAsync(
+            DocumentTranslationContext context,
+            bool excludeExternalReferenceTypes = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return CreateAsync(context.ToSafeArray(), excludeExternalReferenceTypes, cancellationToken);
+        }
+
+        public static async Task<ImportSymbolTable> CreateAsync(
+            IEnumerable<DocumentTranslationContext> documentsContexts,
+            bool excludeExternalReferenceTypes = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var allSymbols = await DiscoverSymbolsAsync(
+                documentsContexts,
+                DiscoverSymbolsInDocument,
+                excludeExternalReferenceTypes
+                    ? (ProcessExternallyReferencedTypeFunc<ImportSymbolInfo>)null
+                    : ProcessExternallyReferencedType,
+                cancellationToken);
+
+            return new ImportSymbolTable(allSymbols);
+        }
 
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public override void AddDefinedTypesInDocument(
+        private static IEnumerable<KeyValuePair<ISymbol, ImportSymbolInfo>> DiscoverSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
-            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols =
-                context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken);
-
-            foreach (INamedTypeSymbol typeSymbol in allTypeDeclarationSymbols)
-            {
-                AddOrUpdate(typeSymbol, symbolInfo);
-            }
+            return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
+                .Select(typeSymbol => new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));
         }
 
         /// <summary>
         /// Adds all of the defined types in external assembly references to the mapping.
         /// </summary>
-        protected override void AddExternallyReferencedType(
+        private static IEnumerable<KeyValuePair<ISymbol, ImportSymbolInfo>> ProcessExternallyReferencedType(
             ITypeSymbol typeSymbol,
-            DocumentTranslationContext context,
+            CompilerOptions options,
             CancellationToken cancellationToken)
         {
             var containingAssembly = typeSymbol.ContainingAssembly;
@@ -58,7 +89,7 @@ namespace Desalt.Core.Translation
             {
                 string moduleName = containingAssembly.Name;
                 var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
-                AddOrUpdate(typeSymbol, symbolInfo);
+                yield return new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo);
             }
         }
     }
