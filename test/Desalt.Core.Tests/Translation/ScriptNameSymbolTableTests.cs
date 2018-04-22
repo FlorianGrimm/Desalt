@@ -20,7 +20,7 @@ namespace Desalt.Core.Tests.Translation
     {
         private enum AssertKind
         {
-            AllDocumentTypes,
+            OnlyDocumentTypes,
             ExternalAssemblyTypes,
         }
 
@@ -31,7 +31,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options: null,
-                assertKind: AssertKind.AllDocumentTypes,
+                assertKind: AssertKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -43,7 +43,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options,
-                assertKind: AssertKind.AllDocumentTypes,
+                assertKind: AssertKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -70,7 +70,7 @@ namespace Desalt.Core.Tests.Translation
 
                 var symbolTable = new ScriptNameSymbolTable();
 
-                if (assertKind == AssertKind.AllDocumentTypes)
+                if (assertKind == AssertKind.OnlyDocumentTypes)
                 {
                     symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
                     symbolTable.Should().BeEquivalentTo(expectedEntries);
