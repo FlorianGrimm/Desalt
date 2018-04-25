@@ -11,7 +11,6 @@ namespace Desalt.Core.Translation
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
@@ -36,20 +35,20 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static Task<ImportSymbolTable> CreateAsync(
+        public static ImportSymbolTable Create(
             DocumentTranslationContext context,
             SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return CreateAsync(context.ToSafeArray(), discoveryKind, cancellationToken);
+            return Create(context.ToSafeArray(), discoveryKind, cancellationToken);
         }
 
-        public static async Task<ImportSymbolTable> CreateAsync(
+        public static ImportSymbolTable Create(
             IEnumerable<DocumentTranslationContext> documentsContexts,
             SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var allSymbols = await DiscoverSymbolsAsync(
+            var allSymbols = DiscoverSymbols(
                 documentsContexts,
                 discoveryKind,
                 DiscoverSymbolsInDocument,

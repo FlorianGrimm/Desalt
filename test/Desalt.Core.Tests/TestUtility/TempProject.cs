@@ -133,10 +133,10 @@ namespace Desalt.Core.Tests.TestUtility
             }
 
             // create the import symbol table
-            var importTable = await ImportSymbolTable.CreateAsync(contexts, discoveryKind);
+            var importTable = ImportSymbolTable.Create(contexts, discoveryKind);
 
             // create the script name symbol table
-            var scriptNameTable = await ScriptNameSymbolTable.CreateAsync(contexts, discoveryKind);
+            var scriptNameTable = ScriptNameSymbolTable.Create(contexts, discoveryKind);
 
             thisContext.Should().NotBeNull();
             return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);

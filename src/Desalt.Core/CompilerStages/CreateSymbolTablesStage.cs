@@ -44,7 +44,7 @@ namespace Desalt.Core.CompilerStages
             {
                 // create the import symbol table
                 Task.Run<object>(
-                    async () => await ImportSymbolTable.CreateAsync(
+                    () => ImportSymbolTable.Create(
                         contexts,
                         SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken: cancellationToken),
@@ -52,7 +52,7 @@ namespace Desalt.Core.CompilerStages
 
                 // create the script name symbol table
                 Task.Run<object>(
-                    async () => await ScriptNameSymbolTable.CreateAsync(
+                    () => ScriptNameSymbolTable.Create(
                         contexts,
                         SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken: cancellationToken),

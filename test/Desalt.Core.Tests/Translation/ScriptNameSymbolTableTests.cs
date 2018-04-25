@@ -62,7 +62,7 @@ namespace Desalt.Core.Tests.Translation
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
-                var symbolTable = await ScriptNameSymbolTable.CreateAsync(context.ToSafeArray(), discoveryKind);
+                var symbolTable = ScriptNameSymbolTable.Create(context.ToSafeArray(), discoveryKind);
 
                 if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
                 {
