@@ -136,6 +136,7 @@ namespace Desalt.Core.Translation
         /// Discovers all of the symbols needed for this symbol table.
         /// </summary>
         /// <param name="documentsContexts">The documents to process.</param>
+        /// <param name="discoveryKind">The kinds of types to add to the symbol table.</param>
         /// <param name="discoverSymbolsInDocumentFunc">
         /// A function to call for each document to discover the symbols defined in the document to
         /// add to the symbol table.
@@ -146,8 +147,9 @@ namespace Desalt.Core.Translation
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
         protected static async Task<IEnumerable<KeyValuePair<string, T>>> DiscoverSymbolsAsync(
             IEnumerable<DocumentTranslationContext> documentsContexts,
+            SymbolTableDiscoveryKind discoveryKind,
             DiscoverSymbolsInDocumentFunc<T> discoverSymbolsInDocumentFunc,
-            ProcessExternallyReferencedTypeFunc<T> processExternallyReferencedTypeFunc = null,
+            ProcessExternallyReferencedTypeFunc<T> processExternallyReferencedTypeFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (documentsContexts == null)
@@ -158,6 +160,11 @@ namespace Desalt.Core.Translation
             if (discoverSymbolsInDocumentFunc == null)
             {
                 throw new ArgumentNullException(nameof(discoverSymbolsInDocumentFunc));
+            }
+
+            if (processExternallyReferencedTypeFunc == null)
+            {
+                throw new ArgumentNullException(nameof(processExternallyReferencedTypeFunc));
             }
 
             DocumentTranslationContext[] contexts = documentsContexts.ToArray();
@@ -174,28 +181,14 @@ namespace Desalt.Core.Translation
                     () =>
                     {
                         var context = contexts[i1];
-                        documentSymbols[i1] = discoverSymbolsInDocumentFunc(context, cancellationToken);
-
-                        // find all of the external type references in the document
-                        if (processExternallyReferencedTypeFunc != null)
-                        {
-                            var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
-                            walker.Visit(context.RootSyntax);
-                            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
-
-                            var processedExternalTypes = new List<IEnumerable<KeyValuePair<ISymbol, T>>>();
-                            foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
-                            {
-                                IEnumerable<KeyValuePair<ISymbol, T>> processedExternalType =
-                                    processExternallyReferencedTypeFunc(
-                                        externalTypeSymbol,
-                                        context.Options,
-                                        cancellationToken);
-
-                                processedExternalTypes.Add(processedExternalType);
-                            }
-                            externalSymbols[i1] = processedExternalTypes.SelectMany(x => x);
-                        }
+                        var symbols = DiscoverSymbolsInDocument(
+                            context,
+                            discoveryKind,
+                            discoverSymbolsInDocumentFunc,
+                            processExternallyReferencedTypeFunc,
+                            cancellationToken);
+                        documentSymbols[i1] = symbols.documentSymbols;
+                        externalSymbols[i1] = symbols.externalSymbols;
                     },
                     cancellationToken);
             }
@@ -208,6 +201,43 @@ namespace Desalt.Core.Translation
                 .Select(pair => new KeyValuePair<string, T>(SymbolTableUtils.KeyFromSymbol(pair.Key), pair.Value));
 
             return allSymbols;
+        }
+
+        private static (IEnumerable<KeyValuePair<ISymbol, T>> documentSymbols, IEnumerable<KeyValuePair<ISymbol, T>>
+            externalSymbols) DiscoverSymbolsInDocument(
+                DocumentTranslationContext context,
+                SymbolTableDiscoveryKind discoveryKind,
+                DiscoverSymbolsInDocumentFunc<T> discoverSymbolsInDocumentFunc,
+                ProcessExternallyReferencedTypeFunc<T> processExternallyReferencedTypeFunc,
+                CancellationToken cancellationToken)
+        {
+            IEnumerable<KeyValuePair<ISymbol, T>> documentSymbols =
+                discoverSymbolsInDocumentFunc(context, cancellationToken);
+            IEnumerable<KeyValuePair<ISymbol, T>> externalSymbols = Enumerable.Empty<KeyValuePair<ISymbol, T>>();
+
+            // we're done if we just need the document types
+            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            {
+                return (documentSymbols, externalSymbols);
+            }
+
+            // find all of the external type references in the document
+            var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
+            walker.Visit(context.RootSyntax);
+            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+
+            var processedExternalTypes = new List<IEnumerable<KeyValuePair<ISymbol, T>>>();
+            foreach (ITypeSymbol externalTypeSymbol in externalTypeSymbols)
+            {
+                IEnumerable<KeyValuePair<ISymbol, T>> processedExternalType =
+                    processExternallyReferencedTypeFunc(externalTypeSymbol, context.Options, cancellationToken);
+
+                processedExternalTypes.Add(processedExternalType);
+            }
+
+            externalSymbols = processedExternalTypes.SelectMany(x => x);
+
+            return (documentSymbols, externalSymbols);
         }
     }
 }

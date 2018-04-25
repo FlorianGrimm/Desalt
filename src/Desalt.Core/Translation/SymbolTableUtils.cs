@@ -8,7 +8,9 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -22,6 +24,13 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
+
+        /// <summary>
+        /// Used to cache externally-referenced assembly types so we only have to populate them up
+        /// once since it can be expensive.
+        /// </summary>
+        private static ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>> s_assemblySymbols =
+            ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>>.Empty;
 
         private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
             SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
@@ -94,6 +103,28 @@ namespace Desalt.Core.Translation
         {
             AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
             return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
+        }
+
+        /// <summary>
+        /// Gets all of the types defined in the assembly that are scriptable, meaning that they
+        /// aren't decorated with a [NonScriptable] attribute. The results are cached between calls
+        /// for efficiency and are retrieved in a thread-safe manner.
+        /// </summary>
+        /// <param name="assemblySymbol">The assembly to use for type lookup.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>An immutable array of all the scriptable types in the assembly.</returns>
+        public static ImmutableArray<INamedTypeSymbol> GetScriptableTypesInAssembly(
+            IAssemblySymbol assemblySymbol,
+            CancellationToken cancellationToken)
+        {
+            ImmutableArray<INamedTypeSymbol> FetchScriptableTypes(IAssemblySymbol _)
+            {
+                ScriptableTypesSymbolVisitor visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
+                visitor.Visit(assemblySymbol);
+                return visitor.ScriptableTypeSymbols;
+            }
+
+            return ImmutableInterlocked.GetOrAdd(ref s_assemblySymbols, assemblySymbol, FetchScriptableTypes);
         }
 
         //// ===========================================================================================================

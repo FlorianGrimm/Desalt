@@ -38,23 +38,22 @@ namespace Desalt.Core.Translation
 
         public static Task<ImportSymbolTable> CreateAsync(
             DocumentTranslationContext context,
-            bool excludeExternalReferenceTypes = false,
+            SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return CreateAsync(context.ToSafeArray(), excludeExternalReferenceTypes, cancellationToken);
+            return CreateAsync(context.ToSafeArray(), discoveryKind, cancellationToken);
         }
 
         public static async Task<ImportSymbolTable> CreateAsync(
             IEnumerable<DocumentTranslationContext> documentsContexts,
-            bool excludeExternalReferenceTypes = false,
+            SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var allSymbols = await DiscoverSymbolsAsync(
                 documentsContexts,
+                discoveryKind,
                 DiscoverSymbolsInDocument,
-                excludeExternalReferenceTypes
-                    ? (ProcessExternallyReferencedTypeFunc<ImportSymbolInfo>)null
-                    : ProcessExternallyReferencedType,
+                ProcessExternallyReferencedType,
                 cancellationToken);
 
             return new ImportSymbolTable(allSymbols);

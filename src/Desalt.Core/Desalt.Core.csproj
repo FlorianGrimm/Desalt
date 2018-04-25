@@ -159,6 +159,7 @@
     <Compile Include="Translation\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />
     <Compile Include="Translation\SymbolTable.cs" />
+    <Compile Include="Translation\SymbolTableDiscoveryKind.cs" />
     <Compile Include="Translation\SymbolTableUtils.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />

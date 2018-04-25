@@ -18,12 +18,6 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public class ScriptNameSymbolTableTests
     {
-        private enum AssertKind
-        {
-            OnlyDocumentTypes,
-            ExternalAssemblyTypes,
-        }
-
         private static async Task AssertDocumentEntriesInSymbolTable(
             string code,
             params KeyValuePair<string, string>[] expectedEntries)
@@ -31,7 +25,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options: null,
-                assertKind: AssertKind.OnlyDocumentTypes,
+                discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -43,7 +37,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options,
-                assertKind: AssertKind.OnlyDocumentTypes,
+                discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -54,25 +48,23 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options: null,
-                assertKind: AssertKind.ExternalAssemblyTypes,
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes,
                 expectedEntries: expectedEntries);
         }
 
         private static async Task AssertEntriesInSymbolTable(
             string code,
             CompilerOptions options,
-            AssertKind assertKind,
+            SymbolTableDiscoveryKind discoveryKind,
             params KeyValuePair<string, string>[] expectedEntries)
         {
             using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
-                var symbolTable = await ScriptNameSymbolTable.CreateAsync(
-                    context.ToSafeArray(),
-                    excludeExternalReferenceTypes: assertKind == AssertKind.OnlyDocumentTypes);
+                var symbolTable = await ScriptNameSymbolTable.CreateAsync(context.ToSafeArray(), discoveryKind);
 
-                if (assertKind == AssertKind.OnlyDocumentTypes)
+                if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
                 {
                     symbolTable.Should().BeEquivalentTo(expectedEntries);
                 }

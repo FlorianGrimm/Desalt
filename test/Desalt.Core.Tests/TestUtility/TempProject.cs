@@ -114,7 +114,8 @@ namespace Desalt.Core.Tests.TestUtility
 
         public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
             string fileName,
-            CompilerOptions options = null)
+            CompilerOptions options = null,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
             DocumentTranslationContext thisContext = null;
 
@@ -132,10 +133,10 @@ namespace Desalt.Core.Tests.TestUtility
             }
 
             // create the import symbol table
-            var importTable = await ImportSymbolTable.CreateAsync(contexts);
+            var importTable = await ImportSymbolTable.CreateAsync(contexts, discoveryKind);
 
             // create the script name symbol table
-            var scriptNameTable = await ScriptNameSymbolTable.CreateAsync(contexts);
+            var scriptNameTable = await ScriptNameSymbolTable.CreateAsync(contexts, discoveryKind);
 
             thisContext.Should().NotBeNull();
             return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);

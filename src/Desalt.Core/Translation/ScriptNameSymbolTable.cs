@@ -37,15 +37,14 @@ namespace Desalt.Core.Translation
 
         public static async Task<ScriptNameSymbolTable> CreateAsync(
             IEnumerable<DocumentTranslationContext> documentsContexts,
-            bool excludeExternalReferenceTypes = false,
+            SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var allSymbols = await DiscoverSymbolsAsync(
                 documentsContexts,
+                discoveryKind,
                 DiscoverSymbolsInDocument,
-                excludeExternalReferenceTypes
-                    ? (ProcessExternallyReferencedTypeFunc<string>)null
-                    : ProcessExternallyReferencedType,
+                ProcessExternallyReferencedType,
                 cancellationToken);
 
             return new ScriptNameSymbolTable(allSymbols);
