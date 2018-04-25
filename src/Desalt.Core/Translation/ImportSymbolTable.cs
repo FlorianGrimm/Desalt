@@ -8,10 +8,9 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
-    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -26,8 +25,10 @@ namespace Desalt.Core.Translation
         //// Constructors
         //// ===========================================================================================================
 
-        private ImportSymbolTable(IEnumerable<KeyValuePair<string, ImportSymbolInfo>> values)
-            : base(values)
+        private ImportSymbolTable(
+            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> documentSymbols,
+            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> directlyReferencedExternalSymbols)
+            : base(documentSymbols, directlyReferencedExternalSymbols, null)
         {
         }
 
@@ -36,59 +37,60 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public static ImportSymbolTable Create(
-            DocumentTranslationContext context,
-            SymbolTableDiscoveryKind discoveryKind,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Create(context.ToSafeArray(), discoveryKind, cancellationToken);
-        }
-
-        public static ImportSymbolTable Create(
             IEnumerable<DocumentTranslationContext> documentsContexts,
             SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var allSymbols = DiscoverSymbols(
-                documentsContexts,
-                discoveryKind,
-                DiscoverSymbolsInDocument,
-                ProcessExternallyReferencedType,
-                cancellationToken);
+            ImmutableArray<DocumentTranslationContext> contexts = documentsContexts.ToImmutableArray();
 
-            return new ImportSymbolTable(allSymbols);
+            // process the types defined in the documents
+            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> documentSymbols = contexts.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
+                .ToImmutableArray();
+
+            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            {
+                return new ImportSymbolTable(
+                    documentSymbols,
+                    ImmutableArray<KeyValuePair<string, ImportSymbolInfo>>.Empty);
+            }
+
+            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> directlyReferencedSymbols = contexts
+                .SelectMany(
+                    context => SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
+                .Distinct()
+                .Select(ProcessExternallyReferencedType)
+                .ToImmutableArray();
+
+            return new ImportSymbolTable(documentSymbols, directlyReferencedSymbols);
         }
 
         /// <summary>
-        /// Adds all of the defined types in the document to the mapping.
+        /// Processes all of the defined types in the document to the mapping.
         /// </summary>
-        private static IEnumerable<KeyValuePair<ISymbol, ImportSymbolInfo>> DiscoverSymbolsInDocument(
+        private static IEnumerable<KeyValuePair<string, ImportSymbolInfo>> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
             return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                .Select(typeSymbol => new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));
+                .Select(
+                    typeSymbol => new KeyValuePair<string, ImportSymbolInfo>(
+                        SymbolTableUtils.KeyFromSymbol(typeSymbol),
+                        symbolInfo));
         }
 
         /// <summary>
-        /// Adds all of the defined types in external assembly references to the mapping.
+        /// Processes an externally-referenced type.
         /// </summary>
-        private static IEnumerable<KeyValuePair<ISymbol, ImportSymbolInfo>> ProcessExternallyReferencedType(
-            ITypeSymbol typeSymbol,
-            CompilerOptions options,
-            CancellationToken cancellationToken)
+        private static KeyValuePair<string, ImportSymbolInfo> ProcessExternallyReferencedType(ISymbol symbol)
         {
-            var containingAssembly = typeSymbol.ContainingAssembly;
-            Debug.Assert(containingAssembly != null, $"{typeSymbol.Name}.ContainingAssembly is null");
-
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (containingAssembly != null)
-            {
-                string moduleName = containingAssembly.Name;
-                var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
-                yield return new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo);
-            }
+            var containingAssembly = symbol.ContainingAssembly;
+            string moduleName = containingAssembly.Name;
+            var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
+            return new KeyValuePair<string, ImportSymbolInfo>(SymbolTableUtils.KeyFromSymbol(symbol), symbolInfo);
         }
     }
 

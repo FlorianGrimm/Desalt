@@ -7,7 +7,10 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
@@ -64,13 +67,26 @@ namespace Desalt.Core.Tests.Translation
 
                 var symbolTable = ScriptNameSymbolTable.Create(context.ToSafeArray(), discoveryKind);
 
-                if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
+                switch (discoveryKind)
                 {
-                    symbolTable.Should().BeEquivalentTo(expectedEntries);
-                }
-                else
-                {
-                    symbolTable.Should().Contain(expectedEntries);
+                    case SymbolTableDiscoveryKind.OnlyDocumentTypes:
+                        symbolTable.DocumentSymbols.Should().BeEquivalentTo(expectedEntries);
+                        break;
+
+                    case SymbolTableDiscoveryKind.DocumentAndReferencedTypes:
+                        symbolTable.DirectlyReferencedExternalSymbols.Should().Contain(expectedEntries);
+                        break;
+
+                    case SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes:
+                        var expectedKeys = expectedEntries.Select(pair => pair.Key).ToImmutableArray();
+                        symbolTable.IndirectlyReferencedExternalSymbols.Where(pair => pair.Key.IsOneOf(expectedKeys))
+                            .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.Value))
+                            .Should()
+                            .BeEquivalentTo(expectedEntries);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(discoveryKind), discoveryKind, null);
                 }
             }
         }
@@ -354,9 +370,11 @@ class C
         [TestMethod]
         public async Task ScriptNameSymbolTable_should_bring_in_all_of_the_symbols_in_referenced_assemblies()
         {
-            await AssertExternalEntriesInSymbolTable(
+            await AssertEntriesInSymbolTable(
                 "using System; class C { bool x; }",
-                new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
+                options: null,
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                expectedEntries: new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -36,7 +37,9 @@ namespace Desalt.Core.Translation
             SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
             SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            SymbolDisplayMemberOptions.IncludeContainingType | SymbolDisplayMemberOptions.IncludeParameters,
+            SymbolDisplayMemberOptions.IncludeContainingType |
+            SymbolDisplayMemberOptions.IncludeParameters |
+            SymbolDisplayMemberOptions.IncludeExplicitInterface,
             SymbolDisplayDelegateStyle.NameOnly,
             SymbolDisplayExtensionMethodStyle.StaticMethod,
             SymbolDisplayParameterOptions.IncludeName | SymbolDisplayParameterOptions.IncludeType,
@@ -53,8 +56,8 @@ namespace Desalt.Core.Translation
 
         public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
 
-        public static IEqualityComparer<KeyValuePair<ISymbol, T>> GetKeyValueComparer<T>() =>
-            new SymbolKeyValuePairComparer<T>();
+        public static IEqualityComparer<KeyValuePair<string, T>> GetKeyValueComparer<T>() =>
+            new StringKeyValuePairComparer<T>();
 
         /// <summary>
         /// Finds a Saltarelle attribute attached to a specified symbol.
@@ -127,6 +130,51 @@ namespace Desalt.Core.Translation
             return ImmutableInterlocked.GetOrAdd(ref s_assemblySymbols, assemblySymbol, FetchScriptableTypes);
         }
 
+        /// <summary>
+        /// Discovers all of the types that are directly referenced in the document, but live in
+        /// external assemblies.
+        /// </summary>
+        /// <param name="context">The <see cref="DocumentTranslationContext"/> to discover.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>All of the externally-referenced type symbols.</returns>
+        public static ISet<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            // find all of the external type references in the document
+            var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
+            walker.Visit(context.RootSyntax);
+            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+            return externalTypeSymbols;
+        }
+
+        /// <summary>
+        /// Discovers all of the types defined in assemblies directly referenced by the documents.
+        /// Mscorlib is always discovered.
+        /// </summary>
+        /// <param name="externalSymbols">All of the externally referenced type symbols.</param>
+        /// <param name="compilation">The compilation to use for looking up mscorlib.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>All of the type symbols defined in external assemblies.</returns>
+        public static ImmutableArray<INamedTypeSymbol> DiscoverTypesInReferencedAssemblies(
+            IEnumerable<ITypeSymbol> externalSymbols,
+            Compilation compilation,
+            CancellationToken cancellationToken)
+        {
+            // get mscorlib
+            IAssemblySymbol mscorlib = compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
+
+            IEnumerable<IAssemblySymbol> referencedAssemblySymbols = mscorlib.ToSingleEnumerable()
+                .Concat(externalSymbols.Select(symbol => symbol.ContainingAssembly))
+                .Distinct();
+
+            // get all of the assembly types
+            return referencedAssemblySymbols.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(assemblySymbol => GetScriptableTypesInAssembly(assemblySymbol, cancellationToken))
+                .ToImmutableArray();
+        }
+
         //// ===========================================================================================================
         //// Classes
         //// ===========================================================================================================
@@ -138,12 +186,11 @@ namespace Desalt.Core.Translation
             public int GetHashCode(ISymbol obj) => KeyFromSymbol(obj).GetHashCode();
         }
 
-        private sealed class SymbolKeyValuePairComparer<T> : IEqualityComparer<KeyValuePair<ISymbol, T>>
+        private sealed class StringKeyValuePairComparer<T> : IEqualityComparer<KeyValuePair<string, T>>
         {
-            public bool Equals(KeyValuePair<ISymbol, T> x, KeyValuePair<ISymbol, T> y) =>
-                KeyFromSymbol(x.Key).Equals(KeyFromSymbol(y.Key));
+            public bool Equals(KeyValuePair<string, T> x, KeyValuePair<string, T> y) => x.Key.Equals(y.Key);
 
-            public int GetHashCode(KeyValuePair<ISymbol, T> obj) => KeyFromSymbol(obj.Key).GetHashCode();
+            public int GetHashCode(KeyValuePair<string, T> obj) => obj.Key.GetHashCode();
         }
     }
 }
