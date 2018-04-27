@@ -195,11 +195,51 @@ class Logger {
             }
 
             [TestMethod]
-            public async Task ObjectCreationExpression_should_use_InlineCode()
+            public async Task ObjectCreationExpression_should_use_InlineCode_for_ListT_creation()
             {
                 await AssertTranslation(
-                    "class C { List<int> list = new List<int>(); }",
-                    "class C {\n  private list: number[] = [];\n}\n");
+                    @"
+class C
+{
+    List<int> list1 = new List<int>();
+    List<int> list2 = new List<int>(capacity: 10);
+    List<int> list3 = new List<int>(1, 2, 3);
+    List<int> list4 = new List<int>(new [] { 1, 2, 3 });
+}",
+                    @"
+class C {
+  private list1: number[] = [];
+
+  private list2: number[] = [];
+
+  private list3: number[] = [1, 2, 3];
+
+  private list4: number[] = ss.arrayClone([1, 2, 3]);
+}
+");
+            }
+
+            [TestMethod]
+            public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
+            {
+                await AssertTranslation(
+                    @"
+class C
+{
+    void Method()
+    {
+        List<int> list = new List<int>();
+        list.AddRange(new [] { 1, 2, 3 });
+    }
+}",
+                    @"
+class C {
+  private method(): void {
+    let list: number[] = [];
+    ss.arrayAddRange(list, [1, 2, 3]);
+  }
+}
+");
             }
         }
     }

@@ -203,6 +203,20 @@ namespace Desalt.Core.Translation
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+
+            // see if there's an [InlineCode] entry for the method invocation
+            if (_semanticModel.GetSymbolInfo(node.Expression).Symbol is IMethodSymbol methodSymbol &&
+                _inlineCodeTable.HasSymbol(methodSymbol) &&
+                _inlineCodeTable[methodSymbol] != null)
+            {
+                yield return InlineCodeTranslator.Translate(
+                    methodSymbol,
+                    _inlineCodeTable[methodSymbol],
+                    leftSide,
+                    arguments);
+                yield break;
+            }
+
             ITsCallExpression translated = Factory.Call(leftSide, arguments);
             yield return translated;
         }
@@ -213,17 +227,35 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
+            var leftSide = (ITsExpression)Visit(node.Type).Single();
+            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+
             // see if there's an [InlineCode] entry for the ctor
-            var ctorSymbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            if (ctorSymbol != null && _inlineCodeTable.HasSymbol(ctorSymbol) && _inlineCodeTable[ctorSymbol] != null)
+            if (_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorSymbol &&
+                _inlineCodeTable.HasSymbol(ctorSymbol) &&
+                _inlineCodeTable[ctorSymbol] != null)
             {
-                yield return Factory.Identifier(_inlineCodeTable[ctorSymbol]);
+                yield return InlineCodeTranslator.Translate(
+                    ctorSymbol,
+                    _inlineCodeTable[ctorSymbol],
+                    leftSide,
+                    arguments);
                 yield break;
             }
 
-            var leftSide = (ITsExpression)Visit(node.Type).Single();
-            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ImplicitArrayCreationExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
+        public override IEnumerable<IAstNode> VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        {
+            var elements =
+                new List<ITsExpression>(node.Initializer.Expressions.SelectMany(Visit).Cast<ITsExpression>());
+            ITsArrayLiteral translated = Factory.Array(elements.ToArray());
             yield return translated;
         }
 
