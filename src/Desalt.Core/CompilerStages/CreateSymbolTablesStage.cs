@@ -37,32 +37,32 @@ namespace Desalt.Core.CompilerStages
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var importSymbolTable = new ImportSymbolTable();
-            var scriptNameSymbolTable = new ScriptNameSymbolTable();
-            var symbolTables = new IConcurrentSymbolTable[] { importSymbolTable, scriptNameSymbolTable };
-
             var contexts = input.ToArray();
 
-            // for each symbol table, add all of the types in the document in parallel (the symbol
-            // table is thread-safe)
-            List<Task> tasks = new List<Task>();
-            foreach (IConcurrentSymbolTable symbolTable in symbolTables)
+            // construct each symbol table in parallel
+            var tasks = new List<Task<object>>
             {
-                foreach (DocumentTranslationContext context in contexts)
-                {
-                    var task = Task.Run(
-                        () => symbolTable.AddDefinedTypesInDocument(context, cancellationToken),
-                        cancellationToken);
-                    tasks.Add(task);
+                // create the import symbol table
+                Task.Run<object>(
+                    () => ImportSymbolTable.Create(
+                        contexts,
+                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                        cancellationToken: cancellationToken),
+                    cancellationToken),
 
-                    task = Task.Run(
-                        () => symbolTable.AddExternallyReferencedTypes(context, cancellationToken),
-                        cancellationToken);
-                    tasks.Add(task);
-                }
-            }
+                // create the script name symbol table
+                Task.Run<object>(
+                    () => ScriptNameSymbolTable.Create(
+                        contexts,
+                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                        cancellationToken: cancellationToken),
+                    cancellationToken)
+            };
 
             await Task.WhenAll(tasks);
+
+            ImportSymbolTable importSymbolTable = (ImportSymbolTable)tasks[0].Result;
+            ScriptNameSymbolTable scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
 
             // create new context objects with the symbol table
             var newContexts = contexts.Select(

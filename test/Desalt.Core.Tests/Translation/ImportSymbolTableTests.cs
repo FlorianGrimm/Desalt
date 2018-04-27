@@ -10,8 +10,8 @@ namespace Desalt.Core.Tests.Translation
     using System;
     using System.IO;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
@@ -24,13 +24,13 @@ namespace Desalt.Core.Tests.Translation
     {
         private static async Task AssertOnSymbolTableAsync(
             string csharpCode,
+            SymbolTableDiscoveryKind discoveryKind,
             Action<ImportSymbolTable, DocumentTranslationContext> assertAction)
         {
             using (var tempProject = await TempProject.CreateAsync("Test", new TempProjectFile("File.cs", csharpCode)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
-                var importTable = new ImportSymbolTable();
-                importTable.AddDefinedTypesInDocument(context, CancellationToken.None);
+                var importTable = ImportSymbolTable.Create(context.ToSafeArray(), discoveryKind);
 
                 assertAction(importTable, context);
             }
@@ -38,10 +38,12 @@ namespace Desalt.Core.Tests.Translation
 
         private static Task AssertHasSymbolsAsync(
             string csharpCode,
+            SymbolTableDiscoveryKind discoveryKind,
             params string[] expectedSymbolNames)
         {
             return AssertOnSymbolTableAsync(
                 csharpCode,
+                discoveryKind,
                 (importTable, context) =>
                 {
                     foreach (string expectedSymbolName in expectedSymbolNames)
@@ -85,7 +87,13 @@ enum MyEnum {}
 delegate void MyDelegate();
 ";
 
-            await AssertHasSymbolsAsync(code, "IMyInterface", "MyClass", "MyEnum", "MyDelegate");
+            await AssertHasSymbolsAsync(
+                code,
+                SymbolTableDiscoveryKind.OnlyDocumentTypes,
+                "IMyInterface",
+                "MyClass",
+                "MyEnum",
+                "MyDelegate");
         }
 
         [TestMethod]
@@ -93,6 +101,7 @@ delegate void MyDelegate();
         {
             await AssertOnSymbolTableAsync(
                 "class MyClass {}",
+                SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 (importTable, context) =>
                 {
                     var symbol = GetSymbol("MyClass", context);

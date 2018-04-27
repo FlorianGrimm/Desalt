@@ -1,0 +1,196 @@
+﻿// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="SymbolTableUtils.cs" company="Justin Rockwood">
+//   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+//   LICENSE.txt in the project root for license information.
+// </copyright>
+// ---------------------------------------------------------------------------------------------------------------------
+
+namespace Desalt.Core.Translation
+{
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using System.Threading;
+    using Desalt.Core.Extensions;
+    using Microsoft.CodeAnalysis;
+
+    /// <summary>
+    /// Contains static utility methods for using a symbol table. Pulled out into a separate class
+    /// because statics aren't shared between generic instances.
+    /// </summary>
+    internal static class SymbolTableUtils
+    {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
+
+        /// <summary>
+        /// Used to cache externally-referenced assembly types so we only have to populate them up
+        /// once since it can be expensive.
+        /// </summary>
+        private static ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>> s_assemblySymbols =
+            ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>>.Empty;
+
+        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
+            SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
+            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            SymbolDisplayMemberOptions.IncludeContainingType |
+            SymbolDisplayMemberOptions.IncludeParameters |
+            SymbolDisplayMemberOptions.IncludeExplicitInterface,
+            SymbolDisplayDelegateStyle.NameOnly,
+            SymbolDisplayExtensionMethodStyle.StaticMethod,
+            SymbolDisplayParameterOptions.IncludeName | SymbolDisplayParameterOptions.IncludeType,
+            SymbolDisplayPropertyStyle.NameOnly,
+            SymbolDisplayLocalOptions.IncludeType,
+            SymbolDisplayKindOptions.IncludeNamespaceKeyword |
+            SymbolDisplayKindOptions.IncludeTypeKeyword |
+            SymbolDisplayKindOptions.IncludeMemberKeyword,
+            SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+
+        public static IEqualityComparer<KeyValuePair<string, T>> GetKeyValueComparer<T>() =>
+            new StringKeyValuePairComparer<T>();
+
+        /// <summary>
+        /// Finds a Saltarelle attribute attached to a specified symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to query.</param>
+        /// <param name="attributeNameMinusSuffix">
+        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
+        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
+        /// </param>
+        /// <returns>
+        /// The found attribute or null if the symbol does not have an attached attribute of the
+        /// given name.
+        /// </returns>
+        public static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
+        {
+            SymbolDisplayFormat format = new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
+            AttributeData attributeData = symbol?.GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
+
+            return attributeData;
+        }
+
+        /// <summary>
+        /// Gets the value of the Saltarelle attribute attached to a specified symbol or a default
+        /// value if the attribute is not present.
+        /// </summary>
+        /// <param name="symbol">The symbol to query.</param>
+        /// <param name="attributeNameMinusSuffix">
+        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
+        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
+        /// </param>
+        /// <param name="defaultValue">
+        /// The value to use if the attribute is not present on the symbol.
+        /// </param>
+        /// <returns>
+        /// Either the value of the attribute or the default value if the attribute is not present on
+        /// the symbol.
+        /// </returns>
+        public static string GetSaltarelleAttributeValueOrDefault(
+            ISymbol symbol,
+            string attributeNameMinusSuffix,
+            string defaultValue)
+        {
+            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
+            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
+        }
+
+        /// <summary>
+        /// Gets all of the types defined in the assembly that are scriptable, meaning that they
+        /// aren't decorated with a [NonScriptable] attribute. The results are cached between calls
+        /// for efficiency and are retrieved in a thread-safe manner.
+        /// </summary>
+        /// <param name="assemblySymbol">The assembly to use for type lookup.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>An immutable array of all the scriptable types in the assembly.</returns>
+        public static ImmutableArray<INamedTypeSymbol> GetScriptableTypesInAssembly(
+            IAssemblySymbol assemblySymbol,
+            CancellationToken cancellationToken)
+        {
+            ImmutableArray<INamedTypeSymbol> FetchScriptableTypes(IAssemblySymbol _)
+            {
+                ScriptableTypesSymbolVisitor visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
+                visitor.Visit(assemblySymbol);
+                return visitor.ScriptableTypeSymbols;
+            }
+
+            return ImmutableInterlocked.GetOrAdd(ref s_assemblySymbols, assemblySymbol, FetchScriptableTypes);
+        }
+
+        /// <summary>
+        /// Discovers all of the types that are directly referenced in the document, but live in
+        /// external assemblies.
+        /// </summary>
+        /// <param name="context">The <see cref="DocumentTranslationContext"/> to discover.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>All of the externally-referenced type symbols.</returns>
+        public static ISet<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            // find all of the external type references in the document
+            var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
+            walker.Visit(context.RootSyntax);
+            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
+            return externalTypeSymbols;
+        }
+
+        /// <summary>
+        /// Discovers all of the types defined in assemblies directly referenced by the documents.
+        /// Mscorlib is always discovered.
+        /// </summary>
+        /// <param name="externalSymbols">All of the externally referenced type symbols.</param>
+        /// <param name="compilation">The compilation to use for looking up mscorlib.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>All of the type symbols defined in external assemblies.</returns>
+        public static ImmutableArray<INamedTypeSymbol> DiscoverTypesInReferencedAssemblies(
+            IEnumerable<ITypeSymbol> externalSymbols,
+            Compilation compilation,
+            CancellationToken cancellationToken)
+        {
+            // get mscorlib
+            IAssemblySymbol mscorlib = compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
+
+            IEnumerable<IAssemblySymbol> referencedAssemblySymbols = mscorlib.ToSingleEnumerable()
+                .Concat(externalSymbols.Select(symbol => symbol.ContainingAssembly))
+                .Distinct();
+
+            // get all of the assembly types
+            return referencedAssemblySymbols.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(assemblySymbol => GetScriptableTypesInAssembly(assemblySymbol, cancellationToken))
+                .ToImmutableArray();
+        }
+
+        //// ===========================================================================================================
+        //// Classes
+        //// ===========================================================================================================
+
+        private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
+        {
+            public bool Equals(ISymbol x, ISymbol y) => KeyFromSymbol(x).Equals(KeyFromSymbol(y));
+
+            public int GetHashCode(ISymbol obj) => KeyFromSymbol(obj).GetHashCode();
+        }
+
+        private sealed class StringKeyValuePairComparer<T> : IEqualityComparer<KeyValuePair<string, T>>
+        {
+            public bool Equals(KeyValuePair<string, T> x, KeyValuePair<string, T> y) => x.Key.Equals(y.Key);
+
+            public int GetHashCode(KeyValuePair<string, T> obj) => obj.Key.GetHashCode();
+        }
+    }
+}

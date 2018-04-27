@@ -7,9 +7,12 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
     using System.Collections.Generic;
-    using System.Threading;
+    using System.Collections.Immutable;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
@@ -18,12 +21,6 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public class ScriptNameSymbolTableTests
     {
-        private enum AssertKind
-        {
-            AllDocumentTypes,
-            ExternalAssemblyTypes,
-        }
-
         private static async Task AssertDocumentEntriesInSymbolTable(
             string code,
             params KeyValuePair<string, string>[] expectedEntries)
@@ -31,7 +28,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options: null,
-                assertKind: AssertKind.AllDocumentTypes,
+                discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -43,7 +40,7 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options,
-                assertKind: AssertKind.AllDocumentTypes,
+                discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 expectedEntries: expectedEntries);
         }
 
@@ -54,31 +51,42 @@ namespace Desalt.Core.Tests.Translation
             await AssertEntriesInSymbolTable(
                 code,
                 options: null,
-                assertKind: AssertKind.ExternalAssemblyTypes,
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes,
                 expectedEntries: expectedEntries);
         }
 
         private static async Task AssertEntriesInSymbolTable(
             string code,
             CompilerOptions options,
-            AssertKind assertKind,
+            SymbolTableDiscoveryKind discoveryKind,
             params KeyValuePair<string, string>[] expectedEntries)
         {
             using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
 
-                var symbolTable = new ScriptNameSymbolTable();
+                var symbolTable = ScriptNameSymbolTable.Create(context.ToSafeArray(), discoveryKind);
 
-                if (assertKind == AssertKind.AllDocumentTypes)
+                switch (discoveryKind)
                 {
-                    symbolTable.AddDefinedTypesInDocument(context, CancellationToken.None);
-                    symbolTable.Should().BeEquivalentTo(expectedEntries);
-                }
-                else
-                {
-                    symbolTable.AddExternallyReferencedTypes(context, CancellationToken.None);
-                    symbolTable.Should().Contain(expectedEntries);
+                    case SymbolTableDiscoveryKind.OnlyDocumentTypes:
+                        symbolTable.DocumentSymbols.Should().BeEquivalentTo(expectedEntries);
+                        break;
+
+                    case SymbolTableDiscoveryKind.DocumentAndReferencedTypes:
+                        symbolTable.DirectlyReferencedExternalSymbols.Should().Contain(expectedEntries);
+                        break;
+
+                    case SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes:
+                        var expectedKeys = expectedEntries.Select(pair => pair.Key).ToImmutableArray();
+                        symbolTable.IndirectlyReferencedExternalSymbols.Where(pair => pair.Key.IsOneOf(expectedKeys))
+                            .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.Value))
+                            .Should()
+                            .BeEquivalentTo(expectedEntries);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(discoveryKind), discoveryKind, null);
                 }
             }
         }
@@ -357,6 +365,16 @@ class C
             await AssertExternalEntriesInSymbolTable(
                 code,
                 new KeyValuePair<string, string>("jQueryApi.jQuery.FromHtml(string html)", "$"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_bring_in_all_of_the_symbols_in_referenced_assemblies()
+        {
+            await AssertEntriesInSymbolTable(
+                "using System; class C { bool x; }",
+                options: null,
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                expectedEntries: new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
         }
     }
 }

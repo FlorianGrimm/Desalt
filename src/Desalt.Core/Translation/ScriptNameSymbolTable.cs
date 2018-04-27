@@ -9,8 +9,10 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -22,68 +24,133 @@ namespace Desalt.Core.Translation
     internal class ScriptNameSymbolTable : SymbolTable<string>
     {
         //// ===========================================================================================================
-        //// Member Variables
+        //// Constructors
         //// ===========================================================================================================
 
-        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
-            SymbolDisplayGlobalNamespaceStyle.Omitted,
-            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+        private ScriptNameSymbolTable(
+            ImmutableArray<KeyValuePair<string, string>> documentSymbols,
+            ImmutableArray<KeyValuePair<string, string>> directlyReferencedExternalSymbols,
+            ImmutableArray<KeyValuePair<string, Lazy<string>>> indirectlyReferencedExternalSymbols)
+            : base(documentSymbols, directlyReferencedExternalSymbols, indirectlyReferencedExternalSymbols)
+        {
+        }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
+        public static ScriptNameSymbolTable Create(
+            IEnumerable<DocumentTranslationContext> documentsContexts,
+            SymbolTableDiscoveryKind discoveryKind,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ImmutableArray<DocumentTranslationContext> contexts = documentsContexts.ToImmutableArray();
+            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
+            Compilation compilation = contexts.FirstOrDefault()?.SemanticModel.Compilation;
+
+            // process the types defined in the documents
+            ImmutableArray<KeyValuePair<string, string>> documentSymbols = contexts.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
+                .ToImmutableArray();
+
+            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            {
+                return new ScriptNameSymbolTable(
+                    documentSymbols,
+                    ImmutableArray<KeyValuePair<string, string>>.Empty,
+                    ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
+            }
+
+            // get all of the directly-referenced external types and members
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalSymbols = contexts
+                .SelectMany(
+                    context => SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
+                .Distinct()
+                .ToImmutableArray();
+
+            ImmutableArray<KeyValuePair<string, string>> directlyReferencedExternalSymbolValues =
+                directlyReferencedExternalSymbols
+                    .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, renameRules))
+                    .ToImmutableArray();
+
+            if (discoveryKind == SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
+            {
+                return new ScriptNameSymbolTable(
+                    documentSymbols,
+                    directlyReferencedExternalSymbolValues,
+                    ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
+            }
+
+            // get all of the types defined in external assemblies, but don't calculate the script
+            // name until it's needed (via a Lazy class)
+            ImmutableArray<KeyValuePair<string, Lazy<string>>> indirectlyReferencedExternalSymbols = SymbolTableUtils
+                .DiscoverTypesInReferencedAssemblies(directlyReferencedExternalSymbols, compilation, cancellationToken)
+                .SelectMany(symbol => symbol.ToSingleEnumerable().Concat(DiscoverMembersOfTypeSymbol(symbol)))
+                .Select(
+                    symbol => new KeyValuePair<string, Lazy<string>>(
+                        SymbolTableUtils.KeyFromSymbol(symbol),
+                        new Lazy<string>(() => GetScriptNameForSymbol(symbol, renameRules), isThreadSafe: true)))
+                .ToImmutableArray();
+
+            return new ScriptNameSymbolTable(
+                documentSymbols,
+                directlyReferencedExternalSymbolValues,
+                indirectlyReferencedExternalSymbols);
+        }
+
         /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        public override void AddDefinedTypesInDocument(
+        private static IEnumerable<KeyValuePair<string, string>> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            IEnumerable<INamedTypeSymbol> allTypeDeclarationSymbols = context.RootSyntax
-                 .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                 .Where(symbol => symbol.TypeKind != TypeKind.Delegate);
+            return context.RootSyntax
 
-            foreach (INamedTypeSymbol symbol in allTypeDeclarationSymbols)
-            {
-                AddType(symbol, context);
-            }
+                // get all of the delcared types
+                .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
+
+                // except delegates
+                .Where(symbol => symbol.TypeKind != TypeKind.Delegate)
+
+                // and get all of the members of the type that can have a script name
+                .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, context.Options.RenameRules));
         }
 
-        /// <summary>
-        /// Adds a single type defined in an external assembly.
-        /// </summary>
-        protected override void AddExternallyReferencedType(
+        private static IEnumerable<ISymbol> DiscoverMembersOfTypeSymbol(INamespaceOrTypeSymbol typeSymbol) =>
+            typeSymbol.GetMembers().Where(ShouldProcessMember);
+
+        private static IEnumerable<KeyValuePair<string, string>> GetScriptNameOnTypeAndMembers(
             ITypeSymbol typeSymbol,
-            DocumentTranslationContext context,
-            CancellationToken cancellationToken)
+            RenameRules renameRules)
         {
-            AddType(typeSymbol, context);
+            var scriptNames = DiscoverMembersOfTypeSymbol(typeSymbol).ToList();
+            scriptNames.Insert(0, typeSymbol);
+
+            return scriptNames.Select(
+                symbol => new KeyValuePair<string, string>(
+                    SymbolTableUtils.KeyFromSymbol(symbol),
+                    GetScriptNameForSymbol(symbol, renameRules)));
         }
 
-        // ReSharper disable once SuggestBaseTypeForParameter
-        private void AddType(ITypeSymbol typeSymbol, DocumentTranslationContext context)
+        private static string GetScriptNameForSymbol(ISymbol symbol, RenameRules renameRules)
         {
-            string typeName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
-                ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
-                : (FindScriptName(typeSymbol) ?? typeSymbol.Name);
+            string scriptName;
 
-            AddOrUpdate(typeSymbol, typeName);
-
-            // add all of the members of the declared type, but skip over compiler-generated
-            // stuff like auto-property backing fields, event add/remove functions, and property
-            // get/set methods.
-            var members = typeSymbol.GetMembers().Where(ShouldProcessMember);
-
-            RenameRules renameRules = context.Options.RenameRules;
-
-            foreach (ISymbol member in members)
+            if (symbol is ITypeSymbol typeSymbol)
             {
-                string scriptName = FindFieldScriptName(member, renameRules.FieldRule) ??
-                    FindScriptName(member) ?? ToCamelCase(member.Name);
-
-                AddOrUpdate(member, scriptName);
+                scriptName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
+                    ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
+                    : (FindScriptName(typeSymbol) ?? typeSymbol.Name);
             }
+            else
+            {
+                scriptName = FindFieldScriptName(symbol, renameRules.FieldRule) ??
+                    FindScriptName(symbol) ?? ToCamelCase(symbol.Name);
+            }
+
+            return scriptName;
         }
 
         private static bool ShouldProcessMember(ISymbol member)
@@ -128,21 +195,21 @@ namespace Desalt.Core.Translation
         private static string FindScriptName(ISymbol symbol)
         {
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            AttributeData scriptNameAttributeData = FindSaltarelleAttribute(symbol, "ScriptName");
-            if (scriptNameAttributeData != null)
+            string scriptName = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
+            if (scriptName != null)
             {
-                return scriptNameAttributeData.ConstructorArguments[0].Value.ToString();
+                return scriptName;
             }
 
             // use [ScriptAlias] if available
-            AttributeData scriptAliasAttributeData = FindSaltarelleAttribute(symbol, "ScriptAlias");
-            if (scriptAliasAttributeData != null)
+            string scriptAlias = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
+            if (scriptAlias != null)
             {
-                return scriptAliasAttributeData.ConstructorArguments[0].Value.ToString();
+                return scriptAlias;
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
-            AttributeData preserveCaseAttributeData = FindSaltarelleAttribute(symbol, "PreserveCase");
+            AttributeData preserveCaseAttributeData = SymbolTableUtils.FindSaltarelleAttribute(symbol, "PreserveCase");
             if (preserveCaseAttributeData != null)
             {
                 return symbol.Name;
@@ -152,7 +219,7 @@ namespace Desalt.Core.Translation
             if (symbol.ContainingType != null)
             {
                 AttributeData preserveMemberCaseAttributeData =
-                    FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
+                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -162,9 +229,8 @@ namespace Desalt.Core.Translation
             // see if there's a [PreserveMemberCase] on the containing assembly
             if (symbol.ContainingAssembly != null)
             {
-                AttributeData preserveMemberCaseAttributeData = FindSaltarelleAttribute(
-                    symbol.ContainingAssembly,
-                    "PreserveMemberCase");
+                AttributeData preserveMemberCaseAttributeData =
+                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingAssembly, "PreserveMemberCase");
                 if (preserveMemberCaseAttributeData != null)
                 {
                     return symbol.Name;
@@ -172,15 +238,6 @@ namespace Desalt.Core.Translation
             }
 
             return null;
-        }
-
-        private static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
-        {
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(s_symbolDisplayFormat) == fullAttributeName);
-
-            return attributeData;
         }
 
         private static string FindFieldScriptName(ISymbol member, FieldRenameRule renameRule)
@@ -194,6 +251,7 @@ namespace Desalt.Core.Translation
 
             switch (renameRule)
             {
+                // ReSharper disable once RedundantCaseLabel
                 case FieldRenameRule.LowerCaseFirstChar:
                 default:
                     scriptName = FindScriptName(member) ?? ToCamelCase(member.Name);
@@ -214,6 +272,7 @@ namespace Desalt.Core.Translation
             string fieldScriptName = FindScriptName(fieldSymbol) ?? ToCamelCase(fieldSymbol.Name);
 
             var query = from member in fieldSymbol.ContainingType.GetMembers()
+
                             // don't include the field we're searching against
                         where !Equals(member, fieldSymbol)
 

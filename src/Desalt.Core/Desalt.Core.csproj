@@ -152,12 +152,15 @@
     <Compile Include="Translation\DocumentationCommentXmlElement.cs" />
     <Compile Include="Translation\DocumentationCommentXmlNames.cs" />
     <Compile Include="Translation\DocumentTranslationContext.cs" />
+    <Compile Include="Translation\ExternalTypeWalker.cs" />
     <Compile Include="Translation\ImportsTranslator.cs" />
     <Compile Include="Translation\ImportSymbolTable.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
+    <Compile Include="Translation\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />
     <Compile Include="Translation\SymbolTable.cs" />
-    <Compile Include="Translation\SymbolTable.ExternalTypeWalker.cs" />
+    <Compile Include="Translation\SymbolTableDiscoveryKind.cs" />
+    <Compile Include="Translation\SymbolTableUtils.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
