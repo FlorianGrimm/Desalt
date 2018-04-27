@@ -7,7 +7,7 @@
 
 namespace Desalt.Core.CompilerStages
 {
-    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -19,7 +19,8 @@ namespace Desalt.Core.CompilerStages
     /// <summary>
     /// Pipeline stage that validates a C# Project in preparation for translating to TypeScript.
     /// </summary>
-    internal class ValidateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTables>, bool>
+    internal class ValidateProjectStage
+        : PipelineStage<ImmutableArray<DocumentTranslationContextWithSymbolTables>, bool>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -31,13 +32,12 @@ namespace Desalt.Core.CompilerStages
         /// </param>
         /// <returns>The result of the stage.</returns>
         public override async Task<IExtendedResult<bool>> ExecuteAsync(
-            IEnumerable<DocumentTranslationContextWithSymbolTables> input,
+            ImmutableArray<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // validate all of the documents in parallel
-            IEnumerable<Task<IExtendedResult<bool>>> tasks = input.Select(
-                context => new CSharpToTypeScriptValidator().ValidateDocumentAsync(context));
+            var tasks = input.Select(context => new CSharpToTypeScriptValidator().ValidateDocumentAsync(context));
 
             IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
 

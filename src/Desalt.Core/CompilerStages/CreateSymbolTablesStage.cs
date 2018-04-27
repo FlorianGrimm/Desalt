@@ -21,8 +21,9 @@ namespace Desalt.Core.CompilerStages
     /// symbols and which file they live in so that each file can correctly add <c>import</c>
     /// statements at the top of the translated file.
     /// </summary>
-    internal class CreateSymbolTablesStage : PipelineStage<IEnumerable<DocumentTranslationContext>,
-        IEnumerable<DocumentTranslationContextWithSymbolTables>>
+    internal class CreateSymbolTablesStage
+        : PipelineStage<ImmutableArray<DocumentTranslationContext>,
+            ImmutableArray<DocumentTranslationContextWithSymbolTables>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -33,13 +34,12 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
+        public override async Task<IExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
-                IEnumerable<DocumentTranslationContext> input,
+                ImmutableArray<DocumentTranslationContext> input,
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var contexts = input.ToImmutableArray();
             // since all of the symbol tables will need references to types directly referenced in
             // the documents and types in referenced assemblies, compute them once and then pass them
             // into each symbol table
@@ -97,7 +97,7 @@ namespace Desalt.Core.CompilerStages
                         inlineCodeSymbolTable))
                 .ToImmutableArray();
 
-            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
+            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }
     }
 }

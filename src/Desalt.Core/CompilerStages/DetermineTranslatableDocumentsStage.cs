@@ -7,7 +7,7 @@
 
 namespace Desalt.Core.CompilerStages
 {
-    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -19,7 +19,8 @@ namespace Desalt.Core.CompilerStages
     /// <summary>
     /// Pipeline stage that takes a C# project and determines which documents are translatable to TypeScript.
     /// </summary>
-    internal class DetermineTranslatableDocumentsStage : PipelineStage<Project, IEnumerable<DocumentTranslationContext>>
+    internal class DetermineTranslatableDocumentsStage
+        : PipelineStage<Project, ImmutableArray<DocumentTranslationContext>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -30,7 +31,7 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContext>>> ExecuteAsync(
+        public override async Task<IExtendedResult<ImmutableArray<DocumentTranslationContext>>> ExecuteAsync(
             Project input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -39,13 +40,14 @@ namespace Desalt.Core.CompilerStages
                 document => DocumentTranslationContext.TryCreateAsync(document, options, cancellationToken));
             IExtendedResult<DocumentTranslationContext>[] results = await Task.WhenAll(tasks);
 
-            IEnumerable<DocumentTranslationContext> onlyValidDocuments =
-                results.Where(result => result.Result != null).Select(result => result.Result);
+            var onlyValidDocuments = results.Where(result => result.Result != null)
+                .Select(result => result.Result)
+                .ToImmutableArray();
             DiagnosticList mergedDiagnostics = DiagnosticList.From(
                 options,
                 results.SelectMany(result => result.Diagnostics));
 
-            return new ExtendedResult<IEnumerable<DocumentTranslationContext>>(onlyValidDocuments, mergedDiagnostics);
+            return new ExtendedResult<ImmutableArray<DocumentTranslationContext>>(onlyValidDocuments, mergedDiagnostics);
         }
     }
 }

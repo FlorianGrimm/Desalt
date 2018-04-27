@@ -23,8 +23,8 @@ namespace Desalt.Core.CompilerStages
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.
     /// </summary>
-    internal class TranslateProjectStage : PipelineStage<IEnumerable<DocumentTranslationContextWithSymbolTables>,
-        IEnumerable<string>>
+    internal class TranslateProjectStage
+        : PipelineStage<ImmutableArray<DocumentTranslationContextWithSymbolTables>, ImmutableArray<string>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -35,8 +35,8 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<string>>> ExecuteAsync(
-            IEnumerable<DocumentTranslationContextWithSymbolTables> input,
+        public override async Task<IExtendedResult<ImmutableArray<string>>> ExecuteAsync(
+            ImmutableArray<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -44,16 +44,16 @@ namespace Desalt.Core.CompilerStages
 
             Directory.CreateDirectory(options.OutputPath);
 
-            ImmutableArray<IExtendedResult<string>> results = input
-                .Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs"))
+            var results = input.Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs"))
                 .AsParallel()
+                .WithCancellation(cancellationToken)
                 .Select(context => TranslateDocument(context, cancellationToken))
                 .ToImmutableArray();
 
-            IEnumerable<string> translatedFilePaths = results.Select(result => result.Result);
+            ImmutableArray<string> translatedFilePaths = results.Select(result => result.Result).ToImmutableArray();
             IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
 
-            return new ExtendedResult<IEnumerable<string>>(translatedFilePaths, mergedDiagnostics);
+            return new ExtendedResult<ImmutableArray<string>>(translatedFilePaths, mergedDiagnostics);
         }
 
         /// <summary>
