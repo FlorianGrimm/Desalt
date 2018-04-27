@@ -95,7 +95,7 @@ class Logger
 }
 
 class Logger {
-  public static loggerLevelNames: string[] = new List<string>();
+  public static loggerLevelNames: string[] = [];
 
   private static init(): void {
     Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
@@ -192,6 +192,14 @@ class Logger {
 
                     await AssertTranslation(code, expected);
                 }
+            }
+
+            [TestMethod]
+            public async Task ObjectCreationExpression_should_use_InlineCode()
+            {
+                await AssertTranslation(
+                    "class C { List<int> list = new List<int>(); }",
+                    "class C {\n  private list: number[] = [];\n}\n");
             }
         }
     }

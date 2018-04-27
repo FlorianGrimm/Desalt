@@ -213,6 +213,14 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
+            // see if there's an [InlineCode] entry for the ctor
+            var ctorSymbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            if (ctorSymbol != null && _inlineCodeTable.HasSymbol(ctorSymbol) && _inlineCodeTable[ctorSymbol] != null)
+            {
+                yield return Factory.Identifier(_inlineCodeTable[ctorSymbol]);
+                yield break;
+            }
+
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
             ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);

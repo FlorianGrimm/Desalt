@@ -35,6 +35,7 @@ namespace Desalt.Core.Translation
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptNameSymbolTable _scriptNameTable;
+        private readonly InlineCodeSymbolTable _inlineCodeTable;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
 
         //// ===========================================================================================================
@@ -49,6 +50,7 @@ namespace Desalt.Core.Translation
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptNameTable = context.ScriptNameSymbolTable;
+            _inlineCodeTable = context.InlineCodeSymbolTable;
             _diagnostics = DiagnosticList.Create(context.Options);
         }
 

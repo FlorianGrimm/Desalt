@@ -21,10 +21,17 @@ namespace Desalt.Core.Tests.Translation
     public partial class TranslationVisitorTests
     {
         private static async Task AssertTranslation(
-            string csharpCode,
+            string codeSnippet,
             string expectedTypeScriptCode,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
         {
+            string code = $@"
+using System;
+using System.Collections.Generic;
+
+{codeSnippet}
+";
+
             // get rid of \r\n sequences in the expected output
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n");
 
