@@ -64,8 +64,17 @@ namespace Desalt.Core.Tests.Translation
             using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
+                var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = ScriptNameSymbolTable.Create(context.ToSafeArray(), discoveryKind);
+                var directlyReferencedExternalTypeSymbols =
+                    SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
+
+                var symbolTable = ScriptNameSymbolTable.Create(
+                    contexts,
+                    directlyReferencedExternalTypeSymbols,
+                    indirectlyReferencedExternalTypeSymbols: SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                        directlyReferencedExternalTypeSymbols,
+                        context.SemanticModel.Compilation));
 
                 switch (discoveryKind)
                 {

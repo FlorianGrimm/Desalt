@@ -14,6 +14,7 @@ namespace Desalt.Core.CompilerStages
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that takes all of the documents to be compiled and extracts all of the defined
@@ -39,33 +40,46 @@ namespace Desalt.Core.CompilerStages
                 CancellationToken cancellationToken = default(CancellationToken))
         {
             var contexts = input.ToImmutableArray();
+            // since all of the symbol tables will need references to types directly referenced in
+            // the documents and types in referenced assemblies, compute them once and then pass them
+            // into each symbol table
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+                    input,
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                    cancellationToken);
+
+            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                    directlyReferencedExternalTypeSymbols,
+                    input.FirstOrDefault()?.SemanticModel.Compilation,
+                    cancellationToken);
 
             // construct each symbol table in parallel
             var tasks = new List<Task<object>>
             {
                 // create the import symbol table
                 Task.Run<object>(
-                    () => ImportSymbolTable.Create(
-                        contexts,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
-                        cancellationToken: cancellationToken),
+                    () => ImportSymbolTable.Create(input, directlyReferencedExternalTypeSymbols, cancellationToken),
                     cancellationToken),
 
                 // create the script name symbol table
                 Task.Run<object>(
                     () => ScriptNameSymbolTable.Create(
-                        contexts,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
-                        cancellationToken: cancellationToken),
+                        input,
+                        directlyReferencedExternalTypeSymbols,
+                        indirectlyReferencedExternalTypeSymbols,
+                        cancellationToken),
                     cancellationToken),
 
                 // create the inline code symbol table
                 Task.Run<object>(
                     () => InlineCodeSymbolTable.Create(
-                        contexts,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                        input,
+                        directlyReferencedExternalTypeSymbols,
+                        indirectlyReferencedExternalTypeSymbols,
                         cancellationToken),
-                    cancellationToken),
+                    cancellationToken)
             };
 
             await Task.WhenAll(tasks);
@@ -75,12 +89,13 @@ namespace Desalt.Core.CompilerStages
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             // create new context objects with the symbol table
-            var newContexts = contexts.Select(
-                context => new DocumentTranslationContextWithSymbolTables(
-                    context,
-                    importSymbolTable,
-                    scriptNameSymbolTable,
-                    inlineCodeSymbolTable));
+            var newContexts = input.Select(
+                    context => new DocumentTranslationContextWithSymbolTables(
+                        context,
+                        importSymbolTable,
+                        scriptNameSymbolTable,
+                        inlineCodeSymbolTable))
+                .ToImmutableArray();
 
             return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }

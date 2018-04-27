@@ -40,34 +40,32 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Creates a new <see cref="ImportSymbolTable"/> for the specified translation contexts.
+        /// </summary>
+        /// <param name="contexts">The contexts from which to retrieve symbols.</param>
+        /// <param name="directlyReferencedExternalTypeSymbols">
+        /// An array of symbols that are directly referenced in the documents, but are defined in
+        /// external assemblies.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
+        /// <returns>A new <see cref="ImportSymbolTable"/>.</returns>
         public static ImportSymbolTable Create(
-            IEnumerable<DocumentTranslationContext> documentsContexts,
-            SymbolTableDiscoveryKind discoveryKind,
+            ImmutableArray<DocumentTranslationContext> contexts,
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            ImmutableArray<DocumentTranslationContext> contexts = documentsContexts.ToImmutableArray();
-
             // process the types defined in the documents
-            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> documentSymbols = contexts.AsParallel()
+            var documentSymbols = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
                 .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
                 .ToImmutableArray();
 
-            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
-            {
-                return new ImportSymbolTable(
-                    documentSymbols,
-                    ImmutableArray<KeyValuePair<string, ImportSymbolInfo>>.Empty);
-            }
+            // process the externally referenced types
+            var directlyReferencedExternalSymbols =
+                directlyReferencedExternalTypeSymbols.Select(ProcessExternalType).ToImmutableArray();
 
-            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> directlyReferencedSymbols = contexts
-                .SelectMany(
-                    context => SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
-                .Distinct()
-                .Select(ProcessExternallyReferencedType)
-                .ToImmutableArray();
-
-            return new ImportSymbolTable(documentSymbols, directlyReferencedSymbols);
+            return new ImportSymbolTable(documentSymbols, directlyReferencedExternalSymbols);
         }
 
         /// <summary>
@@ -89,7 +87,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Processes an externally-referenced type.
         /// </summary>
-        private static KeyValuePair<string, ImportSymbolInfo> ProcessExternallyReferencedType(ISymbol symbol)
+        private static KeyValuePair<string, ImportSymbolInfo> ProcessExternalType(ITypeSymbol symbol)
         {
             var containingAssembly = symbol.ContainingAssembly;
             string moduleName = containingAssembly.Name;

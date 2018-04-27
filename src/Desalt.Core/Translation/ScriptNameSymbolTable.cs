@@ -39,51 +39,41 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Creates a new <see cref="ScriptNameSymbolTable"/> for the specified translation contexts.
+        /// </summary>
+        /// <param name="contexts">The contexts from which to retrieve symbols.</param>
+        /// <param name="directlyReferencedExternalTypeSymbols">
+        /// An array of symbols that are directly referenced in the documents, but are defined in
+        /// external assemblies.
+        /// </param>
+        /// <param name="indirectlyReferencedExternalTypeSymbols">
+        /// An array of symbols that are not directly referenced in the documents and are defined in
+        /// external assemblies.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
+        /// <returns>A new <see cref="ScriptNameSymbolTable"/>.</returns>
         public static ScriptNameSymbolTable Create(
-            IEnumerable<DocumentTranslationContext> documentsContexts,
-            SymbolTableDiscoveryKind discoveryKind,
+            ImmutableArray<DocumentTranslationContext> contexts,
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols,
+            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            ImmutableArray<DocumentTranslationContext> contexts = documentsContexts.ToImmutableArray();
-            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
-            Compilation compilation = contexts.FirstOrDefault()?.SemanticModel.Compilation;
-
             // process the types defined in the documents
-            ImmutableArray<KeyValuePair<string, string>> documentSymbols = contexts.AsParallel()
+            var documentSymbols = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
                 .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
                 .ToImmutableArray();
 
-            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
-            {
-                return new ScriptNameSymbolTable(
-                    documentSymbols,
-                    ImmutableArray<KeyValuePair<string, string>>.Empty,
-                    ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
-            }
+            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
 
-            // get all of the directly-referenced external types and members
-            var directlyReferencedExternalSymbols = contexts.SelectMany(
-                    context => SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
-                .Distinct()
-                .ToImmutableArray();
-
-            var directlyReferencedExternalSymbolValues = directlyReferencedExternalSymbols
+            // process the externally referenced types
+            var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
                 .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, renameRules))
                 .ToImmutableArray();
 
-            if (discoveryKind == SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
-            {
-                return new ScriptNameSymbolTable(
-                    documentSymbols,
-                    directlyReferencedExternalSymbolValues,
-                    ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
-            }
-
-            // get all of the types defined in external assemblies, but don't calculate the script
-            // name until it's needed (via a Lazy class)
-            var indirectlyReferencedExternalSymbols = SymbolTableUtils
-                .DiscoverTypesInReferencedAssemblies(directlyReferencedExternalSymbols, compilation, cancellationToken)
+            // process all of the types and members in referenced assemblies
+            var indirectlyReferencedExternalSymbols = indirectlyReferencedExternalTypeSymbols
                 .SelectMany(symbol => symbol.ToSingleEnumerable().Concat(DiscoverMembersOfTypeSymbol(symbol)))
                 .Select(
                     symbol => new KeyValuePair<string, Lazy<string>>(
@@ -93,7 +83,7 @@ namespace Desalt.Core.Translation
 
             return new ScriptNameSymbolTable(
                 documentSymbols,
-                directlyReferencedExternalSymbolValues,
+                directlyReferencedExternalSymbols,
                 indirectlyReferencedExternalSymbols);
         }
 

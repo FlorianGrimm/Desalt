@@ -134,18 +134,45 @@ namespace Desalt.Core.Translation
         /// Discovers all of the types that are directly referenced in the document, but live in
         /// external assemblies.
         /// </summary>
+        /// <param name="contexts">The contexts from which to retrieve symbols.</param>
+        /// <param name="discoveryKind">The kind of discovery to use (mainly for unit tests).</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
+        /// <returns>
+        /// All of the externally-referenced type symbols. If <paramref name="discoveryKind"/> is
+        /// <see cref="SymbolTableDiscoveryKind.OnlyDocumentTypes"/>, then an empty array is returned
+        /// and no work is done.
+        /// </returns>
+        public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
+            ImmutableArray<DocumentTranslationContext> contexts,
+            SymbolTableDiscoveryKind discoveryKind,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            {
+                return ImmutableArray<ITypeSymbol>.Empty;
+            }
+
+            return contexts
+                .SelectMany(context => DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
+                .Distinct()
+                .ToImmutableArray();
+        }
+
+        /// <summary>
+        /// Discovers all of the types that are directly referenced in the document, but live in
+        /// external assemblies.
+        /// </summary>
         /// <param name="context">The <see cref="DocumentTranslationContext"/> to discover.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
         /// <returns>All of the externally-referenced type symbols.</returns>
-        public static ISet<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
+        public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
             // find all of the external type references in the document
             var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
             walker.Visit(context.RootSyntax);
-            ISet<ITypeSymbol> externalTypeSymbols = walker.ExternalTypeSymbols;
-            return externalTypeSymbols;
+            return walker.ExternalTypeSymbols.ToImmutableArray();
         }
 
         /// <summary>
@@ -155,12 +182,24 @@ namespace Desalt.Core.Translation
         /// <param name="externalSymbols">All of the externally referenced type symbols.</param>
         /// <param name="compilation">The compilation to use for looking up mscorlib.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
-        /// <returns>All of the type symbols defined in external assemblies.</returns>
+        /// <param name="discoveryKind">The kind of discovery to use (mainly for unit tests).</param>
+        /// <returns>
+        /// All of the type symbols defined in external assemblies. If <paramref
+        /// name="discoveryKind"/> is anything other than <see
+        /// cref="SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes"/>, an empty array is returned
+        /// and no work is done.
+        /// </returns>
         public static ImmutableArray<INamedTypeSymbol> DiscoverTypesInReferencedAssemblies(
             IEnumerable<ITypeSymbol> externalSymbols,
             Compilation compilation,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
+            if (discoveryKind != SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+            {
+                return ImmutableArray<INamedTypeSymbol>.Empty;
+            }
+
             // get mscorlib
             IAssemblySymbol mscorlib = compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
 

@@ -40,8 +40,17 @@ class C
             using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+                var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = InlineCodeSymbolTable.Create(context.ToSingleEnumerable(), discoveryKind);
+                var directlyReferencedExternalTypeSymbols =
+                    SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
+
+                var symbolTable = InlineCodeSymbolTable.Create(
+                    contexts,
+                    directlyReferencedExternalTypeSymbols,
+                    indirectlyReferencedExternalTypeSymbols: SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                        directlyReferencedExternalTypeSymbols,
+                        context.SemanticModel.Compilation));
 
                 switch (discoveryKind)
                 {
