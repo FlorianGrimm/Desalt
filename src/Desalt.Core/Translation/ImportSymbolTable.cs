@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -28,7 +29,10 @@ namespace Desalt.Core.Translation
         private ImportSymbolTable(
             ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> documentSymbols,
             ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> directlyReferencedExternalSymbols)
-            : base(documentSymbols, directlyReferencedExternalSymbols, null)
+            : base(
+                documentSymbols,
+                directlyReferencedExternalSymbols,
+                ImmutableArray<KeyValuePair<string, Lazy<ImportSymbolInfo>>>.Empty)
         {
         }
 

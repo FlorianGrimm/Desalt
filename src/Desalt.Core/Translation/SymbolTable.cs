@@ -44,18 +44,13 @@ namespace Desalt.Core.Translation
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
         protected SymbolTable(
-            IEnumerable<KeyValuePair<string, T>> documentSymbols,
-            IEnumerable<KeyValuePair<string, T>> directlyReferencedExternalSymbols,
-            IEnumerable<KeyValuePair<string, Lazy<T>>> indirectlyReferencedExternalSymbols)
+            ImmutableArray<KeyValuePair<string, T>> documentSymbols,
+            ImmutableArray<KeyValuePair<string, T>> directlyReferencedExternalSymbols,
+            ImmutableArray<KeyValuePair<string, Lazy<T>>> indirectlyReferencedExternalSymbols)
         {
-            _documentSymbols = documentSymbols?.ToImmutableDictionary() ??
-                throw new ArgumentNullException(nameof(documentSymbols));
-
-            _directlyReferencedExternalSymbols = directlyReferencedExternalSymbols?.ToImmutableDictionary() ??
-                ImmutableDictionary<string, T>.Empty;
-
-            _indirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols?.ToImmutableDictionary() ??
-                ImmutableDictionary<string, Lazy<T>>.Empty;
+            _documentSymbols = documentSymbols.ToImmutableDictionary();
+            _directlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
+            _indirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
         }
 
         //// ===========================================================================================================

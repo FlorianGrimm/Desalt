@@ -63,16 +63,14 @@ namespace Desalt.Core.Translation
             }
 
             // get all of the directly-referenced external types and members
-            ImmutableArray<ITypeSymbol> directlyReferencedExternalSymbols = contexts
-                .SelectMany(
+            var directlyReferencedExternalSymbols = contexts.SelectMany(
                     context => SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
                 .Distinct()
                 .ToImmutableArray();
 
-            ImmutableArray<KeyValuePair<string, string>> directlyReferencedExternalSymbolValues =
-                directlyReferencedExternalSymbols
-                    .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, renameRules))
-                    .ToImmutableArray();
+            var directlyReferencedExternalSymbolValues = directlyReferencedExternalSymbols
+                .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, renameRules))
+                .ToImmutableArray();
 
             if (discoveryKind == SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
             {
@@ -84,7 +82,7 @@ namespace Desalt.Core.Translation
 
             // get all of the types defined in external assemblies, but don't calculate the script
             // name until it's needed (via a Lazy class)
-            ImmutableArray<KeyValuePair<string, Lazy<string>>> indirectlyReferencedExternalSymbols = SymbolTableUtils
+            var indirectlyReferencedExternalSymbols = SymbolTableUtils
                 .DiscoverTypesInReferencedAssemblies(directlyReferencedExternalSymbols, compilation, cancellationToken)
                 .SelectMany(symbol => symbol.ToSingleEnumerable().Concat(DiscoverMembersOfTypeSymbol(symbol)))
                 .Select(
