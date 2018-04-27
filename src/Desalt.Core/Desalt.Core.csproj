@@ -155,6 +155,7 @@
     <Compile Include="Translation\ExternalTypeWalker.cs" />
     <Compile Include="Translation\ImportsTranslator.cs" />
     <Compile Include="Translation\ImportSymbolTable.cs" />
+    <Compile Include="Translation\InlineCodeSymbolTable.cs" />
     <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="Translation\ScriptNameSymbolTable.cs" />

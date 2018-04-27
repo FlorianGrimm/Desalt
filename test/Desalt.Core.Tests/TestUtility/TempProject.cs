@@ -138,8 +138,15 @@ namespace Desalt.Core.Tests.TestUtility
             // create the script name symbol table
             var scriptNameTable = ScriptNameSymbolTable.Create(contexts, discoveryKind);
 
+            // create the inline code symbol table
+            var inlineCodeTable = InlineCodeSymbolTable.Create(contexts, discoveryKind);
+
             thisContext.Should().NotBeNull();
-            return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);
+            return new DocumentTranslationContextWithSymbolTables(
+                thisContext,
+                importTable,
+                scriptNameTable,
+                inlineCodeTable);
         }
 
         /// <summary>

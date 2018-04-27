@@ -8,6 +8,7 @@
 namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Desalt.Core.CompilerStages
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var contexts = input.ToArray();
+            var contexts = input.ToImmutableArray();
 
             // construct each symbol table in parallel
             var tasks = new List<Task<object>>
@@ -56,20 +57,30 @@ namespace Desalt.Core.CompilerStages
                         contexts,
                         SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken: cancellationToken),
-                    cancellationToken)
+                    cancellationToken),
+
+                // create the inline code symbol table
+                Task.Run<object>(
+                    () => InlineCodeSymbolTable.Create(
+                        contexts,
+                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                        cancellationToken),
+                    cancellationToken),
             };
 
             await Task.WhenAll(tasks);
 
-            ImportSymbolTable importSymbolTable = (ImportSymbolTable)tasks[0].Result;
-            ScriptNameSymbolTable scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
+            var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
+            var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
+            var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             // create new context objects with the symbol table
             var newContexts = contexts.Select(
                 context => new DocumentTranslationContextWithSymbolTables(
                     context,
                     importSymbolTable,
-                    scriptNameSymbolTable));
+                    scriptNameSymbolTable,
+                    inlineCodeSymbolTable));
 
             return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }
