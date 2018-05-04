@@ -145,6 +145,7 @@
     <Compile Include="Pipeline\SuccessOnNoErrorsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameRules.cs" />
+    <Compile Include="Translation\AlternateSignatureSymbolTable.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
     <Compile Include="Translation\DocumentationComment.cs" />
     <Compile Include="Translation\DocumentationCommentCref.cs" />

@@ -83,7 +83,7 @@ namespace Desalt.Core.Translation
         }
 
         //// ===========================================================================================================
-        //// Methods
+        //// Properties
         //// ===========================================================================================================
 
         /// <summary>
@@ -102,6 +102,10 @@ namespace Desalt.Core.Translation
         /// created on demand and then cached.
         /// </summary>
         public IEnumerable<KeyValuePair<ISymbol, Lazy<T>>> IndirectlyReferencedExternalSymbols => _indirectlyReferencedExternalSymbols;
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
 
         /// <summary>
         /// Returns a value indicating whether the symbol table contains a definition for the
