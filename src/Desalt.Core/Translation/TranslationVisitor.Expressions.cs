@@ -203,8 +203,17 @@ namespace Desalt.Core.Translation
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
-            ITsCallExpression translated = Factory.Call(leftSide, arguments);
-            yield return translated;
+
+            // see if there's an [InlineCode] entry for the method invocation
+            if (_inlineCodeTranslator.TryTranslate(node.Expression, leftSide, arguments, out IAstNode translatedNode))
+            {
+                yield return translatedNode;
+            }
+            else
+            {
+                ITsCallExpression translated = Factory.Call(leftSide, arguments);
+                yield return translated;
+            }
         }
 
         /// <summary>
@@ -215,7 +224,28 @@ namespace Desalt.Core.Translation
         {
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
-            ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
+
+            // see if there's an [InlineCode] entry for the ctor invocation
+            if (_inlineCodeTranslator.TryTranslate(node, leftSide, arguments, out IAstNode translatedNode))
+            {
+                yield return translatedNode;
+            }
+            else
+            {
+                ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
+                yield return translated;
+            }
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ImplicitArrayCreationExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
+        public override IEnumerable<IAstNode> VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        {
+            var elements =
+                new List<ITsExpression>(node.Initializer.Expressions.SelectMany(Visit).Cast<ITsExpression>());
+            ITsArrayLiteral translated = Factory.Array(elements.ToArray());
             yield return translated;
         }
 

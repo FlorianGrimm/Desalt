@@ -8,19 +8,22 @@
 namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that takes all of the documents to be compiled and extracts all of the defined
     /// symbols and which file they live in so that each file can correctly add <c>import</c>
     /// statements at the top of the translated file.
     /// </summary>
-    internal class CreateSymbolTablesStage : PipelineStage<IEnumerable<DocumentTranslationContext>,
-        IEnumerable<DocumentTranslationContextWithSymbolTables>>
+    internal class CreateSymbolTablesStage
+        : PipelineStage<ImmutableArray<DocumentTranslationContext>,
+            ImmutableArray<DocumentTranslationContextWithSymbolTables>>
     {
         /// <summary>
         /// Executes the pipeline stage.
@@ -31,47 +34,70 @@ namespace Desalt.Core.CompilerStages
         /// An optional <see cref="CancellationToken"/> allowing the execution to be canceled.
         /// </param>
         /// <returns>The result of the stage.</returns>
-        public override async Task<IExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>>
+        public override async Task<IExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>>
             ExecuteAsync(
-                IEnumerable<DocumentTranslationContext> input,
+                ImmutableArray<DocumentTranslationContext> input,
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            var contexts = input.ToArray();
+            // since all of the symbol tables will need references to types directly referenced in
+            // the documents and types in referenced assemblies, compute them once and then pass them
+            // into each symbol table
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+                    input,
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                    cancellationToken);
+
+            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                    directlyReferencedExternalTypeSymbols,
+                    input.FirstOrDefault()?.SemanticModel.Compilation,
+                    cancellationToken);
 
             // construct each symbol table in parallel
             var tasks = new List<Task<object>>
             {
                 // create the import symbol table
                 Task.Run<object>(
-                    () => ImportSymbolTable.Create(
-                        contexts,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
-                        cancellationToken: cancellationToken),
+                    () => ImportSymbolTable.Create(input, directlyReferencedExternalTypeSymbols, cancellationToken),
                     cancellationToken),
 
                 // create the script name symbol table
                 Task.Run<object>(
                     () => ScriptNameSymbolTable.Create(
-                        contexts,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
-                        cancellationToken: cancellationToken),
+                        input,
+                        directlyReferencedExternalTypeSymbols,
+                        indirectlyReferencedExternalTypeSymbols,
+                        cancellationToken),
+                    cancellationToken),
+
+                // create the inline code symbol table
+                Task.Run<object>(
+                    () => InlineCodeSymbolTable.Create(
+                        input,
+                        directlyReferencedExternalTypeSymbols,
+                        indirectlyReferencedExternalTypeSymbols,
+                        cancellationToken),
                     cancellationToken)
             };
 
             await Task.WhenAll(tasks);
 
-            ImportSymbolTable importSymbolTable = (ImportSymbolTable)tasks[0].Result;
-            ScriptNameSymbolTable scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
+            var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
+            var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
+            var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             // create new context objects with the symbol table
-            var newContexts = contexts.Select(
-                context => new DocumentTranslationContextWithSymbolTables(
-                    context,
-                    importSymbolTable,
-                    scriptNameSymbolTable));
+            var newContexts = input.Select(
+                    context => new DocumentTranslationContextWithSymbolTables(
+                        context,
+                        importSymbolTable,
+                        scriptNameSymbolTable,
+                        inlineCodeSymbolTable))
+                .ToImmutableArray();
 
-            return new ExtendedResult<IEnumerable<DocumentTranslationContextWithSymbolTables>>(newContexts);
+            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(newContexts);
         }
     }
 }

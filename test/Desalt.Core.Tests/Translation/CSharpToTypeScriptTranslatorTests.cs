@@ -26,9 +26,9 @@ using System.Collections.Generic;
 {csharpCode}
 ";
 
-            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File", code)))
+            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File");
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
                 var translator = new CSharpToTypeScriptTranslator();
                 var result = translator.TranslateDocument(context);
 

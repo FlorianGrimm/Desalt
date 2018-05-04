@@ -111,7 +111,8 @@ namespace Desalt.Core.Translation
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
             ImportSymbolTable importSymbolTable,
-            ScriptNameSymbolTable scriptNameSymbolTable) : base(
+            ScriptNameSymbolTable scriptNameSymbolTable,
+            InlineCodeSymbolTable inlineCodeSymbolTable) : base(
             context.Document,
             context.Options,
             context.SyntaxTree,
@@ -119,8 +120,12 @@ namespace Desalt.Core.Translation
             context.SemanticModel)
         {
             ImportSymbolTable = importSymbolTable ?? throw new ArgumentNullException(nameof(importSymbolTable));
+
             ScriptNameSymbolTable =
                 scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+
+            InlineCodeSymbolTable =
+                inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
         }
 
         //// ===========================================================================================================
@@ -130,5 +135,7 @@ namespace Desalt.Core.Translation
         public ImportSymbolTable ImportSymbolTable { get; }
 
         public ScriptNameSymbolTable ScriptNameSymbolTable { get; }
+
+        public InlineCodeSymbolTable InlineCodeSymbolTable { get; }
     }
 }

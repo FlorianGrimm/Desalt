@@ -131,7 +131,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{TokenCode}: {Text} ({Value})";
+        public override string ToString() => $"TokenCode={TokenCode}, Text={Text}, Value={Value}";
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

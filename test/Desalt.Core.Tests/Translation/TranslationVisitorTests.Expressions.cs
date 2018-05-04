@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
+    using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public partial class TranslationVisitorTests
@@ -95,7 +96,7 @@ class Logger
 }
 
 class Logger {
-  public static loggerLevelNames: string[] = new List<string>();
+  public static loggerLevelNames: string[] = [];
 
   private static init(): void {
     Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
@@ -192,6 +193,56 @@ class Logger {
 
                     await AssertTranslation(code, expected);
                 }
+            }
+
+            [TestMethod]
+            public async Task ObjectCreationExpression_should_use_InlineCode_for_ListT_creation()
+            {
+                await AssertTranslation(
+                    @"
+class C
+{
+    List<int> list1 = new List<int>();
+    List<int> list2 = new List<int>(capacity: 10);
+    List<int> list3 = new List<int>(1, 2, 3);
+    List<int> list4 = new List<int>(new [] { 1, 2, 3 });
+}",
+                    @"
+class C {
+  private list1: number[] = [];
+
+  private list2: number[] = [];
+
+  private list3: number[] = [1, 2, 3];
+
+  private list4: number[] = ss.arrayClone([1, 2, 3]);
+}
+",
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+            }
+
+            [TestMethod]
+            public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
+            {
+                await AssertTranslation(
+                    @"
+class C
+{
+    void Method()
+    {
+        List<int> list = new List<int>();
+        list.AddRange(new [] { 1, 2, 3 });
+    }
+}",
+                    @"
+class C {
+  private method(): void {
+    let list: number[] = [];
+    ss.arrayAddRange(list, [1, 2, 3]);
+  }
+}
+",
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
             }
         }
     }

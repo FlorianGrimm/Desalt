@@ -9,6 +9,7 @@ namespace Desalt.Core.Tests.TestUtility
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -120,7 +121,7 @@ namespace Desalt.Core.Tests.TestUtility
             DocumentTranslationContext thisContext = null;
 
             // add all of the symbols from all of the documents in the project
-            var contexts = new List<DocumentTranslationContext>();
+            var contextsList = new List<DocumentTranslationContext>();
             foreach (string docName in _workspace.CurrentSolution.Projects.Single().Documents.Select(doc => doc.Name))
             {
                 DocumentTranslationContext context = await CreateContextForFileAsync(docName, options);
@@ -129,17 +130,41 @@ namespace Desalt.Core.Tests.TestUtility
                     thisContext = context;
                 }
 
-                contexts.Add(context);
+                contextsList.Add(context);
             }
 
+            var contexts = contextsList.ToImmutableArray();
+
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
+
+            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
+                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                    directlyReferencedExternalTypeSymbols,
+                    contexts.FirstOrDefault()?.SemanticModel.Compilation,
+                    discoveryKind: discoveryKind);
+
             // create the import symbol table
-            var importTable = ImportSymbolTable.Create(contexts, discoveryKind);
+            var importTable = ImportSymbolTable.Create(contexts, directlyReferencedExternalTypeSymbols);
 
             // create the script name symbol table
-            var scriptNameTable = ScriptNameSymbolTable.Create(contexts, discoveryKind);
+            var scriptNameTable = ScriptNameSymbolTable.Create(
+                contexts,
+                directlyReferencedExternalTypeSymbols,
+                indirectlyReferencedExternalTypeSymbols);
+
+            // create the inline code symbol table
+            var inlineCodeTable = InlineCodeSymbolTable.Create(
+                contexts,
+                directlyReferencedExternalTypeSymbols,
+                indirectlyReferencedExternalTypeSymbols);
 
             thisContext.Should().NotBeNull();
-            return new DocumentTranslationContextWithSymbolTables(thisContext, importTable, scriptNameTable);
+            return new DocumentTranslationContextWithSymbolTables(
+                thisContext,
+                importTable,
+                scriptNameTable,
+                inlineCodeTable);
         }
 
         /// <summary>

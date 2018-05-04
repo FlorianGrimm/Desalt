@@ -21,19 +21,24 @@ namespace Desalt.Core.Tests.Translation
     public partial class TranslationVisitorTests
     {
         private static async Task AssertTranslation(
-            string csharpCode,
+            string codeSnippet,
             string expectedTypeScriptCode,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
         {
-            // get rid of \r\n sequences in the expected output
-            expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n");
+            string code = $@"
+using System;
+using System.Collections.Generic;
 
-            using (var tempProject = await TempProject.CreateAsync(
-                "TestProject",
-                new TempProjectFile("File", csharpCode)))
+{codeSnippet}
+";
+
+            // get rid of \r\n sequences in the expected output
+            expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
+
+            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                    "File",
+                    "File.cs",
                     discoveryKind: discoveryKind);
 
                 var visitor = new TranslationVisitor(context, CancellationToken.None);

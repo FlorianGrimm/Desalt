@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -30,7 +31,12 @@ namespace Desalt.Core.Tests.Translation
             using (var tempProject = await TempProject.CreateAsync("Test", new TempProjectFile("File.cs", csharpCode)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
-                var importTable = ImportSymbolTable.Create(context.ToSafeArray(), discoveryKind);
+                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+                var importTable = ImportSymbolTable.Create(
+                    contexts,
+                    directlyReferencedExternalTypeSymbols: SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+                        contexts,
+                        discoveryKind));
 
                 assertAction(importTable, context);
             }
