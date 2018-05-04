@@ -36,12 +36,25 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
 
-        public override string CodeDisplay => $"{Type.CodeDisplay}[]";
+        public override string CodeDisplay =>
+            Type is ITsFunctionType ? $"Array<{Type.CodeDisplay}>" : $"{Type.CodeDisplay}[]";
 
         protected override void EmitInternal(Emitter emitter)
         {
-            Type.Emit(emitter);
-            emitter.Write("[]");
+            // special case: if we have an array of function types, we need to use the Array<T>
+            // syntax instead of brackets, otherwise it will be (x: string) => bool[], which is a
+            // function that returns a boolean array instead of an array of functions that return boolean.
+            if (Type is ITsFunctionType)
+            {
+                emitter.Write("Array<");
+                Type.Emit(emitter);
+                emitter.Write(">");
+            }
+            else
+            {
+                Type.Emit(emitter);
+                emitter.Write("[]");
+            }
         }
     }
 }
