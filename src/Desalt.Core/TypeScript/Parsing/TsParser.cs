@@ -158,7 +158,22 @@ namespace Desalt.Core.TypeScript.Parsing
 
         private ITsIdentifier ParseIdentifier()
         {
-            TsToken identifierToken = Read(TsTokenCode.Identifier);
+            TsToken identifierToken;
+
+            // keywords can be identifiers as long as they're not reserved words
+            if (_reader.Peek().TokenCode > TsTokenCode.LastReservedWord)
+            {
+                var keywordAsIdentifierToken = _reader.Read();
+                identifierToken = TsToken.Identifier(
+                    keywordAsIdentifierToken.Text,
+                    keywordAsIdentifierToken.Text,
+                    keywordAsIdentifierToken.Location);
+            }
+            else
+            {
+                identifierToken = Read(TsTokenCode.Identifier);
+            }
+
             return Factory.Identifier(identifierToken.Value.ToString());
         }
 

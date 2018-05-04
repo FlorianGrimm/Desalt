@@ -509,17 +509,20 @@ namespace Desalt.Core.TypeScript.Parsing
 
             // note that this is not an else if clause since we want to allow arguments to be parsed
             // first above and then check for brackets and dots
-            if (_reader.ReadIf(TsTokenCode.LeftBracket))
+            while (_reader.IsNext(TsTokenCode.LeftBracket) || _reader.IsNext(TsTokenCode.Dot))
             {
-                ITsExpression leftSide = expression;
-                ITsExpression bracketContents = ParseExpression();
-                Read(TsTokenCode.RightBracket);
-                expression = Factory.MemberBracket(leftSide, bracketContents);
-            }
-            else if (_reader.ReadIf(TsTokenCode.Dot))
-            {
-                ITsIdentifier identifier = ParseIdentifierOrKeyword();
-                expression = Factory.MemberDot(expression, identifier.Text);
+                if (_reader.ReadIf(TsTokenCode.LeftBracket))
+                {
+                    ITsExpression leftSide = expression;
+                    ITsExpression bracketContents = ParseExpression();
+                    Read(TsTokenCode.RightBracket);
+                    expression = Factory.MemberBracket(leftSide, bracketContents);
+                }
+                else if (_reader.ReadIf(TsTokenCode.Dot))
+                {
+                    ITsIdentifier identifier = ParseIdentifierOrKeyword();
+                    expression = Factory.MemberDot(expression, identifier.Text);
+                }
             }
 
             // template literals aren't supported yet
@@ -662,17 +665,20 @@ namespace Desalt.Core.TypeScript.Parsing
 
             ITsExpression expression = ParsePrimaryExpression();
 
-            if (_reader.ReadIf(TsTokenCode.LeftBracket))
+            while (_reader.IsNext(TsTokenCode.LeftBracket) || _reader.IsNext(TsTokenCode.Dot))
             {
-                ITsExpression leftSide = expression;
-                ITsExpression bracketContents = ParseExpression();
-                Read(TsTokenCode.RightBracket);
-                expression = Factory.MemberBracket(leftSide, bracketContents);
-            }
-            else if (_reader.ReadIf(TsTokenCode.Dot))
-            {
-                ITsIdentifier identifier = ParseIdentifierOrKeyword();
-                expression = Factory.MemberDot(expression, identifier.Text);
+                if (_reader.ReadIf(TsTokenCode.LeftBracket))
+                {
+                    ITsExpression leftSide = expression;
+                    ITsExpression bracketContents = ParseExpression();
+                    Read(TsTokenCode.RightBracket);
+                    expression = Factory.MemberBracket(leftSide, bracketContents);
+                }
+                else if (_reader.ReadIf(TsTokenCode.Dot))
+                {
+                    ITsIdentifier identifier = ParseIdentifierOrKeyword();
+                    expression = Factory.MemberDot(expression, identifier.Text);
+                }
             }
 
             // template literals aren't supported yet
@@ -735,9 +741,6 @@ namespace Desalt.Core.TypeScript.Parsing
                     _reader.Skip();
                     return Factory.This;
 
-                case TsTokenCode.Identifier:
-                    return ParseIdentifierReference();
-
                 case TsTokenCode.Null:
                 case TsTokenCode.True:
                 case TsTokenCode.False:
@@ -771,7 +774,7 @@ namespace Desalt.Core.TypeScript.Parsing
                     return ParseTemplateLiteral();
 
                 default:
-                    throw NewParseException($"Unknown token in PrimaryExpression: '{_reader.Peek()}'");
+                    return ParseIdentifierReference();
             }
         }
 

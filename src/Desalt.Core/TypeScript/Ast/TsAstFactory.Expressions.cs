@@ -201,6 +201,8 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false) =>
             new TsArgument(argument, isSpreadArgument);
 
+        public static ITsArgumentList ArgumentList() => new TsArgumentList();
+
         /// <summary>
         /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
         /// </summary>

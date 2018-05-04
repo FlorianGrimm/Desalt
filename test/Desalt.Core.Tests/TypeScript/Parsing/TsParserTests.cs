@@ -244,5 +244,20 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
 
             AssertParseExpression("x() * y << (x+y)-- - -this.x + [1,2,3]", expected);
         }
+
+        [TestMethod]
+        public void TsParser_should_recognize_keywords_as_identifiers()
+        {
+            AssertParseExpression("string.Empty", Factory.MemberDot(Factory.Identifier("string"), "Empty"));
+        }
+
+        [TestMethod]
+        public void TsParser_should_recognize_a_qualified_name_as_an_expression()
+        {
+            AssertParseExpression("x.y.z()", Factory.Call(Factory.MemberDot(Factory.MemberDot(s_x, "y"), "z")));
+            AssertParseExpression(
+                "x.y[z].z()",
+                Factory.Call(Factory.MemberDot(Factory.MemberBracket(Factory.MemberDot(s_x, "y"), s_z), "z")));
+        }
     }
 }
