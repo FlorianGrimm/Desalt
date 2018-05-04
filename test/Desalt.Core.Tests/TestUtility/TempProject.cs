@@ -170,6 +170,9 @@ namespace Desalt.Core.Tests.TestUtility
                 directlyReferencedExternalTypeSymbols,
                 indirectlyReferencedExternalTypeSymbols);
 
+            // create the alternate signature symbol table
+            var alternateSignatureTable = AlternateSignatureSymbolTable.Create(contexts);
+
             return contexts.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
