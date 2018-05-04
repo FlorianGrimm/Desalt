@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
+    using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public partial class TranslationVisitorTests
@@ -216,7 +217,8 @@ class C {
 
   private list4: number[] = ss.arrayClone([1, 2, 3]);
 }
-");
+",
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
             }
 
             [TestMethod]
@@ -239,7 +241,8 @@ class C {
     ss.arrayAddRange(list, [1, 2, 3]);
   }
 }
-");
+",
+                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
             }
         }
     }

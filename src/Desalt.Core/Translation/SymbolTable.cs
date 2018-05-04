@@ -17,7 +17,7 @@ namespace Desalt.Core.Translation
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T>
+    internal abstract class SymbolTable<T> where T : class
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -62,7 +62,6 @@ namespace Desalt.Core.Translation
             get
             {
                 string symbolName = SymbolTableUtils.KeyFromSymbol(symbol);
-
                 // look in the document symbols first
                 if (!_documentSymbols.TryGetValue(symbolName, out T value))
                 {
@@ -107,7 +106,7 @@ namespace Desalt.Core.Translation
 
         /// <summary>
         /// Returns a value indicating whether the symbol table contains a definition for the
-        /// specified symbol name.
+        /// specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol to look up.</param>
         public bool HasSymbol(ISymbol symbol)
@@ -116,7 +115,8 @@ namespace Desalt.Core.Translation
             return symbolName != null &&
                 (_documentSymbols.TryGetValue(symbolName, out _) ||
                     _directlyReferencedExternalSymbols.TryGetValue(symbolName, out _) ||
-                    _indirectlyReferencedExternalSymbols.TryGetValue(symbolName, out _));
+                    _indirectlyReferencedExternalSymbols.TryGetValue(symbolName, out Lazy<T> lazy) &&
+                    lazy.Value != null);
         }
 
         /// <summary>

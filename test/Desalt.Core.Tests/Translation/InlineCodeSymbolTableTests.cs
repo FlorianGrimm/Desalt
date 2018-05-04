@@ -115,7 +115,7 @@ int Property
                 "List<C> list;",
                 SymbolTableDiscoveryKind.DocumentAndReferencedTypes,
                 new KeyValuePair<string, string>($"{prefix}.List()", "[]"),
-                new KeyValuePair<string, string>($"{prefix}.List(C first, C[] rest)", "[ {first}, {*rest} ]"),
+                new KeyValuePair<string, string>($"{prefix}.List(C first, params C[] rest)", "[ {first}, {*rest} ]"),
                 new KeyValuePair<string, string>($"{prefix}.Clone()", "{$System.Script}.arrayClone({this})"));
         }
     }

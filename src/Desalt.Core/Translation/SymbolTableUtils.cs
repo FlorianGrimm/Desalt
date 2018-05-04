@@ -42,12 +42,12 @@ namespace Desalt.Core.Translation
             SymbolDisplayMemberOptions.IncludeExplicitInterface,
             SymbolDisplayDelegateStyle.NameOnly,
             SymbolDisplayExtensionMethodStyle.StaticMethod,
-            SymbolDisplayParameterOptions.IncludeName | SymbolDisplayParameterOptions.IncludeType,
+            SymbolDisplayParameterOptions.IncludeName |
+            SymbolDisplayParameterOptions.IncludeType |
+            SymbolDisplayParameterOptions.IncludeParamsRefOut,
             SymbolDisplayPropertyStyle.NameOnly,
             SymbolDisplayLocalOptions.IncludeType,
-            SymbolDisplayKindOptions.IncludeNamespaceKeyword |
-            SymbolDisplayKindOptions.IncludeTypeKeyword |
-            SymbolDisplayKindOptions.IncludeMemberKeyword,
+            SymbolDisplayKindOptions.None,
             SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         //// ===========================================================================================================
@@ -167,7 +167,7 @@ namespace Desalt.Core.Translation
         /// <returns>All of the externally-referenced type symbols.</returns>
         public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
             DocumentTranslationContext context,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // find all of the external type references in the document
             var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);

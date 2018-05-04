@@ -105,9 +105,9 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertDocumentEntriesInSymbolTable(
                 "interface MyInterface {} class MyClass {} struct MyStruct {}",
-                new KeyValuePair<string, string>("interface MyInterface", "MyInterface"),
-                new KeyValuePair<string, string>("class MyClass", "MyClass"),
-                new KeyValuePair<string, string>("struct MyStruct", "MyStruct"));
+                new KeyValuePair<string, string>("MyInterface", "MyInterface"),
+                new KeyValuePair<string, string>("MyClass", "MyClass"),
+                new KeyValuePair<string, string>("MyStruct", "MyStruct"));
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertDocumentEntriesInSymbolTable(
                 "class C { C(int x) { } static C() { } }",
-                new KeyValuePair<string, string>("class C", "C"));
+                new KeyValuePair<string, string>("C", "C"));
         }
 
         [TestMethod]
@@ -129,11 +129,11 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertDocumentEntriesInSymbolTable(
                 "class C { int MyInt; } interface I { void MyMethod(); } enum MyEnum { One }",
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.MyInt", "myInt"),
-                new KeyValuePair<string, string>("interface I", "I"),
+                new KeyValuePair<string, string>("I", "I"),
                 new KeyValuePair<string, string>("I.MyMethod()", "myMethod"),
-                new KeyValuePair<string, string>("enum MyEnum", "MyEnum"),
+                new KeyValuePair<string, string>("MyEnum", "MyEnum"),
                 new KeyValuePair<string, string>("MyEnum.One", "one"));
         }
 
@@ -142,8 +142,8 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertDocumentEntriesInSymbolTable(
                 "class C { event System.Action MyEvent; }",
-                new KeyValuePair<string, string>("class C", "C"),
-                new KeyValuePair<string, string>("event C.MyEvent", "myEvent"));
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.MyEvent", "myEvent"));
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertDocumentEntriesInSymbolTable(
                 "class C { bool MyProperty { get; set; } }",
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.MyProperty", "myProperty"));
         }
 
@@ -188,12 +188,12 @@ struct S
 
             await AssertDocumentEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class C", "ScriptClass"),
+                new KeyValuePair<string, string>("C", "ScriptClass"),
                 new KeyValuePair<string, string>("C.field", "ScriptField"),
-                new KeyValuePair<string, string>("event C.Event", "ScriptEvent"),
-                new KeyValuePair<string, string>("interface I", "ScriptInterface"),
+                new KeyValuePair<string, string>("C.Event", "ScriptEvent"),
+                new KeyValuePair<string, string>("I", "ScriptInterface"),
                 new KeyValuePair<string, string>("I.Method()", "ScriptMethod"),
-                new KeyValuePair<string, string>("struct S", "ScriptStruct"),
+                new KeyValuePair<string, string>("S", "ScriptStruct"),
                 new KeyValuePair<string, string>("S.Property", "ScriptProperty"));
         }
 
@@ -205,7 +205,7 @@ struct S
                 new CompilerOptions(
                     "outPath",
                     renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.PrivateDollarPrefix)),
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.name", "$name"));
         }
 
@@ -217,7 +217,7 @@ struct S
                 new CompilerOptions(
                     "outPath",
                     renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName)),
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.x", "x"),
                 new KeyValuePair<string, string>("C.name", "$name"),
                 new KeyValuePair<string, string>("C.Name", "name"));
@@ -253,12 +253,12 @@ struct S
 
             await AssertDocumentEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
-                new KeyValuePair<string, string>("event C.Event", "Event"),
-                new KeyValuePair<string, string>("interface I", "I"),
+                new KeyValuePair<string, string>("C.Event", "Event"),
+                new KeyValuePair<string, string>("I", "I"),
                 new KeyValuePair<string, string>("I.Method()", "Method"),
-                new KeyValuePair<string, string>("struct S", "S"),
+                new KeyValuePair<string, string>("S", "S"),
                 new KeyValuePair<string, string>("S.Property", "Property"));
         }
 
@@ -279,7 +279,7 @@ class C
 
             await AssertDocumentEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
                 new KeyValuePair<string, string>("C.Method()", "Method"));
         }
@@ -302,7 +302,7 @@ class C
 
             await AssertDocumentEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.Field", "Field"),
                 new KeyValuePair<string, string>("C.Method()", "Method"));
         }
@@ -328,7 +328,7 @@ class C
 
             await AssertDocumentEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class C", "C"),
+                new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.Field", "trumpedField"),
                 new KeyValuePair<string, string>("C.Method(int x)", "trumpedMethod"));
         }
@@ -351,7 +351,7 @@ class C
 
             await AssertExternalEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("class Underscore.UnderscoreValue<int>", "UnderscoreValue"),
+                new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>", "UnderscoreValue"),
                 new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value()", "value"));
         }
 
@@ -381,9 +381,10 @@ class C
         {
             await AssertEntriesInSymbolTable(
                 "using System; class C { bool x; }",
-                options: null,
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
-                expectedEntries: new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
+                null,
+                SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                new KeyValuePair<string, string>("System.Script", "ss"),
+                new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
         }
     }
 }

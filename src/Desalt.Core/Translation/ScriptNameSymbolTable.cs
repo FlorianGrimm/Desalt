@@ -74,7 +74,7 @@ namespace Desalt.Core.Translation
 
             // process all of the types and members in referenced assemblies
             var indirectlyReferencedExternalSymbols = indirectlyReferencedExternalTypeSymbols
-                .SelectMany(symbol => symbol.ToSingleEnumerable().Concat(DiscoverMembersOfTypeSymbol(symbol)))
+                .SelectMany(DiscoverTypeAndMembers)
                 .Select(
                     symbol => new KeyValuePair<string, Lazy<string>>(
                         SymbolTableUtils.KeyFromSymbol(symbol),
@@ -85,6 +85,21 @@ namespace Desalt.Core.Translation
                 documentSymbols,
                 directlyReferencedExternalSymbols,
                 indirectlyReferencedExternalSymbols);
+        }
+
+        /// <summary>
+        /// Creates a pre-populated symbol table with mock entries. Used in unit testing.
+        /// </summary>
+        internal static ScriptNameSymbolTable CreateMock(params (string symbolName, string scriptName)[] mockEntries)
+        {
+            var documentSymbols = mockEntries
+                .Select(entry => new KeyValuePair<string, string>(entry.symbolName, entry.scriptName))
+                .ToImmutableArray();
+
+            return new ScriptNameSymbolTable(
+                documentSymbols,
+                ImmutableArray<KeyValuePair<string, string>>.Empty,
+                ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
         }
 
         /// <summary>
@@ -106,17 +121,14 @@ namespace Desalt.Core.Translation
                 .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, context.Options.RenameRules));
         }
 
-        private static IEnumerable<ISymbol> DiscoverMembersOfTypeSymbol(INamespaceOrTypeSymbol typeSymbol) =>
-            typeSymbol.GetMembers().Where(ShouldProcessMember);
+        private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
+            typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
 
         private static IEnumerable<KeyValuePair<string, string>> GetScriptNameOnTypeAndMembers(
             ITypeSymbol typeSymbol,
             RenameRules renameRules)
         {
-            var scriptNames = DiscoverMembersOfTypeSymbol(typeSymbol).ToList();
-            scriptNames.Insert(0, typeSymbol);
-
-            return scriptNames.Select(
+            return DiscoverTypeAndMembers(typeSymbol).Select(
                 symbol => new KeyValuePair<string, string>(
                     SymbolTableUtils.KeyFromSymbol(symbol),
                     GetScriptNameForSymbol(symbol, renameRules)));

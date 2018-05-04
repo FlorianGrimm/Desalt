@@ -86,6 +86,21 @@ namespace Desalt.Core.Translation
                 indirectlyReferencedExternalSymbols);
         }
 
+        /// <summary>
+        /// Creates a pre-populated symbol table with mock entries. Used in unit testing.
+        /// </summary>
+        internal static InlineCodeSymbolTable CreateMock(params (string symbolName, string inlineCode)[] mockEntries)
+        {
+            var documentSymbols = mockEntries
+                .Select(entry => new KeyValuePair<string, string>(entry.symbolName, entry.inlineCode))
+                .ToImmutableArray();
+
+            return new InlineCodeSymbolTable(
+                documentSymbols,
+                ImmutableArray<KeyValuePair<string, string>>.Empty,
+                ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
+        }
+
         private static IEnumerable<KeyValuePair<string, string>> ProcessSymbolsInDocument(
             DocumentTranslationContext context)
         {

@@ -205,20 +205,15 @@ namespace Desalt.Core.Translation
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
             // see if there's an [InlineCode] entry for the method invocation
-            if (_semanticModel.GetSymbolInfo(node.Expression).Symbol is IMethodSymbol methodSymbol &&
-                _inlineCodeTable.HasSymbol(methodSymbol) &&
-                _inlineCodeTable[methodSymbol] != null)
+            if (_inlineCodeTranslator.TryTranslate(node.Expression, leftSide, arguments, out IAstNode translatedNode))
             {
-                yield return InlineCodeTranslator.Translate(
-                    methodSymbol,
-                    _inlineCodeTable[methodSymbol],
-                    leftSide,
-                    arguments);
-                yield break;
+                yield return translatedNode;
             }
-
-            ITsCallExpression translated = Factory.Call(leftSide, arguments);
-            yield return translated;
+            else
+            {
+                ITsCallExpression translated = Factory.Call(leftSide, arguments);
+                yield return translated;
+            }
         }
 
         /// <summary>
@@ -230,21 +225,16 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
-            // see if there's an [InlineCode] entry for the ctor
-            if (_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorSymbol &&
-                _inlineCodeTable.HasSymbol(ctorSymbol) &&
-                _inlineCodeTable[ctorSymbol] != null)
+            // see if there's an [InlineCode] entry for the ctor invocation
+            if (_inlineCodeTranslator.TryTranslate(node, leftSide, arguments, out IAstNode translatedNode))
             {
-                yield return InlineCodeTranslator.Translate(
-                    ctorSymbol,
-                    _inlineCodeTable[ctorSymbol],
-                    leftSide,
-                    arguments);
-                yield break;
+                yield return translatedNode;
             }
-
-            ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
-            yield return translated;
+            else
+            {
+                ITsNewCallExpression translated = Factory.NewCall(leftSide, arguments);
+                yield return translated;
+            }
         }
 
         /// <summary>
