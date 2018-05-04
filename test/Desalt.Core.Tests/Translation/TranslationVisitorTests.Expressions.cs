@@ -244,6 +244,28 @@ class C {
 ",
                     SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
             }
+
+            [TestMethod]
+            public async Task List_of_Func_type_should_translate_to_Array_of_func()
+            {
+                await AssertTranslation(@"
+class C
+{
+    private static List<Func<string, bool>> Filters
+    {
+        get
+        {
+            return (List<Func<string, bool>>)new List<Func<string, bool>>();
+        }
+    }
+}", @"
+class C {
+  private static get filters(): Array<(string: string) => boolean> {
+    return <Array<(string: string) => boolean>>[];
+  }
+}
+");
+            }
         }
     }
 }

@@ -190,6 +190,20 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         }
 
         [TestMethod]
+        public void Emit_array_of_functions_type_using_Array_of_T_instead_of_brackets()
+        {
+            VerifyOutput(
+                Factory.ArrayType(
+                    Factory.FunctionType(
+                        Factory.TypeParameters(Factory.TypeParameter(s_T, s_MyTypeRef)),
+                        Factory.ParameterList(
+                            Factory.BoundRequiredParameter(s_x, s_TRef),
+                            Factory.BoundRequiredParameter(s_y, Factory.StringType)),
+                        Factory.BooleanType)),
+                "Array<<T extends MyType>(x: T, y: string) => boolean>");
+        }
+
+        [TestMethod]
         public void Emit_tuple_type()
         {
             VerifyOutput(
