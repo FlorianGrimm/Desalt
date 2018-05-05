@@ -67,7 +67,7 @@ namespace Desalt.Core.Translation
 
             // get the type of all of the declarations
             var typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
-            ITsType type = TypeTranslator.TranslateSymbol(typeSymbol, _scriptNameTable, _typesToImport);
+            ITsType type = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
 
             ITsSimpleLexicalBinding[] declarations = node.Declaration.Variables.SelectMany(Visit)
                 .Cast<ITsSimpleLexicalBinding>()

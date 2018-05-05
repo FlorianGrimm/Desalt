@@ -35,8 +35,8 @@ namespace Desalt.Core.Translation
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptNameSymbolTable _scriptNameTable;
-        private readonly InlineCodeSymbolTable _inlineCodeTable;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
+        private readonly TypeTranslator _typeTranslator;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
 
         //// ===========================================================================================================
@@ -51,11 +51,11 @@ namespace Desalt.Core.Translation
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptNameTable = context.ScriptNameSymbolTable;
-            _inlineCodeTable = context.InlineCodeSymbolTable;
             _inlineCodeTranslator = new InlineCodeTranslator(
                 context.SemanticModel,
                 context.InlineCodeSymbolTable,
                 context.ScriptNameSymbolTable);
+            _typeTranslator = new TypeTranslator(context.ScriptNameSymbolTable);
 
             _diagnostics = DiagnosticList.Create(context.Options);
         }
@@ -146,10 +146,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = TypeTranslator.TranslateSymbol(
-                parameterTypeSymbol,
-                _scriptNameTable,
-                _typesToImport);
+            ITsType parameterType = _typeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport);
 
             IAstNode parameter;
 
@@ -286,9 +283,8 @@ namespace Desalt.Core.Translation
             ITsType returnType = null;
             if (returnTypeNode != null)
             {
-                returnType = TypeTranslator.TranslateSymbol(
+                returnType = _typeTranslator.TranslateSymbol(
                     returnTypeNode.GetTypeSymbol(_semanticModel),
-                    _scriptNameTable,
                     _typesToImport);
             }
 
