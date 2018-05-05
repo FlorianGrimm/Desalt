@@ -9,6 +9,7 @@ namespace Desalt.Core.Tests
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
@@ -22,13 +23,31 @@ namespace Desalt.Core.Tests
     {
         public TestContext TestContext { get; set; }
 
+        private string RootDirectory
+        {
+            get
+            {
+                string directory = TestContext.TestRunDirectory;
+                while (Path.GetFileName(directory) != "Desalt")
+                {
+                    directory = Path.GetDirectoryName(directory);
+                }
+
+                return directory;
+            }
+        }
+
+        private string OutputDirectory => Path.Combine(RootDirectory, "E2ETestResults", "CoreSubset");
+
+        private string ProjectFilePath =>
+            Path.Combine(RootDirectory, "test", "SaltarelleProjectTests", "CoreSubset", "CoreSubset.csproj");
+
         [TestCategory("SkipWhenLiveUnitTesting")]
         [TestMethod]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
-            // TODO: generalize this so that it's not an absolute path
-            const string outputPath = @"D:\github\Desalt\TestResults\CoreSubset";
-            const string projectFilePath = @"D:\github\Desalt\test\SaltarelleProjectTests\CoreSubset\CoreSubset.csproj";
+            string outputPath = OutputDirectory;
+            string projectFilePath = ProjectFilePath;
 
             //foreach (string file in Directory.EnumerateFiles(outputPath))
             //{
