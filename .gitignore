@@ -1,4 +1,7 @@
 .vs/
+/E2ETestResults/Test/Test.cs
+/E2ETestResults/Test/Test.dll
+/E2ETestResults/Test/Test.js
 /packages/
 /src/**/bin/
 /src/**/obj/
