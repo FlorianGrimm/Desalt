@@ -33,7 +33,7 @@ namespace Desalt.Core.Validation
                     parameter);
 
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, query);
-            return new SuccessResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
         }
     }
 }

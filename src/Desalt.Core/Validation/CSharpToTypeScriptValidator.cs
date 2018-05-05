@@ -33,7 +33,7 @@ namespace Desalt.Core.Validation
             IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
 
             IEnumerable<Diagnostic> diagnostics = results.SelectMany(result => result.Diagnostics);
-            return new SuccessResult(diagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics);
         }
     }
 }

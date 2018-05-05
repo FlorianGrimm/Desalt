@@ -142,7 +142,7 @@
     <Compile Include="Pipeline\IPipelineStage.cs" />
     <Compile Include="Pipeline\PipelineStage.cs" />
     <Compile Include="Pipeline\SimplePipeline.cs" />
-    <Compile Include="Pipeline\SuccessResult.cs" />
+    <Compile Include="Pipeline\SuccessOnNoErrorsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameRules.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />

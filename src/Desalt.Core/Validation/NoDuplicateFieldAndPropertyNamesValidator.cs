@@ -62,7 +62,7 @@ namespace Desalt.Core.Validation
                     fieldVariable.GetLocation());
 
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, errors);
-            return new SuccessResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
         }
     }
 }

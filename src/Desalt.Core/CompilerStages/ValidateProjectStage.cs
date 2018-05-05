@@ -42,7 +42,7 @@ namespace Desalt.Core.CompilerStages
             IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
 
             DiagnosticList diagnostics = DiagnosticList.From(options, results.SelectMany(result => result.Diagnostics));
-            return new SuccessResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
         }
     }
 }
