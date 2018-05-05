@@ -8,7 +8,6 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Tests.TestUtility;
@@ -52,7 +51,7 @@ class Foo
                 }
 
                 var translator = new TypeTranslator(context.ScriptNameSymbolTable);
-                translator.TranslateSymbol(typeSymbol, new HashSet<ISymbol>())
+                translator.TranslateSymbol(typeSymbol)
                     .EmitAsString()
                     .Should()
                     .BeEquivalentTo(expectedType.EmitAsString());

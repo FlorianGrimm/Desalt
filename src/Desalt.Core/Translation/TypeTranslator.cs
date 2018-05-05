@@ -127,8 +127,10 @@ namespace Desalt.Core.Translation
         /// A set of symbols that will need to be imported. This method will add to the set if necessary.
         /// </param>
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
-        public ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport)
+        public ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport = null)
         {
+            typesToImport = typesToImport ?? new HashSet<ISymbol>();
+
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
                 ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, typesToImport);
