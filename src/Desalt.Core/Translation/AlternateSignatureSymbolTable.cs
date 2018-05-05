@@ -12,9 +12,9 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Extensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// Contains mappings of fully-qualified method names to arrays of <see cref="AlternateSignatureMethodInfo"/> for
@@ -77,7 +77,7 @@ namespace Desalt.Core.Translation
             // process the types defined in the documents
             var entries = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
-                .SelectMany(context => GetMethodsInDocument(context, cancellationToken));
+                .SelectMany(context => GetCtorsAndMethodsInDocument(context, cancellationToken));
 
             // aggregate all of the methods into the dictionary - for partial classes it's possible
             // for methods to be spread out amongst several files
@@ -111,21 +111,27 @@ namespace Desalt.Core.Translation
         /// </summary>
         private static string GetMethodName(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
 
-        private static IEnumerable<KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>> GetMethodsInDocument(
-            DocumentTranslationContext context,
-            CancellationToken cancellationToken)
+        private static IEnumerable<KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>>
+            GetCtorsAndMethodsInDocument(DocumentTranslationContext context, CancellationToken cancellationToken)
         {
             // get all of the method declarations, since [AlternateSignature] is only valid on methods
-            var methodsByName =
-                from methodSyntax in context.RootSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-                let methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodSyntax, cancellationToken)
-                where methodSymbol != null
-                let isAlternateSignature =
-                    SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") != null
-                group new AlternateSignatureMethodInfo(methodSymbol, isAlternateSignature) by GetMethodName(methodSymbol);
+            var methodsByName = from methodSyntax in context.RootSyntax.DescendantNodes()
+                                where methodSyntax.Kind()
+                                    .IsOneOf(SyntaxKind.MethodDeclaration, SyntaxKind.ConstructorDeclaration)
+                                let methodSymbol =
+                                    context.SemanticModel.GetDeclaredSymbol(
+                                        methodSyntax,
+                                        cancellationToken) as IMethodSymbol
+                                where methodSymbol != null
+                                let isAlternateSignature =
+                                    SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") != null
+                                group new AlternateSignatureMethodInfo(methodSymbol, isAlternateSignature) by
+                                    GetMethodName(methodSymbol);
 
             return methodsByName.Select(
-                grouping => new KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>(grouping.Key, grouping));
+                grouping => new KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>(
+                    grouping.Key,
+                    grouping));
         }
     }
 

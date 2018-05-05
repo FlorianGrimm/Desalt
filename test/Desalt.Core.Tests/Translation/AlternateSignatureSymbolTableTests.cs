@@ -56,7 +56,7 @@ namespace Desalt.Core.Tests.Translation
 
                 var actualMethodSymbols = contexts.SelectMany(
                     context => context.RootSyntax.DescendantNodes()
-                        .OfType<MethodDeclarationSyntax>()
+                        .OfType<BaseMethodDeclarationSyntax>()
                         .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax)));
 
                 var expectedMethodSymbols = (from expectedMethod in expectedMethods
@@ -138,6 +138,29 @@ partial class C
                 "C.Method()",
                 "C.Method(int x)",
                 "C.Method(int x, string y)");
+        }
+
+        [TestMethod]
+        public async Task AlternateSignatureSymbolTable_should_work_on_ctors()
+        {
+            await AssertEntriesInTableAsync(
+                @"
+class C
+{
+    [AlternateSignature]
+    public extern C();
+
+    public C(int x, string y)
+    {
+    }
+
+    [AlternateSignature]
+    public extern C(int x);
+}",
+                "C.C",
+                "C.C()",
+                "C.C(int x)",
+                "C.C(int x, string y)");
         }
     }
 }
