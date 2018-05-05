@@ -7,14 +7,15 @@
 
 namespace Desalt.Core.CompilerStages
 {
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.Validation;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that validates a C# Project in preparation for translating to TypeScript.
@@ -36,13 +37,18 @@ namespace Desalt.Core.CompilerStages
             CompilerOptions options,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // validate all of the documents in parallel
-            var tasks = input.Select(context => new CSharpToTypeScriptValidator().ValidateDocumentAsync(context));
+            IValidator[] validators =
+            {
+                new NoDefaultParametersInInterfacesValidator(),
+                new NoDuplicateFieldAndPropertyNamesValidator(),
+            };
 
+            // run all of the validators in parallel
+            var tasks = validators.Select(v => Task.Run(() => v.Validate(input), cancellationToken));
             IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
 
-            DiagnosticList diagnostics = DiagnosticList.From(options, results.SelectMany(result => result.Diagnostics));
-            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
+            IEnumerable<Diagnostic> diagnostics = results.SelectMany(result => result.Diagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics);
         }
     }
 }

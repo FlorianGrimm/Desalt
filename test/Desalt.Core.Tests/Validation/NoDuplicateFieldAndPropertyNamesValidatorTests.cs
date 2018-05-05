@@ -7,9 +7,11 @@
 
 namespace Desalt.Core.Tests.Validation
 {
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.Validation;
@@ -39,10 +41,12 @@ public class C
             using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                        "File.cs",
+                        discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDuplicateFieldAndPropertyNamesValidator();
-                IExtendedResult<bool> result = validator.Validate(context);
+                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
 
                 VariableDeclaratorSyntax fieldDeclaration = context.RootSyntax.DescendantNodes()
                     .OfType<FieldDeclarationSyntax>()
@@ -83,10 +87,12 @@ public class C
             using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                        "File.cs",
+                        discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDuplicateFieldAndPropertyNamesValidator();
-                IExtendedResult<bool> result = validator.Validate(context);
+                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
 
                 result.Diagnostics.Should().BeEmpty();
             }

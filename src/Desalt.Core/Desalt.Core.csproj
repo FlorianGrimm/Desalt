@@ -338,7 +338,6 @@
     <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Utility\XmlFragmentParser.cs" />
     <Compile Include="Utility\XmlFragmentParser.Reader.cs" />
-    <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidator.cs" />
     <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidator.cs" />

@@ -8,6 +8,7 @@
 namespace Desalt.Core.Validation
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
@@ -20,9 +21,10 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal class NoDefaultParametersInInterfacesValidator : IValidator
     {
-        public IExtendedResult<bool> Validate(DocumentTranslationContextWithSymbolTables context)
+        public IExtendedResult<bool> Validate(ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts)
         {
             IEnumerable<Diagnostic> query =
+                from context in contexts.AsParallel()
                 from iface in context.RootSyntax.DescendantNodes().OfType<InterfaceDeclarationSyntax>()
                 from method in iface.Members.OfType<MethodDeclarationSyntax>()
                 from parameter in method.ParameterList.Parameters
@@ -32,7 +34,12 @@ namespace Desalt.Core.Validation
                     method.Identifier.Text,
                     parameter);
 
-            DiagnosticList diagnostics = DiagnosticList.From(context.Options, query);
+            if (contexts.Length == 0)
+            {
+                return new ExtendedResult<bool>(true);
+            }
+
+            DiagnosticList diagnostics = DiagnosticList.From(contexts[0].Options, query);
             return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
         }
     }
