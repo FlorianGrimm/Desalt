@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -16,8 +17,9 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
-    /// Contains mappings of fully-qualified method names to arrays of <see cref="IMethodSymbol"/>
-    /// for all of the methods that are decorated with an <c>[AlternateSignature]</c> attribute.
+    /// Contains mappings of fully-qualified method names to arrays of <see cref="AlternateSignatureMethodInfo"/> for
+    /// all of the methods that are decorated with an <c>[AlternateSignature]</c> attribute and their
+    /// associated non-decorated methods.
     /// </summary>
     internal class AlternateSignatureSymbolTable
     {
@@ -38,16 +40,15 @@ namespace Desalt.Core.Translation
             SymbolDisplayKindOptions.None,
             SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
-        private readonly ImmutableDictionary<string, ImmutableArray<IMethodSymbol>> _entries;
+        private readonly ImmutableDictionary<string, ImmutableArray<AlternateSignatureMethodInfo>> _entries;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private AlternateSignatureSymbolTable(
-            ImmutableArray<KeyValuePair<string, ImmutableArray<IMethodSymbol>>> entries)
+        private AlternateSignatureSymbolTable(ImmutableDictionary<string, ImmutableArray<AlternateSignatureMethodInfo>> entries)
         {
-            _entries = entries.ToImmutableDictionary();
+            _entries = entries;
         }
 
         //// ===========================================================================================================
@@ -57,7 +58,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Gets all of the entries in the table. Mainly used for unit testing.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, ImmutableArray<IMethodSymbol>>> Entries => _entries.AsEnumerable();
+        public IEnumerable<KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>> Entries => _entries.AsEnumerable();
 
         //// ===========================================================================================================
         //// Methods
@@ -76,10 +77,33 @@ namespace Desalt.Core.Translation
             // process the types defined in the documents
             var entries = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
-                .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
-                .ToImmutableArray();
+                .SelectMany(context => GetMethodsInDocument(context, cancellationToken));
 
-            return new AlternateSignatureSymbolTable(entries);
+            // aggregate all of the methods into the dictionary - for partial classes it's possible
+            // for methods to be spread out amongst several files
+            var dictionary = new Dictionary<string, List<AlternateSignatureMethodInfo>>();
+            foreach (KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>> entry in entries)
+            {
+                if (dictionary.TryGetValue(entry.Key, out List<AlternateSignatureMethodInfo> methods))
+                {
+                    methods.AddRange(entry.Value);
+                }
+                else
+                {
+                    dictionary.Add(entry.Key, new List<AlternateSignatureMethodInfo>(entry.Value));
+                }
+            }
+
+            // turn it into an immutable dictionary and filter out any entries that don't have any
+            // methods with at least one [AlternateSignature]
+            var immutable = dictionary.Where(pair => pair.Value.Any(info => info.IsAlternateSignature))
+                .Select(
+                    pair => new KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>(
+                        pair.Key,
+                        pair.Value.ToImmutableArray()))
+                .ToImmutableDictionary();
+
+            return new AlternateSignatureSymbolTable(immutable);
         }
 
         /// <summary>
@@ -87,30 +111,33 @@ namespace Desalt.Core.Translation
         /// </summary>
         private static string GetMethodName(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
 
-        private static IEnumerable<KeyValuePair<string, ImmutableArray<IMethodSymbol>>> ProcessSymbolsInDocument(
+        private static IEnumerable<KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>> GetMethodsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            var parameterCountsPerMethod =
-
-                // get all of the method declarations, since [AlternateSignature] is only valid on methods
+            // get all of the method declarations, since [AlternateSignature] is only valid on methods
+            var methodsByName =
                 from methodSyntax in context.RootSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-
-                    // methods have to be declared as extern
-                where methodSyntax.Modifiers.Any(SyntaxKind.ExternKeyword)
-
-                // lookup the symbol
                 let methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodSyntax, cancellationToken)
-                where methodSymbol != null &&
+                where methodSymbol != null
+                let isAlternateSignature =
                     SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") != null
+                group new AlternateSignatureMethodInfo(methodSymbol, isAlternateSignature) by GetMethodName(methodSymbol);
 
-                // get the number of parameters for the method
-                group methodSymbol by GetMethodName(methodSymbol);
-
-            return parameterCountsPerMethod.Select(
-                grouping => new KeyValuePair<string, ImmutableArray<IMethodSymbol>>(
-                    grouping.Key,
-                    grouping.ToImmutableArray()));
+            return methodsByName.Select(
+                grouping => new KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>>(grouping.Key, grouping));
         }
+    }
+
+    internal sealed class AlternateSignatureMethodInfo
+    {
+        public AlternateSignatureMethodInfo(IMethodSymbol methodSymbol, bool isAlternateSignature)
+        {
+            MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
+            IsAlternateSignature = isAlternateSignature;
+        }
+
+        public IMethodSymbol MethodSymbol { get; }
+        public bool IsAlternateSignature { get; }
     }
 }
