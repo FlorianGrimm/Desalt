@@ -193,6 +193,7 @@
     <Compile Include="Utility\XmlFragmentParserTests.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
     <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidatorTests.cs" />
+    <Compile Include="Validation\NoPartialClassesValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

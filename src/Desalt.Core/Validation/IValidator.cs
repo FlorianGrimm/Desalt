@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Validation
 {
+    using System.Collections.Immutable;
     using Desalt.Core.Translation;
 
     /// <summary>
@@ -14,6 +15,6 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal interface IValidator
     {
-        IExtendedResult<bool> Validate(DocumentTranslationContextWithSymbolTables context);
+        IExtendedResult<bool> Validate(ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts);
     }
 }

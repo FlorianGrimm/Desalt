@@ -28,7 +28,7 @@ namespace Desalt.Core
                 compilationRequest,
                 compilationRequest.Options);
 
-            return new SuccessResult(DiagnosticList.From(compilationRequest.Options, result.Diagnostics));
+            return new SuccessOnNoErrorsResult(DiagnosticList.From(compilationRequest.Options, result.Diagnostics));
         }
     }
 }

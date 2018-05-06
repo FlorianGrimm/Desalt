@@ -142,7 +142,7 @@
     <Compile Include="Pipeline\IPipelineStage.cs" />
     <Compile Include="Pipeline\PipelineStage.cs" />
     <Compile Include="Pipeline\SimplePipeline.cs" />
-    <Compile Include="Pipeline\SuccessResult.cs" />
+    <Compile Include="Pipeline\SuccessOnNoErrorsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenameRules.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
@@ -338,10 +338,10 @@
     <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Utility\XmlFragmentParser.cs" />
     <Compile Include="Utility\XmlFragmentParser.Reader.cs" />
-    <Compile Include="Validation\CSharpToTypeScriptValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidator.cs" />
     <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidator.cs" />
+    <Compile Include="Validation\NoPartialClassesValidator.cs" />
     <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>

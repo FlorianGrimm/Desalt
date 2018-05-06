@@ -105,6 +105,13 @@ namespace Desalt.Core.Diagnostics
                 "remove the property and expose the field directly.",
                 warningLevel: WarningLevel.Important)]
             ClassWithDuplicateFieldAndPropertyName,
+
+            [Error(
+                1013,
+                "Partial classes are not supported",
+                "Class '{0}' is declared as partial, which is not supported",
+                description: "TypeScript does not support partial classes")]
+            PartialClassesNotSupported,
         }
 
         //// ===========================================================================================================
@@ -253,7 +260,7 @@ namespace Desalt.Core.Diagnostics
         /// will be the same name in TypeScript. Please change one or the other name or add a
         /// [ScriptName] attribute to rename the compiled name.".
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic ClassWithDuplicateFieldAndPropertyName(
             string className,
             string duplicateName,
@@ -261,5 +268,11 @@ namespace Desalt.Core.Diagnostics
         {
             return Create(DiagnosticId.ClassWithDuplicateFieldAndPropertyName, location, className, duplicateName);
         }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Class '{0}' is declared as partial, which is not supported".
+        /// </summary>
+        public static Diagnostic PartialClassesNotSupported(ClassDeclarationSyntax node) =>
+            Create(DiagnosticId.PartialClassesNotSupported, node.GetLocation(), node.Identifier.Text);
     }
 }

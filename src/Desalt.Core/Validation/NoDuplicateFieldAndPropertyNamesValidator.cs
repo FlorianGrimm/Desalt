@@ -9,6 +9,7 @@ namespace Desalt.Core.Validation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
@@ -25,14 +26,20 @@ namespace Desalt.Core.Validation
     /// </summary>
     internal class NoDuplicateFieldAndPropertyNamesValidator : IValidator
     {
-        public IExtendedResult<bool> Validate(DocumentTranslationContextWithSymbolTables context)
+        public IExtendedResult<bool> Validate(ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts)
         {
-            SemanticModel semanticModel = context.SemanticModel;
-            ScriptNameSymbolTable scriptNameTable = context.ScriptNameSymbolTable;
+            if (contexts.Length == 0)
+            {
+                return new ExtendedResult<bool>(true);
+            }
+
+            SemanticModel semanticModel = contexts[0].SemanticModel;
+            ScriptNameSymbolTable scriptNameTable = contexts[0].ScriptNameSymbolTable;
+            var context = contexts[0];
 
             IEnumerable<Diagnostic> errors =
 
-                // get all of the classes
+                // get all of the classes in all of the documents
                 from @class in context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>()
 
                     // and all of the field declarations in the class
@@ -45,10 +52,7 @@ namespace Desalt.Core.Validation
                     // try to get all of the symbols for the field and property
                 let fieldSymbol = semanticModel.GetDeclaredSymbol(fieldVariable)
                 let propertySymbol = semanticModel.GetDeclaredSymbol(property)
-                where fieldSymbol != null &&
-                    propertySymbol != null &&
-                    scriptNameTable.HasSymbol(fieldSymbol) &&
-                    scriptNameTable.HasSymbol(propertySymbol)
+                where fieldSymbol != null && propertySymbol != null
 
                 // lookup the compiled names
                 let fieldScriptName = context.ScriptNameSymbolTable[fieldSymbol]
@@ -62,7 +66,7 @@ namespace Desalt.Core.Validation
                     fieldVariable.GetLocation());
 
             DiagnosticList diagnostics = DiagnosticList.From(context.Options, errors);
-            return new SuccessResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
         }
     }
 }

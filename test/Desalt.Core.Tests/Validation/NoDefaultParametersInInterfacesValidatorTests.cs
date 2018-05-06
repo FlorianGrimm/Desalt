@@ -7,9 +7,11 @@
 
 namespace Desalt.Core.Tests.Validation
 {
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.Validation;
@@ -29,14 +31,15 @@ public interface TestInterface
     void InvalidMethod(int defaultValue = 0);
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(
-                "TestProject",
-                new TempProjectFile("MyInterface.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync("MyInterface.cs");
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                        "File.cs",
+                        discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
+
                 var validator = new NoDefaultParametersInInterfacesValidator();
-                IExtendedResult<bool> result = validator.Validate(context);
+                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
 
                 ParameterSyntax parameterSyntax =
                     context.RootSyntax.DescendantNodes().OfType<ParameterSyntax>().Single();
