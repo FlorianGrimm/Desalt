@@ -156,9 +156,8 @@ namespace Desalt.Core.Translation
                 bool isReadOnly = node.Modifiers.Any(
                     token => token.IsKind(SyntaxKind.ReadOnlyKeyword) || token.IsKind(SyntaxKind.ConstKeyword));
 
-                var typeAnnotation = TypeTranslator.TranslateSymbol(
+                var typeAnnotation = _typeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
-                    _scriptNameTable,
                     _typesToImport);
 
                 ITsExpression initializer = null;
@@ -280,7 +279,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            var propertyType = TypeTranslator.TranslateSymbol(typeSymbol, _scriptNameTable, _typesToImport);
+            var propertyType = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
             bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)

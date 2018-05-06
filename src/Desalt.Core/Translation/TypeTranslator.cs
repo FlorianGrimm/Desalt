@@ -19,7 +19,7 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Translates known types in C# to known TypeScript types.
     /// </summary>
-    internal static class TypeTranslator
+    internal class TypeTranslator
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -51,6 +51,25 @@ namespace Desalt.Core.Translation
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+
+        private readonly ScriptNameSymbolTable _scriptNameSymbolTable;
+
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TypeTranslator"/> class.
+        /// </summary>
+        /// <param name="scriptNameSymbolTable">
+        /// The script name symbol table. For example, List{T} gets translated to a native array, so
+        /// it has a [ScriptName("Array")] attribute.
+        /// </param>
+        public TypeTranslator(ScriptNameSymbolTable scriptNameSymbolTable)
+        {
+            _scriptNameSymbolTable =
+                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+        }
 
         //// ===========================================================================================================
         //// Methods
@@ -104,22 +123,17 @@ namespace Desalt.Core.Translation
         /// Translates a type symbol into the associated TypeScript equivalent.
         /// </summary>
         /// <param name="symbol">The type symbol to translate.</param>
-        /// <param name="scriptNameSymbolTable">
-        /// The script name symbol table. For example, List{T} gets translated to a native array, so
-        /// it has a [ScriptName("Array")] attribute.
-        /// </param>
         /// <param name="typesToImport">
         /// A set of symbols that will need to be imported. This method will add to the set if necessary.
         /// </param>
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
-        public static ITsType TranslateSymbol(
-            ITypeSymbol symbol,
-            ScriptNameSymbolTable scriptNameSymbolTable,
-            ISet<ISymbol> typesToImport)
+        public ITsType TranslateSymbol(ITypeSymbol symbol, ISet<ISymbol> typesToImport = null)
         {
+            typesToImport = typesToImport ?? new HashSet<ISymbol>();
+
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, scriptNameSymbolTable, typesToImport);
+                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, typesToImport);
                 return Factory.ArrayType(elementType);
             }
 
@@ -134,11 +148,11 @@ namespace Desalt.Core.Translation
             // Action<T1, ...> and Func<T1, ...> are special cases
             if (fullTypeName.IsOneOf("System.Action", "System.Func"))
             {
-                return TranslateFunc((INamedTypeSymbol)symbol, scriptNameSymbolTable, typesToImport);
+                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport);
             }
 
             INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
-            string scriptName = scriptNameSymbolTable.GetValueOrDefault(symbol, null);
+            string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
 
             // check for a native type that requires special translation
             switch (scriptName)
@@ -147,10 +161,7 @@ namespace Desalt.Core.Translation
                     ITsType elementType = Factory.AnyType;
                     if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
                     {
-                        elementType = TranslateSymbol(
-                            namedTypeSymbol.TypeArguments.First(),
-                            scriptNameSymbolTable,
-                            typesToImport);
+                        elementType = TranslateSymbol(namedTypeSymbol.TypeArguments.First(), typesToImport);
                     }
 
                     return Factory.ArrayType(elementType);
@@ -164,8 +175,7 @@ namespace Desalt.Core.Translation
             if (namedTypeSymbol != null)
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
-                translatedTypeMembers = typeMembers
-                    .Select(typeMember => TranslateSymbol(typeMember, scriptNameSymbolTable, typesToImport))
+                translatedTypeMembers = typeMembers.Select(typeMember => TranslateSymbol(typeMember, typesToImport))
                     .ToArray();
             }
 
@@ -176,10 +186,7 @@ namespace Desalt.Core.Translation
         /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
         /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
         /// </summary>
-        private static ITsFunctionType TranslateFunc(
-            INamedTypeSymbol symbol,
-            ScriptNameSymbolTable scriptNameSymbolTable,
-            ISet<ISymbol> typesToImport)
+        private ITsFunctionType TranslateFunc(INamedTypeSymbol symbol, ISet<ISymbol> typesToImport)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             bool isFunc = symbol.Name == "Func";
@@ -190,7 +197,7 @@ namespace Desalt.Core.Translation
                 string parameterName = typeArgument.Name;
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
-                var parameterType = TranslateSymbol(typeArgument, scriptNameSymbolTable, typesToImport);
+                var parameterType = TranslateSymbol(typeArgument, typesToImport);
                 ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(
                     Factory.Identifier(parameterName),
                     parameterType);
@@ -198,9 +205,8 @@ namespace Desalt.Core.Translation
             }
 
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
-            ITsType returnType = isFunc
-                ? TranslateSymbol(symbol.TypeArguments.Last(), scriptNameSymbolTable, typesToImport)
-                : Factory.VoidType;
+            ITsType returnType =
+                isFunc ? TranslateSymbol(symbol.TypeArguments.Last(), typesToImport) : Factory.VoidType;
 
             return Factory.FunctionType(parameterList, returnType);
         }

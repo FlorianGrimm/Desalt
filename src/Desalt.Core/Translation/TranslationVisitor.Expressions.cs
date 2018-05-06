@@ -68,11 +68,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCastExpression"/>.</returns>
         public override IEnumerable<IAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
-            ITsType castType = TypeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _scriptNameTable,
-                _typesToImport);
-
+            ITsType castType = _typeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsCastExpression translated = Factory.Cast(castType, expression);
             yield return translated;
@@ -84,11 +80,7 @@ namespace Desalt.Core.Translation
         /// <remarks>An <see cref="ITsIdentifier"/>.</remarks>
         public override IEnumerable<IAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
-            ITsType type = TypeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _scriptNameTable,
-                _typesToImport);
-
+            ITsType type = _typeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel), _typesToImport);
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
             yield return translated;
         }
@@ -153,7 +145,7 @@ namespace Desalt.Core.Translation
             ITsType[] typeArguments = node.TypeArgumentList.Arguments
                 .Select(typeSyntax => typeSyntax.GetTypeSymbol(_semanticModel))
                 .Where(typeSymbol => typeSymbol != null)
-                .Select(typeSymbol => TypeTranslator.TranslateSymbol(typeSymbol, _scriptNameTable, _typesToImport))
+                .Select(typeSymbol => _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport))
                 .ToArray();
 
             ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
