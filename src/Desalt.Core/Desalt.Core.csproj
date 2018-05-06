@@ -341,6 +341,7 @@
     <Compile Include="Validation\IValidator.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidator.cs" />
     <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidator.cs" />
+    <Compile Include="Validation\NoPartialClassesValidator.cs" />
     <Compile Include="WarningLevel.cs" />
   </ItemGroup>
   <ItemGroup>

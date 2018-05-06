@@ -41,6 +41,7 @@ namespace Desalt.Core.CompilerStages
             {
                 new NoDefaultParametersInInterfacesValidator(),
                 new NoDuplicateFieldAndPropertyNamesValidator(),
+                new NoPartialClassesValidator(),
             };
 
             // run all of the validators in parallel
