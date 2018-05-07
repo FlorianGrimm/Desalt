@@ -8,7 +8,6 @@
 namespace Desalt.Core.Tests.TestUtility
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
@@ -113,27 +112,15 @@ namespace Desalt.Core.Tests.TestUtility
             return result.Result;
         }
 
-        public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
-            string fileName,
-            CompilerOptions options = null,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+        public async Task<ImmutableArray<DocumentTranslationContextWithSymbolTables>>
+            CreateContextsWithSymbolTablesAsync(
+                CompilerOptions options = null,
+                SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
-            DocumentTranslationContext thisContext = null;
-
             // add all of the symbols from all of the documents in the project
-            var contextsList = new List<DocumentTranslationContext>();
-            foreach (string docName in _workspace.CurrentSolution.Projects.Single().Documents.Select(doc => doc.Name))
-            {
-                DocumentTranslationContext context = await CreateContextForFileAsync(docName, options);
-                if (docName == fileName)
-                {
-                    thisContext = context;
-                }
-
-                contextsList.Add(context);
-            }
-
-            var contexts = contextsList.ToImmutableArray();
+            var contexts = (await Task.WhenAll(
+                _workspace.CurrentSolution.Projects.Single()
+                    .Documents.Select(doc => CreateContextForFileAsync(doc.Name, options)))).ToImmutableArray();
 
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
                 SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
@@ -159,12 +146,25 @@ namespace Desalt.Core.Tests.TestUtility
                 directlyReferencedExternalTypeSymbols,
                 indirectlyReferencedExternalTypeSymbols);
 
-            thisContext.Should().NotBeNull();
-            return new DocumentTranslationContextWithSymbolTables(
-                thisContext,
-                importTable,
-                scriptNameTable,
-                inlineCodeTable);
+            return contexts.Select(
+                    context => new DocumentTranslationContextWithSymbolTables(
+                        context,
+                        importTable,
+                        scriptNameTable,
+                        inlineCodeTable))
+                .ToImmutableArray();
+        }
+
+        public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
+            string fileName,
+            CompilerOptions options = null,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+        {
+            var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
+            DocumentTranslationContextWithSymbolTables thisContext =
+                allContexts.First(context => context.Document.Name == fileName);
+
+            return thisContext;
         }
 
         /// <summary>
