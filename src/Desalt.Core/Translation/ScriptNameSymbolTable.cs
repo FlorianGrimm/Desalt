@@ -28,9 +28,9 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private ScriptNameSymbolTable(
-            ImmutableArray<KeyValuePair<string, string>> documentSymbols,
-            ImmutableArray<KeyValuePair<string, string>> directlyReferencedExternalSymbols,
-            ImmutableArray<KeyValuePair<string, Lazy<string>>> indirectlyReferencedExternalSymbols)
+            ImmutableArray<KeyValuePair<ISymbol, string>> documentSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, string>> directlyReferencedExternalSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, Lazy<string>>> indirectlyReferencedExternalSymbols)
             : base(documentSymbols, directlyReferencedExternalSymbols, indirectlyReferencedExternalSymbols)
         {
         }
@@ -76,8 +76,8 @@ namespace Desalt.Core.Translation
             var indirectlyReferencedExternalSymbols = indirectlyReferencedExternalTypeSymbols
                 .SelectMany(DiscoverTypeAndMembers)
                 .Select(
-                    symbol => new KeyValuePair<string, Lazy<string>>(
-                        SymbolTableUtils.KeyFromSymbol(symbol),
+                    symbol => new KeyValuePair<ISymbol, Lazy<string>>(
+                        symbol,
                         new Lazy<string>(() => GetScriptNameForSymbol(symbol, renameRules), isThreadSafe: true)))
                 .ToImmutableArray();
 
@@ -88,24 +88,9 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Creates a pre-populated symbol table with mock entries. Used in unit testing.
-        /// </summary>
-        internal static ScriptNameSymbolTable CreateMock(params (string symbolName, string scriptName)[] mockEntries)
-        {
-            var documentSymbols = mockEntries
-                .Select(entry => new KeyValuePair<string, string>(entry.symbolName, entry.scriptName))
-                .ToImmutableArray();
-
-            return new ScriptNameSymbolTable(
-                documentSymbols,
-                ImmutableArray<KeyValuePair<string, string>>.Empty,
-                ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
-        }
-
-        /// <summary>
         /// Adds all of the defined types in the document to the mapping.
         /// </summary>
-        private static IEnumerable<KeyValuePair<string, string>> ProcessSymbolsInDocument(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
@@ -124,14 +109,13 @@ namespace Desalt.Core.Translation
         private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
             typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
 
-        private static IEnumerable<KeyValuePair<string, string>> GetScriptNameOnTypeAndMembers(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> GetScriptNameOnTypeAndMembers(
             ITypeSymbol typeSymbol,
             RenameRules renameRules)
         {
-            return DiscoverTypeAndMembers(typeSymbol).Select(
-                symbol => new KeyValuePair<string, string>(
-                    SymbolTableUtils.KeyFromSymbol(symbol),
-                    GetScriptNameForSymbol(symbol, renameRules)));
+            return DiscoverTypeAndMembers(typeSymbol)
+                .Select(
+                    symbol => new KeyValuePair<ISymbol, string>(symbol, GetScriptNameForSymbol(symbol, renameRules)));
         }
 
         private static string GetScriptNameForSymbol(ISymbol symbol, RenameRules renameRules)

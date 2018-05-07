@@ -23,9 +23,9 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ImmutableDictionary<string, T> _documentSymbols;
-        private readonly ImmutableDictionary<string, T> _directlyReferencedExternalSymbols;
-        private readonly ImmutableDictionary<string, Lazy<T>> _indirectlyReferencedExternalSymbols;
+        private readonly ImmutableDictionary<ISymbol, T> _documentSymbols;
+        private readonly ImmutableDictionary<ISymbol, T> _directlyReferencedExternalSymbols;
+        private readonly ImmutableDictionary<ISymbol, Lazy<T>> _indirectlyReferencedExternalSymbols;
 
         //// ===========================================================================================================
         //// Constructors
@@ -44,9 +44,9 @@ namespace Desalt.Core.Translation
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
         protected SymbolTable(
-            ImmutableArray<KeyValuePair<string, T>> documentSymbols,
-            ImmutableArray<KeyValuePair<string, T>> directlyReferencedExternalSymbols,
-            ImmutableArray<KeyValuePair<string, Lazy<T>>> indirectlyReferencedExternalSymbols)
+            ImmutableArray<KeyValuePair<ISymbol, T>> documentSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, Lazy<T>>> indirectlyReferencedExternalSymbols)
         {
             _documentSymbols = documentSymbols.ToImmutableDictionary();
             _directlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
@@ -61,18 +61,17 @@ namespace Desalt.Core.Translation
         {
             get
             {
-                string symbolName = SymbolTableUtils.KeyFromSymbol(symbol);
                 // look in the document symbols first
-                if (!_documentSymbols.TryGetValue(symbolName, out T value))
+                if (!_documentSymbols.TryGetValue(symbol, out T value))
                 {
                     // then in the directly-referenced symbols
-                    if (!_directlyReferencedExternalSymbols.TryGetValue(symbolName, out value))
+                    if (!_directlyReferencedExternalSymbols.TryGetValue(symbol, out value))
                     {
                         // then in the indirectly-referenced symbols
-                        if (!_indirectlyReferencedExternalSymbols.TryGetValue(symbolName, out Lazy<T> lazyValue))
+                        if (!_indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue))
                         {
                             throw new KeyNotFoundException(
-                                $"There is no symbol '{symbolName}' defined in the symbol table");
+                                $"There is no symbol '{symbol}' defined in the symbol table");
                         }
 
                         value = lazyValue.Value;
@@ -90,19 +89,19 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Gets the symbols defined in the documents that were used to initialize this symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, T>> DocumentSymbols => _documentSymbols;
+        public IEnumerable<KeyValuePair<ISymbol, T>> DocumentSymbols => _documentSymbols;
 
         /// <summary>
         /// Gets the symbols directly referenced in the documents that were used to initialize this
         /// symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, T>> DirectlyReferencedExternalSymbols => _directlyReferencedExternalSymbols;
+        public IEnumerable<KeyValuePair<ISymbol, T>> DirectlyReferencedExternalSymbols => _directlyReferencedExternalSymbols;
 
         /// <summary>
         /// Gets the symbols defined in externally-referenced assemblies, where their values are
         /// created on demand and then cached.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, Lazy<T>>> IndirectlyReferencedExternalSymbols => _indirectlyReferencedExternalSymbols;
+        public IEnumerable<KeyValuePair<ISymbol, Lazy<T>>> IndirectlyReferencedExternalSymbols => _indirectlyReferencedExternalSymbols;
 
         /// <summary>
         /// Returns a value indicating whether the symbol table contains a definition for the
@@ -111,11 +110,10 @@ namespace Desalt.Core.Translation
         /// <param name="symbol">The symbol to look up.</param>
         public bool HasSymbol(ISymbol symbol)
         {
-            string symbolName = SymbolTableUtils.KeyFromSymbol(symbol);
-            return symbolName != null &&
-                (_documentSymbols.TryGetValue(symbolName, out _) ||
-                    _directlyReferencedExternalSymbols.TryGetValue(symbolName, out _) ||
-                    _indirectlyReferencedExternalSymbols.TryGetValue(symbolName, out Lazy<T> lazy) &&
+            return symbol != null &&
+                (_documentSymbols.TryGetValue(symbol, out _) ||
+                    _directlyReferencedExternalSymbols.TryGetValue(symbol, out _) ||
+                    _indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazy) &&
                     lazy.Value != null);
         }
 

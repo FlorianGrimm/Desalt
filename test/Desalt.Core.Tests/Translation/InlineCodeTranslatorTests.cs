@@ -28,11 +28,10 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertInlineCodeTranslation(
             string codeSnippet,
             Func<CompilationUnitSyntax, ExpressionSyntax> getMethodSyntaxFunc,
-            ScriptNameSymbolTable scriptNameSymbolTable,
-            InlineCodeSymbolTable inlineCodeSymbolTable,
             IAstNode expectedResult,
             ITsExpression translatedLeftSide,
-            ITsArgumentList translatedArgumentList)
+            ITsArgumentList translatedArgumentList,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
         {
             string code = $@"
 using System;
@@ -50,14 +49,16 @@ class C
 
             using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
             {
-                var context = await tempProject.CreateContextForFileAsync("File.cs");
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    "File.cs",
+                    discoveryKind: discoveryKind);
 
                 ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
 
                 var translator = new InlineCodeTranslator(
                     context.SemanticModel,
-                    inlineCodeSymbolTable,
-                    scriptNameSymbolTable);
+                    context.InlineCodeSymbolTable,
+                    context.ScriptNameSymbolTable);
 
                 translator.TryTranslate(methodSyntax, translatedLeftSide, translatedArgumentList, out IAstNode result)
                     .Should()
@@ -77,32 +78,19 @@ class C
             syntax.DescendantNodes().OfType<InvocationExpressionSyntax>().First().Expression;
 
         [TestMethod]
-        public async Task InlineCodeTranslator_should_convert_type_arguments_to_their_script_name()
-        {
-            await AssertInlineCodeTranslation(
-                "new string(new [] { 'a' })",
-                GetMethodOfObjectCreationSyntax,
-                ScriptNameSymbolTable.CreateMock(("System.Script", "ss")),
-                InlineCodeSymbolTable.CreateMock(
-                    ("string.String(char[] value)", "{$System.Script}.fromCharCode()")),
-                expectedResult: Factory.Call(Factory.MemberDot(s_ss, "fromCharCode")),
-                translatedLeftSide: Factory.Identifier("string"),
-                translatedArgumentList: Factory.ArgumentList(
-                    Factory.Argument(Factory.Array(Factory.ArrayElement(Factory.String("a"))))));
-        }
-
-        [TestMethod]
         public async Task InlineCodeTranslator_should_replace_this_parameters_with_the_left_side_expression()
         {
+            // Inline code for List.Clear:
+            // {$System.Script}.clear({this})
+
             ITsIdentifier leftSide = Factory.Identifier("list");
             await AssertInlineCodeTranslation(
                 "var list = new List<int>(); list.Clear()",
                 GetInvocationMethod,
-                ScriptNameSymbolTable.CreateMock(),
-                InlineCodeSymbolTable.CreateMock(("System.Collections.Generic.List<int>.Clear()", "ss.clear({this})")),
                 expectedResult: Factory.Call(Factory.MemberDot(s_ss, "clear"), Factory.ArgumentList(leftSide)),
                 translatedLeftSide: leftSide,
-                translatedArgumentList: Factory.ArgumentList());
+                translatedArgumentList: Factory.ArgumentList(),
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -114,15 +102,13 @@ class C
             // public String(char[] value, int startIndex, int length)
 
             // here's the translated expression: new string(charArray, 1, 10)
-            ITsExpression translatedLeftSide = Factory.MemberDot(Factory.QualifiedName("ss", "fromCharCode"), "apply");
+            ITsExpression translatedLeftSide = Factory.MemberDot(
+                Factory.QualifiedName("string", "fromCharCode"),
+                "apply");
 
             await AssertInlineCodeTranslation(
                 "var charArray = new char[0]; new string(charArray, 1, 10)",
                 GetMethodOfObjectCreationSyntax,
-                ScriptNameSymbolTable.CreateMock(),
-                InlineCodeSymbolTable.CreateMock(
-                    ("string.String(char[] value, int startIndex, int length)",
-                        "ss.fromCharCode.apply(null, {value}.slice({startIndex}, {startIndex} + {length}))")),
                 expectedResult: Factory.Call(
                     translatedLeftSide,
                     Factory.ArgumentList(
@@ -141,25 +127,26 @@ class C
                 translatedArgumentList: Factory.ArgumentList(
                     Factory.Argument(Factory.Identifier("charArray")),
                     Factory.Argument(Factory.Number(1)),
-                    Factory.Argument(Factory.Number(10))));
+                    Factory.Argument(Factory.Number(10))),
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         [TestMethod]
         public async Task InlineCodeTranslator_should_replace_rest_arguments_in_an_argument_list()
         {
+            // Inline code for List.Ctor:
+            // [ {first}, {*rest} ]
+
             await AssertInlineCodeTranslation(
                 "var list = new List<int>(1, 2, 3)",
                 GetMethodOfObjectCreationSyntax,
-                ScriptNameSymbolTable.CreateMock(),
-                InlineCodeSymbolTable.CreateMock(
-                    ("System.Collections.Generic.List<int>.List(int first, params int[] rest)",
-                        "[ {first}, {*rest} ]")),
                 expectedResult: Factory.Array(Factory.Number(1), Factory.Number(2), Factory.Number(3)),
                 translatedLeftSide: Factory.GenericTypeName("List", Factory.NumberType),
                 translatedArgumentList: Factory.ArgumentList(
                     Factory.Argument(Factory.Number(1)),
                     Factory.Argument(Factory.Number(2)),
-                    Factory.Argument(Factory.Number(3))));
+                    Factory.Argument(Factory.Number(3))),
+                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

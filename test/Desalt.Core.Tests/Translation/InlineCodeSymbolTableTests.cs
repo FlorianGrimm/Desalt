@@ -55,17 +55,32 @@ class C
                 switch (discoveryKind)
                 {
                     case SymbolTableDiscoveryKind.OnlyDocumentTypes:
-                        symbolTable.DocumentSymbols.Should().BeEquivalentTo(expectedEntries);
+                        symbolTable.DocumentSymbols
+                            .Select(
+                                pair => new KeyValuePair<string, string>(
+                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Value))
+                            .Should()
+                            .BeEquivalentTo(expectedEntries);
                         break;
 
                     case SymbolTableDiscoveryKind.DocumentAndReferencedTypes:
-                        symbolTable.DirectlyReferencedExternalSymbols.Should().Contain(expectedEntries);
+                        symbolTable.DirectlyReferencedExternalSymbols.Select(
+                                pair => new KeyValuePair<string, string>(
+                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Value))
+                            .Should()
+                            .Contain(expectedEntries);
                         break;
 
                     case SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes:
                         var expectedKeys = expectedEntries.Select(pair => pair.Key).ToImmutableArray();
-                        symbolTable.IndirectlyReferencedExternalSymbols.Where(pair => pair.Key.IsOneOf(expectedKeys))
-                            .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.Value))
+                        symbolTable.IndirectlyReferencedExternalSymbols
+                            .Where(pair => SymbolTableUtils.KeyFromSymbol(pair.Key).IsOneOf(expectedKeys))
+                            .Select(
+                                pair => new KeyValuePair<string, string>(
+                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Value.Value))
                             .Should()
                             .BeEquivalentTo(expectedEntries);
                         break;

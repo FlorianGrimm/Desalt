@@ -27,12 +27,12 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private ImportSymbolTable(
-            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> documentSymbols,
-            ImmutableArray<KeyValuePair<string, ImportSymbolInfo>> directlyReferencedExternalSymbols)
+            ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> documentSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> directlyReferencedExternalSymbols)
             : base(
                 documentSymbols,
                 directlyReferencedExternalSymbols,
-                ImmutableArray<KeyValuePair<string, Lazy<ImportSymbolInfo>>>.Empty)
+                ImmutableArray<KeyValuePair<ISymbol, Lazy<ImportSymbolInfo>>>.Empty)
         {
         }
 
@@ -71,28 +71,25 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Processes all of the defined types in the document to the mapping.
         /// </summary>
-        private static IEnumerable<KeyValuePair<string, ImportSymbolInfo>> ProcessSymbolsInDocument(
+        private static IEnumerable<KeyValuePair<ISymbol, ImportSymbolInfo>> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
             ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
             return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                .Select(
-                    typeSymbol => new KeyValuePair<string, ImportSymbolInfo>(
-                        SymbolTableUtils.KeyFromSymbol(typeSymbol),
-                        symbolInfo));
+                .Select(typeSymbol => new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));
         }
 
         /// <summary>
         /// Processes an externally-referenced type.
         /// </summary>
-        private static KeyValuePair<string, ImportSymbolInfo> ProcessExternalType(ITypeSymbol symbol)
+        private static KeyValuePair<ISymbol, ImportSymbolInfo> ProcessExternalType(ITypeSymbol symbol)
         {
             var containingAssembly = symbol.ContainingAssembly;
             string moduleName = containingAssembly.Name;
             var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
-            return new KeyValuePair<string, ImportSymbolInfo>(SymbolTableUtils.KeyFromSymbol(symbol), symbolInfo);
+            return new KeyValuePair<ISymbol, ImportSymbolInfo>(symbol, symbolInfo);
         }
     }
 
