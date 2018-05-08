@@ -46,7 +46,8 @@ namespace Desalt.Core.Translation
         //// Constructors
         //// ===========================================================================================================
 
-        private AlternateSignatureSymbolTable(ImmutableDictionary<string, ImmutableArray<AlternateSignatureMethodInfo>> entries)
+        private AlternateSignatureSymbolTable(
+            ImmutableDictionary<string, ImmutableArray<AlternateSignatureMethodInfo>> entries)
         {
             _entries = entries;
         }
@@ -58,7 +59,8 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Gets all of the entries in the table. Mainly used for unit testing.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>> Entries => _entries.AsEnumerable();
+        public IEnumerable<KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>> Entries =>
+            _entries.AsEnumerable();
 
         //// ===========================================================================================================
         //// Methods
@@ -77,33 +79,17 @@ namespace Desalt.Core.Translation
             // process the types defined in the documents
             var entries = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
-                .SelectMany(context => GetCtorsAndMethodsInDocument(context, cancellationToken));
+                .SelectMany(context => GetCtorsAndMethodsInDocument(context, cancellationToken))
 
-            // aggregate all of the methods into the dictionary - for partial classes it's possible
-            // for methods to be spread out amongst several files
-            var dictionary = new Dictionary<string, List<AlternateSignatureMethodInfo>>();
-            foreach (KeyValuePair<string, IEnumerable<AlternateSignatureMethodInfo>> entry in entries)
-            {
-                if (dictionary.TryGetValue(entry.Key, out List<AlternateSignatureMethodInfo> methods))
-                {
-                    methods.AddRange(entry.Value);
-                }
-                else
-                {
-                    dictionary.Add(entry.Key, new List<AlternateSignatureMethodInfo>(entry.Value));
-                }
-            }
-
-            // turn it into an immutable dictionary and filter out any entries that don't have any
-            // methods with at least one [AlternateSignature]
-            var immutable = dictionary.Where(pair => pair.Value.Any(info => info.IsAlternateSignature))
+                // filter out any entries that don't have any methods with at least one [AlternateSignature]
+                .Where(pair => pair.Value.Any(info => info.IsAlternateSignature))
                 .Select(
                     pair => new KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>(
                         pair.Key,
                         pair.Value.ToImmutableArray()))
                 .ToImmutableDictionary();
 
-            return new AlternateSignatureSymbolTable(immutable);
+            return new AlternateSignatureSymbolTable(entries);
         }
 
         /// <summary>

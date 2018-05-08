@@ -109,38 +109,6 @@ class C
         }
 
         [TestMethod]
-        public async Task AlternateSignatureSymbolTable_should_aggregate_methods_across_partial_class_files()
-        {
-            const string file1 = @"
-partial class C
-{
-    [AlternateSignature]
-    public extern void Method();
-
-    public void Method(int x, string y)
-    {
-    }
-}";
-
-            const string file2 = @"
-partial class C
-{
-    [AlternateSignature]
-    public extern void Method(int x);
-
-    public void NoAttrMethod()
-    {
-    }
-}";
-            await AssertEntriesInTableAsync(
-                new[] { file1, file2 },
-                "C.Method",
-                "C.Method()",
-                "C.Method(int x)",
-                "C.Method(int x, string y)");
-        }
-
-        [TestMethod]
         public async Task AlternateSignatureSymbolTable_should_work_on_ctors()
         {
             await AssertEntriesInTableAsync(
