@@ -43,7 +43,7 @@ namespace Desalt.Core.Tests.Translation
                     $"using System.Runtime.CompilerServices;\n{codeSnippetsInSeparateFiles[i]}");
             }
 
-            using (var tempProject = await TempProject.CreateAsync("Test", projectFiles))
+            using (var tempProject = await TempProject.CreateAsync(projectFiles))
             {
                 // ReSharper disable once AccessToDisposedClosure
                 var contextPromises = projectFiles.Select(file => tempProject.CreateContextForFileAsync(file.FileName));

@@ -178,7 +178,8 @@ namespace Desalt.Core.Tests.TestUtility
                         context,
                         importTable,
                         scriptNameTable,
-                        inlineCodeTable))
+                        inlineCodeTable,
+                        alternateSignatureTable))
                 .ToImmutableArray();
         }
 
