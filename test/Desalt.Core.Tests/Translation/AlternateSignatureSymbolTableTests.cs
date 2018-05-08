@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Tests.Translation
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
@@ -15,69 +14,41 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class AlternateSignatureSymbolTableTests
     {
-        private static Task AssertEntriesInTableAsync(
+        private static async Task AssertEntriesInTableAsync(
             string codeSnippet,
             string expectedKey,
-            params string[] expectedMethods)
+            string expectedImplementingMethod,
+            params string[] expectedAlternateSignatures)
         {
-            return AssertEntriesInTableAsync(codeSnippet.ToSafeArray(), expectedKey, expectedMethods);
-        }
+            string code = $@"
+using System.Runtime.CompilerServices;
 
-        private static async Task AssertEntriesInTableAsync(
-            IReadOnlyList<string> codeSnippetsInSeparateFiles,
-            string expectedKey,
-            params string[] expectedMethods)
-        {
-            var projectFiles = new TempProjectFile[codeSnippetsInSeparateFiles.Count];
-            for (int i = 0; i < codeSnippetsInSeparateFiles.Count; i++)
+{codeSnippet}
+";
+
+            using (var tempProject = await TempProject.CreateAsync(code))
             {
-                projectFiles[i] = new TempProjectFile(
-                    $"File{i}.cs",
-                    $"using System.Runtime.CompilerServices;\n{codeSnippetsInSeparateFiles[i]}");
-            }
+                var context = await tempProject.CreateContextForFileAsync();
 
-            using (var tempProject = await TempProject.CreateAsync(projectFiles))
-            {
-                // ReSharper disable once AccessToDisposedClosure
-                var contextPromises = projectFiles.Select(file => tempProject.CreateContextForFileAsync(file.FileName));
-                var contexts = (await Task.WhenAll(contextPromises)).ToImmutableArray();
-
-                var alternateSignatureTable = AlternateSignatureSymbolTable.Create(contexts);
+                var result = AlternateSignatureSymbolTable.Create(context.ToSingleEnumerable().ToImmutableArray());
+                result.Diagnostics.Should().BeEmpty();
+                var alternateSignatureTable = result.Result;
 
                 var actualEntries = alternateSignatureTable.Entries.ToImmutableArray();
                 actualEntries.Length.Should().Be(1);
+                actualEntries[0].Key.Should().Be(expectedKey);
 
-                var actualMethodSymbols = contexts.SelectMany(
-                    context => context.RootSyntax.DescendantNodes()
-                        .OfType<BaseMethodDeclarationSyntax>()
-                        .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax)));
+                var actualGroup = actualEntries[0].Value;
 
-                var expectedMethodSymbols = (from expectedMethod in expectedMethods
-                                             let methodSymbol =
-                                                 actualMethodSymbols.First(
-                                                     methodSymbol =>
-                                                         SymbolTableUtils.KeyFromSymbol(methodSymbol) == expectedMethod)
-                                             let isAlternateSignature =
-                                                 SymbolTableUtils.FindSaltarelleAttribute(
-                                                     methodSymbol,
-                                                     "AlternateSignature") !=
-                                                 null
-                                             select new AlternateSignatureMethodInfo(
-                                                 methodSymbol,
-                                                 isAlternateSignature)).ToImmutableArray();
-
-                var expectedEntry = new KeyValuePair<string, ImmutableArray<AlternateSignatureMethodInfo>>(
-                    expectedKey,
-                    expectedMethodSymbols);
-
-                actualEntries[0].Should().BeEquivalentTo(expectedEntry);
+                SymbolTableUtils.KeyFromSymbol(actualGroup.ImplementingMethod).Should().Be(expectedImplementingMethod);
+                actualGroup.AlternateSignatureMethods.Select(SymbolTableUtils.KeyFromSymbol)
+                    .Should()
+                    .BeEquivalentTo(expectedAlternateSignatures);
             }
         }
 
@@ -91,21 +62,20 @@ class C
     [AlternateSignature]
     public extern void Method();
 
+    [AlternateSignature]
+    public extern void Method(int x);
+
     public void Method(int x, string y)
     {
     }
-
-    [AlternateSignature]
-    public extern void Method(int x);
 
     public void NoAttrMethod()
     {
     }
 }",
                 "C.Method",
-                "C.Method()",
-                "C.Method(int x)",
-                "C.Method(int x, string y)");
+                expectedImplementingMethod: "C.Method(int x, string y)",
+                expectedAlternateSignatures: new[] { "C.Method()", "C.Method(int x)" });
         }
 
         [TestMethod]
@@ -126,9 +96,8 @@ class C
     public extern C(int x);
 }",
                 "C.C",
-                "C.C()",
-                "C.C(int x)",
-                "C.C(int x, string y)");
+                expectedImplementingMethod: "C.C(int x, string y)",
+                expectedAlternateSignatures: new[] { "C.C()", "C.C(int x)" });
         }
     }
 }

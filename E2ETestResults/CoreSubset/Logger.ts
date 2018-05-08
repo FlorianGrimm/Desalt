@@ -121,7 +121,7 @@ export class Logger {
    * @param validLogger The logger to accept
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByLogger(validLogger: Logger, minLogLevel: LoggerLevel): void {
+  public static filterByLogger(validLogger: Logger, minLogLevel?: LoggerLevel): void {
     minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.all);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return l === validLogger && ll >= minLogLevel;
@@ -141,7 +141,7 @@ export class Logger {
    * @param t The type used for creating the logger
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByType(t: Function, minLogLevel: LoggerLevel): void {
+  public static filterByType(t: Function, minLogLevel?: LoggerLevel): void {
     minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.all);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return ll >= minLogLevel && l.name === t.name;
@@ -160,7 +160,7 @@ export class Logger {
    * @param namePattern A regular expression to match against the logger name
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByName(namePattern: string, minLogLevel: LoggerLevel): void {
+  public static filterByName(namePattern: string, minLogLevel?: LoggerLevel): void {
     minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.all);
     let regex: RegExp = new RegExp(namePattern, 'i');
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
@@ -222,7 +222,7 @@ export class Logger {
    * @param ll The min
    * @returns A new Log instance
    */
-  public static getLogger(t: Function, ll: LoggerLevel): Logger {
+  public static getLogger(t: Function, ll?: LoggerLevel): Logger {
     let l: Logger = Logger.getLoggerWithName(t.name);
     if (ss.isValue(ll)) {
       Logger.filterByLogger(l, ll);

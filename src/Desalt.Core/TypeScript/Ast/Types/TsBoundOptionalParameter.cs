@@ -68,4 +68,20 @@ namespace Desalt.Core.TypeScript.Ast.Types
             Initializer.EmitOptionalAssignment(emitter);
         }
     }
+
+    public static class TsBoundOptionalParameterExtensions
+    {
+        public static ITsBoundOptionalParameter WithParameterType(
+            this ITsBoundOptionalParameter boundParameter,
+            ITsType value)
+        {
+            return boundParameter.ParameterType.Equals(value)
+                ? boundParameter
+                : new TsBoundOptionalParameter(
+                    boundParameter.ParameterName,
+                    value,
+                    boundParameter.Initializer,
+                    boundParameter.Modifier);
+        }
+    }
 }

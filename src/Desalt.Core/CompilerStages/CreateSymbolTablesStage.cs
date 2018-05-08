@@ -92,7 +92,10 @@ namespace Desalt.Core.CompilerStages
             var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
             var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
-            var alternateSignatureSymbolTable = (AlternateSignatureSymbolTable)tasks[3].Result;
+
+            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;
+            var diagnostics = alternateSignatureTableCreateResult.Diagnostics;
+            var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
 
             // create new context objects with the symbol table
             var newContexts = input.Select(
@@ -104,7 +107,9 @@ namespace Desalt.Core.CompilerStages
                         alternateSignatureSymbolTable))
                 .ToImmutableArray();
 
-            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(newContexts);
+            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(
+                newContexts,
+                diagnostics);
         }
     }
 }
