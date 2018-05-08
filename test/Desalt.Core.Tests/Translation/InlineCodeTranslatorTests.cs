@@ -47,7 +47,7 @@ class C
     private object eval = Script.Eval(""[]"");
 }}";
 
-            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(code))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     "File.cs",

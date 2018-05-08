@@ -28,7 +28,7 @@ namespace Desalt.Core.Tests.Translation
             SymbolTableDiscoveryKind discoveryKind,
             Action<ImportSymbolTable, DocumentTranslationContext> assertAction)
         {
-            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", csharpCode)))
+            using (var tempProject = await TempProject.CreateAsync(csharpCode))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();

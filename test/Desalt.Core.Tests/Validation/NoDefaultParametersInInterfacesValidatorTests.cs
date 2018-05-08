@@ -29,7 +29,7 @@ public interface TestInterface
     void InvalidMethod(int defaultValue = 0);
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(code))
             {
                 var contexts = await tempProject.CreateContextsWithSymbolTablesAsync(
                     discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);

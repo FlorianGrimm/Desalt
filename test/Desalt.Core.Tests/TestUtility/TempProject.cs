@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.TestUtility
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
@@ -49,6 +50,23 @@ namespace Desalt.Core.Tests.TestUtility
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public static Task<TempProject> CreateAsync(params string[] sourceFileContents)
+        {
+            if (sourceFileContents.Length == 1)
+            {
+                return CreateAsync(new TempProjectFile("File.cs", sourceFileContents[0]));
+            }
+
+            List<TempProjectFile> files = new List<TempProjectFile>(sourceFileContents.Length);
+            for (int i = 0; i < sourceFileContents.Length; i++)
+            {
+                var file = new TempProjectFile($"File{i}.cs", sourceFileContents[i]);
+                files.Add(file);
+            }
+
+            return CreateAsync(files.ToArray());
+        }
 
         public static async Task<TempProject> CreateAsync(params TempProjectFile[] sourceFiles)
         {
