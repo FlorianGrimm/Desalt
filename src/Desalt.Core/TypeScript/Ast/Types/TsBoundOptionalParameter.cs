@@ -55,6 +55,11 @@ namespace Desalt.Core.TypeScript.Ast.Types
             Modifier.EmitOptional(emitter);
 
             ParameterName.Emit(emitter);
+            if (Initializer == null)
+            {
+                emitter.Write("?");
+            }
+
             ParameterType.EmitOptionalTypeAnnotation(emitter);
 
             Initializer.EmitOptionalAssignment(emitter);
