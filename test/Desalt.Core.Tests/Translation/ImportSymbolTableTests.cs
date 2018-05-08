@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
         {
             using (var tempProject = await TempProject.CreateAsync(csharpCode))
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
                 var importTable = ImportSymbolTable.Create(
                     contexts,

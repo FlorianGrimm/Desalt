@@ -43,7 +43,7 @@ class Foo
 
             using (var tempProject = await TempProject.CreateAsync(code))
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
                 // find the type symbol for the class member

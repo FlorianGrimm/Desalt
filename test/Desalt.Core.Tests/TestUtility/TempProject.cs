@@ -118,7 +118,7 @@ namespace Desalt.Core.Tests.TestUtility
         }
 
         public async Task<DocumentTranslationContext> CreateContextForFileAsync(
-            string fileName,
+            string fileName = "File.cs",
             CompilerOptions options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
