@@ -23,7 +23,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
         {
             string code = $@"
 using System;
