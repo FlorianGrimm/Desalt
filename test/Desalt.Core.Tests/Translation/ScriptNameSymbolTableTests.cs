@@ -61,7 +61,7 @@ namespace Desalt.Core.Tests.Translation
             SymbolTableDiscoveryKind discoveryKind,
             params KeyValuePair<string, string>[] expectedEntries)
         {
-            using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs", options);
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();

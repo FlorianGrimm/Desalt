@@ -27,6 +27,8 @@ namespace Desalt.Core.Tests.TestUtility
         //// Member Variables
         //// ===========================================================================================================
 
+        private const string ProjectName = "TempProject";
+
         private AdhocWorkspace _workspace;
 
         //// ===========================================================================================================
@@ -39,26 +41,30 @@ namespace Desalt.Core.Tests.TestUtility
         }
 
         //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public static string ProjectDir => Path.Combine("C:\\", ProjectName);
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static async Task<TempProject> CreateAsync(string projectName, params TempProjectFile[] sourceFiles)
+        public static async Task<TempProject> CreateAsync(params TempProjectFile[] sourceFiles)
         {
             // create a new ad-hoc workspace
             var workspace = new AdhocWorkspace();
 
-            string projectDir = Path.Combine("C:\\", projectName);
-
             // add a new project
-            ProjectId projectId = ProjectId.CreateNewId(projectName);
+            ProjectId projectId = ProjectId.CreateNewId(ProjectName);
             VersionStamp version = VersionStamp.Create();
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: 1);
             var projectInfo = ProjectInfo.Create(
                     id: projectId,
-                    filePath: Path.Combine(projectDir, $"{projectName}.csproj"),
+                    filePath: Path.Combine(ProjectDir, $"{ProjectName}.csproj"),
                     version: version,
-                    name: projectName,
-                    assemblyName: projectName,
+                    name: ProjectName,
+                    assemblyName: ProjectName,
                     language: LanguageNames.CSharp,
                     compilationOptions: compilationOptions)
                 .WithSaltarelleReferences();
@@ -68,7 +74,7 @@ namespace Desalt.Core.Tests.TestUtility
             // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
-                string filePath = Path.Combine(projectDir, sourceFile.FileName);
+                string filePath = Path.Combine(ProjectDir, sourceFile.FileName);
 
                 var docId = DocumentId.CreateNewId(projectId, sourceFile.FileName);
                 var loader = TextLoader.From(

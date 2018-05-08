@@ -38,7 +38,7 @@ public class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(
@@ -84,7 +84,7 @@ public class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(

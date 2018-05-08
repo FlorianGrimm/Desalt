@@ -35,7 +35,7 @@ using System.Collections.Generic;
             // get rid of \r\n sequences in the expected output
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
-            using (var tempProject = await TempProject.CreateAsync("TestProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(new TempProjectFile("File.cs", code)))
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     "File.cs",

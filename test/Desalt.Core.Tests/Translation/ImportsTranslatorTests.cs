@@ -76,7 +76,7 @@ class C
             SymbolTableDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
-            using (var tempProject = await TempProject.CreateAsync("TestProject", codeFiles))
+            using (var tempProject = await TempProject.CreateAsync(codeFiles))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(
