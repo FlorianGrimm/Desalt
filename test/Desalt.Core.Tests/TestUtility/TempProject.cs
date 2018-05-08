@@ -28,6 +28,8 @@ namespace Desalt.Core.Tests.TestUtility
         //// Member Variables
         //// ===========================================================================================================
 
+        private const string ProjectName = "TempProject";
+
         private AdhocWorkspace _workspace;
 
         //// ===========================================================================================================
@@ -40,26 +42,47 @@ namespace Desalt.Core.Tests.TestUtility
         }
 
         //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public static string ProjectDir => Path.Combine("C:\\", ProjectName);
+
+        //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static async Task<TempProject> CreateAsync(string projectName, params TempProjectFile[] sourceFiles)
+        public static Task<TempProject> CreateAsync(params string[] sourceFileContents)
+        {
+            if (sourceFileContents.Length == 1)
+            {
+                return CreateAsync(new TempProjectFile("File.cs", sourceFileContents[0]));
+            }
+
+            List<TempProjectFile> files = new List<TempProjectFile>(sourceFileContents.Length);
+            for (int i = 0; i < sourceFileContents.Length; i++)
+            {
+                var file = new TempProjectFile($"File{i}.cs", sourceFileContents[i]);
+                files.Add(file);
+            }
+
+            return CreateAsync(files.ToArray());
+        }
+
+        public static async Task<TempProject> CreateAsync(params TempProjectFile[] sourceFiles)
         {
             // create a new ad-hoc workspace
             var workspace = new AdhocWorkspace();
 
-            string projectDir = Path.Combine("C:\\", projectName);
-
             // add a new project
-            ProjectId projectId = ProjectId.CreateNewId(projectName);
+            ProjectId projectId = ProjectId.CreateNewId(ProjectName);
             VersionStamp version = VersionStamp.Create();
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: 1);
             var projectInfo = ProjectInfo.Create(
                     id: projectId,
-                    filePath: Path.Combine(projectDir, $"{projectName}.csproj"),
+                    filePath: Path.Combine(ProjectDir, $"{ProjectName}.csproj"),
                     version: version,
-                    name: projectName,
-                    assemblyName: projectName,
+                    name: ProjectName,
+                    assemblyName: ProjectName,
                     language: LanguageNames.CSharp,
                     compilationOptions: compilationOptions)
                 .WithSaltarelleReferences();
@@ -69,7 +92,7 @@ namespace Desalt.Core.Tests.TestUtility
             // add all of the files to the project
             foreach (TempProjectFile sourceFile in sourceFiles)
             {
-                string filePath = Path.Combine(projectDir, sourceFile.FileName);
+                string filePath = Path.Combine(ProjectDir, sourceFile.FileName);
 
                 var docId = DocumentId.CreateNewId(projectId, sourceFile.FileName);
                 var loader = TextLoader.From(
@@ -95,7 +118,7 @@ namespace Desalt.Core.Tests.TestUtility
         }
 
         public async Task<DocumentTranslationContext> CreateContextForFileAsync(
-            string fileName,
+            string fileName = "File.cs",
             CompilerOptions options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
@@ -113,27 +136,15 @@ namespace Desalt.Core.Tests.TestUtility
             return result.Result;
         }
 
-        public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
-            string fileName,
-            CompilerOptions options = null,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+        public async Task<ImmutableArray<DocumentTranslationContextWithSymbolTables>>
+            CreateContextsWithSymbolTablesAsync(
+                CompilerOptions options = null,
+                SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
-            DocumentTranslationContext thisContext = null;
-
             // add all of the symbols from all of the documents in the project
-            var contextsList = new List<DocumentTranslationContext>();
-            foreach (string docName in _workspace.CurrentSolution.Projects.Single().Documents.Select(doc => doc.Name))
-            {
-                DocumentTranslationContext context = await CreateContextForFileAsync(docName, options);
-                if (docName == fileName)
-                {
-                    thisContext = context;
-                }
-
-                contextsList.Add(context);
-            }
-
-            var contexts = contextsList.ToImmutableArray();
+            var contexts = (await Task.WhenAll(
+                _workspace.CurrentSolution.Projects.Single()
+                    .Documents.Select(doc => CreateContextForFileAsync(doc.Name, options)))).ToImmutableArray();
 
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
                 SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
@@ -159,12 +170,25 @@ namespace Desalt.Core.Tests.TestUtility
                 directlyReferencedExternalTypeSymbols,
                 indirectlyReferencedExternalTypeSymbols);
 
-            thisContext.Should().NotBeNull();
-            return new DocumentTranslationContextWithSymbolTables(
-                thisContext,
-                importTable,
-                scriptNameTable,
-                inlineCodeTable);
+            return contexts.Select(
+                    context => new DocumentTranslationContextWithSymbolTables(
+                        context,
+                        importTable,
+                        scriptNameTable,
+                        inlineCodeTable))
+                .ToImmutableArray();
+        }
+
+        public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
+            string fileName,
+            CompilerOptions options = null,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+        {
+            var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
+            DocumentTranslationContextWithSymbolTables thisContext =
+                allContexts.First(context => context.Document.Name == fileName);
+
+            return thisContext;
         }
 
         /// <summary>

@@ -27,9 +27,9 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private InlineCodeSymbolTable(
-            ImmutableArray<KeyValuePair<string, string>> documentSymbols,
-            ImmutableArray<KeyValuePair<string, string>> directlyReferencedExternalSymbols,
-            ImmutableArray<KeyValuePair<string, Lazy<string>>> indirectlyReferencedExternalSymbols)
+            ImmutableArray<KeyValuePair<ISymbol, string>> documentSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, string>> directlyReferencedExternalSymbols,
+            ImmutableArray<KeyValuePair<ISymbol, Lazy<string>>> indirectlyReferencedExternalSymbols)
             : base(documentSymbols, directlyReferencedExternalSymbols, indirectlyReferencedExternalSymbols)
         {
         }
@@ -73,8 +73,8 @@ namespace Desalt.Core.Translation
             var indirectlyReferencedExternalSymbols = indirectlyReferencedExternalTypeSymbols
                 .SelectMany(symbol => symbol.ToSingleEnumerable().Concat(DiscoverMembersOfTypeSymbol(symbol)))
                 .Select(
-                    symbol => new KeyValuePair<string, Lazy<string>>(
-                        SymbolTableUtils.KeyFromSymbol(symbol),
+                    symbol => new KeyValuePair<ISymbol, Lazy<string>>(
+                        symbol,
                         new Lazy<string>(
                             () => SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null),
                             isThreadSafe: true)))
@@ -86,22 +86,7 @@ namespace Desalt.Core.Translation
                 indirectlyReferencedExternalSymbols);
         }
 
-        /// <summary>
-        /// Creates a pre-populated symbol table with mock entries. Used in unit testing.
-        /// </summary>
-        internal static InlineCodeSymbolTable CreateMock(params (string symbolName, string inlineCode)[] mockEntries)
-        {
-            var documentSymbols = mockEntries
-                .Select(entry => new KeyValuePair<string, string>(entry.symbolName, entry.inlineCode))
-                .ToImmutableArray();
-
-            return new InlineCodeSymbolTable(
-                documentSymbols,
-                ImmutableArray<KeyValuePair<string, string>>.Empty,
-                ImmutableArray<KeyValuePair<string, Lazy<string>>>.Empty);
-        }
-
-        private static IEnumerable<KeyValuePair<string, string>> ProcessSymbolsInDocument(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessSymbolsInDocument(
             DocumentTranslationContext context)
         {
             // [InlineCode] is only valid on constructors and methods
@@ -115,7 +100,7 @@ namespace Desalt.Core.Translation
                    let symbol = context.SemanticModel.GetDeclaredSymbol(node)
                    let inlineCode = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null)
                    where inlineCode != null
-                   select new KeyValuePair<string, string>(SymbolTableUtils.KeyFromSymbol(symbol), inlineCode);
+                   select new KeyValuePair<ISymbol, string>(symbol, inlineCode);
         }
 
         private static IEnumerable<ISymbol> DiscoverMembersOfTypeSymbol(INamespaceOrTypeSymbol typeSymbol) =>
@@ -127,13 +112,13 @@ namespace Desalt.Core.Translation
                 MethodKind.PropertySet)
             select methodSymbol;
 
-        private static IEnumerable<KeyValuePair<string, string>> ProcessExternalType(ITypeSymbol typeSymbol)
+        private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessExternalType(ITypeSymbol typeSymbol)
         {
             return from methodSymbol in DiscoverMembersOfTypeSymbol(typeSymbol)
                    let inlineCode =
                        SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(methodSymbol, "InlineCode", null)
                    where inlineCode != null
-                   select new KeyValuePair<string, string>(SymbolTableUtils.KeyFromSymbol(methodSymbol), inlineCode);
+                   select new KeyValuePair<ISymbol, string>(methodSymbol, inlineCode);
         }
     }
 }

@@ -8,8 +8,10 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
@@ -23,7 +25,10 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public class TypeTranslatorTests
     {
-        private static async Task AssertTypeTranslation(string csharpType, ITsType expectedType)
+        private static async Task AssertTypeTranslation(
+            string csharpType,
+            ITsType expectedType,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
         {
             // parse the C# code and get the root syntax node
             string code = $@"
@@ -36,9 +41,10 @@ class Foo
 }}
 ";
 
-            using (var tempProject = await TempProject.CreateAsync("TempProject", new TempProjectFile("File.cs", code)))
+            using (var tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+                var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
                 // find the type symbol for the class member
                 VariableDeclarationSyntax variableDeclaration =
@@ -50,7 +56,19 @@ class Foo
                     throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
                 }
 
-                var translator = new TypeTranslator(context.ScriptNameSymbolTable);
+                // create the script name symbol table
+                ImmutableArray<ITypeSymbol> directlyReferencedExternalTypes =
+                    SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
+
+                var scriptNameTable = ScriptNameSymbolTable.Create(
+                    contexts,
+                    directlyReferencedExternalTypes,
+                    SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                        directlyReferencedExternalTypes,
+                        context.SemanticModel.Compilation,
+                        discoveryKind: discoveryKind));
+
+                var translator = new TypeTranslator(scriptNameTable);
                 translator.TranslateSymbol(typeSymbol)
                     .EmitAsString()
                     .Should()
@@ -123,13 +141,17 @@ class Foo
         {
             await AssertTypeTranslation(
                 "Lazy<string>",
-                Factory.TypeReference(Factory.Identifier("Lazy"), Factory.StringType));
+                Factory.TypeReference(Factory.Identifier("Lazy"), Factory.StringType),
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task TypeTranslator_should_translate_a_symbol_that_gets_translated_to_an_array_to_an_array()
         {
-            await AssertTypeTranslation("List<string>", Factory.ArrayType(Factory.StringType));
+            await AssertTypeTranslation(
+                "List<string>",
+                Factory.ArrayType(Factory.StringType),
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

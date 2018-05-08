@@ -33,7 +33,10 @@ namespace Desalt.Core.Tests.Translation
             yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
         }
 
-        private static async Task AssertImports(string codeSnippet, params string[] expectedImportLines)
+        private static async Task AssertImports(
+            string codeSnippet,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
+            string[] expectedImportLines = null)
         {
             string code = $@"
 using System;
@@ -47,26 +50,38 @@ class C
 }}
 ";
 
-            await AssertImports(code, GetFirstFieldDeclarationSymbol, expectedImportLines);
+            await AssertImports(
+                code,
+                GetFirstFieldDeclarationSymbol,
+                discoveryKind,
+                expectedImportLines ?? new string[0]);
         }
 
         private static async Task AssertImports(
             string code,
             GetSymbolsFunc getSymbolsFunc,
+            SymbolTableDiscoveryKind discoveryKind,
             params string[] expectedImportLines)
         {
-            await AssertImports(new[] { new TempProjectFile("File.cs", code), }, getSymbolsFunc, expectedImportLines);
+            await AssertImports(
+                new[] { new TempProjectFile("File.cs", code), },
+                getSymbolsFunc,
+                discoveryKind,
+                expectedImportLines);
         }
 
         private static async Task AssertImports(
             TempProjectFile[] codeFiles,
             GetSymbolsFunc getSymbolsFunc,
+            SymbolTableDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
-            using (var tempProject = await TempProject.CreateAsync("TestProject", codeFiles))
+            using (var tempProject = await TempProject.CreateAsync(codeFiles))
             {
                 DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync(codeFiles[0].FileName);
+                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                        codeFiles[0].FileName,
+                        discoveryKind: discoveryKind);
 
                 IEnumerable<ISymbol> typesToImport = getSymbolsFunc(context);
 
@@ -108,20 +123,20 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
         {
-            await AssertImports("List<int> list;");
-            await AssertImports("JsArray<int> array;");
+            await AssertImports("List<int> list;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertImports("JsArray<int> array;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
         {
-            await AssertImports("JsDictionary<string, int> dict;");
+            await AssertImports("JsDictionary<string, int> dict;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
-            await AssertImports("Error err;");
+            await AssertImports("Error err;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -151,6 +166,7 @@ class C
                     new TempProjectFile("Classes.cs", "class B {} class A {} class C {}")
                 },
                 GetSymbols,
+                SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B, C } from './Classes';");
         }
 
@@ -176,6 +192,7 @@ class C
                     new TempProjectFile("C.cs", "class C {}"),
                 },
                 GetSymbols,
+                SymbolTableDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B } from './AandB';",
                 "import { C } from './C';");
         }

@@ -102,7 +102,8 @@ class Logger {
     Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
   }
 }
-");
+",
+                    SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
             }
 
             [TestMethod]
@@ -248,7 +249,8 @@ class C {
             [TestMethod]
             public async Task List_of_Func_type_should_translate_to_Array_of_func()
             {
-                await AssertTranslation(@"
+                await AssertTranslation(
+                    @"
 class C
 {
     private static List<Func<string, bool>> Filters
@@ -258,13 +260,15 @@ class C
             return (List<Func<string, bool>>)new List<Func<string, bool>>();
         }
     }
-}", @"
+}",
+                    @"
 class C {
   private static get filters(): Array<(string: string) => boolean> {
     return <Array<(string: string) => boolean>>[];
   }
 }
-");
+",
+                    SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
             }
         }
     }

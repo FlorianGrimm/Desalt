@@ -28,9 +28,9 @@ namespace Desalt.Core.Tests.Translation
             SymbolTableDiscoveryKind discoveryKind,
             Action<ImportSymbolTable, DocumentTranslationContext> assertAction)
         {
-            using (var tempProject = await TempProject.CreateAsync("Test", new TempProjectFile("File.cs", csharpCode)))
+            using (var tempProject = await TempProject.CreateAsync(csharpCode))
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync("File.cs");
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
                 var importTable = ImportSymbolTable.Create(
                     contexts,
@@ -113,7 +113,7 @@ delegate void MyDelegate();
                     var symbol = GetSymbol("MyClass", context);
                     importTable[symbol]
                         .RelativeTypeScriptFilePathOrModuleName.Should()
-                        .Be(Path.Combine(@"C:\Test\outputPath", "File.ts"));
+                        .Be(Path.Combine(TempProject.ProjectDir, "outputPath", "File.ts"));
                 });
         }
     }

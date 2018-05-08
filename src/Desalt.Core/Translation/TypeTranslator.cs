@@ -90,12 +90,14 @@ namespace Desalt.Core.Translation
         /// Returns a value indicating whether the specified type name represents a native TypeScript
         /// type. Examples include void, boolean, string, number, any, Function, Object, or RegExp.
         /// </summary>
-        /// <param name="typeName">The name of the type to inspect.</param>
+        /// <param name="scriptNameOfType">
+        /// The script name of the type to inspect ("boolean", "number", etc.).
+        /// </param>
         /// <returns>true if the type name is a native TypeScript type; otherwise, false.</returns>
-        public static bool IsNativeTypeScriptTypeName(string typeName)
+        public static bool IsNativeTypeScriptTypeName(string scriptNameOfType)
         {
             // special cases that aren't in the table
-            switch (typeName)
+            switch (scriptNameOfType)
             {
                 case "Object":
                 case "Error":
@@ -103,7 +105,7 @@ namespace Desalt.Core.Translation
 
                 default:
                     return s_nativeTypeMap.Values.Select(value => value.nativeTypeName)
-                        .Any(nativeTypeName => nativeTypeName.Equals(typeName, StringComparison.Ordinal));
+                        .Any(nativeTypeName => nativeTypeName.Equals(scriptNameOfType, StringComparison.Ordinal));
             }
         }
 
@@ -155,16 +157,15 @@ namespace Desalt.Core.Translation
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
 
             // check for a native type that requires special translation
-            switch (scriptName)
+            if (scriptName == "Array")
             {
-                case "Array":
-                    ITsType elementType = Factory.AnyType;
-                    if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
-                    {
-                        elementType = TranslateSymbol(namedTypeSymbol.TypeArguments.First(), typesToImport);
-                    }
+                ITsType elementType = Factory.AnyType;
+                if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
+                {
+                    elementType = TranslateSymbol(namedTypeSymbol.TypeArguments.First(), typesToImport);
+                }
 
-                    return Factory.ArrayType(elementType);
+                return Factory.ArrayType(elementType);
             }
 
             // this is a type that we'll need to import since it's not a native type
