@@ -7,13 +7,14 @@
 
 namespace Desalt.Core.TypeScript.Ast
 {
+    using System;
     using System.Collections.Immutable;
     using Desalt.Core.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
     /// </summary>
-    public interface IAstNode
+    public interface IAstNode : IEquatable<IAstNode>
     {
         //// ===========================================================================================================
         //// Properties
