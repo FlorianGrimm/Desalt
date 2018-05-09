@@ -58,7 +58,7 @@ class Foo
             docComment.Should().NotBeSameAs(DocumentationComment.Empty);
 
             // translate the documentation comment
-            var result = DocumentationCommentTranslator.Translate(docComment, new CompilerOptions("out"));
+            var result = DocumentationCommentTranslator.Translate(docComment);
             result.Diagnostics.Should().BeEmpty();
 
             ITsJsDocComment jsdocComment = result.Result;

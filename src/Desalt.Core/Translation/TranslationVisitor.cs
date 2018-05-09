@@ -220,7 +220,7 @@ namespace Desalt.Core.Translation
             }
 
             DocumentationComment documentationComment = symbol.GetDocumentationComment();
-            var result = DocumentationCommentTranslator.Translate(documentationComment, _context.Options);
+            var result = DocumentationCommentTranslator.Translate(documentationComment);
             _diagnostics.AddRange(result.Diagnostics);
 
             return translatedNode.WithLeadingTrivia(result.Result);

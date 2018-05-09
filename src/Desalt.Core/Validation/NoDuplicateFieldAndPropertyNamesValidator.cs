@@ -34,7 +34,6 @@ namespace Desalt.Core.Validation
             }
 
             SemanticModel semanticModel = contexts[0].SemanticModel;
-            ScriptNameSymbolTable scriptNameTable = contexts[0].ScriptNameSymbolTable;
             var context = contexts[0];
 
             IEnumerable<Diagnostic> errors =
@@ -65,8 +64,7 @@ namespace Desalt.Core.Validation
                     fieldScriptName,
                     fieldVariable.GetLocation());
 
-            DiagnosticList diagnostics = DiagnosticList.From(context.Options, errors);
-            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(errors);
         }
     }
 }

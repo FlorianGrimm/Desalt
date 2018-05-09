@@ -23,18 +23,12 @@ namespace Desalt.Core.Validation
     {
         public IExtendedResult<bool> Validate(ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts)
         {
-            if (contexts.Length == 0)
-            {
-                return new ExtendedResult<bool>(true);
-            }
-
             var errors = from context in contexts.AsParallel()
                          from classNode in context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>()
                          where classNode.Modifiers.Any(token => token.IsKind(SyntaxKind.PartialKeyword))
                          select DiagnosticFactory.PartialClassesNotSupported(classNode);
 
-            DiagnosticList diagnostics = DiagnosticList.From(contexts[0].Options, errors);
-            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(errors);
         }
     }
 }

@@ -23,10 +23,10 @@ namespace Desalt.Core.Pipeline
         //// Constructors
         //// ===========================================================================================================
 
-        public ExtendedResult(T result, IEnumerable<Diagnostic> filteredDiagnostics = null)
+        public ExtendedResult(T result, IEnumerable<Diagnostic> diagnostics = null)
         {
             Result = result;
-            Diagnostics = filteredDiagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
+            Diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
         //// ===========================================================================================================
@@ -44,8 +44,7 @@ namespace Desalt.Core.Pipeline
         public T Result { get; }
 
         /// <summary>
-        /// Gets all of the diagnostics, filtered according to the compiler options, in the order in
-        /// which they were generated.
+        /// Gets all of the diagnostics in the order in which they were generated.
         /// </summary>
         public ImmutableArray<Diagnostic> Diagnostics { get; }
 

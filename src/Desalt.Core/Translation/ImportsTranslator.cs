@@ -38,7 +38,7 @@ namespace Desalt.Core.Translation
             var undefinedTypeErrors = undefinedTypes.Select(
                 importType => DiagnosticFactory.UnknownType(SymbolTableUtils.KeyFromSymbol(importType)));
 
-            DiagnosticList diagnostics = DiagnosticList.From(context.Options, undefinedTypeErrors);
+            var diagnostics = new List<Diagnostic>(undefinedTypeErrors);
 
             // get rid of all of the undefined imports
             var validImportTypes = importTypes.Except(undefinedTypes);

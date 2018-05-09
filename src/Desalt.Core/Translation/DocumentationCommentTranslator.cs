@@ -15,6 +15,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.Utility;
+    using Microsoft.CodeAnalysis;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
     using XmlNames = DocumentationCommentXmlNames;
 
@@ -31,13 +32,11 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static IExtendedResult<ITsJsDocComment> Translate(
-            DocumentationComment documentationComment,
-            CompilerOptions options)
+        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
         {
             var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
 
-            var diagnostics = DiagnosticList.Create(options);
+            var diagnostics = new List<Diagnostic>();
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 
             // if there is <summary> and <remarks>, then append the remarks after the summary,
@@ -99,9 +98,9 @@ namespace Desalt.Core.Translation
         /// Translates any embedded XML blocks into the relevant JSDoc equivalent.
         /// </summary>
         /// <param name="text">The XML documentation comment text to translate.</param>
-        /// <param name="diagnostics">The <see cref="DiagnosticList"/> to use for reporting errors.</param>
+        /// <param name="diagnostics">The diagnosit lise to use for reporting errors.</param>
         /// <returns>The translated text in JSDoc format.</returns>
-        private static ITsJsDocBlock TranslateElementText(string text, DiagnosticList diagnostics)
+        private static ITsJsDocBlock TranslateElementText(string text, ICollection<Diagnostic> diagnostics)
         {
             if (string.IsNullOrEmpty(text))
             {

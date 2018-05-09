@@ -11,7 +11,6 @@ namespace Desalt.Core.CompilerStages
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
@@ -43,9 +42,7 @@ namespace Desalt.Core.CompilerStages
             var onlyValidDocuments = results.Where(result => result.Result != null)
                 .Select(result => result.Result)
                 .ToImmutableArray();
-            DiagnosticList mergedDiagnostics = DiagnosticList.From(
-                options,
-                results.SelectMany(result => result.Diagnostics));
+            var mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
 
             return new ExtendedResult<ImmutableArray<DocumentTranslationContext>>(onlyValidDocuments, mergedDiagnostics);
         }

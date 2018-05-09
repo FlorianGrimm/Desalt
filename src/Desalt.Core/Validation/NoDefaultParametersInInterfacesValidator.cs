@@ -23,11 +23,6 @@ namespace Desalt.Core.Validation
     {
         public IExtendedResult<bool> Validate(ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts)
         {
-            if (contexts.Length == 0)
-            {
-                return new ExtendedResult<bool>(true);
-            }
-
             IEnumerable<Diagnostic> query =
                 from context in contexts.AsParallel()
                 from iface in context.RootSyntax.DescendantNodes().OfType<InterfaceDeclarationSyntax>()
@@ -39,8 +34,7 @@ namespace Desalt.Core.Validation
                     method.Identifier.Text,
                     parameter);
 
-            DiagnosticList diagnostics = DiagnosticList.From(contexts[0].Options, query);
-            return new SuccessOnNoErrorsResult(diagnostics.FilteredDiagnostics);
+            return new SuccessOnNoErrorsResult(query);
         }
     }
 }
