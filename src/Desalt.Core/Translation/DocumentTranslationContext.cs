@@ -8,10 +8,12 @@
 namespace Desalt.Core.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -74,7 +76,7 @@ namespace Desalt.Core.Translation
             {
                 return new ExtendedResult<DocumentTranslationContext>(
                     null,
-                    DiagnosticList.Create(options, DiagnosticFactory.DocumentContainsNoSyntaxTree(document)));
+                    DiagnosticFactory.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
             }
 
             CompilationUnitSyntax rootSyntax = syntaxTree.GetCompilationUnitRoot(cancellationToken);
@@ -83,16 +85,15 @@ namespace Desalt.Core.Translation
             SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (semanticModel == null)
             {
-                DiagnosticList syntaxDiagnostics = DiagnosticList.From(options, syntaxTree.GetDiagnostics());
-                syntaxDiagnostics.Add(DiagnosticFactory.DocumentContainsNoSemanticModel(document));
+                var syntaxDiagnostics = new List<Diagnostic>(syntaxTree.GetDiagnostics())
+                {
+                    DiagnosticFactory.DocumentContainsNoSemanticModel(document)
+                };
                 return new ExtendedResult<DocumentTranslationContext>(null, syntaxDiagnostics);
             }
 
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model
-            DiagnosticList diagnostics = DiagnosticList.From(
-                options,
-                semanticModel.GetDiagnostics(null, cancellationToken));
-
+            var diagnostics = new List<Diagnostic>(semanticModel.GetDiagnostics(null, cancellationToken));
             var context = new DocumentTranslationContext(document, options, syntaxTree, rootSyntax, semanticModel);
             return new ExtendedResult<DocumentTranslationContext>(context, diagnostics);
         }

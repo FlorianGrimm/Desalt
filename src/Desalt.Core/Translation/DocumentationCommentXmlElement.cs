@@ -16,6 +16,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Represents an XML element inside of a documentation comment.
@@ -69,9 +70,11 @@ namespace Desalt.Core.Translation
         /// Parses an XML element and returns the result.
         /// </summary>
         /// <param name="reader">The reader to use for parsing.</param>
-        /// <param name="diagnostics">An optional <see cref="DiagnosticList"/> to use for reporting errors.</param>
+        /// <param name="diagnostics">An optional diagnostic list to use for reporting errors.</param>
         /// <returns>The parsed XML element or null if there were errors.</returns>
-        public static DocumentationCommentXmlElement Parse(PeekingTextReader reader, DiagnosticList diagnostics = null)
+        public static DocumentationCommentXmlElement Parse(
+            PeekingTextReader reader,
+            ICollection<Diagnostic> diagnostics = null)
         {
             if (reader.Peek() != '<')
             {
@@ -79,7 +82,7 @@ namespace Desalt.Core.Translation
                     "Ummm... don't be calling this unless you're at an XML start character.");
             }
 
-            diagnostics = diagnostics ?? DiagnosticList.Empty;
+            diagnostics = diagnostics ?? new List<Diagnostic>();
 
             // skip the <
             reader.Read();
@@ -135,6 +138,7 @@ namespace Desalt.Core.Translation
                 content = reader.ReadUntil(closingTag);
                 reader.Read(closingTag.Length);
                 reader.SkipWhitespace();
+
                 // read the >
                 if (reader.Peek() != '>')
                 {

@@ -27,10 +27,12 @@ namespace Desalt.Core.Tests.Pipeline
             _executeFunc = executeFunc;
         }
 
-        public FakePipelineStage(SimpleExecuteFunc<TInput, TOutput> simpleExecuteFunc) : this(
-            (input, cancellationToken) =>
-                Task.FromResult<IExtendedResult<TOutput>>(new ExtendedResult<TOutput>(simpleExecuteFunc(input))))
-        { }
+        public FakePipelineStage(SimpleExecuteFunc<TInput, TOutput> simpleExecuteFunc)
+            : this(
+                (input, cancellationToken) =>
+                    Task.FromResult<IExtendedResult<TOutput>>(new ExtendedResult<TOutput>(simpleExecuteFunc(input))))
+        {
+        }
 
         public override async Task<IExtendedResult<TOutput>> ExecuteAsync(
             TInput input,

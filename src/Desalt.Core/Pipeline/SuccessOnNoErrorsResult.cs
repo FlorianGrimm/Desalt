@@ -20,9 +20,9 @@ namespace Desalt.Core.Pipeline
         //// Constructors
         //// ===========================================================================================================
 
-        public SuccessOnNoErrorsResult(IEnumerable<Diagnostic> filteredDiagnostics = null) : base(
-            (filteredDiagnostics ?? Enumerable.Empty<Diagnostic>()).Any(d => d.Severity == DiagnosticSeverity.Error),
-            filteredDiagnostics)
+        public SuccessOnNoErrorsResult(IEnumerable<Diagnostic> diagnostics = null) : base(
+            (diagnostics ?? Enumerable.Empty<Diagnostic>()).Any(d => d.Severity == DiagnosticSeverity.Error),
+            diagnostics)
         {
         }
     }
