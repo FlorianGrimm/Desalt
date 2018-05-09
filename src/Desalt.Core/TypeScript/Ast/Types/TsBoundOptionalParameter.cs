@@ -48,7 +48,10 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay =>
             $"{Modifier.OptionalCodeDisplay()}" +
-            $"{ParameterName}${ParameterType.OptionalTypeAnnotation()} = {Initializer}";
+            ParameterName +
+            (Initializer == null ? "?" : "") +
+            ParameterType.OptionalTypeAnnotation() +
+            (Initializer != null ? $" = {Initializer}" : "");
 
         protected override void EmitInternal(Emitter emitter)
         {
