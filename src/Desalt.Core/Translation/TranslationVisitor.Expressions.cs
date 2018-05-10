@@ -55,6 +55,9 @@ namespace Desalt.Core.Translation
 
                 case SyntaxKind.FalseLiteralExpression:
                     return Factory.False.ToSingleEnumerable();
+
+                case SyntaxKind.NullLiteralExpression:
+                    return Factory.Null.ToSingleEnumerable();
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
