@@ -13,6 +13,13 @@ namespace Desalt.Core.TypeScript.Ast
 
     public static partial class TsAstFactory
     {
+        /// <summary>
+        /// Creates an expression list separated by commas. Useful in for loops for the initializer
+        /// or incrementor, for example.
+        /// </summary>
+        public static ITsCommaExpression CommaExpression(params ITsExpression[] expressions) =>
+            new TsCommaExpression(expressions);
+
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================

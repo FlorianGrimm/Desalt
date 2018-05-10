@@ -634,6 +634,11 @@ namespace Desalt.Core.TypeScript.Ast
     {
     }
 
+    public interface ITsCommaExpression : ITsExpression
+    {
+        ImmutableArray<ITsExpression> Expressions { get; }
+    }
+
     /* A.3 Statements
      * --------------
      * Statement:

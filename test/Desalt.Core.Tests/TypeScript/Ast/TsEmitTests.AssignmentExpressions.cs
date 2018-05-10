@@ -29,5 +29,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.Assignment(s_x, Op.BitwiseXorAssign, s_y), "x ^= y");
             VerifyOutput(Factory.Assignment(s_x, Op.BitwiseOrAssign, s_y), "x |= y");
         }
+
+        [TestMethod]
+        public void Emit_comma_expressions()
+        {
+            VerifyOutput(Factory.CommaExpression(s_x, s_y), "x, y");
+        }
     }
 }

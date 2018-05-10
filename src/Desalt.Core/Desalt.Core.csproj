@@ -220,6 +220,7 @@
     <Compile Include="TypeScript\Ast\Expressions\TsCallExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsCastExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsClassExpression.cs" />
+    <Compile Include="TypeScript\Ast\Expressions\TsCommaExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsConditionalExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsCoverInitializedName.cs" />
