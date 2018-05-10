@@ -153,6 +153,12 @@ namespace Desalt.Core.Translation
                 return TranslateFunc((INamedTypeSymbol)symbol, typesToImport);
             }
 
+            // type parameters don't have a script name - just use their name
+            if (symbol is ITypeParameterSymbol typeParameterSymbol)
+            {
+                return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
+            }
+
             INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
 
