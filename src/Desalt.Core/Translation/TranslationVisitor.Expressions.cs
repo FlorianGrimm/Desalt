@@ -266,6 +266,22 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a DefaultExpressionSyntax node.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITsCallExpression"/>, since `default(T)` gets translated as a call to `ss.getDefaultValue(T)`
+        /// </returns>
+        public override IEnumerable<IAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
+        {
+            ITsType translatedType = _typeTranslator.TranslateSymbol(node.Type.GetTypeSymbol(_semanticModel));
+
+            ITsCallExpression translated = Factory.Call(
+                Factory.MemberDot(Factory.Identifier("ss"), "getDefaultValue"),
+                Factory.ArgumentList(Factory.Argument(Factory.Identifier(translatedType.EmitAsString()))));
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Assignments, Unary, and Binary Expressions
         //// ===========================================================================================================
