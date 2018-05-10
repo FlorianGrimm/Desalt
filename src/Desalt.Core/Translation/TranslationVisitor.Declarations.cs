@@ -159,7 +159,8 @@ namespace Desalt.Core.Translation
 
                 var typeAnnotation = _typeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
-                    _typesToImport);
+                    _typesToImport,
+                    _diagnostics);
 
                 ITsExpression initializer = null;
                 if (variableDeclaration.Initializer != null)
@@ -205,7 +206,10 @@ namespace Desalt.Core.Translation
             bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
                 symbol,
                 callSignature.Parameters,
-                out ITsParameterList translatedParameterList);
+                out ITsParameterList translatedParameterList,
+                out IEnumerable<Diagnostic> diagnostics);
+
+            _diagnostics.AddRange(diagnostics);
 
             if (adjustedParameters)
             {
@@ -295,7 +299,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            var propertyType = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+            var propertyType = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport, _diagnostics);
             bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)

@@ -152,7 +152,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = _typeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport);
+            ITsType parameterType = _typeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport, _diagnostics);
 
             IAstNode parameter;
 
@@ -322,7 +322,8 @@ namespace Desalt.Core.Translation
             {
                 returnType = _typeTranslator.TranslateSymbol(
                     returnTypeNode.GetTypeSymbol(_semanticModel),
-                    _typesToImport);
+                    _typesToImport,
+                    _diagnostics);
             }
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);

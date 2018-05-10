@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
@@ -69,10 +70,13 @@ class Foo
                         discoveryKind: discoveryKind));
 
                 var translator = new TypeTranslator(scriptNameTable);
-                translator.TranslateSymbol(typeSymbol)
-                    .EmitAsString()
+                var diagnostics = new List<Diagnostic>();
+
+                translator.TranslateSymbol(typeSymbol, typesToImport: null, diagnostics: diagnostics)
                     .Should()
-                    .BeEquivalentTo(expectedType.EmitAsString());
+                    .BeEquivalentTo(expectedType);
+
+                diagnostics.Should().BeEmpty();
             }
         }
 
