@@ -44,6 +44,7 @@ namespace Desalt.Core.Translation
             ["System.Single"] = ("number", Factory.NumberType),
             ["System.Double"] = ("number", Factory.NumberType),
             ["System.Object"] = ("any", Factory.AnyType),
+            ["dynamic"] = ("any", Factory.AnyType),
             ["System.Array"] = ("Array", null),
             ["System.Action"] = ("Function", null),
             ["System.Func"] = ("Function", null),
