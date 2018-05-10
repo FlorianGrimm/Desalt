@@ -1,0 +1,13 @@
+{
+  "name": "@tableau/core-subset",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Justin Rockwood",
+  "license": "UNLICENSED",
+  "scripts": {
+    "compile": "node_modules/.bin/tsc --project tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "2.8.3"
+  }
+}

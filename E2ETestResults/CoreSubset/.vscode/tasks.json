@@ -10,17 +10,18 @@
     },
     "tasks": [
       {
-        "label": "build test code",
-        "command": "node",
+        "label": "compile",
+        "command": "yarn",
         "args": [
-          "build.js"
+          "run",
+          "compile"
         ],
         "group": {
           "kind": "build",
           "isDefault": true
         },
         "problemMatcher": [
-          "$msCompile"
+          "$tsc"
         ]
       }
     ]
