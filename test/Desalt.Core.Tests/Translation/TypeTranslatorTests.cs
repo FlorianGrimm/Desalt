@@ -72,7 +72,11 @@ class Foo
                 var translator = new TypeTranslator(scriptNameTable);
                 var diagnostics = new List<Diagnostic>();
 
-                translator.TranslateSymbol(typeSymbol, typesToImport: null, diagnostics: diagnostics)
+                translator.TranslateSymbol(
+                        typeSymbol,
+                        typesToImport: null,
+                        diagnostics: diagnostics,
+                        getLocationFunc: variableDeclaration.Type.GetLocation)
                     .Should()
                     .BeEquivalentTo(expectedType);
 

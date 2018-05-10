@@ -85,7 +85,8 @@ namespace Desalt.Core.Translation
             ITsType castType = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
                 _typesToImport,
-                _diagnostics);
+                _diagnostics,
+                node.Type.GetLocation);
 
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsCastExpression translated = Factory.Cast(castType, expression);
@@ -101,7 +102,8 @@ namespace Desalt.Core.Translation
             ITsType type = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
                 _typesToImport,
-                _diagnostics);
+                _diagnostics,
+                node.Type.GetLocation);
 
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
             yield return translated;
@@ -184,12 +186,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
         public override IEnumerable<IAstNode> VisitGenericName(GenericNameSyntax node)
         {
-            ITsType[] typeArguments = node.TypeArgumentList.Arguments
-                .Select(typeSyntax => typeSyntax.GetTypeSymbol(_semanticModel))
-                .Where(typeSymbol => typeSymbol != null)
-                .Select(typeSymbol => _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport, _diagnostics))
-                .ToArray();
-
+            ITsType[] typeArguments = Visit(node.TypeArgumentList).Cast<ITsType>().ToArray();
             ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
             yield return translated;
         }
@@ -316,7 +313,8 @@ namespace Desalt.Core.Translation
             ITsType translatedType = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
                 _typesToImport,
-                _diagnostics);
+                _diagnostics,
+                node.Type.GetLocation);
 
             ITsCallExpression translated = Factory.Call(
                 Factory.MemberDot(Factory.Identifier("ss"), "getDefaultValue"),

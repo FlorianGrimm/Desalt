@@ -152,7 +152,11 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = _typeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport, _diagnostics);
+            ITsType parameterType = _typeTranslator.TranslateSymbol(
+                parameterTypeSymbol,
+                _typesToImport,
+                _diagnostics,
+                () => node.Type.GetLocation());
 
             IAstNode parameter;
 
@@ -195,6 +199,23 @@ namespace Desalt.Core.Translation
             ITsIdentifier typeName = Factory.Identifier(node.Identifier.Text);
             ITsTypeParameter translated = Factory.TypeParameter(typeName);
             yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TypeArgumentListSyntax node.
+        /// </summary>
+        /// <returns>An enumerable of <see cref="ITsType"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeArgumentList(TypeArgumentListSyntax node)
+        {
+            var translated = from typeSyntax in node.Arguments
+                             let typeSymbol = typeSyntax.GetTypeSymbol(_semanticModel)
+                             where typeSymbol != null
+                             select _typeTranslator.TranslateSymbol(
+                                 typeSymbol,
+                                 _typesToImport,
+                                 _diagnostics,
+                                 typeSyntax.GetLocation);
+            return translated;
         }
 
         /// <summary>
@@ -323,7 +344,8 @@ namespace Desalt.Core.Translation
                 returnType = _typeTranslator.TranslateSymbol(
                     returnTypeNode.GetTypeSymbol(_semanticModel),
                     _typesToImport,
-                    _diagnostics);
+                    _diagnostics,
+                    returnTypeNode.GetLocation);
             }
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);

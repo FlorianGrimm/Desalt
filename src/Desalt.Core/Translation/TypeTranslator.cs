@@ -129,19 +129,27 @@ namespace Desalt.Core.Translation
         /// <param name="typesToImport">
         /// A set of symbols that will need to be imported. This method will add to the set if necessary.
         /// </param>
-        /// <param name="diagnostics">An optional collection to add errors to.</param>
+        /// <param name="diagnostics">A collection to add errors to.</param>
+        /// <param name="getLocationFunc">
+        /// A function returning the location in the source code of the symbol. Used for error reporting.
+        /// </param>
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
         public ITsType TranslateSymbol(
             ITypeSymbol symbol,
             ISet<ISymbol> typesToImport,
-            ICollection<Diagnostic> diagnostics)
+            ICollection<Diagnostic> diagnostics,
+            Func<Location> getLocationFunc)
         {
             typesToImport = typesToImport ?? new HashSet<ISymbol>();
             diagnostics = diagnostics ?? new List<Diagnostic>();
 
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                ITsType elementType = TranslateSymbol(arrayTypeSymbol.ElementType, typesToImport, diagnostics);
+                ITsType elementType = TranslateSymbol(
+                    arrayTypeSymbol.ElementType,
+                    typesToImport,
+                    diagnostics,
+                    getLocationFunc);
                 return Factory.ArrayType(elementType);
             }
 
@@ -156,7 +164,7 @@ namespace Desalt.Core.Translation
             // Action<T1, ...> and Func<T1, ...> are special cases
             if (fullTypeName.IsOneOf("System.Action", "System.Func"))
             {
-                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport, diagnostics);
+                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport, diagnostics, getLocationFunc);
             }
 
             // type parameters don't have a script name - just use their name
@@ -170,7 +178,10 @@ namespace Desalt.Core.Translation
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
             if (scriptName == null)
             {
-                Diagnostic error = DiagnosticFactory.UnknownTypeReference(SymbolTableUtils.KeyFromSymbol(symbol));
+                Diagnostic error = DiagnosticFactory.UnknownTypeReference(
+                    SymbolTableUtils.KeyFromSymbol(symbol),
+                    getLocationFunc());
+
                 diagnostics.Add(error);
                 scriptName = "UNKNOWN";
             }
@@ -181,7 +192,11 @@ namespace Desalt.Core.Translation
                 ITsType elementType = Factory.AnyType;
                 if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
                 {
-                    elementType = TranslateSymbol(namedTypeSymbol.TypeArguments.First(), typesToImport, diagnostics);
+                    elementType = TranslateSymbol(
+                        namedTypeSymbol.TypeArguments.First(),
+                        typesToImport,
+                        diagnostics,
+                        getLocationFunc);
                 }
 
                 return Factory.ArrayType(elementType);
@@ -196,7 +211,7 @@ namespace Desalt.Core.Translation
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
                 translatedTypeMembers = typeMembers
-                    .Select(typeMember => TranslateSymbol(typeMember, typesToImport, diagnostics))
+                    .Select(typeMember => TranslateSymbol(typeMember, typesToImport, diagnostics, getLocationFunc))
                     .ToArray();
             }
 
@@ -210,7 +225,8 @@ namespace Desalt.Core.Translation
         private ITsFunctionType TranslateFunc(
             INamedTypeSymbol symbol,
             ISet<ISymbol> typesToImport,
-            ICollection<Diagnostic> diagnostics)
+            ICollection<Diagnostic> diagnostics,
+            Func<Location> getLocationFunc)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             bool isFunc = symbol.Name == "Func";
@@ -221,7 +237,7 @@ namespace Desalt.Core.Translation
                 string parameterName = typeArgument.Name;
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
-                ITsType parameterType = TranslateSymbol(typeArgument, typesToImport, diagnostics);
+                ITsType parameterType = TranslateSymbol(typeArgument, typesToImport, diagnostics, getLocationFunc);
                 ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(
                     Factory.Identifier(parameterName),
                     parameterType);
@@ -231,7 +247,7 @@ namespace Desalt.Core.Translation
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
 
             ITsType returnType = isFunc
-                ? TranslateSymbol(symbol.TypeArguments.Last(), typesToImport, diagnostics)
+                ? TranslateSymbol(symbol.TypeArguments.Last(), typesToImport, diagnostics, getLocationFunc)
                 : Factory.VoidType;
 
             return Factory.FunctionType(parameterList, returnType);

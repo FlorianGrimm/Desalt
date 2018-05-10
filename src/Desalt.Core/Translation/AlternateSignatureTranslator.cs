@@ -211,12 +211,19 @@ namespace Desalt.Core.Translation
             int parameterIndex,
             ICollection<Diagnostic> diagnostics)
         {
+            Location GetLocation() =>
+                group.ImplementingMethod.Parameters[parameterIndex]
+                    .DeclaringSyntaxReferences[0]
+                    .GetSyntax()
+                    .GetLocation();
+
             var translatedTypes = group.TypesForParameter(parameterIndex)
                 .Select(
                     typeSymbol => _typeTranslator.TranslateSymbol(
                         typeSymbol,
                         typesToImport: null,
-                        diagnostics: diagnostics))
+                        diagnostics: diagnostics,
+                        getLocationFunc: GetLocation))
                 .Distinct()
                 .ToArray();
 

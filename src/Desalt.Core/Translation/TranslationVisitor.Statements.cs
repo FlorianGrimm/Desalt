@@ -67,7 +67,11 @@ namespace Desalt.Core.Translation
 
             // get the type of all of the declarations
             var typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
-            ITsType type = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport, _diagnostics);
+            ITsType type = _typeTranslator.TranslateSymbol(
+                typeSymbol,
+                _typesToImport,
+                _diagnostics,
+                node.Declaration.Type.GetLocation);
 
             ITsSimpleLexicalBinding[] declarations = node.Declaration.Variables.SelectMany(Visit)
                 .Cast<ITsSimpleLexicalBinding>()
@@ -106,10 +110,6 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
         public override IEnumerable<IAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
-            // get the type of all of the declarations
-            var typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType type = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport, _diagnostics);
-
             // TODO: Determine whether this should be a const or let declaration
             const bool isConst = false;
 
