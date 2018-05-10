@@ -19,7 +19,7 @@ namespace Desalt.Core.Diagnostics
     /// cref="CompilerOptions"/>. This is not thread-safe and designed to be used within a single
     /// thread to gather diagnostics for the running task.
     /// </summary>
-    internal sealed class DiagnosticList : IEnumerable<Diagnostic>
+    internal sealed class DiagnosticList : ICollection<Diagnostic>
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -56,6 +56,10 @@ namespace Desalt.Core.Diagnostics
         //// Properties
         //// ===========================================================================================================
 
+        public int Count => _diagnostics.Count;
+
+        bool ICollection<Diagnostic>.IsReadOnly => false;
+
         public ImmutableArray<Diagnostic> FilteredDiagnostics => _diagnostics.ToImmutableArray();
 
         public bool HasErrors => _diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error);
@@ -64,23 +68,21 @@ namespace Desalt.Core.Diagnostics
         //// Methods
         //// ===========================================================================================================
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate
-        /// through the collection.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<Diagnostic> GetEnumerator() => _diagnostics.GetEnumerator();
+
+        bool ICollection<Diagnostic>.Contains(Diagnostic item) => _diagnostics.Contains(item);
+
+        void ICollection<Diagnostic>.CopyTo(Diagnostic[] array, int arrayIndex) =>
+            _diagnostics.CopyTo(array, arrayIndex);
+
+        bool ICollection<Diagnostic>.Remove(Diagnostic item) => _diagnostics.Remove(item);
+
+        void ICollection<Diagnostic>.Add(Diagnostic item) => Add(item);
 
         /// <summary>
         /// Adds a new diagnostic to the list, but only if the compiler options don't dictate that it
