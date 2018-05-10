@@ -68,7 +68,7 @@ export interface MyInterface {
         {
             await AssertTranslationAsync(
                 "using System.Text; class C { private StringBuilder _builder; }",
-                "import { StringBuilder } from 'mscorlib';\n\nclass C {\n  private _builder: StringBuilder;\n}\n");
+                "import 'mscorlib';\n\nclass C {\n  private _builder: StringBuilder;\n}\n");
         }
     }
 }

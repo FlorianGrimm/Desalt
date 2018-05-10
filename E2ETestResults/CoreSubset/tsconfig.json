@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": "custom-types",
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": [
+      "es2015"
+    ],
+    "module": "commonjs",
+    "newLine": "LF",
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2015",
+    "typeRoots": [
+      "custom-types",
+      "node_modules/@types"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

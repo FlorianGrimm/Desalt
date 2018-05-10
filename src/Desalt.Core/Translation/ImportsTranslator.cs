@@ -15,6 +15,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Pipeline;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
+    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates import declarations for a set of types.
@@ -88,17 +89,26 @@ namespace Desalt.Core.Translation
             var importDeclarations = new List<ITsImportDeclaration>();
             foreach (var grouping in groupedByFileName)
             {
-                // create the list inside of `import { list } from 'file'`
-                ITsImportSpecifier[] importNames = grouping
-                    .Select(item => TsAstFactory.ImportSpecifier(TsAstFactory.Identifier(item.TypeName)))
-                    .ToArray();
-                var importClause = TsAstFactory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
+                // special case: mscorlib - needs to be imported like this: `import 'mscorlib';`
+                if (grouping.Key == "mscorlib")
+                {
+                    ITsImportDeclaration import = Factory.ImportDeclaration(Factory.String("mscorlib"));
+                    importDeclarations.Add(import);
+                }
+                else
+                {
+                    // create the list inside of `import { list } from 'file'`
+                    ITsImportSpecifier[] importNames = grouping.Select(
+                            item => Factory.ImportSpecifier(Factory.Identifier(item.TypeName)))
+                        .ToArray();
+                    var importClause = Factory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
 
-                // create the from clause
-                ITsFromClause fromClause = TsAstFactory.FromClause(TsAstFactory.String(grouping.Key));
+                    // create the from clause
+                    ITsFromClause fromClause = Factory.FromClause(Factory.String(grouping.Key));
 
-                ITsImportDeclaration import = TsAstFactory.ImportDeclaration(importClause, fromClause);
-                importDeclarations.Add(import);
+                    ITsImportDeclaration import = Factory.ImportDeclaration(importClause, fromClause);
+                    importDeclarations.Add(import);
+                }
             }
 
             return new ExtendedResult<IEnumerable<ITsImportDeclaration>>(importDeclarations, diagnostics);
