@@ -229,6 +229,32 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a WhileStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsWhileStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitWhileStatement(WhileStatementSyntax node)
+        {
+            var whileCondition = (ITsExpression)Visit(node.Condition).Single();
+            var whileStatement = (ITsStatement)Visit(node.Statement).Single();
+
+            ITsWhileStatement translated = Factory.While(whileCondition, whileStatement);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a DoStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsDoWhileStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitDoStatement(DoStatementSyntax node)
+        {
+            var doStatement = (ITsStatement)Visit(node.Statement).Single();
+            var whileCondition = (ITsExpression)Visit(node.Condition).Single();
+
+            ITsDoWhileStatement translated = Factory.DoWhile(doStatement, whileCondition);
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Functions and Methods
         //// ===========================================================================================================

@@ -37,6 +37,62 @@ class C {
         }
 
         [TestMethod]
+        public async Task Translate_while_statements()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    void Method()
+    {
+        int i = 0;
+        while (i < 10)
+        {
+            i++;
+        }
+    }
+}",
+                @"
+class C {
+  private method(): void {
+    let i: number = 0;
+    while (i < 10) {
+      i++;
+    }
+  }
+}
+");
+        }
+
+        [TestMethod]
+        public async Task Translate_do_while_statements()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    void Method()
+    {
+        int i = 0;
+        do
+        {
+            i++;
+        } while (i < 10);
+    }
+}",
+                @"
+class C {
+  private method(): void {
+    let i: number = 0;
+    do {
+      i++;
+    } while (i < 10);
+  }
+}
+");
+        }
+
+        [TestMethod]
         public async Task Translate_for_statements()
         {
             await AssertTranslation(
