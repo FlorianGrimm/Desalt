@@ -62,7 +62,8 @@ namespace Desalt.Core.Diagnostics
             [Warning(
                 1006,
                 "Unstructured XML text not supported",
-                "Unstructured text within XML documentation comments is not currently supported. Add it to a <remarks> element. Text: '{0}'",
+                "Unstructured text within XML documentation comments is not currently supported. Add it to a " +
+                "<remarks> element. Text: '{0}'",
                 WarningLevel.Minor)]
             UnstructuredXmlTextNotSupported,
 
@@ -116,10 +117,13 @@ namespace Desalt.Core.Diagnostics
             [Error(
                 1014,
                 "Overloads with [AlternateSignatue] not supported",
-                "Method '{0}' is an overload, but also has one or more [AlternateSignature] methods.",
+                "Method '{0}' is an overload, but also has one or more [AlternateSignature] methods",
                 description: "Change the original source to remove the overloaded method or remove the " +
                 "[AlternateSignature] attribute")]
             OverloadsWithAlternateSignatureNotSupported,
+
+            [Error(1015, "Unknown type reference", "Type '{0}' is not a known type reference")]
+            UnknownTypeReference,
         }
 
         //// ===========================================================================================================
@@ -289,5 +293,11 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         public static Diagnostic OverloadsWithAlternateSignatureNotSupported(string methodName, Location location) =>
             Create(DiagnosticId.OverloadsWithAlternateSignatureNotSupported, location, methodName);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Type '{0}' is not a known type reference".
+        /// </summary>
+        public static Diagnostic UnknownTypeReference(string typeName, Location location = null) =>
+            Create(DiagnosticId.UnknownTypeReference, location ?? Location.None, typeName);
     }
 }

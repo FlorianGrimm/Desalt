@@ -166,7 +166,14 @@ namespace Desalt.Core.Translation
             }
 
             INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
+
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
+            if (scriptName == null)
+            {
+                Diagnostic error = DiagnosticFactory.UnknownTypeReference(SymbolTableUtils.KeyFromSymbol(symbol));
+                diagnostics.Add(error);
+                scriptName = "UNKNOWN";
+            }
 
             // check for a native type that requires special translation
             if (scriptName == "Array")
