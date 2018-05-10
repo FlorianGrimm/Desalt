@@ -44,7 +44,8 @@ namespace Desalt.Core.CompilerStages
 
             Directory.CreateDirectory(options.OutputPath);
 
-            var results = input.Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs"))
+            var results = input
+                .Where(context => context.Document.Name.IsOneOf("ILogAppender.cs", "Logger.cs", "ScriptEx.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)
                 .Select(context => TranslateDocument(context, cancellationToken))
