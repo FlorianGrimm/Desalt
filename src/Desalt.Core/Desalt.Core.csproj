@@ -337,6 +337,7 @@
     <Compile Include="Utility\ExceptionFactory.cs" />
     <Compile Include="Utility\IndentedTextWriter.cs" />
     <Compile Include="Utility\Param.cs" />
+    <Compile Include="Utility\PathUtil.cs" />
     <Compile Include="Utility\PeekingTextReader.cs" />
     <Compile Include="Utility\TextReaderLocation.cs" />
     <Compile Include="Utility\UnicodeStringStream.cs" />
