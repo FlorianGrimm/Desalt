@@ -116,6 +116,10 @@ class Logger {
             }
         }
 
+        //// ===========================================================================================================
+        //// Unary and Binary Expressions
+        //// ===========================================================================================================
+
         [TestMethod]
         public async Task Prefix_unary_expressions()
         {
@@ -190,6 +194,34 @@ class Logger {
                 await AssertTranslation(code, expected);
             }
         }
+
+        [TestMethod]
+        public async Task Conditional_expressions()
+        {
+            await AssertTranslation(@"
+class C
+{
+    int Method()
+    {
+        bool x = true;
+        int y = 1, z = 2;
+
+        return x ? y : z;
+    }
+}", @"
+class C {
+  private method(): number {
+    let x: boolean = true;
+    let y: number = 1, z: number = 2;
+    return x ? y : z;
+  }
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Other Expression Translation Tests
+        //// ===========================================================================================================
 
         [TestMethod]
         public async Task ObjectCreationExpression_should_use_InlineCode_for_ListT_creation()

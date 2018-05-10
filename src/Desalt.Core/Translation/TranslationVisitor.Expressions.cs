@@ -325,7 +325,7 @@ namespace Desalt.Core.Translation
         }
 
         //// ===========================================================================================================
-        //// Assignments, Unary, and Binary Expressions
+        //// Assignments, Conditional, Unary, and Binary Expressions
         //// ===========================================================================================================
 
         /// <summary>
@@ -341,6 +341,20 @@ namespace Desalt.Core.Translation
                 leftSide,
                 TranslateAssignmentOperator(node.OperatorToken),
                 rightSide);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ConditionalExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsConditionalExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitConditionalExpression(ConditionalExpressionSyntax node)
+        {
+            var condition = (ITsExpression)Visit(node.Condition).Single();
+            var whenTrue = (ITsExpression)Visit(node.WhenTrue).Single();
+            var whenFalse = (ITsExpression)Visit(node.WhenFalse).Single();
+
+            ITsConditionalExpression translated = Factory.Conditional(condition, whenTrue, whenFalse);
             yield return translated;
         }
 

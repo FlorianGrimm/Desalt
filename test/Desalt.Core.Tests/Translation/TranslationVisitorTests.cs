@@ -37,9 +37,7 @@ using System.Collections.Generic;
 
             using (var tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                    "File.cs",
-                    discoveryKind: discoveryKind);
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(discoveryKind: discoveryKind);
 
                 var visitor = new TranslationVisitor(context, CancellationToken.None);
                 IAstNode result = visitor.Visit(context.RootSyntax).Single();
