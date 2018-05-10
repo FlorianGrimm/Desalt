@@ -100,6 +100,26 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a VariableDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
+        public override IEnumerable<IAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            // get the type of all of the declarations
+            var typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            ITsType type = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport, _diagnostics);
+
+            // TODO: Determine whether this should be a const or let declaration
+            const bool isConst = false;
+
+            // iterate over all of the variables and translate them
+            var lexicalBindings = node.Variables.SelectMany(Visit).Cast<ITsLexicalBinding>();
+
+            ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, lexicalBindings.ToArray());
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Conditional Statements
         //// ===========================================================================================================
@@ -187,6 +207,25 @@ namespace Desalt.Core.Translation
                 declaration,
                 rightSide,
                 statement);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ForStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsForStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitForStatement(ForStatementSyntax node)
+        {
+            var initializer = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            var condition = (ITsExpression)Visit(node.Condition).Single();
+            var statement = (ITsStatement)Visit(node.Statement).Single();
+
+            // translate all of the incrementors and create a comma expression from them
+            var incrementors = node.Incrementors.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+            ITsExpression incrementor =
+                incrementors.Length == 1 ? incrementors[0] : Factory.CommaExpression(incrementors);
+
+            ITsForStatement translated = Factory.For(initializer, condition, incrementor, statement);
             yield return translated;
         }
 

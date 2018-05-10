@@ -35,5 +35,28 @@ class C {
 }
 ");
         }
+
+        [TestMethod]
+        public async Task Translate_for_statements()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    void Method()
+    {
+        for (int i = 0, j = 10; i < 10; i++, j--)
+        {
+        }
+    }
+}",
+                @"
+class C {
+  private method(): void {
+    for (let i = 0, j = 10; i < 10; i++, j--) { }
+  }
+}
+");
+        }
     }
 }
