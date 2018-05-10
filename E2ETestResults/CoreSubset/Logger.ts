@@ -2,7 +2,7 @@ import { ILogAppender } from './ILogAppender';
 
 import { MiscUtil } from './MiscUtil';
 
-import { ss } from 'mscorlib';
+import 'mscorlib';
 
 import { ScriptEx } from './ScriptEx';
 
