@@ -18,6 +18,7 @@ namespace Desalt.Core.CompilerStages
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -74,12 +75,19 @@ namespace Desalt.Core.CompilerStages
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken)
         {
+            // ----------------------------------------------------
             // TEMP - copy the original .cs file for easy comparing
+            // get the relative path of the file
+            string relativePath = PathUtil.MakeRelativePath(
+                context.Document.Project.FilePath,
+                context.Document.FilePath);
+
+            string destinationPath = Path.Combine(context.Options.OutputPath, relativePath);
+
             // ReSharper disable once AssignNullToNotNullAttribute
-            File.Copy(
-                context.Document.FilePath,
-                Path.Combine(context.Options.OutputPath, Path.GetFileName(context.Document.FilePath)),
-                overwrite: true);
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+            File.Copy(context.Document.FilePath, destinationPath, overwrite: true);
+            // ----------------------------------------------------
 
             // translate the C# syntax tree to TypeScript
             var translator = new CSharpToTypeScriptTranslator();

@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
@@ -59,8 +58,7 @@ namespace Desalt.Core.Translation
                                 relativePathOrModuleName);
 
                             // remove the file extension
-                            relativePathOrModuleName = Path.GetFileNameWithoutExtension(relativePathOrModuleName) ??
-                                throw new InvalidOperationException("Something went wrong with path parsing");
+                            relativePathOrModuleName = PathUtil.ReplaceExtension(relativePathOrModuleName, "");
 
                             // TypeScript import paths can always use forward slashes
                             relativePathOrModuleName = relativePathOrModuleName.Replace("\\", "/");

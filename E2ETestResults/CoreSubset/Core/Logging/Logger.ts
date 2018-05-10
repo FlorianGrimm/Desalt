@@ -1,10 +1,10 @@
 import { ILogAppender } from './ILogAppender';
 
-import { MiscUtil } from './MiscUtil';
+import { MiscUtil } from '../Utility/MiscUtil';
 
 import 'mscorlib';
 
-import { ScriptEx } from './ScriptEx';
+import { ScriptEx } from '../../CoreSlim/ScriptEx';
 
 /**
  * The various levels of logging priority.

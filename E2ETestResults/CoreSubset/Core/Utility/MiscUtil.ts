@@ -4,9 +4,9 @@ import { tsConfig } from 'TypeDefs';
 
 import { _ } from 'Underscore';
 
-import { Utility } from './Utility';
+import { Utility } from '../../Bootstrap/Utility';
 
-import { WindowHelper } from './WindowHelper';
+import { WindowHelper } from '../../CoreSlim/WindowHelper';
 
 export enum PathnameKey {
   workbookName = 2,
