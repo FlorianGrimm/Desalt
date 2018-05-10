@@ -108,6 +108,26 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a PredefinedTypeSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
+        public override IEnumerable<IAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
+        {
+            // try to get the script name of the expression
+            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+
+            // if there's no symbol then just return an identifier
+            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            {
+                yield return Factory.Identifier(node.Keyword.Text);
+            }
+            else
+            {
+                yield return Factory.Identifier(scriptName);
+            }
+        }
+
+        /// <summary>
         /// Called when the visitor visits a IdentifierNameSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
