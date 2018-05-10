@@ -306,9 +306,12 @@ namespace Desalt.Core.Translation
 
         private ITsCallSignature TranslateCallSignature(
             ParameterListSyntax parameterListNode,
+            TypeParameterListSyntax typeParameterListNode = null,
             TypeSyntax returnTypeNode = null)
         {
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
+            ITsTypeParameters typeParameters = typeParameterListNode == null
+                ? Factory.TypeParameters()
+                : (ITsTypeParameters)Visit(typeParameterListNode).Single();
 
             ITsParameterList parameters = parameterListNode == null
                 ? Factory.ParameterList()

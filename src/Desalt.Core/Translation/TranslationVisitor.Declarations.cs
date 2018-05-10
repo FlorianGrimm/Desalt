@@ -196,7 +196,10 @@ namespace Desalt.Core.Translation
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
-            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList, node.ReturnType);
+            ITsCallSignature callSignature = TranslateCallSignature(
+                node.ParameterList,
+                node.TypeParameterList,
+                node.ReturnType);
 
             // see if the parameter list should be adjusted to accomodate[AlternateSignature] methods
             bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
