@@ -66,6 +66,17 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a ParenthesizedExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsParenthesizedExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        {
+            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsParenthesizedExpression translated = Factory.ParenthesizedExpression(expression);
+            yield return translated;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a CastExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsCastExpression"/>.</returns>
