@@ -170,6 +170,34 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a TypeParameterListSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTypeParameters"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeParameterList(TypeParameterListSyntax node)
+        {
+            var typeParameters = new List<ITsTypeParameter>();
+            foreach (TypeParameterSyntax typeParameterNode in node.Parameters)
+            {
+                var typeParameter = (ITsTypeParameter)Visit(typeParameterNode).Single();
+                typeParameters.Add(typeParameter);
+            }
+
+            ITsTypeParameters translated = Factory.TypeParameters(typeParameters.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TypeParameterSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTypeParameter"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeParameter(TypeParameterSyntax node)
+        {
+            ITsIdentifier typeName = Factory.Identifier(node.Identifier.Text);
+            ITsTypeParameter translated = Factory.TypeParameter(typeName);
+            yield return translated;
+        }
+
+        /// <summary>
         /// Translates an identifier used in a declaration (class, interface, method, etc.) by
         /// looking up the symbol and the associated script name.
         /// </summary>
