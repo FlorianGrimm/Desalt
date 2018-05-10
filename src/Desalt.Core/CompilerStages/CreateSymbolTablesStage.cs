@@ -40,7 +40,7 @@ namespace Desalt.Core.CompilerStages
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
-            // since all of the symbol tables will need references to types directly referenced in
+            // since most of the symbol tables will need references to types directly referenced in
             // the documents and types in referenced assemblies, compute them once and then pass them
             // into each symbol table
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
@@ -79,7 +79,12 @@ namespace Desalt.Core.CompilerStages
                         directlyReferencedExternalTypeSymbols,
                         indirectlyReferencedExternalTypeSymbols,
                         cancellationToken),
-                    cancellationToken)
+                    cancellationToken),
+
+                // create the alternate signature symbol table
+                Task.Run<object>(
+                    () => AlternateSignatureSymbolTable.Create(input, cancellationToken),
+                    cancellationToken),
             };
 
             await Task.WhenAll(tasks);
@@ -88,16 +93,23 @@ namespace Desalt.Core.CompilerStages
             var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
+            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;
+            var diagnostics = alternateSignatureTableCreateResult.Diagnostics;
+            var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
+
             // create new context objects with the symbol table
             var newContexts = input.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         importSymbolTable,
                         scriptNameSymbolTable,
-                        inlineCodeSymbolTable))
+                        inlineCodeSymbolTable,
+                        alternateSignatureSymbolTable))
                 .ToImmutableArray();
 
-            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(newContexts);
+            return new ExtendedResult<ImmutableArray<DocumentTranslationContextWithSymbolTables>>(
+                newContexts,
+                diagnostics);
         }
     }
 }

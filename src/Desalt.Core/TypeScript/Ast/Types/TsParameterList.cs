@@ -46,7 +46,9 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay =>
             RequiredParameters.ToElidedList() +
+            (RequiredParameters.Length > 0 && (OptionalParameters.Length > 0 || RestParameter != null) ? ", " : "") +
             OptionalParameters.ToElidedList() +
+            (OptionalParameters.Length > 0 && RestParameter != null ? ", " : "") +
             RestParameter?.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)

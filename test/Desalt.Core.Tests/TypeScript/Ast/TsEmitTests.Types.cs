@@ -293,9 +293,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                     optionalParameters: new ITsOptionalParameter[]
                     {
                         Factory.StringOptionalParameter(s_y, Factory.String("value")),
-                        Factory.BoundOptionalParameter(s_z, Factory.NumberType, Factory.Zero)
+                        Factory.BoundOptionalParameter(s_z, Factory.NumberType, Factory.Zero),
+                        Factory.BoundOptionalParameter(s_p, Factory.BooleanType),
+                        Factory.BoundOptionalParameter(Factory.Identifier("noType")),
                     }),
-                "x, y?: 'value', z: number = 0");
+                "x, y?: 'value', z: number = 0, p?: boolean, noType?");
         }
 
         [TestMethod]

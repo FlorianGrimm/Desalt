@@ -54,4 +54,15 @@ namespace Desalt.Core.TypeScript.Ast.Types
             ReturnType.EmitOptionalTypeAnnotation(emitter);
         }
     }
+
+    public static class CallSignatureExtensions
+    {
+        public static ITsCallSignature
+            WithParameters(this ITsCallSignature callSignature, ITsParameterList parameters)
+        {
+            return callSignature.Parameters.Equals(parameters)
+                ? callSignature
+                : new TsCallSignature(callSignature.TypeParameters, parameters, callSignature.ReturnType);
+        }
+    }
 }

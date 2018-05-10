@@ -183,8 +183,8 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Creates a union type of the form 'type1 | type2'.
         /// </summary>
-        public static ITsUnionType UnionType(ITsType type1, ITsType type2, params ITsType[] otherTypes) =>
-            new TsUnionOrIntersectionType(type1, type2, otherTypes, isUnion: true);
+        public static ITsUnionType UnionType(params ITsType[] types) =>
+            new TsUnionOrIntersectionType(types[0], types[1], types.Skip(2).ToArray(), isUnion: true);
 
         /// <summary>
         /// Creates an intersection type of the form 'type1 &amp; type2'.

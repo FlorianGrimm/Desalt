@@ -48,16 +48,40 @@ namespace Desalt.Core.TypeScript.Ast.Types
 
         public override string CodeDisplay =>
             $"{Modifier.OptionalCodeDisplay()}" +
-            $"{ParameterName}${ParameterType.OptionalTypeAnnotation()} = {Initializer}";
+            ParameterName +
+            (Initializer == null ? "?" : "") +
+            ParameterType.OptionalTypeAnnotation() +
+            (Initializer != null ? $" = {Initializer}" : "");
 
         protected override void EmitInternal(Emitter emitter)
         {
             Modifier.EmitOptional(emitter);
 
             ParameterName.Emit(emitter);
+            if (Initializer == null)
+            {
+                emitter.Write("?");
+            }
+
             ParameterType.EmitOptionalTypeAnnotation(emitter);
 
             Initializer.EmitOptionalAssignment(emitter);
+        }
+    }
+
+    public static class TsBoundOptionalParameterExtensions
+    {
+        public static ITsBoundOptionalParameter WithParameterType(
+            this ITsBoundOptionalParameter boundParameter,
+            ITsType value)
+        {
+            return boundParameter.ParameterType.Equals(value)
+                ? boundParameter
+                : new TsBoundOptionalParameter(
+                    boundParameter.ParameterName,
+                    value,
+                    boundParameter.Initializer,
+                    boundParameter.Modifier);
         }
     }
 }

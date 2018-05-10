@@ -47,6 +47,10 @@ namespace Desalt.Core.Tests.TestUtility
 
         public static string ProjectDir => Path.Combine("C:\\", ProjectName);
 
+        public string OutputPath =>
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Path.Combine(Path.GetDirectoryName(_workspace.CurrentSolution.Projects.Single().FilePath), "outputPath");
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -122,11 +126,7 @@ namespace Desalt.Core.Tests.TestUtility
             CompilerOptions options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            options = options ??
-                new CompilerOptions(Path.Combine(Path.GetDirectoryName(project.FilePath), "outputPath"));
-
+            options = options ?? new CompilerOptions(OutputPath);
             Document document = project.Documents.Single(doc => doc.Name == fileName);
 
             IExtendedResult<DocumentTranslationContext> result =
@@ -170,19 +170,25 @@ namespace Desalt.Core.Tests.TestUtility
                 directlyReferencedExternalTypeSymbols,
                 indirectlyReferencedExternalTypeSymbols);
 
+            // create the alternate signature symbol table
+            var result = AlternateSignatureSymbolTable.Create(contexts);
+            result.Diagnostics.Should().BeEmpty();
+            var alternateSignatureTable = result.Result;
+
             return contexts.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         importTable,
                         scriptNameTable,
-                        inlineCodeTable))
+                        inlineCodeTable,
+                        alternateSignatureTable))
                 .ToImmutableArray();
         }
 
         public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
-            string fileName,
+            string fileName = "File.cs",
             CompilerOptions options = null,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
         {
             var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
             DocumentTranslationContextWithSymbolTables thisContext =

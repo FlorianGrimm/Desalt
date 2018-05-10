@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
+    using Desalt.Core.TypeScript.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -191,21 +192,33 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList, node.ReturnType);
 
+            // see if the parameter list should be adjusted to accomodate[AlternateSignature] methods
+            bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
+                symbol,
+                callSignature.Parameters,
+                out ITsParameterList translatedParameterList);
+
+            if (adjustedParameters)
+            {
+                callSignature = callSignature.WithParameters(translatedParameterList);
+            }
+
             // if we're defining an interface, then we need to return a ITsMethodSignature
-            if (_semanticModel.GetDeclaredSymbol(node).ContainingType.IsInterfaceType())
+            if (symbol.ContainingType.IsInterfaceType())
             {
                 ITsMethodSignature methodSignature = Factory.MethodSignature(
                     functionName,
                     isOptional: false,
                     callSignature: callSignature);
                 methodSignature = AddDocumentationComment(methodSignature, node);
-                return methodSignature.ToSingleEnumerable();
+                yield return methodSignature;
+                yield break;
             }
 
             // a function body can be null in the case of an 'extern' declaration.
@@ -225,7 +238,7 @@ namespace Desalt.Core.Translation
                 functionBody?.Statements);
 
             methodDeclaration = AddDocumentationComment(methodDeclaration, node);
-            return methodDeclaration.ToSingleEnumerable();
+            yield return methodDeclaration;
         }
 
         /// <summary>
