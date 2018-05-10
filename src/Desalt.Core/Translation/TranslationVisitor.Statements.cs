@@ -13,6 +13,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Declarations;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
@@ -154,9 +156,21 @@ namespace Desalt.Core.Translation
 
             bool hasCatch = node.Catches.Count > 0;
             CatchClauseSyntax catchClause = node.Catches[0];
-            ITsIdentifier catchParameter = hasCatch && catchClause.Declaration != null
-                ? Factory.Identifier(catchClause.Declaration.Identifier.Text)
-                : null;
+            ITsIdentifier catchParameter = null;
+            if (hasCatch && catchClause.Declaration != null)
+            {
+                // C# can have `catch (Exception)` without an identifier, but we need one in
+                // TypeScript, so generate a placeholder if necessary
+                if (catchClause.Declaration.Identifier.IsKind(SyntaxKind.None))
+                {
+                    catchParameter = Factory.Identifier("e");
+                }
+                else
+                {
+                    catchParameter = Factory.Identifier(catchClause.Declaration.Identifier.Text);
+                }
+            }
+
             var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
 
             // translate the finally block if present
