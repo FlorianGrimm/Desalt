@@ -16,6 +16,36 @@ namespace Desalt.Core.Utility
     internal static class PathUtil
     {
         /// <summary>
+        /// Replaces the file extension and leaves the rest of the path intact.
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="extension">The new extension, with or without the leading period.</param>
+        /// <returns>The same path, but with the extension replaced.</returns>
+        public static string ReplaceExtension(string filePath, string extension)
+        {
+            // add the leading period if necessary
+            extension = extension?.Trim() ?? string.Empty;
+            if (extension.Length > 0 && extension[0] != '.')
+            {
+                extension = '.' + extension;
+            }
+
+            string newFilePath;
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                newFilePath = extension;
+            }
+            else
+            {
+                string directoryName = Path.GetDirectoryName(filePath) ?? string.Empty;
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+                newFilePath = Path.Combine(directoryName, fileNameWithoutExtension + extension);
+            }
+
+            return newFilePath;
+        }
+
+        /// <summary>
         /// Creates a relative path from one file or folder to another.
         /// </summary>
         /// <param name="fromPath">

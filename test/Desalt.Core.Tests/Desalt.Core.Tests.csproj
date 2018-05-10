@@ -189,6 +189,7 @@
     <Compile Include="TypeScript\Parsing\TsParserTests.Types.cs" />
     <Compile Include="TypeScript\Parsing\TsTokenReaderTests.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
+    <Compile Include="Utility\PathUtilTests.cs" />
     <Compile Include="Utility\PeekingTextReaderTests.cs" />
     <Compile Include="Utility\TextReaderLocationTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />
