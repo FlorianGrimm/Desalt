@@ -16,6 +16,9 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -400,6 +403,46 @@ class C
                 SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                 new KeyValuePair<string, string>("System.Script", "ss"),
                 new KeyValuePair<string, string>("System.Script.Eval(string s)", "eval"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_find_instantiated_versions_of_generic_methods()
+        {
+            const string code = @"
+using System;
+
+public static class ScriptEx
+{
+    public static T Value<T>(T a, T b)
+    {
+        return default(T);
+    }
+
+    public static void Main()
+    {
+        int x = ScriptEx.Value(1, 10);
+    }
+}
+";
+            using (var tempProject = await TempProject.CreateAsync(code))
+            {
+                var context = await tempProject.CreateContextForFileAsync();
+
+                var scriptNameTable = ScriptNameSymbolTable.Create(
+                    context.ToSingleEnumerable().ToImmutableArray(),
+                    ImmutableArray<ITypeSymbol>.Empty,
+                    ImmutableArray<INamedTypeSymbol>.Empty);
+
+                // get the method invocation symbol
+                var memberAccessSyntax = context.RootSyntax.DescendantNodes()
+                    .OfType<MemberAccessExpressionSyntax>()
+                    .Single();
+
+                var symbol = context.SemanticModel.GetSymbolInfo(memberAccessSyntax).Symbol;
+
+                scriptNameTable.TryGetValue(symbol, out string scriptName).Should().BeTrue();
+                scriptName.Should().Be("value");
+            }
         }
     }
 }

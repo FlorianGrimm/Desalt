@@ -61,21 +61,9 @@ namespace Desalt.Core.Translation
         {
             get
             {
-                // look in the document symbols first
-                if (!_documentSymbols.TryGetValue(symbol, out T value))
+                if (!TryGetValue(symbol, out T value))
                 {
-                    // then in the directly-referenced symbols
-                    if (!_directlyReferencedExternalSymbols.TryGetValue(symbol, out value))
-                    {
-                        // then in the indirectly-referenced symbols
-                        if (!_indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue))
-                        {
-                            throw new KeyNotFoundException(
-                                $"There is no symbol '{symbol}' defined in the symbol table");
-                        }
-
-                        value = lazyValue.Value;
-                    }
+                    throw new KeyNotFoundException($"There is no symbol '{symbol}' defined in the symbol table");
                 }
 
                 return value;
@@ -112,14 +100,7 @@ namespace Desalt.Core.Translation
         /// specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol to look up.</param>
-        public bool HasSymbol(ISymbol symbol)
-        {
-            return symbol != null &&
-                (_documentSymbols.TryGetValue(symbol, out _) ||
-                    _directlyReferencedExternalSymbols.TryGetValue(symbol, out _) ||
-                    _indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazy) &&
-                    lazy.Value != null);
-        }
+        public bool HasSymbol(ISymbol symbol) => TryGetValue(symbol, out _);
 
         /// <summary>
         /// Attempts to get the value associated with the specified key.
@@ -131,10 +112,38 @@ namespace Desalt.Core.Translation
         /// <returns>true if the symbol was found; otherwise, false.</returns>
         public bool TryGetValue(ISymbol symbol, out T value)
         {
-            if (HasSymbol(symbol))
+            if (symbol == null)
             {
-                value = this[symbol];
+                throw new ArgumentNullException(nameof(symbol));
+            }
+
+            // look in the document symbols first
+            if (_documentSymbols.TryGetValue(symbol, out value))
+            {
                 return true;
+            }
+
+            // then in the directly-referenced symbols
+            if (_directlyReferencedExternalSymbols.TryGetValue(symbol, out value))
+            {
+                return true;
+            }
+
+            // then in the indirectly-referenced symbols
+            if (_indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+                lazyValue.Value != null)
+            {
+                value = lazyValue.Value;
+                return true;
+            }
+
+            // then try the original definition, which is the generic version of a symbol (for
+            // example, if the symbol is a method `Value<int>(int x)`, then the original definition
+            // is `Value<T>(T x)`
+            if (symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol))
+            {
+                // ReSharper disable once TailRecursiveCall
+                return TryGetValue(symbol.OriginalDefinition, out value);
             }
 
             value = default(T);
