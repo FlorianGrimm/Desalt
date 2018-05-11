@@ -52,7 +52,8 @@ namespace Desalt.Core.CompilerStages
                         "Logger.cs",
                         "MiscUtil.cs",
                         "ScriptEx.cs",
-                        "Utility.cs"))
+                        "Utility.cs",
+                        "WindowHelper.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)
                 .Select(context => TranslateDocument(context, cancellationToken))
