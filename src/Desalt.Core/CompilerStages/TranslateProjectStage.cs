@@ -51,7 +51,8 @@ namespace Desalt.Core.CompilerStages
                         "ILogAppender.cs",
                         "Logger.cs",
                         "MiscUtil.cs",
-                        "ScriptEx.cs"))
+                        "ScriptEx.cs",
+                        "Utility.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)
                 .Select(context => TranslateDocument(context, cancellationToken))
