@@ -533,6 +533,7 @@ namespace Desalt.Core.Translation
                     return TsBinaryOperator.LogicalAnd;
 
                 case SyntaxKind.BarBarToken:
+                case SyntaxKind.QuestionQuestionToken:
                     return TsBinaryOperator.LogicalOr;
 
                 default:
