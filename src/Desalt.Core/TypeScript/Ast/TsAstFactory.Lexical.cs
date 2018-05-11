@@ -14,6 +14,16 @@ namespace Desalt.Core.TypeScript.Ast
     public static partial class TsAstFactory
     {
         /// <summary>
+        /// Represents a newline whitespace trivia node.
+        /// </summary>
+        public static readonly ITsWhitespaceTrivia Newline = TsWhitespaceTrivia.Newline;
+
+        /// <summary>
+        /// Creates whitespace that can appear before or after another <see cref="IAstNode"/>.
+        /// </summary>
+        public static ITsWhitespaceTrivia Whitespace(string text) => TsWhitespaceTrivia.Create(text);
+
+        /// <summary>
         /// Creates a TypeScript single-line comment of the form '// comment'.
         /// </summary>
         public static ITsSingleLineComment SingleLineComment(

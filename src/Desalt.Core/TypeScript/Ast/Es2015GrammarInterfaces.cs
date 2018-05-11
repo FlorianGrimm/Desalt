@@ -50,6 +50,15 @@ namespace Desalt.Core.TypeScript.Ast
      */
 
     /// <summary>
+    /// Represents whitespace that can appear before or after another <see cref="IAstNode"/>.
+    /// </summary>
+    public interface ITsWhitespaceTrivia : IAstTriviaNode
+    {
+        string Text { get; }
+        bool IsNewline { get; }
+    }
+
+    /// <summary>
     /// Represents a TypeScript multi-line comment of the form '/* lines */'.
     /// </summary>
     public interface ITsMultiLineComment : IAstTriviaNode

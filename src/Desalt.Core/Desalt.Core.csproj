@@ -255,6 +255,7 @@
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocTagNames.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsWhitespaceTrivia.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsContinueOrBreakStatement.cs" />

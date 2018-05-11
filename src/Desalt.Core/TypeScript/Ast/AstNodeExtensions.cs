@@ -84,5 +84,15 @@ namespace Desalt.Core.TypeScript.Ast
             AstNode classNode = node as AstNode ?? throw new InvalidCastException();
             return (T)(object)classNode.WithLeadingTrivia<AstNode>(triviaNodes);
         }
+
+        /// <summary>
+        /// Creates a copy of this node with the specified leading trivia.
+        /// </summary>
+        public static T WithTrailingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes)
+            where T : IAstNode
+        {
+            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithTrailingTrivia<AstNode>(triviaNodes);
+        }
     }
 }
