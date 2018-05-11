@@ -140,6 +140,21 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        //// ===========================================================================================================
+        //// Throw, Try/Catch, and Using Statements
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a ThrowStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsThrowStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitThrowStatement(ThrowStatementSyntax node)
+        {
+            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsThrowStatement translated = Factory.Throw(expression);
+            yield return translated;
+        }
+
         /// <summary>
         /// Called when the visitor visits a TryStatementSyntax node.
         /// </summary>
