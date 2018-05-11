@@ -49,6 +49,7 @@ namespace Desalt.Core.CompilerStages
                 .Where(
                     context => context.Document.Name.IsOneOf(
                         "ILogAppender.cs",
+                        "LayoutMetrics.cs",
                         "Logger.cs",
                         "MiscUtil.cs",
                         "ScriptEx.cs",
