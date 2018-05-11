@@ -40,7 +40,20 @@ namespace Desalt.Core.Translation
             switch (node.Kind())
             {
                 case SyntaxKind.StringLiteralExpression:
-                    return Factory.String(node.Token.ValueText).ToSingleEnumerable();
+                    // use the raw text since C# strings are escaped the same as JavaScript strings
+                    string str = node.Token.Text;
+                    bool isVerbatim = str.StartsWith("@", StringComparison.Ordinal);
+
+                    // trim the leading @ and quotes
+                    str = str.TrimStart('@', '"').TrimEnd('"');
+
+                    // for verbatim strings, we need to add the escape characters back in
+                    if (isVerbatim)
+                    {
+                        str = str.Replace(@"\", @"\\").Replace("\"\"", @"\""");
+                    }
+
+                    return Factory.String(str).ToSingleEnumerable();
 
                 case SyntaxKind.CharacterLiteralExpression:
                     return Factory.String(node.Token.ValueText).ToSingleEnumerable();

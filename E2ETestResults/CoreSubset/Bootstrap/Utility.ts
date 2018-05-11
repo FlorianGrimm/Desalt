@@ -23,11 +23,11 @@ export enum EmbedMode {
 export class Utility {
   private static readonly safari7ClientHeightErrorPixels: number = 20;
 
-  private static readonly regexNotwhite: RegExp = new RegExp('\s');
+  private static readonly regexNotwhite: RegExp = new RegExp('\\s');
 
-  private static readonly regexTrimLeft: RegExp = new RegExp('^\s+');
+  private static readonly regexTrimLeft: RegExp = new RegExp('^\\s+');
 
-  private static readonly regexTrimRight: RegExp = new RegExp('\s+$');
+  private static readonly regexTrimRight: RegExp = new RegExp('\\s+$');
 
   private static readonly embedModeVar: EmbedMode;
 
@@ -36,9 +36,9 @@ export class Utility {
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
   public static __ctor() {
-    if (Utility.regexNotwhite.test('\xA0')) {
-      Utility.regexTrimLeft = new RegExp('^[\s\xA0]+');
-      Utility.regexTrimRight = new RegExp('[\s\xA0]+$');
+    if (Utility.regexNotwhite.test('\\xA0')) {
+      Utility.regexTrimLeft = new RegExp('^[\\s\\xA0]+');
+      Utility.regexTrimRight = new RegExp('[\\s\\xA0]+$');
     }
     Utility.embedModeVar = Utility.calculateEmbedMode();
   }
@@ -179,7 +179,7 @@ export class Utility {
       let bufferLength: number = buffer.length;
       while (byteOffset < bufferLength) {
         let newData: string = buffer.substr(byteOffset);
-        let regex: RegExp = new RegExp('^(\d+);');
+        let regex: RegExp = new RegExp('^(\\d+);');
         let match: string[] = newData.match(regex);
         if (!ss.isValue(match)) {
           return;
