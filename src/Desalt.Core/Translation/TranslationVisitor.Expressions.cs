@@ -254,7 +254,12 @@ namespace Desalt.Core.Translation
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
             // see if there's an [InlineCode] entry for the method invocation
-            if (_inlineCodeTranslator.TryTranslate(node.Expression, leftSide, arguments, out IAstNode translatedNode))
+            if (_inlineCodeTranslator.TryTranslate(
+                node.Expression,
+                leftSide,
+                arguments,
+                _diagnostics,
+                out IAstNode translatedNode))
             {
                 yield return translatedNode;
             }
@@ -275,7 +280,12 @@ namespace Desalt.Core.Translation
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
             // see if there's an [InlineCode] entry for the ctor invocation
-            if (_inlineCodeTranslator.TryTranslate(node, leftSide, arguments, out IAstNode translatedNode))
+            if (_inlineCodeTranslator.TryTranslate(
+                node,
+                leftSide,
+                arguments,
+                _diagnostics,
+                out IAstNode translatedNode))
             {
                 yield return translatedNode;
             }

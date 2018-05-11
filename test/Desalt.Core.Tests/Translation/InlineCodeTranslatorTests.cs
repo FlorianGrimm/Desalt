@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Emit;
@@ -16,6 +17,7 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Core.TypeScript.Ast.TsAstFactory;
@@ -60,9 +62,17 @@ class C
                     context.InlineCodeSymbolTable,
                     context.ScriptNameSymbolTable);
 
-                translator.TryTranslate(methodSyntax, translatedLeftSide, translatedArgumentList, out IAstNode result)
+                var diagnostics = new List<Diagnostic>();
+                translator.TryTranslate(
+                        methodSyntax,
+                        translatedLeftSide,
+                        translatedArgumentList,
+                        diagnostics,
+                        out IAstNode result)
                     .Should()
                     .BeTrue(because: "there should be an [InlineCode] translation");
+
+                diagnostics.Should().BeEmpty();
 
                 // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
                 string translated = result.EmitAsString(EmitOptions.UnixSpaces);
