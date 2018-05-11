@@ -39,6 +39,7 @@ namespace Desalt.Core.Translation
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
+        private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         //// ===========================================================================================================
         //// Constructors

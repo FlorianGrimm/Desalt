@@ -114,5 +114,155 @@ class C {
 }
 ");
         }
+
+        [TestMethod]
+        public async Task Translate_a_single_using_block_with_a_declaration()
+        {
+            await AssertTranslation(
+                @"
+class C : IDisposable
+{
+    void Method()
+    {
+        int i = 0;
+
+        using (var c1 = new C())
+        {
+            i++;
+        }
+    }
+
+    public void Dispose() { }
+}
+",
+                @"
+class C {
+  private method(): void {
+    let i: number = 0;
+    {
+      const c1: C = new C();
+      try {
+        i++;
+      } finally {
+        if (c1) {
+          c1.dispose();
+        }
+      }
+    }
+  }
+
+  public dispose(): void { }
+}
+");
+        }
+
+        [TestMethod]
+        public async Task Translate_a_single_using_block_with_an_expression()
+        {
+            await AssertTranslation(
+                @"
+class C : IDisposable
+{
+    void Method()
+    {
+        int i = 0;
+        var c1 = new C();
+
+        using (c1)
+        {
+            i++;
+        }
+    }
+
+    public void Dispose() { }
+}
+",
+                @"
+class C {
+  private method(): void {
+    let i: number = 0;
+    let c1: C = new C();
+    {
+      const $using1: C = c1;
+      try {
+        i++;
+      } finally {
+        if ($using1) {
+          $using1.dispose();
+        }
+      }
+    }
+  }
+
+  public dispose(): void { }
+}
+");
+        }
+
+        [TestMethod]
+        public async Task Translate_nested_using_blocks()
+        {
+            await AssertTranslation(
+                @"
+class C : IDisposable
+{
+    void Method()
+    {
+        int i = 0;
+        var c1 = new C();
+
+        using (c1)
+        using (var c2 = new C())
+        using (c1.ReturnSelf())
+        {
+            i++;
+        }
+    }
+
+    public void Dispose() { }
+    public C ReturnSelf() { return this; }
+}
+",
+                @"
+class C {
+  private method(): void {
+    let i: number = 0;
+    let c1: C = new C();
+    {
+      const $using1: C = c1;
+      try {
+        const c2: C = new C();
+        try {
+          const $using2: C = c1.returnSelf();
+          try {
+            i++;
+          } finally {
+            if ($using2) {
+              $using2.dispose();
+            }
+          }
+        }
+         finally {
+          if (c2) {
+            c2.dispose();
+          }
+        }
+      }
+       finally {
+        if ($using1) {
+          $using1.dispose();
+        }
+      }
+    }
+  }
+
+  public dispose(): void { }
+
+  public returnSelf(): C {
+    return this;
+  }
+}
+");
+        }
     }
 }

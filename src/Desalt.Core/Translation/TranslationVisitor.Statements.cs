@@ -199,6 +199,141 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a UsingStatementSyntax node.
+        /// </summary>
+        /// <returns>A <see cref="ITsBlockStatement"/> representing a wrapped try/finally block.</returns>
+        public override IEnumerable<IAstNode> VisitUsingStatement(UsingStatementSyntax node)
+        {
+            var statements = new List<ITsStatementListItem>();
+            string reservedTemporaryVariable = null;
+            ITsIdentifier variableNameIdentifier;
+
+            // Case 1: when there's a declaration
+            // ----------------------------------
+            // C#:
+            // using (var c = new C()) {}
+            //
+            // TypeScript:
+            // {
+            //   const c = new C();
+            //   try {
+            //   } finally {
+            //     if (c) {
+            //       c.dispose();
+            //     }
+            //   }
+            // }
+            if (node.Declaration != null)
+            {
+                // translate the declaration
+                var declaration = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+                declaration = declaration.WithIsConst(true);
+
+                // get the type of the declaration
+                ITypeSymbol typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
+                ITsType declarationType = typeSymbol == null
+                    ? null
+                    : _typeTranslator.TranslateSymbol(
+                        typeSymbol,
+                        _typesToImport,
+                        _diagnostics,
+                        node.Declaration.Type.GetLocation);
+
+                // fixup all of the declarations to add the type
+                if (declarationType != null)
+                {
+                    declaration = declaration.WithDeclarations(
+                        declaration.Declarations.Cast<ITsSimpleLexicalBinding>()
+                            .Select(binding => binding.WithVariableType(declarationType)));
+                }
+
+                statements.Add(declaration);
+
+                variableNameIdentifier = declaration.Declarations.Cast<ITsSimpleLexicalBinding>().First().VariableName;
+            }
+
+            // Case 2: when there's an expression
+            // ----------------------------------
+            // C#:
+            // using (c.GetDipose()) {}
+            //
+            // TypeScript:
+            // {
+            //   const $using1 = c.getDispose();
+            //   try {
+            //   } finally {
+            //     if ($using1) {
+            //       $using1.dispose();
+            //     }
+            //   }
+            // }
+            else
+            {
+                // translate the expression
+                var expression = (ITsExpression)Visit(node.Expression).Single();
+
+                // try to find the type of the expression
+                ITypeSymbol expressionTypeSymbol =
+                    _semanticModel.GetTypeInfo(node.Expression, _cancellationToken).ConvertedType;
+
+                ITsType variableType = expressionTypeSymbol == null
+                    ? null
+                    : _typeTranslator.TranslateSymbol(
+                        expressionTypeSymbol,
+                        _typesToImport,
+                        _diagnostics,
+                        node.Expression.GetLocation);
+
+                // create a temporary variable name to hold the expression
+                reservedTemporaryVariable = _temporaryVariableAllocator.Reserve("$using");
+                variableNameIdentifier = Factory.Identifier(reservedTemporaryVariable);
+
+                // assign the expression to the temporary variable
+                ITsLexicalDeclaration declaration = Factory.LexicalDeclaration(
+                    isConst: true,
+                    declarations: new ITsLexicalBinding[]
+                    {
+                        Factory.SimpleLexicalBinding(variableNameIdentifier, variableType, expression)
+                    });
+
+                statements.Add(declaration);
+            }
+
+            // create the try block, which is the using block
+            var usingBlock = (ITsStatement)Visit(node.Statement).Single();
+            if (usingBlock is ITsBlockStatement tryBlock)
+            {
+                // remove any trailing newlines
+                tryBlock = tryBlock.WithTrailingTrivia(new IAstTriviaNode[0]);
+            }
+            else
+            {
+                tryBlock = Factory.Block(usingBlock);
+            }
+
+            // create the finally block, which disposes the object
+            ITsBlockStatement finallyBlock = Factory.Block(
+                Factory.IfStatement(
+                    variableNameIdentifier,
+                    Factory.Block(Factory.Call(Factory.MemberDot(variableNameIdentifier, "dispose")).ToStatement())));
+
+            // create the try/finally statement
+            var tryFinally = Factory.TryFinally(tryBlock, finallyBlock);
+            statements.Add(tryFinally);
+
+            // wrap the declaration inside of a block so that scoping will be correct
+            ITsBlockStatement translated = Factory.Block(statements.ToArray()).WithTrailingTrivia(Factory.Newline);
+
+            // return the temporary variable to the allocator
+            if (reservedTemporaryVariable != null)
+            {
+                _temporaryVariableAllocator.Return(reservedTemporaryVariable);
+            }
+
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Loops
         //// ===========================================================================================================
