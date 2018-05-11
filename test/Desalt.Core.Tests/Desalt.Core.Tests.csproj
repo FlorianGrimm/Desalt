@@ -167,6 +167,7 @@
     <Compile Include="Translation\InlineCodeSymbolTableTests.cs" />
     <Compile Include="Translation\InlineCodeTranslatorTests.cs" />
     <Compile Include="Translation\ScriptNameSymbolTableTests.cs" />
+    <Compile Include="Translation\TemporaryVariableAllocatorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Expressions.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />

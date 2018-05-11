@@ -166,6 +166,7 @@
     <Compile Include="Translation\SymbolTable.cs" />
     <Compile Include="Translation\SymbolTableDiscoveryKind.cs" />
     <Compile Include="Translation\SymbolTableUtils.cs" />
+    <Compile Include="Translation\TemporaryVariableAllocator.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
