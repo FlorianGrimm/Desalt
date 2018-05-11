@@ -200,7 +200,12 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
 
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            string scriptName = _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
+
+            // get the script name - the symbol can be null if we're inside a dynamic scope since all
+            // bets are off with the type checking
+            string scriptName = symbol == null
+                ? node.Name.Identifier.Text
+                : _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
 
             ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
             yield return translated;
