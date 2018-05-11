@@ -295,7 +295,7 @@ export class Logger {
       Logger.filterByName('.*', LoggerLevel.all);
     }
     for (const logParam of logParams) {
-      let logVals: string[] = logParam.split(string.fromCharCode('\':\''));
+      let logVals: string[] = logParam.split(string.fromCharCode(':'));
       let level: LoggerLevel = LoggerLevel.debug;
       if (logVals.length > 0 && ss.isValue(logVals[1])) {
         let key: string = logVals[1].toLowerCase();

@@ -40,10 +40,10 @@ namespace Desalt.Core.Translation
             switch (node.Kind())
             {
                 case SyntaxKind.StringLiteralExpression:
-                    return Factory.String(node.Token.Text.Trim('"')).ToSingleEnumerable();
+                    return Factory.String(node.Token.ValueText).ToSingleEnumerable();
 
                 case SyntaxKind.CharacterLiteralExpression:
-                    return Factory.String(node.Token.Text).ToSingleEnumerable();
+                    return Factory.String(node.Token.ValueText).ToSingleEnumerable();
 
                 case SyntaxKind.NumericLiteralExpression:
                     return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)

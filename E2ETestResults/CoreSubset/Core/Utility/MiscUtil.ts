@@ -102,11 +102,11 @@ export class MiscUtil {
         usernameValidChars[s] = s;
       }
     };
-    addCodes('\'a\'', '\'z\'');
-    addCodes('\'A\'', '\'Z\'');
-    addCodes('\'0\'', '\'9\'');
-    addCodes('\'_\'', '\'_\'');
-    addCodes('\'-\'', '\'-\'');
+    addCodes('a', 'z');
+    addCodes('A', 'Z');
+    addCodes('0', '9');
+    addCodes('_', '_');
+    addCodes('-', '-');
     valueToEncode = MiscUtil.percentEncode(valueToEncode, usernameValidChars);
     valueToEncode = MiscUtil.percentEncode(valueToEncode, null);
     return valueToEncode;
@@ -187,7 +187,7 @@ export class MiscUtil {
    * @returns truthiness, or defaultIfMissing if the string is null or empty
    */
   public static toBoolean(value: string, defaultIfMissing: boolean): boolean {
-    let positiveRegex: RegExp = new RegExp('@"^(yes|y|true|t|1)$', 'i');
+    let positiveRegex: RegExp = new RegExp('^(yes|y|true|t|1)$', 'i');
     if (MiscUtil.isNullOrEmpty(value)) {
       return defaultIfMissing;
     }
