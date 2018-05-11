@@ -271,6 +271,26 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a ArrayCreationExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
+        public override IEnumerable<IAstNode> VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
+        {
+            var arrayElements = Visit(node.Initializer).Cast<ITsExpression>();
+            ITsArrayLiteral translated = Factory.Array(arrayElements.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a InitializerExpressionSyntax node.
+        /// </summary>
+        /// <returns>An enumerable of <see cref="ITsExpression"/>.</returns>
+        public override IEnumerable<IAstNode> VisitInitializerExpression(InitializerExpressionSyntax node)
+        {
+            return node.Expressions.SelectMany(Visit);
+        }
+
+        /// <summary>
         /// Called when the visitor visits a ObjectCreationExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
