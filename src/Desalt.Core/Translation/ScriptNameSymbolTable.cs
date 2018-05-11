@@ -126,7 +126,7 @@ namespace Desalt.Core.Translation
             {
                 scriptName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
                     ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
-                    : (FindScriptName(typeSymbol) ?? typeSymbol.Name);
+                    : FindScriptName(typeSymbol) ?? typeSymbol.Name;
             }
             else
             {

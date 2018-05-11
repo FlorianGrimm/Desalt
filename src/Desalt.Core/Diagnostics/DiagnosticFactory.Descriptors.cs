@@ -62,7 +62,8 @@ namespace Desalt.Core.Diagnostics
             [Warning(
                 1006,
                 "Unstructured XML text not supported",
-                "Unstructured text within XML documentation comments is not currently supported. Add it to a <remarks> element. Text: '{0}'",
+                "Unstructured text within XML documentation comments is not currently supported. Add it to a " +
+                "<remarks> element. Text: '{0}'",
                 WarningLevel.Minor)]
             UnstructuredXmlTextNotSupported,
 
@@ -116,10 +117,16 @@ namespace Desalt.Core.Diagnostics
             [Error(
                 1014,
                 "Overloads with [AlternateSignatue] not supported",
-                "Method '{0}' is an overload, but also has one or more [AlternateSignature] methods.",
+                "Method '{0}' is an overload, but also has one or more [AlternateSignature] methods",
                 description: "Change the original source to remove the overloaded method or remove the " +
                 "[AlternateSignature] attribute")]
             OverloadsWithAlternateSignatureNotSupported,
+
+            [Error(1015, "Unknown type reference", "Type '{0}' is not a known type reference")]
+            UnknownTypeReference,
+
+            [Error(1016, "[InlineCode] parsing error", "Error parsing inline code '{0}' for '{1}': {2}")]
+            InlineCodeParsingError,
         }
 
         //// ===========================================================================================================
@@ -289,5 +296,28 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         public static Diagnostic OverloadsWithAlternateSignatureNotSupported(string methodName, Location location) =>
             Create(DiagnosticId.OverloadsWithAlternateSignatureNotSupported, location, methodName);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Type '{0}' is not a known type reference".
+        /// </summary>
+        public static Diagnostic UnknownTypeReference(string typeName, Location location = null) =>
+            Create(DiagnosticId.UnknownTypeReference, location ?? Location.None, typeName);
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Error parsing inline code '{0}' for '{1}': {2}".
+        /// </summary>
+        /// <param name="inlineCode">The [InlineCode] that has an error.</param>
+        /// <param name="symbolName">The symbol containing the [InlineCode] attribute.</param>
+        /// <param name="errorMessage">Details about the parsing error.</param>
+        /// <param name="location">An optional associated location in the source code.</param>
+        /// <returns></returns>
+        public static Diagnostic InlineCodeParsingError(
+            string inlineCode,
+            string symbolName,
+            string errorMessage,
+            Location location)
+        {
+            return Create(DiagnosticId.InlineCodeParsingError, location, inlineCode, symbolName, errorMessage);
+        }
     }
 }

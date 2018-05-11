@@ -167,6 +167,7 @@
     <Compile Include="Translation\InlineCodeSymbolTableTests.cs" />
     <Compile Include="Translation\InlineCodeTranslatorTests.cs" />
     <Compile Include="Translation\ScriptNameSymbolTableTests.cs" />
+    <Compile Include="Translation\TemporaryVariableAllocatorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Expressions.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="TypeScript\Parsing\TsParserTests.Types.cs" />
     <Compile Include="TypeScript\Parsing\TsTokenReaderTests.cs" />
     <Compile Include="Utility\IndentedTextWriterTests.cs" />
+    <Compile Include="Utility\PathUtilTests.cs" />
     <Compile Include="Utility\PeekingTextReaderTests.cs" />
     <Compile Include="Utility\TextReaderLocationTests.cs" />
     <Compile Include="Utility\UnicodeStringStreamTests.cs" />

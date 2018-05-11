@@ -8,8 +8,10 @@
 namespace Desalt.Core.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;
@@ -76,6 +78,7 @@ namespace Desalt.Core.Translation
         /// <param name="translatedArgumentList">
         /// The translated argument list associated with this method.
         /// </param>
+        /// <param name="diagnostics">A collection of diagnostics to add to for any errors.</param>
         /// <param name="translatedNode">
         /// The translated TypeScript code or null if no translation is possible (an error condition).
         /// </param>
@@ -86,6 +89,7 @@ namespace Desalt.Core.Translation
             ExpressionSyntax methodExpressionSyntax,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
+            ICollection<Diagnostic> diagnostics,
             out IAstNode translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
@@ -96,7 +100,8 @@ namespace Desalt.Core.Translation
                     methodExpressionSyntax,
                     methodSymbol,
                     translatedLeftSide,
-                    translatedArgumentList);
+                    translatedArgumentList,
+                    diagnostics);
 
                 translatedNode = Translate(context);
                 return true;
@@ -125,7 +130,7 @@ namespace Desalt.Core.Translation
                     int read = reader.Read();
                     if (read != expected)
                     {
-                        throw context.CreateParseException($"Expected to read '{expected}'.");
+                        context.CreateParseError($"Expected to read '{expected}'.");
                     }
 
                     reader.SkipWhitespace();
@@ -193,8 +198,12 @@ namespace Desalt.Core.Translation
 
             // find the translated parameter and use it for substitution
             int index = FindIndexOfParameter(parameterName, context);
-            var translatedArgument = context.TranslatedArgumentList.Arguments[index];
+            if (index < 0)
+            {
+                return parameterName;
+            }
 
+            var translatedArgument = context.TranslatedArgumentList.Arguments[index];
             return translatedArgument.EmitAsString();
         }
 
@@ -205,7 +214,8 @@ namespace Desalt.Core.Translation
 
             if (typeSyntax == null)
             {
-                throw context.CreateParseException($"Cannot parse '{fullTypeName}' as a type name");
+                context.CreateParseError($"Cannot parse '{fullTypeName}' as a type name");
+                return fullTypeName;
             }
 
             ITypeSymbol typeSymbol = _semanticModel.GetSpeculativeTypeInfo(
@@ -216,7 +226,8 @@ namespace Desalt.Core.Translation
 
             if (typeSymbol == null || typeSymbol is IErrorTypeSymbol)
             {
-                throw context.CreateParseException($"Cannot resolve '{fullTypeName}' to a single type symbol");
+                context.CreateParseError($"Cannot resolve '{fullTypeName}' to a single type symbol");
+                return fullTypeName;
             }
 
             if (_scriptNameSymbolTable.TryGetValue(typeSymbol, out string scriptName))
@@ -224,18 +235,24 @@ namespace Desalt.Core.Translation
                 return scriptName;
             }
 
-            throw context.CreateParseException($"Cannot find '{typeSymbol}' in the ScriptName symbol table");
+            context.CreateParseError($"Cannot find '{typeSymbol}' in the ScriptName symbol table");
+            return fullTypeName;
         }
 
         private static string ExpandParams(string parameterName, Context context)
         {
             // find the index of the translated param
             int index = FindIndexOfParameter(parameterName, context);
+            if (index < 0)
+            {
+                return parameterName;
+            }
 
             // a parameter of the form '*rest' means to expand the parameter array
             if (!context.MethodSymbol.Parameters[index].IsParams)
             {
-                throw context.CreateParseException($"Parameter '{parameterName}' is not a 'params' parameter.");
+                context.CreateParseError($"Parameter '{parameterName}' is not a 'params' parameter.");
+                return parameterName;
             }
 
             var builder = new StringBuilder();
@@ -259,7 +276,8 @@ namespace Desalt.Core.Translation
                 context.MethodSymbol.Parameters.FirstOrDefault(parameter => parameter.Name == parameterName);
             if (foundParameter == null)
             {
-                throw context.CreateParseException($"Cannot find parameter '{parameterName}' in the method");
+                context.CreateParseError($"Cannot find parameter '{parameterName}' in the method");
+                return -1;
             }
 
             int index = context.MethodSymbol.Parameters.IndexOf(foundParameter);
@@ -267,8 +285,9 @@ namespace Desalt.Core.Translation
             // find the translated parameter and use it for substitution
             if (index >= context.TranslatedArgumentList.Arguments.Length)
             {
-                throw context.CreateParseException(
+                context.CreateParseError(
                     $"Cannot find parameter '{parameterName}' in the translated argument list '{context.TranslatedArgumentList.EmitAsString()}'");
+                return -1;
             }
 
             return index;
@@ -285,7 +304,8 @@ namespace Desalt.Core.Translation
                 ExpressionSyntax methodExpressionSyntax,
                 IMethodSymbol methodSymbol,
                 ITsExpression translatedLeftSide,
-                ITsArgumentList translatedArgumentList)
+                ITsArgumentList translatedArgumentList,
+                ICollection<Diagnostic> diagnostics)
             {
                 InlineCode = inlineCode ?? throw new ArgumentNullException(nameof(inlineCode));
                 MethodExpressionSyntax = methodExpressionSyntax ??
@@ -295,6 +315,8 @@ namespace Desalt.Core.Translation
                 TranslatedLeftSide = translatedLeftSide ?? throw new ArgumentNullException(nameof(translatedLeftSide));
                 TranslatedArgumentList = translatedArgumentList ??
                     throw new ArgumentNullException(nameof(translatedArgumentList));
+
+                Diagnostics = diagnostics ?? throw new ArgumentNullException(nameof(diagnostics));
             }
 
             public string InlineCode { get; }
@@ -302,11 +324,16 @@ namespace Desalt.Core.Translation
             public IMethodSymbol MethodSymbol { get; }
             public ITsExpression TranslatedLeftSide { get; }
             public ITsArgumentList TranslatedArgumentList { get; }
+            private ICollection<Diagnostic> Diagnostics { get; }
 
-            public Exception CreateParseException(string message)
+            public void CreateParseError(string message)
             {
-                return new InvalidOperationException(
-                    $"Error parsing inline code '{InlineCode}' for '{SymbolTableUtils.KeyFromSymbol(MethodSymbol)}': {message}");
+                Diagnostics.Add(
+                    DiagnosticFactory.InlineCodeParsingError(
+                        InlineCode,
+                        SymbolTableUtils.KeyFromSymbol(MethodSymbol),
+                        message,
+                        MethodExpressionSyntax.GetLocation()));
             }
         }
     }

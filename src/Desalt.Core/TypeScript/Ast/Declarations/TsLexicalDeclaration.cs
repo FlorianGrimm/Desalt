@@ -53,4 +53,27 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             emitter.WriteLine(";");
         }
     }
+
+    public static class TsLexicalDeclarationExtensions
+    {
+        public static ITsLexicalDeclaration WithIsConst(this ITsLexicalDeclaration declaration, bool value)
+        {
+            return declaration.IsConst == value
+                ? declaration
+                : new TsLexicalDeclaration(value, declaration.Declarations);
+        }
+
+        public static ITsLexicalDeclaration WithDeclarations(
+            this ITsLexicalDeclaration declaration,
+            IEnumerable<ITsLexicalBinding> value)
+        {
+            var valueAsImmutableArray = value?.ToImmutableArray() ?? ImmutableArray<ITsLexicalBinding>.Empty;
+            if (declaration.Declarations.Equals(valueAsImmutableArray))
+            {
+                return declaration;
+            }
+
+            return new TsLexicalDeclaration(declaration.IsConst, valueAsImmutableArray);
+        }
+    }
 }

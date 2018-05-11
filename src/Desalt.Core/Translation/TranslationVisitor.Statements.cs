@@ -13,6 +13,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Declarations;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
@@ -67,7 +69,11 @@ namespace Desalt.Core.Translation
 
             // get the type of all of the declarations
             var typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
-            ITsType type = _typeTranslator.TranslateSymbol(typeSymbol, _typesToImport);
+            ITsType type = _typeTranslator.TranslateSymbol(
+                typeSymbol,
+                _typesToImport,
+                _diagnostics,
+                node.Declaration.Type.GetLocation);
 
             ITsSimpleLexicalBinding[] declarations = node.Declaration.Variables.SelectMany(Visit)
                 .Cast<ITsSimpleLexicalBinding>()
@@ -100,6 +106,22 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a VariableDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
+        public override IEnumerable<IAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            // TODO: Determine whether this should be a const or let declaration
+            const bool isConst = false;
+
+            // iterate over all of the variables and translate them
+            var lexicalBindings = node.Variables.SelectMany(Visit).Cast<ITsLexicalBinding>();
+
+            ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, lexicalBindings.ToArray());
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Conditional Statements
         //// ===========================================================================================================
@@ -115,6 +137,21 @@ namespace Desalt.Core.Translation
             var elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
 
             ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
+            yield return translated;
+        }
+
+        //// ===========================================================================================================
+        //// Throw, Try/Catch, and Using Statements
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a ThrowStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsThrowStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitThrowStatement(ThrowStatementSyntax node)
+        {
+            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsThrowStatement translated = Factory.Throw(expression);
             yield return translated;
         }
 
@@ -134,9 +171,21 @@ namespace Desalt.Core.Translation
 
             bool hasCatch = node.Catches.Count > 0;
             CatchClauseSyntax catchClause = node.Catches[0];
-            ITsIdentifier catchParameter = hasCatch && catchClause.Declaration != null
-                ? Factory.Identifier(catchClause.Declaration.Identifier.Text)
-                : null;
+            ITsIdentifier catchParameter = null;
+            if (hasCatch && catchClause.Declaration != null)
+            {
+                // C# can have `catch (Exception)` without an identifier, but we need one in
+                // TypeScript, so generate a placeholder if necessary
+                if (catchClause.Declaration.Identifier.IsKind(SyntaxKind.None))
+                {
+                    catchParameter = Factory.Identifier("e");
+                }
+                else
+                {
+                    catchParameter = Factory.Identifier(catchClause.Declaration.Identifier.Text);
+                }
+            }
+
             var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
 
             // translate the finally block if present
@@ -165,6 +214,141 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        /// <summary>
+        /// Called when the visitor visits a UsingStatementSyntax node.
+        /// </summary>
+        /// <returns>A <see cref="ITsBlockStatement"/> representing a wrapped try/finally block.</returns>
+        public override IEnumerable<IAstNode> VisitUsingStatement(UsingStatementSyntax node)
+        {
+            var statements = new List<ITsStatementListItem>();
+            string reservedTemporaryVariable = null;
+            ITsIdentifier variableNameIdentifier;
+
+            // Case 1: when there's a declaration
+            // ----------------------------------
+            // C#:
+            // using (var c = new C()) {}
+            //
+            // TypeScript:
+            // {
+            //   const c = new C();
+            //   try {
+            //   } finally {
+            //     if (c) {
+            //       c.dispose();
+            //     }
+            //   }
+            // }
+            if (node.Declaration != null)
+            {
+                // translate the declaration
+                var declaration = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+                declaration = declaration.WithIsConst(true);
+
+                // get the type of the declaration
+                ITypeSymbol typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
+                ITsType declarationType = typeSymbol == null
+                    ? null
+                    : _typeTranslator.TranslateSymbol(
+                        typeSymbol,
+                        _typesToImport,
+                        _diagnostics,
+                        node.Declaration.Type.GetLocation);
+
+                // fixup all of the declarations to add the type
+                if (declarationType != null)
+                {
+                    declaration = declaration.WithDeclarations(
+                        declaration.Declarations.Cast<ITsSimpleLexicalBinding>()
+                            .Select(binding => binding.WithVariableType(declarationType)));
+                }
+
+                statements.Add(declaration);
+
+                variableNameIdentifier = declaration.Declarations.Cast<ITsSimpleLexicalBinding>().First().VariableName;
+            }
+
+            // Case 2: when there's an expression
+            // ----------------------------------
+            // C#:
+            // using (c.GetDipose()) {}
+            //
+            // TypeScript:
+            // {
+            //   const $using1 = c.getDispose();
+            //   try {
+            //   } finally {
+            //     if ($using1) {
+            //       $using1.dispose();
+            //     }
+            //   }
+            // }
+            else
+            {
+                // translate the expression
+                var expression = (ITsExpression)Visit(node.Expression).Single();
+
+                // try to find the type of the expression
+                ITypeSymbol expressionTypeSymbol =
+                    _semanticModel.GetTypeInfo(node.Expression, _cancellationToken).ConvertedType;
+
+                ITsType variableType = expressionTypeSymbol == null
+                    ? null
+                    : _typeTranslator.TranslateSymbol(
+                        expressionTypeSymbol,
+                        _typesToImport,
+                        _diagnostics,
+                        node.Expression.GetLocation);
+
+                // create a temporary variable name to hold the expression
+                reservedTemporaryVariable = _temporaryVariableAllocator.Reserve("$using");
+                variableNameIdentifier = Factory.Identifier(reservedTemporaryVariable);
+
+                // assign the expression to the temporary variable
+                ITsLexicalDeclaration declaration = Factory.LexicalDeclaration(
+                    isConst: true,
+                    declarations: new ITsLexicalBinding[]
+                    {
+                        Factory.SimpleLexicalBinding(variableNameIdentifier, variableType, expression)
+                    });
+
+                statements.Add(declaration);
+            }
+
+            // create the try block, which is the using block
+            var usingBlock = (ITsStatement)Visit(node.Statement).Single();
+            if (usingBlock is ITsBlockStatement tryBlock)
+            {
+                // remove any trailing newlines
+                tryBlock = tryBlock.WithTrailingTrivia(new IAstTriviaNode[0]);
+            }
+            else
+            {
+                tryBlock = Factory.Block(usingBlock);
+            }
+
+            // create the finally block, which disposes the object
+            ITsBlockStatement finallyBlock = Factory.Block(
+                Factory.IfStatement(
+                    variableNameIdentifier,
+                    Factory.Block(Factory.Call(Factory.MemberDot(variableNameIdentifier, "dispose")).ToStatement())));
+
+            // create the try/finally statement
+            var tryFinally = Factory.TryFinally(tryBlock, finallyBlock);
+            statements.Add(tryFinally);
+
+            // wrap the declaration inside of a block so that scoping will be correct
+            ITsBlockStatement translated = Factory.Block(statements.ToArray()).WithTrailingTrivia(Factory.Newline);
+
+            // return the temporary variable to the allocator
+            if (reservedTemporaryVariable != null)
+            {
+                _temporaryVariableAllocator.Return(reservedTemporaryVariable);
+            }
+
+            yield return translated;
+        }
+
         //// ===========================================================================================================
         //// Loops
         //// ===========================================================================================================
@@ -187,6 +371,51 @@ namespace Desalt.Core.Translation
                 declaration,
                 rightSide,
                 statement);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ForStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsForStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitForStatement(ForStatementSyntax node)
+        {
+            var initializer = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            var condition = (ITsExpression)Visit(node.Condition).Single();
+            var statement = (ITsStatement)Visit(node.Statement).Single();
+
+            // translate all of the incrementors and create a comma expression from them
+            var incrementors = node.Incrementors.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+            ITsExpression incrementor =
+                incrementors.Length == 1 ? incrementors[0] : Factory.CommaExpression(incrementors);
+
+            ITsForStatement translated = Factory.For(initializer, condition, incrementor, statement);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a WhileStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsWhileStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitWhileStatement(WhileStatementSyntax node)
+        {
+            var whileCondition = (ITsExpression)Visit(node.Condition).Single();
+            var whileStatement = (ITsStatement)Visit(node.Statement).Single();
+
+            ITsWhileStatement translated = Factory.While(whileCondition, whileStatement);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a DoStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsDoWhileStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitDoStatement(DoStatementSyntax node)
+        {
+            var doStatement = (ITsStatement)Visit(node.Statement).Single();
+            var whileCondition = (ITsExpression)Visit(node.Condition).Single();
+
+            ITsDoWhileStatement translated = Factory.DoWhile(doStatement, whileCondition);
             yield return translated;
         }
 

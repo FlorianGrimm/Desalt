@@ -59,7 +59,8 @@ namespace Desalt.Core.Tests
                 (from id in new[]
                  {
                      DiagnosticId.ClassWithDuplicateFieldAndPropertyName,
-                     DiagnosticId.InterfaceWithDefaultParameter
+                     DiagnosticId.InterfaceWithDefaultParameter,
+                     DiagnosticId.UnsupportedAccessibility,
                  }
                  select new KeyValuePair<string, ReportDiagnostic>(
                      DiagnosticFactory.IdFromDiagnosticId(id),

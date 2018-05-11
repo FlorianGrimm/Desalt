@@ -166,6 +166,7 @@
     <Compile Include="Translation\SymbolTable.cs" />
     <Compile Include="Translation\SymbolTableDiscoveryKind.cs" />
     <Compile Include="Translation\SymbolTableUtils.cs" />
+    <Compile Include="Translation\TemporaryVariableAllocator.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="TypeScript\Ast\Expressions\TsCallExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsCastExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsClassExpression.cs" />
+    <Compile Include="TypeScript\Ast\Expressions\TsCommaExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsComputedPropertyName.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsConditionalExpression.cs" />
     <Compile Include="TypeScript\Ast\Expressions\TsCoverInitializedName.cs" />
@@ -253,6 +255,7 @@
     <Compile Include="TypeScript\Ast\Lexical\TsJsDocTagNames.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsMultiLineComment.cs" />
     <Compile Include="TypeScript\Ast\Lexical\TsSingleLineComment.cs" />
+    <Compile Include="TypeScript\Ast\Lexical\TsWhitespaceTrivia.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsArrayBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsBlockStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsContinueOrBreakStatement.cs" />
@@ -336,6 +339,7 @@
     <Compile Include="Utility\ExceptionFactory.cs" />
     <Compile Include="Utility\IndentedTextWriter.cs" />
     <Compile Include="Utility\Param.cs" />
+    <Compile Include="Utility\PathUtil.cs" />
     <Compile Include="Utility\PeekingTextReader.cs" />
     <Compile Include="Utility\TextReaderLocation.cs" />
     <Compile Include="Utility\UnicodeStringStream.cs" />

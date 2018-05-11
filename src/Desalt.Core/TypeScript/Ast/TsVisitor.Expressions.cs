@@ -10,9 +10,14 @@ namespace Desalt.Core.TypeScript.Ast
     public abstract partial class TsVisitor
     {
         /// <summary>
+        /// Visits an expression list separated by commas. Useful in for loops for the initializer or
+        /// incrementor, for example.
+        /// </summary>
+        public virtual void VisitCommaExpression(ITsCommaExpression node) => Visit(node);
+
+        /// <summary>
         /// Visits a parenthesized expression, of the form '(expression)'.
         /// </summary>
-        /// <param name="node"></param>
         public virtual void VisitParenthesizedExpression(ITsParenthesizedExpression node) => Visit(node);
 
         /// <summary>
@@ -63,7 +68,6 @@ namespace Desalt.Core.TypeScript.Ast
         /// <summary>
         /// Visits an element in an object initializer of the form 'identifer = expression'.
         /// </summary>
-        /// <param name="node"></param>
         public virtual void VisitCoverInitializedName(ITsCoverInitializedName node) => Visit(node);
 
         /// <summary>

@@ -39,6 +39,7 @@ namespace Desalt.Core.Translation
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
+        private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         //// ===========================================================================================================
         //// Constructors
@@ -152,7 +153,11 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = _typeTranslator.TranslateSymbol(parameterTypeSymbol, _typesToImport);
+            ITsType parameterType = _typeTranslator.TranslateSymbol(
+                parameterTypeSymbol,
+                _typesToImport,
+                _diagnostics,
+                () => node.Type.GetLocation());
 
             IAstNode parameter;
 
@@ -167,6 +172,51 @@ namespace Desalt.Core.Translation
             }
 
             return parameter.ToSingleEnumerable();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TypeParameterListSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTypeParameters"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeParameterList(TypeParameterListSyntax node)
+        {
+            var typeParameters = new List<ITsTypeParameter>();
+            foreach (TypeParameterSyntax typeParameterNode in node.Parameters)
+            {
+                var typeParameter = (ITsTypeParameter)Visit(typeParameterNode).Single();
+                typeParameters.Add(typeParameter);
+            }
+
+            ITsTypeParameters translated = Factory.TypeParameters(typeParameters.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TypeParameterSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTypeParameter"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeParameter(TypeParameterSyntax node)
+        {
+            ITsIdentifier typeName = Factory.Identifier(node.Identifier.Text);
+            ITsTypeParameter translated = Factory.TypeParameter(typeName);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a TypeArgumentListSyntax node.
+        /// </summary>
+        /// <returns>An enumerable of <see cref="ITsType"/>.</returns>
+        public override IEnumerable<IAstNode> VisitTypeArgumentList(TypeArgumentListSyntax node)
+        {
+            var translated = from typeSyntax in node.Arguments
+                             let typeSymbol = typeSyntax.GetTypeSymbol(_semanticModel)
+                             where typeSymbol != null
+                             select _typeTranslator.TranslateSymbol(
+                                 typeSymbol,
+                                 _typesToImport,
+                                 _diagnostics,
+                                 typeSyntax.GetLocation);
+            return translated;
         }
 
         /// <summary>
@@ -278,9 +328,12 @@ namespace Desalt.Core.Translation
 
         private ITsCallSignature TranslateCallSignature(
             ParameterListSyntax parameterListNode,
+            TypeParameterListSyntax typeParameterListNode = null,
             TypeSyntax returnTypeNode = null)
         {
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
+            ITsTypeParameters typeParameters = typeParameterListNode == null
+                ? Factory.TypeParameters()
+                : (ITsTypeParameters)Visit(typeParameterListNode).Single();
 
             ITsParameterList parameters = parameterListNode == null
                 ? Factory.ParameterList()
@@ -291,7 +344,9 @@ namespace Desalt.Core.Translation
             {
                 returnType = _typeTranslator.TranslateSymbol(
                     returnTypeNode.GetTypeSymbol(_semanticModel),
-                    _typesToImport);
+                    _typesToImport,
+                    _diagnostics,
+                    returnTypeNode.GetLocation);
             }
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);

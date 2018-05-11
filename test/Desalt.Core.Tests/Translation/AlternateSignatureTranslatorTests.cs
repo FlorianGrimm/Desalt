@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Extensions;
@@ -57,7 +58,10 @@ using System.Runtime.CompilerServices;
                 bool result = translator.TryAdjustParameterListTypes(
                     methodSymbol,
                     translatedParameterList,
-                    out ITsParameterList actualParameterList);
+                    out ITsParameterList actualParameterList,
+                    out IEnumerable<Diagnostic> diagnostics);
+
+                diagnostics.Should().BeEmpty();
 
                 result.Should().Be(expectedResult, because: "the parameter list should not have changed");
                 actualParameterList.Should().BeEquivalentTo(expectedParameterList);
