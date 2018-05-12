@@ -403,7 +403,7 @@ export class WindowHelper {
         selection.removeAllRanges();
       } else
         if ((typeof (selection['empty']) === 'function')) {
-          selection['empty'](args);
+          selection['empty']();
         }
     }
   }
