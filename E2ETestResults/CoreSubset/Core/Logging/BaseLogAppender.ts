@@ -1,11 +1,13 @@
 import 'mscorlib';
 
+import { ILogAppender } from './ILogAppender';
+
 import { Logger, LoggerLevel } from './Logger';
 
 /**
  * A base class for log appenders.
  */
-export abstract class BaseLogAppender {
+export abstract class BaseLogAppender implements ILogAppender {
   private readonly filters: Array<(logger: Logger, loggerLevel: LoggerLevel) => boolean>;
 
   protected constructor() {

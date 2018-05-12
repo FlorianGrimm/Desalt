@@ -166,7 +166,7 @@ export class LayoutMetrics {
 // Call the static constructor
 LayoutMetrics.__ctor();
 
-export class Metric {
+export class Metric extends Object {
   public w: number;
 
   public h: number;

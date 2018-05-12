@@ -277,7 +277,7 @@ MetricsController.__ctor();
 /**
  * Class representing a single timing context for the MetricsController
  */
-export class MetricsContext {
+export class MetricsContext implements IDisposable {
   public readonly id: number;
 
   public readonly metricSuite: MetricsSuites;
@@ -347,7 +347,7 @@ export class MetricsContext {
  * A singleton class that 'implements' the MetricsContext interface but doesn't do/store any timing
  * or metrics events in practice
  */
-class NullMetricsContext {
+class NullMetricsContext extends MetricsContext {
   private static $instance: NullMetricsContext;
 
   private constructor() {

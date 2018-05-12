@@ -9,7 +9,9 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Types;
@@ -110,13 +112,51 @@ namespace Desalt.Core.Translation
         public override IEnumerable<IAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             ITsIdentifier className = TranslateDeclarationIdentifier(node);
+            bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
 
+            // translate the type parameters if there are any
             ITsTypeParameters typeParameters = node.TypeParameterList == null
                 ? null
                 : (ITsTypeParameters)Visit(node.TypeParameterList).Single();
 
-            ITsClassHeritage heritage = Factory.ClassHeritage(implementsTypes: null);
-            bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
+            // translate the class heritage (extends and implements)
+            ITsTypeReference extendsClause = null;
+            var implementsTypes = new List<ITsTypeReference>();
+            if (node.BaseList != null)
+            {
+                var baseList = Visit(node.BaseList).Cast<ITsTypeReference>().ToImmutableArray();
+
+                // get the type symbols so we can tell which ones are interfaces
+                var typeSymbols = node.BaseList.Types
+                    .Select(typeSyntax => typeSyntax.Type.GetTypeSymbol(_semanticModel))
+                    .ToImmutableArray();
+
+                for (int i = 0; i < baseList.Length; i++)
+                {
+                    if (typeSymbols[i].IsInterfaceType())
+                    {
+                        implementsTypes.Add(baseList[i]);
+                    }
+                    else
+                    {
+                        if (extendsClause != null)
+                        {
+                            _diagnostics.Add(
+                                DiagnosticFactory.InternalError(
+                                    "C# isn't supposed to support multiple inheritance! We already saw " +
+                                    $"'{extendsClause.EmitAsString()}' but we have another type " +
+                                    $"'{baseList[i].EmitAsString()}' that is claiming to be a base class.",
+                                    node.BaseList.Types[i].GetLocation()));
+                        }
+
+                        extendsClause = baseList[i];
+                    }
+                }
+            }
+
+            ITsClassHeritage heritage = Factory.ClassHeritage(extendsClause, implementsTypes.ToArray());
+
+            // translate the body
             var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>();
 
             ITsClassDeclaration classDeclaration = Factory.ClassDeclaration(
@@ -139,6 +179,30 @@ namespace Desalt.Core.Translation
                     .WithLeadingTrivia(Factory.SingleLineComment("Call the static constructor"));
                 yield return Factory.ExpressionStatement(staticCtorCall);
             }
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a BaseListSyntax node.
+        /// </summary>
+        /// <returns>An enumerable of <see cref="ITsTypeReference"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBaseList(BaseListSyntax node)
+        {
+            return node.Types.SelectMany(Visit).Cast<ITsTypeReference>();
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a SimpleBaseTypeSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsTypeReference"/>.</returns>
+        public override IEnumerable<IAstNode> VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+        {
+            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            var translated = (ITsTypeReference)_typeTranslator.TranslateSymbol(
+                typeSymbol,
+                _typesToImport,
+                _diagnostics,
+                node.Type.GetLocation);
+            yield return translated;
         }
 
         /// <summary>
