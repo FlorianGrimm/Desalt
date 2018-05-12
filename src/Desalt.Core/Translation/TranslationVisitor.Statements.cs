@@ -354,6 +354,16 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
+        /// Called when the visitor visits a BreakStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBreakStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBreakStatement(BreakStatementSyntax node)
+        {
+            ITsBreakStatement translated = Factory.Break();
+            yield return translated;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a ForEachStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsForOfStatement"/>.</returns>
@@ -432,6 +442,18 @@ namespace Desalt.Core.Translation
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
             var body = (ITsBlockStatement)Visit(node.Block).Single();
             ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body.Statements.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ParenthesizedLambdaExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
+        public override IEnumerable<IAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+        {
+            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
+            var body = (ITsExpression)Visit(node.Body).Single();
+            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body);
             yield return translated;
         }
 

@@ -51,6 +51,7 @@ namespace Desalt.Core.CompilerStages
                         "ILogAppender.cs",
                         "LayoutMetrics.cs",
                         "Logger.cs",
+                        "MetricsController.cs",
                         "MiscUtil.cs",
                         "ScriptEx.cs",
                         "Utility.cs",
