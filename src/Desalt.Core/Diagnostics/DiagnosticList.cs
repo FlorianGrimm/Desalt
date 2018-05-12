@@ -64,6 +64,12 @@ namespace Desalt.Core.Diagnostics
 
         public bool HasErrors => _diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error);
 
+        /// <summary>
+        /// Determines whether to throw an exception when a filtered error is added. Mainly used in
+        /// unit tests - should not normally be used.
+        /// </summary>
+        public bool ThrowOnErrors { get; set; }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -107,6 +113,10 @@ namespace Desalt.Core.Diagnostics
             if (diagnostic != null)
             {
                 _diagnostics.Add(diagnostic);
+                if (ThrowOnErrors)
+                {
+                    throw new InvalidOperationException(diagnostic.ToString());
+                }
             }
 
             return diagnostic;
