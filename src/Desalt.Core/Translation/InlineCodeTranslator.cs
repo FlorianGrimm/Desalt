@@ -130,7 +130,7 @@ namespace Desalt.Core.Translation
                     int read = reader.Read();
                     if (read != expected)
                     {
-                        context.CreateParseError($"Expected to read '{expected}'.");
+                        context.AddParseError($"Expected to read '{expected}'.");
                     }
 
                     reader.SkipWhitespace();
@@ -197,7 +197,12 @@ namespace Desalt.Core.Translation
             }
 
             // find the translated parameter and use it for substitution
-            int index = FindIndexOfParameter(parameterName, context);
+            int index = TryFindIndexOfParameter(parameterName, context, out Diagnostic diagnostic);
+            if (diagnostic != null)
+            {
+                context.Diagnostics.Add(diagnostic);
+            }
+
             if (index < 0)
             {
                 return parameterName;
@@ -214,7 +219,7 @@ namespace Desalt.Core.Translation
 
             if (typeSyntax == null)
             {
-                context.CreateParseError($"Cannot parse '{fullTypeName}' as a type name");
+                context.AddParseError($"Cannot parse '{fullTypeName}' as a type name");
                 return fullTypeName;
             }
 
@@ -226,7 +231,7 @@ namespace Desalt.Core.Translation
 
             if (typeSymbol == null || typeSymbol is IErrorTypeSymbol)
             {
-                context.CreateParseError($"Cannot resolve '{fullTypeName}' to a single type symbol");
+                context.AddParseError($"Cannot resolve '{fullTypeName}' to a single type symbol");
                 return fullTypeName;
             }
 
@@ -235,23 +240,25 @@ namespace Desalt.Core.Translation
                 return scriptName;
             }
 
-            context.CreateParseError($"Cannot find '{typeSymbol}' in the ScriptName symbol table");
+            context.AddParseError($"Cannot find '{typeSymbol}' in the ScriptName symbol table");
             return fullTypeName;
         }
 
         private static string ExpandParams(string parameterName, Context context)
         {
             // find the index of the translated param
-            int index = FindIndexOfParameter(parameterName, context);
+            int index = TryFindIndexOfParameter(parameterName, context, out _);
+
+            // if there are no more parameters, then there's nothing to expand
             if (index < 0)
             {
-                return parameterName;
+                return string.Empty;
             }
 
             // a parameter of the form '*rest' means to expand the parameter array
             if (!context.MethodSymbol.Parameters[index].IsParams)
             {
-                context.CreateParseError($"Parameter '{parameterName}' is not a 'params' parameter.");
+                context.AddParseError($"Parameter '{parameterName}' is not a 'params' parameter.");
                 return parameterName;
             }
 
@@ -269,14 +276,14 @@ namespace Desalt.Core.Translation
             return builder.ToString();
         }
 
-        private static int FindIndexOfParameter(string parameterName, Context context)
+        private static int TryFindIndexOfParameter(string parameterName, Context context, out Diagnostic diagnostic)
         {
             // find the position of the parameter in the parameter list
             IParameterSymbol foundParameter =
                 context.MethodSymbol.Parameters.FirstOrDefault(parameter => parameter.Name == parameterName);
             if (foundParameter == null)
             {
-                context.CreateParseError($"Cannot find parameter '{parameterName}' in the method");
+                diagnostic = context.CreateParseError($"Cannot find parameter '{parameterName}' in the method");
                 return -1;
             }
 
@@ -285,11 +292,12 @@ namespace Desalt.Core.Translation
             // find the translated parameter and use it for substitution
             if (index >= context.TranslatedArgumentList.Arguments.Length)
             {
-                context.CreateParseError(
+                diagnostic = context.CreateParseError(
                     $"Cannot find parameter '{parameterName}' in the translated argument list '{context.TranslatedArgumentList.EmitAsString()}'");
                 return -1;
             }
 
+            diagnostic = null;
             return index;
         }
 
@@ -324,16 +332,20 @@ namespace Desalt.Core.Translation
             public IMethodSymbol MethodSymbol { get; }
             public ITsExpression TranslatedLeftSide { get; }
             public ITsArgumentList TranslatedArgumentList { get; }
-            private ICollection<Diagnostic> Diagnostics { get; }
+            public ICollection<Diagnostic> Diagnostics { get; }
 
-            public void CreateParseError(string message)
+            public void AddParseError(string message)
             {
-                Diagnostics.Add(
-                    DiagnosticFactory.InlineCodeParsingError(
-                        InlineCode,
-                        SymbolTableUtils.KeyFromSymbol(MethodSymbol),
-                        message,
-                        MethodExpressionSyntax.GetLocation()));
+                Diagnostics.Add(CreateParseError(message));
+            }
+
+            public Diagnostic CreateParseError(string message)
+            {
+                return DiagnosticFactory.InlineCodeParsingError(
+                    InlineCode,
+                    SymbolTableUtils.KeyFromSymbol(MethodSymbol),
+                    message,
+                    MethodExpressionSyntax.GetLocation());
             }
         }
     }

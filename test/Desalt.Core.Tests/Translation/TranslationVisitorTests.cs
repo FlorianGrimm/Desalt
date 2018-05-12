@@ -8,8 +8,8 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Emit;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
@@ -28,6 +28,7 @@ namespace Desalt.Core.Tests.Translation
             string code = $@"
 using System;
 using System.Collections.Generic;
+using System.Html;
 
 {codeSnippet}
 ";
@@ -39,7 +40,10 @@ using System.Collections.Generic;
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(discoveryKind: discoveryKind);
 
-                var visitor = new TranslationVisitor(context, CancellationToken.None);
+                var throwingDiagnosticList = DiagnosticList.Create(tempProject.Options);
+                throwingDiagnosticList.ThrowOnErrors = true;
+
+                var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
                 IAstNode result = visitor.Visit(context.RootSyntax).Single();
 
                 visitor.Diagnostics.Should().BeEmpty();

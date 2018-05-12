@@ -51,6 +51,8 @@ namespace Desalt.Core.Tests.TestUtility
             // ReSharper disable once AssignNullToNotNullAttribute
             Path.Combine(Path.GetDirectoryName(_workspace.CurrentSolution.Projects.Single().FilePath), "outputPath");
 
+        public CompilerOptions Options => new CompilerOptions(OutputPath);
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -126,7 +128,7 @@ namespace Desalt.Core.Tests.TestUtility
             CompilerOptions options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
-            options = options ?? new CompilerOptions(OutputPath);
+            options = options ?? Options;
             Document document = project.Documents.Single(doc => doc.Name == fileName);
 
             IExtendedResult<DocumentTranslationContext> result =

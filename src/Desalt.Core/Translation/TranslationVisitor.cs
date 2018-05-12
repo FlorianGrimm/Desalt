@@ -30,7 +30,7 @@ namespace Desalt.Core.Translation
 
         private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
 
-        private readonly DiagnosticList _diagnostics;
+        private readonly ICollection<Diagnostic> _diagnostics;
         private readonly CancellationToken _cancellationToken;
         private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
@@ -45,9 +45,21 @@ namespace Desalt.Core.Translation
         //// Constructors
         //// ===========================================================================================================
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslationVisitor"/> class.
+        /// </summary>
+        /// <param name="context">The context for the document translation.</param>
+        /// <param name="cancellationToken">An optional token to control canceling translation.</param>
+        /// <param name="diagnostics">
+        /// An optional diagnostic collection to use for adding errors. This should normally not be
+        /// used since it could make this class not thread safe if access to the collection is not
+        /// guarded with thread locking mechanisms. No locking is done within this class. This is
+        /// used mainly for unit tests.
+        /// </param>
         public TranslationVisitor(
             DocumentTranslationContextWithSymbolTables context,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            ICollection<Diagnostic> diagnostics = null)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _cancellationToken = cancellationToken;
@@ -64,7 +76,7 @@ namespace Desalt.Core.Translation
                 context.AlternateSignatureSymbolTable,
                 _typeTranslator);
 
-            _diagnostics = DiagnosticList.Create(context.Options);
+            _diagnostics = diagnostics ?? DiagnosticList.Create(context.Options);
         }
 
         //// ===========================================================================================================
