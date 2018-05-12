@@ -5,7 +5,7 @@ import { Logger, LoggerLevel } from './Logger';
 /**
  * A base class for log appenders.
  */
-export class BaseLogAppender {
+export abstract class BaseLogAppender {
   private readonly filters: Array<(logger: Logger, loggerLevel: LoggerLevel) => boolean>;
 
   protected constructor() {

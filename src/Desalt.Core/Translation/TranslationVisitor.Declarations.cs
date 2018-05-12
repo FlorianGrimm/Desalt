@@ -111,19 +111,19 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier className = TranslateDeclarationIdentifier(node);
 
-            // translate the generic type parameters
-            ITsTypeParameters typeParameters = Factory.TypeParameters();
+            ITsTypeParameters typeParameters = node.TypeParameterList == null
+                ? null
+                : (ITsTypeParameters)Visit(node.TypeParameterList).Single();
 
-            // translate the class heritage
             ITsClassHeritage heritage = Factory.ClassHeritage(implementsTypes: null);
-
-            // translate the class body
+            bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
             var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>();
 
             ITsClassDeclaration classDeclaration = Factory.ClassDeclaration(
                 className,
                 typeParameters,
                 heritage,
+                isAbstract,
                 classBody);
 
             // export if necessary and add documentation comments

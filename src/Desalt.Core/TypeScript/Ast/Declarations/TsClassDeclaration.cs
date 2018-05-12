@@ -25,11 +25,13 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             ITsIdentifier className = null,
             ITsTypeParameters typeParameters = null,
             ITsClassHeritage heritage = null,
+            bool isAbstract = false,
             IEnumerable<ITsClassElement> classBody = null)
         {
             ClassName = className;
             TypeParameters = typeParameters ?? new TsTypeParameters();
             Heritage = heritage ?? new TsClassHeritage();
+            IsAbstract = isAbstract;
             ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
         }
 
@@ -40,6 +42,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public ITsIdentifier ClassName { get; }
         public ITsTypeParameters TypeParameters { get; }
         public ITsClassHeritage Heritage { get; }
+        public bool IsAbstract { get; }
         public ImmutableArray<ITsClassElement> ClassBody { get; }
 
         //// ===========================================================================================================
@@ -49,10 +52,16 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public override void Accept(TsVisitor visitor) => visitor.VisitClassDeclaration(this);
 
         public override string CodeDisplay =>
+            (IsAbstract ? "abstract " : "") +
             $"class {ClassName?.CodeDisplay}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
 
         protected override void EmitInternal(Emitter emitter)
         {
+            if (IsAbstract)
+            {
+                emitter.Write("abstract ");
+            }
+
             emitter.Write("class ");
             ClassName?.Emit(emitter);
             TypeParameters.Emit(emitter);

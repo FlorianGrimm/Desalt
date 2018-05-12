@@ -627,6 +627,7 @@ namespace Desalt.Core.TypeScript.Ast
         ITsIdentifier ClassName { get; }
         ITsTypeParameters TypeParameters { get; }
         ITsClassHeritage Heritage { get; }
+        bool IsAbstract { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 

@@ -192,9 +192,10 @@ namespace Desalt.Core.TypeScript.Ast
             ITsIdentifier className = null,
             ITsTypeParameters typeParameters = null,
             ITsClassHeritage heritage = null,
+            bool isAbstract = false,
             IEnumerable<ITsClassElement> classBody = null)
         {
-            return new TsClassDeclaration(className, typeParameters, heritage, classBody);
+            return new TsClassDeclaration(className, typeParameters, heritage, isAbstract, classBody);
         }
 
         /// <summary>
