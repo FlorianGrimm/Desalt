@@ -141,7 +141,7 @@ export class LayoutMetrics {
     for (const entry of LayoutMetrics.defaultDb) {
       if (ss.isValue((<any>this)[entry.key])) {
         let m: Metric = <Metric>(<any>this)[entry.key];
-        sb.append('\t\' + entry.key + '\": {\n');
+        sb.append('\t\"' + entry.key + '\": {\n');
         sb.append('\t\t\"w\": ' + m.w + ',\n');
         sb.append('\t\t\"h\": ' + m.h + '\n');
         sb.append('\t}');
