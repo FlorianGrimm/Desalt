@@ -83,6 +83,49 @@ namespace Desalt.Core.Tests.Translation
         }
 
         //// ===========================================================================================================
+        //// Switch Statment Tests
+        //// ===========================================================================================================
+
+        [TestMethod]
+        public async Task Translate_switch_statements()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int num = 0;
+    switch (num)
+    {
+        case 0:
+        case 1:
+            num++;
+            break;
+
+        case 2:
+            break;
+
+        default:
+            num--;
+            break;
+    }
+",
+                @"
+    let num: number = 0;
+    switch (num) {
+      case 0:
+      case 1:
+        num++;
+        break;
+
+      case 2:
+        break;
+
+      default:
+        num--;
+        break;
+    }
+");
+        }
+
+        //// ===========================================================================================================
         //// Using Statement Tests
         //// ===========================================================================================================
 

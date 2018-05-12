@@ -48,6 +48,7 @@ namespace Desalt.Core.CompilerStages
             var results = input
                 .Where(
                     context => context.Document.Name.IsOneOf(
+                        "BaseLogAppender.cs",
                         "ILogAppender.cs",
                         "LayoutMetrics.cs",
                         "Logger.cs",
