@@ -76,8 +76,6 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslation(
                 @"
-using System.Collections.Generic;
-
 enum LoggerLevel { All = 0 }
 class Logger
 {
@@ -127,11 +125,11 @@ class Logger {
 
             foreach (string op in new[] { "++", "--", "+", "-", "~" })
             {
-                code = $"class C {{ void Method() {{ int x = 123; x = {op}x; }} }}";
+                code = $"int x = 123; x = {op}x;";
                 expected =
-                    $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x = {op}x;\n  }}\n}}\n";
+                    $"let x: number = 123;\n    x = {op}x;";
 
-                await AssertTranslation(code, expected);
+                await AssertTranslationWithClassCAndMethod(code, expected);
             }
 
             code = $"class C {{ void Method() {{ bool x = !true; }} }}";
@@ -145,11 +143,11 @@ class Logger {
         {
             foreach (string op in new[] { "++", "--" })
             {
-                string code = $"class C {{ void Method() {{ int x = 123; x = x{op}; }} }}";
+                string code = $"int x = 123; x = x{op};";
                 string expected =
-                    $"class C {{\n  private method(): void {{\n    let x: number = 123;\n    x = x{op};\n  }}\n}}\n";
+                    $"let x: number = 123;\n    x = x{op};";
 
-                await AssertTranslation(code, expected);
+                await AssertTranslationWithClassCAndMethod(code, expected);
             }
         }
 
@@ -158,11 +156,10 @@ class Logger {
         {
             foreach (string op in new[] { "*", "/", "%", "+", "-", "<<", ">>", "&", "^", "|" })
             {
-                string code = $"class C {{ void Method() {{ int x = 1; int y = 2; x = x {op} y; }} }}";
-                string expected = $"class C {{\n  private method(): void {{\n" +
-                    $"    let x: number = 1;\n    let y: number = 2;\n    x = x {op} y;\n  }}\n}}\n";
+                string code = $"int x = 1; int y = 2; x = x {op} y;";
+                string expected = $"let x: number = 1;\n    let y: number = 2;\n    x = x {op} y;";
 
-                await AssertTranslation(code, expected);
+                await AssertTranslationWithClassCAndMethod(code, expected);
             }
         }
 
@@ -171,14 +168,12 @@ class Logger {
         {
             foreach (string op in new[] { "<", ">", "<=", ">=", "==", "!=" })
             {
-                string code = $"class C {{ void Method() {{ int x = 1; int y = 2; bool z = x {op} y; }} }}";
+                string code = $"int x = 1; int y = 2; bool z = x {op} y;";
 
                 string expectedOp = op == "==" ? "===" : op == "!=" ? "!==" : op;
-                string expected = $"class C {{\n  private method(): void {{\n" +
-                    $"    let x: number = 1;\n    let y: number = 2;\n" +
-                    $"    let z: boolean = x {expectedOp} y;\n  }}\n}}\n";
+                string expected = $"let x: number = 1;\n    let y: number = 2;\n    let z: boolean = x {expectedOp} y;";
 
-                await AssertTranslation(code, expected);
+                await AssertTranslationWithClassCAndMethod(code, expected);
             }
         }
 
@@ -187,11 +182,10 @@ class Logger {
         {
             foreach (string op in new[] { "&&", "||" })
             {
-                string code = $"class C {{ void Method() {{ bool x = true; bool y = false; x = x {op} y; }} }}";
-                string expected = $"class C {{\n  private method(): void {{\n" +
-                    $"    let x: boolean = true;\n    let y: boolean = false;\n    x = x {op} y;\n  }}\n}}\n";
+                string code = $"bool x = true; bool y = false; x = x {op} y;";
+                string expected = $"let x: boolean = true;\n    let y: boolean = false;\n    x = x {op} y;";
 
-                await AssertTranslation(code, expected);
+                await AssertTranslationWithClassCAndMethod(code, expected);
             }
         }
 
@@ -256,23 +250,14 @@ class C {
         [TestMethod]
         public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
         {
-            await AssertTranslation(
+            await AssertTranslationWithClassCAndMethod(
                 @"
-class C
-{
-    void Method()
-    {
-        List<int> list = new List<int>();
-        list.AddRange(new [] { 1, 2, 3 });
-    }
-}",
+    List<int> list = new List<int>();
+    list.AddRange(new [] { 1, 2, 3 });
+",
                 @"
-class C {
-  private method(): void {
     let list: number[] = [];
     ss.arrayAddRange(list, [1, 2, 3]);
-  }
-}
 ",
                 SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
@@ -288,27 +273,17 @@ class C {
         [TestMethod]
         public async Task InvocationExpression_should_handle_nested_invocations_with_InlineCode()
         {
-            await AssertTranslation(@"
-class C
-{
-    void Method()
+            await AssertTranslationWithClassCAndMethod(@"
+    const string requestFuncName = ""requestAnimationFrame"";
+    Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
     {
-        const string requestFuncName = ""requestAnimationFrame"";
-        Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
-        {
-            return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
-        };
-    }
-}
+        return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
+    };
 ", @"
-class C {
-  private method(): void {
     const requestFuncName: string = 'requestAnimationFrame';
     let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
       return window[requestFuncName](callback);
     };
-  }
-}
 ", SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
