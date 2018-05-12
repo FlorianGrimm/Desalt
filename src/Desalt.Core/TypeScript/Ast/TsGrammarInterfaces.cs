@@ -683,6 +683,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsPropertyName FunctionName { get; }
         ITsCallSignature CallSignature { get; }
         ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
@@ -692,6 +693,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsGetAccessor GetAccessor { get; }
     }
 
@@ -699,6 +701,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsSetAccessor SetAccessor { get; }
     }
 

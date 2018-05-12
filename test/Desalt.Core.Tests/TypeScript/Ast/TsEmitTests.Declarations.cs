@@ -193,6 +193,16 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     isStatic: true,
+                    isAbstract: true,
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "static abstract myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.FunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    isStatic: true,
                     callSignature: Factory.CallSignature(
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
                         Factory.VoidType)),
@@ -234,6 +244,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
                     TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    isAbstract: true),
+                "public static abstract get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.GetAccessorMemberDeclaration(
+                    Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
                     isStatic: true),
                 "public static get field(): number { }\n");
 
@@ -241,6 +259,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType)),
                 "get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.SetAccessorMemberDeclaration(
+                    Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    isAbstract: true),
+                "public static abstract set field(value: number) { }\n");
 
             VerifyOutput(
                 Factory.SetAccessorMemberDeclaration(

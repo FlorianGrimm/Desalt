@@ -104,8 +104,8 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public override string CodeDisplay =>
             AccessibilityModifier.OptionalCodeDisplay() +
-            IsStatic.OptionalStaticDeclaration() +
-            IsReadOnly.OptionalReadOnlyDeclaration() +
+            (IsStatic ? "static " : "") +
+            (IsReadOnly ? "readonly " : "") +
             VariableName +
             TypeAnnotation.OptionalTypeAnnotation() +
             Initializer.OptionalAssignment() +
@@ -114,8 +114,8 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
-            IsStatic.EmitOptionalStaticDeclaration(emitter);
-            IsReadOnly.EmitOptionalReadOnlyDeclaration(emitter);
+            emitter.Write(IsStatic ? "static " : "");
+            emitter.Write(IsReadOnly ? "readonly " : "");
             VariableName.Emit(emitter);
             TypeAnnotation.EmitOptionalTypeAnnotation(emitter);
             Initializer.EmitOptionalAssignment(emitter);

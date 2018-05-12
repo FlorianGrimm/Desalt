@@ -307,6 +307,7 @@ namespace Desalt.Core.Translation
                 callSignature,
                 accessibilityModifier,
                 symbol.IsStatic,
+                symbol.IsAbstract,
                 functionBody?.Statements);
 
             methodDeclaration = AddDocumentationComment(methodDeclaration, node);
@@ -371,6 +372,7 @@ namespace Desalt.Core.Translation
                 node.Type.GetLocation);
 
             bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
+            bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
@@ -387,7 +389,8 @@ namespace Desalt.Core.Translation
                         ITsGetAccessorMemberDeclaration getAccessorDeclaration = Factory.GetAccessorMemberDeclaration(
                             getAccessor,
                             accessibilityModifier,
-                            isStatic);
+                            isStatic,
+                            isAbstract);
                         yield return AddDocumentationComment(getAccessorDeclaration, node);
                         break;
 
@@ -400,7 +403,8 @@ namespace Desalt.Core.Translation
                         ITsSetAccessorMemberDeclaration setAccessorDeclaration = Factory.SetAccessorMemberDeclaration(
                             setAccessor,
                             accessibilityModifier,
-                            isStatic);
+                            isStatic,
+                            isAbstract);
                         yield return AddDocumentationComment(setAccessorDeclaration, node);
                         break;
 

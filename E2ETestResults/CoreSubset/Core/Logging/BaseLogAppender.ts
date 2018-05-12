@@ -45,7 +45,7 @@ export abstract class BaseLogAppender implements ILogAppender {
    * @param message The message to write
    * @param args Optional message arguments.
    */
-  protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void;
+  protected abstract logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void;
 
   protected formatMessage(message: string, args: any[]): string {
     if (ss.isNullOrUndefined(args) || args.length === 0) {
