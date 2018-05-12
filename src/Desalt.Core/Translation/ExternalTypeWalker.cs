@@ -81,11 +81,9 @@ namespace Desalt.Core.Translation
 
         public override void VisitIdentifierName(IdentifierNameSyntax node)
         {
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            if (symbol?.IsStatic == true)
-            {
-                AddTypeIfNecessary(symbol.ContainingType);
-            }
+            TypeInfo typeInfo = _semanticModel.GetTypeInfo(node);
+            AddTypeIfNecessary(typeInfo.Type);
+            AddTypeIfNecessary(typeInfo.ConvertedType);
 
             base.VisitIdentifierName(node);
         }
