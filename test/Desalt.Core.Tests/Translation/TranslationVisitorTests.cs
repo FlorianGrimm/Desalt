@@ -28,6 +28,7 @@ namespace Desalt.Core.Tests.Translation
             string code = $@"
 using System;
 using System.Collections.Generic;
+using System.Html;
 
 {codeSnippet}
 ";

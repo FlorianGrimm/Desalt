@@ -152,14 +152,14 @@ export class WindowHelper {
       }
       if (requestFuncName !== null) {
         WindowHelper.requestAnimationFrameFunc = (callback: () => void) => {
-          return callback[fieldName];
+          return window[requestFuncName](callback);
         };
       } else {
         WindowHelper.setDefaultRequestAnimationFrameImpl();
       }
       if (cancelFuncName !== null) {
         WindowHelper.cancelAnimationFrameFunc = (animationId: number) => {
-          animationId[fieldName];
+          window[cancelFuncName](animationId);
         };
       } else {
         WindowHelper.cancelAnimationFrameFunc = (id: number) => {

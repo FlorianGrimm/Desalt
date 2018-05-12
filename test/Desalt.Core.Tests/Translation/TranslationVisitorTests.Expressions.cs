@@ -220,7 +220,7 @@ class C {
         }
 
         //// ===========================================================================================================
-        //// Other Expression Translation Tests
+        //// Object Creation Expression Tests
         //// ===========================================================================================================
 
         [TestMethod]
@@ -249,6 +249,10 @@ class C {
                 SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
+        //// ===========================================================================================================
+        //// Invocation Expression Tests
+        //// ===========================================================================================================
+
         [TestMethod]
         public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
         {
@@ -272,6 +276,45 @@ class C {
 ",
                 SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
+
+        /// <remarks>
+        /// This was giving the following error before fixing it:
+        /// <![CDATA[
+        /// error DSC1016: Error parsing inline code '{instance}[{fieldName}]' for
+        ///    'System.TypeUtil.GetField<System.Func<System.Action, int>>(object instance, string fieldName)':
+        ///     Cannot find parameter 'fieldName' in the translated argument list '(callback)'
+        /// ]]>
+        /// </remarks>
+        [TestMethod]
+        public async Task InvocationExpression_should_handle_nested_invocations_with_InlineCode()
+        {
+            await AssertTranslation(@"
+class C
+{
+    void Method()
+    {
+        const string requestFuncName = ""requestAnimationFrame"";
+        Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
+        {
+            return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
+        };
+    }
+}
+", @"
+class C {
+  private method(): void {
+    const requestFuncName: string = 'requestAnimationFrame';
+    let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
+      return window[requestFuncName](callback);
+    };
+  }
+}
+", SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+        }
+
+        //// ===========================================================================================================
+        //// Other Expression Types Tests
+        //// ===========================================================================================================
 
         [TestMethod]
         public async Task List_of_Func_type_should_translate_to_Array_of_func()
