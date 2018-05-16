@@ -158,12 +158,12 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     PropertyDefinitionList , PropertyDefinition
         ///
         /// PropertyDefinition:
-        ///     IdentifierReference
-        ///     CoverInitializedName
-        ///     PropertyName : AssignmentExpression
-        ///     PropertyName CallSignature { FunctionBody }
-        ///     GetAccessor
-        ///     SetAccessor
+        ///     IdentifierReference                             (starts with Identifier)
+        ///     CoverInitializedName                            (starts with Identifier)
+        ///     PropertyName : AssignmentExpression             (starts with Identifier, StringLiteral, or NumberLiteral)
+        ///     PropertyName CallSignature { FunctionBody }     (starts with Identifier, StringLiteral, or NumberLiteral)
+        ///     GetAccessor                                     (starts with 'get')
+        ///     SetAccessor                                     (starts with 'set')
         ///
         /// CoverInitializedName:
         ///     IdentifierReference Initializer
@@ -174,12 +174,22 @@ namespace Desalt.Core.TypeScript.Parsing
 
             Read(TsTokenCode.LeftBrace);
 
+            // read each property definition
             while (!_reader.IsNext(TsTokenCode.RightBrace))
             {
-                ITsPropertyDefinition propertyDefinition =
-                    TryParseGetAccessor() ?? (ITsPropertyDefinition)TryParseSetAccessor();
+                ITsPropertyDefinition propertyDefinition;
 
-                if (propertyDefinition == null)
+                // GetAccessor
+                if (_reader.IsNext(TsTokenCode.Get))
+                {
+                    propertyDefinition = ParseGetAccessor();
+                }
+                // SetAccessor
+                else if (_reader.IsNext(TsTokenCode.Set))
+                {
+                    propertyDefinition = ParseSetAccessor();
+                }
+                else
                 {
                     ITsPropertyName propertyName = ParsePropertyName();
                     ITsIdentifier identifier = propertyName as ITsIdentifier;
@@ -191,17 +201,18 @@ namespace Desalt.Core.TypeScript.Parsing
                         propertyDefinition = Factory.PropertyAssignment(propertyName, initializer);
                     }
 
+                    // CoverInitializedName
+                    else if (identifier != null && _reader.IsNext(TsTokenCode.Equals))
+                    {
+                        ITsExpression initializer = ParseInitializer();
+                        propertyDefinition = Factory.CoverInitializedName(identifier, initializer);
+                    }
+
                     // PropertyName CallSignature { FunctionBody }
-                    else if (TryParseCallSignature(out ITsCallSignature callSignature))
+                    else if (TryParse(ParseCallSignature, out ITsCallSignature callSignature))
                     {
                         ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
                         propertyDefinition = Factory.PropertyFunction(propertyName, callSignature, functionBody);
-                    }
-
-                    // CoverInitializedName
-                    else if (identifier != null && TryParseInitializer(out ITsExpression initializer))
-                    {
-                        propertyDefinition = Factory.CoverInitializedName(identifier, initializer);
                     }
 
                     // IdentifierReference
@@ -209,15 +220,13 @@ namespace Desalt.Core.TypeScript.Parsing
                     {
                         propertyDefinition = identifier;
                     }
-                }
-
-                if (propertyDefinition == null)
-                {
-                    throw NewParseException($"Unknown token in ParseObjectLiteral: {_reader.Peek()}");
+                    else
+                    {
+                        throw NewParseException($"Unknown token in ParseObjectLiteral: {_reader.Peek()}");
+                    }
                 }
 
                 propertyDefinitions.Add(propertyDefinition);
-
                 _reader.ReadIf(TsTokenCode.Comma);
             }
 
@@ -233,17 +242,21 @@ namespace Desalt.Core.TypeScript.Parsing
         /// Initializer:
         ///     = AssignmentExpression
         /// ]]></code></remarks>
-        private ITsExpression TryParseInitializer() =>
-            _reader.ReadIf(TsTokenCode.Equals) ? ParseAssignmentExpression() : null;
-
-        private bool TryParseInitializer(out ITsExpression initializer)
+        private ITsExpression ParseInitializer()
         {
-            initializer = TryParseInitializer();
-            return initializer != null;
+            Read(TsTokenCode.Equals);
+            return ParseAssignmentExpression();
         }
 
-        private ITsGetAccessor TryParseGetAccessor() =>
-            _reader.Peek().TokenCode == TsTokenCode.Get ? ParseGetAccessor() : null;
+        private ITsExpression ParseOptionalInitializer()
+        {
+            if (_reader.IsNext(TsTokenCode.Equals))
+            {
+                return ParseInitializer();
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Parses a get accessor of the form 'get name(): string { body }'.
@@ -260,15 +273,10 @@ namespace Desalt.Core.TypeScript.Parsing
             Read(TsTokenCode.LeftParen);
             Read(TsTokenCode.RightParen);
 
-            ITsType propertyType = TryParseTypeAnnotation();
+            ITsType propertyType = ParseOptionalTypeAnnotation();
             ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
 
             return Factory.GetAccessor(propertyName, propertyType, functionBody);
-        }
-
-        private ITsSetAccessor TryParseSetAccessor()
-        {
-            return _reader.Peek().TokenCode == TsTokenCode.Set ? ParseSetAccessor() : null;
         }
 
         /// <summary>
@@ -276,12 +284,21 @@ namespace Desalt.Core.TypeScript.Parsing
         /// </summary>
         /// <remarks><code><![CDATA[
         /// SetAccessor:
-        ///     set PropertyName(BindingIdentifierOrPattern TypeAnnotationOpt) { FunctionBody }
+        ///     set PropertyName ( BindingIdentifierOrPattern TypeAnnotationOpt ) { FunctionBody }
         /// ]]></code></remarks>
         private ITsSetAccessor ParseSetAccessor()
         {
             Read(TsTokenCode.Set);
-            return null;
+            ITsPropertyName propertyName = ParsePropertyName();
+
+            Read(TsTokenCode.LeftParen);
+            ITsBindingIdentifierOrPattern parameterName = ParseBindingIdentifierOrPattern();
+            ITsType parameterType = ParseOptionalTypeAnnotation();
+            Read(TsTokenCode.RightParen);
+
+            ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
+
+            return Factory.SetAccessor(propertyName, parameterName, parameterType, functionBody);
         }
 
         /// <summary>

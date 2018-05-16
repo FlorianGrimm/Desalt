@@ -259,5 +259,16 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 "x.y[z].z()",
                 Factory.Call(Factory.MemberDot(Factory.MemberBracket(Factory.MemberDot(s_x, "y"), s_z), "z")));
         }
+
+        [TestMethod]
+        public void TsParser_should_recognize_a_logical_or_with_an_arrow_function()
+        {
+            AssertParseExpression(
+                "filter || (() => true)",
+                Factory.BinaryExpression(
+                    Factory.Identifier("filter"),
+                    TsBinaryOperator.LogicalOr,
+                    Factory.ArrowFunction(Factory.CallSignature(), Factory.True).WithParentheses()));
+        }
     }
 }

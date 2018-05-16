@@ -36,16 +36,16 @@ namespace Desalt.Core.TypeScript.Parsing
         private ITsStatement ParseStatement()
         {
             // BlockStatement
-            ITsBlockStatement blockStatement = TryParseBlockStatement();
-            if (blockStatement != null)
+            if (_reader.IsNext(TsTokenCode.LeftBrace))
             {
+                ITsBlockStatement blockStatement = ParseBlockStatement();
                 return blockStatement;
             }
 
             // VariableStatement
-            ITsVariableStatement variableStatement = TryParseVariableStatement();
-            if (variableStatement != null)
+            if (_reader.IsNext(TsTokenCode.Var))
             {
+                ITsVariableStatement variableStatement = ParseVariableStatement();
                 return variableStatement;
             }
 
@@ -75,12 +75,9 @@ namespace Desalt.Core.TypeScript.Parsing
         /// Block:
         ///     { StatementListOpt }
         /// ]]></code></remarks>
-        private ITsBlockStatement TryParseBlockStatement()
+        private ITsBlockStatement ParseBlockStatement()
         {
-            if (!_reader.ReadIf(TsTokenCode.LeftBrace))
-            {
-                return null;
-            }
+            Read(TsTokenCode.LeftBrace);
 
             if (_reader.ReadIf(TsTokenCode.RightBrace))
             {
@@ -100,13 +97,9 @@ namespace Desalt.Core.TypeScript.Parsing
         /// VariableStatement:
         ///     var VariableDeclarationList ;
         /// ]]></code></remarks>
-        private ITsVariableStatement TryParseVariableStatement()
+        private ITsVariableStatement ParseVariableStatement()
         {
-            if (!_reader.ReadIf(TsTokenCode.Var))
-            {
-                return null;
-            }
-
+            Read(TsTokenCode.Var);
             var declarations = ParseVariableDeclarationList();
             Read(TsTokenCode.Semicolon);
 
@@ -140,19 +133,19 @@ namespace Desalt.Core.TypeScript.Parsing
                 ITsVariableDeclaration declaration;
 
                 // SimpleVariableDeclaration
-                ITsIdentifier variableName = TryParseIdentifier();
-                if (variableName != null)
+                if (TryParseIdentifier(out ITsIdentifier variableName))
                 {
-                    ITsType variableType = TryParseTypeAnnotation();
-                    ITsExpression initializer = TryParseInitializer();
+                    ITsType variableType = ParseOptionalTypeAnnotation();
+                    ITsExpression initializer = ParseOptionalInitializer();
 
                     declaration = Factory.SimpleVariableDeclaration(variableName, variableType, initializer);
                 }
+                // DestructuringVariableDeclaration
                 else
                 {
                     ITsBindingPattern bindingPattern = ParseBindingPattern();
-                    ITsType variableType = TryParseTypeAnnotation();
-                    ITsExpression initializer = TryParseInitializer();
+                    ITsType variableType = ParseOptionalTypeAnnotation();
+                    ITsExpression initializer = ParseInitializer();
 
                     declaration = Factory.DestructuringVariableDeclaration(bindingPattern, variableType, initializer);
                 }

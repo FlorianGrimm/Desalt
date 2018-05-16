@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.TypeScript.Parsing
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core.TypeScript.Ast;
@@ -149,14 +150,10 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsIdentifier ParseIdentifierReference() => ParseIdentifier();
 
-        private ITsIdentifier TryParseIdentifier()
-        {
-            return _reader.ReadIf(TsTokenCode.Identifier, out TsToken identifierToken)
-                ? Factory.Identifier(identifierToken.Value.ToString())
-                : null;
-        }
+        private static bool IsStartOfIdentifier(TsTokenCode tokenCode) =>
+            tokenCode == TsTokenCode.Identifier || tokenCode > TsTokenCode.LastReservedWord;
 
-        private ITsIdentifier ParseIdentifier()
+        private bool TryParseIdentifier(out ITsIdentifier identifier)
         {
             TsToken identifierToken;
 
@@ -169,12 +166,28 @@ namespace Desalt.Core.TypeScript.Parsing
                     keywordAsIdentifierToken.Text,
                     keywordAsIdentifierToken.Location);
             }
-            else
+            else if (_reader.IsNext(TsTokenCode.Identifier))
             {
                 identifierToken = Read(TsTokenCode.Identifier);
             }
+            else
+            {
+                identifier = null;
+                return false;
+            }
 
-            return Factory.Identifier(identifierToken.Value.ToString());
+            identifier = Factory.Identifier(identifierToken.Value.ToString());
+            return true;
+        }
+
+        private ITsIdentifier ParseIdentifier()
+        {
+            if (TryParseIdentifier(out ITsIdentifier identifier))
+            {
+                return identifier;
+            }
+
+            throw NewParseException($"Expected an identifier as the next token");
         }
 
         /// <summary>
@@ -195,12 +208,38 @@ namespace Desalt.Core.TypeScript.Parsing
 
         private TsToken Read(TsTokenCode expectedTokenCode)
         {
-            if (_reader.Peek().TokenCode != expectedTokenCode)
+            if (!_reader.IsNext(expectedTokenCode))
             {
                 throw NewParseException($"Expected '{expectedTokenCode}' as the next token");
             }
 
             return _reader.Read();
+        }
+
+        /// <summary>
+        /// Attempts to parse productions without throwing exceptions. If there are failures, false
+        /// is returned and the reader is at the same state as before this function was called. If
+        /// the parsing succeeded, the reader is at the next token after the parse.
+        /// </summary>
+        /// <typeparam name="T">The type of parsed TypeScript AST node.</typeparam>
+        /// <param name="func">The function to run inside of a saved state context.</param>
+        /// <param name="result">
+        /// If the parse is successful, the result of the tried parse; otherwise, <c>default(T)</c>.
+        /// </param>
+        /// <returns>True if the parse succeeded; false otherwise.</returns>
+        public bool TryParse<T>(Func<T> func, out T result) where T : class, IAstNode
+        {
+            try
+            {
+                bool WasSuccessful(T r) => !(r is null);
+                result = _reader.ReadWithSavedState(func, shouldCommitReadFunc: WasSuccessful);
+                return WasSuccessful(result);
+            }
+            catch (TsParserException)
+            {
+                result = default(T);
+                return false;
+            }
         }
 
         private TsParserException NewParseException(string message, TextReaderLocation? location = null)

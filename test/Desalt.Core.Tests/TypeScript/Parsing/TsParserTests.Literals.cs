@@ -92,6 +92,8 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.Identifier("prop"),
                     Factory.StringType,
                     Enumerable.Empty<ITsStatementListItem>()));
+
+            // Statement lists are not yet supported
             action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
         }
 
@@ -109,6 +111,8 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                             TsAssignmentOperator.SimpleAssign,
                             Factory.Identifier("value"))
                         .ToStatement()));
+
+            // Statement lists are not yet supported
             action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
         }
 
@@ -126,6 +130,8 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                             Factory.ParameterList(s_x),
                             Factory.BooleanType),
                         Factory.Return(Factory.False))));
+
+            // Statement lists are not yet supported
             action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
         }
     }
