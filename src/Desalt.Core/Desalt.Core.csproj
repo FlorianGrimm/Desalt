@@ -270,6 +270,7 @@
     <Compile Include="TypeScript\Ast\Statements\TsLabelledStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsObjectBindingPattern.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsPatternBinding.cs" />
+    <Compile Include="TypeScript\Ast\Statements\TsPropertyNameBinding.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsReturnStatement.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsSimpleVariableDeclaration.cs" />
     <Compile Include="TypeScript\Ast\Statements\TsSingleNameBinding.cs" />
