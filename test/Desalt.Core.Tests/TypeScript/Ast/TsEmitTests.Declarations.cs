@@ -193,6 +193,16 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.FunctionMemberDeclaration(
                     Factory.Identifier("myMethod"),
                     isStatic: true,
+                    isAbstract: true,
+                    callSignature: Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
+                        Factory.VoidType)),
+                "static abstract myMethod(x: number): void;\n");
+
+            VerifyOutput(
+                Factory.FunctionMemberDeclaration(
+                    Factory.Identifier("myMethod"),
+                    isStatic: true,
                     callSignature: Factory.CallSignature(
                         Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
                         Factory.VoidType)),
@@ -234,6 +244,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
                     TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    isAbstract: true),
+                "public static abstract get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.GetAccessorMemberDeclaration(
+                    Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
                     isStatic: true),
                 "public static get field(): number { }\n");
 
@@ -241,6 +259,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 Factory.GetAccessorMemberDeclaration(
                     Factory.GetAccessor(Factory.Identifier("field"), Factory.NumberType)),
                 "get field(): number { }\n");
+
+            VerifyOutput(
+                Factory.SetAccessorMemberDeclaration(
+                    Factory.SetAccessor(Factory.Identifier("field"), Factory.Identifier("value"), Factory.NumberType),
+                    TsAccessibilityModifier.Public,
+                    isStatic: true,
+                    isAbstract: true),
+                "public static abstract set field(value: number) { }\n");
 
             VerifyOutput(
                 Factory.SetAccessorMemberDeclaration(
@@ -298,6 +324,12 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         }
 
         [TestMethod]
+        public void Emit_abstract_class_declaration()
+        {
+            VerifyOutput(Factory.ClassDeclaration(Factory.Identifier("C"), isAbstract: true), "abstract class C {\n}\n");
+        }
+
+        [TestMethod]
         public void Emit_class_declaration_with_all_of_the_possible_elements()
         {
             // ReSharper disable once InconsistentNaming
@@ -311,27 +343,34 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 
             VerifyOutput(
                 Factory.ClassDeclaration(
-                    Factory.Identifier("AnimalCollection"),
-                    Factory.TypeParameters(Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal")))),
+                    className: Factory.Identifier("AnimalCollection"),
+                    typeParameters:
+                    Factory.TypeParameters(
+                        Factory.TypeParameter(s_T, Factory.TypeReference(Factory.Identifier("IAnimal")))),
+                    heritage:
                     Factory.ClassHeritage(
                         Factory.TypeReference(Factory.Identifier("Collection"), s_TRef),
                         Factory.TypeReference(Factory.Identifier("ICollection"), s_TRef).ToSafeArray()),
-                    new ITsClassElement[]
+                    isAbstract: false,
+                    classBody: new ITsClassElement[]
                     {
                         Factory.VariableMemberDeclaration(
-                            _items, TsAccessibilityModifier.Private,typeAnnotation: Factory.ArrayType(s_TRef)),
+                            _items,
+                            TsAccessibilityModifier.Private,
+                            typeAnnotation: Factory.ArrayType(s_TRef)),
                         Factory.ConstructorDeclaration(
                             TsAccessibilityModifier.Public,
                             Factory.ParameterList(
                                 requiredParameters: Factory.BoundRequiredParameter(item, s_TRef).ToSafeArray(),
                                 restParameter: Factory.RestParameter(items, Factory.ArrayType(s_TRef))),
                             Factory.Assignment(
-                                thisItems,
-                                TsAssignmentOperator.SimpleAssign,
-                                Factory.Array(
-                                    Factory.ArrayElement(item), Factory.ArrayElement(items, isSpreadElement: true)))
-                            .ToStatement()
-                            .ToSafeArray()),
+                                    thisItems,
+                                    TsAssignmentOperator.SimpleAssign,
+                                    Factory.Array(
+                                        Factory.ArrayElement(item),
+                                        Factory.ArrayElement(items, isSpreadElement: true)))
+                                .ToStatement()
+                                .ToSafeArray()),
                         Factory.IndexMemberDeclaration(
                             Factory.IndexSignature(
                                 Factory.Identifier("index"),
@@ -342,9 +381,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                             TsAccessibilityModifier.Public),
                         Factory.SetAccessorMemberDeclaration(
                             Factory.SetAccessor(
-                                length, value, Factory.NumberType,
+                                length,
+                                value,
+                                Factory.NumberType,
                                 Factory.Assignment(thisItemsLength, TsAssignmentOperator.SimpleAssign, value)
-                                .ToStatement()),
+                                    .ToStatement()),
                             TsAccessibilityModifier.Public),
                         Factory.FunctionMemberDeclaration(
                             Factory.Identifier("add"),
@@ -353,9 +394,11 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                                 Factory.VoidType),
                             TsAccessibilityModifier.Public,
                             functionBody: Factory.Assignment(
-                                Factory.MemberBracket(thisItems, thisItemsLength),
-                                TsAssignmentOperator.SimpleAssign,
-                                item).ToStatement().ToSafeArray())
+                                    Factory.MemberBracket(thisItems, thisItemsLength),
+                                    TsAssignmentOperator.SimpleAssign,
+                                    item)
+                                .ToStatement()
+                                .ToSafeArray())
                     }),
                 @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
   private _items: T[];

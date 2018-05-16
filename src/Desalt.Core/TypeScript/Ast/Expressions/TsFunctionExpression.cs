@@ -46,8 +46,10 @@ namespace Desalt.Core.TypeScript.Ast.Expressions
         public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
 
         public override string CodeDisplay =>
-            $"function {FunctionName.CodeDisplay}{CallSignature} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
+            "function " +
+            (FunctionName != null ? FunctionName.CodeDisplay : "") +
+            CallSignature.CodeDisplay +
+            $" {{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
         protected override void EmitInternal(Emitter emitter)
         {

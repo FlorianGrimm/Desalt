@@ -26,9 +26,9 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsType ParseType()
         {
-            ITsType ctorType = TryParseConstructorType();
-            if (ctorType != null)
+            if (_reader.IsNext(TsTokenCode.New))
             {
+                ITsType ctorType = ParseConstructorType();
                 return ctorType;
             }
 
@@ -130,7 +130,7 @@ namespace Desalt.Core.TypeScript.Parsing
         private bool SkipParameterStart()
         {
             // skip modifiers
-            TryParseAccessibilityModifier();
+            ParseOptionalAccessibilityModifier();
 
             // return true if we can parse an array or object binding pattern with no errors
             try
@@ -153,12 +153,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsFunctionType ParseFunctionType()
         {
-            ITsTypeParameters typeParameters = TryParseTypeParameters();
-            if (typeParameters == null && !_reader.IsNext(TsTokenCode.LeftParen))
-            {
-                return null;
-            }
-
+            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameters = ParseOptionalParameterListWithParens();
             Read(TsTokenCode.EqualsGreaterThan);
             ITsType returnType = ParseType();
@@ -173,14 +168,10 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ConstructorType:
         ///     new TypeParametersOpt ( ParameterListOpt ) => Type
         /// ]]></code></remarks>
-        private ITsConstructorType TryParseConstructorType()
+        private ITsConstructorType ParseConstructorType()
         {
-            if (!_reader.ReadIf(TsTokenCode.New))
-            {
-                return null;
-            }
-
-            ITsTypeParameters typeParameters = TryParseTypeParameters();
+            Read(TsTokenCode.New);
+            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameters = ParseOptionalParameterListWithParens();
             Read(TsTokenCode.EqualsGreaterThan);
             ITsType returnType = ParseType();
@@ -213,31 +204,58 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsType ParsePrimaryType()
         {
-            ITsType type = TryParsePredefinedType() ??
-                TryParseObjectType() ?? TryParseTupleType() ?? (ITsType)TryParseTypeQuery();
-
-            // ParenthesizedType
-            if (type == null && _reader.ReadIf(TsTokenCode.LeftParen))
+            ITsType type = null;
+            switch (_reader.Peek().TokenCode)
             {
-                type = ParseType();
-                Read(TsTokenCode.RightParen);
+                // PredefinedType
+                case TsTokenCode.Any:
+                case TsTokenCode.Number:
+                case TsTokenCode.Boolean:
+                case TsTokenCode.String:
+                case TsTokenCode.Symbol:
+                case TsTokenCode.Void:
+                    type = ParsePredefinedType();
+                    break;
+
+                // TypeReference
+                // ReSharper disable once PatternAlwaysMatches
+                case TsTokenCode tc when IsStartOfIdentifier(tc):
+                    type = ParseTypeReference();
+                    break;
+
+                // ParenthesizedType
+                case TsTokenCode.LeftParen:
+                    _reader.Read();
+                    type = ParseType();
+                    Read(TsTokenCode.RightParen);
+                    break;
+
+                // ObjectType
+                case TsTokenCode.LeftBrace:
+                    type = ParseObjectType();
+                    break;
+
+                // TupleType
+                case TsTokenCode.LeftBracket:
+                    type = ParseTupleType();
+                    break;
+
+                // TypeQuery
+                case TsTokenCode.Typeof:
+                    type = ParseTypeQuery();
+                    break;
+
+                // ThisType
+                case TsTokenCode.This:
+                    type = Factory.ThisType;
+                    break;
             }
 
-            // ThisType
-            if (type == null && _reader.ReadIf(TsTokenCode.This))
+            // ArrayType
+            if (type != null && _reader.ReadIf(TsTokenCode.LeftBracket))
             {
-                type = Factory.ThisType;
-            }
-
-            // TypeReference and ArrayType
-            if (type == null)
-            {
-                type = ParseTypeReference();
-                if (_reader.ReadIf(TsTokenCode.LeftBracket))
-                {
-                    type = Factory.ArrayType(type);
-                    Read(TsTokenCode.RightBracket);
-                }
+                type = Factory.ArrayType(type);
+                Read(TsTokenCode.RightBracket);
             }
 
             if (type == null)
@@ -257,45 +275,32 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     symbol
         ///     void
         /// ]]></code></remarks>
-        private ITsType TryParsePredefinedType()
+        private ITsType ParsePredefinedType()
         {
-            TsToken token = _reader.Peek();
-            ITsType type = null;
-
+            TsToken token = _reader.Read();
             switch (token.TokenCode)
             {
                 case TsTokenCode.Any:
-                    type = Factory.AnyType;
-                    break;
+                    return Factory.AnyType;
 
                 case TsTokenCode.Number:
-                    type = Factory.NumberType;
-                    break;
+                    return Factory.NumberType;
 
                 case TsTokenCode.Boolean:
-                    type = Factory.BooleanType;
-                    break;
+                    return Factory.BooleanType;
 
                 case TsTokenCode.String:
-                    type = Factory.StringType;
-                    break;
+                    return Factory.StringType;
 
                 case TsTokenCode.Symbol:
-                    type = Factory.SymbolType;
-                    break;
+                    return Factory.SymbolType;
 
                 case TsTokenCode.Void:
-                    type = Factory.VoidType;
-                    break;
-            }
+                    return Factory.VoidType;
 
-            if (type != null)
-            {
-                _reader.Skip();
-                return type;
+                default:
+                    throw NewParseException($"Token '{token}' is not a predefined type", token.Location);
             }
-
-            return null;
         }
 
         /// <summary>
@@ -316,7 +321,7 @@ namespace Desalt.Core.TypeScript.Parsing
         private ITsTypeReference ParseTypeReference()
         {
             ITsQualifiedName typeName = ParseQualifiedName();
-            ITsType[] typeArguments = TryParseTypeArguments();
+            ITsType[] typeArguments = ParseOptionalTypeArguments();
             return Factory.TypeReference(typeName, typeArguments);
         }
 
@@ -337,11 +342,11 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     TypeMemberList , TypeMember
         ///
         /// TypeMember:
-        ///     PropertySignature
-        ///     CallSignature
-        ///     ConstructSignature
-        ///     IndexSignature
-        ///     MethodSignature
+        ///     PropertySignature   (starts with PropertyName)
+        ///     CallSignature       (starts with either '<' or '(')
+        ///     ConstructSignature  (starts with 'new')
+        ///     IndexSignature      (starts with '[')
+        ///     MethodSignature     (starts with PropertyName)
         ///
         /// PropertySignature:
         ///     PropertyName ?Opt TypeAnnotationOpt
@@ -349,48 +354,56 @@ namespace Desalt.Core.TypeScript.Parsing
         /// MethodSignature:
         ///     PropertyName ?Opt CallSignature
         /// ]]></code></remarks>
-        private ITsObjectType TryParseObjectType()
+        private ITsObjectType ParseObjectType()
         {
-            if (!_reader.ReadIf(TsTokenCode.LeftBrace))
-            {
-                return null;
-            }
+            Read(TsTokenCode.LeftBrace);
 
             var typeMembers = new List<ITsTypeMember>();
             do
             {
-                if (_reader.IsNext(TsTokenCode.RightBrace))
-                {
-                    break;
-                }
+                ITsTypeMember member;
 
-                ITsTypeMember member = TryParseConstructSignature() ??
-                    (ITsTypeMember)TryParseIndexSignature() ?? TryParseCallSignature();
-
-                // PropertySignature and MethodSignature start the same way
-                if (member == null)
+                // ReSharper disable once SwitchStatementMissingSomeCases
+                switch (_reader.Peek().TokenCode)
                 {
-                    ITsPropertyName propertyName = ParsePropertyName();
-                    bool isOptional = _reader.ReadIf(TsTokenCode.Question);
-                    if (TryParseCallSignature(out ITsCallSignature callSignature))
-                    {
-                        member = Factory.MethodSignature(propertyName, isOptional, callSignature);
-                    }
-                    else
-                    {
-                        ITsType propertyType = TryParseTypeAnnotation();
-                        member = Factory.PropertySignature(propertyName, propertyType, isOptional);
-                    }
-                }
+                    // ConstructSignature
+                    case TsTokenCode.New:
+                        member = ParseConstructSignature();
+                        break;
 
-                if (member == null)
-                {
-                    throw NewParseException($"Unknown token in ParseObjectType: {_reader.Peek()}");
+                    // IndexSignature
+                    case TsTokenCode.LeftBracket:
+                        member = ParseIndexSignature();
+                        break;
+
+                    // CallSignature
+                    case TsTokenCode.LessThan:
+                    case TsTokenCode.LeftParen:
+                        member = ParseCallSignature();
+                        break;
+
+                    // PropertySignature and MethodSignature start the same way
+                    default:
+                        ITsPropertyName propertyName = ParsePropertyName();
+                        bool isOptional = _reader.ReadIf(TsTokenCode.Question);
+                        if (_reader.Peek().TokenCode.IsOneOf(TsTokenCode.LessThan, TsTokenCode.LeftParen))
+                        {
+                            ITsCallSignature callSignature = ParseCallSignature();
+                            member = Factory.MethodSignature(propertyName, isOptional, callSignature);
+                        }
+                        else
+                        {
+                            ITsType propertyType = ParseOptionalTypeAnnotation();
+                            member = Factory.PropertySignature(propertyName, propertyType, isOptional);
+                        }
+
+                        break;
                 }
 
                 typeMembers.Add(member);
+                _reader.ReadIf(tokenCode => tokenCode.IsOneOf(TsTokenCode.Semicolon, TsTokenCode.Comma));
             }
-            while (_reader.ReadIf(tokenCode => tokenCode.IsOneOf(TsTokenCode.Semicolon, TsTokenCode.Comma)));
+            while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.RightBrace));
 
             Read(TsTokenCode.RightBrace);
 
@@ -404,16 +417,12 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ConstructSignature:
         ///     new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
         /// ]]></code></remarks>
-        private ITsConstructSignature TryParseConstructSignature()
+        private ITsConstructSignature ParseConstructSignature()
         {
-            if (!_reader.ReadIf(TsTokenCode.New))
-            {
-                return null;
-            }
-
-            ITsTypeParameters typeParameters = TryParseTypeParameters();
+            Read(TsTokenCode.New);
+            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameterList = ParseOptionalParameterListWithParens();
-            ITsType returnType = TryParseTypeAnnotation();
+            ITsType returnType = ParseOptionalTypeAnnotation();
 
             return Factory.ConstructSignature(typeParameters, parameterList, returnType);
         }
@@ -426,12 +435,9 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     [ BindingIdentifier : string ] TypeAnnotation
         ///     [ BindingIdentifier : number ] TypeAnnotation
         /// ]]></code></remarks>
-        private ITsIndexSignature TryParseIndexSignature()
+        private ITsIndexSignature ParseIndexSignature()
         {
-            if (!_reader.ReadIf(TsTokenCode.LeftBracket))
-            {
-                return null;
-            }
+            Read(TsTokenCode.LeftBracket);
 
             ITsIdentifier parameterName = ParseIdentifier();
             Read(TsTokenCode.Colon);
@@ -471,12 +477,9 @@ namespace Desalt.Core.TypeScript.Parsing
         /// TupleElementType:
         ///     Type
         /// ]]></code></remarks>
-        private ITsTupleType TryParseTupleType()
+        private ITsTupleType ParseTupleType()
         {
-            if (!_reader.ReadIf(TsTokenCode.LeftBracket))
-            {
-                return null;
-            }
+            Read(TsTokenCode.LeftBracket);
 
             var types = new List<ITsType>();
             do
@@ -501,13 +504,9 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     IdentifierReference
         ///     TypeQueryExpression . IdentifierName
         /// ]]></code></remarks>
-        private ITsTypeQuery TryParseTypeQuery()
+        private ITsTypeQuery ParseTypeQuery()
         {
-            if (!_reader.ReadIf(TsTokenCode.Typeof))
-            {
-                return null;
-            }
-
+            Read(TsTokenCode.Typeof);
             var qualifiedName = ParseQualifiedName();
             return Factory.TypeQuery(qualifiedName);
         }
@@ -519,29 +518,11 @@ namespace Desalt.Core.TypeScript.Parsing
         /// CallSignature:
         ///    TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
         /// ]]></code></remarks>
-        private bool TryParseCallSignature(out ITsCallSignature callSignature)
+        private ITsCallSignature ParseCallSignature()
         {
-            callSignature = TryParseCallSignature();
-            return callSignature != null;
-        }
-
-        /// <summary>
-        /// Parses a call signature.
-        /// </summary>
-        /// <remarks><code><![CDATA[
-        /// CallSignature:
-        ///    TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
-        /// ]]></code></remarks>
-        private ITsCallSignature TryParseCallSignature()
-        {
-            ITsTypeParameters typeParameters = TryParseTypeParameters();
-            if (typeParameters == null && !_reader.IsNext(TsTokenCode.LeftParen))
-            {
-                return null;
-            }
-
+            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameterList = ParseOptionalParameterListWithParens();
-            ITsType returnType = TryParseTypeAnnotation();
+            ITsType returnType = ParseOptionalTypeAnnotation();
 
             return Factory.CallSignature(typeParameters, parameterList, returnType);
         }
@@ -563,7 +544,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// Constraint:
         ///     extends Type
         /// ]]></code></remarks>
-        private ITsTypeParameters TryParseTypeParameters()
+        private ITsTypeParameters ParseOptionalTypeParameters()
         {
             if (!_reader.ReadIf(TsTokenCode.LessThan))
             {
@@ -571,7 +552,7 @@ namespace Desalt.Core.TypeScript.Parsing
             }
 
             var typeParameters = new List<ITsTypeParameter>();
-            while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.GreaterThan))
+            do
             {
                 ITsIdentifier typeName = ParseIdentifier();
                 ITsType constraint = null;
@@ -580,11 +561,10 @@ namespace Desalt.Core.TypeScript.Parsing
                     constraint = ParseType();
                 }
 
-                _reader.ReadIf(TsTokenCode.Comma);
-
                 var typeParameter = Factory.TypeParameter(typeName, constraint);
                 typeParameters.Add(typeParameter);
             }
+            while (!_reader.IsAtEnd && _reader.ReadIf(TsTokenCode.Comma));
 
             Read(TsTokenCode.GreaterThan);
             return Factory.TypeParameters(typeParameters.ToArray());
@@ -604,7 +584,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// TypeArgument:
         ///     Type
         /// ]]></code></remarks>
-        private ITsType[] TryParseTypeArguments()
+        private ITsType[] ParseOptionalTypeArguments()
         {
             if (!_reader.ReadIf(TsTokenCode.LessThan))
             {
@@ -630,7 +610,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// TypeAnnotation:
         ///     : Type
         /// ]]></code></remarks>
-        private ITsType TryParseTypeAnnotation() => _reader.ReadIf(TsTokenCode.Colon) ? ParseType() : null;
+        private ITsType ParseOptionalTypeAnnotation() => _reader.ReadIf(TsTokenCode.Colon) ? ParseType() : null;
 
         /// <summary>
         /// Parses a type annotation of the form ': type'.

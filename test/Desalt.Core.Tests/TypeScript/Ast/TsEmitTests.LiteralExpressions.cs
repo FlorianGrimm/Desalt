@@ -109,6 +109,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         }
 
         [TestMethod]
+        public void Emit_array_literals_with_elisons_ie_empty_elements()
+        {
+            VerifyOutput(
+                Factory.Array(null, Factory.ArrayElement(s_x), null, null, Factory.ArrayElement(s_y)),
+                "[, x, , , y]");
+        }
+
+        [TestMethod]
         public void Emit_array_literals_with_spread_operator()
         {
             VerifyOutput(Factory.Array(Factory.ArrayElement(s_y, isSpreadElement: true)), "[... y]");

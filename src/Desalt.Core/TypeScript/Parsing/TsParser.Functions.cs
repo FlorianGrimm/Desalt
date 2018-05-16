@@ -22,7 +22,69 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsFunctionExpression ParseFunctionExpression()
         {
-            throw NotYetImplementedException("Function expressions are not yet implemented");
+            Read(TsTokenCode.Function);
+            TryParseIdentifier(out ITsIdentifier functionName);
+            ITsCallSignature callSignature = ParseCallSignature();
+            ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
+
+            return Factory.FunctionExpression(callSignature, functionName, functionBody);
+        }
+
+        /// <summary>
+        /// Tries to parse an arrow function. If successful, the arrow function is returned and the
+        /// reader is ready for the next production. If not successful, the reader is preserved in
+        /// the same location as before the function was called.
+        /// </summary>
+        /// <returns>true if the next production was an ArrowFunction; otherwise, false.</returns>
+        /// <remarks><code><![CDATA[
+        /// ArrowFunction:
+        ///   ArrowParameters [no LineTerminator here] => ConciseBody
+        ///
+        /// ArrowParameters:
+        ///   BindingIdentifier
+        ///   CoverParenthesizedExpressionAndArrowParameterList
+        ///
+        /// ConciseBody:
+        ///   [lookahead != { ] AssignmentExpression
+        ///   { FunctionBody }
+        ///
+        /// When the production `ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList`
+        /// is recognized the following grammar is used to refine the interpretation of
+        /// CoverParenthesizedExpressionAndArrowParameterList:
+        ///
+        /// ArrowFormalParameters: ( Modified )
+        ///   CallSignature
+        /// ]]></code></remarks>
+        private ITsArrowFunction ParseArrowFunction()
+        {
+            ITsExpression bodyExpression;
+
+            // try to parse 'param =>' arrow functions
+            if (TryParseIdentifier(out ITsIdentifier singleParameterName))
+            {
+                Read(TsTokenCode.EqualsGreaterThan);
+                if (_reader.IsNext(TsTokenCode.LeftBrace))
+                {
+                    ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
+                    return Factory.ArrowFunction(singleParameterName, functionBody);
+                }
+
+                bodyExpression = ParseAssignmentExpression();
+                return Factory.ArrowFunction(singleParameterName, bodyExpression);
+            }
+
+            // parse the call signature
+            ITsCallSignature callSignature = ParseCallSignature();
+            Read(TsTokenCode.EqualsGreaterThan);
+
+            if (_reader.IsNext(TsTokenCode.LeftBrace))
+            {
+                ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
+                return Factory.ArrowFunction(callSignature, functionBody);
+            }
+
+            bodyExpression = ParseAssignmentExpression();
+            return Factory.ArrowFunction(callSignature, bodyExpression);
         }
 
         /// <summary>
@@ -41,6 +103,10 @@ namespace Desalt.Core.TypeScript.Parsing
             if (withBraces)
             {
                 Read(TsTokenCode.LeftBrace);
+                if (_reader.ReadIf(TsTokenCode.RightBrace))
+                {
+                    return new ITsStatementListItem[0];
+                }
             }
 
             var statements = ParseStatementList();
@@ -105,15 +171,15 @@ namespace Desalt.Core.TypeScript.Parsing
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             var optionalParameters = new List<ITsOptionalParameter>();
-            ITsRestParameter restParameter;
+            ITsRestParameter restParameter = null;
 
             // RequiredParameterList or OptionalParameterList
             do
             {
                 // RestParameter
-                restParameter = TryParseRestParameter();
-                if (restParameter != null)
+                if (_reader.IsNext(TsTokenCode.DotDotDot))
                 {
+                    restParameter = ParseRestParameter();
                     break;
                 }
 
@@ -123,7 +189,7 @@ namespace Desalt.Core.TypeScript.Parsing
 
                 // RequiredParameter: AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt
                 // OptionalParameter: AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
-                TsAccessibilityModifier? accessibilityModifier = TryParseAccessibilityModifier();
+                TsAccessibilityModifier? accessibilityModifier = ParseOptionalAccessibilityModifier();
                 ITsBindingIdentifierOrPattern parameterName = ParseBindingIdentifierOrPattern();
 
                 if (_reader.ReadIf(TsTokenCode.Question))
@@ -140,13 +206,14 @@ namespace Desalt.Core.TypeScript.Parsing
                 }
                 else
                 {
-                    parameterType = TryParseTypeAnnotation();
+                    parameterType = ParseOptionalTypeAnnotation();
                 }
 
                 // OptionalParameter: AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
-                ITsExpression initializer = TryParseInitializer();
-                if (initializer != null)
+                ITsExpression initializer = null;
+                if (_reader.IsNext(TsTokenCode.Equals))
                 {
+                    initializer = ParseInitializer();
                     parsingOptionalParameter = true;
                 }
 
@@ -212,7 +279,7 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     private
         ///     protected
         /// ]]></code></remarks>
-        private TsAccessibilityModifier? TryParseAccessibilityModifier()
+        private TsAccessibilityModifier? ParseOptionalAccessibilityModifier()
         {
             if (_reader.ReadIf(TsTokenCode.Public))
             {
@@ -239,15 +306,11 @@ namespace Desalt.Core.TypeScript.Parsing
         /// RestParameter:
         ///     ... BindingIdentifier TypeAnnotationOpt
         /// ]]></code></remarks>
-        private ITsRestParameter TryParseRestParameter()
+        private ITsRestParameter ParseRestParameter()
         {
-            if (!_reader.ReadIf(TsTokenCode.DotDotDot))
-            {
-                return null;
-            }
-
+            Read(TsTokenCode.DotDotDot);
             ITsIdentifier parameterName = ParseIdentifier();
-            ITsType parameterType = TryParseTypeAnnotation();
+            ITsType parameterType = ParseOptionalTypeAnnotation();
 
             return Factory.RestParameter(parameterName, parameterType);
         }
@@ -262,8 +325,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsBindingIdentifierOrPattern ParseBindingIdentifierOrPattern()
         {
-            ITsIdentifier identifier = TryParseIdentifier();
-            if (identifier != null)
+            if (TryParseIdentifier(out ITsIdentifier identifier))
             {
                 return identifier;
             }
@@ -281,7 +343,12 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsBindingPattern ParseBindingPattern()
         {
-            return null;
+            if (_reader.IsNext(TsTokenCode.LeftBrace))
+            {
+                return ParseObjectBindingPattern();
+            }
+
+            return ParseArrayBindingPattern();
         }
 
         /// <summary>
@@ -292,10 +359,26 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     { }
         ///     { BindingPropertyList }
         ///     { BindingPropertyList , }
+        ///
+        /// BindingPropertyList:
+        ///     BindingProperty
+        ///     BindingPropertyList , BindingProperty
         /// ]]></code></remarks>
         private ITsObjectBindingPattern ParseObjectBindingPattern()
         {
-            return null;
+            Read(TsTokenCode.LeftBrace);
+
+            var properties = new List<ITsBindingProperty>();
+            while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.RightBrace))
+            {
+                ITsBindingProperty property = ParseBindingProperty();
+                properties.Add(property);
+
+                _reader.ReadIf(TsTokenCode.Comma);
+            }
+
+            Read(TsTokenCode.RightBrace);
+            return Factory.ObjectBindingPattern(properties.ToArray());
         }
 
         /// <summary>
@@ -306,10 +389,6 @@ namespace Desalt.Core.TypeScript.Parsing
         ///     [ ElisionOpt BindingRestElementOpt ]
         ///     [ BindingElementList ]
         ///     [ BindingElementList , ElisionOpt BindingRestElementOpt ]
-        ///
-        /// BindingPropertyList:
-        ///     BindingProperty
-        ///     BindingPropertyList , BindingProperty
         ///
         /// BindingElementList:
         ///     BindingElisionElement
@@ -323,7 +402,43 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsArrayBindingPattern ParseArrayBindingPattern()
         {
-            return null;
+            Read(TsTokenCode.LeftBracket);
+
+            var elements = new List<ITsBindingElement>();
+            while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.RightBracket))
+            {
+                // read all of the elisons (empty elements)
+                while (_reader.ReadIf(TsTokenCode.Comma))
+                {
+                    elements.Add(null);
+                }
+
+                // check for the rest element
+                if (_reader.IsNext(TsTokenCode.DotDotDot))
+                {
+                    break;
+                }
+
+                // we could be at the end after reading the empty elements
+                if (_reader.IsNext(TsTokenCode.RightBracket))
+                {
+                    break;
+                }
+
+                ITsBindingElement element = ParseBindingElement();
+                elements.Add(element);
+
+                _reader.ReadIf(TsTokenCode.Comma);
+            }
+
+            ITsIdentifier restElement = null;
+            if (_reader.ReadIf(TsTokenCode.DotDotDot))
+            {
+                restElement = ParseIdentifier();
+            }
+
+            Read(TsTokenCode.RightBracket);
+            return Factory.ArrayBindingPattern(elements, restElement);
         }
 
         /// <summary>
@@ -343,7 +458,42 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsBindingProperty ParseBindingProperty()
         {
-            return null;
+            ITsPropertyName propertyName = ParsePropertyName();
+
+            if (propertyName is ITsIdentifier name && !_reader.IsNext(TsTokenCode.Colon))
+            {
+                ITsExpression defaultValue = ParseOptionalInitializer();
+                return Factory.SingleNameBinding(name, defaultValue);
+            }
+
+            Read(TsTokenCode.Colon);
+            ITsBindingElement bindingElement = ParseBindingElement();
+            return Factory.PropertyNameBinding(propertyName, bindingElement);
+        }
+
+        /// <summary>
+        /// Parses a binding element.
+        /// </summary>
+        /// <remarks><code><![CDATA[
+        /// BindingElement:
+        ///     SingleNameBinding
+        ///     BindingPattern InitializerOpt
+        ///
+        /// SingleNameBinding:
+        ///     BindingIdentifier InitializerOpt
+        /// ]]></code></remarks>
+        private ITsBindingElement ParseBindingElement()
+        {
+            if (_reader.IsNext(TsTokenCode.LeftBrace) || _reader.IsNext(TsTokenCode.LeftBracket))
+            {
+                ITsBindingPattern bindingPattern = ParseBindingPattern();
+                ITsExpression initializer = ParseOptionalInitializer();
+                return Factory.PatternBinding(bindingPattern, initializer);
+            }
+
+            ITsIdentifier name = ParseIdentifier();
+            ITsExpression defaultValue = ParseOptionalInitializer();
+            return Factory.SingleNameBinding(name, defaultValue);
         }
     }
 }

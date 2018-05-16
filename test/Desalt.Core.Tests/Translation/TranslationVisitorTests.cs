@@ -20,6 +20,30 @@ namespace Desalt.Core.Tests.Translation
     [TestClass]
     public partial class TranslationVisitorTests
     {
+        private static Task AssertTranslationWithClassCAndMethod(
+            string codeSnippet,
+            string expectedTypeScriptCode,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+        {
+            return AssertTranslation(
+                $@"
+class C
+{{
+    void Method()
+    {{
+        {codeSnippet}
+    }}
+}}",
+                $@"
+class C {{
+  private method(): void {{
+    {expectedTypeScriptCode.Replace("\r\n", "\n").Trim()}
+  }}
+}}
+",
+                discoveryKind);
+        }
+
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,

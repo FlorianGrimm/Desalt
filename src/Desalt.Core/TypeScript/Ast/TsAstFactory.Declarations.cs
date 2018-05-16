@@ -135,10 +135,11 @@ namespace Desalt.Core.TypeScript.Ast
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isAbstract = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
             return TsFunctionMemberDeclaration.Create(
-                functionName, callSignature, accessibilityModifier, isStatic, functionBody);
+                functionName, callSignature, accessibilityModifier, isStatic, isAbstract, functionBody);
         }
 
         /// <summary>
@@ -147,9 +148,10 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsGetAccessorMemberDeclaration GetAccessorMemberDeclaration(
             ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false)
+            bool isStatic = false,
+            bool isAbstract = false)
         {
-            return new TsGetSetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic);
+            return new TsGetSetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic, isAbstract);
         }
 
         /// <summary>
@@ -158,9 +160,10 @@ namespace Desalt.Core.TypeScript.Ast
         public static ITsSetAccessorMemberDeclaration SetAccessorMemberDeclaration(
             ITsSetAccessor setAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false)
+            bool isStatic = false,
+            bool isAbstract = false)
         {
-            return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic);
+            return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic, isAbstract);
         }
 
         /// <summary>
@@ -192,9 +195,10 @@ namespace Desalt.Core.TypeScript.Ast
             ITsIdentifier className = null,
             ITsTypeParameters typeParameters = null,
             ITsClassHeritage heritage = null,
+            bool isAbstract = false,
             IEnumerable<ITsClassElement> classBody = null)
         {
-            return new TsClassDeclaration(className, typeParameters, heritage, classBody);
+            return new TsClassDeclaration(className, typeParameters, heritage, isAbstract, classBody);
         }
 
         /// <summary>

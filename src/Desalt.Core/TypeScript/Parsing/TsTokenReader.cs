@@ -10,6 +10,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using System.Linq;
 
     internal sealed class TsTokenReader
@@ -20,6 +21,7 @@ namespace Desalt.Core.TypeScript.Parsing
 
         private readonly ImmutableArray<TsToken> _tokens;
         private int _index;
+        private int _withinSavedStateBlockCount;
 
         //// ===========================================================================================================
         //// Constructors
@@ -38,6 +40,11 @@ namespace Desalt.Core.TypeScript.Parsing
         /// Gets a value indicating if the reader is at the end and there are no tokens left.
         /// </summary>
         public bool IsAtEnd => _index >= _tokens.Length;
+
+        /// <summary>
+        /// Gets a value indicating whether the reader is currently within a saved state block.
+        /// </summary>
+        public bool WithinSavedStateBlock => _withinSavedStateBlockCount > 0;
 
         //// ===========================================================================================================
         //// Methods
@@ -206,19 +213,31 @@ namespace Desalt.Core.TypeScript.Parsing
         /// </summary>
         /// <typeparam name="T">The return type of the function to run.</typeparam>
         /// <param name="func">The function to run inside of saved state.</param>
+        /// <param name="shouldCommitReadFunc">
+        /// An optional function that will be called with the result of <paramref name="func"/>,
+        /// which returns a value indicating whether to commit the read or to rollback to the saved
+        /// state. This is really useful in scenarios where a parse needs to be tried, but if it
+        /// succeeds we don't need to parse again.
+        /// </param>
         /// <returns>Whatever <paramref name="func"/> returns.</returns>
-        public T ReadWithSavedState<T>(Func<T> func)
+        public T ReadWithSavedState<T>(Func<T> func, Func<T, bool> shouldCommitReadFunc = null)
         {
             int savedIndex = _index;
+            _withinSavedStateBlockCount++;
 
-            T returnValue;
+            var returnValue = default(T);
             try
             {
                 returnValue = func();
             }
             finally
             {
-                _index = savedIndex;
+                if (shouldCommitReadFunc?.Invoke(returnValue) != true)
+                {
+                    _index = savedIndex;
+                    _withinSavedStateBlockCount--;
+                    Debug.Assert(_withinSavedStateBlockCount >= 0);
+                }
             }
 
             return returnValue;

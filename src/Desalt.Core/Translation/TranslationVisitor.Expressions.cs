@@ -44,8 +44,10 @@ namespace Desalt.Core.Translation
                     string str = node.Token.Text;
                     bool isVerbatim = str.StartsWith("@", StringComparison.Ordinal);
 
-                    // trim the leading @ and quotes
-                    str = str.TrimStart('@', '"').TrimEnd('"');
+                    // trim the leading @ and surrounding quotes
+                    str = isVerbatim ? str.Substring(1) : str;
+                    str = str.StartsWith("\"", StringComparison.Ordinal) ? str.Substring(1) : str;
+                    str = str.EndsWith("\"", StringComparison.Ordinal) ? str.Substring(0, str.Length - 1) : str;
 
                     // for verbatim strings, we need to add the escape characters back in
                     if (isVerbatim)

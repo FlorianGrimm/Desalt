@@ -80,4 +80,33 @@ namespace Desalt.Core.TypeScript.Ast.Statements
             emitter.IndentLevel--;
         }
     }
+
+    public static class TsSwitchClauseExtensions
+    {
+        public static ITsCaseOrDefaultClause WithStatements(
+            this ITsCaseOrDefaultClause instance,
+            IEnumerable<ITsStatementListItem> value)
+        {
+            var valueAsImmutableArray = value?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            if (instance.Statements.Equals(valueAsImmutableArray))
+            {
+                return instance;
+            }
+
+            switch (instance)
+            {
+                case TsSwitchClause switchClause when switchClause.Expression != null:
+                    return TsSwitchClause.Case(switchClause.Expression, valueAsImmutableArray);
+
+                case TsSwitchClause switchClause when switchClause.Expression == null:
+                    return TsSwitchClause.Default(valueAsImmutableArray);
+
+                case ITsCaseClause caseClause:
+                    return TsSwitchClause.Case(caseClause.Expression, valueAsImmutableArray);
+
+                default:
+                    return TsSwitchClause.Default(valueAsImmutableArray);
+            }
+        }
+    }
 }

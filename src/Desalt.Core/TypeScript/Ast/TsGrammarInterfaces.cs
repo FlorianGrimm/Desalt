@@ -627,6 +627,7 @@ namespace Desalt.Core.TypeScript.Ast
         ITsIdentifier ClassName { get; }
         ITsTypeParameters TypeParameters { get; }
         ITsClassHeritage Heritage { get; }
+        bool IsAbstract { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 
@@ -682,6 +683,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsPropertyName FunctionName { get; }
         ITsCallSignature CallSignature { get; }
         ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
@@ -691,6 +693,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsGetAccessor GetAccessor { get; }
     }
 
@@ -698,6 +701,7 @@ namespace Desalt.Core.TypeScript.Ast
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
         bool IsStatic { get; }
+        bool IsAbstract { get; }
         ITsSetAccessor SetAccessor { get; }
     }
 

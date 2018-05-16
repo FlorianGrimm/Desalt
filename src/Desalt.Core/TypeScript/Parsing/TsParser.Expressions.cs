@@ -8,6 +8,7 @@
 namespace Desalt.Core.TypeScript.Parsing
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
@@ -79,13 +80,21 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsExpression ParseExpression()
         {
-            ITsExpression expression = ParseAssignmentExpression();
-            if (_reader.Peek().TokenCode == TsTokenCode.Comma)
+            var expressions = new List<ITsExpression>();
+
+            do
             {
-                throw NotYetImplementedException("Commas are not yet supported as part of an expression");
+                ITsExpression expression = ParseAssignmentExpression();
+                expressions.Add(expression);
+            }
+            while (!_reader.IsAtEnd && _reader.ReadIf(TsTokenCode.Comma));
+
+            if (expressions.Count > 1)
+            {
+                return Factory.CommaExpression(expressions.ToArray());
             }
 
-            return expression;
+            return expressions.Single();
         }
 
         /// <summary>
@@ -95,7 +104,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// AssignmentExpression:
         ///     ConditionalExpression
         ///     YieldExpression (not yet supported)
-        ///     ArrowFunction (not yet supported)
+        ///     ArrowFunction
         ///     LeftHandSideExpression = AssignmentExpression
         ///     LeftHandSideExpression AssignmentOperator AssignmentExpression
         ///
@@ -109,6 +118,13 @@ namespace Desalt.Core.TypeScript.Parsing
             if (_reader.Peek().TokenCode == TsTokenCode.Yield)
             {
                 throw NotYetImplementedException("yield expressions are not yet supported");
+            }
+
+            // arrow expressions can start the same way as a left hand side expression, so we need to
+            // try parsing one and see what happens
+            if (TryParse(ParseArrowFunction, out ITsArrowFunction arrowFunction))
+            {
+                return arrowFunction;
             }
 
             // ConditionalExpression starts with a LogigalORExpression while an assignment expression
@@ -598,7 +614,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// ]]></code></remarks>
         private ITsArgumentList ParseArguments()
         {
-            ITsType[] typeArguments = TryParseTypeArguments();
+            ITsType[] typeArguments = ParseOptionalTypeArguments();
 
             Read(TsTokenCode.LeftParen);
 

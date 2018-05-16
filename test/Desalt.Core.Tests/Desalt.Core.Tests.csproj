@@ -169,6 +169,7 @@
     <Compile Include="Translation\ScriptNameSymbolTableTests.cs" />
     <Compile Include="Translation\TemporaryVariableAllocatorTests.cs" />
     <Compile Include="Translation\TranslationVisitorTests.cs" />
+    <Compile Include="Translation\TranslationVisitorTests.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Expressions.cs" />
     <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />
     <Compile Include="Translation\TypeTranslatorTests.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="TypeScript\Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="TypeScript\Parsing\TsLexerTests.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.cs" />
+    <Compile Include="TypeScript\Parsing\TsParserTests.Functions.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Literals.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Statements.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Types.cs" />

@@ -23,21 +23,25 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         public TsGetSetAccessorMemberDeclaration(
             ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false)
+            bool isStatic = false,
+            bool isAbstract = false)
         {
             GetAccessor = getAccessor ?? throw new ArgumentNullException(nameof(getAccessor));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
+            IsAbstract = isAbstract;
         }
 
         public TsGetSetAccessorMemberDeclaration(
             ITsSetAccessor setAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false)
+            bool isStatic = false,
+            bool isAbstract = false)
         {
             SetAccessor = setAccessor ?? throw new ArgumentNullException(nameof(setAccessor));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
+            IsAbstract = isAbstract;
         }
 
         //// ===========================================================================================================
@@ -46,6 +50,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
         public bool IsStatic { get; }
+        public bool IsAbstract { get; }
         public ITsGetAccessor GetAccessor { get; }
         public ITsSetAccessor SetAccessor { get; }
 
@@ -66,13 +71,16 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         }
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
+            AccessibilityModifier.OptionalCodeDisplay() +
+            (IsStatic ? "static " : "") +
+            (IsAbstract ? "abstract " : "") +
             (GetAccessor != null ? GetAccessor.CodeDisplay : SetAccessor.CodeDisplay);
 
         protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
-            IsStatic.EmitOptionalStaticDeclaration(emitter);
+            emitter.Write(IsStatic ? "static " : "");
+            emitter.Write(IsAbstract ? "abstract " : "");
             GetAccessor?.Emit(emitter);
             SetAccessor?.Emit(emitter);
             emitter.WriteLine();

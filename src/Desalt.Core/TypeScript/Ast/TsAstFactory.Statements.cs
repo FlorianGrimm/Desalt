@@ -99,6 +99,17 @@ namespace Desalt.Core.TypeScript.Ast
             return new TsSingleNameBinding(name, defaultValue);
         }
 
+        /// <summary>
+        /// Creates a property name binding pattern used in object and array bindings, of the form
+        /// 'propertyName = expression'.
+        /// </summary>
+        public static ITsPropertyNameBinding PropertyNameBinding(
+            ITsPropertyName propertyName,
+            ITsBindingElement bindingElement)
+        {
+            return new TsPropertyNameBinding(propertyName, bindingElement);
+        }
+
         public static ITsPatternBinding PatternBinding(
             ITsBindingPattern bindingPattern,
             ITsExpression initializer = null)

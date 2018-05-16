@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
+    using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public partial class TranslationVisitorTests
@@ -15,105 +16,119 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task Translate_anonymous_methods_should_correctly_infer_the_return_type()
         {
-            await AssertTranslation(
+            await AssertTranslationWithClassCAndMethod(
                 @"
-using System;
-
-class C {
-    void Method() {
-        Func<string, bool> func = delegate(string x) {
-            return x == ""y"";
-        };
-    }
-}",
-                @"class C {
-  private method(): void {
+    Func<string, bool> func = delegate(string x) {
+        return x == ""y"";
+    };
+",
+                @"
     let func: (string: string) => boolean = (x: string) => {
       return x === 'y';
     };
-  }
-}
 ");
         }
+
+        //// ===========================================================================================================
+        //// Loops Tests
+        //// ===========================================================================================================
 
         [TestMethod]
         public async Task Translate_while_statements()
         {
-            await AssertTranslation(
+            await AssertTranslationWithClassCAndMethod(
                 @"
-class C
-{
-    void Method()
+    int i = 0;
+    while (i < 10)
     {
-        int i = 0;
-        while (i < 10)
-        {
-            i++;
-        }
+        i++;
     }
-}",
+",
                 @"
-class C {
-  private method(): void {
     let i: number = 0;
     while (i < 10) {
       i++;
-    }
-  }
-}
-");
+    }");
         }
 
         [TestMethod]
         public async Task Translate_do_while_statements()
         {
-            await AssertTranslation(
+            await AssertTranslationWithClassCAndMethod(
                 @"
-class C
-{
-    void Method()
+    int i = 0;
+    do
     {
-        int i = 0;
-        do
-        {
-            i++;
-        } while (i < 10);
-    }
-}",
+        i++;
+    } while (i < 10);
+",
                 @"
-class C {
-  private method(): void {
     let i: number = 0;
     do {
       i++;
-    } while (i < 10);
-  }
-}
-");
+    } while (i < 10);");
         }
 
         [TestMethod]
         public async Task Translate_for_statements()
         {
-            await AssertTranslation(
+            await AssertTranslationWithClassCAndMethod(
                 @"
-class C
-{
-    void Method()
+    for (int i = 0, j = 10; i < 10; i++, j--)
     {
-        for (int i = 0, j = 10; i < 10; i++, j--)
-        {
-        }
     }
-}",
+",
                 @"
-class C {
-  private method(): void {
     for (let i = 0, j = 10; i < 10; i++, j--) { }
-  }
-}
 ");
         }
+
+        //// ===========================================================================================================
+        //// Switch Statment Tests
+        //// ===========================================================================================================
+
+        [TestMethod]
+        public async Task Translate_switch_statements()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int num = 0;
+    switch (num)
+    {
+        case 0:
+        case 1:
+            num++;
+            break;
+
+        case 2:
+            break;
+
+        default:
+            num--;
+            break;
+    }
+",
+                @"
+    let num: number = 0;
+    switch (num) {
+      case 0:
+      case 1:
+        num++;
+        break;
+
+      case 2:
+        break;
+
+      default:
+        num--;
+        break;
+    }
+");
+        }
+
+        //// ===========================================================================================================
+        //// Using Statement Tests
+        //// ===========================================================================================================
 
         [TestMethod]
         public async Task Translate_a_single_using_block_with_a_declaration()
@@ -136,7 +151,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C {
+class C implements IDisposable {
   private method(): void {
     let i: number = 0;
     {
@@ -153,7 +168,7 @@ class C {
 
   public dispose(): void { }
 }
-");
+", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -178,7 +193,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C {
+class C implements IDisposable {
   private method(): void {
     let i: number = 0;
     let c1: C = new C();
@@ -196,7 +211,7 @@ class C {
 
   public dispose(): void { }
 }
-");
+", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -224,7 +239,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C {
+class C implements IDisposable {
   private method(): void {
     let i: number = 0;
     let c1: C = new C();
@@ -262,7 +277,7 @@ class C {
     return this;
   }
 }
-");
+", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

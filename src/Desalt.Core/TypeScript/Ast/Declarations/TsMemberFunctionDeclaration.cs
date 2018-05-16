@@ -28,6 +28,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isAbstract = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
             IsAmbient = isAmbient;
@@ -35,6 +36,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
+            IsAbstract = isAbstract;
             FunctionBody = functionBody?.ToImmutableArray();
         }
 
@@ -44,6 +46,7 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
         public bool IsStatic { get; }
+        public bool IsAbstract { get; }
         public ITsPropertyName FunctionName { get; }
         public ITsCallSignature CallSignature { get; }
         public ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
@@ -59,10 +62,17 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
+            bool isAbstract = false,
             IEnumerable<ITsStatementListItem> functionBody = null)
         {
             return new TsFunctionMemberDeclaration(
-                false, functionName, callSignature, accessibilityModifier, isStatic, functionBody);
+                isAmbient: false,
+                functionName: functionName,
+                callSignature: callSignature,
+                accessibilityModifier: accessibilityModifier,
+                isStatic: isStatic,
+                isAbstract: isAbstract,
+                functionBody: functionBody);
         }
 
         public static ITsAmbientFunctionMemberDeclaration CreateAmbient(
@@ -71,7 +81,12 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false)
         {
-            return new TsFunctionMemberDeclaration(true, functionName, callSignature, accessibilityModifier, isStatic);
+            return new TsFunctionMemberDeclaration(
+                isAmbient: true,
+                functionName: functionName,
+                callSignature: callSignature,
+                accessibilityModifier: accessibilityModifier,
+                isStatic: isStatic);
         }
 
         public override void Accept(TsVisitor visitor)
@@ -87,14 +102,17 @@ namespace Desalt.Core.TypeScript.Ast.Declarations
         }
 
         public override string CodeDisplay =>
-            $"{AccessibilityModifier.OptionalCodeDisplay()}{IsStatic.OptionalStaticDeclaration()}" +
+            AccessibilityModifier.OptionalCodeDisplay() +
+            (IsStatic ? "static " : "") +
+            (IsAbstract ? "abstract " : "") +
             $"{FunctionName}{CallSignature.CodeDisplay}" +
             (FunctionBody?.ToElidedList() ?? ";");
 
         protected override void EmitInternal(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
-            IsStatic.EmitOptionalStaticDeclaration(emitter);
+            emitter.Write(IsStatic ? "static " : "");
+            emitter.Write(IsAbstract ? "abstract " : "");
             FunctionName.Emit(emitter);
             CallSignature.Emit(emitter);
 

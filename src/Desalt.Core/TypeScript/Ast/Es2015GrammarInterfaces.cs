@@ -1146,9 +1146,9 @@ namespace Desalt.Core.TypeScript.Ast
      *   [lookahead != { ] AssignmentExpression
      *   { FunctionBody }
      *
-     * When the production
-     * ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList is recognized the following
-     * grammar is used to refine the interpretation of CoverParenthesizedExpressionAndArrowParameterList:
+     * When the production `ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList`
+     * is recognized the following grammar is used to refine the interpretation of
+     * CoverParenthesizedExpressionAndArrowParameterList:
      *
      * ArrowFormalParameters: (see TypeScript grammar copied below)
      *   ( StrictFormalParameters )

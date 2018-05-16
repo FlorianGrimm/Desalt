@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Declarations;
+    using Desalt.Core.TypeScript.Ast.Statements;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,6 +21,15 @@ namespace Desalt.Core.Translation
 
     internal sealed partial class TranslationVisitor
     {
+        /// <summary>
+        /// Called when the visitor visits a EmptyStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsEmptyStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitEmptyStatement(EmptyStatementSyntax node)
+        {
+            yield return Factory.EmptyStatement;
+        }
+
         /// <summary>
         /// Called when the visitor visits a ExpressionStatementSyntax node.
         /// </summary>
@@ -354,6 +364,26 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
+        /// Called when the visitor visits a BreakStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBreakStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitBreakStatement(BreakStatementSyntax node)
+        {
+            ITsBreakStatement translated = Factory.Break();
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ContinueStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsContinueStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitContinueStatement(ContinueStatementSyntax node)
+        {
+            ITsContinueStatement translated = Factory.Continue();
+            yield return translated;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a ForEachStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsForOfStatement"/>.</returns>
@@ -420,6 +450,59 @@ namespace Desalt.Core.Translation
         }
 
         //// ===========================================================================================================
+        //// Switch Statement
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a SwitchStatementSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsSwitchStatement"/>.</returns>
+        public override IEnumerable<IAstNode> VisitSwitchStatement(SwitchStatementSyntax node)
+        {
+            var condition = (ITsExpression)Visit(node.Expression).Single();
+            var clauses = node.Sections.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>();
+
+            ITsSwitchStatement translated = Factory.Switch(condition, clauses.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a SwitchSectionSyntax node.
+        /// </summary>
+        /// <returns>An enumerable of <see cref="ITsCaseOrDefaultClause"/>.</returns>
+        public override IEnumerable<IAstNode> VisitSwitchSection(SwitchSectionSyntax node)
+        {
+            var labels = node.Labels.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>().ToArray();
+            var statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
+
+            // attach the statements to the last label
+            labels[labels.Length - 1] = labels[labels.Length - 1].WithStatements(statements);
+
+            return labels;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a CaseSwitchLabelSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsCaseClause"/>.</returns>
+        public override IEnumerable<IAstNode> VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
+        {
+            var expression = (ITsExpression)Visit(node.Value).Single();
+            ITsCaseClause translated = Factory.CaseClause(expression);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a DefaultSwitchLabelSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsDefaultClause"/>.</returns>
+        public override IEnumerable<IAstNode> VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
+        {
+            ITsDefaultClause translated = Factory.DefaultClause();
+            yield return translated;
+        }
+
+        //// ===========================================================================================================
         //// Functions and Methods
         //// ===========================================================================================================
 
@@ -432,6 +515,18 @@ namespace Desalt.Core.Translation
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
             var body = (ITsBlockStatement)Visit(node.Block).Single();
             ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body.Statements.ToArray());
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ParenthesizedLambdaExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
+        public override IEnumerable<IAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+        {
+            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
+            var body = (ITsExpression)Visit(node.Body).Single();
+            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body);
             yield return translated;
         }
 

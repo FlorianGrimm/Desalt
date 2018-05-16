@@ -56,6 +56,12 @@ namespace Desalt.Core.TypeScript.Ast
         public virtual void VisitSingleNameBinding(ITsSingleNameBinding node) => Visit(node);
 
         /// <summary>
+        /// Visits a property name binding pattern used in object and array bindings, of the form
+        /// 'propertyName = expression'.
+        /// </summary>
+        public virtual void VisitPropertyNameBinding(ITsPropertyNameBinding node) => Visit(node);
+
+        /// <summary>
         /// Visits a recursive pattern binding in an object or array binding.
         /// </summary>
         public virtual void VisitPatternBinding(ITsPatternBinding node) => Visit(node);
