@@ -104,7 +104,7 @@ namespace Desalt.Core.Translation
                     diagnostics);
 
                 translatedNode = Translate(context);
-                return true;
+                return translatedNode != null;
             }
 
             translatedNode = null;
@@ -114,8 +114,17 @@ namespace Desalt.Core.Translation
         private IAstNode Translate(Context context)
         {
             string replacedInlineCode = ReplaceParameters(context);
-            ITsExpression parsedExpression = TsParser.ParseExpression(replacedInlineCode);
-            return parsedExpression;
+
+            try
+            {
+                ITsExpression parsedExpression = TsParser.ParseExpression(replacedInlineCode);
+                return parsedExpression;
+            }
+            catch (TsParserException e)
+            {
+                context.AddParseError(e.Message);
+                return context.TranslatedLeftSide;
+            }
         }
 
         private string ReplaceParameters(Context context)
