@@ -41,6 +41,10 @@ namespace Desalt.Core.TypeScript.Parsing
             if (withBraces)
             {
                 Read(TsTokenCode.LeftBrace);
+                if (_reader.ReadIf(TsTokenCode.RightBrace))
+                {
+                    return new ITsStatementListItem[0];
+                }
             }
 
             var statements = ParseStatementList();
