@@ -54,7 +54,7 @@ namespace Desalt.Core.TypeScript.Ast
                     builder.Append(delimiter);
                 }
 
-                string itemStr = item.CodeDisplay;
+                string itemStr = item?.CodeDisplay ?? string.Empty;
                 if (builder.Length + itemStr.Length >= maxStringLength)
                 {
                     builder.Append("...");
