@@ -31,7 +31,11 @@ namespace Desalt.Core.Translation
             ImmutableArray<KeyValuePair<ISymbol, string>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, string>> directlyReferencedExternalSymbols,
             ImmutableArray<KeyValuePair<ISymbol, Lazy<string>>> indirectlyReferencedExternalSymbols)
-            : base(documentSymbols, directlyReferencedExternalSymbols, indirectlyReferencedExternalSymbols)
+            : base(
+                ImmutableArray<KeyValuePair<string, string>>.Empty,
+                documentSymbols,
+                directlyReferencedExternalSymbols,
+                indirectlyReferencedExternalSymbols)
         {
         }
 

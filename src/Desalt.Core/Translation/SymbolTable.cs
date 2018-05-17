@@ -30,6 +30,11 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Initializes a new <see cref="SymbolTable{T}"/> with the specified values.
         /// </summary>
+        /// <param name="overrideSymbols">
+        /// An array of overrides that takes precedence over any of the other symbols. This is to
+        /// allow creating exceptions without changing the Saltarelle assembly source code. The key
+        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// </param>
         /// <param name="documentSymbols">The symbols defined in the documents.</param>
         /// <param name="directlyReferencedExternalSymbols">
         /// The symbols directly referenced in the documents but residing in external assemblies.
@@ -40,10 +45,12 @@ namespace Desalt.Core.Translation
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
         protected SymbolTable(
+            ImmutableArray<KeyValuePair<string, T>> overrideSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
             ImmutableArray<KeyValuePair<ISymbol, Lazy<T>>> indirectlyReferencedExternalSymbols)
         {
+            OverrideSymbols = overrideSymbols.ToImmutableDictionary();
             DocumentSymbols = documentSymbols.ToImmutableDictionary();
             DirectlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
             IndirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
@@ -69,6 +76,13 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
+
+        /// <summary>
+        /// Gets the overrides that takes precedence over any of the other symbols. This is to allow
+        /// creating exceptions without changing the Saltarelle assembly source code. The key is what
+        /// is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// </summary>
+        public ImmutableDictionary<string, T> OverrideSymbols { get; }
 
         /// <summary>
         /// Gets the symbols defined in the documents that were used to initialize this symbol table.
@@ -113,7 +127,14 @@ namespace Desalt.Core.Translation
                 throw new ArgumentNullException(nameof(symbol));
             }
 
-            // look in the document symbols first
+            // look in the overrides first
+            string key = SymbolTableUtils.KeyFromSymbol(symbol);
+            if (OverrideSymbols.TryGetValue(key, out value))
+            {
+                return true;
+            }
+
+            // then in the document symbols
             if (DocumentSymbols.TryGetValue(symbol, out value))
             {
                 return true;

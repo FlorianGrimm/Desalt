@@ -30,6 +30,7 @@ namespace Desalt.Core.Translation
             ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> directlyReferencedExternalSymbols)
             : base(
+                ImmutableArray<KeyValuePair<string, ImportSymbolInfo>>.Empty,
                 documentSymbols,
                 directlyReferencedExternalSymbols,
                 ImmutableArray<KeyValuePair<ISymbol, Lazy<ImportSymbolInfo>>>.Empty)

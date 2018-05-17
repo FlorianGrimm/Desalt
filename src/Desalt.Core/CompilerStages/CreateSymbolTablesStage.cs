@@ -78,6 +78,7 @@ namespace Desalt.Core.CompilerStages
                         input,
                         directlyReferencedExternalTypeSymbols,
                         indirectlyReferencedExternalTypeSymbols,
+                        ImmutableArray<KeyValuePair<string, string>>.Empty,
                         cancellationToken),
                     cancellationToken),
 

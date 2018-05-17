@@ -27,10 +27,15 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private InlineCodeSymbolTable(
+            ImmutableArray<KeyValuePair<string, string>> overrideSymbols,
             ImmutableArray<KeyValuePair<ISymbol, string>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, string>> directlyReferencedExternalSymbols,
             ImmutableArray<KeyValuePair<ISymbol, Lazy<string>>> indirectlyReferencedExternalSymbols)
-            : base(documentSymbols, directlyReferencedExternalSymbols, indirectlyReferencedExternalSymbols)
+            : base(
+                overrideSymbols,
+                documentSymbols,
+                directlyReferencedExternalSymbols,
+                indirectlyReferencedExternalSymbols)
         {
         }
 
@@ -50,12 +55,18 @@ namespace Desalt.Core.Translation
         /// An array of symbols that are not directly referenced in the documents and are defined in
         /// external assemblies.
         /// </param>
+        /// <param name="overrideSymbols">
+        /// An array of overrides that takes precedence over any of the other symbols. This is to
+        /// allow creating exceptions without changing the Saltarelle assembly source code. The key
+        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="InlineCodeSymbolTable"/>.</returns>
         public static InlineCodeSymbolTable Create(
             ImmutableArray<DocumentTranslationContext> contexts,
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols,
             ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols,
+            IEnumerable<KeyValuePair<string, string>> overrideSymbols = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // process the types defined in the documents
@@ -81,6 +92,7 @@ namespace Desalt.Core.Translation
                 .ToImmutableArray();
 
             return new InlineCodeSymbolTable(
+                overrideSymbols?.ToImmutableArray() ?? ImmutableArray<KeyValuePair<string, string>>.Empty,
                 documentSymbols,
                 directlyReferencedExternalSymbols,
                 indirectlyReferencedExternalSymbols);

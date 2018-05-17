@@ -16,6 +16,8 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -132,6 +134,46 @@ int Property
                 new KeyValuePair<string, string>($"{prefix}.List()", "[]"),
                 new KeyValuePair<string, string>($"{prefix}.List(C first, params C[] rest)", "[ {first}, {*rest} ]"),
                 new KeyValuePair<string, string>($"{prefix}.Clone()", "{$System.Script}.arrayClone({this})"));
+        }
+
+        [TestMethod]
+        public async Task InlineCodeSymbolTable_should_use_the_overrides_first()
+        {
+            const string code = @"
+using System;
+
+class C
+{
+    void Method()
+    {
+        TypeUtil.GetField<int>(new C(), ""fieldName"");
+    }
+}
+";
+
+            using (var tempProject = await TempProject.CreateAsync(code))
+            {
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+
+                ExpressionSyntax methodSyntax = context.RootSyntax.DescendantNodes()
+                    .OfType<InvocationExpressionSyntax>()
+                    .First()
+                    .Expression;
+                var methodSymbol = (IMethodSymbol)context.SemanticModel.GetSymbolInfo(methodSyntax).Symbol;
+
+                string symbolKey = SymbolTableUtils.KeyFromSymbol(methodSymbol);
+
+                var symbolTable = InlineCodeSymbolTable.Create(
+                    contexts,
+                    directlyReferencedExternalTypeSymbols: ImmutableArray<ITypeSymbol>.Empty,
+                    indirectlyReferencedExternalTypeSymbols: ImmutableArray<INamedTypeSymbol>.Empty,
+                    overrideSymbols: new[] { new KeyValuePair<string, string>(symbolKey, "override!") });
+
+                symbolTable.HasSymbol(methodSymbol).Should().BeTrue();
+                symbolTable.TryGetValue(methodSymbol, out string value).Should().BeTrue();
+                value.Should().Be("override!");
+            }
         }
     }
 }
