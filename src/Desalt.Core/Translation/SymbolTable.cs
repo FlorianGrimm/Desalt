@@ -23,10 +23,6 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ImmutableDictionary<ISymbol, T> _documentSymbols;
-        private readonly ImmutableDictionary<ISymbol, T> _directlyReferencedExternalSymbols;
-        private readonly ImmutableDictionary<ISymbol, Lazy<T>> _indirectlyReferencedExternalSymbols;
-
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -48,9 +44,9 @@ namespace Desalt.Core.Translation
             ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
             ImmutableArray<KeyValuePair<ISymbol, Lazy<T>>> indirectlyReferencedExternalSymbols)
         {
-            _documentSymbols = documentSymbols.ToImmutableDictionary();
-            _directlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
-            _indirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
+            DocumentSymbols = documentSymbols.ToImmutableDictionary();
+            DirectlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
+            IndirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
         }
 
         //// ===========================================================================================================
@@ -77,19 +73,19 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Gets the symbols defined in the documents that were used to initialize this symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, T>> DocumentSymbols => _documentSymbols;
+        public ImmutableDictionary<ISymbol, T> DocumentSymbols { get; }
 
         /// <summary>
         /// Gets the symbols directly referenced in the documents that were used to initialize this
         /// symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, T>> DirectlyReferencedExternalSymbols => _directlyReferencedExternalSymbols;
+        public ImmutableDictionary<ISymbol, T> DirectlyReferencedExternalSymbols { get; }
 
         /// <summary>
         /// Gets the symbols defined in externally-referenced assemblies, where their values are
         /// created on demand and then cached.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, Lazy<T>>> IndirectlyReferencedExternalSymbols => _indirectlyReferencedExternalSymbols;
+        public ImmutableDictionary<ISymbol, Lazy<T>> IndirectlyReferencedExternalSymbols { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -118,19 +114,19 @@ namespace Desalt.Core.Translation
             }
 
             // look in the document symbols first
-            if (_documentSymbols.TryGetValue(symbol, out value))
+            if (DocumentSymbols.TryGetValue(symbol, out value))
             {
                 return true;
             }
 
             // then in the directly-referenced symbols
-            if (_directlyReferencedExternalSymbols.TryGetValue(symbol, out value))
+            if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value))
             {
                 return true;
             }
 
             // then in the indirectly-referenced symbols
-            if (_indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+            if (IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
                 lazyValue.Value != null)
             {
                 value = lazyValue.Value;
