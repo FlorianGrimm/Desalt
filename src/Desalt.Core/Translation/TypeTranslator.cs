@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScript.Ast.TsAstFactory;

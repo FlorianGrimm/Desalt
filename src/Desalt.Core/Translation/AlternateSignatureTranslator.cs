@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Types;
     using Microsoft.CodeAnalysis;

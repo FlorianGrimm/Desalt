@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Text;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;

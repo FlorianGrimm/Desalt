@@ -13,6 +13,7 @@ namespace Desalt.Core.CompilerStages
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 

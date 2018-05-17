@@ -13,6 +13,7 @@ namespace Desalt.Core.Tests.TestUtility
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;

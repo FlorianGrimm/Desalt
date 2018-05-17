@@ -12,6 +12,7 @@ namespace Desalt.Core.Tests.Validation
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Extensions;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.Validation;

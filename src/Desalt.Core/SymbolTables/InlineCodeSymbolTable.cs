@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Translation
+namespace Desalt.Core.SymbolTables
 {
     using System;
     using System.Collections.Generic;
@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Extensions;
+    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
