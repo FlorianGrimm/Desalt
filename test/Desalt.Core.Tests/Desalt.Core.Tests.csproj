@@ -154,6 +154,7 @@
     <Compile Include="Pipeline\FakePipelineStages.cs" />
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SymbolTableOverridesTests.cs" />
     <Compile Include="SymbolTables\AlternateSignatureSymbolTableTests.cs" />
     <Compile Include="SymbolTables\ImportSymbolTableTests.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTableTests.cs" />
