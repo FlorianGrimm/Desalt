@@ -7,12 +7,8 @@
 
 namespace Desalt.Core.Tests.TypeScript.Parsing
 {
-    using System;
-    using System.Linq;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
-    using Desalt.Core.TypeScript.Parsing;
-    using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Factory = Core.TypeScript.Ast.TsAstFactory;
 
@@ -86,53 +82,45 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
         [TestMethod]
         public void TsParser_should_parse_object_literals_with_a_getter()
         {
-            Action action = () => AssertParseExpression(
+            AssertParseExpression(
                 "{ get prop(): string { return 's'; } }",
-                Factory.GetAccessor(
-                    Factory.Identifier("prop"),
-                    Factory.StringType,
-                    Enumerable.Empty<ITsStatementListItem>()));
-
-            // Statement lists are not yet supported
-            action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
+                Factory.Object(
+                    Factory.GetAccessor(
+                        Factory.Identifier("prop"),
+                        Factory.StringType,
+                        Factory.Return(Factory.String("s")))));
         }
 
         [TestMethod]
         public void TsParser_should_parse_object_literals_with_a_setter()
         {
-            Action action = () => AssertParseExpression(
+            AssertParseExpression(
                 "{ set prop(value: string) { this._prop = value; } }",
-                Factory.SetAccessor(
-                    Factory.Identifier("prop"),
-                    Factory.Identifier("value"),
-                    Factory.StringType,
-                    Factory.Assignment(
-                            Factory.MemberDot(Factory.This, "_prop"),
-                            TsAssignmentOperator.SimpleAssign,
-                            Factory.Identifier("value"))
-                        .ToStatement()));
-
-            // Statement lists are not yet supported
-            action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
+                Factory.Object(
+                    Factory.SetAccessor(
+                        Factory.Identifier("prop"),
+                        Factory.Identifier("value"),
+                        Factory.StringType,
+                        Factory.Assignment(
+                                Factory.MemberDot(Factory.This, "_prop"),
+                                TsAssignmentOperator.SimpleAssign,
+                                Factory.Identifier("value"))
+                            .ToStatement())));
         }
 
         [TestMethod]
         public void TsParser_should_parse_object_literals_with_methods()
         {
-            Action action = () => AssertParseExpression(
-                "{ myFunc<T extends string, TResult extends boolean>(x: T): TResult { return false; }",
+            AssertParseExpression(
+                "{ myFunc<T extends string, TResult extends boolean>(x: T): TResult { return false; } }",
                 Factory.Object(
                     Factory.PropertyFunction(
                         Factory.Identifier("myFunc"),
                         Factory.CallSignature(
-                            Factory.TypeParameters(
-                                Factory.TypeParameter(Factory.Identifier("T"), Factory.StringType)),
+                            Factory.TypeParameters(Factory.TypeParameter(Factory.Identifier("T"), Factory.StringType)),
                             Factory.ParameterList(s_x),
                             Factory.BooleanType),
                         Factory.Return(Factory.False))));
-
-            // Statement lists are not yet supported
-            action.Should().ThrowExactly<TsParserException>().And.NotYetImplemented.Should().BeTrue();
         }
     }
 }

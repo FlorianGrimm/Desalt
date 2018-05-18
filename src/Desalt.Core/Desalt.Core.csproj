@@ -332,6 +332,7 @@
     <Compile Include="TypeScript\Parsing\TsLexer.Punctuators.cs" />
     <Compile Include="TypeScript\Parsing\TsLexer.StringLiterals.cs" />
     <Compile Include="TypeScript\Parsing\TsParser.cs" />
+    <Compile Include="TypeScript\Parsing\TsParser.Declarations.cs" />
     <Compile Include="TypeScript\Parsing\TsParser.Expressions.cs" />
     <Compile Include="TypeScript\Parsing\TsParser.Functions.cs" />
     <Compile Include="TypeScript\Parsing\TsParser.Literals.cs" />

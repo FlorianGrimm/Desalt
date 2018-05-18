@@ -187,6 +187,7 @@
     <Compile Include="TypeScript\Ast\TsEmitTests.UnaryAndBinaryExpressions.cs" />
     <Compile Include="TypeScript\Parsing\TsLexerTests.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.cs" />
+    <Compile Include="TypeScript\Parsing\TsParserTests.Declarations.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Functions.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Literals.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Statements.cs" />

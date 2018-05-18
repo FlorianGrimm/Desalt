@@ -55,7 +55,7 @@ namespace Desalt.Core.TypeScript.Parsing
         /// </summary>
         /// <param name="code">The code to parse</param>
         /// <returns>An <see cref="ITsType"/>.</returns>
-        public static ITsType ParseType(string code)
+        internal static ITsType ParseType(string code)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
             var parser = new TsParser(tokens);
@@ -67,11 +67,23 @@ namespace Desalt.Core.TypeScript.Parsing
         /// </summary>
         /// <param name="code">The code to parse</param>
         /// <returns>An <see cref="ITsStatement"/>.</returns>
-        public static ITsStatement ParseStatement(string code)
+        internal static ITsStatement ParseStatement(string code)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
             var parser = new TsParser(tokens);
             return parser.ParseStatement();
+        }
+
+        /// <summary>
+        /// Parses a TypeScript declaration.
+        /// </summary>
+        /// <param name="code">The code to parse</param>
+        /// <returns>An <see cref="ITsDeclaration"/>.</returns>
+        internal static ITsDeclaration ParseDeclaration(string code)
+        {
+            ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
+            var parser = new TsParser(tokens);
+            return parser.ParseDeclaration();
         }
 
         /// <summary>
