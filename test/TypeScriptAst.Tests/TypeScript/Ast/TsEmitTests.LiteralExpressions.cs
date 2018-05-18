@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Ast
+namespace TypeScriptAst.Tests.TypeScript.Ast
 {
     using System;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Expressions;
     using FluentAssertions;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Ast.Expressions;
     using Xunit;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {

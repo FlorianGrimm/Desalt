@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Expressions
+namespace TypeScriptAst.TypeScript.Ast.Expressions
 {
     /// <summary>
     /// Represents the different types of TypeScript unary expression operators.

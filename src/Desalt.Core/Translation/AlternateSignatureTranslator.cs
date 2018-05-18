@@ -12,10 +12,10 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Types;
     using Microsoft.CodeAnalysis;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Ast.Types;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates the parameters of a method or constructor declaration to adjust the types

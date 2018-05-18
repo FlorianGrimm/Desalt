@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Expressions
+namespace TypeScriptAst.TypeScript.Ast.Expressions
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a function declaration acting as an expression.

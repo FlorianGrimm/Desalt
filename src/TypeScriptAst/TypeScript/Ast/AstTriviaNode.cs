@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System;
     using System.Diagnostics;
     using System.IO;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Abstract base class for all abstract syntax tree (AST) trivia node types. A trivia node is a

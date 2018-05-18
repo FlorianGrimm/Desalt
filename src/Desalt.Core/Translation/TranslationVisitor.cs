@@ -11,14 +11,14 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.TypeScript.Ast;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.

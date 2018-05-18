@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Types
+namespace TypeScriptAst.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a bound required parameter in a parameter list for a function.

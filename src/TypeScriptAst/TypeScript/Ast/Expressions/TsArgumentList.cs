@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Expressions
+namespace TypeScriptAst.TypeScript.Ast.Expressions
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).

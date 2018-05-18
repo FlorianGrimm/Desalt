@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Lexical
+namespace TypeScriptAst.TypeScript.Ast.Lexical
 {
     /// <summary>
     /// Contains all of the JSDoc tag names.

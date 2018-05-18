@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Types
+namespace TypeScriptAst.TypeScript.Ast.Types
 {
     using System;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.

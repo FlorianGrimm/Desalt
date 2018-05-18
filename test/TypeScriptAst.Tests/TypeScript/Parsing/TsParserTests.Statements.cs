@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Parsing
+namespace TypeScriptAst.Tests.TypeScript.Parsing
 {
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Expressions;
-    using Desalt.Core.TypeScript.Parsing;
     using FluentAssertions;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Ast.Expressions;
+    using TypeScriptAst.TypeScript.Parsing;
     using Xunit;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
     {

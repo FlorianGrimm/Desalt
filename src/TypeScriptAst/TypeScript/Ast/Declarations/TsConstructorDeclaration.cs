@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Declarations
+namespace TypeScriptAst.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a constructor declaration in a class.

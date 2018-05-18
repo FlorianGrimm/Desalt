@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Parsing
+namespace TypeScriptAst.TypeScript.Parsing
 {
     using System;
-    using Desalt.Core.Utility;
+    using CompilerUtilities;
 
     public class TsParserException : Exception
     {

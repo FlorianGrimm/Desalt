@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Statements
+namespace TypeScriptAst.TypeScript.Ast.Statements
 {
     using System;
     using System.Text;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a for-in or for-of loop of the form 'for (const x: type in|of expression) statement'.

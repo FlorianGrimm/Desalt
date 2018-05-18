@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Types
+namespace TypeScriptAst.TypeScript.Ast.Types
 {
     using System;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript tuple type.

@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Statements
+namespace TypeScriptAst.TypeScript.Ast.Statements
 {
     using System;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a simple variable declaration of the form 'x: type = y'.

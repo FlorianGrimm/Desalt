@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Extensions
+namespace CompilerUtilities.Extensions
 {
     using System;
     using System.IO;

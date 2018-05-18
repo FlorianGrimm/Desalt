@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Types
+namespace TypeScriptAst.TypeScript.Ast.Types
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a union type of the form 'type1 | type2' or an intersection type of the form

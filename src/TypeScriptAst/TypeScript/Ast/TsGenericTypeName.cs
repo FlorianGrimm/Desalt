@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.

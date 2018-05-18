@@ -11,17 +11,17 @@ namespace Desalt.Core.Tests.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.Core.Emit;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Expressions;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Emit;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Ast.Expressions;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     [TestClass]
     public class InlineCodeTranslatorTests

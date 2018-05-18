@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Declarations
+namespace TypeScriptAst.TypeScript.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing exported

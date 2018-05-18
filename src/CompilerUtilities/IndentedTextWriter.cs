@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Utility
+namespace CompilerUtilities
 {
     using System;
     using System.Globalization;

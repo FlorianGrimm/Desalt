@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Parsing
+namespace TypeScriptAst.TypeScript.Parsing
 {
-    using Desalt.Core.Extensions;
-    using Desalt.Core.TypeScript.Ast;
+    using CompilerUtilities.Extensions;
+    using TypeScriptAst.TypeScript.Ast;
     using Factory = Ast.TsAstFactory;
 
     public partial class TsParser

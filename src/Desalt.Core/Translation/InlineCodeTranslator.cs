@@ -11,14 +11,15 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using CompilerUtilities;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Parsing;
 
     /// <summary>
     /// Parses and translates [InlineCode] attribute contents.

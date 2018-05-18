@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using CompilerUtilities;
     using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Statements
+namespace TypeScriptAst.TypeScript.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.

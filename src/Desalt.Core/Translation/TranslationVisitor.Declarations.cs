@@ -11,14 +11,14 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.TypeScript.Ast.Types;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     internal sealed partial class TranslationVisitor
     {

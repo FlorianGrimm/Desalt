@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.Extensions
+namespace CompilerUtilities.Tests.Extensions
 {
     using System;
     using System.IO;
     using System.Text;
-    using Desalt.Core.Extensions;
+    using CompilerUtilities.Extensions;
     using FluentAssertions;
     using Xunit;
 

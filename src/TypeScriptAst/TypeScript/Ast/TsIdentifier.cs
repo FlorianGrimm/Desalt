@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System;
     using System.Collections.Concurrent;
-    using Desalt.Core.Emit;
-    using Desalt.Core.Utility;
+    using CompilerUtilities;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript identifier.

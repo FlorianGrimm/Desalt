@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Parsing
+namespace TypeScriptAst.Tests.TypeScript.Parsing
 {
     using System.Linq;
-    using Desalt.Core.TypeScript.Parsing;
-    using Desalt.Core.Utility;
+    using CompilerUtilities;
     using FluentAssertions;
+    using TypeScriptAst.TypeScript.Parsing;
     using Xunit;
 
     public class TsTokenReaderTests

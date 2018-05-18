@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Desalt.Core.TypeScript.Ast.Lexical;
+    using TypeScriptAst.TypeScript.Ast.Lexical;
 
     public static partial class TsAstFactory
     {

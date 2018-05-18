@@ -5,13 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.

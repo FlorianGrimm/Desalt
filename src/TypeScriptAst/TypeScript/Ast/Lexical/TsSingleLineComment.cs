@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Lexical
+namespace TypeScriptAst.TypeScript.Ast.Lexical
 {
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript single-line comment of the form '// comment'.

@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
+namespace TypeScriptAst.Tests.TypeScript.Ast.Lexical
 {
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.TypeScript.Ast.Lexical;
     using FluentAssertions;
+    using TypeScriptAst.TypeScript.Ast.Lexical;
     using Xunit;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     public class TsJsDocCommentTests
     {

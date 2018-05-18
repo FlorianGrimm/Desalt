@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Expressions
+namespace TypeScriptAst.TypeScript.Ast.Expressions
 {
-    using Desalt.Core.Emit;
-    using Desalt.Core.Utility;
+    using CompilerUtilities;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a regular expression literal.

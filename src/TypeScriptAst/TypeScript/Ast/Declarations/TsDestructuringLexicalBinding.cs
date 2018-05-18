@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Declarations
+namespace TypeScriptAst.TypeScript.Ast.Declarations
 {
     using System;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.

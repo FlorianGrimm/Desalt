@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Utility
+namespace CompilerUtilities
 {
     using System;
     using System.Globalization;
@@ -46,7 +46,7 @@ namespace Desalt.Core.Utility
 
         /// <summary>
         /// Returns a value that indicates whether the values of two <see
-        /// cref="T:Desalt.Core.Utility.TextReaderLocation"/> objects are equal.
+        /// cref="T:CompilerUtilities.TextReaderLocation"/> objects are equal.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>
@@ -58,7 +58,7 @@ namespace Desalt.Core.Utility
 
         /// <summary>
         /// Returns a value that indicates whether two <see
-        /// cref="T:Desalt.Core.Utility.TextReaderLocation"/> objects have different values.
+        /// cref="T:CompilerUtilities.TextReaderLocation"/> objects have different values.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>

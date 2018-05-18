@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
-    using Desalt.Core.TypeScript.Ast.Declarations;
+    using TypeScriptAst.TypeScript.Ast.Declarations;
 
     public static partial class TsAstFactory
     {

@@ -10,13 +10,13 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Emit;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Emit;
+    using TypeScriptAst.TypeScript.Ast;
 
     [TestClass]
     public partial class TranslationVisitorTests

@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Ast
+namespace TypeScriptAst.Tests.TypeScript.Ast
 {
     using Xunit;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
-    using Op = Desalt.Core.TypeScript.Ast.Expressions.TsAssignmentOperator;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using Op = TypeScriptAst.TypeScript.Ast.Expressions.TsAssignmentOperator;
 
     public partial class TsEmitTests
     {

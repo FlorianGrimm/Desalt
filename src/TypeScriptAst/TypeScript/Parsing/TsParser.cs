@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Parsing
+namespace TypeScriptAst.TypeScript.Parsing
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.Utility;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using CompilerUtilities;
+    using TypeScriptAst.TypeScript.Ast;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Parses an expression into an abstract syntax tree (AST).

@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Lexical
+namespace TypeScriptAst.TypeScript.Ast.Lexical
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Emit;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript multi-line comment of the form '/* lines */'.

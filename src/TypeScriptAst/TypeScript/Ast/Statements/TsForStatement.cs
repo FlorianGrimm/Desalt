@@ -5,15 +5,15 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Statements
+namespace TypeScriptAst.TypeScript.Ast.Statements
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
     using System.Text;
-    using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
+    using CompilerUtilities.Extensions;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a 'for' loop.

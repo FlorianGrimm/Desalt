@@ -11,8 +11,8 @@ namespace Desalt.Core.SymbolTables
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;

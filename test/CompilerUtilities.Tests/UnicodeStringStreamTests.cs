@@ -5,14 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.Utility
+namespace CompilerUtilities.Tests
 {
     using System;
     using System.IO;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.Core.Utility;
     using FluentAssertions;
     using Xunit;
 

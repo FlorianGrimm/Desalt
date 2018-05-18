@@ -12,8 +12,8 @@ namespace Desalt.Core.Translation
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;

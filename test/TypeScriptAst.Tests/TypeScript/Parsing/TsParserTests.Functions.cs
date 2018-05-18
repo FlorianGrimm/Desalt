@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.TypeScript.Parsing
+namespace TypeScriptAst.Tests.TypeScript.Parsing
 {
     using Xunit;
-    using Factory = Core.TypeScript.Ast.TsAstFactory;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
     {

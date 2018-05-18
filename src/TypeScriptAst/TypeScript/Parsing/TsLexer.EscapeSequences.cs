@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Parsing
+namespace TypeScriptAst.TypeScript.Parsing
 {
     using System.Globalization;
     using System.Text;
-    using Desalt.Core.Utility;
+    using CompilerUtilities;
 
     public sealed partial class TsLexer
     {

@@ -12,11 +12,11 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.TypeScript.Ast;
+    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
 
     /// <summary>
     /// Contains extension methods for working with Roslyn data types.

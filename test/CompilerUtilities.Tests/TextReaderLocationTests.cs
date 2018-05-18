@@ -5,10 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.Utility
+namespace CompilerUtilities.Tests
 {
     using System;
-    using Desalt.Core.Utility;
     using FluentAssertions;
     using Xunit;
 

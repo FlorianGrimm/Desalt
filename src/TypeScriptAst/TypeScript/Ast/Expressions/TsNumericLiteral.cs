@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast.Expressions
+namespace TypeScriptAst.TypeScript.Ast.Expressions
 {
     using System;
     using System.Globalization;
-    using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
+    using CompilerUtilities.Extensions;
+    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents an expression containing a numeric literal value.

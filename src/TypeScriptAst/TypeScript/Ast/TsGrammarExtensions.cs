@@ -5,16 +5,16 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.TypeScript.Ast
+namespace TypeScriptAst.TypeScript.Ast
 {
     using System;
     using System.Collections.Generic;
-    using Desalt.Core.Emit;
-    using Desalt.Core.Extensions;
-    using Desalt.Core.TypeScript.Ast.Declarations;
-    using Desalt.Core.TypeScript.Ast.Expressions;
-    using Desalt.Core.TypeScript.Ast.Statements;
-    using Desalt.Core.TypeScript.Ast.Types;
+    using CompilerUtilities.Extensions;
+    using TypeScriptAst.Emit;
+    using TypeScriptAst.TypeScript.Ast.Declarations;
+    using TypeScriptAst.TypeScript.Ast.Expressions;
+    using TypeScriptAst.TypeScript.Ast.Statements;
+    using TypeScriptAst.TypeScript.Ast.Types;
 
     /// <summary>
     /// Contains static extension methods for <see cref="IAstNode"/> objects.
