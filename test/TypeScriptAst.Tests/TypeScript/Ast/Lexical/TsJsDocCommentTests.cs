@@ -11,10 +11,9 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
     using System.Linq;
     using Desalt.Core.TypeScript.Ast.Lexical;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
-    [TestClass]
     public class TsJsDocCommentTests
     {
         private static readonly TsJsDocComment s_fullComment = new TsJsDocComment(
@@ -41,7 +40,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
             summaryTag: Factory.JsDocBlock("Summary"),
             seeTags: new[] { Factory.JsDocBlock("See1"), Factory.JsDocBlock("See2") });
 
-        [TestMethod]
+        [Fact]
         public void With_methods_should_not_create_a_new_instance_if_the_same()
         {
             s_fullComment.WithFileTag(Factory.JsDocBlock("File")).Should().BeSameAs(s_fullComment);
@@ -77,7 +76,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
                 .BeSameAs(s_fullComment);
         }
 
-        [TestMethod]
+        [Fact]
         public void With_methods_should_not_modify_the_original_object()
         {
             s_fullComment.WithFileTag(Factory.JsDocBlock("FileX"));
@@ -104,7 +103,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
             s_fullComment.Should().Be(s_fullCommentPristine);
         }
 
-        [TestMethod]
+        [Fact]
         public void With_methods_should_return_different_objects()
         {
             s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).Should().NotBe(s_fullComment);
@@ -142,7 +141,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast.Lexical
             s_fullComment.Should().Be(s_fullCommentPristine);
         }
 
-        [TestMethod]
+        [Fact]
         public void With_methods_should_change_the_value()
         {
             s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).FileTag.EmitAsString().Should().Be("FileX");

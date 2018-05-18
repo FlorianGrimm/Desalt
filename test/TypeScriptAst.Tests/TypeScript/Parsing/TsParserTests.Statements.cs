@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast.Expressions;
     using Desalt.Core.TypeScript.Parsing;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
@@ -22,25 +22,25 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_a_debugger_statement()
         {
             AssertParseStatement("debugger;", Factory.Debugger);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_an_empty_statement()
         {
             AssertParseStatement(";", Factory.EmptyStatement);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_an_empty_block()
         {
             AssertParseStatement("{}", Factory.Block());
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseStatment_should_recognize_variable_statements()
         {
             AssertParseStatement(
@@ -49,7 +49,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.SimpleVariableDeclaration(s_x, Factory.StringType, Factory.String("str"))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_if_statements()
         {
             AssertParseStatement("if (x) debugger;", Factory.IfStatement(s_x, Factory.Debugger));
@@ -58,40 +58,40 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 Factory.IfStatement(s_x, Factory.Debugger, Factory.Block()));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_continue_statements()
         {
             AssertParseStatement("continue;", Factory.Continue());
             AssertParseStatement("continue x;", Factory.Continue(s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_break_statements()
         {
             AssertParseStatement("break;", Factory.Break());
             AssertParseStatement("break x;", Factory.Break(s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_return_statements()
         {
             AssertParseStatement("return;", Factory.Return());
             AssertParseStatement("return x;", Factory.Return(s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_a_with_statement()
         {
             AssertParseStatement("with (x) {}", Factory.With(s_x, Factory.Block()));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_a_throw_statement()
         {
             AssertParseStatement("throw x;", Factory.Throw(s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_try_statements()
         {
             ITsBlockStatement block = Factory.Block();
@@ -103,7 +103,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseStatement("try {} finally {}", Factory.TryFinally(block, block));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_labelled_statements()
         {
             AssertParseStatement("x: return x;", Factory.LabelledStatement(s_x, Factory.Return(s_x)));
@@ -112,13 +112,13 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 Factory.LabelledStatement(s_x, Factory.FunctionDeclaration(Factory.CallSignature())));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_do_while_statements()
         {
             AssertParseStatement("do {} while (true);", Factory.DoWhile(Factory.Block(), Factory.True));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_switch_statements()
         {
             AssertParseStatement(
@@ -138,7 +138,7 @@ switch (x) {
                     Factory.DefaultClause(Factory.Return(s_y))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_expression_statements()
         {
             AssertParseStatement(

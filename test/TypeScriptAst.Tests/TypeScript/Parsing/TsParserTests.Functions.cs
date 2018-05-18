@@ -7,12 +7,12 @@
 
 namespace Desalt.Core.Tests.TypeScript.Parsing
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
     {
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_function_parameters_with_object_binding_patterns()
         {
             AssertParseExpression(
@@ -29,7 +29,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                                         Factory.SingleNameBinding(s_x))))))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_function_parameters_with_array_binding_patterns()
         {
             AssertParseExpression(
@@ -50,7 +50,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                                     s_z))))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_function_parameters_with_nested_binding_patterns()
         {
             AssertParseExpression(

@@ -10,12 +10,12 @@ namespace Desalt.Core.Tests.TypeScript.Ast
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [TestMethod]
+        [Fact]
         public void Emit_simple_lexical_bindings()
         {
             VerifyOutput(Factory.SimpleLexicalBinding(s_x), "x");
@@ -28,7 +28,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "x: string = 'hello'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_destructuring_lexical_binding_with_no_type_annotation()
         {
             VerifyOutput(
@@ -38,7 +38,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[x, y] = z");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_destructuring_lexical_binding_with_type_annotation()
         {
             VerifyOutput(
@@ -49,7 +49,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[x, y]: number[] = z");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_destructuring_lexical_binding_with_no_type_annotation_or_initializer()
         {
             VerifyOutput(
@@ -58,7 +58,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[x, y]");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_lexical_declarations()
         {
             VerifyOutput(
@@ -76,7 +76,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "let x, y: any = z;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_anonymous_function_declaration_with_no_body()
         {
             VerifyOutput(
@@ -86,7 +86,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "function(x: number);\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_named_function_declaration_with_no_body()
         {
             VerifyOutput(
@@ -98,7 +98,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "function func(x: boolean): any;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_anonymous_function_declaration_with_body()
         {
             VerifyOutput(
@@ -110,7 +110,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "function(x: number) {\n  return;\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_named_function_declaration_with_body()
         {
             VerifyOutput(
@@ -123,7 +123,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "function func(x: boolean): any {\n  return 0;\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_constructor_declaration_with_no_body()
         {
             VerifyOutput(
@@ -135,7 +135,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "public constructor(protected x, y: 'str');\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_constructor_declaration_with_body()
         {
             VerifyOutput(
@@ -153,7 +153,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "public constructor(protected x, y: 'str') {\n  this._y = y;\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_variable_member_declaration()
         {
             VerifyOutput(
@@ -176,7 +176,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.VariableMemberDeclaration(s_x), "x;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_function_member_declarations_with_no_body()
         {
             VerifyOutput(
@@ -217,7 +217,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "myMethod(x: number): void;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_function_member_declarations_with_a_body()
         {
             VerifyOutput(
@@ -237,7 +237,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "myMethod() {\n  return 0;\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_get_and_set_accessor_member_declarations()
         {
             VerifyOutput(
@@ -281,7 +281,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "set field(value: number) { }\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_index_member_declarations()
         {
             VerifyOutput(
@@ -290,7 +290,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[key: string]: any;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_class_heritage()
         {
             VerifyOutput(
@@ -317,19 +317,19 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 " implements IOne, ITwo");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_empty_class_declaration()
         {
             VerifyOutput(Factory.ClassDeclaration(), "class {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_abstract_class_declaration()
         {
             VerifyOutput(Factory.ClassDeclaration(Factory.Identifier("C"), isAbstract: true), "abstract class C {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_class_declaration_with_all_of_the_possible_elements()
         {
             // ReSharper disable once InconsistentNaming
@@ -424,13 +424,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 ".Replace("\r\n", "\n"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_empty_interface_declaration()
         {
             VerifyOutput(Factory.InterfaceDeclaration(s_T, Factory.ObjectType()), "interface T {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_interface_declaration()
         {
             VerifyOutput(
@@ -447,20 +447,20 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "interface ISomething {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_enum_member()
         {
             VerifyOutput(Factory.EnumMember(s_x), "x");
             VerifyOutput(Factory.EnumMember(s_y, s_z), "y = z");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_empty_enum_declaration()
         {
             VerifyOutput(Factory.EnumDeclaration(s_T), "enum T {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_enum_declaration()
         {
             VerifyOutput(
@@ -472,7 +472,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "const enum MyEnum {\n  x,\n  y = 10,\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_namespace_declaration()
         {
             VerifyOutput(
@@ -490,7 +490,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 ".Replace("\r\n", "\n"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_exported_variable_statement()
         {
             VerifyOutput(
@@ -498,7 +498,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "export var x;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_exported_declarations()
         {
             VerifyOutput(
@@ -510,7 +510,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.ClassDeclaration().ToExported(), "export class {\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_import_alias_declaration()
         {
             VerifyOutput(
@@ -518,14 +518,14 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "import x = jQuery.IDeferred;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_binding()
         {
             VerifyOutput(Factory.AmbientBinding(s_x), "x");
             VerifyOutput(Factory.AmbientBinding(s_x, Factory.BooleanType), "x: boolean");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_variable_declaration()
         {
             VerifyOutput(
@@ -540,7 +540,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "let x: number, y;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_function_declaration()
         {
             VerifyOutput(
@@ -548,7 +548,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "function x();\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_constructor_declaration()
         {
             VerifyOutput(
@@ -559,7 +559,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "constructor(protected x, y: 'str');\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_variable_member_declarations()
         {
             VerifyOutput(
@@ -580,7 +580,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.AmbientVariableMemberDeclaration(s_x), "x;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_function_member_declarations()
         {
             VerifyOutput(
@@ -611,7 +611,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "myMethod(x: number): void;\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_class_declaration_with_all_of_the_possible_elements()
         {
             // ReSharper disable once InconsistentNaming
@@ -655,7 +655,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 ".Replace("\r\n", "\n"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_namespace_elements()
         {
             VerifyOutput(
@@ -694,7 +694,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "export namespace MyNs { }\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_ambient_namespace_declaration()
         {
             VerifyOutput(
@@ -704,20 +704,20 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "namespace A.B.C {\n  enum x {\n}\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_import_specifier()
         {
             VerifyOutput(Factory.ImportSpecifier(s_x), "x");
             VerifyOutput(Factory.ImportSpecifier(s_x, s_y), "x as y");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_from_clause()
         {
             VerifyOutput(Factory.FromClause(Factory.String("myModule")), "from 'myModule'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_import_clauses()
         {
             // Default bindings
@@ -735,7 +735,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "{ x as y, z }");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_import_declarations()
         {
             VerifyOutput(Factory.ImportDeclaration(Factory.String("myModule")), "import 'myModule';\n");
@@ -746,7 +746,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "import x, { y as z, p } from './Module';\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_import_require_declaration()
         {
             VerifyOutput(
@@ -754,7 +754,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "import x = require('jQuery');\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_export_implementation_element()
         {
             VerifyOutput(

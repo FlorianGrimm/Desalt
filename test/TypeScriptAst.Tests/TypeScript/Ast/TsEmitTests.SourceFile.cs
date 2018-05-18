@@ -10,12 +10,12 @@ namespace Desalt.Core.Tests.TypeScript.Ast
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [TestMethod]
+        [Fact]
         public void Emit_an_ImplementationScript()
         {
             // ReSharper disable InconsistentNaming
@@ -158,7 +158,7 @@ class Monkey implements Animal {
 ".Replace("\r\n", "\n"));
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_an_ImplementationModule()
         {
             // ReSharper disable InconsistentNaming

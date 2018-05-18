@@ -12,9 +12,8 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
     using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class TsLexerTests
     {
         private static void AssertLex(string code, params TsToken[] expectedTokens)
@@ -22,7 +21,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             TsLexer.Lex(code).Should().ContainInOrder(expectedTokens.AsEnumerable());
         }
 
-        [TestMethod]
+        [Fact]
         public void TsLexer_should_lex_identifiers()
         {
             AssertLex("id", TsToken.Identifier("id", "id", new TextReaderLocation(1, 1)));
@@ -32,7 +31,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertLex("j\\u{0061}r", TsToken.Identifier("j\\u{0061}r", "jar", new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_on_an_invalid_unicode_escape_sequence()
         {
             Action action = () => TsLexer.Lex("\\u123");
@@ -54,7 +53,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 .Be("(1,1): error: Unicode escape sequence '\\u{12345}' is out of range");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_keywords()
         {
             string[] keywords =
@@ -87,7 +86,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_punctuators()
         {
             (string text, TsTokenCode tokenCode)[] punctuators =
@@ -150,7 +149,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_decimal_integer_literals()
         {
             AssertLex(
@@ -190,7 +189,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_an_error_if_the_decimal_integer_is_out_of_range()
         {
             Action action = () => TsLexer.Lex("1234e12345678901234567890");
@@ -200,7 +199,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 .Be("(1,1): error: Invalid decimal literal '1234e12345678901234567890'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_binary_integer_literals()
         {
             AssertLex(
@@ -212,7 +211,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 TsToken.NumericLiteral(TsTokenCode.BinaryIntegerLiteral, "0B1101", 13, new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_an_error_if_the_binary_integer_is_out_of_range()
         {
             Action action = () =>
@@ -226,7 +225,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     "'0b111100001111000011110000111100001111000011110000111100001111000011110000'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_octal_integer_literals()
         {
             AssertLex(
@@ -246,7 +245,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_an_error_if_the_octal_integer_is_out_of_range()
         {
             Action action = () => TsLexer.Lex("0o12345670123456701234567012345670");
@@ -257,7 +256,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     "(1,1): error: Invalid octal integer literal '0o12345670123456701234567012345670'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_hex_integer_literals()
         {
             AssertLex(
@@ -277,7 +276,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_an_error_if_the_hex_integer_is_out_of_range()
         {
             Action action = () => TsLexer.Lex("0x0123456789abcdef0123456789abcdef0123456789abcdef");
@@ -287,7 +286,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 .Be("(1,1): error: Invalid hex integer literal '0x0123456789abcdef0123456789abcdef0123456789abcdef'");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_string_literals()
         {
             AssertLex(
@@ -299,7 +298,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 TsToken.StringLiteral("\"str\"", "str", new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_an_eerror_if_the_string_is_not_terminated()
         {
             Action action = () => TsLexer.Lex("'ab");
@@ -309,35 +308,35 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 .Be("(1,1): error: Unterminated string literal: 'ab");
         }
 
-        [DataTestMethod]
-        [DataRow("'ab\\'c'", "ab'c")]
-        [DataRow("'ab\\\"c'", "ab\"c")]
-        [DataRow("'ab\\\\c'", "ab\\c")]
-        [DataRow("'ab\\bc'", "ab\bc")]
-        [DataRow("'ab\\fc'", "ab\fc")]
-        [DataRow("'ab\\nc'", "ab\nc")]
-        [DataRow("'ab\\rc'", "ab\rc")]
-        [DataRow("'ab\\tc'", "ab\tc")]
-        [DataRow("'ab\\vc'", "ab\vc")]
+        [Theory]
+        [InlineData("'ab\\'c'", "ab'c")]
+        [InlineData("'ab\\\"c'", "ab\"c")]
+        [InlineData("'ab\\\\c'", "ab\\c")]
+        [InlineData("'ab\\bc'", "ab\bc")]
+        [InlineData("'ab\\fc'", "ab\fc")]
+        [InlineData("'ab\\nc'", "ab\nc")]
+        [InlineData("'ab\\rc'", "ab\rc")]
+        [InlineData("'ab\\tc'", "ab\tc")]
+        [InlineData("'ab\\vc'", "ab\vc")]
         public void Lex_should_recognize_string_literals_with_single_character_escape_sequences(string text, string value)
         {
             AssertLex(text, TsToken.StringLiteral(text, value, new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_string_literals_with_the_null_character()
         {
             AssertLex("'a\\0bc'", TsToken.StringLiteral("'a\\0bc'", "a\0bc", new TextReaderLocation(1, 1)));
             AssertLex("'a\\01b'", TsToken.StringLiteral("'a\\01b'", "a01b", new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_string_literals_with_hex_escape_sequences()
         {
             AssertLex("'a\\x62c'", TsToken.StringLiteral("'a\\x62c'", "abc", new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_on_an_invalid_hex_escape_sequence_in_a_string_literal()
         {
             Action action = () => TsLexer.Lex("'\\x1");
@@ -353,7 +352,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a hex escape sequence");
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_recognize_string_literals_with_Unicode_escape_sequences()
         {
             AssertLex(
@@ -361,7 +360,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 TsToken.StringLiteral("'a\\u0062\\u0063d'", "abcd", new TextReaderLocation(1, 1)));
         }
 
-        [TestMethod]
+        [Fact]
         public void Lex_should_throw_on_an_invalid_Unicode_escape_sequence_in_a_string_literal()
         {
             Action action = () => TsLexer.Lex("'\\u123");

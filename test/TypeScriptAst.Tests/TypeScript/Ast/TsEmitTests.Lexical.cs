@@ -9,38 +9,38 @@ namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using Desalt.Core.Emit;
     using Desalt.Core.Extensions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [TestMethod]
+        [Fact]
         public void Emit_single_line_comment()
         {
             VerifyOutput(Factory.SingleLineComment("my comment"), "// my comment\n");
             VerifyOutput(Factory.SingleLineComment("my comment", omitNewLineAtEnd: true), "// my comment");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_multi_line_comment_with_no_lines()
         {
             VerifyOutput(Factory.MultiLineComment(), "/**/");
             VerifyOutput(Factory.MultiLineComment(isJsDoc: true), "/***/");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_multi_line_comment_with_a_single_line()
         {
             VerifyOutput(Factory.MultiLineComment("line 1"), "/* line 1 */");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_multi_line_comment_with_multiple_lines()
         {
             VerifyOutput(Factory.MultiLineComment("line 1", "line 2"), "/* line 1\n * line 2\n */\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_single_line_JsDoc_comment_on_three_lines()
         {
             VerifyOutput(Factory.MultiLineComment(isJsDoc: true, lines: "line 1"), "/**\n * line 1\n */\n");
@@ -50,19 +50,19 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         //// ITsJsDocLinkTag
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_JSDoc_link_with_no_text()
         {
             VerifyOutput(Factory.JsDocLinkTag("http"), "{@link http}");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_JSDoc_link_with_text()
         {
             VerifyOutput(Factory.JsDocLinkTag("http", "Text"), "[Text]{@link http}");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_should_strip_out_illegal_characters_for_JSDoc_links()
         {
             VerifyOutput(Factory.JsDocLinkTag("{ht{tp}", "[Te][xt]"), "[Text]{@link http}");
@@ -72,7 +72,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         //// ITsJsDocComment
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_JSDoc_comment_with_no_content_on_one_line()
         {
             VerifyOutput(
@@ -81,13 +81,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 EmitOptions.UnixSpaces.WithSingleLineJsDocCommentsOnOneLine(true));
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_single_line_JSDoc_comment_on_multiple_lines_by_default()
         {
             VerifyOutput(Factory.JsDocComment("Description"), "/**\n * Description\n */\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_single_line_JSDoc_comment_on_one_line_if_the_options_specify()
         {
             var options = EmitOptions.UnixSpaces.WithSingleLineJsDocCommentsOnOneLine(true);
@@ -133,7 +133,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 options);
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_JSDoc_comment_with_only_a_single_tag_should_write_on_multiple_lines_by_default()
         {
             VerifyOutput(Factory.JsDocComment(fileTag: Factory.JsDocBlock("File")), "/**\n * @file File\n */\n");
@@ -170,7 +170,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "/**\n * @see See\n */\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_a_JSDoc_comment_ensuring_the_order_of_the_tags()
         {
             VerifyOutput(

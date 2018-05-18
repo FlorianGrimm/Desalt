@@ -12,10 +12,9 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast.Expressions;
     using Desalt.Core.TypeScript.Parsing;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
-    [TestClass]
     public partial class TsParserTests
     {
         //// ===========================================================================================================
@@ -51,25 +50,25 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
         //// Primary Expression Parsing Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_this()
         {
             AssertParseExpression("this", Factory.This);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_identifiers()
         {
             AssertParseExpression("x", s_x);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_conditional_expressions()
         {
             AssertParseExpression("x ? y : z", Factory.Conditional(s_x, s_y, s_z));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_assignment_expressions()
         {
             AssertParseExpression("x = y", Factory.Assignment(s_x, TsAssignmentOperator.SimpleAssign, s_y));
@@ -88,14 +87,14 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x |= y", Factory.Assignment(s_x, TsAssignmentOperator.BitwiseOrAssign, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_logical_and_or_expressions()
         {
             AssertParseExpression("x || y", Factory.BinaryExpression(s_x, TsBinaryOperator.LogicalOr, s_y));
             AssertParseExpression("x && y", Factory.BinaryExpression(s_x, TsBinaryOperator.LogicalAnd, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_bitwise_expressions()
         {
             AssertParseExpression("x | y", Factory.BinaryExpression(s_x, TsBinaryOperator.BitwiseOr, s_y));
@@ -103,7 +102,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x & y", Factory.BinaryExpression(s_x, TsBinaryOperator.BitwiseAnd, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_equality_expressions()
         {
             AssertParseExpression("x == y", Factory.BinaryExpression(s_x, TsBinaryOperator.Equals, s_y));
@@ -112,7 +111,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x !== y", Factory.BinaryExpression(s_x, TsBinaryOperator.StrictNotEquals, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_relational_expressions()
         {
             AssertParseExpression("x < y", Factory.BinaryExpression(s_x, TsBinaryOperator.LessThan, s_y));
@@ -123,7 +122,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x in y", Factory.BinaryExpression(s_x, TsBinaryOperator.In, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_shift_expressions()
         {
             AssertParseExpression("x << y", Factory.BinaryExpression(s_x, TsBinaryOperator.LeftShift, s_y));
@@ -131,14 +130,14 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x >>> y", Factory.BinaryExpression(s_x, TsBinaryOperator.UnsignedRightShift, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_additive_expressions()
         {
             AssertParseExpression("x + y", Factory.BinaryExpression(s_x, TsBinaryOperator.Add, s_y));
             AssertParseExpression("x - y", Factory.BinaryExpression(s_x, TsBinaryOperator.Subtract, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_multiplicative_expressions()
         {
             AssertParseExpression("x * y", Factory.BinaryExpression(s_x, TsBinaryOperator.Multiply, s_y));
@@ -146,7 +145,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x % y", Factory.BinaryExpression(s_x, TsBinaryOperator.Modulo, s_y));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_unary_expressions()
         {
             AssertParseExpression("delete x", Factory.UnaryExpression(s_x, TsUnaryOperator.Delete));
@@ -161,14 +160,14 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("<T>x", Factory.Cast(s_T, s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_postfix_expressions()
         {
             AssertParseExpression("x++", Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement));
             AssertParseExpression("x--", Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixDecrement));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_new_expressions()
         {
             AssertParseExpression("new x()", Factory.NewCall(s_x));
@@ -182,13 +181,13 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                         Factory.Argument(s_z, isSpreadArgument: true))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_super_calls()
         {
             AssertParseExpression("super(x, y)", Factory.SuperCall(Factory.ArgumentList(s_x, s_y)));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_call_expressions()
         {
             AssertParseExpression("x(y, z)", Factory.Call(s_x, Factory.ArgumentList(s_y, s_z)));
@@ -196,27 +195,27 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x().y", Factory.MemberDot(Factory.Call(s_x), "y"));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_super_properties()
         {
             AssertParseExpression("super[x]", Factory.SuperBracket(s_x));
             AssertParseExpression("super.x", Factory.SuperDot("x"));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_member_dot_and_bracket_expressions()
         {
             AssertParseExpression("x[y]", Factory.MemberBracket(s_x, s_y));
             AssertParseExpression("x.y", Factory.MemberDot(s_x, "y"));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_parenthesized_expressions()
         {
             AssertParseExpression("(x)", Factory.ParenthesizedExpression(s_x));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_get_precedence_correct()
         {
             // x() * y << (x+y)-- - -this.x + [1,2,3]"
@@ -245,13 +244,13 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseExpression("x() * y << (x+y)-- - -this.x + [1,2,3]", expected);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_keywords_as_identifiers()
         {
             AssertParseExpression("string.Empty", Factory.MemberDot(Factory.Identifier("string"), "Empty"));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_a_qualified_name_as_an_expression()
         {
             AssertParseExpression("x.y.z()", Factory.Call(Factory.MemberDot(Factory.MemberDot(s_x, "y"), "z")));
@@ -260,7 +259,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 Factory.Call(Factory.MemberDot(Factory.MemberBracket(Factory.MemberDot(s_x, "y"), s_z), "z")));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_recognize_a_logical_or_with_an_arrow_function()
         {
             AssertParseExpression(

@@ -8,7 +8,7 @@
 namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using Desalt.Core.TypeScript.Ast;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
@@ -25,7 +25,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
          *   new MemberExpression Arguments
          */
 
-        [TestMethod]
+        [Fact]
         public void Emit_bracket_member_expression()
         {
             const string expected = @"x['throw']";
@@ -35,25 +35,25 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(expression, expected);
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_dot_notation_member_expression()
         {
             VerifyOutput(Factory.MemberDot(s_x, "y"), "x.y");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_super_bracket_expression()
         {
             VerifyOutput(Factory.SuperBracket(s_z), "super[z]");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_super_dot_expression()
         {
             VerifyOutput(Factory.SuperDot("name"), "super.name");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_call_expression()
         {
             VerifyOutput(
@@ -63,7 +63,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "x(y, ... z)");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_new_call_expression()
         {
             VerifyOutput(
@@ -73,7 +73,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "new x(y, ... z)");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_super_call_expression()
         {
             VerifyOutput(
@@ -83,13 +83,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "super(y, ... z)");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_new_target_expression()
         {
             VerifyOutput(Factory.NewTarget, "new.target");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_arrow_functions()
         {
             VerifyOutput(Factory.ArrowFunction(s_x, s_y), "x => y");

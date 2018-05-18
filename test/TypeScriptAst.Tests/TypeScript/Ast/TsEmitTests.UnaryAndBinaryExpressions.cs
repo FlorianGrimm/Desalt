@@ -8,12 +8,12 @@
 namespace Desalt.Core.Tests.TypeScript.Ast
 {
     using Desalt.Core.TypeScript.Ast.Expressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [TestMethod]
+        [Fact]
         public void Emit_unary_expressions()
         {
             VerifyOutput(Factory.UnaryExpression(s_x, TsUnaryOperator.PostfixIncrement), "x++");
@@ -32,7 +32,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.UnaryExpression(s_x, TsUnaryOperator.LogicalNot), "!x");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_cast_unary_expression()
         {
             VerifyOutput(
@@ -40,7 +40,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "<number>++x");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_binary_expressions()
         {
             VerifyOutput(Factory.BinaryExpression(s_x, TsBinaryOperator.Multiply, s_y), "x * y");
@@ -75,7 +75,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.BinaryExpression(s_x, TsBinaryOperator.LogicalOr, s_y), "x || y");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_conditional_expressions()
         {
             VerifyOutput(Factory.Conditional(s_x, s_y, s_z), "x ? y : z");

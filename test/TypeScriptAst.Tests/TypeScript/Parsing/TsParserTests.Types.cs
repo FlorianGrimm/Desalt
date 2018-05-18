@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Parsing;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
@@ -26,7 +26,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
         //// ParseType Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_predefined_types()
         {
             AssertParseType("any", Factory.AnyType);
@@ -37,19 +37,19 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseType("void", Factory.VoidType);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_parse_the_this_type()
         {
             AssertParseType("this", Factory.ThisType);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_parenthesized_types()
         {
             AssertParseType("(number)", Factory.NumberType);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_type_references()
         {
             AssertParseType(
@@ -57,7 +57,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 Factory.TypeReference(Factory.QualifiedName("Ns1.Ns2.Type"), s_T1, s_T2));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_array_types()
         {
             AssertParseType(
@@ -65,7 +65,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                 Factory.ArrayType(Factory.TypeReference(Factory.QualifiedName("Ns1.Ns2.Type"), s_T1, s_T2)));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_tuple_types()
         {
             AssertParseType(
@@ -75,13 +75,13 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.TypeReference(Factory.Identifier("Promise"), Factory.NumberType)));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_type_queries()
         {
             AssertParseType("typeof A.B.C", Factory.TypeQuery(Factory.QualifiedName("A.B.C")));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_object_types_with_construct_signatures()
         {
             AssertParseType(
@@ -104,7 +104,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                         Factory.TypeReference(Factory.Identifier("Type")))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_object_types_with_index_signatures()
         {
             AssertParseType(
@@ -120,7 +120,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                         returnType: Factory.AnyType)));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_object_types_with_call_signatures()
         {
             AssertParseType(
@@ -139,7 +139,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.CallSignature()));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_object_types_with_property_signatures()
         {
             AssertParseType(
@@ -151,7 +151,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.PropertySignature(Factory.Identifier("optTyped"), Factory.AnyType, isOptional: true)));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_object_types_with_method_signatures()
         {
             AssertParseType(
@@ -179,7 +179,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                         callSignature: Factory.CallSignature())));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_a_constructor_type()
         {
             AssertParseType(
@@ -192,7 +192,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
                     Factory.TypeReference(Factory.Identifier("T"))));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_a_function_type()
         {
             AssertParseType(
@@ -207,7 +207,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             AssertParseType("() => void", Factory.FunctionType(Factory.ParameterList(), Factory.VoidType));
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_ParseType_should_recognize_a_union_and_intersection_type()
         {
             AssertParseType(

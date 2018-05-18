@@ -12,10 +12,9 @@ namespace Desalt.Core.Tests.TypeScript.Ast
     using Desalt.Core.Extensions;
     using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
-    [TestClass]
     public partial class TsEmitTests
     {
         private static readonly ITsIdentifier s_p = Factory.Identifier("p");
@@ -53,7 +52,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_generic_type_name()
         {
             VerifyOutput(

@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Ast.Expressions;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsEmitTests
@@ -20,27 +20,27 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         //// Literal Expressions
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void Emit_null_literal()
         {
             VerifyOutput(Factory.Null, "null");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_boolean_literals()
         {
             VerifyOutput(Factory.True, "true");
             VerifyOutput(Factory.False, "false");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_string_literals()
         {
             VerifyOutput(Factory.String("single"), "'single'");
             VerifyOutput(Factory.String("double", StringLiteralQuoteKind.DoubleQuote), "\"double\"");
         }
 
-        [TestMethod]
+        [Fact]
         public void Number_literals_should_be_positive()
         {
             Action action = () => Factory.Number(-123);
@@ -56,7 +56,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("value");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_decimal_literals()
         {
             VerifyOutput(Factory.Number(123), "123");
@@ -65,33 +65,33 @@ namespace Desalt.Core.Tests.TypeScript.Ast
             VerifyOutput(Factory.Number(53e-53), "5.3E-52");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_binary_integer_literals()
         {
             VerifyOutput(Factory.BinaryInteger(17), "0b10001");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_octal_integer_literals()
         {
             VerifyOutput(Factory.OctalInteger(20), "0o24");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_hex_integer_literal()
         {
             VerifyOutput(Factory.HexInteger(415), "0x19f");
             VerifyOutput(Factory.HexInteger(48879), "0xbeef");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_regular_expression_literals()
         {
             VerifyOutput(Factory.RegularExpression("a-z", "g"), "/a-z/g");
             VerifyOutput(Factory.RegularExpression("hello", null), "/hello/");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_array_literals()
         {
             VerifyOutput(
@@ -108,7 +108,7 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[y, z, 'str']");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_array_literals_with_elisons_ie_empty_elements()
         {
             VerifyOutput(
@@ -116,13 +116,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
                 "[, x, , , y]");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_array_literals_with_spread_operator()
         {
             VerifyOutput(Factory.Array(Factory.ArrayElement(s_y, isSpreadElement: true)), "[... y]");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_template_literals()
         {
             VerifyOutput(Factory.TemplateString(Factory.TemplatePart(template: "string")), "`string`");
@@ -137,13 +137,13 @@ namespace Desalt.Core.Tests.TypeScript.Ast
         //// Object Literal Expressions
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void Emit_empty_object_literal()
         {
             VerifyOutput(Factory.EmptyObject, "{}");
         }
 
-        [TestMethod]
+        [Fact]
         public void Emit_full_object_literal_with_every_type_of_property_definition()
         {
             VerifyOutput(

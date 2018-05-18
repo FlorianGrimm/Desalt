@@ -10,7 +10,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.TypeScript.Parsing;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
     using Factory = Core.TypeScript.Ast.TsAstFactory;
 
     public partial class TsParserTests
@@ -21,7 +21,7 @@ namespace Desalt.Core.Tests.TypeScript.Parsing
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestMethod]
+        [Fact]
         public void TsParser_should_parse_function_declarations()
         {
             AssertParseDeclaration(
