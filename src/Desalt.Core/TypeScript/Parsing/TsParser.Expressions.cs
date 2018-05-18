@@ -97,6 +97,29 @@ namespace Desalt.Core.TypeScript.Parsing
             return expressions.Single();
         }
 
+        private bool IsStartOfExpression()
+        {
+            TsTokenCode tokenCode = _reader.Peek().TokenCode;
+            switch (tokenCode)
+            {
+                case TsTokenCode.Plus:
+                case TsTokenCode.Minus:
+                case TsTokenCode.Tilde:
+                case TsTokenCode.Exclamation:
+                case TsTokenCode.Delete:
+                case TsTokenCode.Typeof:
+                case TsTokenCode.Void:
+                case TsTokenCode.PlusPlus:
+                case TsTokenCode.MinusMinus:
+                case TsTokenCode.LessThan:
+                case TsTokenCode.Await:
+                case TsTokenCode.Yield:
+                    return true;
+            }
+
+            return IsStartOfIdentifier(tokenCode) || IsStartOfLeftHandSideExpression();
+        }
+
         /// <summary>
         /// Parses an assignment expression.
         /// </summary>
@@ -499,7 +522,7 @@ namespace Desalt.Core.TypeScript.Parsing
         ///
         /// CallExpression:
         ///     MemberExpression Arguments
-        ///     SuperCall
+        ///     SuperCall                           (starts with 'super')
         ///     CallExpression Arguments
         ///     CallExpression [ Expression ]
         ///     CallExpression . IdentifierName
@@ -544,6 +567,22 @@ namespace Desalt.Core.TypeScript.Parsing
             // template literals aren't supported yet
 
             return expression;
+        }
+
+        private bool IsStartOfLeftHandSideExpression()
+        {
+            switch (_reader.Peek().TokenCode)
+            {
+                // LeftHandSideExpression -> NewExpression
+                case TsTokenCode.New:
+
+                // LeftHandSideExpression -> CallExpression -> SuperCall
+                case TsTokenCode.Super:
+                    return true;
+
+                default:
+                    return IsStartOfPrimaryExpression();
+            }
         }
 
         private static bool IsLeftHandSideExpression(ITsExpression expression)
@@ -723,6 +762,54 @@ namespace Desalt.Core.TypeScript.Parsing
             Read(TsTokenCode.Dot);
             ITsIdentifier identifier = ParseIdentifierOrKeyword();
             return Factory.SuperDot(identifier.Text);
+        }
+
+        private bool IsStartOfPrimaryExpression()
+        {
+            switch (_reader.Peek().TokenCode)
+            {
+                case TsTokenCode.This:
+
+                // IdentifierReference
+                case TsTokenCode.Identifier:
+                // ReSharper disable once PatternAlwaysMatches
+                case TsTokenCode tc when IsStartOfIdentifier(tc):
+
+                // Literal
+                case TsTokenCode.Null:
+                case TsTokenCode.True:
+                case TsTokenCode.False:
+                case TsTokenCode.DecimalLiteral:
+                case TsTokenCode.BinaryIntegerLiteral:
+                case TsTokenCode.OctalIntegerLiteral:
+                case TsTokenCode.HexIntegerLiteral:
+                case TsTokenCode.StringLiteral:
+
+                // ArrayLiteral
+                case TsTokenCode.LeftBracket:
+
+                // ObjectLiteral
+                case TsTokenCode.LeftBrace:
+
+                // FunctionExpression and GeneratorExpression
+                case TsTokenCode.Function:
+
+                // ClassExpression
+                case TsTokenCode.Class:
+
+                // RegularExpressionLiteral:
+                case TsTokenCode.Slash:
+
+                // TemplateLiteral:
+                case TsTokenCode.TemplateLiteral:
+
+                // ParenthesizedExpression
+                case TsTokenCode.LeftParen:
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

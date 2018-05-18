@@ -1065,6 +1065,7 @@ namespace Desalt.Core.TypeScript.Ast
      *   try Block Catch Finally
      *
      * Catch:
+     *   catch Block
      *   catch ( CatchParameter ) Block
      *
      * Finally:

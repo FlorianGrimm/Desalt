@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Translation
+namespace Desalt.Core.SymbolTables
 {
     using System;
     using System.Collections.Generic;
@@ -23,10 +23,6 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly ImmutableDictionary<ISymbol, T> _documentSymbols;
-        private readonly ImmutableDictionary<ISymbol, T> _directlyReferencedExternalSymbols;
-        private readonly ImmutableDictionary<ISymbol, Lazy<T>> _indirectlyReferencedExternalSymbols;
-
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -34,6 +30,11 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Initializes a new <see cref="SymbolTable{T}"/> with the specified values.
         /// </summary>
+        /// <param name="overrideSymbols">
+        /// An array of overrides that takes precedence over any of the other symbols. This is to
+        /// allow creating exceptions without changing the Saltarelle assembly source code. The key
+        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// </param>
         /// <param name="documentSymbols">The symbols defined in the documents.</param>
         /// <param name="directlyReferencedExternalSymbols">
         /// The symbols directly referenced in the documents but residing in external assemblies.
@@ -44,13 +45,15 @@ namespace Desalt.Core.Translation
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
         protected SymbolTable(
+            ImmutableArray<KeyValuePair<string, T>> overrideSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
             ImmutableArray<KeyValuePair<ISymbol, Lazy<T>>> indirectlyReferencedExternalSymbols)
         {
-            _documentSymbols = documentSymbols.ToImmutableDictionary();
-            _directlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
-            _indirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
+            OverrideSymbols = overrideSymbols.ToImmutableDictionary();
+            DocumentSymbols = documentSymbols.ToImmutableDictionary();
+            DirectlyReferencedExternalSymbols = directlyReferencedExternalSymbols.ToImmutableDictionary();
+            IndirectlyReferencedExternalSymbols = indirectlyReferencedExternalSymbols.ToImmutableDictionary();
         }
 
         //// ===========================================================================================================
@@ -75,21 +78,28 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
+        /// Gets the overrides that takes precedence over any of the other symbols. This is to allow
+        /// creating exceptions without changing the Saltarelle assembly source code. The key is what
+        /// is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// </summary>
+        public ImmutableDictionary<string, T> OverrideSymbols { get; }
+
+        /// <summary>
         /// Gets the symbols defined in the documents that were used to initialize this symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, T>> DocumentSymbols => _documentSymbols;
+        public ImmutableDictionary<ISymbol, T> DocumentSymbols { get; }
 
         /// <summary>
         /// Gets the symbols directly referenced in the documents that were used to initialize this
         /// symbol table.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, T>> DirectlyReferencedExternalSymbols => _directlyReferencedExternalSymbols;
+        public ImmutableDictionary<ISymbol, T> DirectlyReferencedExternalSymbols { get; }
 
         /// <summary>
         /// Gets the symbols defined in externally-referenced assemblies, where their values are
         /// created on demand and then cached.
         /// </summary>
-        public IEnumerable<KeyValuePair<ISymbol, Lazy<T>>> IndirectlyReferencedExternalSymbols => _indirectlyReferencedExternalSymbols;
+        public ImmutableDictionary<ISymbol, Lazy<T>> IndirectlyReferencedExternalSymbols { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -117,33 +127,43 @@ namespace Desalt.Core.Translation
                 throw new ArgumentNullException(nameof(symbol));
             }
 
-            // look in the document symbols first
-            if (_documentSymbols.TryGetValue(symbol, out value))
+            // detect if there is a generic version of a symbol (for example, if the symbol is a
+            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`
+            bool hasGenericVersion =
+                symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol);
+
+            // look in the overrides first, both for the concrete and generic symbols
+            if (OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol), out value) ||
+                hasGenericVersion &&
+                OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol.OriginalDefinition), out value))
+            {
+                return true;
+            }
+
+            // then in the document symbols
+            if (DocumentSymbols.TryGetValue(symbol, out value) ||
+                hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value))
             {
                 return true;
             }
 
             // then in the directly-referenced symbols
-            if (_directlyReferencedExternalSymbols.TryGetValue(symbol, out value))
+            if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value) ||
+                hasGenericVersion &&
+                DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value))
             {
                 return true;
             }
 
             // then in the indirectly-referenced symbols
-            if (_indirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+            if (IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+                lazyValue.Value != null ||
+                hasGenericVersion &&
+                IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
                 lazyValue.Value != null)
             {
                 value = lazyValue.Value;
                 return true;
-            }
-
-            // then try the original definition, which is the generic version of a symbol (for
-            // example, if the symbol is a method `Value<int>(int x)`, then the original definition
-            // is `Value<T>(T x)`
-            if (symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol))
-            {
-                // ReSharper disable once TailRecursiveCall
-                return TryGetValue(symbol.OriginalDefinition, out value);
             }
 
             value = default(T);

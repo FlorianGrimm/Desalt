@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;

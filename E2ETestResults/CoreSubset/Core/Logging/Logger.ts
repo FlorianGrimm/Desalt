@@ -122,7 +122,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByLogger(validLogger: Logger, minLogLevel?: LoggerLevel): void {
-    minLogLevel = minLogLevel || LoggerLevel.all;
+    minLogLevel = (minLogLevel) || (LoggerLevel.all);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return l === validLogger && ll >= minLogLevel;
     });
@@ -142,7 +142,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByType(t: Function, minLogLevel?: LoggerLevel): void {
-    minLogLevel = minLogLevel || LoggerLevel.all;
+    minLogLevel = (minLogLevel) || (LoggerLevel.all);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return ll >= minLogLevel && l.name === t.name;
     });
@@ -161,7 +161,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByName(namePattern: string, minLogLevel?: LoggerLevel): void {
-    minLogLevel = minLogLevel || LoggerLevel.all;
+    minLogLevel = (minLogLevel) || (LoggerLevel.all);
     let regex: RegExp = new RegExp(namePattern, 'i');
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return ll >= minLogLevel && ss.isValue(l.name.match(regex));

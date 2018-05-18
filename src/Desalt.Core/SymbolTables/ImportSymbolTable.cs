@@ -5,13 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Translation
+namespace Desalt.Core.SymbolTables
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
+    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -30,6 +31,7 @@ namespace Desalt.Core.Translation
             ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, ImportSymbolInfo>> directlyReferencedExternalSymbols)
             : base(
+                ImmutableArray<KeyValuePair<string, ImportSymbolInfo>>.Empty,
                 documentSymbols,
                 directlyReferencedExternalSymbols,
                 ImmutableArray<KeyValuePair<ISymbol, Lazy<ImportSymbolInfo>>>.Empty)

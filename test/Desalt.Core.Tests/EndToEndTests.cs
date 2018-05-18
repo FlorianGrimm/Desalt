@@ -42,17 +42,14 @@ namespace Desalt.Core.Tests
         private string ProjectFilePath =>
             Path.Combine(RootDirectory, "test", "SaltarelleProjectTests", "CoreSubset", "CoreSubset.csproj");
 
+        private string SymbolTableOverridesFilePath => Path.Combine(OutputDirectory, "symbolTableOverrides.json");
+
         [TestCategory("SkipWhenLiveUnitTesting")]
         [TestMethod]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
             string outputPath = OutputDirectory;
             string projectFilePath = ProjectFilePath;
-
-            //foreach (string file in Directory.EnumerateFiles(outputPath))
-            //{
-            //    File.Delete(file);
-            //}
 
             // for now, turn off some errors and warnings until we implement rewriters
             var ignoredDiagnostics =
@@ -70,16 +67,34 @@ namespace Desalt.Core.Tests
             var renameRules =
                 RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName);
 
+            // make sure the symbol table overrides file is present
+            EnsureSymbolTablesOverrideFile();
+
             var options = new CompilerOptions(
                 outputPath,
                 specificDiagnosticOptions: ignoredDiagnostics,
-                renameRules: renameRules);
+                renameRules: renameRules,
+                symbolTableOverridesFilePath: SymbolTableOverridesFilePath);
 
             var request = new CompilationRequest(projectFilePath, options);
             var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
 
             result.Diagnostics.Should().BeEmpty();
+        }
+
+        private void EnsureSymbolTablesOverrideFile()
+        {
+            if (File.Exists(SymbolTableOverridesFilePath))
+            {
+                return;
+            }
+
+            var overrides = new SymbolTableOverrides(
+                new KeyValuePair<string, SymbolTableOverride>(
+                    "Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)",
+                    new SymbolTableOverride(inlineCode: "({a}) || ({b})")));
+            overrides.Serialize(SymbolTableOverridesFilePath);
         }
     }
 }

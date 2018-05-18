@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Translation
+namespace Desalt.Core.SymbolTables
 {
     /// <summary>
     /// Controls how a <see cref="SymbolTable{T}"/> discovers types to add to the symbol table.

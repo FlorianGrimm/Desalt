@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests.Translation
+namespace Desalt.Core.Tests.SymbolTables
 {
     using System;
     using System.Collections.Immutable;
@@ -13,6 +13,7 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Extensions;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;

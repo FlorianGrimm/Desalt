@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
