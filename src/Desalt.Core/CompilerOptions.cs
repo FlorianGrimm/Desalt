@@ -28,7 +28,8 @@ namespace Desalt.Core
             WarningLevel warningLevel = WarningLevel.Informational,
             ReportDiagnostic generalDiagnosticOption = ReportDiagnostic.Default,
             ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
-            RenameRules renameRules = null)
+            RenameRules renameRules = null,
+            string symbolTableOverridesFilePath = null)
         {
             OutputPath = outputPath;
             WarningLevel = warningLevel;
@@ -36,6 +37,7 @@ namespace Desalt.Core
             SpecificDiagnosticOptions =
                 specificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
             RenameRules = renameRules ?? RenameRules.Default;
+            SymbolTableOverridesFilePath = symbolTableOverridesFilePath;
         }
 
         //// ===========================================================================================================
@@ -66,6 +68,12 @@ namespace Desalt.Core
         /// Gets the renaming rules to apply during TypeScript translation.
         /// </summary>
         public RenameRules RenameRules { get; }
+
+        /// <summary>
+        /// Gets the path to a .json file containing overrides for various symbols, such as
+        /// [InlineCode] or [ScriptName] overrides.
+        /// </summary>
+        public string SymbolTableOverridesFilePath { get; }
 
         //// ===========================================================================================================
         //// Methods

@@ -10,6 +10,7 @@ namespace Desalt.Core
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
@@ -22,27 +23,42 @@ namespace Desalt.Core
     /// change the source code. Serializing and deserializing to a JSON file is supported to allow
     /// specifying a file name on the command line.
     /// </remarks>
+    [JsonObject(MemberSerialization.OptIn)]
     public sealed class SymbolTableOverrides
     {
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
+        [JsonProperty]
         public ImmutableDictionary<string, SymbolTableOverride> Overrides { get; }
+
+        public ImmutableDictionary<string, string> InlineCodeOverrides { get; }
+        public ImmutableDictionary<string, string> ScriptNameOverrides { get; }
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         public SymbolTableOverrides(params KeyValuePair<string, SymbolTableOverride>[] overrides)
+            : this(overrides.ToImmutableDictionary())
         {
-            Overrides = overrides?.ToImmutableDictionary() ?? ImmutableDictionary<string, SymbolTableOverride>.Empty;
         }
 
         [JsonConstructor]
         public SymbolTableOverrides(ImmutableDictionary<string, SymbolTableOverride> overrides)
         {
             Overrides = overrides ?? ImmutableDictionary<string, SymbolTableOverride>.Empty;
+
+            InlineCodeOverrides = Overrides
+                .Where(pair => pair.Value.InlineCode != null)
+                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.InlineCode))
+                .ToImmutableDictionary();
+
+            ScriptNameOverrides = Overrides
+                .Where(pair => pair.Value.ScriptName != null)
+                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ScriptName))
+                .ToImmutableDictionary();
         }
 
         //// ===========================================================================================================
@@ -95,7 +111,7 @@ namespace Desalt.Core
         {
             var contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy()
+                NamingStrategy = new CamelCaseNamingStrategy(),
             };
 
             var settings = new JsonSerializerSettings

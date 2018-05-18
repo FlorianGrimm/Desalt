@@ -7,11 +7,13 @@
 
 namespace Desalt.Core.CompilerStages
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
@@ -41,6 +43,25 @@ namespace Desalt.Core.CompilerStages
                 CompilerOptions options,
                 CancellationToken cancellationToken = default(CancellationToken))
         {
+            var diagnostics = new List<Diagnostic>();
+
+            // create the symbol table overrides by reading in the provided JSON file
+            var overrides = new SymbolTableOverrides();
+            if (options.SymbolTableOverridesFilePath != null)
+            {
+                try
+                {
+                    overrides = SymbolTableOverrides.Deserialize(options.SymbolTableOverridesFilePath);
+                }
+                catch (Exception e)
+                {
+                    diagnostics.Add(
+                        DiagnosticFactory.InvalidSymbolTableOverridesFile(
+                            options.SymbolTableOverridesFilePath,
+                            e.Message));
+                }
+            }
+
             // since most of the symbol tables will need references to types directly referenced in
             // the documents and types in referenced assemblies, compute them once and then pass them
             // into each symbol table
@@ -70,6 +91,7 @@ namespace Desalt.Core.CompilerStages
                         input,
                         directlyReferencedExternalTypeSymbols,
                         indirectlyReferencedExternalTypeSymbols,
+                        overrides.ScriptNameOverrides,
                         cancellationToken),
                     cancellationToken),
 
@@ -79,7 +101,7 @@ namespace Desalt.Core.CompilerStages
                         input,
                         directlyReferencedExternalTypeSymbols,
                         indirectlyReferencedExternalTypeSymbols,
-                        ImmutableArray<KeyValuePair<string, string>>.Empty,
+                        overrides.InlineCodeOverrides,
                         cancellationToken),
                     cancellationToken),
 
@@ -96,7 +118,7 @@ namespace Desalt.Core.CompilerStages
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;
-            var diagnostics = alternateSignatureTableCreateResult.Diagnostics;
+            diagnostics.AddRange(alternateSignatureTableCreateResult.Diagnostics);
             var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
 
             // create new context objects with the symbol table

@@ -94,7 +94,9 @@ namespace Desalt.Core.Translation
             out IAstNode translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
-            if (_semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol is IMethodSymbol methodSymbol && _inlineCodeSymbolTable.TryGetValue(methodSymbol, out string inlineCode))
+            // ReSharper disable once UsePatternMatching
+            var methodSymbol = _semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol as IMethodSymbol;
+            if (methodSymbol != null && _inlineCodeSymbolTable.TryGetValue(methodSymbol, out string inlineCode))
             {
                 var context = new Context(
                     inlineCode,

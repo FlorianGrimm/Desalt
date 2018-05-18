@@ -10,7 +10,6 @@ namespace Desalt.Core.SymbolTables
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -128,40 +127,43 @@ namespace Desalt.Core.SymbolTables
                 throw new ArgumentNullException(nameof(symbol));
             }
 
-            // look in the overrides first
-            string key = SymbolTableUtils.KeyFromSymbol(symbol);
-            if (OverrideSymbols.TryGetValue(key, out value))
+            // detect if there is a generic version of a symbol (for example, if the symbol is a
+            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`
+            bool hasGenericVersion =
+                symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol);
+
+            // look in the overrides first, both for the concrete and generic symbols
+            if (OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol), out value) ||
+                hasGenericVersion &&
+                OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol.OriginalDefinition), out value))
             {
                 return true;
             }
 
             // then in the document symbols
-            if (DocumentSymbols.TryGetValue(symbol, out value))
+            if (DocumentSymbols.TryGetValue(symbol, out value) ||
+                hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value))
             {
                 return true;
             }
 
             // then in the directly-referenced symbols
-            if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value))
+            if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value) ||
+                hasGenericVersion &&
+                DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value))
             {
                 return true;
             }
 
             // then in the indirectly-referenced symbols
             if (IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+                lazyValue.Value != null ||
+                hasGenericVersion &&
+                IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
                 lazyValue.Value != null)
             {
                 value = lazyValue.Value;
                 return true;
-            }
-
-            // then try the original definition, which is the generic version of a symbol (for
-            // example, if the symbol is a method `Value<int>(int x)`, then the original definition
-            // is `Value<T>(T x)`
-            if (symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol))
-            {
-                // ReSharper disable once TailRecursiveCall
-                return TryGetValue(symbol.OriginalDefinition, out value);
             }
 
             value = default(T);
