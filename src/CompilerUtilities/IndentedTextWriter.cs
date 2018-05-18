@@ -220,14 +220,12 @@ namespace Desalt.Core.Utility
             InnerWriter.Write(value);
         }
 
-        [CLSCompliant(false)]
         public override void Write(uint value)
         {
             OutputTabs();
             InnerWriter.Write(value);
         }
 
-        [CLSCompliant(false)]
         public override void Write(ulong value)
         {
             OutputTabs();
@@ -368,7 +366,6 @@ namespace Desalt.Core.Utility
             _indentPending = true;
         }
 
-        [CLSCompliant(false)]
         public override void WriteLine(uint value)
         {
             OutputTabs();
@@ -376,7 +373,6 @@ namespace Desalt.Core.Utility
             _indentPending = true;
         }
 
-        [CLSCompliant(false)]
         public override void WriteLine(ulong value)
         {
             OutputTabs();

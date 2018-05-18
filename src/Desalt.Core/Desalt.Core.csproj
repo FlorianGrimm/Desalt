@@ -137,10 +137,6 @@
     <Compile Include="Diagnostics\DiagnosticList.cs" />
     <Compile Include="Emit\EmitOptions.cs" />
     <Compile Include="Emit\Emitter.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Extensions\ImmutableExtensions.cs" />
-    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IExtendedResult.cs" />
     <Compile Include="Pipeline\ExtendedResult.cs" />
     <Compile Include="Pipeline\IPipelineStage.cs" />
@@ -344,12 +340,7 @@
     <Compile Include="TypeScript\Parsing\TsTokenCode.cs" />
     <Compile Include="TypeScript\Parsing\TsTokenReader.cs" />
     <Compile Include="Utility\ExceptionFactory.cs" />
-    <Compile Include="Utility\IndentedTextWriter.cs" />
-    <Compile Include="Utility\Param.cs" />
     <Compile Include="Utility\PathUtil.cs" />
-    <Compile Include="Utility\PeekingTextReader.cs" />
-    <Compile Include="Utility\TextReaderLocation.cs" />
-    <Compile Include="Utility\UnicodeStringStream.cs" />
     <Compile Include="Utility\XmlFragmentParser.cs" />
     <Compile Include="Utility\XmlFragmentParser.Reader.cs" />
     <Compile Include="Validation\IValidator.cs" />
@@ -365,6 +356,12 @@
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CompilerUtilities\CompilerUtilities.csproj">
+      <Project>{e7223b23-39b8-4542-a3f3-6c56cd6e5ae1}</Project>
+      <Name>CompilerUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\Desalt.CommonProps.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

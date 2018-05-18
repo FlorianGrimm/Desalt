@@ -209,6 +209,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CompilerUtilities\CompilerUtilities.csproj">
+      <Project>{e7223b23-39b8-4542-a3f3-6c56cd6e5ae1}</Project>
+      <Name>CompilerUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj">
       <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
       <Name>Desalt.Core</Name>

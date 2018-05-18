@@ -21,7 +21,7 @@ namespace Desalt.Core.Utility
     /// <see cref="Encoding.GetBytes(char[])"/> when encoding is desired at the cost of extra
     /// memory. The code is modified from an MSDN article at http://msdn.microsoft.com/en-us/magazine/cc163768.aspx.
     /// </remarks>
-    internal class UnicodeStringStream : Stream
+    public class UnicodeStringStream : Stream
     {
         //// ===========================================================================================================
         //// Member Variables
