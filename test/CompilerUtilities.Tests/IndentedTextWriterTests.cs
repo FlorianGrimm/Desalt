@@ -11,9 +11,8 @@ namespace Desalt.Core.Tests.Utility
     using System.IO;
     using Desalt.Core.Utility;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class IndentedTextWriterTests
     {
         private static void RunTest(Action<IndentedTextWriter> test, string expected)
@@ -43,7 +42,7 @@ namespace Desalt.Core.Tests.Utility
             actual.Should().Be(expected);
         }
 
-        [TestMethod]
+        [Fact]
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable ObjectCreationAsStatement
@@ -55,7 +54,7 @@ namespace Desalt.Core.Tests.Utility
             // ReSharper restore ObjectCreationAsStatement
         }
 
-        [TestMethod]
+        [Fact]
         public void Ctor_should_use_the_default_IndentationPrefix_if_not_specified()
         {
             using (var stream = new MemoryStream())
@@ -73,7 +72,7 @@ namespace Desalt.Core.Tests.Utility
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_should_not_indent_by_default()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -85,7 +84,7 @@ namespace Desalt.Core.Tests.Utility
             RunTest(test, "12345\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_should_correctly_indent_one_level()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -99,7 +98,7 @@ namespace Desalt.Core.Tests.Utility
             RunTest(test, "{\n  test\n}\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_should_handle_indents_less_than_zero()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -111,7 +110,7 @@ namespace Desalt.Core.Tests.Utility
             RunTest(test, "abc\ndef\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_should_not_indent_the_first_line_even_if_Indent_is_greater_than_zero()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -123,7 +122,7 @@ namespace Desalt.Core.Tests.Utility
             RunTest(test, "abc\n    def\n");
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_should_add_the_indentation_when_writing_an_empty_string()
         {
             Action<IndentedTextWriter> test = writer =>

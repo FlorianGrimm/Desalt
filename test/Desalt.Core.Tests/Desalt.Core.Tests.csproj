@@ -150,7 +150,6 @@
     <Compile Include="Diagnostics\DiagnosticListTests.cs" />
     <Compile Include="Diagnostics\DiagnosticsTestFactories.cs" />
     <Compile Include="Emit\EmitterTests.cs" />
-    <Compile Include="Extensions\StreamExtensionsTests.cs" />
     <Compile Include="EndToEndTests.cs" />
     <Compile Include="Pipeline\FakePipelineStages.cs" />
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
@@ -194,11 +193,7 @@
     <Compile Include="TypeScript\Parsing\TsParserTests.Statements.cs" />
     <Compile Include="TypeScript\Parsing\TsParserTests.Types.cs" />
     <Compile Include="TypeScript\Parsing\TsTokenReaderTests.cs" />
-    <Compile Include="Utility\IndentedTextWriterTests.cs" />
     <Compile Include="Utility\PathUtilTests.cs" />
-    <Compile Include="Utility\PeekingTextReaderTests.cs" />
-    <Compile Include="Utility\TextReaderLocationTests.cs" />
-    <Compile Include="Utility\UnicodeStringStreamTests.cs" />
     <Compile Include="Utility\XmlFragmentParserTests.cs" />
     <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
     <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidatorTests.cs" />

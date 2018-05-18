@@ -10,16 +10,15 @@ namespace Desalt.Core.Tests.Utility
     using System;
     using Desalt.Core.Utility;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class TextReaderLocationTests
     {
         //// ===========================================================================================================
         //// Constructor Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Ctor_by_range()
         {
             var location = new TextReaderLocation(21, 2, "file");
@@ -28,7 +27,7 @@ namespace Desalt.Core.Tests.Utility
             location.Source.Should().Be("file");
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Ctor_only_line()
         {
             var location = new TextReaderLocation(100, 1);
@@ -41,14 +40,14 @@ namespace Desalt.Core.Tests.Utility
         //// ToString Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_ToString_full_range()
         {
             var location = new TextReaderLocation(21, 2, "file");
             location.ToString().Should().Be("file(21,2)");
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_ToString_full_range_no_source()
         {
             var location = new TextReaderLocation(21, 2);
@@ -59,21 +58,21 @@ namespace Desalt.Core.Tests.Utility
         //// Equality Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_not_equal_null()
         {
             var location = new TextReaderLocation(100, 1);
             location.Equals(null).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_equal_for_the_same_instance()
         {
             var location = new TextReaderLocation(100, 1);
             location.Equals(location).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_equal_for_two_different_instances_with_the_same_contents()
         {
             var location1 = new TextReaderLocation(100, 1, "source");
@@ -81,7 +80,7 @@ namespace Desalt.Core.Tests.Utility
             location1.Equals(location2).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_not_equal_for_each_field_that_is_different()
         {
             var location = new TextReaderLocation(1, 1, "source");
@@ -91,7 +90,7 @@ namespace Desalt.Core.Tests.Utility
             location.Equals(new TextReaderLocation(1, 1, "Source")).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_equal_using_double_equal_sign()
         {
             var location = new TextReaderLocation(100, 1);
@@ -104,7 +103,7 @@ namespace Desalt.Core.Tests.Utility
             (null == location).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_not_be_equal_using_bang_equal_sign()
         {
             var location = new TextReaderLocation(100, 1);
@@ -117,7 +116,7 @@ namespace Desalt.Core.Tests.Utility
             (null != location).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_Equality_should_return_the_same_hash_code_for_equal_objects()
         {
             var location1 = new TextReaderLocation(4, 5);
@@ -129,7 +128,7 @@ namespace Desalt.Core.Tests.Utility
         //// IncrementLine Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void
             TextReaderLocation_IncrementLine_should_return_a_new_object_with_the_line_incremented_and_the_column_at_1()
         {
@@ -142,7 +141,7 @@ namespace Desalt.Core.Tests.Utility
             increment.Source.Should().Be("source");
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_IncrementLine_should_not_modify_its_own_contents()
         {
             var location = new TextReaderLocation(100, 1);
@@ -156,7 +155,7 @@ namespace Desalt.Core.Tests.Utility
         //// IncrementColumn Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void
             TextReaderLocation_IncrementColumn_should_return_a_new_object_with_the_column_incremented_and_the_line_the_same()
         {
@@ -169,7 +168,7 @@ namespace Desalt.Core.Tests.Utility
             increment.Source.Should().Be("source");
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_IncrementColumn_should_not_modify_its_own_contents()
         {
             var location = new TextReaderLocation(100, 50);
@@ -183,7 +182,7 @@ namespace Desalt.Core.Tests.Utility
         //// DecrementColumn Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Fact]
         public void
             TextReaderLocation_DecrementColumn_should_return_a_new_object_with_the_column_decremented_and_the_line_the_same()
         {
@@ -194,7 +193,7 @@ namespace Desalt.Core.Tests.Utility
             decrement.Source.Should().Be("source");
         }
 
-        [TestMethod]
+        [Fact]
         public void TextReaderLocation_DecrementColumn_should_throw_if_at_the_beginning_of_the_line()
         {
             var location = new TextReaderLocation(100, 1, "source");

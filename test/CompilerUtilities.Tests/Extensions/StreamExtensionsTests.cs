@@ -12,19 +12,18 @@ namespace Desalt.Core.Tests.Extensions
     using System.Text;
     using Desalt.Core.Extensions;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class StreamExtensionsTests
     {
-        [TestMethod]
+        [Fact]
         public void ReadAllText_should_throw_on_null_args()
         {
             Action action = () => StreamExtensions.ReadAllText(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadAllText_should_get_all_of_the_text()
         {
             using (var stream = new MemoryStream())
@@ -36,7 +35,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadAllText_should_not_preserve_the_position_by_default()
         {
             using (var stream = new MemoryStream())
@@ -49,7 +48,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadAllText_should_preserve_the_position_if_requested()
         {
             using (var stream = new MemoryStream())
@@ -63,7 +62,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadAllText_should_use_UTF8_encoding_by_default()
         {
             const string chinese = "中文";
@@ -99,14 +98,14 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_throw_on_null_args()
         {
             Action action = () => StreamExtensions.ReadToEnd(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_get_all_of_the_text_when_the_stream_is_at_the_beginning()
         {
             using (var stream = new MemoryStream())
@@ -119,7 +118,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_get_the_remaining_text_when_the_stream_is_not_at_the_beginning()
         {
             using (var stream = new MemoryStream())
@@ -132,7 +131,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_return_an_empty_string_if_already_at_the_end()
         {
             using (var stream = new MemoryStream())
@@ -141,7 +140,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_not_preserve_the_position_by_default()
         {
             using (var stream = new MemoryStream())
@@ -154,7 +153,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_preserve_the_position_if_requested()
         {
             using (var stream = new MemoryStream())
@@ -168,7 +167,7 @@ namespace Desalt.Core.Tests.Extensions
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadToEnd_should_use_UTF8_encoding_by_default()
         {
             const string chinese = "中文";
