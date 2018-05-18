@@ -12,7 +12,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 
-    internal sealed partial class TsLexer
+    public sealed partial class TsLexer
     {
         private static bool IsDecimalDigit(char c) => c >= '0' && c <= '9';
 

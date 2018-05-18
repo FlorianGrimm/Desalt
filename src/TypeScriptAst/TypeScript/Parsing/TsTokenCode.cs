@@ -10,7 +10,7 @@ namespace Desalt.Core.TypeScript.Parsing
     /// <summary>
     /// Enumerates the different types of TypeScript tokens.
     /// </summary>
-    internal enum TsTokenCode
+    public enum TsTokenCode
     {
         /// <summary>
         /// Represents a placeholder token that represents an error.

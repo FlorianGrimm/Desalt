@@ -16,7 +16,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using Desalt.Core.Extensions;
     using Desalt.Core.Utility;
 
-    internal sealed partial class TsLexer
+    public sealed partial class TsLexer
     {
         //// ===========================================================================================================
         //// Member Variables

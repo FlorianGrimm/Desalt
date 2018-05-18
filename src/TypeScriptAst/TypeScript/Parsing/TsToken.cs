@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Parsing
     /// <summary>
     /// Represents a token in TypeScript source code.
     /// </summary>
-    internal class TsToken : IEquatable<TsToken>
+    public class TsToken : IEquatable<TsToken>
     {
         //// ===========================================================================================================
         //// Member Variables

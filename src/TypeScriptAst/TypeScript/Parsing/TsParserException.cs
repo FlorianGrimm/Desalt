@@ -10,7 +10,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using System;
     using Desalt.Core.Utility;
 
-    internal class TsParserException : Exception
+    public class TsParserException : Exception
     {
         public TsParserException(string message, TextReaderLocation location)
             : base($"{location}: error: {message}")

@@ -10,7 +10,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using System.Text;
     using Desalt.Core.Utility;
 
-    internal sealed partial class TsLexer
+    public sealed partial class TsLexer
     {
         private static bool IsStringLiteralStartChar(char c) => c == '\'' || c == '"';
 

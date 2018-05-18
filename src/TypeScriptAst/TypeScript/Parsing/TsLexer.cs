@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Parsing
     /// <summary>
     /// Parses TypeScript code into tokens.
     /// </summary>
-    internal sealed partial class TsLexer
+    public sealed partial class TsLexer
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -14,7 +14,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast.Expressions;
     using Factory = Ast.TsAstFactory;
 
-    internal partial class TsParser
+    public partial class TsParser
     {
         private static readonly Dictionary<TsTokenCode, TsBinaryOperator> s_binaryOperatorMap =
             new Dictionary<TsTokenCode, TsBinaryOperator>

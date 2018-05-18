@@ -217,6 +217,10 @@
       <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
       <Name>Desalt.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\TypeScriptAst\TypeScriptAst.csproj">
+      <Project>{a479830b-124b-4371-af44-f27e98fb4da8}</Project>
+      <Name>TypeScriptAst</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

@@ -13,7 +13,7 @@ namespace Desalt.Core.TypeScript.Parsing
     using Desalt.Core.TypeScript.Ast;
     using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
 
-    internal partial class TsParser
+    public partial class TsParser
     {
         /// <summary>
         /// Parses a type.

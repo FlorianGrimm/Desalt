@@ -17,7 +17,7 @@ namespace Desalt.Core.TypeScript.Parsing
     /// <summary>
     /// Parses an expression into an abstract syntax tree (AST).
     /// </summary>
-    internal partial class TsParser
+    public partial class TsParser
     {
         //// ===========================================================================================================
         //// Member Variables
