@@ -182,45 +182,45 @@ namespace Desalt.Core.Tests.Utility
         //// AdvanceLocation
         //// ===========================================================================================================
 
-        //[Fact]
-        //public void PeekingTextReader_AdvanceLocation_should_not_change_the_location_on_end_of_stream()
-        //{
-        //    var current = new TextReaderLocation(10, 2);
-        //    PeekingTextReader.AdvanceLocation(-1, -1, current).Should().Be(current);
-        //}
+        [Fact]
+        public void PeekingTextReader_AdvanceLocation_should_not_change_the_location_on_end_of_stream()
+        {
+            var current = new TextReaderLocation(10, 2);
+            PeekingTextReader.AdvanceLocation(-1, -1, current).Should().Be(current);
+        }
 
-        //[Fact]
-        //public void PeekingTextReader_AdvanceLocation_should_increment_the_column_on_a_non_line_ending()
-        //{
-        //    PeekingTextReader.AdvanceLocation('a', 'b', new TextReaderLocation(1, 1))
-        //        .Should()
-        //        .Be(new TextReaderLocation(1, 2));
-        //}
+        [Fact]
+        public void PeekingTextReader_AdvanceLocation_should_increment_the_column_on_a_non_line_ending()
+        {
+            PeekingTextReader.AdvanceLocation('a', 'b', new TextReaderLocation(1, 1))
+                .Should()
+                .Be(new TextReaderLocation(1, 2));
+        }
 
-        //[Fact]
-        //public void
-        //    PeekingTextReader_AdvanceLocation_should_increment_the_column_but_not_the_line_when_reading_the_first_char_of_a_crlf_combo()
-        //{
-        //    PeekingTextReader.AdvanceLocation('\r', '\n', new TextReaderLocation(1, 1))
-        //        .Should()
-        //        .Be(new TextReaderLocation(1, 2));
-        //}
+        [Fact]
+        public void
+            PeekingTextReader_AdvanceLocation_should_increment_the_column_but_not_the_line_when_reading_the_first_char_of_a_crlf_combo()
+        {
+            PeekingTextReader.AdvanceLocation('\r', '\n', new TextReaderLocation(1, 1))
+                .Should()
+                .Be(new TextReaderLocation(1, 2));
+        }
 
-        //[Fact]
-        //public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_cr()
-        //{
-        //    PeekingTextReader.AdvanceLocation('\r', 'a', new TextReaderLocation(1, 1))
-        //        .Should()
-        //        .Be(new TextReaderLocation(2, 1));
-        //}
+        [Fact]
+        public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_cr()
+        {
+            PeekingTextReader.AdvanceLocation('\r', 'a', new TextReaderLocation(1, 1))
+                .Should()
+                .Be(new TextReaderLocation(2, 1));
+        }
 
-        //[Fact]
-        //public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_lf()
-        //{
-        //    PeekingTextReader.AdvanceLocation('\n', 'a', new TextReaderLocation(1, 1))
-        //        .Should()
-        //        .Be(new TextReaderLocation(2, 1));
-        //}
+        [Fact]
+        public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_lf()
+        {
+            PeekingTextReader.AdvanceLocation('\n', 'a', new TextReaderLocation(1, 1))
+                .Should()
+                .Be(new TextReaderLocation(2, 1));
+        }
 
         //// ===========================================================================================================
         //// IsAtEnd

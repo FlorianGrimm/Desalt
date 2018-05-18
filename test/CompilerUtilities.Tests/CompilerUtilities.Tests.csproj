@@ -6,6 +6,8 @@
     <Authors>Justin Rockwood</Authors>
     <Product>CompilerUtilities</Product>
     <Copyright>Copyright (c) Justin Rockwood. All rights reserved.</Copyright>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\src\CompilerUtilities\CompilerUtilities.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
