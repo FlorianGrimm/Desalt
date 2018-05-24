@@ -10,8 +10,8 @@ namespace Desalt.Core.Tests.Validation
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;

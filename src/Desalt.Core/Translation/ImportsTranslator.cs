@@ -13,10 +13,10 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates import declarations for a set of types.

@@ -11,17 +11,17 @@ namespace Desalt.Core.Tests.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.Core.Emit;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Expressions;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Factory = Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Ast.Expressions;
+    using TypeScriptAst.Emit;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     [TestClass]
     public class InlineCodeTranslatorTests
@@ -31,7 +31,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertInlineCodeTranslation(
             string codeSnippet,
             Func<CompilationUnitSyntax, ExpressionSyntax> getMethodSyntaxFunc,
-            IAstNode expectedResult,
+            ITsAstNode expectedResult,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
@@ -69,7 +69,7 @@ class C
                         translatedLeftSide,
                         translatedArgumentList,
                         diagnostics,
-                        out IAstNode result)
+                        out ITsAstNode result)
                     .Should()
                     .BeTrue(because: "there should be an [InlineCode] translation");
 

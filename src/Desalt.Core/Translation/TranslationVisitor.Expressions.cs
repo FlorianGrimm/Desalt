@@ -10,14 +10,14 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Ast.Expressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Ast.Expressions;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     internal sealed partial class TranslationVisitor
     {
@@ -25,7 +25,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ThisExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsThis"/>.</returns>
-        public override IEnumerable<IAstNode> VisitThisExpression(ThisExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitThisExpression(ThisExpressionSyntax node)
         {
             yield return Factory.This;
         }
@@ -34,7 +34,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a LiteralExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitLiteralExpression(LiteralExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitLiteralExpression(LiteralExpressionSyntax node)
         {
             // ReSharper disable once SwitchStatementMissingSomeCases
             switch (node.Kind())
@@ -77,14 +77,14 @@ namespace Desalt.Core.Translation
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
             ReportUnsupportedTranslataion(diagnostic);
-            return Enumerable.Empty<IAstNode>();
+            return Enumerable.Empty<ITsAstNode>();
         }
 
         /// <summary>
         /// Called when the visitor visits a ParenthesizedExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsParenthesizedExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
         {
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsParenthesizedExpression translated = Factory.ParenthesizedExpression(expression);
@@ -95,7 +95,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a CastExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsCastExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitCastExpression(CastExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
             ITsType castType = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
@@ -112,7 +112,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a TypeOfExpressionSyntax node.
         /// </summary>
         /// <remarks>An <see cref="ITsIdentifier"/>.</remarks>
-        public override IEnumerable<IAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
             ITsType type = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
@@ -128,7 +128,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a PredefinedTypeSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsIdentifier"/>.</returns>
-        public override IEnumerable<IAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
+        public override IEnumerable<ITsAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
         {
             // try to get the script name of the expression
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
@@ -148,7 +148,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a IdentifierNameSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitIdentifierName(IdentifierNameSyntax node)
+        public override IEnumerable<ITsAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
             // try to get the script name of the expression
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
@@ -199,7 +199,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a GenericNameSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
-        public override IEnumerable<IAstNode> VisitGenericName(GenericNameSyntax node)
+        public override IEnumerable<ITsAstNode> VisitGenericName(GenericNameSyntax node)
         {
             ITsType[] typeArguments = Visit(node.TypeArgumentList).Cast<ITsType>().ToArray();
             ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
@@ -210,7 +210,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a MemberAccessExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
 
@@ -229,7 +229,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a ElementAccessExpressionSyntax node.
         /// </summary>
-        public override IEnumerable<IAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var bracketContents = (ITsExpression)Visit(node.ArgumentList).Single();
@@ -241,7 +241,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a EqualsValueClauseSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitEqualsValueClause(EqualsValueClauseSyntax node)
+        public override IEnumerable<ITsAstNode> VisitEqualsValueClause(EqualsValueClauseSyntax node)
         {
             return Visit(node.Value);
         }
@@ -250,7 +250,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a InvocationExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
@@ -268,7 +268,7 @@ namespace Desalt.Core.Translation
                     leftSide,
                     arguments,
                     _diagnostics,
-                    out IAstNode translatedNode))
+                    out ITsAstNode translatedNode))
             {
                 yield return translatedNode;
             }
@@ -283,7 +283,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ArrayCreationExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
-        public override IEnumerable<IAstNode> VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
         {
             var arrayElements = Visit(node.Initializer).Cast<ITsExpression>();
             ITsArrayLiteral translated = Factory.Array(arrayElements.ToArray());
@@ -294,7 +294,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a InitializerExpressionSyntax node.
         /// </summary>
         /// <returns>An enumerable of <see cref="ITsExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitInitializerExpression(InitializerExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitInitializerExpression(InitializerExpressionSyntax node)
         {
             return node.Expressions.SelectMany(Visit);
         }
@@ -303,7 +303,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ObjectCreationExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Type).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
@@ -314,7 +314,7 @@ namespace Desalt.Core.Translation
                 leftSide,
                 arguments,
                 _diagnostics,
-                out IAstNode translatedNode))
+                out ITsAstNode translatedNode))
             {
                 yield return translatedNode;
             }
@@ -329,7 +329,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ImplicitArrayCreationExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
-        public override IEnumerable<IAstNode> VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
             var elements =
                 new List<ITsExpression>(node.Initializer.Expressions.SelectMany(Visit).Cast<ITsExpression>());
@@ -341,7 +341,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ArgumentListSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArgumentList"/>.</returns>
-        public override IEnumerable<IAstNode> VisitArgumentList(ArgumentListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitArgumentList(ArgumentListSyntax node)
         {
             ITsArgument[] arguments = node.Arguments.SelectMany(Visit).Cast<ITsArgument>().ToArray();
             ITsArgumentList translated = Factory.ArgumentList(arguments);
@@ -352,7 +352,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ArgumentSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArgument"/>.</returns>
-        public override IEnumerable<IAstNode> VisitArgument(ArgumentSyntax node)
+        public override IEnumerable<ITsAstNode> VisitArgument(ArgumentSyntax node)
         {
             var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
             ITsArgument translated = Factory.Argument(argumentExpression);
@@ -365,7 +365,7 @@ namespace Desalt.Core.Translation
         /// <returns>
         /// An <see cref="ITsCallExpression"/>, since `default(T)` gets translated as a call to `ss.getDefaultValue(T)`
         /// </returns>
-        public override IEnumerable<IAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
         {
             ITsType translatedType = _typeTranslator.TranslateSymbol(
                 node.Type.GetTypeSymbol(_semanticModel),
@@ -387,7 +387,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a AssignmentExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsAssignmentExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitAssignmentExpression(AssignmentExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Left).Single();
             var rightSide = (ITsExpression)Visit(node.Right).Single();
@@ -403,7 +403,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ConditionalExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsConditionalExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitConditionalExpression(ConditionalExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitConditionalExpression(ConditionalExpressionSyntax node)
         {
             var condition = (ITsExpression)Visit(node.Condition).Single();
             var whenTrue = (ITsExpression)Visit(node.WhenTrue).Single();
@@ -417,7 +417,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
             var operand = (ITsExpression)Visit(node.Operand).Single();
             ITsUnaryExpression translated = Factory.UnaryExpression(
@@ -430,7 +430,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a PostfixUnaryExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
         {
             var operand = (ITsExpression)Visit(node.Operand).Single();
             ITsUnaryExpression translated = Factory.UnaryExpression(
@@ -443,7 +443,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a BinaryExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsBinaryExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Left).Single();
             var rightSide = (ITsExpression)Visit(node.Right).Single();

@@ -11,12 +11,12 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
-    using Factory = TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates known types in C# to known TypeScript types.

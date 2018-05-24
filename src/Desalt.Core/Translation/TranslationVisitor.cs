@@ -11,19 +11,19 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Extensions;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.
     /// </summary>
-    internal sealed partial class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<IAstNode>>
+    internal sealed partial class TranslationVisitor : CSharpSyntaxVisitor<IEnumerable<ITsAstNode>>
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -92,11 +92,11 @@ namespace Desalt.Core.Translation
         //// Visit Methods
         //// ===========================================================================================================
 
-        public override IEnumerable<IAstNode> DefaultVisit(SyntaxNode node)
+        public override IEnumerable<ITsAstNode> DefaultVisit(SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
             ReportUnsupportedTranslataion(diagnostic);
-            return Enumerable.Empty<IAstNode>();
+            return Enumerable.Empty<ITsAstNode>();
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Desalt.Core.Translation
         /// stack trace in debug mode and returns an empty enumerable.
         /// </summary>
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to add and report.</param>
-        /// <returns>An empty <see cref="IEnumerable{IAstNode}"/>.</returns>
+        /// <returns>An empty <see cref="IEnumerable{ITsAstNode}"/>.</returns>
         private void ReportUnsupportedTranslataion(Diagnostic diagnostic)
         {
             _diagnostics.Add(diagnostic);
@@ -119,7 +119,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a CompilationUnitSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsImplementationModule"/>.</returns>
-        public override IEnumerable<IAstNode> VisitCompilationUnit(CompilationUnitSyntax node)
+        public override IEnumerable<ITsAstNode> VisitCompilationUnit(CompilationUnitSyntax node)
         {
             var elements = node.Members.SelectMany(Visit).Cast<ITsImplementationModuleElement>();
             ITsImplementationModule implementationScript = Factory.ImplementationModule(elements.ToArray());
@@ -131,7 +131,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ParameterListSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsParameterList"/>.</returns>
-        public override IEnumerable<IAstNode> VisitParameterList(ParameterListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitParameterList(ParameterListSyntax node)
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             var optionalParameters = new List<ITsOptionalParameter>();
@@ -139,7 +139,7 @@ namespace Desalt.Core.Translation
 
             foreach (ParameterSyntax parameterNode in node.Parameters)
             {
-                IAstNode parameter = Visit(parameterNode).Single();
+                ITsAstNode parameter = Visit(parameterNode).Single();
                 if (parameter is ITsRequiredParameter requiredParameter)
                 {
                     requiredParameters.Add(requiredParameter);
@@ -162,7 +162,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ParameterSyntax node.
         /// </summary>
         /// <returns>Either a <see cref="ITsBoundRequiredParameter"/> or a <see cref="ITsBoundOptionalParameter"/>.</returns>
-        public override IEnumerable<IAstNode> VisitParameter(ParameterSyntax node)
+        public override IEnumerable<ITsAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
             ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
@@ -172,7 +172,7 @@ namespace Desalt.Core.Translation
                 _diagnostics,
                 () => node.Type.GetLocation());
 
-            IAstNode parameter;
+            ITsAstNode parameter;
 
             if (node.Default == null)
             {
@@ -191,7 +191,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a TypeParameterListSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsTypeParameters"/>.</returns>
-        public override IEnumerable<IAstNode> VisitTypeParameterList(TypeParameterListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitTypeParameterList(TypeParameterListSyntax node)
         {
             var typeParameters = new List<ITsTypeParameter>();
             foreach (TypeParameterSyntax typeParameterNode in node.Parameters)
@@ -208,7 +208,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a TypeParameterSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsTypeParameter"/>.</returns>
-        public override IEnumerable<IAstNode> VisitTypeParameter(TypeParameterSyntax node)
+        public override IEnumerable<ITsAstNode> VisitTypeParameter(TypeParameterSyntax node)
         {
             ITsIdentifier typeName = Factory.Identifier(node.Identifier.Text);
             ITsTypeParameter translated = Factory.TypeParameter(typeName);
@@ -219,7 +219,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a TypeArgumentListSyntax node.
         /// </summary>
         /// <returns>An enumerable of <see cref="ITsType"/>.</returns>
-        public override IEnumerable<IAstNode> VisitTypeArgumentList(TypeArgumentListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitTypeArgumentList(TypeArgumentListSyntax node)
         {
             var translated = from typeSyntax in node.Arguments
                              let typeSymbol = typeSyntax.GetTypeSymbol(_semanticModel)
@@ -275,7 +275,7 @@ namespace Desalt.Core.Translation
         /// comments prepended. If there are no documentation comments, the same node is returned.
         /// </returns>
         private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode symbolNode = null)
-            where T : IAstNode
+            where T : ITsAstNode
         {
             if (!node.HasStructuredTrivia)
             {

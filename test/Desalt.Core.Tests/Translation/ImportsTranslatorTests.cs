@@ -13,12 +13,12 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Ast;
 
     [TestClass]
     public class ImportsTranslatorTests

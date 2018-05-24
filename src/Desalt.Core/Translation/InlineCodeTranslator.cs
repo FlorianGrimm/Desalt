@@ -11,14 +11,15 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using CompilerUtilities;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.TypeScript.Ast;
-    using Desalt.Core.TypeScript.Parsing;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Parsing;
 
     /// <summary>
     /// Parses and translates [InlineCode] attribute contents.
@@ -91,7 +92,7 @@ namespace Desalt.Core.Translation
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             ICollection<Diagnostic> diagnostics,
-            out IAstNode translatedNode)
+            out ITsAstNode translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
             // ReSharper disable once UsePatternMatching
@@ -114,7 +115,7 @@ namespace Desalt.Core.Translation
             return false;
         }
 
-        private IAstNode Translate(Context context)
+        private ITsAstNode Translate(Context context)
         {
             string replacedInlineCode = ReplaceParameters(context);
 

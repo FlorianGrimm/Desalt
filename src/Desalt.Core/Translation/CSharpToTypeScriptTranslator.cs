@@ -11,8 +11,8 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Pipeline;
-    using Desalt.Core.TypeScript.Ast;
-    using Factory = Desalt.Core.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Converts a CSharp syntax tree into a TypeScript syntax tree.

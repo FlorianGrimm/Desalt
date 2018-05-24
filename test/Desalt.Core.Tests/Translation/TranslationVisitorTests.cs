@@ -10,13 +10,13 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Emit;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.Core.TypeScript.Ast;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Emit;
 
     [TestClass]
     public partial class TranslationVisitorTests
@@ -69,7 +69,7 @@ using System.Html;
                 throwingDiagnosticList.ThrowOnErrors = true;
 
                 var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
-                IAstNode result = visitor.Visit(context.RootSyntax).Single();
+                ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
 
                 visitor.Diagnostics.Should().BeEmpty();
 
