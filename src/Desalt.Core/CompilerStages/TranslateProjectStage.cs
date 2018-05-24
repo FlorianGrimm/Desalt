@@ -50,6 +50,7 @@ namespace Desalt.Core.CompilerStages
                     context => context.Document.Name.IsOneOf(
                         "BaseLogAppender.cs",
                         "ConsoleLogAppender.cs",
+                        "ErrorTrace.cs",
                         "ILogAppender.cs",
                         "LayoutMetrics.cs",
                         "Logger.cs",
