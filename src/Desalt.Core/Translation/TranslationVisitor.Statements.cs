@@ -525,8 +525,28 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
-            var body = (ITsExpression)Visit(node.Body).Single();
-            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body);
+            var body = Visit(node.Body).Single();
+
+            ITsArrowFunction translated;
+            switch (body)
+            {
+                case ITsExpression bodyExpression:
+                    translated = Factory.ArrowFunction(callSignature, bodyExpression);
+                    break;
+
+                case ITsBlockStatement bodyBlock:
+                    translated = Factory.ArrowFunction(callSignature, bodyBlock.Statements.ToArray());
+                    break;
+
+                default:
+                    _diagnostics.Add(
+                        DiagnosticFactory.InternalError(
+                            $"Unknown lambda expression body type: {node.Body}",
+                            node.Body.GetLocation()));
+                    translated = Factory.ArrowFunction(callSignature, Factory.Identifier("TranslationError"));
+                    break;
+            }
+
             yield return translated;
         }
 
