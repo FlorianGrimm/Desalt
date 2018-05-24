@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="AstNodeExtensions.cs" company="Justin Rockwood">
+// <copyright file="TsAstNodeExtensions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Contains extension methods for working with <see cref="ITsAstNode"/> objects.
     /// </summary>
-    public static class AstNodeExtensions
+    public static class TsAstNodeExtensions
     {
         /// <summary>
         /// Creates a delimiter-separated list of elements, up to and not exceeding the specified
