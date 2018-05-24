@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an expression that assigns one value to another.
     /// </summary>
-    internal class TsAssignmentExpression : AstNode, ITsAssignmentExpression
+    internal class TsAssignmentExpression : TsAstNode, ITsAssignmentExpression
     {
         //// ===========================================================================================================
         //// Constructors

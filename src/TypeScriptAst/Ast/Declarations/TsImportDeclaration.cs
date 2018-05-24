@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
     /// </summary>
-    internal class TsImportDeclaration : AstNode, ITsImportDeclaration
+    internal class TsImportDeclaration : TsAstNode, ITsImportDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

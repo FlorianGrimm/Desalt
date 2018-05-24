@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a do/while statement.
     /// </summary>
-    internal class TsDoWhileStatement : AstNode, ITsDoWhileStatement
+    internal class TsDoWhileStatement : TsAstNode, ITsDoWhileStatement
     {
         //// ===========================================================================================================
         //// Constructors

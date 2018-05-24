@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
     /// </summary>
-    internal class TsImplementationScript : AstNode, ITsImplementationScript
+    internal class TsImplementationScript : TsAstNode, ITsImplementationScript
     {
         //// ===========================================================================================================
         //// Constructors

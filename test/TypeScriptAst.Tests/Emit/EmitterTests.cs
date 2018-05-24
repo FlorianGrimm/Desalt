@@ -22,14 +22,14 @@ namespace TypeScriptAst.Tests.Emit
     {
         private static readonly EmitOptions s_testOptions = EmitOptions.UnixTabs;
 
-        private static readonly IAstNode[] s_statements =
+        private static readonly ITsAstNode[] s_statements =
         {
             new Identifier("One"),
             new Identifier("Two"),
             new Identifier("Three")
         };
 
-        private sealed class Identifier : IAstNode
+        private sealed class Identifier : ITsAstNode
         {
             public Identifier(string name) => Name = name;
 
@@ -46,13 +46,13 @@ namespace TypeScriptAst.Tests.Emit
 
             public string EmitAsString(EmitOptions options = null) => Name;
 
-            public IAstNode WithLeadingTrivia(params IAstTriviaNode[] triviaNodes) =>
+            public ITsAstNode WithLeadingTrivia(params IAstTriviaNode[] triviaNodes) =>
                 throw new NotImplementedException();
 
-            public IAstNode WithTrailingTrivia(params IAstTriviaNode[] triviaNodes) =>
+            public ITsAstNode WithTrailingTrivia(params IAstTriviaNode[] triviaNodes) =>
                 throw new NotImplementedException();
 
-            public bool Equals(IAstNode other) => throw new NotImplementedException();
+            public bool Equals(ITsAstNode other) => throw new NotImplementedException();
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace TypeScriptAst.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(ImmutableArray<IAstNode>.Empty);
+                emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
                 stream.ReadAllText().Should().Be("{ }");
             }
         }
@@ -126,7 +126,7 @@ namespace TypeScriptAst.Tests.Emit
             using (var stream = new MemoryStream())
             {
                 var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(ImmutableArray<IAstNode>.Empty);
+                emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
                 stream.ReadAllText().Should().Be("{ }");
             }
         }

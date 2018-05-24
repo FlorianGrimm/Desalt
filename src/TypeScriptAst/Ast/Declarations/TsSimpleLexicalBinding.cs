@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a simple lexical binding of the form 'x: type = y'.
     /// </summary>
-    internal class TsSimpleLexicalBinding : AstNode, ITsSimpleLexicalBinding
+    internal class TsSimpleLexicalBinding : TsAstNode, ITsSimpleLexicalBinding
     {
         //// ===========================================================================================================
         //// Constructors

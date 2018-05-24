@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a member variable declaration in a class.
     /// </summary>
-    internal class TsVariableMemberDeclaration : AstNode,
+    internal class TsVariableMemberDeclaration : TsAstNode,
         ITsVariableMemberDeclaration,
         ITsAmbientVariableMemberDeclaration
     {

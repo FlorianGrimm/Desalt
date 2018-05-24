@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a part of a template literal.
     /// </summary>
-    internal class TsTemplatePart : AstNode, ITsTemplatePart
+    internal class TsTemplatePart : TsAstNode, ITsTemplatePart
     {
         //// ===========================================================================================================
         //// Constructors

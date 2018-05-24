@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents an expression in statement form.
     /// </summary>
-    internal class TsExpressionStatement : AstNode, ITsExpressionStatement
+    internal class TsExpressionStatement : TsAstNode, ITsExpressionStatement
     {
         //// ===========================================================================================================
         //// Constructors

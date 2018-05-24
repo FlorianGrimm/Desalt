@@ -16,7 +16,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an arrow function expression of the form '() => body'.
     /// </summary>
-    internal class TsArrowFunction : AstNode, ITsArrowFunction
+    internal class TsArrowFunction : TsAstNode, ITsArrowFunction
     {
         //// ===========================================================================================================
         //// Constructors

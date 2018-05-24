@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript function or constructor type.
     /// </summary>
-    internal class TsFunctionOrConstructorType : AstNode, ITsFunctionType, ITsConstructorType
+    internal class TsFunctionOrConstructorType : TsAstNode, ITsFunctionType, ITsConstructorType
     {
         //// ===========================================================================================================
         //// Constructors

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
     /// </summary>
-    internal class TsTypeParameter : AstNode, ITsTypeParameter
+    internal class TsTypeParameter : TsAstNode, ITsTypeParameter
     {
         //// ===========================================================================================================
         //// Constructors

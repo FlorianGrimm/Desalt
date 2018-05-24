@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a constructor declaration in a class.
     /// </summary>
-    internal class TsConstructorDeclaration : AstNode,
+    internal class TsConstructorDeclaration : TsAstNode,
         ITsConstructorDeclaration, ITsAmbientConstructorDeclaration
     {
         //// ===========================================================================================================

@@ -25,7 +25,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a EmptyStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsEmptyStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitEmptyStatement(EmptyStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitEmptyStatement(EmptyStatementSyntax node)
         {
             yield return Factory.EmptyStatement;
         }
@@ -34,7 +34,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ExpressionStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsExpressionStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitExpressionStatement(ExpressionStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitExpressionStatement(ExpressionStatementSyntax node)
         {
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsExpressionStatement translated = Factory.ExpressionStatement(expression);
@@ -45,7 +45,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a BlockSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsBlockStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitBlock(BlockSyntax node)
+        public override IEnumerable<ITsAstNode> VisitBlock(BlockSyntax node)
         {
             ITsStatementListItem[] statements =
                 node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
@@ -56,7 +56,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a BracketedArgumentListSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
-        public override IEnumerable<IAstNode> VisitBracketedArgumentList(BracketedArgumentListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitBracketedArgumentList(BracketedArgumentListSyntax node)
         {
             if (node.Arguments.Count > 1)
             {
@@ -72,7 +72,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a LocalDeclarationStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
-        public override IEnumerable<IAstNode> VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
             // TODO: figure out if the variable ever changes to determine if it's const vs. let
             bool isConst = node.IsConst;
@@ -99,7 +99,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a VariableDeclaratorSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsSimpleLexicalBinding"/>.</returns>
-        public override IEnumerable<IAstNode> VisitVariableDeclarator(VariableDeclaratorSyntax node)
+        public override IEnumerable<ITsAstNode> VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var variableName = Factory.Identifier(node.Identifier.Text);
 
@@ -120,7 +120,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a VariableDeclarationSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
-        public override IEnumerable<IAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
             // TODO: Determine whether this should be a const or let declaration
             const bool isConst = false;
@@ -140,7 +140,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a IfStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsIfStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitIfStatement(IfStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitIfStatement(IfStatementSyntax node)
         {
             var ifCondition = (ITsExpression)Visit(node.Condition).Single();
             var ifStatement = (ITsStatement)Visit(node.Statement).Single();
@@ -158,7 +158,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ThrowStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsThrowStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitThrowStatement(ThrowStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitThrowStatement(ThrowStatementSyntax node)
         {
             var expression = (ITsExpression)Visit(node.Expression).Single();
             ITsThrowStatement translated = Factory.Throw(expression);
@@ -169,7 +169,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a TryStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsTryStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitTryStatement(TryStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitTryStatement(TryStatementSyntax node)
         {
             var tryBlock = (ITsBlockStatement)Visit(node.Block).Single();
 
@@ -228,7 +228,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a UsingStatementSyntax node.
         /// </summary>
         /// <returns>A <see cref="ITsBlockStatement"/> representing a wrapped try/finally block.</returns>
-        public override IEnumerable<IAstNode> VisitUsingStatement(UsingStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitUsingStatement(UsingStatementSyntax node)
         {
             var statements = new List<ITsStatementListItem>();
             string reservedTemporaryVariable = null;
@@ -367,7 +367,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a BreakStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsBreakStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitBreakStatement(BreakStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitBreakStatement(BreakStatementSyntax node)
         {
             ITsBreakStatement translated = Factory.Break();
             yield return translated;
@@ -377,7 +377,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ContinueStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsContinueStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitContinueStatement(ContinueStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitContinueStatement(ContinueStatementSyntax node)
         {
             ITsContinueStatement translated = Factory.Continue();
             yield return translated;
@@ -387,7 +387,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ForEachStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsForOfStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitForEachStatement(ForEachStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitForEachStatement(ForEachStatementSyntax node)
         {
             // translate the variable declaration - the 'x' in 'for (const x of )'
             // NOTE: in TypeScript you can't actually have a type annotation on the left hand side of
@@ -408,7 +408,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ForStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsForStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitForStatement(ForStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitForStatement(ForStatementSyntax node)
         {
             var initializer = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
             var condition = (ITsExpression)Visit(node.Condition).Single();
@@ -427,7 +427,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a WhileStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsWhileStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitWhileStatement(WhileStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitWhileStatement(WhileStatementSyntax node)
         {
             var whileCondition = (ITsExpression)Visit(node.Condition).Single();
             var whileStatement = (ITsStatement)Visit(node.Statement).Single();
@@ -440,7 +440,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a DoStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsDoWhileStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitDoStatement(DoStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitDoStatement(DoStatementSyntax node)
         {
             var doStatement = (ITsStatement)Visit(node.Statement).Single();
             var whileCondition = (ITsExpression)Visit(node.Condition).Single();
@@ -457,7 +457,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a SwitchStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsSwitchStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitSwitchStatement(SwitchStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitSwitchStatement(SwitchStatementSyntax node)
         {
             var condition = (ITsExpression)Visit(node.Expression).Single();
             var clauses = node.Sections.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>();
@@ -470,7 +470,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a SwitchSectionSyntax node.
         /// </summary>
         /// <returns>An enumerable of <see cref="ITsCaseOrDefaultClause"/>.</returns>
-        public override IEnumerable<IAstNode> VisitSwitchSection(SwitchSectionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitSwitchSection(SwitchSectionSyntax node)
         {
             var labels = node.Labels.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>().ToArray();
             var statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
@@ -485,7 +485,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a CaseSwitchLabelSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsCaseClause"/>.</returns>
-        public override IEnumerable<IAstNode> VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
+        public override IEnumerable<ITsAstNode> VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
         {
             var expression = (ITsExpression)Visit(node.Value).Single();
             ITsCaseClause translated = Factory.CaseClause(expression);
@@ -496,7 +496,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a DefaultSwitchLabelSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsDefaultClause"/>.</returns>
-        public override IEnumerable<IAstNode> VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
+        public override IEnumerable<ITsAstNode> VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
         {
             ITsDefaultClause translated = Factory.DefaultClause();
             yield return translated;
@@ -510,7 +510,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a AnonymousMethodExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
-        public override IEnumerable<IAstNode> VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
         {
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
             var body = (ITsBlockStatement)Visit(node.Block).Single();
@@ -522,7 +522,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ParenthesizedLambdaExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
-        public override IEnumerable<IAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+        public override IEnumerable<ITsAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
             var body = (ITsExpression)Visit(node.Body).Single();
@@ -534,7 +534,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a ReturnStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsReturnStatement"/>.</returns>
-        public override IEnumerable<IAstNode> VisitReturnStatement(ReturnStatementSyntax node)
+        public override IEnumerable<ITsAstNode> VisitReturnStatement(ReturnStatementSyntax node)
         {
             ITsExpression expression = null;
             if (node.Expression != null)

@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.
     /// </summary>
-    internal class TsCallSignature : AstNode, ITsCallSignature
+    internal class TsCallSignature : TsAstNode, ITsCallSignature
     {
         //// ===========================================================================================================
         //// Constructors

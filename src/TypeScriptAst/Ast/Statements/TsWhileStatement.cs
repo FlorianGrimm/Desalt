@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a while loop.
     /// </summary>
-    internal class TsWhileStatement : AstNode, ITsWhileStatement
+    internal class TsWhileStatement : TsAstNode, ITsWhileStatement
     {
         //// ===========================================================================================================
         //// Constructors

@@ -16,7 +16,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.
     /// </summary>
-    internal class TsFunctionDeclaration : AstNode, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
+    internal class TsFunctionDeclaration : TsAstNode, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

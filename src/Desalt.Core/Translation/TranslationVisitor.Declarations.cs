@@ -26,7 +26,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a NamespaceDeclarationSyntax node.
         /// </summary>
         /// <returns>A list of <see cref="ITsImplementationModuleElement"/> elements.</returns>
-        public override IEnumerable<IAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             return node.Members.SelectMany(Visit).Cast<ITsImplementationModuleElement>();
         }
@@ -38,7 +38,7 @@ namespace Desalt.Core.Translation
         /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
         /// cref="ITsInterfaceDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             ITsIdentifier interfaceName = TranslateDeclarationIdentifier(node);
 
@@ -71,7 +71,7 @@ namespace Desalt.Core.Translation
         /// An <see cref="ITsImplementationModuleElement"/>, which is either an <see
         /// cref="ITsEnumDeclaration"/> or an <see cref="ITsExportImplementationElement"/>.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             ITsIdentifier enumName = TranslateDeclarationIdentifier(node);
 
@@ -87,7 +87,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a EnumMemberDeclarationSyntax node.
         /// </summary>
-        public override IEnumerable<IAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             ITsIdentifier scriptName = TranslateDeclarationIdentifier(node);
             ITsExpression value = null;
@@ -109,7 +109,7 @@ namespace Desalt.Core.Translation
         /// a static constructor, an additional function call ( <see cref="ITsCallExpression"/>) to
         /// the initializer is added immediately after the class declaration.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             ITsIdentifier className = TranslateDeclarationIdentifier(node);
             bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
@@ -185,7 +185,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a BaseListSyntax node.
         /// </summary>
         /// <returns>An enumerable of <see cref="ITsTypeReference"/>.</returns>
-        public override IEnumerable<IAstNode> VisitBaseList(BaseListSyntax node)
+        public override IEnumerable<ITsAstNode> VisitBaseList(BaseListSyntax node)
         {
             return node.Types.SelectMany(Visit).Cast<ITsTypeReference>();
         }
@@ -194,7 +194,7 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a SimpleBaseTypeSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsTypeReference"/>.</returns>
-        public override IEnumerable<IAstNode> VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+        public override IEnumerable<ITsAstNode> VisitSimpleBaseType(SimpleBaseTypeSyntax node)
         {
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
             var translated = (ITsTypeReference)_typeTranslator.TranslateSymbol(
@@ -208,7 +208,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a FieldDeclarationSyntax node.
         /// </summary>
-        public override IEnumerable<IAstNode> VisitFieldDeclaration(FieldDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             var fieldDeclarations = new List<ITsVariableMemberDeclaration>();
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
@@ -256,7 +256,7 @@ namespace Desalt.Core.Translation
         /// An <see cref="ITsMethodSignature"/> if we're within an interface declaration; otherwise
         /// an <see cref="ITsFunctionMemberDeclaration"/>.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
@@ -321,7 +321,7 @@ namespace Desalt.Core.Translation
         /// An <see cref="ITsConstructorDeclaration"/> or an <see
         /// cref="ITsFunctionMemberDeclaration"/> in the case of a static constructor.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
@@ -361,7 +361,7 @@ namespace Desalt.Core.Translation
         /// An <see cref="IEnumerable{T}"/> of one or both of <see
         /// cref="ITsGetAccessorMemberDeclaration"/> or <see cref="ITsSetAccessorMemberDeclaration"/>.
         /// </returns>
-        public override IEnumerable<IAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        public override IEnumerable<ITsAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);

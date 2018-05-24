@@ -19,7 +19,7 @@ namespace TypeScriptAst.Ast
         public static readonly ITsWhitespaceTrivia Newline = TsWhitespaceTrivia.Newline;
 
         /// <summary>
-        /// Creates whitespace that can appear before or after another <see cref="IAstNode"/>.
+        /// Creates whitespace that can appear before or after another <see cref="ITsAstNode"/>.
         /// </summary>
         public static ITsWhitespaceTrivia Whitespace(string text) => TsWhitespaceTrivia.Create(text);
 

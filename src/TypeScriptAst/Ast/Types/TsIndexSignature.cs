@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents an index signature of the form '[parameterName: string|number]: type'.
     /// </summary>
-    internal class TsIndexSignature : AstNode, ITsIndexSignature
+    internal class TsIndexSignature : TsAstNode, ITsIndexSignature
     {
         //// ===========================================================================================================
         //// Constructors

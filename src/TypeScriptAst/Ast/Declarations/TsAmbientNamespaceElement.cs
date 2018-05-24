@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an element in an ambient namespace declaration.
     /// </summary>
-    internal class TsAmbientNamespaceElement : AstNode, ITsAmbientNamespaceElement
+    internal class TsAmbientNamespaceElement : TsAstNode, ITsAmbientNamespaceElement
     {
         //// ===========================================================================================================
         //// Constructors

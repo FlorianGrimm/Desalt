@@ -40,12 +40,12 @@ namespace TypeScriptAst.Ast
      *   extends Type
      */
 
-    public interface ITsTypeParameters : IAstNode
+    public interface ITsTypeParameters : ITsAstNode
     {
         ImmutableArray<ITsTypeParameter> TypeParameters { get; }
     }
 
-    public interface ITsTypeParameter : IAstNode
+    public interface ITsTypeParameter : ITsAstNode
     {
         ITsIdentifier TypeName { get; }
         ITsType Constraint { get; }
@@ -68,7 +68,7 @@ namespace TypeScriptAst.Ast
      *   ConstructorType
      */
 
-    public interface ITsType : IAstNode { }
+    public interface ITsType : ITsAstNode { }
 
     /* UnionOrIntersectionOrPrimaryType:
      *   UnionType
@@ -164,7 +164,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsTypeMember> TypeMembers { get; }
     }
 
-    public interface ITsTypeMember : IAstNode { }
+    public interface ITsTypeMember : ITsAstNode { }
 
     /* ArrayType:
      *   PrimaryType [no LineTerminator here] [ ]
@@ -299,7 +299,7 @@ namespace TypeScriptAst.Ast
      *   RequiredParameterList , OptionalParameterList , RestParameter
      */
 
-    public interface ITsParameterList : IAstNode
+    public interface ITsParameterList : ITsAstNode
     {
         ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
         ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
@@ -320,7 +320,7 @@ namespace TypeScriptAst.Ast
      *   protected
      */
 
-    public interface ITsRequiredParameter : IAstNode { }
+    public interface ITsRequiredParameter : ITsAstNode { }
 
     public interface ITsBoundRequiredParameter : ITsRequiredParameter
     {
@@ -347,7 +347,7 @@ namespace TypeScriptAst.Ast
      *   BindingPattern
      */
 
-    public interface ITsBindingIdentifierOrPattern : IAstNode { }
+    public interface ITsBindingIdentifierOrPattern : ITsAstNode { }
 
     /* OptionalParameterList:
      *   OptionalParameter
@@ -359,7 +359,7 @@ namespace TypeScriptAst.Ast
      *   BindingIdentifier ? : StringLiteral
      */
 
-    public interface ITsOptionalParameter : IAstNode { }
+    public interface ITsOptionalParameter : ITsAstNode { }
 
     public interface ITsBoundOptionalParameter : ITsOptionalParameter
     {
@@ -379,7 +379,7 @@ namespace TypeScriptAst.Ast
      *   ... BindingIdentifier TypeAnnotationOpt
      */
 
-    public interface ITsRestParameter : IAstNode
+    public interface ITsRestParameter : ITsAstNode
     {
         ITsIdentifier ParameterName { get; }
         ITsType ParameterType { get; }
@@ -511,7 +511,7 @@ namespace TypeScriptAst.Ast
      *   BindingPattern TypeAnnotationOpt Initializer
      */
 
-    public interface ITsVariableDeclaration : IAstNode { }
+    public interface ITsVariableDeclaration : ITsAstNode { }
 
     public interface ITsSimpleVariableDeclaration : ITsVariableDeclaration
     {
@@ -538,7 +538,7 @@ namespace TypeScriptAst.Ast
      *   BindingPattern TypeAnnotationOpt InitializerOpt
      */
 
-    public interface ITsLexicalBinding : IAstNode { }
+    public interface ITsLexicalBinding : ITsAstNode { }
 
     public interface ITsSimpleLexicalBinding : ITsLexicalBinding
     {
@@ -631,14 +631,14 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 
-    public interface ITsClassHeritage : IAstNode
+    public interface ITsClassHeritage : ITsAstNode
     {
         ITsTypeReference ExtendsClause { get; }
         ImmutableArray<ITsTypeReference> ImplementsClause { get; }
         bool IsEmpty { get; }
     }
 
-    public interface ITsClassElement : IAstNode { }
+    public interface ITsClassElement : ITsAstNode { }
 
     /* ConstructorDeclaration:
      *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
@@ -742,7 +742,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsEnumMember> EnumBody { get; }
     }
 
-    public interface ITsEnumMember : IAstNode
+    public interface ITsEnumMember : ITsAstNode
     {
         ITsPropertyName Name { get; }
         ITsExpression Value { get; }
@@ -786,7 +786,7 @@ namespace TypeScriptAst.Ast
      *   ExportNamespaceElement
      */
 
-    public interface ITsNamespaceElement : IAstNode { }
+    public interface ITsNamespaceElement : ITsAstNode { }
 
     /* ExportNamespaceElement:
      *   export VariableStatement
@@ -841,7 +841,7 @@ namespace TypeScriptAst.Ast
      *   DeclarationModule
      */
 
-    public interface ITsImplementationSourceFile : IAstNode { }
+    public interface ITsImplementationSourceFile : ITsAstNode { }
 
     /* ImplementationScript:
      *   ImplementationScriptElementsOpt
@@ -860,7 +860,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsImplementationScriptElement> Elements { get; }
     }
 
-    public interface ITsImplementationScriptElement : IAstNode { }
+    public interface ITsImplementationScriptElement : ITsAstNode { }
 
     /* ImplementationElement:
      *   Statement
@@ -921,7 +921,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsImplementationModuleElement> Elements { get; }
     }
 
-    public interface ITsImplementationModuleElement : IAstNode { }
+    public interface ITsImplementationModuleElement : ITsAstNode { }
 
     /* DeclarationModule:
      *   DeclarationModuleElementsOpt
@@ -1010,7 +1010,7 @@ namespace TypeScriptAst.Ast
         ITsAmbientDeclarationElement Declaration { get; }
     }
 
-    public interface ITsAmbientDeclarationElement : IAstNode { }
+    public interface ITsAmbientDeclarationElement : ITsAstNode { }
 
     /* AmbientVariableDeclaration:
      *   var AmbientBindingList ;
@@ -1037,7 +1037,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents an ambient variable binding of the form 'name: type'.
     /// </summary>
-    public interface ITsAmbientBinding : IAstNode
+    public interface ITsAmbientBinding : ITsAstNode
     {
         ITsIdentifier VariableName { get; }
         ITsType VariableType { get; }
@@ -1084,7 +1084,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
     }
 
-    public interface ITsAmbientClassBodyElement : IAstNode { }
+    public interface ITsAmbientClassBodyElement : ITsAstNode { }
 
     public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement
     {
@@ -1141,7 +1141,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsAmbientNamespaceElement> Body { get; }
     }
 
-    public interface ITsAmbientNamespaceElement : IAstNode
+    public interface ITsAmbientNamespaceElement : ITsAstNode
     {
         bool HasExportKeyword { get; }
         ITsAmbientDeclarationElement Declaration { get; }

@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript type reference.
     /// </summary>
-    internal class TsTypeReference : AstNode, ITsTypeReference
+    internal class TsTypeReference : TsAstNode, ITsTypeReference
     {
         //// ===========================================================================================================
         //// Constructors

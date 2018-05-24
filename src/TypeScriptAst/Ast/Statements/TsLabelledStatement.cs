@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a labelled statement.
     /// </summary>
-    internal class TsLabelledStatement : AstNode, ITsLabelledStatement
+    internal class TsLabelledStatement : TsAstNode, ITsLabelledStatement
     {
         //// ===========================================================================================================
         //// Constructors

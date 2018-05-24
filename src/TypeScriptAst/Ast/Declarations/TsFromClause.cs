@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a from clause in an import or export statement, of the form 'from moduleName'.
     /// </summary>
-    internal class TsFromClause : AstNode, ITsFromClause
+    internal class TsFromClause : TsAstNode, ITsFromClause
     {
         //// ===========================================================================================================
         //// Constructors

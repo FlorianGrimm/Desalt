@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a unary expression.
     /// </summary>
-    internal class TsUnaryExpression : AstNode, ITsUnaryExpression
+    internal class TsUnaryExpression : TsAstNode, ITsUnaryExpression
     {
         //// ===========================================================================================================
         //// Constructors

@@ -239,7 +239,7 @@ namespace TypeScriptAst.Parsing
         /// If the parse is successful, the result of the tried parse; otherwise, <c>default(T)</c>.
         /// </param>
         /// <returns>True if the parse succeeded; false otherwise.</returns>
-        public bool TryParse<T>(Func<T> func, out T result) where T : class, IAstNode
+        public bool TryParse<T>(Func<T> func, out T result) where T : class, ITsAstNode
         {
             try
             {

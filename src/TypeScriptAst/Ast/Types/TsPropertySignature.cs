@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a property signature.
     /// </summary>
-    internal class TsPropertySignature : AstNode, ITsPropertySignature
+    internal class TsPropertySignature : TsAstNode, ITsPropertySignature
     {
         //// ===========================================================================================================
         //// Constructors

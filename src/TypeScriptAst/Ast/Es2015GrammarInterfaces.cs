@@ -50,7 +50,7 @@ namespace TypeScriptAst.Ast
      */
 
     /// <summary>
-    /// Represents whitespace that can appear before or after another <see cref="IAstNode"/>.
+    /// Represents whitespace that can appear before or after another <see cref="ITsAstNode"/>.
     /// </summary>
     public interface ITsWhitespaceTrivia : IAstTriviaNode
     {
@@ -243,7 +243,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsArrayElement> Elements { get; }
     }
 
-    public interface ITsArrayElement : IAstNode
+    public interface ITsArrayElement : ITsAstNode
     {
         ITsExpression Element { get; }
 
@@ -309,7 +309,7 @@ namespace TypeScriptAst.Ast
         ITsExpression Initializer { get; }
     }
 
-    public interface ITsPropertyName : IAstNode { }
+    public interface ITsPropertyName : ITsAstNode { }
 
     public interface ITsLiteralPropertyName : ITsPropertyName { }
 
@@ -355,7 +355,7 @@ namespace TypeScriptAst.Ast
      *   SourceCharacter but not one of ` or \ or $ or LineTerminator
      */
 
-    public interface ITsTemplatePart : IAstNode
+    public interface ITsTemplatePart : ITsAstNode
     {
         string Template { get; }
         ITsExpression Expression { get; }
@@ -462,13 +462,13 @@ namespace TypeScriptAst.Ast
         ITsArgumentList Arguments { get; }
     }
 
-    public interface ITsArgumentList : IAstNode
+    public interface ITsArgumentList : ITsAstNode
     {
         ImmutableArray<ITsType> TypeArguments { get; }
         ImmutableArray<ITsArgument> Arguments { get; }
     }
 
-    public interface ITsArgument : IAstNode
+    public interface ITsArgument : ITsAstNode
     {
         ITsExpression Argument { get; }
 
@@ -639,7 +639,7 @@ namespace TypeScriptAst.Ast
      *   Expression , AssignmentExpression
      */
 
-    public interface ITsExpression : IAstNode
+    public interface ITsExpression : ITsAstNode
     {
     }
 
@@ -708,7 +708,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsStatementListItem> Statements { get; }
     }
 
-    public interface ITsStatementListItem : IAstNode { }
+    public interface ITsStatementListItem : ITsAstNode { }
 
     /* 13.3.1 Let and Const Declarations
      * ---------------------------------
@@ -809,7 +809,7 @@ namespace TypeScriptAst.Ast
         ITsIdentifier RestElement { get; }
     }
 
-    public interface ITsBindingProperty : IAstNode { }
+    public interface ITsBindingProperty : ITsAstNode { }
 
     public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
     {
@@ -823,7 +823,7 @@ namespace TypeScriptAst.Ast
         ITsBindingElement BindingElement { get; }
     }
 
-    public interface ITsBindingElement : IAstNode { }
+    public interface ITsBindingElement : ITsAstNode { }
 
     public interface ITsPatternBinding : ITsBindingElement
     {
@@ -1015,7 +1015,7 @@ namespace TypeScriptAst.Ast
         ImmutableArray<ITsCaseOrDefaultClause> Clauses { get; }
     }
 
-    public interface ITsCaseOrDefaultClause : IAstNode
+    public interface ITsCaseOrDefaultClause : ITsAstNode
     {
         ImmutableArray<ITsStatementListItem> Statements { get; }
     }
@@ -1296,7 +1296,7 @@ namespace TypeScriptAst.Ast
      *   { ImportsList , }
      */
 
-    public interface ITsImportClause : IAstNode
+    public interface ITsImportClause : ITsAstNode
     {
         ITsIdentifier DefaultBinding { get; }
         ITsIdentifier NamespaceBinding { get; }
@@ -1307,7 +1307,7 @@ namespace TypeScriptAst.Ast
      *   from ModuleSpecifier
      */
 
-    public interface ITsFromClause : IAstNode
+    public interface ITsFromClause : ITsAstNode
     {
         ITsStringLiteral Module { get; }
     }
@@ -1321,7 +1321,7 @@ namespace TypeScriptAst.Ast
      *   IdentifierName as ImportedBinding
      */
 
-    public interface ITsImportSpecifier : IAstNode
+    public interface ITsImportSpecifier : ITsAstNode
     {
         ITsIdentifier Name { get; }
         ITsIdentifier AsName { get; }

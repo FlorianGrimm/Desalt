@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a bound optional parameter in a function.
     /// </summary>
-    internal class TsBoundOptionalParameter : AstNode, ITsBoundOptionalParameter
+    internal class TsBoundOptionalParameter : TsAstNode, ITsBoundOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors

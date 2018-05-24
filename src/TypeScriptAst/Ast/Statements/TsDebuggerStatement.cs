@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a 'debugger' statement.
     /// </summary>
-    internal class TsDebuggerStatement : AstNode, ITsDebuggerStatement
+    internal class TsDebuggerStatement : TsAstNode, ITsDebuggerStatement
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Statements
     /// Represents a property name binding pattern used in object and array bindings, of the form
     /// 'propertyName = expression'.
     /// </summary>
-    internal class TsPropertyNameBinding : AstNode, ITsPropertyNameBinding
+    internal class TsPropertyNameBinding : TsAstNode, ITsPropertyNameBinding
     {
         //// ===========================================================================================================
         //// Constructors

@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a lexical declaration of the form 'const|let x: type, y: type = z;'.
     /// </summary>
-    internal class TsLexicalDeclaration : AstNode, ITsLexicalDeclaration
+    internal class TsLexicalDeclaration : TsAstNode, ITsLexicalDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

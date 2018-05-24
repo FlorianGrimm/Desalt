@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a case clause in a switch statement.
     /// </summary>
-    internal class TsSwitchClause : AstNode, ITsCaseClause, ITsDefaultClause
+    internal class TsSwitchClause : TsAstNode, ITsCaseClause, ITsDefaultClause
     {
         //// ===========================================================================================================
         //// Constructors

@@ -16,7 +16,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an ambient class declaration.
     /// </summary>
-    internal class TsAmbientClassDeclaration : AstNode, ITsAmbientClassDeclaration
+    internal class TsAmbientClassDeclaration : TsAstNode, ITsAmbientClassDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

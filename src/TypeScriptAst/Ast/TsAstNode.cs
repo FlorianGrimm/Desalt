@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="AstNode.cs" company="Justin Rockwood">
+// <copyright file="TsAstNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -18,13 +18,13 @@ namespace TypeScriptAst.Ast
     /// Abstract base class for all abstract syntax tree (AST) nodes.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public abstract class AstNode : IAstNode, IEquatable<AstNode>
+    public abstract class TsAstNode : ITsAstNode, IEquatable<TsAstNode>
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        protected AstNode(
+        protected TsAstNode(
             IEnumerable<IAstTriviaNode> leadingTrivia = null,
             IEnumerable<IAstTriviaNode> trailingTrivia = null)
         {
@@ -63,7 +63,7 @@ namespace TypeScriptAst.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a value that indicates whether the values of two <see cref="AstNode"/>
+        /// Returns a value that indicates whether the values of two <see cref="TsAstNode"/>
         /// objects are equal.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
@@ -72,10 +72,10 @@ namespace TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(IAstNode left, AstNode right) => Equals(left, right);
+        public static bool operator ==(ITsAstNode left, TsAstNode right) => Equals(left, right);
 
         /// <summary>
-        /// Returns a value that indicates whether the values of two <see cref="AstNode"/>
+        /// Returns a value that indicates whether the values of two <see cref="TsAstNode"/>
         /// objects are equal.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
@@ -84,10 +84,10 @@ namespace TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(AstNode left, IAstNode right) => Equals(left, right);
+        public static bool operator ==(TsAstNode left, ITsAstNode right) => Equals(left, right);
 
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="AstNode"/> objects have
+        /// Returns a value that indicates whether two <see cref="TsAstNode"/> objects have
         /// different values.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
@@ -95,10 +95,10 @@ namespace TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(IAstNode left, AstNode right) => !Equals(left, right);
+        public static bool operator !=(ITsAstNode left, TsAstNode right) => !Equals(left, right);
 
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="AstNode"/> objects have
+        /// Returns a value that indicates whether two <see cref="TsAstNode"/> objects have
         /// different values.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
@@ -106,7 +106,7 @@ namespace TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(AstNode left, IAstNode right) => !Equals(left, right);
+        public static bool operator !=(TsAstNode left, ITsAstNode right) => !Equals(left, right);
 
         //// ===========================================================================================================
         //// Methods
@@ -167,7 +167,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public T WithLeadingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : AstNode
+        public T WithLeadingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : TsAstNode
         {
             // when there are no trivia nodes to append, return the original object
             if (triviaNodes == null || triviaNodes.Length == 0)
@@ -175,7 +175,7 @@ namespace TypeScriptAst.Ast
                 return (T)this;
             }
 
-            var copy = (AstNode)MemberwiseClone();
+            var copy = (TsAstNode)MemberwiseClone();
             copy.LeadingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;
         }
@@ -183,7 +183,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified trailing trivia.
         /// </summary>
-        public T WithTrailingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : AstNode
+        public T WithTrailingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : TsAstNode
         {
             // when there are no trivia nodes to append, return the original object
             if (triviaNodes == null || triviaNodes.Length == 0)
@@ -191,7 +191,7 @@ namespace TypeScriptAst.Ast
                 return (T)this;
             }
 
-            var copy = (AstNode)MemberwiseClone();
+            var copy = (TsAstNode)MemberwiseClone();
             copy.TrailingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;
         }
@@ -209,7 +209,7 @@ namespace TypeScriptAst.Ast
         /// true if the specified object is equal to the current object; otherwise, false.
         /// </returns>
         /// <param name="obj">The object to compare with the current object.</param>
-        public override bool Equals(object obj) => Equals(obj as AstNode);
+        public override bool Equals(object obj) => Equals(obj as TsAstNode);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -218,7 +218,7 @@ namespace TypeScriptAst.Ast
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        bool IEquatable<IAstNode>.Equals(IAstNode other) => Equals(other as AstNode);
+        bool IEquatable<ITsAstNode>.Equals(ITsAstNode other) => Equals(other as TsAstNode);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -227,7 +227,7 @@ namespace TypeScriptAst.Ast
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public virtual bool Equals(AstNode other)
+        public virtual bool Equals(TsAstNode other)
         {
             if (other is null)
             {

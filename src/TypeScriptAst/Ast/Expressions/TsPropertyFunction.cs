@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an object literal property function.
     /// </summary>
-    internal class TsPropertyFunction : AstNode, ITsPropertyFunction
+    internal class TsPropertyFunction : TsAstNode, ITsPropertyFunction
     {
         //// ===========================================================================================================
         //// Constructors

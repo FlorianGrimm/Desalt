@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a property set accessor of the form 'set name(value: type) { body }'.
     /// </summary>
-    internal class TsSetAccessor : AstNode, ITsSetAccessor
+    internal class TsSetAccessor : TsAstNode, ITsSetAccessor
     {
         //// ===========================================================================================================
         //// Constructors

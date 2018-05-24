@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an exported declaration.
     /// </summary>
-    internal class TsExportedDeclaration : AstNode, ITsExportedDeclaration
+    internal class TsExportedDeclaration : TsAstNode, ITsExportedDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents the 'this' type.
     /// </summary>
-    internal class TsThisType : AstNode, ITsThisType
+    internal class TsThisType : TsAstNode, ITsThisType
     {
         //// ===========================================================================================================
         //// Member Variables

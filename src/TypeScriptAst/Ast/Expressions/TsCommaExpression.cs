@@ -16,7 +16,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// Represents an expression list separated by commas. Useful in for loops for the initializer or
     /// incrementor, for example.
     /// </summary>
-    internal class TsCommaExpression : AstNode, ITsCommaExpression
+    internal class TsCommaExpression : TsAstNode, ITsCommaExpression
     {
         //// ===========================================================================================================
         //// Constructors

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an argument in a call expression.
     /// </summary>
-    internal class TsArgument : AstNode, ITsArgument
+    internal class TsArgument : TsAstNode, ITsArgument
     {
         //// ===========================================================================================================
         //// Constructors

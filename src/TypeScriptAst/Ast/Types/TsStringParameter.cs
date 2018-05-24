@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a required or optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
     /// </summary>
-    internal class TsStringParameter : AstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
+    internal class TsStringParameter : TsAstNode, ITsStringRequiredParameter, ITsStringOptionalParameter
     {
         //// ===========================================================================================================
         //// Constructors

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a recursive pattern binding in an object or array binding.
     /// </summary>
-    internal class TsPatternBinding : AstNode, ITsPatternBinding
+    internal class TsPatternBinding : TsAstNode, ITsPatternBinding
     {
         //// ===========================================================================================================
         //// Constructors

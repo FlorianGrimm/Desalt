@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
     /// </summary>
-    internal class TsIfStatement : AstNode, ITsIfStatement
+    internal class TsIfStatement : TsAstNode, ITsIfStatement
     {
         //// ===========================================================================================================
         //// Constructors

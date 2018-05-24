@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an enum member of the form, 'name = value'.
     /// </summary>
-    internal class TsEnumMember : AstNode, ITsEnumMember
+    internal class TsEnumMember : TsAstNode, ITsEnumMember
     {
         //// ===========================================================================================================
         //// Constructors

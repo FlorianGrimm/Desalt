@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a template literal of the form `string${Expression}`.
     /// </summary>
-    internal class TsTemplateLiteral : AstNode, ITsTemplateLiteral
+    internal class TsTemplateLiteral : TsAstNode, ITsTemplateLiteral
     {
         //// ===========================================================================================================
         //// Constructors

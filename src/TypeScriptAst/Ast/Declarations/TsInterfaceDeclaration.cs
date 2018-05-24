@@ -16,7 +16,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an interface declaration.
     /// </summary>
-    internal class TsInterfaceDeclaration : AstNode, ITsInterfaceDeclaration
+    internal class TsInterfaceDeclaration : TsAstNode, ITsInterfaceDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

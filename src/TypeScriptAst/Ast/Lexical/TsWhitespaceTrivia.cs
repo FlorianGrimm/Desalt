@@ -10,7 +10,7 @@ namespace TypeScriptAst.Ast.Lexical
     using TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents whitespace that can appear before or after another <see cref="IAstNode"/>.
+    /// Represents whitespace that can appear before or after another <see cref="ITsAstNode"/>.
     /// </summary>
     internal class TsWhitespaceTrivia : AstTriviaNode, ITsWhitespaceTrivia
     {

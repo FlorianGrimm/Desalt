@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsNumericLiteral : AstNode, ITsNumericLiteral
+    internal class TsNumericLiteral : TsAstNode, ITsNumericLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

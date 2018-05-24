@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a continue or break statement of the form, 'continue|break [label]'.
     /// </summary>
-    internal class TsContinueOrBreakStatement : AstNode, ITsContinueStatement, ITsBreakStatement
+    internal class TsContinueOrBreakStatement : TsAstNode, ITsContinueStatement, ITsBreakStatement
     {
         //// ===========================================================================================================
         //// Constructors

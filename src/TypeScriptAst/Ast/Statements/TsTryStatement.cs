@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a try/catch/finally statement.
     /// </summary>
-    internal class TsTryStatement : AstNode, ITsTryStatement
+    internal class TsTryStatement : TsAstNode, ITsTryStatement
     {
         //// ===========================================================================================================
         //// Constructors

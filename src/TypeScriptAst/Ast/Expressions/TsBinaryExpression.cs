@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a binary expression.
     /// </summary>
-    internal class TsBinaryExpression : AstNode, ITsBinaryExpression
+    internal class TsBinaryExpression : TsAstNode, ITsBinaryExpression
     {
         //// ===========================================================================================================
         //// Constructors

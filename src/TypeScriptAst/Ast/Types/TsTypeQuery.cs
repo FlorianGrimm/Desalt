@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a 'typeof' query.
     /// </summary>
-    internal class TsTypeQuery : AstNode, ITsTypeQuery
+    internal class TsTypeQuery : TsAstNode, ITsTypeQuery
     {
         //// ===========================================================================================================
         //// Constructors

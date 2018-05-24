@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an element in an array.
     /// </summary>
-    internal class TsArrayElement : AstNode, ITsArrayElement
+    internal class TsArrayElement : TsAstNode, ITsArrayElement
     {
         //// ===========================================================================================================
         //// Constructors

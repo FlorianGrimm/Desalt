@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an array literal of the form '[element...]'.
     /// </summary>
-    internal class TsArrayLiteral : AstNode, ITsArrayLiteral
+    internal class TsArrayLiteral : TsAstNode, ITsArrayLiteral
     {
         //// ===========================================================================================================
         //// Constructors

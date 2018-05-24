@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an expression containing a numeric literal value.
     /// </summary>
-    internal class TsBooleanLiteral : AstNode, ITsBooleanLiteral
+    internal class TsBooleanLiteral : TsAstNode, ITsBooleanLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

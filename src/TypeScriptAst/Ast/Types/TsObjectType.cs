@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript object type.
     /// </summary>
-    internal class TsObjectType : AstNode, ITsObjectType
+    internal class TsObjectType : TsAstNode, ITsObjectType
     {
         //// ===========================================================================================================
         //// Constructors

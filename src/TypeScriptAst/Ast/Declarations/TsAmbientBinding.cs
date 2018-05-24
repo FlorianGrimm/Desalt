@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an ambient variable binding of the form 'name: type'.
     /// </summary>
-    internal class TsAmbientBinding : AstNode, ITsAmbientBinding
+    internal class TsAmbientBinding : TsAstNode, ITsAmbientBinding
     {
         //// ===========================================================================================================
         //// Constructors

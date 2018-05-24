@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an exported element in a module file.
     /// </summary>
-    internal class TsExportImplementationElement : AstNode, ITsExportImplementationElement
+    internal class TsExportImplementationElement : TsAstNode, ITsExportImplementationElement
     {
         //// ===========================================================================================================
         //// Constructors

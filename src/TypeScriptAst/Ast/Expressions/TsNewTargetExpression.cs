@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an expression of the form 'new.target'.
     /// </summary>
-    internal class TsNewTargetExpression : AstNode, ITsNewTargetExpression
+    internal class TsNewTargetExpression : TsAstNode, ITsNewTargetExpression
     {
         //// ===========================================================================================================
         //// Member Variables

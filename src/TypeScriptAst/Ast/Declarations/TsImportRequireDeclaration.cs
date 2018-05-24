@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
     /// </summary>
-    internal class TsImportRequireDeclaration : AstNode, ITsImportRequireDeclaration
+    internal class TsImportRequireDeclaration : TsAstNode, ITsImportRequireDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

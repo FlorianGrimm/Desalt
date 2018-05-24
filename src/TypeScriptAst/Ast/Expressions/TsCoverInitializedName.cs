@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents an element in an object initializer of the form 'identifer = expression'.
     /// </summary>
-    internal class TsCoverInitializedName : AstNode, ITsCoverInitializedName
+    internal class TsCoverInitializedName : TsAstNode, ITsCoverInitializedName
     {
         //// ===========================================================================================================
         //// Constructors

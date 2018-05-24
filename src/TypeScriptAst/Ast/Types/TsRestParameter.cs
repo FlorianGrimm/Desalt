@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a function parameter of the form '... parameterName: type'.
     /// </summary>
-    internal class TsRestParameter : AstNode, ITsRestParameter
+    internal class TsRestParameter : TsAstNode, ITsRestParameter
     {
         //// ===========================================================================================================
         //// Constructors

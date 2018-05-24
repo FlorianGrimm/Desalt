@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a 'return' statement.
     /// </summary>
-    internal class TsReturnStatement : AstNode, ITsReturnStatement
+    internal class TsReturnStatement : TsAstNode, ITsReturnStatement
     {
         //// ===========================================================================================================
         //// Constructors

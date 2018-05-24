@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class TsStringLiteral : AstNode, ITsStringLiteral
+    internal class TsStringLiteral : TsAstNode, ITsStringLiteral
     {
         //// ===========================================================================================================
         //// Constructors

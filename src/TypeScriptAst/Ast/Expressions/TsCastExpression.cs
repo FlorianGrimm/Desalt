@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a unary cast expression of the form, '&lt;Type&gt;.
     /// </summary>
-    internal class TsCastExpression : AstNode, ITsCastExpression
+    internal class TsCastExpression : TsAstNode, ITsCastExpression
     {
         //// ===========================================================================================================
         //// Constructors

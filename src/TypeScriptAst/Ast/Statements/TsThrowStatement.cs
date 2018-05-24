@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a 'throw' statement.
     /// </summary>
-    internal class TsThrowStatement : AstNode, ITsThrowStatement
+    internal class TsThrowStatement : TsAstNode, ITsThrowStatement
     {
         //// ===========================================================================================================
         //// Constructors

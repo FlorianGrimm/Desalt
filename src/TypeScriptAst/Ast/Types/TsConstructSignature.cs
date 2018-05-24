@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.
     /// </summary>
-    internal class TsConstructSignature : AstNode, ITsConstructSignature
+    internal class TsConstructSignature : TsAstNode, ITsConstructSignature
     {
         //// ===========================================================================================================
         //// Constructors

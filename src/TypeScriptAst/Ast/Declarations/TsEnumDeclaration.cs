@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an enum declaration.
     /// </summary>
-    internal class TsEnumDeclaration : AstNode, ITsEnumDeclaration
+    internal class TsEnumDeclaration : TsAstNode, ITsEnumDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

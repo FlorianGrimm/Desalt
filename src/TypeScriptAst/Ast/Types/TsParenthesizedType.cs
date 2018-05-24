@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a parenthesized type, of the form '(Type)'.
     /// </summary>
-    internal class TsParenthesizedType : AstNode, ITsParenthesizedType
+    internal class TsParenthesizedType : TsAstNode, ITsParenthesizedType
     {
         //// ===========================================================================================================
         //// Constructors

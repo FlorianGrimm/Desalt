@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a property get accessor of the form 'get name (): type { body }'.
     /// </summary>
-    internal class TsGetAccessor : AstNode, ITsGetAccessor
+    internal class TsGetAccessor : TsAstNode, ITsGetAccessor
     {
         //// ===========================================================================================================
         //// Constructors

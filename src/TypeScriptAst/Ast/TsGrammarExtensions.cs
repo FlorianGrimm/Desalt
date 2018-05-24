@@ -17,7 +17,7 @@ namespace TypeScriptAst.Ast
     using TypeScriptAst.Emit;
 
     /// <summary>
-    /// Contains static extension methods for <see cref="IAstNode"/> objects.
+    /// Contains static extension methods for <see cref="ITsAstNode"/> objects.
     /// </summary>
     public static class TsGrammarExtensions
     {
@@ -175,7 +175,7 @@ namespace TypeScriptAst.Ast
         /// Emits a comma-separated list, but only if the items are not null. Shortcut for
         /// <see cref="Emitter.WriteCommaList"/>.
         /// </summary>
-        public static void EmitCommaList(this IReadOnlyList<IAstNode> items, Emitter emitter)
+        public static void EmitCommaList(this IReadOnlyList<ITsAstNode> items, Emitter emitter)
         {
             if (items != null)
             {

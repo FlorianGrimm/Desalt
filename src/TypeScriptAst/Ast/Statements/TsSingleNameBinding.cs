@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
     /// </summary>
-    internal class TsSingleNameBinding : AstNode, ITsSingleNameBinding
+    internal class TsSingleNameBinding : TsAstNode, ITsSingleNameBinding
     {
         //// ===========================================================================================================
         //// Constructors

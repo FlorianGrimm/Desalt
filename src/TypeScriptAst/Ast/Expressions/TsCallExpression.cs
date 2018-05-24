@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a call epression of the form 'expression(arguments)'.
     /// </summary>
-    internal class TsCallExpression : AstNode, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
+    internal class TsCallExpression : TsAstNode, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
     {
         //// ===========================================================================================================
         //// Constructors

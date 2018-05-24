@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a null literal.
     /// </summary>
-    internal class TsNullLiteral : AstNode, ITsNullLiteral
+    internal class TsNullLiteral : TsAstNode, ITsNullLiteral
     {
         //// ===========================================================================================================
         //// Member Variables

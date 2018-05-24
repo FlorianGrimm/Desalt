@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents one of the predefined types: any, number, boolean, string, symbol, void.
     /// </summary>
-    internal class TsPredefinedType : AstNode, ITsType
+    internal class TsPredefinedType : TsAstNode, ITsType
     {
         //// ===========================================================================================================
         //// Member Variables

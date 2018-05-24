@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression[expression]'.
     /// </summary>
-    internal class TsMemberBracketExpression : AstNode, ITsMemberBracketExpression, ITsSuperBracketExpression
+    internal class TsMemberBracketExpression : TsAstNode, ITsMemberBracketExpression, ITsSuperBracketExpression
     {
         //// ===========================================================================================================
         //// Constructors

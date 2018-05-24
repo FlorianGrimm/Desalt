@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents either a 'get' or a 'set' member accessor declaration in a class.
     /// </summary>
-    internal class TsGetSetAccessorMemberDeclaration : AstNode,
+    internal class TsGetSetAccessorMemberDeclaration : TsAstNode,
         ITsGetAccessorMemberDeclaration, ITsSetAccessorMemberDeclaration
     {
         //// ===========================================================================================================

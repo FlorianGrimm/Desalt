@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a parenthesized expression, of the form '(expression)'.
     /// </summary>
-    internal class TsParenthesizedExpression : AstNode, ITsParenthesizedExpression
+    internal class TsParenthesizedExpression : TsAstNode, ITsParenthesizedExpression
     {
         //// ===========================================================================================================
         //// Constructors

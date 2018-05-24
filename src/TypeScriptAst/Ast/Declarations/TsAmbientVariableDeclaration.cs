@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
     /// </summary>
-    internal class TsAmbientVariableDeclaration : AstNode, ITsAmbientVariableDeclaration
+    internal class TsAmbientVariableDeclaration : TsAstNode, ITsAmbientVariableDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

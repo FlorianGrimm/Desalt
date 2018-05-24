@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript array type.
     /// </summary>
-    internal class TsArrayType : AstNode, ITsArrayType
+    internal class TsArrayType : TsAstNode, ITsArrayType
     {
         //// ===========================================================================================================
         //// Constructors

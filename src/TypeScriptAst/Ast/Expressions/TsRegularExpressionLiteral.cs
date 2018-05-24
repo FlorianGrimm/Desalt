@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a regular expression literal.
     /// </summary>
-    internal class TsRegularExpressionLiteral : AstNode, ITsRegularExpressionLiteral
+    internal class TsRegularExpressionLiteral : TsAstNode, ITsRegularExpressionLiteral
     {
         //// ===========================================================================================================
         //// Constructors

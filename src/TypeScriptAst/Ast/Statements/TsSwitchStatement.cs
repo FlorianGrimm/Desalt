@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
     /// </summary>
-    internal class TsSwitchStatement : AstNode, ITsSwitchStatement
+    internal class TsSwitchStatement : TsAstNode, ITsSwitchStatement
     {
         //// ===========================================================================================================
         //// Constructors

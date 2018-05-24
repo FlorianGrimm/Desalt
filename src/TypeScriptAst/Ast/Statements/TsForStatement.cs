@@ -18,7 +18,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a 'for' loop.
     /// </summary>
-    internal class TsForStatement : AstNode, ITsForStatement
+    internal class TsForStatement : TsAstNode, ITsForStatement
     {
         //// ===========================================================================================================
         //// Constructors

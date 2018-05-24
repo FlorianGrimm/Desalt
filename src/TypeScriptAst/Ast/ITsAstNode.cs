@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAstNode.cs" company="Justin Rockwood">
+// <copyright file="ITsAstNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
     /// </summary>
-    public interface IAstNode : IEquatable<IAstNode>
+    public interface ITsAstNode : IEquatable<ITsAstNode>
     {
         //// ===========================================================================================================
         //// Properties

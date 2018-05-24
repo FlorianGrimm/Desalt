@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a class declaration acting as an expression.
     /// </summary>
-    internal class TsClassExpression : AstNode, ITsClassExpression
+    internal class TsClassExpression : TsAstNode, ITsClassExpression
     {
         //// ===========================================================================================================
         //// Constructors

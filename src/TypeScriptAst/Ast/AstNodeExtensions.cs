@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast
     using CompilerUtilities;
 
     /// <summary>
-    /// Contains extension methods for working with <see cref="IAstNode"/> objects.
+    /// Contains extension methods for working with <see cref="ITsAstNode"/> objects.
     /// </summary>
     public static class AstNodeExtensions
     {
@@ -36,7 +36,7 @@ namespace TypeScriptAst.Ast
             this IEnumerable<T> list,
             string delimiter = ", ",
             int maxStringLength = 32)
-            where T : IAstNode
+            where T : ITsAstNode
         {
             Param.VerifyGreaterThanOrEqualTo(maxStringLength, nameof(maxStringLength), 0);
 
@@ -70,29 +70,29 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public static T PrependTo<T>(this IAstTriviaNode trivia, T node) where T : IAstNode
+        public static T PrependTo<T>(this IAstTriviaNode trivia, T node) where T : ITsAstNode
         {
-            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
-            return (T)(object)classNode.WithLeadingTrivia<AstNode>(trivia);
+            TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithLeadingTrivia<TsAstNode>(trivia);
         }
 
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public static T WithLeadingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes) where T : IAstNode
+        public static T WithLeadingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes) where T : ITsAstNode
         {
-            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
-            return (T)(object)classNode.WithLeadingTrivia<AstNode>(triviaNodes);
+            TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithLeadingTrivia<TsAstNode>(triviaNodes);
         }
 
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
         public static T WithTrailingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes)
-            where T : IAstNode
+            where T : ITsAstNode
         {
-            AstNode classNode = node as AstNode ?? throw new InvalidCastException();
-            return (T)(object)classNode.WithTrailingTrivia<AstNode>(triviaNodes);
+            TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();
+            return (T)(object)classNode.WithTrailingTrivia<TsAstNode>(triviaNodes);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a variable declaration statement of the form 'var x = y;'.
     /// </summary>
-    internal class TsVariableStatement : AstNode, ITsVariableStatement
+    internal class TsVariableStatement : TsAstNode, ITsVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors

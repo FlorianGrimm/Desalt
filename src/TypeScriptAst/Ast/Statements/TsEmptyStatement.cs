@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    internal class TsEmptyStatement : AstNode, ITsEmptyStatement
+    internal class TsEmptyStatement : TsAstNode, ITsEmptyStatement
     {
         //// ===========================================================================================================
         //// Member Variables

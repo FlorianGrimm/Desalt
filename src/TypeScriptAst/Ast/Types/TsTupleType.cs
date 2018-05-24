@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a TypeScript tuple type.
     /// </summary>
-    internal class TsTupleType : AstNode, ITsTupleType
+    internal class TsTupleType : TsAstNode, ITsTupleType
     {
         //// ===========================================================================================================
         //// Constructors

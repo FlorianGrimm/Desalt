@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
     /// </summary>
-    internal class TsObjectBindingPattern : AstNode, ITsObjectBindingPattern
+    internal class TsObjectBindingPattern : TsAstNode, ITsObjectBindingPattern
     {
         //// ===========================================================================================================
         //// Constructors

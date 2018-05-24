@@ -31,7 +31,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertInlineCodeTranslation(
             string codeSnippet,
             Func<CompilationUnitSyntax, ExpressionSyntax> getMethodSyntaxFunc,
-            IAstNode expectedResult,
+            ITsAstNode expectedResult,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
@@ -69,7 +69,7 @@ class C
                         translatedLeftSide,
                         translatedArgumentList,
                         diagnostics,
-                        out IAstNode result)
+                        out ITsAstNode result)
                     .Should()
                     .BeTrue(because: "there should be an [InlineCode] translation");
 

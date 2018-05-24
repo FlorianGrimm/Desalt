@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents a TypeScript identifier.
     /// </summary>
-    internal class TsIdentifier : AstNode, ITsIdentifier
+    internal class TsIdentifier : TsAstNode, ITsIdentifier
     {
         //// ===========================================================================================================
         //// Member Variables

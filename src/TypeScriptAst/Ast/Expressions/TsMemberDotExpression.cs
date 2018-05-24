@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.
     /// </summary>
-    internal class TsMemberDotExpression : AstNode, ITsMemberDotExpression, ITsSuperDotExpression
+    internal class TsMemberDotExpression : TsAstNode, ITsMemberDotExpression, ITsSuperDotExpression
     {
         //// ===========================================================================================================
         //// Constructors

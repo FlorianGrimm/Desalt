@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a block statement of the form '{ statements }'.
     /// </summary>
-    internal class TsBlockStatement : AstNode, ITsBlockStatement
+    internal class TsBlockStatement : TsAstNode, ITsBlockStatement
     {
         //// ===========================================================================================================
         //// Constructors

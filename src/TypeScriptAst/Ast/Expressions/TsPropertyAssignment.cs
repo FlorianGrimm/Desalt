@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a property assignment in the following form: 'propertyName: value'.
     /// </summary>
-    internal class TsPropertyAssignment : AstNode, ITsPropertyAssignment
+    internal class TsPropertyAssignment : TsAstNode, ITsPropertyAssignment
     {
         //// ===========================================================================================================
         //// Constructors

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an index member declaration in a class.
     /// </summary>
-    internal class TsIndexMemberDeclaration : AstNode, ITsIndexMemberDeclaration
+    internal class TsIndexMemberDeclaration : TsAstNode, ITsIndexMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

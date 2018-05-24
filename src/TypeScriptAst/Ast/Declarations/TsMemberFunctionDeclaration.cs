@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a member function declaration in a class.
     /// </summary>
-    internal class TsFunctionMemberDeclaration : AstNode,
+    internal class TsFunctionMemberDeclaration : TsAstNode,
         ITsFunctionMemberDeclaration, ITsAmbientFunctionMemberDeclaration
     {
         //// ===========================================================================================================

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
     /// </summary>
-    internal class TsTypeParameters : AstNode, ITsTypeParameters
+    internal class TsTypeParameters : TsAstNode, ITsTypeParameters
     {
         //// ===========================================================================================================
         //// Member Variables

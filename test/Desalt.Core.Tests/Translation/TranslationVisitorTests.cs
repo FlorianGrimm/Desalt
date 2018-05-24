@@ -69,7 +69,7 @@ using System.Html;
                 throwingDiagnosticList.ThrowOnErrors = true;
 
                 var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
-                IAstNode result = visitor.Visit(context.RootSyntax).Single();
+                ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
 
                 visitor.Diagnostics.Should().BeEmpty();
 

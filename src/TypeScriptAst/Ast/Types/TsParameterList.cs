@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast.Types
     /// <summary>
     /// Represents a parameter list of the form '(parameter: type)'.
     /// </summary>
-    internal class TsParameterList : AstNode, ITsParameterList
+    internal class TsParameterList : TsAstNode, ITsParameterList
     {
         //// ===========================================================================================================
         //// Constructors

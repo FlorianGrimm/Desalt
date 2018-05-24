@@ -92,7 +92,7 @@ namespace Desalt.Core.Translation
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             ICollection<Diagnostic> diagnostics,
-            out IAstNode translatedNode)
+            out ITsAstNode translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
             // ReSharper disable once UsePatternMatching
@@ -115,7 +115,7 @@ namespace Desalt.Core.Translation
             return false;
         }
 
-        private IAstNode Translate(Context context)
+        private ITsAstNode Translate(Context context)
         {
             string replacedInlineCode = ReplaceParameters(context);
 

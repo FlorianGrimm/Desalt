@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an exported variable statement.
     /// </summary>
-    internal class TsExportedVariableStatement : AstNode, ITsExportedVariableStatement
+    internal class TsExportedVariableStatement : TsAstNode, ITsExportedVariableStatement
     {
         //// ===========================================================================================================
         //// Constructors

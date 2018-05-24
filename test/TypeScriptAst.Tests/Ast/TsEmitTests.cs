@@ -30,7 +30,7 @@ namespace TypeScriptAst.Tests.Ast
 #pragma warning restore IDE1006 // Naming Styles
         // ReSharper restore InconsistentNaming
 
-        private static void VerifyOutput(IAstNode node, string expected, EmitOptions options = null)
+        private static void VerifyOutput(ITsAstNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
             using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))

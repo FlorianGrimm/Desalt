@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
     /// </summary>
-    internal class TsImportAliasDeclaration : AstNode, ITsImportAliasDeclaration
+    internal class TsImportAliasDeclaration : TsAstNode, ITsImportAliasDeclaration
     {
         //// ===========================================================================================================
         //// Constructors

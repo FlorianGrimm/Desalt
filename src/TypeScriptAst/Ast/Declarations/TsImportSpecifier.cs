@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.
     /// </summary>
-    internal class TsImportSpecifier : AstNode, ITsImportSpecifier
+    internal class TsImportSpecifier : TsAstNode, ITsImportSpecifier
     {
         //// ===========================================================================================================
         //// Constructors

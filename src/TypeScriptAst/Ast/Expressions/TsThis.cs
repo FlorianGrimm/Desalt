@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents the 'this' expression.
     /// </summary>
-    internal class TsThis : AstNode, ITsThis
+    internal class TsThis : TsAstNode, ITsThis
     {
         //// ===========================================================================================================
         //// Member Variables

@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Expressions
     /// <summary>
     /// Represents a conditional expression of the form 'x ? y : z'.
     /// </summary>
-    internal class TsConditionalExpression : AstNode, ITsConditionalExpression
+    internal class TsConditionalExpression : TsAstNode, ITsConditionalExpression
     {
         //// ===========================================================================================================
         //// Constructors

@@ -129,7 +129,7 @@ namespace TypeScriptAst.Emit
         /// Indicates whether to skip writing newlines between items. Useful for writing blocks of
         /// statements that already have newlines.
         /// </param>
-        public void WriteBlock(IReadOnlyList<IAstNode> items, bool skipNewlines = false)
+        public void WriteBlock(IReadOnlyList<ITsAstNode> items, bool skipNewlines = false)
         {
             WriteList(
                 items,
@@ -148,7 +148,7 @@ namespace TypeScriptAst.Emit
         /// Writes a list of items separated by a comma.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteCommaList(IReadOnlyList<IAstNode> items)
+        public void WriteCommaList(IReadOnlyList<ITsAstNode> items)
         {
             WriteList(items, indent: false, itemDelimiter: ", ");
         }
@@ -158,7 +158,7 @@ namespace TypeScriptAst.Emit
         /// new line.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteCommaNewlineSeparatedBlock(IReadOnlyList<IAstNode> items)
+        public void WriteCommaNewlineSeparatedBlock(IReadOnlyList<ITsAstNode> items)
         {
             WriteList(
                 items,
@@ -175,7 +175,7 @@ namespace TypeScriptAst.Emit
         /// Writes a comma-separated list wrapped in a () block.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteParameterList(IReadOnlyList<IAstNode> items)
+        public void WriteParameterList(IReadOnlyList<ITsAstNode> items)
         {
             WriteList(items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
         }
@@ -207,7 +207,7 @@ namespace TypeScriptAst.Emit
         /// name="prefix"/><paramref name="suffix"/></c>
         /// </param>
         public void WriteList(
-            IReadOnlyList<IAstNode> items,
+            IReadOnlyList<ITsAstNode> items,
             bool indent,
             string prefix = null,
             string suffix = null,
@@ -260,7 +260,7 @@ namespace TypeScriptAst.Emit
 
             for (int i = 0; i < items.Count; i++)
             {
-                IAstNode item = items[i];
+                ITsAstNode item = items[i];
                 item?.Emit(this);
 
                 // write the delimiter
@@ -303,7 +303,7 @@ namespace TypeScriptAst.Emit
         /// Indicates whether to add a newline after the block if it's a block statement.
         /// </param>
         public void WriteStatementIndentedOrInBlock(
-            IAstNode statement,
+            ITsAstNode statement,
             bool isBlockStatement,
             string prefixForIndentedStatement = null,
             string prefixForBlock = null,

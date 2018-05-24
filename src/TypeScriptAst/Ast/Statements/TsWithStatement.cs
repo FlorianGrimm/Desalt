@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Statements
     /// <summary>
     /// Represents a 'with' statement of the form, 'with (expression) statement'.
     /// </summary>
-    internal class TsWithStatement : AstNode, ITsWithStatement
+    internal class TsWithStatement : TsAstNode, ITsWithStatement
     {
         //// ===========================================================================================================
         //// Constructors
