@@ -12,7 +12,7 @@ namespace TypeScriptAst.Emit
     using System.IO;
     using System.Text;
     using CompilerUtilities;
-    using TypeScriptAst.TypeScript.Ast;
+    using TypeScriptAst.Ast;
 
     /// <summary>
     /// General-purpose emitter for serializing abstract syntax nodes into code.

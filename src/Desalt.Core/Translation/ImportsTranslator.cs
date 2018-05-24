@@ -15,8 +15,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.TypeScript.Ast;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates import declarations for a set of types.

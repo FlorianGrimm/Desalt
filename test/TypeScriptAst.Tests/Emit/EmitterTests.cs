@@ -14,8 +14,8 @@ namespace TypeScriptAst.Tests.Emit
     using System.Text;
     using CompilerUtilities.Extensions;
     using FluentAssertions;
+    using TypeScriptAst.Ast;
     using TypeScriptAst.Emit;
-    using TypeScriptAst.TypeScript.Ast;
     using Xunit;
 
     public class EmitterTests

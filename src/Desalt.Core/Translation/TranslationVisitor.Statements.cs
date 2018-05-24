@@ -14,10 +14,10 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using TypeScriptAst.TypeScript.Ast;
-    using TypeScriptAst.TypeScript.Ast.Declarations;
-    using TypeScriptAst.TypeScript.Ast.Statements;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Ast.Declarations;
+    using TypeScriptAst.Ast.Statements;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     internal sealed partial class TranslationVisitor
     {

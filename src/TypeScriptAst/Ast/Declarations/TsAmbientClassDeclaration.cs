@@ -1,0 +1,74 @@
+﻿// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="TsAmbientClassDeclaration.cs" company="Justin Rockwood">
+//   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+//   LICENSE.txt in the project root for license information.
+// </copyright>
+// ---------------------------------------------------------------------------------------------------------------------
+
+namespace TypeScriptAst.Ast.Declarations
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using TypeScriptAst.Ast.Types;
+    using TypeScriptAst.Emit;
+
+    /// <summary>
+    /// Represents an ambient class declaration.
+    /// </summary>
+    internal class TsAmbientClassDeclaration : AstNode, ITsAmbientClassDeclaration
+    {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public TsAmbientClassDeclaration(
+            ITsIdentifier className,
+            ITsTypeParameters typeParameters = null,
+            ITsClassHeritage heritage = null,
+            IEnumerable<ITsAmbientClassBodyElement> classBody = null)
+        {
+            ClassName = className ?? throw new ArgumentNullException(nameof(className));
+            TypeParameters = typeParameters ?? new TsTypeParameters();
+            Heritage = heritage ?? new TsClassHeritage();
+            ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsAmbientClassBodyElement>.Empty;
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public ITsIdentifier ClassName { get; }
+        public ITsTypeParameters TypeParameters { get; }
+        public ITsClassHeritage Heritage { get; }
+        public ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientClassDeclaration(this);
+
+        public override string CodeDisplay =>
+            $"class {ClassName}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
+
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write("class ");
+            ClassName.Emit(emitter);
+            TypeParameters.Emit(emitter);
+            Heritage.Emit(emitter);
+
+            emitter.WriteLine(" {");
+            emitter.IndentLevel++;
+
+            foreach (ITsAmbientClassBodyElement element in ClassBody)
+            {
+                element.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
+        }
+    }
+}

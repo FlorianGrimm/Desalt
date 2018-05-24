@@ -14,8 +14,8 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Ast;
     using TypeScriptAst.Emit;
-    using TypeScriptAst.TypeScript.Ast;
 
     [TestClass]
     public class DocumentationCommentTranslatorTests

@@ -18,10 +18,10 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Ast.Expressions;
     using TypeScriptAst.Emit;
-    using TypeScriptAst.TypeScript.Ast;
-    using TypeScriptAst.TypeScript.Ast.Expressions;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     [TestClass]
     public class InlineCodeTranslatorTests

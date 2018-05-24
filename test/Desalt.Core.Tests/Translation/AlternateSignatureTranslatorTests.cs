@@ -19,8 +19,8 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.TypeScript.Ast;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     [TestClass]
     public class AlternateSignatureTranslatorTests

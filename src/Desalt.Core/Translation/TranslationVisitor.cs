@@ -17,8 +17,8 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using TypeScriptAst.TypeScript.Ast;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Visits a C# syntax tree, translating from a C# AST into a TypeScript AST.

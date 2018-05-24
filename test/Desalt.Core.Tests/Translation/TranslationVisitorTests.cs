@@ -15,8 +15,8 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Translation;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using TypeScriptAst.Ast;
     using TypeScriptAst.Emit;
-    using TypeScriptAst.TypeScript.Ast;
 
     [TestClass]
     public partial class TranslationVisitorTests

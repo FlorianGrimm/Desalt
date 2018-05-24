@@ -16,8 +16,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Pipeline;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.TypeScript.Ast;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
     using XmlNames = DocumentationCommentXmlNames;
 
     /// <summary>

@@ -15,8 +15,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.TypeScript.Ast;
-    using Factory = TypeScriptAst.TypeScript.Ast.TsAstFactory;
+    using TypeScriptAst.Ast;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Translates known types in C# to known TypeScript types.

@@ -18,8 +18,8 @@ namespace Desalt.Core.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using TypeScriptAst.TypeScript.Ast;
-    using TypeScriptAst.TypeScript.Parsing;
+    using TypeScriptAst.Ast;
+    using TypeScriptAst.Parsing;
 
     /// <summary>
     /// Parses and translates [InlineCode] attribute contents.
