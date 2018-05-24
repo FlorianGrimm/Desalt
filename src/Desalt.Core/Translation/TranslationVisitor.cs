@@ -33,7 +33,6 @@ namespace Desalt.Core.Translation
 
         private readonly ICollection<Diagnostic> _diagnostics;
         private readonly CancellationToken _cancellationToken;
-        private readonly DocumentTranslationContextWithSymbolTables _context;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptNameSymbolTable _scriptNameTable;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
@@ -62,7 +61,6 @@ namespace Desalt.Core.Translation
             CancellationToken cancellationToken = default(CancellationToken),
             ICollection<Diagnostic> diagnostics = null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptNameTable = context.ScriptNameSymbolTable;
