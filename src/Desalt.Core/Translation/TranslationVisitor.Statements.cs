@@ -410,7 +410,19 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsForStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitForStatement(ForStatementSyntax node)
         {
-            var initializer = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            ITsLexicalDeclaration initializerWithLexicalDeclaration = null;
+            ITsExpression initializer = null;
+            if (node.Declaration != null)
+            {
+                initializerWithLexicalDeclaration = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            }
+            else
+            {
+                // translate all of the initializers and create a comma expression from them
+                var initializers = node.Initializers.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+                initializer = initializers.Length == 1 ? initializers[0] : Factory.CommaExpression(initializers);
+            }
+
             var condition = (ITsExpression)Visit(node.Condition).Single();
             var statement = (ITsStatement)Visit(node.Statement).Single();
 
@@ -419,7 +431,10 @@ namespace Desalt.Core.Translation
             ITsExpression incrementor =
                 incrementors.Length == 1 ? incrementors[0] : Factory.CommaExpression(incrementors);
 
-            ITsForStatement translated = Factory.For(initializer, condition, incrementor, statement);
+            ITsForStatement translated = initializerWithLexicalDeclaration != null
+                ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
+                : Factory.For(initializer, condition, incrementor, statement);
+
             yield return translated;
         }
 
