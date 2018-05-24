@@ -330,7 +330,7 @@ namespace Desalt.Core.Translation
             if (usingBlock is ITsBlockStatement tryBlock)
             {
                 // remove any trailing newlines
-                tryBlock = tryBlock.WithTrailingTrivia(new IAstTriviaNode[0]);
+                tryBlock = tryBlock.WithTrailingTrivia(new ITsAstTriviaNode[0]);
             }
             else
             {

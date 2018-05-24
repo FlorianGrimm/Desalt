@@ -12,7 +12,7 @@ namespace TypeScriptAst.Ast.Lexical
     /// <summary>
     /// Represents a TypeScript single-line comment of the form '// comment'.
     /// </summary>
-    internal class TsSingleLineComment : AstTriviaNode, ITsSingleLineComment
+    internal class TsSingleLineComment : TsAstTriviaNode, ITsSingleLineComment
     {
         //// ===========================================================================================================
         //// Constructors

@@ -25,11 +25,11 @@ namespace TypeScriptAst.Ast
         //// ===========================================================================================================
 
         protected TsAstNode(
-            IEnumerable<IAstTriviaNode> leadingTrivia = null,
-            IEnumerable<IAstTriviaNode> trailingTrivia = null)
+            IEnumerable<ITsAstTriviaNode> leadingTrivia = null,
+            IEnumerable<ITsAstTriviaNode> trailingTrivia = null)
         {
-            LeadingTrivia = leadingTrivia?.ToImmutableArray() ?? ImmutableArray<IAstTriviaNode>.Empty;
-            TrailingTrivia = trailingTrivia?.ToImmutableArray() ?? ImmutableArray<IAstTriviaNode>.Empty;
+            LeadingTrivia = leadingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
+            TrailingTrivia = trailingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
         }
 
         //// ===========================================================================================================
@@ -45,12 +45,12 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
         /// </summary>
-        public ImmutableArray<IAstTriviaNode> LeadingTrivia { get; private set; }
+        public ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; private set; }
 
         /// <summary>
         /// Gets an array of trivia that appear after this node in the source code.
         /// </summary>
-        public ImmutableArray<IAstTriviaNode> TrailingTrivia { get; private set; }
+        public ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; private set; }
 
         /// <summary>
         /// Gets a consise string representing the current AST node to show in the debugger
@@ -130,14 +130,14 @@ namespace TypeScriptAst.Ast
         /// <param name="emitter">The emitter to use.</param>
         public void Emit(Emitter emitter)
         {
-            foreach (IAstTriviaNode trivia in LeadingTrivia)
+            foreach (ITsAstTriviaNode trivia in LeadingTrivia)
             {
                 trivia.Emit(emitter);
             }
 
             EmitInternal(emitter);
 
-            foreach (IAstTriviaNode trivia in TrailingTrivia)
+            foreach (ITsAstTriviaNode trivia in TrailingTrivia)
             {
                 trivia.Emit(emitter);
             }
@@ -167,7 +167,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public T WithLeadingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : TsAstNode
+        public T WithLeadingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
         {
             // when there are no trivia nodes to append, return the original object
             if (triviaNodes == null || triviaNodes.Length == 0)
@@ -183,7 +183,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified trailing trivia.
         /// </summary>
-        public T WithTrailingTrivia<T>(params IAstTriviaNode[] triviaNodes) where T : TsAstNode
+        public T WithTrailingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
         {
             // when there are no trivia nodes to append, return the original object
             if (triviaNodes == null || triviaNodes.Length == 0)

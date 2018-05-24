@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Lexical
     /// <summary>
     /// Represents a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
     /// </summary>
-    internal class TsJsDocLinkTag : AstTriviaNode, ITsJsDocLinkTag
+    internal class TsJsDocLinkTag : TsAstTriviaNode, ITsJsDocLinkTag
     {
         //// ===========================================================================================================
         //// Constructors

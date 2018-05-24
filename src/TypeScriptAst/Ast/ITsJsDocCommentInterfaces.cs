@@ -27,7 +27,7 @@ namespace TypeScriptAst.Ast
     ///  * @see text
     ///  */
     /// </code></remarks>
-    public interface ITsJsDocComment : IAstTriviaNode
+    public interface ITsJsDocComment : ITsAstTriviaNode
     {
         /// <summary>
         /// Gets the main description.
@@ -170,7 +170,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents a JSDoc block tag, for example @see, @example, and description.
     /// </summary>
-    public interface ITsJsDocBlock : IAstTriviaNode
+    public interface ITsJsDocBlock : ITsAstTriviaNode
     {
         ImmutableArray<ITsJsDocInlineContent> Content { get; }
 
@@ -184,7 +184,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents either plain text or structured inline contents within a JSDoc block tag.
     /// </summary>
-    public interface ITsJsDocInlineContent : IAstTriviaNode
+    public interface ITsJsDocInlineContent : ITsAstTriviaNode
     {
         /// <summary>
         /// Returns a value indicating whether this content node is empty.

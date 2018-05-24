@@ -37,8 +37,8 @@ namespace TypeScriptAst.Tests.Emit
 
             public string CodeDisplay => Name;
 
-            public ImmutableArray<IAstTriviaNode> LeadingTrivia { get; } = ImmutableArray<IAstTriviaNode>.Empty;
-            public ImmutableArray<IAstTriviaNode> TrailingTrivia { get; } = ImmutableArray<IAstTriviaNode>.Empty;
+            public ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; } = ImmutableArray<ITsAstTriviaNode>.Empty;
+            public ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; } = ImmutableArray<ITsAstTriviaNode>.Empty;
 
             public void Accept(TsVisitor visitor) => throw new NotImplementedException();
 
@@ -46,10 +46,10 @@ namespace TypeScriptAst.Tests.Emit
 
             public string EmitAsString(EmitOptions options = null) => Name;
 
-            public ITsAstNode WithLeadingTrivia(params IAstTriviaNode[] triviaNodes) =>
+            public ITsAstNode WithLeadingTrivia(params ITsAstTriviaNode[] triviaNodes) =>
                 throw new NotImplementedException();
 
-            public ITsAstNode WithTrailingTrivia(params IAstTriviaNode[] triviaNodes) =>
+            public ITsAstNode WithTrailingTrivia(params ITsAstTriviaNode[] triviaNodes) =>
                 throw new NotImplementedException();
 
             public bool Equals(ITsAstNode other) => throw new NotImplementedException();

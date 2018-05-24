@@ -41,7 +41,7 @@ namespace TypeScriptAst.Tests.Ast
             }
         }
 
-        private static void VerifyOutput(IAstTriviaNode node, string expected, EmitOptions options = null)
+        private static void VerifyOutput(ITsAstTriviaNode node, string expected, EmitOptions options = null)
         {
             using (var stream = new MemoryStream())
             using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))

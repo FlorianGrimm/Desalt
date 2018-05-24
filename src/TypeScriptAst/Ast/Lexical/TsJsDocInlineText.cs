@@ -13,7 +13,7 @@ namespace TypeScriptAst.Ast.Lexical
     /// <summary>
     /// Represents plain text within a JSDoc block tag.
     /// </summary>
-    internal class TsJsDocInlineText : AstTriviaNode, ITsJsDocInlineText
+    internal class TsJsDocInlineText : TsAstTriviaNode, ITsJsDocInlineText
     {
         //// ===========================================================================================================
         //// Constructors

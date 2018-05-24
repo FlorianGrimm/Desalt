@@ -17,7 +17,7 @@ namespace TypeScriptAst.Ast.Lexical
     /// <summary>
     /// Represents a JSDoc block tag, for example @see, @example, and description.
     /// </summary>
-    internal class TsJsDocBlock : AstTriviaNode, ITsJsDocBlock
+    internal class TsJsDocBlock : TsAstTriviaNode, ITsJsDocBlock
     {
         //// ===========================================================================================================
         //// Constructors

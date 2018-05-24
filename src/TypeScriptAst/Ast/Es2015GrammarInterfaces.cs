@@ -52,7 +52,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents whitespace that can appear before or after another <see cref="ITsAstNode"/>.
     /// </summary>
-    public interface ITsWhitespaceTrivia : IAstTriviaNode
+    public interface ITsWhitespaceTrivia : ITsAstTriviaNode
     {
         string Text { get; }
         bool IsNewline { get; }
@@ -61,7 +61,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents a TypeScript multi-line comment of the form '/* lines */'.
     /// </summary>
-    public interface ITsMultiLineComment : IAstTriviaNode
+    public interface ITsMultiLineComment : ITsAstTriviaNode
     {
         /// <summary>
         /// Indicates whether the comment should start with /** (JsDoc) or /*.
@@ -74,7 +74,7 @@ namespace TypeScriptAst.Ast
     /// <summary>
     /// Represents a TypeScript single-line comment of the form '// comment'.
     /// </summary>
-    public interface ITsSingleLineComment : IAstTriviaNode
+    public interface ITsSingleLineComment : ITsAstTriviaNode
     {
         string Text { get; }
     }

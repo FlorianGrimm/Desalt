@@ -33,7 +33,7 @@ namespace TypeScriptAst.Ast.Lexical
     ///  * @see text
     ///  */
     /// </code></remarks>
-    internal class TsJsDocComment : AstTriviaNode, ITsJsDocComment
+    internal class TsJsDocComment : TsAstTriviaNode, ITsJsDocComment
     {
         //// ===========================================================================================================
         //// Member Variables

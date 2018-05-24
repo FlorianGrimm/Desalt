@@ -70,7 +70,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public static T PrependTo<T>(this IAstTriviaNode trivia, T node) where T : ITsAstNode
+        public static T PrependTo<T>(this ITsAstTriviaNode trivia, T node) where T : ITsAstNode
         {
             TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();
             return (T)(object)classNode.WithLeadingTrivia<TsAstNode>(trivia);
@@ -79,7 +79,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public static T WithLeadingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes) where T : ITsAstNode
+        public static T WithLeadingTrivia<T>(this T node, params ITsAstTriviaNode[] triviaNodes) where T : ITsAstNode
         {
             TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();
             return (T)(object)classNode.WithLeadingTrivia<TsAstNode>(triviaNodes);
@@ -88,7 +88,7 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Creates a copy of this node with the specified leading trivia.
         /// </summary>
-        public static T WithTrailingTrivia<T>(this T node, params IAstTriviaNode[] triviaNodes)
+        public static T WithTrailingTrivia<T>(this T node, params ITsAstTriviaNode[] triviaNodes)
             where T : ITsAstNode
         {
             TsAstNode classNode = node as TsAstNode ?? throw new InvalidCastException();

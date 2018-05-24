@@ -29,12 +29,12 @@ namespace TypeScriptAst.Ast
         /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
         /// </summary>
-        ImmutableArray<IAstTriviaNode> LeadingTrivia { get; }
+        ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; }
 
         /// <summary>
         /// Gets an array of trivia that appear after this node in the source code.
         /// </summary>
-        ImmutableArray<IAstTriviaNode> TrailingTrivia { get; }
+        ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; }
 
         //// ===========================================================================================================
         //// Methods

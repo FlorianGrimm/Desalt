@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAstTriviaNode.cs" company="Justin Rockwood">
+// <copyright file="ITsAstTriviaNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace TypeScriptAst.Ast
     /// Root interface for all abstract syntax tree (AST) trivia node types. A trivia node is a
     /// comment or whitespace.
     /// </summary>
-    public interface IAstTriviaNode : IEquatable<IAstTriviaNode>
+    public interface ITsAstTriviaNode : IEquatable<ITsAstTriviaNode>
     {
         //// ===========================================================================================================
         //// Properties

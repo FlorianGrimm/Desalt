@@ -15,7 +15,7 @@ namespace TypeScriptAst.Ast.Lexical
     /// <summary>
     /// Represents a TypeScript multi-line comment of the form '/* lines */'.
     /// </summary>
-    internal class TsMultiLineComment : AstTriviaNode, ITsMultiLineComment
+    internal class TsMultiLineComment : TsAstTriviaNode, ITsMultiLineComment
     {
         //// ===========================================================================================================
         //// Constructors
