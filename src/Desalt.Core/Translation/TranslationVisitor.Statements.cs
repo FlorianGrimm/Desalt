@@ -154,13 +154,36 @@ namespace Desalt.Core.Translation
         //// Throw, Try/Catch, and Using Statements
         //// ===========================================================================================================
 
+        private ITsIdentifier _lastCatchIdentifier;
+
         /// <summary>
         /// Called when the visitor visits a ThrowStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsThrowStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitThrowStatement(ThrowStatementSyntax node)
         {
-            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsExpression expression;
+
+            if (node.Expression == null)
+            {
+                if (_lastCatchIdentifier == null)
+                {
+                    _diagnostics.Add(
+                        DiagnosticFactory.InternalError(
+                            "_lastCatchIdentifier should have been set",
+                            node.GetLocation()));
+                    expression = Factory.Identifier("FIXME");
+                }
+                else
+                {
+                    expression = _lastCatchIdentifier;
+                }
+            }
+            else
+            {
+                expression = (ITsExpression)Visit(node.Expression).Single();
+            }
+
             ITsThrowStatement translated = Factory.Throw(expression);
             yield return translated;
         }
@@ -182,18 +205,30 @@ namespace Desalt.Core.Translation
             bool hasCatch = node.Catches.Count > 0;
             CatchClauseSyntax catchClause = node.Catches[0];
             ITsIdentifier catchParameter = null;
-            if (hasCatch && catchClause.Declaration != null)
+            if (hasCatch)
             {
+                CatchDeclarationSyntax declaration = catchClause.Declaration;
+
                 // C# can have `catch (Exception)` without an identifier, but we need one in
                 // TypeScript, so generate a placeholder if necessary
-                if (catchClause.Declaration.Identifier.IsKind(SyntaxKind.None))
+                if (declaration?.Identifier.IsKind(SyntaxKind.None) == true)
                 {
                     catchParameter = Factory.Identifier("e");
                 }
-                else
+                else if (declaration != null)
                 {
-                    catchParameter = Factory.Identifier(catchClause.Declaration.Identifier.Text);
+                    catchParameter = Factory.Identifier(declaration.Identifier.Text);
                 }
+                // C# can have plain 'throw;' statements, but TypeScript cannot, so check for this
+                // case and generate a placeholder if necessary
+                else if (catchClause.Block.Statements.OfType<ThrowStatementSyntax>()
+                    .Any(throwSyntax => throwSyntax.Expression == null))
+                {
+                    catchParameter = Factory.Identifier("e");
+                }
+
+                // cache this identifier temporarily since VisitThrowStatement will need it
+                _lastCatchIdentifier = catchParameter;
             }
 
             var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
@@ -220,6 +255,9 @@ namespace Desalt.Core.Translation
             {
                 translated = Factory.Try(tryBlock);
             }
+
+            // reset this temporary variable
+            _lastCatchIdentifier = null;
 
             yield return translated;
         }
