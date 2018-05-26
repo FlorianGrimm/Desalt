@@ -57,6 +57,7 @@ namespace Desalt.Core.CompilerStages
                         "MetricsController.cs",
                         "MetricsLogger.cs",
                         "MiscUtil.cs",
+                        "NavigationMetricsCollector.cs",
                         "ScriptEx.cs",
                         "Utility.cs",
                         "WindowHelper.cs"))
