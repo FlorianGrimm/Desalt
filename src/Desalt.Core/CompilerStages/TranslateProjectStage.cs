@@ -60,6 +60,7 @@ namespace Desalt.Core.CompilerStages
                         "NavigationMetricsCollector.cs",
                         "ScriptEx.cs",
                         "Utility.cs",
+                        "WindowAppender.cs",
                         "WindowHelper.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)
