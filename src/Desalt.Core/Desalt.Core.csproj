@@ -169,6 +169,7 @@
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
     <Compile Include="Translation\TranslationVisitor.Expressions.cs" />
+    <Compile Include="Translation\TranslationVisitor.Functions.cs" />
     <Compile Include="Translation\TranslationVisitor.Statements.cs" />
     <Compile Include="Translation\TypeTranslator.cs" />
     <Compile Include="Utility\ExceptionFactory.cs" />
