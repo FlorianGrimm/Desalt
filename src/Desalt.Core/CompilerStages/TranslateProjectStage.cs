@@ -49,14 +49,19 @@ namespace Desalt.Core.CompilerStages
                 .Where(
                     context => context.Document.Name.IsOneOf(
                         "BaseLogAppender.cs",
+                        "BrowserSupport.cs",
                         "ConsoleLogAppender.cs",
+                        "ErrorTrace.cs",
                         "ILogAppender.cs",
                         "LayoutMetrics.cs",
                         "Logger.cs",
                         "MetricsController.cs",
+                        "MetricsLogger.cs",
                         "MiscUtil.cs",
+                        "NavigationMetricsCollector.cs",
                         "ScriptEx.cs",
                         "Utility.cs",
+                        "WindowAppender.cs",
                         "WindowHelper.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)

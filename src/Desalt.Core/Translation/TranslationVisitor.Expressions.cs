@@ -21,6 +21,10 @@ namespace Desalt.Core.Translation
 
     internal sealed partial class TranslationVisitor
     {
+        //// ===========================================================================================================
+        //// Literal Expressions
+        //// ===========================================================================================================
+
         /// <summary>
         /// Called when the visitor visits a ThisExpressionSyntax node.
         /// </summary>
@@ -80,6 +84,10 @@ namespace Desalt.Core.Translation
             return Enumerable.Empty<ITsAstNode>();
         }
 
+        //// ===========================================================================================================
+        //// Parenthesized, Cast, and TypeOf Expressions
+        //// ===========================================================================================================
+
         /// <summary>
         /// Called when the visitor visits a ParenthesizedExpressionSyntax node.
         /// </summary>
@@ -123,6 +131,10 @@ namespace Desalt.Core.Translation
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
             yield return translated;
         }
+
+        //// ===========================================================================================================
+        //// Identifiers and Member Names
+        //// ===========================================================================================================
 
         /// <summary>
         /// Called when the visitor visits a PredefinedTypeSyntax node.
@@ -246,38 +258,9 @@ namespace Desalt.Core.Translation
             return Visit(node.Value);
         }
 
-        /// <summary>
-        /// Called when the visitor visits a InvocationExpressionSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsCallExpression"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
-        {
-            var leftSide = (ITsExpression)Visit(node.Expression).Single();
-            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
-
-            // if the node's left side expression is a method or a constructor, then it will have
-            // already been translated and the [InlineCode] would have already been applied - we
-            // shouldn't do it twice because it will be wrong the second time.
-            bool hasLeftSideAlreadyBeenTranslatedWithInlineCode = node.Expression.Kind()
-                .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
-
-            // see if there's an [InlineCode] entry for the method invocation
-            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode &&
-                _inlineCodeTranslator.TryTranslate(
-                    node.Expression,
-                    leftSide,
-                    arguments,
-                    _diagnostics,
-                    out ITsAstNode translatedNode))
-            {
-                yield return translatedNode;
-            }
-            else
-            {
-                ITsCallExpression translated = Factory.Call(leftSide, arguments);
-                yield return translated;
-            }
-        }
+        //// ===========================================================================================================
+        //// Array and Object Creation Expressions
+        //// ===========================================================================================================
 
         /// <summary>
         /// Called when the visitor visits a ArrayCreationExpressionSyntax node.
@@ -306,7 +289,20 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Type).Single();
-            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+
+            // node.ArgumentList can be null in the case of the following pattern:
+            // var x = new Thing { Prop = value; }
+            ITsArgumentList arguments = Factory.ArgumentList();
+            if (node.ArgumentList != null)
+            {
+                arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+            }
+
+            if (node.Initializer != null)
+            {
+                // TODO - need to support object creation of the form:
+                // var x = new Thing { Prop = value; }
+            }
 
             // see if there's an [InlineCode] entry for the ctor invocation
             if (_inlineCodeTranslator.TryTranslate(
@@ -334,28 +330,6 @@ namespace Desalt.Core.Translation
             var elements =
                 new List<ITsExpression>(node.Initializer.Expressions.SelectMany(Visit).Cast<ITsExpression>());
             ITsArrayLiteral translated = Factory.Array(elements.ToArray());
-            yield return translated;
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a ArgumentListSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsArgumentList"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitArgumentList(ArgumentListSyntax node)
-        {
-            ITsArgument[] arguments = node.Arguments.SelectMany(Visit).Cast<ITsArgument>().ToArray();
-            ITsArgumentList translated = Factory.ArgumentList(arguments);
-            yield return translated;
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a ArgumentSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsArgument"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitArgument(ArgumentSyntax node)
-        {
-            var argumentExpression = (ITsExpression)Visit(node.Expression).Single();
-            ITsArgument translated = Factory.Argument(argumentExpression);
             yield return translated;
         }
 

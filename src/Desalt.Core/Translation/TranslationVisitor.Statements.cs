@@ -154,13 +154,36 @@ namespace Desalt.Core.Translation
         //// Throw, Try/Catch, and Using Statements
         //// ===========================================================================================================
 
+        private ITsIdentifier _lastCatchIdentifier;
+
         /// <summary>
         /// Called when the visitor visits a ThrowStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsThrowStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitThrowStatement(ThrowStatementSyntax node)
         {
-            var expression = (ITsExpression)Visit(node.Expression).Single();
+            ITsExpression expression;
+
+            if (node.Expression == null)
+            {
+                if (_lastCatchIdentifier == null)
+                {
+                    _diagnostics.Add(
+                        DiagnosticFactory.InternalError(
+                            "_lastCatchIdentifier should have been set",
+                            node.GetLocation()));
+                    expression = Factory.Identifier("FIXME");
+                }
+                else
+                {
+                    expression = _lastCatchIdentifier;
+                }
+            }
+            else
+            {
+                expression = (ITsExpression)Visit(node.Expression).Single();
+            }
+
             ITsThrowStatement translated = Factory.Throw(expression);
             yield return translated;
         }
@@ -180,20 +203,32 @@ namespace Desalt.Core.Translation
             }
 
             bool hasCatch = node.Catches.Count > 0;
-            CatchClauseSyntax catchClause = node.Catches[0];
+            CatchClauseSyntax catchClause = hasCatch ? node.Catches[0] : null;
             ITsIdentifier catchParameter = null;
-            if (hasCatch && catchClause.Declaration != null)
+            if (hasCatch)
             {
+                CatchDeclarationSyntax declaration = catchClause.Declaration;
+
                 // C# can have `catch (Exception)` without an identifier, but we need one in
                 // TypeScript, so generate a placeholder if necessary
-                if (catchClause.Declaration.Identifier.IsKind(SyntaxKind.None))
+                if (declaration?.Identifier.IsKind(SyntaxKind.None) == true)
                 {
                     catchParameter = Factory.Identifier("e");
                 }
-                else
+                else if (declaration != null)
                 {
-                    catchParameter = Factory.Identifier(catchClause.Declaration.Identifier.Text);
+                    catchParameter = Factory.Identifier(declaration.Identifier.Text);
                 }
+                // C# can have plain 'throw;' statements, but TypeScript cannot, so check for this
+                // case and generate a placeholder if necessary
+                else if (catchClause.Block.Statements.OfType<ThrowStatementSyntax>()
+                    .Any(throwSyntax => throwSyntax.Expression == null))
+                {
+                    catchParameter = Factory.Identifier("e");
+                }
+
+                // cache this identifier temporarily since VisitThrowStatement will need it
+                _lastCatchIdentifier = catchParameter;
             }
 
             var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
@@ -220,6 +255,9 @@ namespace Desalt.Core.Translation
             {
                 translated = Factory.Try(tryBlock);
             }
+
+            // reset this temporary variable
+            _lastCatchIdentifier = null;
 
             yield return translated;
         }
@@ -410,7 +448,19 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsForStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitForStatement(ForStatementSyntax node)
         {
-            var initializer = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            ITsLexicalDeclaration initializerWithLexicalDeclaration = null;
+            ITsExpression initializer = null;
+            if (node.Declaration != null)
+            {
+                initializerWithLexicalDeclaration = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
+            }
+            else
+            {
+                // translate all of the initializers and create a comma expression from them
+                var initializers = node.Initializers.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+                initializer = initializers.Length == 1 ? initializers[0] : Factory.CommaExpression(initializers);
+            }
+
             var condition = (ITsExpression)Visit(node.Condition).Single();
             var statement = (ITsStatement)Visit(node.Statement).Single();
 
@@ -419,7 +469,10 @@ namespace Desalt.Core.Translation
             ITsExpression incrementor =
                 incrementors.Length == 1 ? incrementors[0] : Factory.CommaExpression(incrementors);
 
-            ITsForStatement translated = Factory.For(initializer, condition, incrementor, statement);
+            ITsForStatement translated = initializerWithLexicalDeclaration != null
+                ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
+                : Factory.For(initializer, condition, incrementor, statement);
+
             yield return translated;
         }
 
@@ -499,50 +552,6 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
         {
             ITsDefaultClause translated = Factory.DefaultClause();
-            yield return translated;
-        }
-
-        //// ===========================================================================================================
-        //// Functions and Methods
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Called when the visitor visits a AnonymousMethodExpressionSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
-        {
-            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
-            var body = (ITsBlockStatement)Visit(node.Block).Single();
-            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body.Statements.ToArray());
-            yield return translated;
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a ParenthesizedLambdaExpressionSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
-        {
-            ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
-            var body = (ITsExpression)Visit(node.Body).Single();
-            ITsArrowFunction translated = Factory.ArrowFunction(callSignature, body);
-            yield return translated;
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a ReturnStatementSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsReturnStatement"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitReturnStatement(ReturnStatementSyntax node)
-        {
-            ITsExpression expression = null;
-            if (node.Expression != null)
-            {
-                expression = (ITsExpression)Visit(node.Expression).Single();
-            }
-
-            ITsReturnStatement translated = Factory.Return(expression);
             yield return translated;
         }
     }
