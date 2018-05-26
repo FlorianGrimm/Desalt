@@ -69,6 +69,19 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a SimpleLambdaExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
+        {
+            ITsIdentifier singleParameterName = Factory.Identifier(node.Parameter.Identifier.ValueText);
+            var body = (ITsExpression)Visit(node.Body).Single();
+
+            ITsArrowFunction translated = Factory.ArrowFunction(singleParameterName, body);
+            yield return translated;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a ParenthesizedLambdaExpressionSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsArrowFunction"/>.</returns>
