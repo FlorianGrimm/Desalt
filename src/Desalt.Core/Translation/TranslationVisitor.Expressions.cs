@@ -289,7 +289,20 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Type).Single();
-            var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+
+            // node.ArgumentList can be null in the case of the following pattern:
+            // var x = new Thing { Prop = value; }
+            ITsArgumentList arguments = Factory.ArgumentList();
+            if (node.ArgumentList != null)
+            {
+                arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
+            }
+
+            if (node.Initializer != null)
+            {
+                // TODO - need to support object creation of the form:
+                // var x = new Thing { Prop = value; }
+            }
 
             // see if there's an [InlineCode] entry for the ctor invocation
             if (_inlineCodeTranslator.TryTranslate(
