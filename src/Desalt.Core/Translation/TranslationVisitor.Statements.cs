@@ -203,7 +203,7 @@ namespace Desalt.Core.Translation
             }
 
             bool hasCatch = node.Catches.Count > 0;
-            CatchClauseSyntax catchClause = node.Catches[0];
+            CatchClauseSyntax catchClause = hasCatch ? node.Catches[0] : null;
             ITsIdentifier catchParameter = null;
             if (hasCatch)
             {
