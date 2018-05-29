@@ -222,7 +222,6 @@ struct S
             await AssertDocumentEntriesInSymbolTable(
                 "class C { private string name; }",
                 new CompilerOptions(
-                    "outPath",
                     renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.PrivateDollarPrefix)),
                 new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.name", "$name"));
@@ -234,7 +233,6 @@ struct S
             await AssertDocumentEntriesInSymbolTable(
                 "class C { private int x; private string name; public string Name { get; } }",
                 new CompilerOptions(
-                    "outPath",
                     renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName)),
                 new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.x", "x"),

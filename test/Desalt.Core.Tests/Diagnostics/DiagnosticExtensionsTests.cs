@@ -25,7 +25,7 @@ namespace Desalt.Core.Tests.Diagnostics
         [TestMethod]
         public void CalculateReportAction_should_throw_on_null_parameters()
         {
-            Action action = () => DiagnosticExtensions.CalculateReportAction(null, new CompilerOptions("out"));
+            Action action = () => DiagnosticExtensions.CalculateReportAction(null, CompilerOptions.Default);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostic");
 
             action = () => DiagnosticExtensions.CalculateReportAction(DiagnosticsTestFactories.CreateDiagnostic(), null);
@@ -37,7 +37,7 @@ namespace Desalt.Core.Tests.Diagnostics
         {
             ReportDiagnostic reportAction = DiagnosticExtensions.CalculateReportAction(
                 DiagnosticsTestFactories.CreateDiagnostic(customTags: new[] { WellKnownDiagnosticTags.NotConfigurable }),
-                new CompilerOptions("out"));
+                CompilerOptions.Default);
 
             reportAction.Should().Be(ReportDiagnostic.Default);
         }
@@ -49,7 +49,7 @@ namespace Desalt.Core.Tests.Diagnostics
                 DiagnosticsTestFactories.CreateDiagnostic(
                     isEnabledByDefault: false,
                     customTags: new[] { WellKnownDiagnosticTags.NotConfigurable }),
-                new CompilerOptions("out"));
+                CompilerOptions.Default);
 
             reportAction.Should().Be(ReportDiagnostic.Suppress);
         }
@@ -69,7 +69,7 @@ namespace Desalt.Core.Tests.Diagnostics
             {
                 ImmutableDictionary<string, ReportDiagnostic> dict = ImmutableDictionary.CreateRange(
                     new[] { new KeyValuePair<string, ReportDiagnostic>("id", reportAction) });
-                var options = new CompilerOptions("out", specificDiagnosticOptions: dict);
+                var options = new CompilerOptions(outputPath: "out", specificDiagnosticOptions: dict);
 
                 DiagnosticExtensions.CalculateReportAction(DiagnosticsTestFactories.CreateDiagnostic(), options).Should().Be(reportAction);
             }
@@ -82,7 +82,7 @@ namespace Desalt.Core.Tests.Diagnostics
 
             for (int i = 1; i < 4; i++)
             {
-                var options = new CompilerOptions("out", warningLevel: (WarningLevel)i);
+                var options = new CompilerOptions(outputPath: "out", warningLevel: (WarningLevel)i);
                 DiagnosticExtensions.CalculateReportAction(informationalWarning, options)
                     .Should()
                     .Be(ReportDiagnostic.Suppress);
@@ -93,7 +93,7 @@ namespace Desalt.Core.Tests.Diagnostics
         public void CalculateReportAction_should_raise_warnings_to_errors_when_GeneralDiagnosticOption_is_Error()
         {
             Diagnostic error = DiagnosticsTestFactories.CreateWarning();
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Error);
+            var options = new CompilerOptions(outputPath: "out", generalDiagnosticOption: ReportDiagnostic.Error);
             DiagnosticExtensions.CalculateReportAction(error, options).Should().Be(ReportDiagnostic.Error);
         }
 
@@ -102,7 +102,7 @@ namespace Desalt.Core.Tests.Diagnostics
             CalculateReportAction_should_not_raise_Info_or_Hidden_to_errors_when_GeneralDiagnosticOption_is_Error()
         {
             Diagnostic info = DiagnosticsTestFactories.CreateDiagnostic(defaultSeverity: DiagnosticSeverity.Info, warningLevel: 4);
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Error);
+            var options = new CompilerOptions(outputPath: "out", generalDiagnosticOption: ReportDiagnostic.Error);
             DiagnosticExtensions.CalculateReportAction(info, options).Should().Be(ReportDiagnostic.Default);
 
             Diagnostic hidden = DiagnosticsTestFactories.CreateDiagnostic(defaultSeverity: DiagnosticSeverity.Hidden, warningLevel: 4);
@@ -113,7 +113,7 @@ namespace Desalt.Core.Tests.Diagnostics
         public void CalculateReportAction_should_suppress_all_warnings_if_GeneralDiagnosticOption_is_Suppress()
         {
             Diagnostic warning = DiagnosticsTestFactories.CreateWarning();
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
+            var options = new CompilerOptions(outputPath: "out", generalDiagnosticOption: ReportDiagnostic.Suppress);
             DiagnosticExtensions.CalculateReportAction(warning, options).Should().Be(ReportDiagnostic.Suppress);
         }
 
@@ -121,7 +121,7 @@ namespace Desalt.Core.Tests.Diagnostics
         public void CalculateReportAction_should_not_suppress_errors_when_GeneralDiagnosticOption_is_Suppress()
         {
             Diagnostic error = DiagnosticsTestFactories.CreateDiagnostic();
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
+            var options = new CompilerOptions(outputPath: "out", generalDiagnosticOption: ReportDiagnostic.Suppress);
             DiagnosticExtensions.CalculateReportAction(error, options).Should().Be(ReportDiagnostic.Default);
         }
 
@@ -183,7 +183,7 @@ namespace Desalt.Core.Tests.Diagnostics
         {
             Location location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());
             var additionalLocations = new[] { Location.Create("file2.cs", new TextSpan(), new LinePositionSpan()), };
-            var customTags = new[] { WellKnownDiagnosticTags.EditAndContinue };
+            string[] customTags = { WellKnownDiagnosticTags.EditAndContinue };
 
             Diagnostic diagnostic = Diagnostic.Create(
                 "id",

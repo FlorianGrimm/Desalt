@@ -17,6 +17,15 @@ namespace Desalt.Core
     public class CompilerOptions
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly CompilerOptions Default = new CompilerOptions(instanceToCopy: null);
+
+        private const WarningLevel DefaultWarningLevel = WarningLevel.Informational;
+        private const ReportDiagnostic DefaultGeneralDiagnosticOption = ReportDiagnostic.Default;
+
+        //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
@@ -24,20 +33,50 @@ namespace Desalt.Core
         /// Default constructor contains the default values of all of the options.
         /// </summary>
         public CompilerOptions(
-            string outputPath,
-            WarningLevel warningLevel = WarningLevel.Informational,
-            ReportDiagnostic generalDiagnosticOption = ReportDiagnostic.Default,
+            string outputPath = null,
+            WarningLevel warningLevel = DefaultWarningLevel,
+            ReportDiagnostic generalDiagnosticOption = DefaultGeneralDiagnosticOption,
             ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
             RenameRules renameRules = null,
-            string symbolTableOverridesFilePath = null)
+            SymbolTableOverrides symbolTableOverrides = null)
+            : this(
+                instanceToCopy: null,
+                outputPath: outputPath,
+                warningLevel: warningLevel,
+                generalDiagnosticOption: generalDiagnosticOption,
+                specificDiagnosticOptions: specificDiagnosticOptions,
+                renameRules: renameRules,
+                symbolTableOverrides: symbolTableOverrides)
         {
-            OutputPath = outputPath;
-            WarningLevel = warningLevel;
-            GeneralDiagnosticOption = generalDiagnosticOption;
-            SpecificDiagnosticOptions =
-                specificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
-            RenameRules = renameRules ?? RenameRules.Default;
-            SymbolTableOverridesFilePath = symbolTableOverridesFilePath;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CompilerOptions"/> class. Values are set using the
+        /// following precedence:
+        /// * The named parameter, if specified
+        /// * Otherwise, the value of <paramref name="instanceToCopy"/>, if specified
+        /// * Otherwise, the default value of the parameter's type
+        /// </summary>
+        private CompilerOptions(
+            CompilerOptions instanceToCopy = null,
+            string outputPath = null,
+            WarningLevel? warningLevel = null,
+            ReportDiagnostic? generalDiagnosticOption = null,
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
+            RenameRules renameRules = null,
+            SymbolTableOverrides symbolTableOverrides = null)
+        {
+            OutputPath = outputPath ?? instanceToCopy?.OutputPath ?? string.Empty;
+            WarningLevel = warningLevel ?? instanceToCopy?.WarningLevel ?? DefaultWarningLevel;
+            GeneralDiagnosticOption = generalDiagnosticOption ??
+                instanceToCopy?.GeneralDiagnosticOption ?? DefaultGeneralDiagnosticOption;
+
+            SpecificDiagnosticOptions = specificDiagnosticOptions ??
+                instanceToCopy?.SpecificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
+
+            RenameRules = renameRules ?? instanceToCopy?.RenameRules ?? RenameRules.Default;
+            SymbolTableOverrides = symbolTableOverrides ??
+                instanceToCopy?.SymbolTableOverrides ?? SymbolTableOverrides.Empty;
         }
 
         //// ===========================================================================================================

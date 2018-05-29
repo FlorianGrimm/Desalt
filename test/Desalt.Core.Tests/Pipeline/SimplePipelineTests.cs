@@ -81,7 +81,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new IntToStringStage());
             try
             {
-                await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
+                await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             }
             catch (InvalidOperationException e)
             {
@@ -100,7 +100,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new IntToStringStage());
             pipeline.AddStage(new StringToCharArrayStage());
 
-            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
+            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Result.Should().Equal('1', '2', '3');
         }
 
@@ -113,7 +113,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
 
             const string inputString = "Input";
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString, new CompilerOptions("out"));
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString, CompilerOptions.Default);
             result.Result.Should().BeSameAs(inputString);
         }
 
@@ -171,7 +171,7 @@ namespace Desalt.Core.Tests.Pipeline
                                     warningLevel: 1)
                             }))));
 
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(123, new CompilerOptions("out"));
+            IExtendedResult<string> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Success.Should().BeFalse();
             result.Diagnostics.Select(m => m.ToString())
                 .Should()
