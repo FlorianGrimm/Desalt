@@ -1,7 +1,0 @@
-﻿{
-  "overrides": {
-    "Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)": {
-      "inlineCode": "({a}) || ({b})"
-    }
-  }
-}

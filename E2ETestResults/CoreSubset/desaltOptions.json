@@ -1,0 +1,18 @@
+﻿{
+  "outputPath": ".",
+  "warningLevel": "informational",
+  "generalDiagnosticOption": "default",
+  "specificDiagnosticOptions": {
+    "DSC1003": "suppress",
+    "DSC1005": "suppress",
+    "DSC1012": "suppress"
+  },
+  "renameRules": {
+    "fieldRule": "dollarPrefixOnlyForDuplicateName"
+  },
+  "symbolTableOverrides": {
+    "Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)": {
+      "inlineCode": "({a}) || ({b})"
+    }
+  }
+}

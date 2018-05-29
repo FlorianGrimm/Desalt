@@ -9,11 +9,7 @@ namespace Desalt.Core
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.IO;
     using System.Linq;
-    using System.Text;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
 
     /// <summary>
     /// Contains overrides to the internal symbol tables for specific symbols.
@@ -23,14 +19,18 @@ namespace Desalt.Core
     /// change the source code. Serializing and deserializing to a JSON file is supported to allow
     /// specifying a file name on the command line.
     /// </remarks>
-    [JsonObject(MemberSerialization.OptIn)]
     public sealed class SymbolTableOverrides
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly SymbolTableOverrides Empty = new SymbolTableOverrides();
+
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        [JsonProperty]
         public ImmutableDictionary<string, SymbolTableOverride> Overrides { get; }
 
         public ImmutableDictionary<string, string> InlineCodeOverrides { get; }
@@ -45,7 +45,6 @@ namespace Desalt.Core
         {
         }
 
-        [JsonConstructor]
         public SymbolTableOverrides(ImmutableDictionary<string, SymbolTableOverride> overrides)
         {
             Overrides = overrides ?? ImmutableDictionary<string, SymbolTableOverride>.Empty;
@@ -59,69 +58,6 @@ namespace Desalt.Core
                 .Where(pair => pair.Value.ScriptName != null)
                 .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ScriptName))
                 .ToImmutableDictionary();
-        }
-
-        //// ===========================================================================================================
-        //// Methods
-        //// ===========================================================================================================
-
-        public static SymbolTableOverrides Deserialize(string path)
-        {
-            using (var stream = new FileStream(path, FileMode.Open))
-            {
-                return Deserialize(stream);
-            }
-        }
-
-        public static SymbolTableOverrides Deserialize(Stream stream)
-        {
-            using (var reader = new StreamReader(
-                stream,
-                Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: true,
-                bufferSize: 4096,
-                leaveOpen: true))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                var serializer = CreateSerializer();
-                var deserialized = serializer.Deserialize<SymbolTableOverrides>(jsonReader);
-                return deserialized;
-            }
-        }
-
-        public void Serialize(string path)
-        {
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                Serialize(stream);
-            }
-        }
-
-        public void Serialize(Stream stream)
-        {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 4096, leaveOpen: true))
-            using (var jsonWriter = new JsonTextWriter(writer))
-            {
-                var serializer = CreateSerializer();
-                serializer.Serialize(jsonWriter, this);
-            }
-        }
-
-        private static JsonSerializer CreateSerializer()
-        {
-            var contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy(),
-            };
-
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = contractResolver,
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-            };
-
-            return JsonSerializer.Create(settings);
         }
     }
 

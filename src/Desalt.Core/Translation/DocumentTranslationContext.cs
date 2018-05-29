@@ -56,6 +56,16 @@ namespace Desalt.Core.Translation
         public SemanticModel SemanticModel { get; }
 
         /// <summary>
+        /// Gets the output path for this document translation context.
+        /// </summary>
+        public string OutputPath =>
+            Options.OutputPath ??
+            Path.GetDirectoryName(Document.Project.OutputFilePath) ??
+            Path.GetDirectoryName(Document.Project.FilePath) ??
+            throw new InvalidOperationException(
+                $"Cannot determine the output path for the TypeScript file: {Document.Name}");
+
+        /// <summary>
         /// Gets the output path for the translated TypeScript file.
         /// </summary>
         public string TypeScriptFilePath
@@ -67,7 +77,7 @@ namespace Desalt.Core.Translation
                 relativeDir = Path.GetDirectoryName(relativeDir) ?? ".";
                 string tsFileName = Path.GetFileNameWithoutExtension(docPath) + ".ts";
 
-                return Path.GetFullPath(Path.Combine(Options.OutputPath, relativeDir, tsFileName));
+                return Path.GetFullPath(Path.Combine(OutputPath, relativeDir, tsFileName));
             }
         }
 

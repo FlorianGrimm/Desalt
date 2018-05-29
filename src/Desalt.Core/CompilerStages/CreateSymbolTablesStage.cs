@@ -7,13 +7,11 @@
 
 namespace Desalt.Core.CompilerStages
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
@@ -45,22 +43,8 @@ namespace Desalt.Core.CompilerStages
         {
             var diagnostics = new List<Diagnostic>();
 
-            // create the symbol table overrides by reading in the provided JSON file
-            var overrides = new SymbolTableOverrides();
-            if (options.SymbolTableOverridesFilePath != null)
-            {
-                try
-                {
-                    overrides = SymbolTableOverrides.Deserialize(options.SymbolTableOverridesFilePath);
-                }
-                catch (Exception e)
-                {
-                    diagnostics.Add(
-                        DiagnosticFactory.InvalidSymbolTableOverridesFile(
-                            options.SymbolTableOverridesFilePath,
-                            e.Message));
-                }
-            }
+            // get the symbol table overrides
+            SymbolTableOverrides overrides = options.SymbolTableOverrides;
 
             // since most of the symbol tables will need references to types directly referenced in
             // the documents and types in referenced assemblies, compute them once and then pass them
