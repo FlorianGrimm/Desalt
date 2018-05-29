@@ -16,11 +16,8 @@ namespace Desalt.Core.Diagnostics
     internal partial class DiagnosticFactory
     {
         //// ===========================================================================================================
-        //// Member Variables
+        //// Enums
         //// ===========================================================================================================
-
-        private const string IdPrefix = "DSC";
-        private const string TranslationCategory = "Desalt.Translation";
 
         public enum DiagnosticId
         {
@@ -130,9 +127,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(
                 1017,
-                "Invalid symbol table overrides file",
-                "Error in reading the symbol table overrides file in '{0}': {1}")]
-            InvalidSymbolTableOverridesFile,
+                "Invalid options file",
+                "Error in reading the options file in '{0}': {1}")]
+            InvalidOptionsFile,
         }
 
         //// ===========================================================================================================
@@ -327,11 +324,11 @@ namespace Desalt.Core.Diagnostics
         }
 
         /// <summary>
-        /// Returns a diagnostic of the form "Error in reading the symbol table overrides file in '{0}': {1}".
+        /// Returns a diagnostic of the form "Error in reading the options file in '{0}': {1}".
         /// </summary>
         /// <param name="filePath">The file path of the invalid JSON file.</param>
         /// <param name="errorMessage">The error when reading the file.</param>
-        public static Diagnostic InvalidSymbolTableOverridesFile(string filePath, string errorMessage) =>
-            Create(DiagnosticId.InvalidSymbolTableOverridesFile, Location.None, filePath, errorMessage);
+        public static Diagnostic InvalidOptionsFile(string filePath, string errorMessage) =>
+            Create(DiagnosticId.InvalidOptionsFile, Location.None, filePath, errorMessage);
     }
 }

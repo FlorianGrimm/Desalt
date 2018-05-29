@@ -43,8 +43,6 @@ namespace Desalt.Core.CompilerStages
         {
             await Task.Yield();
 
-            Directory.CreateDirectory(options.OutputPath);
-
             var results = input
                 .Where(
                     context => context.Document.Name.IsOneOf(
@@ -86,6 +84,9 @@ namespace Desalt.Core.CompilerStages
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken)
         {
+            // create the output directory tree if it's not already present
+            Directory.CreateDirectory(context.OutputPath);
+
             // ----------------------------------------------------
             // TEMP - copy the original .cs file for easy comparing
             // get the relative path of the file
