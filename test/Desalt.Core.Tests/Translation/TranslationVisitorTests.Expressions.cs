@@ -9,7 +9,6 @@ namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public partial class TranslationVisitorTests
@@ -102,19 +101,6 @@ class Logger {
                 SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
-        public async Task Assignment_expressions()
-        {
-            foreach (string op in new[] { "=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "&=", "^=", "|=" })
-            {
-                string code = $"class C {{ void Method() {{ int x = 1; x = x {op} 123; }} }}";
-                string expected =
-                    $"class C {{\n  private method(): void {{\n    let x: number = 1;\n    x = x {op} 123;\n  }}\n}}\n";
-
-                await AssertTranslation(code, expected);
-            }
-        }
-
         //// ===========================================================================================================
         //// Unary and Binary Expressions
         //// ===========================================================================================================
@@ -122,72 +108,117 @@ class Logger {
         [TestMethod]
         public async Task Prefix_unary_expressions()
         {
-            string code, expected;
-
-            foreach (string op in new[] { "++", "--", "+", "-", "~" })
-            {
-                code = $"int x = 123; x = {op}x;";
-                expected =
-                    $"let x: number = 123;\n    x = {op}x;";
-
-                await AssertTranslationWithClassCAndMethod(code, expected);
-            }
-
-            code = $"class C {{ void Method() {{ bool x = !true; }} }}";
-            expected = $"class C {{\n  private method(): void {{\n    let x: boolean = !true;\n  }}\n}}\n";
-
-            await AssertTranslation(code, expected);
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int x = 123;
+    x = +x;
+    x = -x;
+    x = ~x;
+    x = ++x;
+    x = --x;
+    bool y = !true;",
+                @"
+    let x: number = 123;
+    x = +x;
+    x = -x;
+    x = ~x;
+    x = ++x;
+    x = --x;
+    let y: boolean = !true;
+");
         }
 
         [TestMethod]
         public async Task Postfix_unary_expressions()
         {
-            foreach (string op in new[] { "++", "--" })
-            {
-                string code = $"int x = 123; x = x{op};";
-                string expected =
-                    $"let x: number = 123;\n    x = x{op};";
-
-                await AssertTranslationWithClassCAndMethod(code, expected);
-            }
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int x = 123;
+    x = x++;
+    x = x--;
+",
+                @"
+    let x: number = 123;
+    x = x++;
+    x = x--;
+");
         }
 
         [TestMethod]
         public async Task Binary_expressions_on_numbers()
         {
-            foreach (string op in new[] { "*", "/", "%", "+", "-", "<<", ">>", "&", "^", "|" })
-            {
-                string code = $"int x = 1; int y = 2; x = x {op} y;";
-                string expected = $"let x: number = 1;\n    let y: number = 2;\n    x = x {op} y;";
-
-                await AssertTranslationWithClassCAndMethod(code, expected);
-            }
+            await AssertTranslationWithClassCAndMethod(@"
+    int x = 1;
+    int y = 2;
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x = x << y;
+    x = x >> y;
+    x = x & y;
+    x = x ^ y;
+    x = x | y;
+",
+                @"
+    let x: number = 1;
+    let y: number = 2;
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x = x << y;
+    x = x >> y;
+    x = x & y;
+    x = x ^ y;
+    x = x | y;
+");
         }
 
         [TestMethod]
         public async Task Binary_expressions_on_comparisons()
         {
-            foreach (string op in new[] { "<", ">", "<=", ">=", "==", "!=" })
-            {
-                string code = $"int x = 1; int y = 2; bool z = x {op} y;";
-
-                string expectedOp = op == "==" ? "===" : op == "!=" ? "!==" : op;
-                string expected = $"let x: number = 1;\n    let y: number = 2;\n    let z: boolean = x {expectedOp} y;";
-
-                await AssertTranslationWithClassCAndMethod(code, expected);
-            }
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int x = 1;
+    int y = 2;
+    bool z = x < y;
+    z = x > y;
+    z = x <= y;
+    z = x >= y;
+    z = x == y;
+    z = x != y;
+",
+                @"
+    let x: number = 1;
+    let y: number = 2;
+    let z: boolean = x < y;
+    z = x > y;
+    z = x <= y;
+    z = x >= y;
+    z = x === y;
+    z = x !== y;
+");
         }
 
         [TestMethod]
         public async Task Binary_expressions_on_booleans()
         {
-            foreach (string op in new[] { "&&", "||" })
-            {
-                string code = $"bool x = true; bool y = false; x = x {op} y;";
-                string expected = $"let x: boolean = true;\n    let y: boolean = false;\n    x = x {op} y;";
-
-                await AssertTranslationWithClassCAndMethod(code, expected);
-            }
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    bool x = true;
+    bool y = false;
+    x = x && y;
+    x = x || y;
+",
+                @"
+    let x: boolean = true;
+    let y: boolean = false;
+    x = x && y;
+    x = x || y;
+");
         }
 
         [TestMethod]
@@ -211,6 +242,40 @@ class C {
     return x ? y : z;
   }
 }
+");
+        }
+
+        [TestMethod]
+        public async Task Assignment_expressions()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    int x = 1;
+    x = x;
+    x *= x;
+    x /= x;
+    x %= x;
+    x += x;
+    x -= x;
+    x <<= x;
+    x >>= x;
+    x &= x;
+    x ^= x;
+    x |= x;
+",
+                @"
+    let x: number = 1;
+    x = x;
+    x *= x;
+    x /= x;
+    x %= x;
+    x += x;
+    x -= x;
+    x <<= x;
+    x >>= x;
+    x &= x;
+    x ^= x;
+    x |= x;
 ");
         }
 

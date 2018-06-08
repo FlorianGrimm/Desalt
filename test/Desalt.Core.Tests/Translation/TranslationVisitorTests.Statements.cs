@@ -9,7 +9,6 @@ namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.Translation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     public partial class TranslationVisitorTests
@@ -169,7 +168,8 @@ class C implements IDisposable {
 
   public dispose(): void { }
 }
-", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+",
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -212,7 +212,8 @@ class C implements IDisposable {
 
   public dispose(): void { }
 }
-", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+",
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -278,7 +279,8 @@ class C implements IDisposable {
     return this;
   }
 }
-", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+",
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }
