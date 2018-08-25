@@ -35,30 +35,29 @@ namespace Desalt.Core.SymbolTables
             ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>>.Empty;
 
         private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
-            SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
-            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-            SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            memberOptions:
             SymbolDisplayMemberOptions.IncludeContainingType |
             SymbolDisplayMemberOptions.IncludeParameters |
             SymbolDisplayMemberOptions.IncludeExplicitInterface,
-            SymbolDisplayDelegateStyle.NameOnly,
-            SymbolDisplayExtensionMethodStyle.StaticMethod,
+            delegateStyle: SymbolDisplayDelegateStyle.NameOnly,
+            extensionMethodStyle: SymbolDisplayExtensionMethodStyle.StaticMethod,
+            parameterOptions:
             SymbolDisplayParameterOptions.IncludeName |
             SymbolDisplayParameterOptions.IncludeType |
             SymbolDisplayParameterOptions.IncludeParamsRefOut,
-            SymbolDisplayPropertyStyle.NameOnly,
-            SymbolDisplayLocalOptions.IncludeType,
-            SymbolDisplayKindOptions.None,
-            SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+            propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+            localOptions: SymbolDisplayLocalOptions.IncludeType,
+            kindOptions: SymbolDisplayKindOptions.None,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
-
-        public static IEqualityComparer<KeyValuePair<string, T>> GetKeyValueComparer<T>() =>
-            new StringKeyValuePairComparer<T>();
 
         /// <summary>
         /// Finds a Saltarelle attribute attached to a specified symbol.
@@ -74,7 +73,7 @@ namespace Desalt.Core.SymbolTables
         /// </returns>
         public static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
         {
-            SymbolDisplayFormat format = new SymbolDisplayFormat(
+            var format = new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
             string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
@@ -123,7 +122,7 @@ namespace Desalt.Core.SymbolTables
         {
             ImmutableArray<INamedTypeSymbol> FetchScriptableTypes(IAssemblySymbol _)
             {
-                ScriptableTypesSymbolVisitor visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
+                var visitor = new ScriptableTypesSymbolVisitor(cancellationToken);
                 visitor.Visit(assemblySymbol);
                 return visitor.ScriptableTypeSymbols;
             }
