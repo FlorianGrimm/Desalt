@@ -81,7 +81,7 @@ namespace Desalt.Core.SymbolTables
 
             // process the externally referenced types
             var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
-                .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, renameRules))
+                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, renameRules))
                 .ToImmutableArray();
 
             // process all of the types and members in referenced assemblies
@@ -90,7 +90,7 @@ namespace Desalt.Core.SymbolTables
                 .Select(
                     symbol => new KeyValuePair<ISymbol, Lazy<string>>(
                         symbol,
-                        new Lazy<string>(() => GetScriptNameForSymbol(symbol, renameRules), isThreadSafe: true)))
+                        new Lazy<string>(() => DiscoverScriptNameForSymbol(symbol, renameRules), isThreadSafe: true)))
                 .ToImmutableArray();
 
             return new ScriptNameSymbolTable(
@@ -116,35 +116,52 @@ namespace Desalt.Core.SymbolTables
                 .Where(symbol => symbol.TypeKind != TypeKind.Delegate)
 
                 // and get all of the members of the type that can have a script name
-                .SelectMany(symbol => GetScriptNameOnTypeAndMembers(symbol, context.Options.RenameRules));
+                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, context.Options.RenameRules));
         }
 
         private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
             typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
 
-        private static IEnumerable<KeyValuePair<ISymbol, string>> GetScriptNameOnTypeAndMembers(
+        private static IEnumerable<KeyValuePair<ISymbol, string>> DiscoverScriptNameOnTypeAndMembers(
             ITypeSymbol typeSymbol,
             RenameRules renameRules)
         {
             return DiscoverTypeAndMembers(typeSymbol)
                 .Select(
-                    symbol => new KeyValuePair<ISymbol, string>(symbol, GetScriptNameForSymbol(symbol, renameRules)));
+                    symbol => new KeyValuePair<ISymbol, string>(
+                        symbol,
+                        DiscoverScriptNameForSymbol(symbol, renameRules)));
         }
 
-        private static string GetScriptNameForSymbol(ISymbol symbol, RenameRules renameRules)
+        /// <summary>
+        /// Determines the name a symbol should have in the generated script.
+        /// </summary>
+        /// <param name="symbol">The symbol for which to discover the script name.</param>
+        /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
+        /// <returns>The name the specified symbol should have in the generated script.</returns>
+        private static string DiscoverScriptNameForSymbol(ISymbol symbol, RenameRules renameRules)
         {
             string scriptName;
 
-            if (symbol is ITypeSymbol typeSymbol)
+            switch (symbol)
             {
-                scriptName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
-                    ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
-                    : FindScriptName(typeSymbol) ?? typeSymbol.Name;
-            }
-            else
-            {
-                scriptName = FindFieldScriptName(symbol, renameRules.FieldRule) ??
-                    FindScriptName(symbol) ?? ToCamelCase(symbol.Name);
+                case ITypeSymbol typeSymbol:
+                    scriptName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
+                        ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
+                        : DetermineScriptNameFromAttributes(typeSymbol) ?? typeSymbol.Name;
+                    break;
+
+                case IFieldSymbol fieldSymbol:
+                    scriptName = DetermineFieldScriptName(fieldSymbol, renameRules.FieldRule);
+                    break;
+
+                case IMethodSymbol methodSymbol:
+                    scriptName = DetermineMethodScriptName(methodSymbol);
+                    break;
+
+                default:
+                    scriptName = DetermineScriptNameFromAttributes(symbol) ?? ToCamelCase(symbol.Name);
+                    break;
             }
 
             return scriptName;
@@ -189,20 +206,35 @@ namespace Desalt.Core.SymbolTables
 
         private static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
-        private static string FindScriptName(ISymbol symbol)
+        /// <summary>
+        /// Attempts to find the script name for the specified symbol based on attributes defined on
+        /// the symbol, containing type, or containing namespace.
+        /// </summary>
+        /// <param name="symbol">The symbol to determine naming for.</param>
+        /// <returns>
+        /// The name to use in the generated script for the symbol, or null if there are no
+        /// attributes that control the naming.
+        /// </returns>
+        private static string DetermineScriptNameFromAttributes(ISymbol symbol)
         {
-            // use [ScriptName] if available (even if there's also a [PreserveCase])
-            string scriptName = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
-            if (scriptName != null)
-            {
-                return scriptName;
-            }
+            // Use the following precedence if there are multiple attributes:
+            // [ScriptAlias]
+            // [ScriptName]
+            // [PreserveCase]
+            // [PreserveMemberCase]
 
             // use [ScriptAlias] if available
             string scriptAlias = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
             if (scriptAlias != null)
             {
                 return scriptAlias;
+            }
+
+            // use [ScriptName] if available (even if there's also a [PreserveCase])
+            string scriptName = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
+            if (scriptName != null)
+            {
+                return scriptName;
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
@@ -237,13 +269,14 @@ namespace Desalt.Core.SymbolTables
             return null;
         }
 
-        private static string FindFieldScriptName(ISymbol member, FieldRenameRule renameRule)
+        /// <summary>
+        /// Determines the name that a field should have in the generated code.
+        /// </summary>
+        /// <param name="fieldSymbol">The field for which to determine the script name.</param>
+        /// <param name="renameRule">Options on how to rename fields.</param>
+        /// <returns>The name the field should have in the generated code.</returns>
+        private static string DetermineFieldScriptName(IFieldSymbol fieldSymbol, FieldRenameRule renameRule)
         {
-            if (member.Kind != SymbolKind.Field)
-            {
-                return null;
-            }
-
             string scriptName;
 
             switch (renameRule)
@@ -251,22 +284,31 @@ namespace Desalt.Core.SymbolTables
                 // ReSharper disable once RedundantCaseLabel
                 case FieldRenameRule.LowerCaseFirstChar:
                 default:
-                    scriptName = FindScriptName(member) ?? ToCamelCase(member.Name);
+                    scriptName = DetermineScriptNameFromAttributes(fieldSymbol) ?? ToCamelCase(fieldSymbol.Name);
                     break;
 
                 // add a $ prefix if the field is private OR when there's a duplicate name
-                case FieldRenameRule.PrivateDollarPrefix when member.DeclaredAccessibility == Accessibility.Private:
-                case FieldRenameRule.DollarPrefixOnlyForDuplicateName when IsDuplicateName(member):
-                    scriptName = FindScriptName(member) ?? $"${ToCamelCase(member.Name)}";
+                case FieldRenameRule.PrivateDollarPrefix
+                    when fieldSymbol.DeclaredAccessibility == Accessibility.Private:
+                case FieldRenameRule.DollarPrefixOnlyForDuplicateName when HasDuplicateFieldName(fieldSymbol):
+                    scriptName = DetermineScriptNameFromAttributes(fieldSymbol) ?? $"${ToCamelCase(fieldSymbol.Name)}";
                     break;
             }
 
             return scriptName;
         }
 
-        private static bool IsDuplicateName(ISymbol fieldSymbol)
+        /// <summary>
+        /// Returns a value indicating whether the specified field symbol has a duplicate script
+        /// name. For example, a public field named "Field" will be named "field" by default in the
+        /// generated script. Another field named "Other" might be marked with a
+        /// [ScriptName("field")], in which case there's a conflict.
+        /// </summary>
+        /// <param name="fieldSymbol">The field to search for.</param>
+        /// <returns>True if there is a duplicate script name; otherwise, false.</returns>
+        private static bool HasDuplicateFieldName(ISymbol fieldSymbol)
         {
-            string fieldScriptName = FindScriptName(fieldSymbol) ?? ToCamelCase(fieldSymbol.Name);
+            string fieldScriptName = DetermineScriptNameFromAttributes(fieldSymbol) ?? ToCamelCase(fieldSymbol.Name);
 
             var query = from member in fieldSymbol.ContainingType.GetMembers()
 
@@ -274,13 +316,94 @@ namespace Desalt.Core.SymbolTables
                         where !Equals(member, fieldSymbol)
 
                         // find the potential script name of the member
-                        let scriptName = FindScriptName(member) ?? ToCamelCase(member.Name)
+                        let scriptName = DetermineScriptNameFromAttributes(member) ?? ToCamelCase(member.Name)
 
                         // and only take the ones that are equal to the field's script name
                         where string.Equals(scriptName, fieldScriptName, StringComparison.Ordinal)
                         select member;
 
             return query.Any();
+        }
+
+        /// <summary>
+        /// Determines the name that a method should have in the generated code.
+        /// </summary>
+        /// <param name="methodSymbol">The method for which to determine the script name.</param>
+        /// <returns>The name the method shoudl have in the generated code.</returns>
+        private static string DetermineMethodScriptName(IMethodSymbol methodSymbol)
+        {
+            string methodName = methodSymbol.Name;
+            string defaultName = ToCamelCase(methodName);
+
+            // if the symbol has any attributes that control naming, use those
+            string attributedName = DetermineScriptNameFromAttributes(methodSymbol);
+            if (attributedName != null)
+            {
+                return attributedName;
+            }
+
+            // check for [Imported] since we don't rename overloads on imported members
+            bool imported = SymbolTableUtils.FindSaltarelleAttribute(methodSymbol.ContainingType, "Imported") != null;
+            if (imported)
+            {
+                return defaultName;
+            }
+
+            // check for [AlternateSignature] and then find the name of the other method
+            if (SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") != null)
+            {
+                IMethodSymbol otherMethod = methodSymbol.ContainingType.GetMembers()
+                    .OfType<IMethodSymbol>()
+                    .Single(
+                        m => !Equals(m, methodSymbol) &&
+                            m.IsStatic == methodSymbol.IsStatic &&
+                            m.Name == methodSymbol.Name &&
+                            SymbolTableUtils.FindSaltarelleAttribute(m, "AlternateSignature") == null);
+                string scriptName = DetermineMethodScriptName(otherMethod);
+                return scriptName;
+            }
+
+            // check for overloads, since those need to be renamed with a $1, $2, etc. suffix
+            if (!CanBeOverloaded(methodSymbol))
+            {
+                return defaultName;
+            }
+
+            // overloads are only renamed if the script name will be the same, so first run through
+            // all of the methods and determine their script names
+            var allMethodsWithThisScriptName =
+               from m in methodSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>()
+               where CanBeOverloaded(m)
+
+               // only look at static/instance methods (the same as what this method is), since it's
+               // fine to have a static method and an instance method that have the same script name
+               where m.IsStatic == methodSymbol.IsStatic
+
+               // take out [AlternateSignature] methods since they use the name of the implementation method
+               where SymbolTableUtils.FindSaltarelleAttribute(m, "AlternateSignature") == null
+
+               let sname = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
+               where sname.Equals(defaultName, StringComparison.Ordinal)
+               select m;
+
+            // find the index of this method (according to the order it was declared)
+            int index = allMethodsWithThisScriptName.ToImmutableArray().IndexOf(methodSymbol);
+
+            // if we're the first method in the declared overloads, then we keep our name (using the
+            // default camelCase rename) and the other overloaded methods need to add suffixes
+            if (index == 0)
+            {
+                return defaultName;
+            }
+
+            // if it's overloaded, just assign it a suffix of $x where x is the index of when it was declared
+            return ToCamelCase($"{methodName}${index}");
+        }
+
+        private static bool CanBeOverloaded(IMethodSymbol methodSymbol)
+        {
+            // only normal methods and constructors can be overloaded
+            return methodSymbol.MethodKind == MethodKind.Ordinary || methodSymbol.MethodKind == MethodKind.Constructor;
         }
     }
 }

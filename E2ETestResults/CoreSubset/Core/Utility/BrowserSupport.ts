@@ -515,7 +515,7 @@ export class BrowserSupport {
       e.style[styleProp] = val;
       let s: CSSStyleDeclaration = DomUtil.getComputedStyle(e);
       let computedVal: string = s[cssProp];
-      return !MiscUtil.isNullOrEmpty(computedVal) && computedVal !== 'none';
+      return !MiscUtil.isNullOrEmpty$1(computedVal) && computedVal !== 'none';
     } finally {
       (<HTMLElement>document.body.removeChild(e)).style.display = 'none';
     }

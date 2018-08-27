@@ -153,7 +153,7 @@ export class MiscUtil {
    * gets compiled to a static utility method in Saltarelle, it gives us a one-line way to check this condition
    * rather than three-line 'if (string.isNullOrEmpty()) {}' conditionals everywhere.
    */
-  public static isNullOrEmpty(s: string): boolean {
+  public static isNullOrEmpty$1(s: string): boolean {
     return ss.isNullOrEmptyString(s);
   }
 
@@ -188,7 +188,7 @@ export class MiscUtil {
    */
   public static toBoolean(value: string, defaultIfMissing: boolean): boolean {
     let positiveRegex: RegExp = new RegExp('^(yes|y|true|t|1)$', 'i');
-    if (MiscUtil.isNullOrEmpty(value)) {
+    if (MiscUtil.isNullOrEmpty$1(value)) {
       return defaultIfMissing;
     }
     let match: string[] = value.match(positiveRegex);
@@ -307,7 +307,7 @@ export class MiscUtil {
    * typeparam T The type of the class to dispose
    * @returns returns null
    */
-  public static dispose<T>(d: T[]): T[] {
+  public static dispose$1<T>(d: T[]): T[] {
     if (ss.isValue(d)) {
       for (const v of d) {
         v.dispose();

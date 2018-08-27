@@ -353,6 +353,38 @@ class C {
 ", SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
+        [TestMethod]
+        public async Task InvocationExpression_should_use_the_correct_overloaded_name_for_locally_defined_methods()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    void Method() {}
+    void Method(string x) {}
+
+    void Test()
+    {
+        var a = new A();
+        a.Method();
+        a.Method(""str"");
+    }
+}",
+                @"
+class A {
+  private method(): void { }
+
+  private method$1(x: string): void { }
+
+  private test(): void {
+    let a: A = new A();
+    a.method();
+    a.method$1('str');
+  }
+}
+");
+        }
+
         //// ===========================================================================================================
         //// Other Expression Types Tests
         //// ===========================================================================================================
