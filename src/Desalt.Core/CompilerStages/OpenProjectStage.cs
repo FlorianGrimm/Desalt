@@ -15,6 +15,7 @@ namespace Desalt.Core.CompilerStages
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
+    using Microsoft.Build.Locator;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.MSBuild;
 
@@ -42,6 +43,11 @@ namespace Desalt.Core.CompilerStages
         {
             try
             {
+                // register the MSBuild locator so that it can find the right assemblies for MSBuild (see
+                // https://github.com/Microsoft/msbuild/issues/1889 and
+                // https://docs.microsoft.com/en-us/visualstudio/msbuild/updating-an-existing-application?view=vs-2017)
+                MSBuildLocator.RegisterDefaults();
+
                 // try to open the project
                 var workspace = MSBuildWorkspace.Create();
                 Project project = await workspace.OpenProjectAsync(input.ProjectFilePath, cancellationToken);
