@@ -52,7 +52,7 @@ namespace Desalt.Core.CompilerStages
                 var workspace = MSBuildWorkspace.Create();
                 Project project = await workspace.OpenProjectAsync(input.ProjectFilePath, cancellationToken);
 
-                var diagnostics = workspace.Diagnostics.Select(WorkspaceDiagnosticToDiagnostic);
+                var diagnostics = workspace.Diagnostics.Where(IsValidError).Select(WorkspaceDiagnosticToDiagnostic);
                 return new ExtendedResult<Project>(project, diagnostics);
             }
             catch (ReflectionTypeLoadException e)
@@ -65,6 +65,27 @@ namespace Desalt.Core.CompilerStages
             }
         }
 
+        /// <summary>
+        /// Determines if the specified <see cref="WorkspaceDiagnostic"/> is "valid", meaning that
+        /// it's not one of the messages that we want to ignore.
+        /// </summary>
+        /// <param name="diagnostic">The <see cref="WorkspaceDiagnostic"/> to check.</param>
+        /// <returns>True if the error is "valid" and should be reported; otherwise, false.</returns>
+        private static bool IsValidError(WorkspaceDiagnostic diagnostic)
+        {
+            // This error occurs because of a dynamic binding issue. We don't actually need to run
+            // the SCTask anyway, so just ignore it.
+            return !diagnostic.Message.Contains("The \"SCTask\" task failed unexpectedly");
+        }
+
+        /// <summary>
+        /// Converts a <see cref="WorkspaceDiagnostic"/> to a <see cref="Diagnostic"/> to use in the
+        /// compiler pipeline.
+        /// </summary>
+        /// <param name="workspaceDiagnostic">
+        /// A diagnostic issued when opening or compiling the project.
+        /// </param>
+        /// <returns>A compatible <see cref="Diagnostic"/> for use in the compiler pipeline.</returns>
         private static Diagnostic WorkspaceDiagnosticToDiagnostic(WorkspaceDiagnostic workspaceDiagnostic)
         {
             // parse the message to get the id and the message parts
