@@ -12,6 +12,8 @@ namespace Desalt.Core.Tests.TestUtility
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
@@ -65,7 +67,7 @@ namespace Desalt.Core.Tests.TestUtility
                 return CreateAsync(new TempProjectFile("File.cs", sourceFileContents[0]));
             }
 
-            List<TempProjectFile> files = new List<TempProjectFile>(sourceFileContents.Length);
+            var files = new List<TempProjectFile>(sourceFileContents.Length);
             for (int i = 0; i < sourceFileContents.Length; i++)
             {
                 var file = new TempProjectFile($"File{i}.cs", sourceFileContents[i]);
@@ -77,51 +79,64 @@ namespace Desalt.Core.Tests.TestUtility
 
         public static async Task<TempProject> CreateAsync(params TempProjectFile[] sourceFiles)
         {
-            // create a new ad-hoc workspace
-            var workspace = new AdhocWorkspace();
-
-            // add a new project
-            ProjectId projectId = ProjectId.CreateNewId(ProjectName);
-            VersionStamp version = VersionStamp.Create();
-            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, warningLevel: 1);
-            var projectInfo = ProjectInfo.Create(
-                    id: projectId,
-                    filePath: Path.Combine(ProjectDir, $"{ProjectName}.csproj"),
-                    version: version,
-                    name: ProjectName,
-                    assemblyName: ProjectName,
-                    language: LanguageNames.CSharp,
-                    compilationOptions: compilationOptions)
-                .WithSaltarelleReferences();
-
-            var project = workspace.AddProject(projectInfo);
-
-            // add all of the files to the project
-            foreach (TempProjectFile sourceFile in sourceFiles)
+            try
             {
-                string filePath = Path.Combine(ProjectDir, sourceFile.FileName);
+                // create a new ad-hoc workspace
+                var workspace = new AdhocWorkspace();
 
-                var docId = DocumentId.CreateNewId(projectId, sourceFile.FileName);
-                var loader = TextLoader.From(
-                    TextAndVersion.Create(
-                        text: SourceText.From(sourceFile.FileContents),
-                        version: VersionStamp.Create(),
-                        filePath: filePath));
+                // add a new project
+                var projectId = ProjectId.CreateNewId(ProjectName);
+                var version = VersionStamp.Create();
+                var compilationOptions = new CSharpCompilationOptions(
+                    OutputKind.DynamicallyLinkedLibrary,
+                    warningLevel: 1);
+                var projectInfo = ProjectInfo.Create(
+                        id: projectId,
+                        filePath: Path.Combine(ProjectDir, $"{ProjectName}.csproj"),
+                        version: version,
+                        name: ProjectName,
+                        assemblyName: ProjectName,
+                        language: LanguageNames.CSharp,
+                        compilationOptions: compilationOptions)
+                    .WithSaltarelleReferences();
 
-                var documentInfo = DocumentInfo.Create(
-                    id: docId,
-                    name: sourceFile.FileName,
-                    loader: loader,
-                    filePath: filePath);
+                var project = workspace.AddProject(projectInfo);
 
-                workspace.AddDocument(documentInfo);
+                // add all of the files to the project
+                foreach (TempProjectFile sourceFile in sourceFiles)
+                {
+                    string filePath = Path.Combine(ProjectDir, sourceFile.FileName);
+
+                    var docId = DocumentId.CreateNewId(projectId, sourceFile.FileName);
+                    var loader = TextLoader.From(
+                        TextAndVersion.Create(
+                            text: SourceText.From(sourceFile.FileContents),
+                            version: VersionStamp.Create(),
+                            filePath: filePath));
+
+                    var documentInfo = DocumentInfo.Create(
+                        id: docId,
+                        name: sourceFile.FileName,
+                        loader: loader,
+                        filePath: filePath);
+
+                    workspace.AddDocument(documentInfo);
+                }
+
+                // try to compile the project and report any diagnostics
+                Compilation compilation = await project.GetCompilationAsync();
+                compilation.GetDiagnostics().Should().BeEmpty();
+
+                return new TempProject(workspace);
             }
-
-            // try to compile the project and report any diagnostics
-            Compilation compilation = await project.GetCompilationAsync();
-            compilation.GetDiagnostics().Should().BeEmpty();
-
-            return new TempProject(workspace);
+            catch (ReflectionTypeLoadException e)
+            {
+                string subMessages = e.LoaderExceptions.Aggregate(
+                    new StringBuilder().AppendLine().AppendLine("LoaderExceptions:"),
+                    (builder, ex) => builder.AppendLine(ex.Message),
+                    builder => builder.ToString());
+                throw new Exception($"{e.Message}{subMessages}");
+            }
         }
 
         public async Task<DocumentTranslationContext> CreateContextForFileAsync(
