@@ -168,15 +168,29 @@ namespace Desalt.Core.Translation
             // if there's no symbol then just return an identifier
             if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
             {
-                return Factory.Identifier(node.Identifier.Text).ToSingleEnumerable();
+                yield return Factory.Identifier(node.Identifier.Text);
+                yield break;
             }
 
+            ITsExpression translated = TranslateIdentifierName(symbol, scriptName, node.SpanStart);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Translates an identifier name represented by the symbol, taking into account static vs. instance references.
+        /// </summary>
+        /// <param name="symbol">The symbol to translate.</param>
+        /// <param name="scriptName">The script name of the symbol.</param>
+        /// <param name="nodeSpanStart">The start of the syntax node where this symbol was located.</param>
+        /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
+        private ITsExpression TranslateIdentifierName(ISymbol symbol, string scriptName, int nodeSpanStart)
+        {
             // get the containing type
             INamedTypeSymbol containingType = symbol.ContainingType;
 
             // see if the identifier is declared within this type
             bool belongsToThisType = containingType ==
-                _semanticModel.GetEnclosingSymbol(node.SpanStart, _cancellationToken)?.ContainingType;
+                _semanticModel.GetEnclosingSymbol(nodeSpanStart, _cancellationToken)?.ContainingType;
 
             ITsExpression expression;
 
@@ -188,6 +202,7 @@ namespace Desalt.Core.Translation
 
                 expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
             }
+
             // add a "this." prefix if it's an instance symbol within our same type
             else if (!symbol.IsStatic && belongsToThisType)
             {
@@ -204,7 +219,7 @@ namespace Desalt.Core.Translation
                 _typesToImport.Add(symbol);
             }
 
-            return expression.ToSingleEnumerable();
+            return expression;
         }
 
         /// <summary>

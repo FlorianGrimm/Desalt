@@ -32,7 +32,7 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
-            // if the node's left side expression is a method or a constructor, then it will have
+            // If the node's left side expression is a method or a constructor, then it will have
             // already been translated and the [InlineCode] would have already been applied - we
             // shouldn't do it twice because it will be wrong the second time.
             bool hasLeftSideAlreadyBeenTranslatedWithInlineCode = node.Expression.Kind()

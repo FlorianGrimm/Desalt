@@ -267,7 +267,7 @@ namespace Desalt.Core.Translation
                 node.TypeParameterList,
                 node.ReturnType);
 
-            // see if the parameter list should be adjusted to accomodate[AlternateSignature] methods
+            // see if the parameter list should be adjusted to accomodate [AlternateSignature] methods
             bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
                 symbol,
                 callSignature.Parameters,

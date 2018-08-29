@@ -41,15 +41,13 @@ namespace Desalt.Core.SymbolTables
             SymbolDisplayKindOptions.None,
             SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
-        private readonly ImmutableDictionary<string, AlternateSignatureMethodGroup> _entries;
-
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         private AlternateSignatureSymbolTable(ImmutableDictionary<string, AlternateSignatureMethodGroup> entries)
         {
-            _entries = entries;
+            Entries = entries;
         }
 
         //// ===========================================================================================================
@@ -59,7 +57,7 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// Gets all of the entries in the table. Mainly used for unit testing.
         /// </summary>
-        public ImmutableDictionary<string, AlternateSignatureMethodGroup> Entries => _entries;
+        public ImmutableDictionary<string, AlternateSignatureMethodGroup> Entries { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -93,10 +91,8 @@ namespace Desalt.Core.SymbolTables
             return new ExtendedResult<AlternateSignatureSymbolTable>(table, allDiagnostics);
         }
 
-        public bool HasSymbol(IMethodSymbol symbol) => _entries.ContainsKey(GetMethodName(symbol));
-
         public bool TryGetValue(IMethodSymbol symbol, out AlternateSignatureMethodGroup value) =>
-            _entries.TryGetValue(GetMethodName(symbol), out value);
+            Entries.TryGetValue(GetMethodName(symbol), out value);
 
         /// <summary>
         /// Gets the key given a symbol. Only exposed for unit tests.
