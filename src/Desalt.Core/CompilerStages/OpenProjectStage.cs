@@ -50,7 +50,10 @@ namespace Desalt.Core.CompilerStages
 
                 // try to open the project
                 var workspace = MSBuildWorkspace.Create();
-                Project project = await workspace.OpenProjectAsync(input.ProjectFilePath, cancellationToken);
+                Project project = await workspace.OpenProjectAsync(
+                    input.ProjectFilePath,
+                    progress: null,
+                    cancellationToken: cancellationToken);
 
                 var diagnostics = workspace.Diagnostics.Where(IsValidError).Select(WorkspaceDiagnosticToDiagnostic);
                 return new ExtendedResult<Project>(project, diagnostics);
