@@ -316,7 +316,7 @@ export class MetricsLogger {
    */
   private sendBeacon(hostname: string, payload: string): void {
     const Version: number = 1;
-    if (MiscUtil.isNullOrEmpty(hostname) || MiscUtil.isNullOrEmpty(payload)) {
+    if (MiscUtil.isNullOrEmpty$1(hostname) || MiscUtil.isNullOrEmpty$1(payload)) {
       return;
     }
     let beaconImg: Element = <Element>document.createElement('img');

@@ -351,6 +351,35 @@ class C
         }
 
         [TestMethod]
+        public async Task
+            ScriptNameSymbolTable_should_use_ScriptAlias_over_ScriptName_or_PreserveCase_or_PreserveMemberCase()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+[PreserveMemberCase]
+class C
+{
+    [PreserveCase]
+    [ScriptName(""trumpedField"")]
+    private int Field;
+
+    [PreserveCase]
+    [ScriptName(""trumpedMethod"")]
+    [ScriptAlias(""aliasedMethod"")]
+    private static void Method(int x) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Field", "trumpedField"),
+                new KeyValuePair<string, string>("C.Method(int x)", "aliasedMethod"));
+        }
+
+        [TestMethod]
         public async Task ScriptNameSymbolTable_should_use_ScriptName_from_referenced_assemblies()
         {
             const string code = @"
@@ -442,6 +471,162 @@ public static class ScriptEx
                 scriptNameTable.TryGetValue(symbol, out string scriptName).Should().BeTrue();
                 scriptName.Should().Be("value");
             }
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_rename_overloaded_method_declarations()
+        {
+            const string code = @"
+using System;
+
+class C
+{
+    public void Method() {}
+    public void Method(int x) {}
+    public void Method(string y) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method()", "method"),
+                new KeyValuePair<string, string>("C.Method(int x)", "method$1"),
+                new KeyValuePair<string, string>("C.Method(string y)", "method$2"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_use_attributes_first_before_renaming_overloads()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+class C
+{
+    public static void Method() {}
+
+    [ScriptAlias(""static_1"")]
+    public static void Method(int i, string s) {}
+
+    public void Method(int i) {}
+
+    [ScriptName(""instance_1"")]
+    public void Method(string s) {}
+
+    [PreserveCase]
+    public void Method(double d) {}
+
+    public void Method(float f) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method()", "method"),
+                new KeyValuePair<string, string>("C.Method(int i, string s)", "static_1"),
+                new KeyValuePair<string, string>("C.Method(int i)", "method"),
+                new KeyValuePair<string, string>("C.Method(string s)", "instance_1"),
+                new KeyValuePair<string, string>("C.Method(double d)", "Method"),
+                new KeyValuePair<string, string>("C.Method(float f)", "method$1"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_consider_static_vs_non_static_when_renaming_overloads()
+        {
+            const string code = @"
+using System;
+
+class C
+{
+    public static void Method() {}
+    public static void Method(int x, string y) {}
+
+    public void Method(int i) {}
+    public void Method(string s) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method()", "method"),
+                new KeyValuePair<string, string>("C.Method(int x, string y)", "method$1"),
+                new KeyValuePair<string, string>("C.Method(int i)", "method"),
+                new KeyValuePair<string, string>("C.Method(string s)", "method$1"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_not_rename_imported_overloads()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+[Imported]
+class C
+{
+    public static void Method() {}
+    public static void Method(int x, string y) {}
+
+    public void Method(int i) {}
+    public void Method(string s) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method()", "method"),
+                new KeyValuePair<string, string>("C.Method(int x, string y)", "method"),
+                new KeyValuePair<string, string>("C.Method(int i)", "method"),
+                new KeyValuePair<string, string>("C.Method(string s)", "method"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_not_rename_alternate_signature_overloads()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+class C
+{
+    [AlternateSignature]
+    public extern void Method(int i);
+    public void Method(string s) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method(int i)", "method"),
+                new KeyValuePair<string, string>("C.Method(string s)", "method"));
+        }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_use_script_name_of_implementation_in_alternate_signature_overloads()
+        {
+            const string code = @"
+using System;
+using System.Runtime.CompilerServices;
+
+class C
+{
+    [AlternateSignature]
+    public extern void Method(int i);
+    [ScriptName(""overloaded"")]
+    public void Method(string s) {}
+}
+";
+
+            await AssertDocumentEntriesInSymbolTable(
+                code,
+                new KeyValuePair<string, string>("C", "C"),
+                new KeyValuePair<string, string>("C.Method(int i)", "overloaded"),
+                new KeyValuePair<string, string>("C.Method(string s)", "overloaded"));
         }
     }
 }

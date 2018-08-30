@@ -34,5 +34,29 @@ class C extends B implements IA, IC {
 }
 ");
         }
+
+        [TestMethod]
+        public async Task Translate_should_rename_overloaded_method_declarations()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    public void Method()
+    {
+    }
+
+    public void Method(int x)
+    {
+    }
+}",
+                @"
+class A {
+  public method(): void { }
+
+  public method$1(x: number): void { }
+}
+");
+        }
     }
 }
