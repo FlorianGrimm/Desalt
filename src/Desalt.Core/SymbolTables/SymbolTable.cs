@@ -17,7 +17,8 @@ namespace Desalt.Core.SymbolTables
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T> where T : class
+    internal abstract class SymbolTable<T>
+        where T : class
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -134,33 +135,33 @@ namespace Desalt.Core.SymbolTables
 
             // look in the overrides first, both for the concrete and generic symbols
             if (OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol), out value) ||
-                hasGenericVersion &&
-                OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol.OriginalDefinition), out value))
+                (hasGenericVersion &&
+                    OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol.OriginalDefinition), out value)))
             {
                 return true;
             }
 
             // then in the document symbols
             if (DocumentSymbols.TryGetValue(symbol, out value) ||
-                hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value))
+                (hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value)))
             {
                 return true;
             }
 
             // then in the directly-referenced symbols
             if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value) ||
-                hasGenericVersion &&
-                DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value))
+                (hasGenericVersion &&
+                    DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value)))
             {
                 return true;
             }
 
             // then in the indirectly-referenced symbols
-            if (IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
-                lazyValue.Value != null ||
-                hasGenericVersion &&
-                IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
-                lazyValue.Value != null)
+            if ((IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+                    lazyValue.Value != null) ||
+                (hasGenericVersion &&
+                    IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
+                    lazyValue.Value != null))
             {
                 value = lazyValue.Value;
                 return true;
