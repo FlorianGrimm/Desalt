@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="RoslynExtensions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -24,8 +24,42 @@ namespace Desalt.Core.Utility
     /// </summary>
     internal static class RoslynExtensions
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
+            globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            memberOptions:
+            SymbolDisplayMemberOptions.IncludeContainingType |
+            SymbolDisplayMemberOptions.IncludeParameters |
+            SymbolDisplayMemberOptions.IncludeExplicitInterface,
+            delegateStyle: SymbolDisplayDelegateStyle.NameOnly,
+            extensionMethodStyle: SymbolDisplayExtensionMethodStyle.StaticMethod,
+            parameterOptions:
+            SymbolDisplayParameterOptions.IncludeName |
+            SymbolDisplayParameterOptions.IncludeType |
+            SymbolDisplayParameterOptions.IncludeParamsRefOut,
+            propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+            localOptions: SymbolDisplayLocalOptions.IncludeType,
+            kindOptions: SymbolDisplayKindOptions.None,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
         /// <summary>
-        /// Extracts the semanic type symbol from the specified type syntax node.
+        /// Returns a string representation of the specified symbol that is suitable for use in a
+        /// hash table or for using in unit tests.
+        /// </summary>
+        /// <param name="symbol">The symbol to display.</param>
+        public static string ToHashDisplay(this ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+
+        /// <summary>
+        /// Extracts the semantic type symbol from the specified type syntax node.
         /// </summary>
         public static ITypeSymbol GetTypeSymbol(this TypeSyntax typeSyntax, SemanticModel semanticModel)
         {

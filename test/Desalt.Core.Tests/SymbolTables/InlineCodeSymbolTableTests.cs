@@ -16,6 +16,7 @@ namespace Desalt.Core.Tests.SymbolTables
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -61,7 +62,7 @@ class C
                         symbolTable.DocumentSymbols
                             .Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value))
                             .Should()
                             .BeEquivalentTo(expectedEntries);
@@ -70,7 +71,7 @@ class C
                     case SymbolTableDiscoveryKind.DocumentAndReferencedTypes:
                         symbolTable.DirectlyReferencedExternalSymbols.Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value))
                             .Should()
                             .Contain(expectedEntries);
@@ -79,10 +80,10 @@ class C
                     case SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes:
                         var expectedKeys = expectedEntries.Select(pair => pair.Key).ToImmutableArray();
                         symbolTable.IndirectlyReferencedExternalSymbols
-                            .Where(pair => SymbolTableUtils.KeyFromSymbol(pair.Key).IsOneOf(expectedKeys))
+                            .Where(pair => pair.Key.ToHashDisplay().IsOneOf(expectedKeys))
                             .Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value.Value))
                             .Should()
                             .BeEquivalentTo(expectedEntries);
@@ -163,7 +164,7 @@ class C
                     .Expression;
                 var methodSymbol = (IMethodSymbol)context.SemanticModel.GetSymbolInfo(methodSyntax).Symbol;
 
-                string symbolKey = SymbolTableUtils.KeyFromSymbol(methodSymbol);
+                string symbolKey = methodSymbol.ToHashDisplay();
 
                 var symbolTable = InlineCodeSymbolTable.Create(
                     contexts,

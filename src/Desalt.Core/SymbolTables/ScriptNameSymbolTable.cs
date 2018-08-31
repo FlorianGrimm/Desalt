@@ -61,7 +61,7 @@ namespace Desalt.Core.SymbolTables
         /// <param name="overrideSymbols">
         /// An array of overrides that takes precedence over any of the other symbols. This is to
         /// allow creating exceptions without changing the Saltarelle assembly source code. The key
-        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// is what is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
         /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="ScriptNameSymbolTable"/>.</returns>

@@ -356,7 +356,7 @@ namespace Desalt.Core.Translation
             {
                 return DiagnosticFactory.InlineCodeParsingError(
                     InlineCode,
-                    SymbolTableUtils.KeyFromSymbol(MethodSymbol),
+                    MethodSymbol.ToHashDisplay(),
                     message,
                     MethodExpressionSyntax.GetLocation());
             }

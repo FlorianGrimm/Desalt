@@ -14,6 +14,7 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -48,7 +49,7 @@ using System.Runtime.CompilerServices;
                 var methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<BaseMethodDeclarationSyntax>()
                     .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
-                    .First(symbol => SymbolTableUtils.KeyFromSymbol(symbol) == methodKey);
+                    .First(symbol => symbol.ToHashDisplay() == methodKey);
 
                 var typeTranslator = new TypeTranslator(context.ScriptNameSymbolTable);
 

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ScriptNameSymbolTableTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -16,6 +16,7 @@ namespace Desalt.Core.Tests.SymbolTables
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -86,7 +87,7 @@ namespace Desalt.Core.Tests.SymbolTables
                         symbolTable.DocumentSymbols
                             .Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value))
                             .Should()
                             .BeEquivalentTo(expectedEntries);
@@ -95,7 +96,7 @@ namespace Desalt.Core.Tests.SymbolTables
                     case SymbolTableDiscoveryKind.DocumentAndReferencedTypes:
                         symbolTable.DirectlyReferencedExternalSymbols.Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value))
                             .Should()
                             .Contain(expectedEntries);
@@ -104,10 +105,10 @@ namespace Desalt.Core.Tests.SymbolTables
                     case SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes:
                         var expectedKeys = expectedEntries.Select(pair => pair.Key).ToImmutableArray();
                         symbolTable.IndirectlyReferencedExternalSymbols
-                            .Where(pair => SymbolTableUtils.KeyFromSymbol(pair.Key).IsOneOf(expectedKeys))
+                            .Where(pair => pair.Key.ToHashDisplay().IsOneOf(expectedKeys))
                             .Select(
                                 pair => new KeyValuePair<string, string>(
-                                    SymbolTableUtils.KeyFromSymbol(pair.Key),
+                                    pair.Key.ToHashDisplay(),
                                     pair.Value.Value))
                             .Should()
                             .BeEquivalentTo(expectedEntries);

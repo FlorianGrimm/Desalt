@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="AlternateSignatureMethodGroup.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,7 +14,7 @@ namespace Desalt.Core.SymbolTables
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
-    using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -126,7 +126,7 @@ namespace Desalt.Core.SymbolTables
             {
                 var syntaxNode = implementingMethods[1].DeclaringSyntaxReferences[0].GetSyntax();
                 Location location = syntaxNode.GetLocation();
-                string methodName = SymbolTableUtils.KeyFromSymbol(implementingMethods[1]);
+                string methodName = implementingMethods[1].ToHashDisplay();
 
                 diagnostics.Add(DiagnosticFactory.OverloadsWithAlternateSignatureNotSupported(methodName, location));
             }

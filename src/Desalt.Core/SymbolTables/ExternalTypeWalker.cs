@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExternalTypeWalker.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -9,7 +9,6 @@ namespace Desalt.Core.SymbolTables
 {
     using System.Collections.Generic;
     using System.Threading;
-    using Desalt.Core.Translation;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -28,7 +27,7 @@ namespace Desalt.Core.SymbolTables
         private readonly IAssemblySymbol _assemblyBeingTranslated;
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
-        private readonly HashSet<ITypeSymbol> _typeSymbols = new HashSet<ITypeSymbol>(SymbolTableUtils.KeyComparer);
+        private readonly HashSet<ITypeSymbol> _typeSymbols = new HashSet<ITypeSymbol>();
 
         //// ===========================================================================================================
         //// Constructors
