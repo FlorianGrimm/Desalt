@@ -9,6 +9,7 @@ namespace Desalt.Core.Tests.Translation
 {
     using System.Linq;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;

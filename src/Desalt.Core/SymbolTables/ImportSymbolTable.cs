@@ -13,6 +13,7 @@ namespace Desalt.Core.SymbolTables
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -77,7 +78,7 @@ namespace Desalt.Core.SymbolTables
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
+            var symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
             return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
                 .Select(typeSymbol => new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));

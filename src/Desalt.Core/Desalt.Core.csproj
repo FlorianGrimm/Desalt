@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\Microsoft.Build.Locator.1.0.18\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\packages\Microsoft.Build.Locator.1.0.18\build\Microsoft.Build.Locator.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -191,7 +191,6 @@
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\ImportsTranslator.cs" />
     <Compile Include="Translation\InlineCodeTranslator.cs" />
-    <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\TemporaryVariableAllocator.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
@@ -201,6 +200,7 @@
     <Compile Include="Translation\TypeTranslator.cs" />
     <Compile Include="Utility\ExceptionFactory.cs" />
     <Compile Include="Utility\PathUtil.cs" />
+    <Compile Include="Utility\RoslynExtensions.cs" />
     <Compile Include="Utility\XmlFragmentParser.cs" />
     <Compile Include="Utility\XmlFragmentParser.Reader.cs" />
     <Compile Include="Validation\IValidator.cs" />

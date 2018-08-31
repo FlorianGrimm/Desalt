@@ -5,13 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Translation
+namespace Desalt.Core.Utility
 {
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
     using Desalt.Core.SymbolTables;
+    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
