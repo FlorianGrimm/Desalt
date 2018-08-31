@@ -110,7 +110,7 @@ namespace Desalt.Core.SymbolTables
         {
             return context.RootSyntax
 
-                // get all of the delcared types
+                // get all of the declared types
                 .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
 
                 // except delegates
