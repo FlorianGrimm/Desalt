@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="InlineCodeTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -85,7 +85,7 @@ namespace Desalt.Core.Translation
         /// The translated TypeScript code or null if no translation is possible (an error condition).
         /// </param>
         /// <returns>
-        /// True if the translation happend or false if no translation is possible (an error condition).
+        /// True if the translation happened or false if no translation is possible (an error condition).
         /// </returns>
         public bool TryTranslate(
             ExpressionSyntax methodExpressionSyntax,
@@ -96,8 +96,8 @@ namespace Desalt.Core.Translation
         {
             // see if there's an [InlineCode] entry for the method invocation
             // ReSharper disable once UsePatternMatching
-            var methodSymbol = _semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol as IMethodSymbol;
-            if (methodSymbol != null && _inlineCodeSymbolTable.TryGetValue(methodSymbol, out string inlineCode))
+            if (_semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol is IMethodSymbol methodSymbol &&
+                _inlineCodeSymbolTable.TryGetValue(methodSymbol, out string inlineCode))
             {
                 var context = new Context(
                     inlineCode,

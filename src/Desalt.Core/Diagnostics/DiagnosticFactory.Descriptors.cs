@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DiagnosticFactory.Descriptors.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -224,7 +224,7 @@ namespace Desalt.Core.Diagnostics
         /// <summary>
         /// Returns a diagnostic of the form "Type '{0}' is unknown and cannot be imported."
         /// </summary>
-        /// <param name="typeName">The name of the uknown type.</param>
+        /// <param name="typeName">The name of the unknown type.</param>
         /// <param name="location">The location of the error.</param>
         public static Diagnostic UnknownType(string typeName, Location location = null) =>
             Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
