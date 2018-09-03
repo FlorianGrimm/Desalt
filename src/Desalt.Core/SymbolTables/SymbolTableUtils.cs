@@ -37,55 +37,6 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         /// <summary>
-        /// Finds a Saltarelle attribute attached to a specified symbol.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeNameMinusSuffix">
-        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
-        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
-        /// </param>
-        /// <returns>
-        /// The found attribute or null if the symbol does not have an attached attribute of the
-        /// given name.
-        /// </returns>
-        public static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
-        {
-            var format = new SymbolDisplayFormat(
-                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol?.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
-
-            return attributeData;
-        }
-
-        /// <summary>
-        /// Gets the value of the Saltarelle attribute attached to a specified symbol or a default
-        /// value if the attribute is not present.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeNameMinusSuffix">
-        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
-        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
-        /// </param>
-        /// <param name="defaultValue">
-        /// The value to use if the attribute is not present on the symbol.
-        /// </param>
-        /// <returns>
-        /// Either the value of the attribute or the default value if the attribute is not present on
-        /// the symbol.
-        /// </returns>
-        public static string GetSaltarelleAttributeValueOrDefault(
-            ISymbol symbol,
-            string attributeNameMinusSuffix,
-            string defaultValue)
-        {
-            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
-            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
-        }
-
-        /// <summary>
         /// Gets all of the types defined in the assembly that are scriptable, meaning that they
         /// aren't decorated with a [NonScriptable] attribute. The results are cached between calls
         /// for efficiency and are retrieved in a thread-safe manner.

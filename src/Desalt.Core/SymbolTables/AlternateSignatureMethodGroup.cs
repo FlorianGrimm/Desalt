@@ -105,8 +105,7 @@ namespace Desalt.Core.SymbolTables
             var methodSymbolsArr = methodSymbols.ToImmutableArray();
 
             var implementingMethods = methodSymbolsArr.Where(
-                    methodSymbol =>
-                        SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") == null)
+                    methodSymbol => !methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature))
                 .ToImmutableArray();
 
             // we don't support multiple overloads mixed with [AlternateSignature], which would mean

@@ -176,8 +176,10 @@
     <Compile Include="SymbolTables\ExternalTypeWalker.cs" />
     <Compile Include="SymbolTables\ImportSymbolTable.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
+    <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
+    <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\SymbolTableDiscoveryKind.cs" />
     <Compile Include="SymbolTables\SymbolTableUtils.cs" />

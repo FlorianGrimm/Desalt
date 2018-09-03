@@ -74,13 +74,15 @@ namespace Desalt.Core.SymbolTables
             _cancellationToken.ThrowIfCancellationRequested();
 
             // skip namespaces, delegates, modules, and things that have a [NonScriptable] attribute
-            if (!symbol.IsNamespace &&
-                symbol.DelegateInvokeMethod == null &&
-                symbol.MetadataName != "<Module>" &&
-                SymbolTableUtils.FindSaltarelleAttribute(symbol, "NonScriptable") == null)
+            if (symbol.IsNamespace ||
+                symbol.DelegateInvokeMethod != null ||
+                symbol.MetadataName == "<Module>" ||
+                symbol.GetFlagAttribute(SaltarelleAttributeName.NonScriptable))
             {
-                _typeSymbols.Add(symbol);
+                return;
             }
+
+            _typeSymbols.Add(symbol);
         }
     }
 }

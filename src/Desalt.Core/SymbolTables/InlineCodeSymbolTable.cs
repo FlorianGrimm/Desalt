@@ -89,7 +89,7 @@ namespace Desalt.Core.SymbolTables
                     symbol => new KeyValuePair<ISymbol, Lazy<string>>(
                         symbol,
                         new Lazy<string>(
-                            () => SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null),
+                            () => symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode),
                             isThreadSafe: true)))
                 .ToImmutableArray();
 
@@ -112,7 +112,7 @@ namespace Desalt.Core.SymbolTables
                            SyntaxKind.GetAccessorDeclaration,
                            SyntaxKind.SetAccessorDeclaration)
                    let symbol = context.SemanticModel.GetDeclaredSymbol(node)
-                   let inlineCode = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null)
+                   let inlineCode = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode)
                    where inlineCode != null
                    select new KeyValuePair<ISymbol, string>(symbol, inlineCode);
         }
@@ -129,8 +129,7 @@ namespace Desalt.Core.SymbolTables
         private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessExternalType(ITypeSymbol typeSymbol)
         {
             return from methodSymbol in DiscoverMembersOfTypeSymbol(typeSymbol)
-                   let inlineCode =
-                       SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(methodSymbol, "InlineCode", null)
+                   let inlineCode = methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode)
                    where inlineCode != null
                    select new KeyValuePair<ISymbol, string>(methodSymbol, inlineCode);
         }
