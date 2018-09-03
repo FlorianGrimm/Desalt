@@ -179,6 +179,16 @@
     <Compile Include="SymbolTables\ImportSymbolInfo.cs" />
     <Compile Include="SymbolTables\ImportSymbolTable.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
+    <Compile Include="SymbolTables\IScriptAssemblySymbol.cs" />
+    <Compile Include="SymbolTables\IScriptDelegateSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptEnumSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptEventSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptFieldSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptMethodSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptPropertySymbol.cs" />
+    <Compile Include="SymbolTables\IScriptStructSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptTypeSymbol.cs" />
     <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
