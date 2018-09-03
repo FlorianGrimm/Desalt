@@ -22,7 +22,7 @@ namespace Desalt.Core.SymbolTables
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
+    internal class ImportSymbolTable : SymbolTableBase<ImportSymbolInfo>
     {
         //// ===========================================================================================================
         //// Constructors

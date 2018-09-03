@@ -23,7 +23,7 @@ namespace Desalt.Core.SymbolTables
     /// names. It can also be changed using the [PreserveName] and [ScriptName] attributes.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ScriptNameSymbolTable : SymbolTable<string>
+    internal class ScriptNameSymbolTable : SymbolTableBase<string>
     {
         //// ===========================================================================================================
         //// Constructors

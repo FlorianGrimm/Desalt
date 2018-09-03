@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\Microsoft.Build.Locator.1.0.18\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\packages\Microsoft.Build.Locator.1.0.18\build\Microsoft.Build.Locator.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -178,7 +178,7 @@
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
-    <Compile Include="SymbolTables\SymbolTable.cs" />
+    <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\SymbolTableDiscoveryKind.cs" />
     <Compile Include="SymbolTables\SymbolTableUtils.cs" />
     <Compile Include="Translation\AlternateSignatureTranslator.cs" />

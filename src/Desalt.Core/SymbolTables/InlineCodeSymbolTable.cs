@@ -22,7 +22,7 @@ namespace Desalt.Core.SymbolTables
     /// Represents a symbol table containing [InlineCode] attribute content, which is to be used in
     /// translating calls to the method or property.
     /// </summary>
-    internal class InlineCodeSymbolTable : SymbolTable<string>
+    internal class InlineCodeSymbolTable : SymbolTableBase<string>
     {
         //// ===========================================================================================================
         //// Constructors

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="SymbolTable.cs" company="Justin Rockwood">
+// <copyright file="SymbolTableBase.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -18,7 +18,7 @@ namespace Desalt.Core.SymbolTables
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T>
+    internal abstract class SymbolTableBase<T>
         where T : class
     {
         //// ===========================================================================================================
@@ -30,7 +30,7 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         /// <summary>
-        /// Initializes a new <see cref="SymbolTable{T}"/> with the specified values.
+        /// Initializes a new <see cref="SymbolTableBase{T}"/> with the specified values.
         /// </summary>
         /// <param name="overrideSymbols">
         /// An array of overrides that takes precedence over any of the other symbols. This is to
@@ -46,7 +46,7 @@ namespace Desalt.Core.SymbolTables
         /// externally-referenced types in an assembly that may never be accessed. There is a
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
-        protected SymbolTable(
+        protected SymbolTableBase(
             ImmutableArray<KeyValuePair<string, T>> overrideSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
