@@ -174,6 +174,7 @@
     <Compile Include="SymbolTables\AlternateSignatureMethodGroup.cs" />
     <Compile Include="SymbolTables\AlternateSignatureSymbolTable.cs" />
     <Compile Include="SymbolTables\ExternalTypeWalker.cs" />
+    <Compile Include="SymbolTables\ImportSymbolInfo.cs" />
     <Compile Include="SymbolTables\ImportSymbolTable.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
     <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
