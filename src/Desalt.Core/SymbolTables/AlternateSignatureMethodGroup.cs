@@ -14,7 +14,6 @@ namespace Desalt.Core.SymbolTables
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
-    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -76,23 +75,16 @@ namespace Desalt.Core.SymbolTables
             // we don't support multiple overloads mixed with [AlternateSignature], which would mean
             // that we'd have to implement a way to figure out which [AlternateSignatures] go with
             // which methods based on the parameters and return type - hard!
-            if (implementingMethods.Length == 0)
+            if (implementingMethods.Length != 1)
             {
                 // we should not hit this case because the Saltarelle compiler will generate an error
-                // if there's not at least one implementing method
+                // if there's not exactly one implementing method
                 diagnostics.Add(
                     DiagnosticFactory.InternalError(
-                        $"There are no implementing methods of the [AlternateSignature] method group " +
+                        $"The Saltarelle compiler should enforce that there is exactly one implementing methods of the " +
+                        $"[AlternateSignature] method group " +
                         $"for '{methodSymbolsArr[0].Name}'",
                         methodSymbolsArr[0].DeclaringSyntaxReferences[0].GetSyntax().GetLocation()));
-            }
-            else if (implementingMethods.Length > 1)
-            {
-                var syntaxNode = implementingMethods[1].DeclaringSyntaxReferences[0].GetSyntax();
-                Location location = syntaxNode.GetLocation();
-                string methodName = implementingMethods[1].ToHashDisplay();
-
-                diagnostics.Add(DiagnosticFactory.OverloadsWithAlternateSignatureNotSupported(methodName, location));
             }
 
             IMethodSymbol implementingMethod = implementingMethods[0];

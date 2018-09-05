@@ -111,14 +111,6 @@ namespace Desalt.Core.Diagnostics
                 description: "TypeScript does not support partial classes")]
             PartialClassesNotSupported,
 
-            [Error(
-                1014,
-                "Overloads with [AlternateSignatue] not supported",
-                "Method '{0}' is an overload, but also has one or more [AlternateSignature] methods",
-                description: "Change the original source to remove the overloaded method or remove the " +
-                "[AlternateSignature] attribute")]
-            OverloadsWithAlternateSignatureNotSupported,
-
             [Error(1015, "Unknown type reference", "Type '{0}' is not a known type reference")]
             UnknownTypeReference,
 
@@ -292,13 +284,6 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         public static Diagnostic PartialClassesNotSupported(ClassDeclarationSyntax node) =>
             Create(DiagnosticId.PartialClassesNotSupported, node.GetLocation(), node.Identifier.Text);
-
-        /// <summary>
-        /// Returns a diagnostic of the form "Method '{0}' is an overload, but also has one or more
-        /// [AlternateSignature] methods."
-        /// </summary>
-        public static Diagnostic OverloadsWithAlternateSignatureNotSupported(string methodName, Location location) =>
-            Create(DiagnosticId.OverloadsWithAlternateSignatureNotSupported, location, methodName);
 
         /// <summary>
         /// Returns a diagnostic of the form "Type '{0}' is not a known type reference".
