@@ -60,41 +60,6 @@ namespace Desalt.Core.SymbolTables
             }
         }
 
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Gets the <see cref="IMethodSymbol"/> that implements the method group.
-        /// </summary>
-        public IMethodSymbol ImplementingMethod { get; }
-
-        /// <summary>
-        /// Gets an array of <see cref="IMethodSymbol"/> objects comprising the group of methods
-        /// decorated with the [AlternateSignature] attribute.
-        /// </summary>
-        public ImmutableArray<IMethodSymbol> AlternateSignatureMethods { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IMethodSymbol"/> that has the most parameters. If there is more than
-        /// one that have the same number of parameters, an indeterminate one is returned.
-        /// </summary>
-        public IMethodSymbol MethodWithMaxParams { get; }
-
-        /// <summary>
-        /// Gets the minimum number of parameters across the methods in the group.
-        /// </summary>
-        public int MinParameterCount { get; }
-
-        /// <summary>
-        /// Gets the maximum number of parameters across the methods in the group.
-        /// </summary>
-        public int MaxParameterCount { get; }
-
-        //// ===========================================================================================================
-        //// Methods
-        //// ===========================================================================================================
-
         /// <summary>
         /// Creates a new <see cref="AlternateSignatureMethodGroup"/> from the specified method symbols.
         /// </summary>
@@ -136,6 +101,41 @@ namespace Desalt.Core.SymbolTables
 
             return new ExtendedResult<AlternateSignatureMethodGroup>(group, diagnostics);
         }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Gets the <see cref="IMethodSymbol"/> that implements the method group.
+        /// </summary>
+        public IMethodSymbol ImplementingMethod { get; }
+
+        /// <summary>
+        /// Gets an array of <see cref="IMethodSymbol"/> objects comprising the group of methods
+        /// decorated with the [AlternateSignature] attribute.
+        /// </summary>
+        public ImmutableArray<IMethodSymbol> AlternateSignatureMethods { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IMethodSymbol"/> that has the most parameters. If there is more than
+        /// one that have the same number of parameters, an indeterminate one is returned.
+        /// </summary>
+        public IMethodSymbol MethodWithMaxParams { get; }
+
+        /// <summary>
+        /// Gets the minimum number of parameters across the methods in the group.
+        /// </summary>
+        public int MinParameterCount { get; }
+
+        /// <summary>
+        /// Gets the maximum number of parameters across the methods in the group.
+        /// </summary>
+        public int MaxParameterCount { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
 
         /// <summary>
         /// Gets all of the valid types for the specified parameter across all of the methods in the group.
