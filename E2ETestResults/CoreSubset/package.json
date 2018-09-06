@@ -8,6 +8,6 @@
     "compile": "node_modules/.bin/tsc --project tsconfig.json"
   },
   "devDependencies": {
-    "typescript": "2.8.3"
+    "typescript": "3.0.3"
   }
 }
