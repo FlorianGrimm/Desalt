@@ -319,7 +319,7 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a method should have in the generated code.
         /// </summary>
         /// <param name="methodSymbol">The method for which to determine the script name.</param>
-        /// <returns>The name the method shoudl have in the generated code.</returns>
+        /// <returns>The name the method should have in the generated code.</returns>
         private static string DetermineMethodScriptName(IMethodSymbol methodSymbol)
         {
             string methodName = methodSymbol.Name;
