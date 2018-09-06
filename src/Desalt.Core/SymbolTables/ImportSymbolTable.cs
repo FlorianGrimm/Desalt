@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ImportSymbolTable.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -13,6 +13,7 @@ namespace Desalt.Core.SymbolTables
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -21,7 +22,7 @@ namespace Desalt.Core.SymbolTables
     /// translated TypeScript file.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ImportSymbolTable : SymbolTable<ImportSymbolInfo>
+    internal class ImportSymbolTable : SymbolTableBase<ImportSymbolInfo>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -77,7 +78,7 @@ namespace Desalt.Core.SymbolTables
             DocumentTranslationContext context,
             CancellationToken cancellationToken)
         {
-            ImportSymbolInfo symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
+            var symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
 
             return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
                 .Select(typeSymbol => new KeyValuePair<ISymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));
@@ -92,48 +93,6 @@ namespace Desalt.Core.SymbolTables
             string moduleName = containingAssembly.Name;
             var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
             return new KeyValuePair<ISymbol, ImportSymbolInfo>(symbol, symbolInfo);
-        }
-    }
-
-    /// <summary>
-    /// Represents an imported symbol that is contained in an <see cref="ImportSymbolTable"/>.
-    /// </summary>
-    internal class ImportSymbolInfo
-    {
-        //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        private ImportSymbolInfo(string relativeTypeScriptFilePathOrModuleName, bool isInternalReference)
-        {
-            RelativeTypeScriptFilePathOrModuleName = relativeTypeScriptFilePathOrModuleName;
-            IsInternalReference = isInternalReference;
-        }
-
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        public string RelativeTypeScriptFilePathOrModuleName { get; }
-
-        /// <summary>
-        /// Returns a value indicating whether this is an internal reference, meaning that the type
-        /// is defined within this project. An external reference is something from another assembly.
-        /// </summary>
-        public bool IsInternalReference { get; }
-
-        //// ===========================================================================================================
-        //// Methods
-        //// ===========================================================================================================
-
-        public static ImportSymbolInfo CreateInternalReference(string typeScriptFilePath)
-        {
-            return new ImportSymbolInfo(typeScriptFilePath, isInternalReference: true);
-        }
-
-        public static ImportSymbolInfo CreateExternalReference(string moduleName)
-        {
-            return new ImportSymbolInfo(moduleName, isInternalReference: false);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ScriptableTypesSymbolVisitor.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -13,7 +13,7 @@ namespace Desalt.Core.SymbolTables
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Visits a symbol and gathes all types that don't have a [NonScriptable] attribute on them.
+    /// Visits a symbol and gathers all types that don't have a [NonScriptable] attribute on them.
     /// </summary>
     internal sealed class ScriptableTypesSymbolVisitor : SymbolVisitor
     {
@@ -74,13 +74,15 @@ namespace Desalt.Core.SymbolTables
             _cancellationToken.ThrowIfCancellationRequested();
 
             // skip namespaces, delegates, modules, and things that have a [NonScriptable] attribute
-            if (!symbol.IsNamespace &&
-                symbol.DelegateInvokeMethod == null &&
-                symbol.MetadataName != "<Module>" &&
-                SymbolTableUtils.FindSaltarelleAttribute(symbol, "NonScriptable") == null)
+            if (symbol.IsNamespace ||
+                symbol.DelegateInvokeMethod != null ||
+                symbol.MetadataName == "<Module>" ||
+                symbol.GetFlagAttribute(SaltarelleAttributeName.NonScriptable))
             {
-                _typeSymbols.Add(symbol);
+                return;
             }
+
+            _typeSymbols.Add(symbol);
         }
     }
 }

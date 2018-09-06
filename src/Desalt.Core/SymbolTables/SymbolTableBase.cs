@@ -1,5 +1,5 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="SymbolTable.cs" company="Justin Rockwood">
+// ---------------------------------------------------------------------------------------------------------------------
+// <copyright file="SymbolTableBase.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,6 +10,7 @@ namespace Desalt.Core.SymbolTables
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -17,7 +18,8 @@ namespace Desalt.Core.SymbolTables
     /// </summary>
     /// <typeparam name="T">The type of information that the symbol table holds.</typeparam>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal abstract class SymbolTable<T> where T : class
+    internal abstract class SymbolTableBase<T>
+        where T : class
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -28,12 +30,12 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         /// <summary>
-        /// Initializes a new <see cref="SymbolTable{T}"/> with the specified values.
+        /// Initializes a new <see cref="SymbolTableBase{T}"/> with the specified values.
         /// </summary>
         /// <param name="overrideSymbols">
         /// An array of overrides that takes precedence over any of the other symbols. This is to
         /// allow creating exceptions without changing the Saltarelle assembly source code. The key
-        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// is what is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
         /// </param>
         /// <param name="documentSymbols">The symbols defined in the documents.</param>
         /// <param name="directlyReferencedExternalSymbols">
@@ -44,7 +46,7 @@ namespace Desalt.Core.SymbolTables
         /// externally-referenced types in an assembly that may never be accessed. There is a
         /// performance hit for processing potentially hundreds of values when they may not be used.
         /// </param>
-        protected SymbolTable(
+        protected SymbolTableBase(
             ImmutableArray<KeyValuePair<string, T>> overrideSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> documentSymbols,
             ImmutableArray<KeyValuePair<ISymbol, T>> directlyReferencedExternalSymbols,
@@ -80,7 +82,7 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// Gets the overrides that takes precedence over any of the other symbols. This is to allow
         /// creating exceptions without changing the Saltarelle assembly source code. The key is what
-        /// is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
         /// </summary>
         public ImmutableDictionary<string, T> OverrideSymbols { get; }
 
@@ -133,34 +135,34 @@ namespace Desalt.Core.SymbolTables
                 symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol);
 
             // look in the overrides first, both for the concrete and generic symbols
-            if (OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol), out value) ||
-                hasGenericVersion &&
-                OverrideSymbols.TryGetValue(SymbolTableUtils.KeyFromSymbol(symbol.OriginalDefinition), out value))
+            if (OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out value) ||
+                (hasGenericVersion &&
+                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition.ToHashDisplay(), out value)))
             {
                 return true;
             }
 
             // then in the document symbols
             if (DocumentSymbols.TryGetValue(symbol, out value) ||
-                hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value))
+                (hasGenericVersion && DocumentSymbols.TryGetValue(symbol.OriginalDefinition, out value)))
             {
                 return true;
             }
 
             // then in the directly-referenced symbols
             if (DirectlyReferencedExternalSymbols.TryGetValue(symbol, out value) ||
-                hasGenericVersion &&
-                DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value))
+                (hasGenericVersion &&
+                    DirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out value)))
             {
                 return true;
             }
 
             // then in the indirectly-referenced symbols
-            if (IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
-                lazyValue.Value != null ||
-                hasGenericVersion &&
-                IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
-                lazyValue.Value != null)
+            if ((IndirectlyReferencedExternalSymbols.TryGetValue(symbol, out Lazy<T> lazyValue) &&
+                    lazyValue.Value != null) ||
+                (hasGenericVersion &&
+                    IndirectlyReferencedExternalSymbols.TryGetValue(symbol.OriginalDefinition, out lazyValue) &&
+                    lazyValue.Value != null))
             {
                 value = lazyValue.Value;
                 return true;

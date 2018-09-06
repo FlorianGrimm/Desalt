@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="SymbolTableUtils.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -25,8 +25,6 @@ namespace Desalt.Core.SymbolTables
         //// Member Variables
         //// ===========================================================================================================
 
-        public static readonly IEqualityComparer<ISymbol> KeyComparer = new KeyEqualityComparer();
-
         /// <summary>
         /// Used to cache externally-referenced assembly types so we only have to populate them up
         /// once since it can be expensive.
@@ -34,79 +32,9 @@ namespace Desalt.Core.SymbolTables
         private static ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>> s_assemblySymbols =
             ImmutableDictionary<IAssemblySymbol, ImmutableArray<INamedTypeSymbol>>.Empty;
 
-        private static readonly SymbolDisplayFormat s_symbolDisplayFormat = new SymbolDisplayFormat(
-            globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
-            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            memberOptions:
-            SymbolDisplayMemberOptions.IncludeContainingType |
-            SymbolDisplayMemberOptions.IncludeParameters |
-            SymbolDisplayMemberOptions.IncludeExplicitInterface,
-            delegateStyle: SymbolDisplayDelegateStyle.NameOnly,
-            extensionMethodStyle: SymbolDisplayExtensionMethodStyle.StaticMethod,
-            parameterOptions:
-            SymbolDisplayParameterOptions.IncludeName |
-            SymbolDisplayParameterOptions.IncludeType |
-            SymbolDisplayParameterOptions.IncludeParamsRefOut,
-            propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
-            localOptions: SymbolDisplayLocalOptions.IncludeType,
-            kindOptions: SymbolDisplayKindOptions.None,
-            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        public static string KeyFromSymbol(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
-
-        /// <summary>
-        /// Finds a Saltarelle attribute attached to a specified symbol.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeNameMinusSuffix">
-        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
-        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
-        /// </param>
-        /// <returns>
-        /// The found attribute or null if the symbol does not have an attached attribute of the
-        /// given name.
-        /// </returns>
-        public static AttributeData FindSaltarelleAttribute(ISymbol symbol, string attributeNameMinusSuffix)
-        {
-            var format = new SymbolDisplayFormat(
-                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-
-            string fullAttributeName = $"System.Runtime.CompilerServices.{attributeNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol?.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
-
-            return attributeData;
-        }
-
-        /// <summary>
-        /// Gets the value of the Saltarelle attribute attached to a specified symbol or a default
-        /// value if the attribute is not present.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeNameMinusSuffix">
-        /// The name of the attribute to find, minus the "Attribute" suffix. For example,
-        /// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
-        /// </param>
-        /// <param name="defaultValue">
-        /// The value to use if the attribute is not present on the symbol.
-        /// </param>
-        /// <returns>
-        /// Either the value of the attribute or the default value if the attribute is not present on
-        /// the symbol.
-        /// </returns>
-        public static string GetSaltarelleAttributeValueOrDefault(
-            ISymbol symbol,
-            string attributeNameMinusSuffix,
-            string defaultValue)
-        {
-            AttributeData attributeData = FindSaltarelleAttribute(symbol, attributeNameMinusSuffix);
-            return attributeData?.ConstructorArguments[0].Value.ToString() ?? defaultValue;
-        }
 
         /// <summary>
         /// Gets all of the types defined in the assembly that are scriptable, meaning that they
@@ -147,15 +75,11 @@ namespace Desalt.Core.SymbolTables
             SymbolTableDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes)
-            {
-                return ImmutableArray<ITypeSymbol>.Empty;
-            }
-
-            return contexts
-                .SelectMany(context => DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
-                .Distinct()
-                .ToImmutableArray();
+            return discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes
+                ? ImmutableArray<ITypeSymbol>.Empty
+                : contexts.SelectMany(context => DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
+                    .Distinct()
+                    .ToImmutableArray();
         }
 
         /// <summary>
@@ -212,24 +136,6 @@ namespace Desalt.Core.SymbolTables
                 .WithCancellation(cancellationToken)
                 .SelectMany(assemblySymbol => GetScriptableTypesInAssembly(assemblySymbol, cancellationToken))
                 .ToImmutableArray();
-        }
-
-        //// ===========================================================================================================
-        //// Classes
-        //// ===========================================================================================================
-
-        private sealed class KeyEqualityComparer : IEqualityComparer<ISymbol>
-        {
-            public bool Equals(ISymbol x, ISymbol y) => KeyFromSymbol(x).Equals(KeyFromSymbol(y));
-
-            public int GetHashCode(ISymbol obj) => KeyFromSymbol(obj).GetHashCode();
-        }
-
-        private sealed class StringKeyValuePairComparer<T> : IEqualityComparer<KeyValuePair<string, T>>
-        {
-            public bool Equals(KeyValuePair<string, T> x, KeyValuePair<string, T> y) => x.Key.Equals(y.Key);
-
-            public int GetHashCode(KeyValuePair<string, T> obj) => obj.Key.GetHashCode();
         }
     }
 }

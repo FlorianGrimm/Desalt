@@ -11,6 +11,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

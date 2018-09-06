@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="AlternateSignatureMethodGroup.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,7 +14,6 @@ namespace Desalt.Core.SymbolTables
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
-    using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -60,6 +59,41 @@ namespace Desalt.Core.SymbolTables
             }
         }
 
+        /// <summary>
+        /// Creates a new <see cref="AlternateSignatureMethodGroup"/> from the specified method symbols.
+        /// </summary>
+        /// <param name="methodSymbols">The methods that all share the same [AlternateSignature] group.</param>
+        public static IExtendedResult<AlternateSignatureMethodGroup> Create(IEnumerable<IMethodSymbol> methodSymbols)
+        {
+            var diagnostics = new List<Diagnostic>();
+            var methodSymbolsArr = methodSymbols.ToImmutableArray();
+
+            var implementingMethods = methodSymbolsArr.Where(
+                    methodSymbol => !methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature))
+                .ToImmutableArray();
+
+            // we don't support multiple overloads mixed with [AlternateSignature], which would mean
+            // that we'd have to implement a way to figure out which [AlternateSignatures] go with
+            // which methods based on the parameters and return type - hard!
+            if (implementingMethods.Length != 1)
+            {
+                // we should not hit this case because the Saltarelle compiler will generate an error
+                // if there's not exactly one implementing method
+                diagnostics.Add(
+                    DiagnosticFactory.InternalError(
+                        $"The Saltarelle compiler should enforce that there is exactly one implementing methods of the " +
+                        $"[AlternateSignature] method group " +
+                        $"for '{methodSymbolsArr[0].Name}'",
+                        methodSymbolsArr[0].DeclaringSyntaxReferences[0].GetSyntax().GetLocation()));
+            }
+
+            IMethodSymbol implementingMethod = implementingMethods[0];
+            var alternateSignatureMethods = methodSymbolsArr.Except(implementingMethods).ToImmutableArray();
+            var group = new AlternateSignatureMethodGroup(implementingMethod, alternateSignatureMethods);
+
+            return new ExtendedResult<AlternateSignatureMethodGroup>(group, diagnostics);
+        }
+
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
@@ -94,49 +128,6 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Creates a new <see cref="AlternateSignatureMethodGroup"/> from the specified method symbols.
-        /// </summary>
-        /// <param name="methodSymbols">The methods that all share the same [AlternateSignature] group.</param>
-        public static IExtendedResult<AlternateSignatureMethodGroup> Create(IEnumerable<IMethodSymbol> methodSymbols)
-        {
-            var diagnostics = new List<Diagnostic>();
-            var methodSymbolsArr = methodSymbols.ToImmutableArray();
-
-            var implementingMethods = methodSymbolsArr.Where(
-                    methodSymbol =>
-                        SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") == null)
-                .ToImmutableArray();
-
-            // we don't support multiple overloads mixed with [AlternateSignature], which would mean
-            // that we'd have to implement a way to figure out which [AlternateSignatures] go with
-            // which methods based on the parameters and return type - hard!
-            if (implementingMethods.Length == 0)
-            {
-                // we should not hit this case because the Saltarelle compiler will generate an error
-                // if there's not at least one implementing method
-                diagnostics.Add(
-                    DiagnosticFactory.InternalError(
-                        $"There are no implementing methods of the [AlternateSignature] method group " +
-                        $"for '{methodSymbolsArr[0].Name}'",
-                        methodSymbolsArr[0].DeclaringSyntaxReferences[0].GetSyntax().GetLocation()));
-            }
-            else if (implementingMethods.Length > 1)
-            {
-                var syntaxNode = implementingMethods[1].DeclaringSyntaxReferences[0].GetSyntax();
-                Location location = syntaxNode.GetLocation();
-                string methodName = SymbolTableUtils.KeyFromSymbol(implementingMethods[1]);
-
-                diagnostics.Add(DiagnosticFactory.OverloadsWithAlternateSignatureNotSupported(methodName, location));
-            }
-
-            IMethodSymbol implementingMethod = implementingMethods[0];
-            var alternateSignatureMethods = methodSymbolsArr.Except(implementingMethods).ToImmutableArray();
-            var group = new AlternateSignatureMethodGroup(implementingMethod, alternateSignatureMethods);
-
-            return new ExtendedResult<AlternateSignatureMethodGroup>(group, diagnostics);
-        }
 
         /// <summary>
         /// Gets all of the valid types for the specified parameter across all of the methods in the group.

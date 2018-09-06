@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ScriptNameSymbolTable.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,6 +14,7 @@ namespace Desalt.Core.SymbolTables
     using System.Threading;
     using CompilerUtilities.Extensions;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -22,7 +23,7 @@ namespace Desalt.Core.SymbolTables
     /// names. It can also be changed using the [PreserveName] and [ScriptName] attributes.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ScriptNameSymbolTable : SymbolTable<string>
+    internal class ScriptNameSymbolTable : SymbolTableBase<string>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -60,7 +61,7 @@ namespace Desalt.Core.SymbolTables
         /// <param name="overrideSymbols">
         /// An array of overrides that takes precedence over any of the other symbols. This is to
         /// allow creating exceptions without changing the Saltarelle assembly source code. The key
-        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// is what is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
         /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="ScriptNameSymbolTable"/>.</returns>
@@ -109,7 +110,7 @@ namespace Desalt.Core.SymbolTables
         {
             return context.RootSyntax
 
-                // get all of the delcared types
+                // get all of the declared types
                 .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
 
                 // except delegates
@@ -224,46 +225,35 @@ namespace Desalt.Core.SymbolTables
             // [PreserveMemberCase]
 
             // use [ScriptAlias] if available
-            string scriptAlias = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptAlias", null);
+            string scriptAlias = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptAlias);
             if (scriptAlias != null)
             {
                 return scriptAlias;
             }
 
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            string scriptName = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "ScriptName", null);
+            string scriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
             if (scriptName != null)
             {
                 return scriptName;
             }
 
             // for [PreserveCase], don't touch the original name as given in the C# code
-            AttributeData preserveCaseAttributeData = SymbolTableUtils.FindSaltarelleAttribute(symbol, "PreserveCase");
-            if (preserveCaseAttributeData != null)
+            if (symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveCase))
             {
                 return symbol.Name;
             }
 
             // see if there's a [PreserveMemberCase] on the containing type
-            if (symbol.ContainingType != null)
+            if (symbol.ContainingType?.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase) == true)
             {
-                AttributeData preserveMemberCaseAttributeData =
-                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingType, "PreserveMemberCase");
-                if (preserveMemberCaseAttributeData != null)
-                {
-                    return symbol.Name;
-                }
+                return symbol.Name;
             }
 
             // see if there's a [PreserveMemberCase] on the containing assembly
-            if (symbol.ContainingAssembly != null)
+            if (symbol.ContainingAssembly?.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase) == true)
             {
-                AttributeData preserveMemberCaseAttributeData =
-                    SymbolTableUtils.FindSaltarelleAttribute(symbol.ContainingAssembly, "PreserveMemberCase");
-                if (preserveMemberCaseAttributeData != null)
-                {
-                    return symbol.Name;
-                }
+                return symbol.Name;
             }
 
             return null;
@@ -343,14 +333,14 @@ namespace Desalt.Core.SymbolTables
             }
 
             // check for [Imported] since we don't rename overloads on imported members
-            bool imported = SymbolTableUtils.FindSaltarelleAttribute(methodSymbol.ContainingType, "Imported") != null;
+            bool imported = methodSymbol.ContainingType.GetFlagAttribute(SaltarelleAttributeName.Imported);
             if (imported)
             {
                 return defaultName;
             }
 
             // check for [AlternateSignature] and then find the name of the other method
-            if (SymbolTableUtils.FindSaltarelleAttribute(methodSymbol, "AlternateSignature") != null)
+            if (methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature))
             {
                 IMethodSymbol otherMethod = methodSymbol.ContainingType.GetMembers()
                     .OfType<IMethodSymbol>()
@@ -358,7 +348,7 @@ namespace Desalt.Core.SymbolTables
                         m => !Equals(m, methodSymbol) &&
                             m.IsStatic == methodSymbol.IsStatic &&
                             m.Name == methodSymbol.Name &&
-                            SymbolTableUtils.FindSaltarelleAttribute(m, "AlternateSignature") == null);
+                            !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature));
                 string scriptName = DetermineMethodScriptName(otherMethod);
                 return scriptName;
             }
@@ -380,7 +370,7 @@ namespace Desalt.Core.SymbolTables
                where m.IsStatic == methodSymbol.IsStatic
 
                // take out [AlternateSignature] methods since they use the name of the implementation method
-               where SymbolTableUtils.FindSaltarelleAttribute(m, "AlternateSignature") == null
+               where !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature)
 
                let sname = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
                where sname.Equals(defaultName, StringComparison.Ordinal)

@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -181,7 +182,7 @@ namespace Desalt.Core.Translation
             if (scriptName == null)
             {
                 Diagnostic error = DiagnosticFactory.UnknownTypeReference(
-                    SymbolTableUtils.KeyFromSymbol(symbol),
+                    symbol.ToHashDisplay(),
                     getLocationFunc());
 
                 diagnostics.Add(error);

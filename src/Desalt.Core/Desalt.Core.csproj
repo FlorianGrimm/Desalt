@@ -174,11 +174,14 @@
     <Compile Include="SymbolTables\AlternateSignatureMethodGroup.cs" />
     <Compile Include="SymbolTables\AlternateSignatureSymbolTable.cs" />
     <Compile Include="SymbolTables\ExternalTypeWalker.cs" />
+    <Compile Include="SymbolTables\ImportSymbolInfo.cs" />
     <Compile Include="SymbolTables\ImportSymbolTable.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
+    <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
-    <Compile Include="SymbolTables\SymbolTable.cs" />
+    <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
+    <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\SymbolTableDiscoveryKind.cs" />
     <Compile Include="SymbolTables\SymbolTableUtils.cs" />
     <Compile Include="Translation\AlternateSignatureTranslator.cs" />
@@ -191,7 +194,6 @@
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\ImportsTranslator.cs" />
     <Compile Include="Translation\InlineCodeTranslator.cs" />
-    <Compile Include="Translation\RoslynExtensions.cs" />
     <Compile Include="Translation\TemporaryVariableAllocator.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />
@@ -201,6 +203,7 @@
     <Compile Include="Translation\TypeTranslator.cs" />
     <Compile Include="Utility\ExceptionFactory.cs" />
     <Compile Include="Utility\PathUtil.cs" />
+    <Compile Include="Utility\RoslynExtensions.cs" />
     <Compile Include="Utility\XmlFragmentParser.cs" />
     <Compile Include="Utility\XmlFragmentParser.Reader.cs" />
     <Compile Include="Validation\IValidator.cs" />

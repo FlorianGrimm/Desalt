@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="InlineCodeSymbolTable.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,6 +14,7 @@ namespace Desalt.Core.SymbolTables
     using System.Threading;
     using CompilerUtilities.Extensions;
     using Desalt.Core.Translation;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -21,7 +22,7 @@ namespace Desalt.Core.SymbolTables
     /// Represents a symbol table containing [InlineCode] attribute content, which is to be used in
     /// translating calls to the method or property.
     /// </summary>
-    internal class InlineCodeSymbolTable : SymbolTable<string>
+    internal class InlineCodeSymbolTable : SymbolTableBase<string>
     {
         //// ===========================================================================================================
         //// Constructors
@@ -59,7 +60,7 @@ namespace Desalt.Core.SymbolTables
         /// <param name="overrideSymbols">
         /// An array of overrides that takes precedence over any of the other symbols. This is to
         /// allow creating exceptions without changing the Saltarelle assembly source code. The key
-        /// is what is returned from <see cref="SymbolTableUtils.KeyFromSymbol"/>.
+        /// is what is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
         /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="InlineCodeSymbolTable"/>.</returns>
@@ -88,7 +89,7 @@ namespace Desalt.Core.SymbolTables
                     symbol => new KeyValuePair<ISymbol, Lazy<string>>(
                         symbol,
                         new Lazy<string>(
-                            () => SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null),
+                            () => symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode),
                             isThreadSafe: true)))
                 .ToImmutableArray();
 
@@ -111,7 +112,7 @@ namespace Desalt.Core.SymbolTables
                            SyntaxKind.GetAccessorDeclaration,
                            SyntaxKind.SetAccessorDeclaration)
                    let symbol = context.SemanticModel.GetDeclaredSymbol(node)
-                   let inlineCode = SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(symbol, "InlineCode", null)
+                   let inlineCode = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode)
                    where inlineCode != null
                    select new KeyValuePair<ISymbol, string>(symbol, inlineCode);
         }
@@ -128,8 +129,7 @@ namespace Desalt.Core.SymbolTables
         private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessExternalType(ITypeSymbol typeSymbol)
         {
             return from methodSymbol in DiscoverMembersOfTypeSymbol(typeSymbol)
-                   let inlineCode =
-                       SymbolTableUtils.GetSaltarelleAttributeValueOrDefault(methodSymbol, "InlineCode", null)
+                   let inlineCode = methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode)
                    where inlineCode != null
                    select new KeyValuePair<ISymbol, string>(methodSymbol, inlineCode);
         }

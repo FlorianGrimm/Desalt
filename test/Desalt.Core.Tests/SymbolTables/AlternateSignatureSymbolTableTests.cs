@@ -13,6 +13,7 @@ namespace Desalt.Core.Tests.SymbolTables
     using CompilerUtilities.Extensions;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
+    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -45,8 +46,8 @@ using System.Runtime.CompilerServices;
 
                 var actualGroup = actualEntries[0].Value;
 
-                SymbolTableUtils.KeyFromSymbol(actualGroup.ImplementingMethod).Should().Be(expectedImplementingMethod);
-                actualGroup.AlternateSignatureMethods.Select(SymbolTableUtils.KeyFromSymbol)
+                actualGroup.ImplementingMethod.ToHashDisplay().Should().Be(expectedImplementingMethod);
+                actualGroup.AlternateSignatureMethods.Select(RoslynExtensions.ToHashDisplay)
                     .Should()
                     .BeEquivalentTo(expectedAlternateSignatures);
             }

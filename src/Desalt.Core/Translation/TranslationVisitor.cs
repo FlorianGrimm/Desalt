@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitor.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -38,7 +39,7 @@ namespace Desalt.Core.Translation
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
-        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>(SymbolTableUtils.KeyComparer);
+        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>();
         private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         //// ===========================================================================================================
