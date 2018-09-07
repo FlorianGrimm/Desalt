@@ -22,7 +22,7 @@ export class ConsoleLogAppender extends BaseLogAppender {
    */
   public static __ctor() {
     ConsoleLogAppender.enableLogging((l: Logger, ll: LoggerLevel) => {
-      return ll >= LoggerLevel.info;
+      return ll >= LoggerLevel.Info;
     });
   }
 
@@ -77,10 +77,10 @@ export class ConsoleLogAppender extends BaseLogAppender {
     let console: any = window.self['console'];
     if (this.levelMethods === null) {
       this.levelMethods = {};
-      this.levelMethods[LoggerLevel.debug.toString()] = console.log;
-      this.levelMethods[LoggerLevel.error.toString()] = console.error;
-      this.levelMethods[LoggerLevel.info.toString()] = console.info;
-      this.levelMethods[LoggerLevel.warn.toString()] = console.warn;
+      this.levelMethods[LoggerLevel.Debug.toString()] = console.log;
+      this.levelMethods[LoggerLevel.Error.toString()] = console.error;
+      this.levelMethods[LoggerLevel.Info.toString()] = console.info;
+      this.levelMethods[LoggerLevel.Warn.toString()] = console.warn;
     }
     return this.levelMethods[level.toString()] || console.log;
   }

@@ -5,23 +5,23 @@ import 'mscorlib';
 /**
  * UIMetricType enums
  */
-export enum UIMetricType {
-  scrollbar = 0,
-  qfixed = 1,
-  qslider = 2,
-  qreadout = 3,
-  cfixed = 4,
-  citem = 5,
-  hfixed = 6,
-  hitem = 7,
-  cmslider = 8,
-  cmdropdown = 9,
-  cmpattern = 10,
-  rdate = 11,
-  rdatep = 12,
-  capply = 13,
-  cmtypeinsearch = 14,
-  ccustomitem = 15,
+export const enum UIMetricType {
+  Scrollbar = 'scrollbar',
+  QFixed = 'qfixed',
+  QSlider = 'qslider',
+  QReadout = 'qreadout',
+  CFixed = 'cfixed',
+  CItem = 'citem',
+  HFixed = 'hfixed',
+  HItem = 'hitem',
+  CmSlider = 'cmslider',
+  CmDropdown = 'cmdropdown',
+  CmPattern = 'cmpattern',
+  RDate = 'rdate',
+  RDateP = 'rdatep',
+  CApply = 'capply',
+  CmTypeInSearch = 'cmtypeinsearch',
+  CCustomItem = 'ccustomitem',
 }
 
 /**
@@ -43,40 +43,40 @@ export class LayoutMetrics {
   // block to inline initializations.
   public static __ctor() {
     LayoutMetrics.defaultDb = {};
-    LayoutMetrics.defaultDb[UIMetricType.scrollbar] = new Metric(17, 17);
-    LayoutMetrics.defaultDb[UIMetricType.qfixed] = new Metric(0, 5);
-    LayoutMetrics.defaultDb[UIMetricType.qslider] = new Metric(0, 18);
-    LayoutMetrics.defaultDb[UIMetricType.qreadout] = new Metric(0, 20);
-    LayoutMetrics.defaultDb[UIMetricType.cfixed] = new Metric(0, 6);
-    LayoutMetrics.defaultDb[UIMetricType.citem] = new Metric(0, 18);
-    LayoutMetrics.defaultDb[UIMetricType.ccustomitem] = new Metric(0, 9);
-    LayoutMetrics.defaultDb[UIMetricType.hfixed] = new Metric(0, 21);
-    LayoutMetrics.defaultDb[UIMetricType.hitem] = new Metric(0, 18);
-    LayoutMetrics.defaultDb[UIMetricType.cmslider] = new Metric(0, 49);
-    LayoutMetrics.defaultDb[UIMetricType.cmdropdown] = new Metric(0, 29);
-    LayoutMetrics.defaultDb[UIMetricType.cmpattern] = new Metric(0, 29);
-    LayoutMetrics.defaultDb[UIMetricType.capply] = new Metric(0, 21);
-    LayoutMetrics.defaultDb[UIMetricType.cmtypeinsearch] = new Metric(0, 22);
-    LayoutMetrics.defaultDb[UIMetricType.rdate] = new Metric(0, 28);
+    LayoutMetrics.defaultDb[UIMetricType.Scrollbar] = new Metric(17, 17);
+    LayoutMetrics.defaultDb[UIMetricType.QFixed] = new Metric(0, 5);
+    LayoutMetrics.defaultDb[UIMetricType.QSlider] = new Metric(0, 18);
+    LayoutMetrics.defaultDb[UIMetricType.QReadout] = new Metric(0, 20);
+    LayoutMetrics.defaultDb[UIMetricType.CFixed] = new Metric(0, 6);
+    LayoutMetrics.defaultDb[UIMetricType.CItem] = new Metric(0, 18);
+    LayoutMetrics.defaultDb[UIMetricType.CCustomItem] = new Metric(0, 9);
+    LayoutMetrics.defaultDb[UIMetricType.HFixed] = new Metric(0, 21);
+    LayoutMetrics.defaultDb[UIMetricType.HItem] = new Metric(0, 18);
+    LayoutMetrics.defaultDb[UIMetricType.CmSlider] = new Metric(0, 49);
+    LayoutMetrics.defaultDb[UIMetricType.CmDropdown] = new Metric(0, 29);
+    LayoutMetrics.defaultDb[UIMetricType.CmPattern] = new Metric(0, 29);
+    LayoutMetrics.defaultDb[UIMetricType.CApply] = new Metric(0, 21);
+    LayoutMetrics.defaultDb[UIMetricType.CmTypeInSearch] = new Metric(0, 22);
+    LayoutMetrics.defaultDb[UIMetricType.RDate] = new Metric(0, 28);
     if (tsConfig.is_mobile) {
-      LayoutMetrics.defaultDb[UIMetricType.scrollbar] = new Metric(0, 0);
+      LayoutMetrics.defaultDb[UIMetricType.Scrollbar] = new Metric(0, 0);
     }
-    LayoutMetrics.metricToClientMetric[UIMetricType.scrollbar] = ClientUIMetricType.scrollbar-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.qfixed] = ClientUIMetricType.q-filter-fixed-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.qslider] = ClientUIMetricType.q-filter-slider-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.qreadout] = ClientUIMetricType.q-filter-readout-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.cfixed] = ClientUIMetricType.c-filter-fixed-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.citem] = ClientUIMetricType.c-filter-item-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.capply] = ClientUIMetricType.c-filter-apply-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.hfixed] = ClientUIMetricType.h-filter-fixed-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.hitem] = ClientUIMetricType.h-filter-item-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.cmslider] = ClientUIMetricType.cm-slider-filter-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.cmdropdown] = ClientUIMetricType.cm-dropdown-filter-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.cmpattern] = ClientUIMetricType.cm-pattern-filter-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.rdate] = ClientUIMetricType.r-date-filter-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.rdatep] = ClientUIMetricType.r-date-p-filter-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.cmtypeinsearch] = ClientUIMetricType.cm-type-in-search-metric;
-    LayoutMetrics.metricToClientMetric[UIMetricType.ccustomitem] = ClientUIMetricType.c-filter-custom-item-metric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.Scrollbar] = ClientUIMetricType.ScrollbarMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.QFixed] = ClientUIMetricType.QFilterFixedMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.QSlider] = ClientUIMetricType.QFilterSliderMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.QReadout] = ClientUIMetricType.QFilterReadoutMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CFixed] = ClientUIMetricType.CFilterFixedMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CItem] = ClientUIMetricType.CFilterItemMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CApply] = ClientUIMetricType.CFilterApplyMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.HFixed] = ClientUIMetricType.HFilterFixedMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.HItem] = ClientUIMetricType.HFilterItemMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CmSlider] = ClientUIMetricType.CmSliderFilterMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CmDropdown] = ClientUIMetricType.CmDropdownFilterMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CmPattern] = ClientUIMetricType.CmPatternFilterMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.RDate] = ClientUIMetricType.RDateFilterMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.RDateP] = ClientUIMetricType.RDatePFilterMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CmTypeInSearch] = ClientUIMetricType.CmTypeInSearchMetric;
+    LayoutMetrics.metricToClientMetric[UIMetricType.CCustomItem] = ClientUIMetricType.CFilterCustomItemMetric;
   }
 
   /**
@@ -89,7 +89,7 @@ export class LayoutMetrics {
       let size: number = LayoutMetrics.getScrollbarSize();
       scrollbarSize = new Metric(size, size);
     }
-    (<any>this)[UIMetricType.scrollbar] = new Metric(scrollbarSize.w, scrollbarSize.h);
+    (<any>this)[UIMetricType.Scrollbar] = new Metric(scrollbarSize.w, scrollbarSize.h);
   }
 
   public static clone(other: LayoutMetrics): LayoutMetrics {

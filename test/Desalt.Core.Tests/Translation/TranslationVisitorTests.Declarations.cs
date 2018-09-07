@@ -49,13 +49,13 @@ namespace Desalt.Core.Tests.Translation
         [TestMethod]
         public async Task Bare_enum_declaration_without_accessibility_should_not_be_exported()
         {
-            await AssertTranslation("enum LoggerLevel { All }", "enum LoggerLevel {\n  all,\n}\n");
+            await AssertTranslation("enum LoggerLevel { All }", "enum LoggerLevel {\n  All,\n}\n");
         }
 
         [TestMethod]
         public async Task Public_enum_declaration_should_be_exported()
         {
-            await AssertTranslation("public enum LoggerLevel { All }", "export enum LoggerLevel {\n  all,\n}\n");
+            await AssertTranslation("public enum LoggerLevel { All }", "export enum LoggerLevel {\n  All,\n}\n");
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslation(
                 "enum LoggerLevel { All = 123 }",
-                "enum LoggerLevel {\n  all = 123,\n}\n");
+                "enum LoggerLevel {\n  All = 123,\n}\n");
         }
 
         [TestMethod]
@@ -71,7 +71,53 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslation(
                 "enum LoggerLevel { Hex = 0x100 }",
-                "enum LoggerLevel {\n  hex = 0x100,\n}\n");
+                "enum LoggerLevel {\n  Hex = 0x100,\n}\n");
+        }
+
+        [TestMethod]
+        public async Task Enum_declarations_should_respect_EnumRenameRule_LowerCaseFirstChar()
+        {
+            await AssertTranslation(
+                "enum E { [ScriptName(\"uno\")] One, Two }",
+                "enum E {\n  uno,\n  two,\n}\n",
+                populateOptionsFunc: options =>
+                    options.WithRenameRules(options.RenameRules.WithEnumRule(EnumRenameRule.LowerCaseFirstChar)));
+        }
+
+        [TestMethod]
+        public async Task Enum_declarations_with_NamedValues_should_be_a_const_enum()
+        {
+            await AssertTranslation(
+                "[NamedValues] enum E { One, Two }",
+                "const enum E {\n  One = 'one',\n  Two = 'two',\n}\n");
+        }
+
+        [TestMethod]
+        public async Task Enum_declarations_with_NamedValues_should_be_a_const_enum_even_when_a_value_has_been_defined()
+        {
+            await AssertTranslation(
+                "[NamedValues] enum E { One = 1, Two = 2 }",
+                "const enum E {\n  One = 'one',\n  Two = 'two',\n}\n");
+        }
+
+        [TestMethod]
+        public async Task
+            Enum_declarations_with_NamedValues_should_use_script_name_for_the_value_and_not_the_declaration()
+        {
+            await AssertTranslation(
+                "[NamedValues] enum E { [ScriptName(\"uno\")] One, Two }",
+                "const enum E {\n  One = 'uno',\n  Two = 'two',\n}\n");
+        }
+
+        [TestMethod]
+        public async Task
+            Enum_declarations_with_NamedValues_should_use_script_name_and_respect_EnumRenameRule_LowerCaseFirstChar()
+        {
+            await AssertTranslation(
+                "[NamedValues] enum E { [ScriptName(\"uno\")] One, Two }",
+                "const enum E {\n  one = 'uno',\n  two = 'two',\n}\n",
+                populateOptionsFunc: options =>
+                    options.WithRenameRules(options.RenameRules.WithEnumRule(EnumRenameRule.LowerCaseFirstChar)));
         }
 
         //// ===========================================================================================================

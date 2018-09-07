@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitor.Declarations.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -76,9 +77,12 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier enumName = TranslateDeclarationIdentifier(node);
 
+            // make the enum const if [NamedValues] is present
+            bool isConst = _semanticModel.GetDeclaredSymbol(node).GetFlagAttribute(SaltarelleAttributeName.NamedValues);
+
             // translate the enum body
             var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
-            ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers);
+            ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers, isConst);
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final = ExportAndAddDocComment(enumDeclaration, node);
@@ -91,10 +95,22 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             ITsIdentifier scriptName = TranslateDeclarationIdentifier(node);
+
+            // get the explicitly defined value if present
             ITsExpression value = null;
             if (node.EqualsValue != null)
             {
                 value = Visit(node.EqualsValue.Value).Cast<ITsExpression>().Single();
+            }
+
+            // ignore the value if the enum is [NamedValues] and generate our own value
+            bool isNamedValues = _semanticModel.GetDeclaredSymbol(node.Parent)
+                .GetFlagAttribute(SaltarelleAttributeName.NamedValues);
+            if (isNamedValues)
+            {
+                IFieldSymbol fieldSymbol = _semanticModel.GetDeclaredSymbol(node);
+                string defaultFieldName = ScriptNameSymbolTable.DetermineEnumFieldDefaultScriptName(fieldSymbol);
+                value = Factory.String(defaultFieldName);
             }
 
             ITsEnumMember translatedMember = Factory.EnumMember(scriptName, value);

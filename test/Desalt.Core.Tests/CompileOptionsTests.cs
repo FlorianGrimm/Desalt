@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CompileOptionsTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -30,6 +30,7 @@ namespace Desalt.Core.Tests
     ""DSC1012"": ""suppress""
   },
   ""renameRules"": {
+    ""enumRule"": ""matchCSharpName"",
     ""fieldRule"": ""dollarPrefixOnlyForDuplicateName""
   },
   ""symbolTableOverrides"": {

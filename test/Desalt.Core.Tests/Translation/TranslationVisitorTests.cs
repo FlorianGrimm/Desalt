@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
@@ -48,12 +49,14 @@ class C {{
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
+            Func<CompilerOptions, CompilerOptions> populateOptionsFunc = null)
         {
             string code = $@"
 using System;
 using System.Collections.Generic;
 using System.Html;
+using System.Runtime.CompilerServices;
 
 {codeSnippet}
 ";
@@ -63,7 +66,10 @@ using System.Html;
 
             using (var tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(discoveryKind: discoveryKind);
+                var options = populateOptionsFunc?.Invoke(tempProject.Options);
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    discoveryKind: discoveryKind,
+                    options: options);
 
                 var throwingDiagnosticList = DiagnosticList.Create(tempProject.Options);
                 throwingDiagnosticList.ThrowOnErrors = true;

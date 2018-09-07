@@ -11,10 +11,10 @@ import { TypeUtil, WindowOrientation } from 'NativeJsTypeDefs';
 /**
  * The different scenarios in which the current viz can be embedded.
  */
-export enum EmbedMode {
-  notEmbedded = 0,
-  embeddedInWg = 1,
-  embeddedNotInWg = 2,
+export const enum EmbedMode {
+  NotEmbedded = 'notEmbedded',
+  EmbeddedInWg = 'embeddedInWg',
+  EmbeddedNotInWg = 'embeddedNotInWg',
 }
 
 /**
@@ -65,7 +65,7 @@ export class Utility {
     try {
       let win: Object = Utility.getTopmostWindow();
       let orientation: WindowOrientation = win.GetOrientation();
-      return ss.isValue(orientation) && (orientation === WindowOrientation.leftLandscape || orientation === WindowOrientation.rightLandscape);
+      return ss.isValue(orientation) && (orientation === WindowOrientation.LeftLandscape || orientation === WindowOrientation.RightLandscape);
     } catch { }
     return false;
   }
@@ -144,7 +144,7 @@ export class Utility {
    * Otherwise it's the viz's frame.
    */
   public static get locationWindow(): Object {
-    return Utility.embedMode === EmbedMode.embeddedInWg ? window.parent : window.self;
+    return Utility.embedMode === EmbedMode.EmbeddedInWg ? window.parent : window.self;
   }
 
   private static parseQueryParamString(urlStr: string): Object<string, string> {
@@ -194,7 +194,7 @@ export class Utility {
         try {
           let contextStr: string = 'Parse ' + ((byteOffset === 0) ? 'Primary' : 'Secondary') + ' JSON';
           {
-            const mc: MetricsContext = MetricsController.createContext(contextStr, MetricsSuites.debug);
+            const mc: MetricsContext = MetricsController.createContext(contextStr, MetricsSuites.Debug);
             try {
               json = Utility.parseJson(newData);
             } finally {
@@ -219,7 +219,7 @@ export class Utility {
     let cannotTouchXhrWhileDownloading: boolean = (window.navigator.userAgent.indexOf('MSIE') >= 0 && number.parseFloat(window.navigator.appVersion.split('MSIE ')[1]) < 10);
     xhr.onreadystatechange = () => {
       try {
-        if (!cannotTouchXhrWhileDownloading && xhr.readyState === ReadyState.loading && xhr.status === 200 && !isReceiving) {
+        if (!cannotTouchXhrWhileDownloading && xhr.readyState === ReadyState.Loading && xhr.status === 200 && !isReceiving) {
           consumeJSONChunks();
           if (intervalID === -1) {
             intervalID = window.setInterval(consumeJSONChunks, 10);
@@ -227,7 +227,7 @@ export class Utility {
           isReceiving = true;
           return;
         }
-        if (xhr.readyState !== ReadyState.done) {
+        if (xhr.readyState !== ReadyState.Done) {
           return;
         }
         if (intervalID !== -1) {
@@ -280,7 +280,7 @@ export class Utility {
     }
     let invokeError: (object: any) => void = Utility.getInvokeErrorDelegate(xhr, errBack);
     xhr.onreadystatechange = () => {
-      if (xhr.readyState !== ReadyState.done) {
+      if (xhr.readyState !== ReadyState.Done) {
         return;
       }
       if (Utility.isSuccessStatus(xhr)) {
@@ -368,12 +368,12 @@ export class Utility {
       parentIsSelf = window.self === window.parent;
     } catch { }
     if (parentIsSelf) {
-      return EmbedMode.notEmbedded;
+      return EmbedMode.NotEmbedded;
     }
     if (tsConfig.single_frame) {
-      return EmbedMode.embeddedNotInWg;
+      return EmbedMode.EmbeddedNotInWg;
     }
-    return EmbedMode.embeddedInWg;
+    return EmbedMode.EmbeddedInWg;
   }
 
   public static trim(text: string): string {
@@ -464,7 +464,7 @@ export class Utility {
     if (ss.isNullOrUndefined(canvas) || ss.isNullOrUndefined((<any>canvas)['getContext'])) {
       return false;
     }
-    let context: Object = (<Element>canvas).getContext(CanvasContextId.2d);
+    let context: Object = (<Element>canvas).getContext(CanvasContextId.Render2D);
     return (typeof (context['fillText']) === 'function') && ss.isValue(context['measureText']('foo'));
   }
 
