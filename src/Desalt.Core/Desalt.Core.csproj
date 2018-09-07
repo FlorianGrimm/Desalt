@@ -194,6 +194,7 @@
     <Compile Include="Translation\DocumentTranslationContext.cs" />
     <Compile Include="Translation\ImportsTranslator.cs" />
     <Compile Include="Translation\InlineCodeTranslator.cs" />
+    <Compile Include="Translation\JsDictionaryTranslator.cs" />
     <Compile Include="Translation\TemporaryVariableAllocator.cs" />
     <Compile Include="Translation\TranslationVisitor.cs" />
     <Compile Include="Translation\TranslationVisitor.Declarations.cs" />

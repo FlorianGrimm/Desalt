@@ -53,12 +53,12 @@ export class MetricsLogger {
   /**
    * Mapping of metrics parameter names to verbose/debugging names
    */
-  private static readonly debugParamNames: Object<MetricsParameterName, string>;
+  private static readonly debugParamNames: { [key: string]: string };
 
   /**
    * Mapping of metrics event types to verbose/debugging type names
    */
-  private static readonly debugEventNames: Object<MetricsEventType, string>;
+  private static readonly debugEventNames: { [key: string]: string };
 
   /**
    * Singleton instance for the class
@@ -86,12 +86,12 @@ export class MetricsLogger {
    * Cached id of timer (via window.setTimeout) for callback to clean up beacon
    * images that are no longer needed
    */
-  private beaconCleanupTimerId: Nullable<number>;
+  private beaconCleanupTimerId: number | null;
 
   /**
    * Cached timerID for buffer processing timer
    */
-  private bufferProcessTimerId: Nullable<number>;
+  private bufferProcessTimerId: number | null;
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
@@ -231,7 +231,7 @@ export class MetricsLogger {
    */
   private static formatEvent(evt: MetricsEvent, verbose: boolean): string {
     let delimiter: string = verbose ? ', ' : ',';
-    let strBuilder: StringBuilder = new StringBuilder();
+    let strBuilder: ss.StringBuilder = new ss.StringBuilder();
     strBuilder.append(verbose ? MetricsLogger.debugEventNames[evt.eventType] : evt.eventType.toString());
     let count: number = evt.parameters.count;
     if (count > 0) {
@@ -259,7 +259,7 @@ export class MetricsLogger {
   /**
    * Given a dictionary of values, output the list of name+value pairs to the string builder
    */
-  private static formatDictionaryValues(strBuilder: StringBuilder, dict: Object<string, any>, verbose: boolean): void {
+  private static formatDictionaryValues(strBuilder: ss.StringBuilder, dict: { [key: string]: any }, verbose: boolean): void {
     let delimiter: string = verbose ? ', ' : ',';
     let propSeparator: string = verbose ? ': ' : ':';
     let propCount: number = dict.count;
@@ -280,7 +280,7 @@ export class MetricsLogger {
   /**
    * Given a specific object, output it's value to the stringbuilder with the appropriate format
    */
-  private static formatValue(strBuilder: StringBuilder, value: any, verbose: boolean): void {
+  private static formatValue(strBuilder: ss.StringBuilder, value: any, verbose: boolean): void {
     let type: string = typeof value;
     if (type === 'number' && Math.floor(<number>value) !== <number>value) {
       strBuilder.append((<number>value).toFixed(1));
@@ -301,7 +301,7 @@ export class MetricsLogger {
         } else
           if (type === 'object') {
             strBuilder.append('{');
-            let dict: Object = Object.getDictionary(value);
+            let dict: { [key: string]: any } = Object.getDictionary(value);
             MetricsLogger.formatDictionaryValues(strBuilder, dict, verbose);
             strBuilder.append('}');
           } else {

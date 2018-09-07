@@ -46,9 +46,9 @@ export class ErrorTrace {
 
   public static lastExceptionStack: StackTrace;
 
-  public static lastException: Exception;
+  public static lastException: ss.Exception;
 
-  private static readonly sourceCache: Object<Object, string[]> = {};
+  private static readonly sourceCache: { [key: string]: string[] } = {};
 
   private static queuedTraces: StackTrace[] = [];
 
@@ -307,11 +307,11 @@ export class ErrorTrace {
     return null;
   }
 
-  public static getStackTraceFor(e: Exception): StackTrace {
+  public static getStackTraceFor(e: ss.Exception): StackTrace {
     let defaultTrace: StackTrace = new StackTrace(StackTraceMode.Stack, e.message);
     defaultTrace.name = <string>(<any>e).name;
     if (ErrorTrace.getStack) {
-      let stackTraceComputers: Array<(exception: Exception) => StackTrace> = [];
+      let stackTraceComputers: Array<(exception: ss.Exception) => StackTrace> = [];
       stackTraceComputers.push(ErrorTrace.computeStackTraceFromStackTraceProp);
       stackTraceComputers.push(ErrorTrace.computeStackTraceByWalkingCallerChain);
       for (const stackTraceComputer of stackTraceComputers) {
@@ -334,11 +334,11 @@ export class ErrorTrace {
     return defaultTrace;
   }
 
-  public static computeStackTraceByWalkingCallerChain(e: Exception): StackTrace {
+  public static computeStackTraceByWalkingCallerChain(e: ss.Exception): StackTrace {
     let err: Error = (<any>e)._error;
     let functionName: RegExp = new RegExp('function\\s+([_$a-zA-Z\x00a0-\xFFFF][_$a-zA-Z0-9\x00a0-\xFFFF]*)?\\s*\\(', 'i');
     let locations: StackLocation[] = [];
-    let funcs: Object<string, boolean> = {};
+    let funcs: { [key: string]: boolean } = {};
     let recursion: boolean = false;
     let curr: any = null;
     for (curr = (<any>ErrorTrace).computeStackTraceByWalkingCallerChain.caller; ss.isValue(curr) && !recursion; curr = curr.caller) {
@@ -409,7 +409,7 @@ export class ErrorTrace {
     return null;
   }
 
-  private static computeStackTraceFromStackTraceProp(e: Exception): StackTrace {
+  private static computeStackTraceFromStackTraceProp(e: ss.Exception): StackTrace {
     let err: Error = (<any>e)._error;
     if (ss.isNullOrUndefined(err) || ss.isNullOrUndefined(err.stack)) {
       return null;
@@ -494,7 +494,7 @@ export class ErrorTrace {
    * @param e The exception to report.
    * @param rethrow Whether to throw the exception again when done processing it (originally a default of true).
    */
-  public static report(e: Exception, rethrow: boolean): void {
+  public static report(e: ss.Exception, rethrow: boolean): void {
     if (ss.isNullOrUndefined(rethrow)) {
       rethrow = true;
     }
@@ -612,7 +612,7 @@ export class StackTraceAppender extends BaseLogAppender {
     message = this.formatMessage(ss.replaceAllString(message, '\n', '<br />'), args);
     if (level > LoggerLevel.Info) {
       try {
-        throw new Exception('Logged(' + Logger.loggerLevelNames[<number>level] + ', from ' + source.name + '): ' + message);
+        throw new ss.Exception('Logged(' + Logger.loggerLevelNames[<number>level] + ', from ' + source.name + '): ' + message);
       } catch (e) {
         ErrorTrace.report(e, false);
       }

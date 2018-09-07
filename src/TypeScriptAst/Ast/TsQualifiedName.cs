@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsQualifiedName.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -10,7 +10,7 @@ namespace TypeScriptAst.Ast
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Linq;
+    using System.Text;
     using TypeScriptAst.Emit;
 
     /// <summary>
@@ -41,7 +41,20 @@ namespace TypeScriptAst.Ast
 
         public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
 
-        public override string CodeDisplay => $"{string.Join(".", Left.Select(x => x.CodeDisplay))}{Right.CodeDisplay}";
+        public override string CodeDisplay
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                foreach (ITsIdentifier identifier in Left)
+                {
+                    builder.Append(identifier.CodeDisplay).Append('.');
+                }
+
+                builder.Append(Right.CodeDisplay);
+                return builder.ToString();
+            }
+        }
 
         protected override void EmitInternal(Emitter emitter)
         {

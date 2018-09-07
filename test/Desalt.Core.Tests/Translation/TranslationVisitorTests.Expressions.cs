@@ -309,6 +309,32 @@ class C {
                 SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
+        [TestMethod]
+        public async Task ObjectCreationExpression_should_detect_JsDictionary_special_case_initialization()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    private JsDictionary notGeneric = new JsDictionary(""key1"", ""value1"", ""key2"", ""value2"");
+    private JsDictionary<int, bool> generic = new JsDictionary<int, bool>(1, true, 2, false);
+}",
+                @"
+class C {
+  private notGeneric: { [key: string]: any } = {
+    'key1': 'value1',
+    'key2': 'value2'
+  };
+
+  private generic: { [key: number]: boolean } = {
+    1: true,
+    2: false
+  };
+}
+",
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+        }
+
         //// ===========================================================================================================
         //// Invocation Expression Tests
         //// ===========================================================================================================

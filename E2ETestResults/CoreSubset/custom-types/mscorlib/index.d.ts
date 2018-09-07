@@ -6,6 +6,7 @@
 declare namespace ss {
   function isNullOrUndefined(o: any): boolean;
   function isValue(o: any): boolean;
+  function coalesce<T>(a: T, b: T): T;
 
   ///////////////////////////////////////////////////////////////////////////////
   // Object Extensions
@@ -117,8 +118,33 @@ declare namespace ss {
   ///////////////////////////////////////////////////////////////////////////////
   // IDisposable
 
+  interface IDisposable {
+    dispose(): void;
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // StringBuilder
+
+  class StringBuilder {
+    constructor(initialText?: string);
+
+    append(b: boolean): StringBuilder;
+    append(n: number): StringBuilder;
+    append(s: string): StringBuilder;
+    append(o: object): StringBuilder;
+
+    appendChar(c: string): StringBuilder;
+    appendLineChar(c: string): StringBuilder;
+
+    appendLine(b: boolean): StringBuilder;
+    appendLine(n: number): StringBuilder;
+    appendLine(s: string): StringBuilder;
+    appendLine(o: object): StringBuilder;
+
+    clear(): void;
+
+    readonly length: number;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////
   // Random
@@ -128,6 +154,14 @@ declare namespace ss {
 
   ///////////////////////////////////////////////////////////////////////////////
   // Exception
+
+  class Exception {
+    constructor(message?: string, innerException?: Exception);
+
+    readonly message: string;
+    readonly innerException: Exception;
+    readonly stack: string;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // NotImplementedException

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CSharpToTypeScriptTranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -68,7 +68,7 @@ export interface MyInterface {
         {
             await AssertTranslationAsync(
                 "using System.Text; class C { private StringBuilder _builder; }",
-                "import 'mscorlib';\n\nclass C {\n  private _builder: StringBuilder;\n}\n");
+                "import 'mscorlib';\n\nclass C {\n  private _builder: ss.StringBuilder;\n}\n");
         }
     }
 }

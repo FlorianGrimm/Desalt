@@ -16,7 +16,7 @@ import { TypeUtil } from 'NativeJsTypeDefs';
 export class ConsoleLogAppender extends BaseLogAppender {
   private static globalAppender: ConsoleLogAppender;
 
-  private levelMethods: Object<string, any>;
+  private levelMethods: { [key: string]: any };
 
   /**
    */

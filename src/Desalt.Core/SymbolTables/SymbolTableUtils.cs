@@ -125,7 +125,7 @@ namespace Desalt.Core.SymbolTables
             }
 
             // get mscorlib
-            IAssemblySymbol mscorlib = compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
+            IAssemblySymbol mscorlib = GetMscorlibAssemblySymbol(compilation);
 
             IEnumerable<IAssemblySymbol> referencedAssemblySymbols = mscorlib.ToSingleEnumerable()
                 .Concat(externalSymbols.Select(symbol => symbol.ContainingAssembly))
@@ -137,5 +137,13 @@ namespace Desalt.Core.SymbolTables
                 .SelectMany(assemblySymbol => GetScriptableTypesInAssembly(assemblySymbol, cancellationToken))
                 .ToImmutableArray();
         }
+
+        /// <summary>
+        /// Gets the mscolib assembly symbol.
+        /// </summary>
+        /// <param name="compilation">The compilation to use for looking up mscorlib.</param>
+        /// <returns>An <see cref="IAssemblySymbol"/> for mscorlib.</returns>
+        public static IAssemblySymbol GetMscorlibAssemblySymbol(Compilation compilation) =>
+            compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
     }
 }

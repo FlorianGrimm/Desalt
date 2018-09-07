@@ -35,9 +35,9 @@ export const enum UIMetricType {
  * Make sure to keep both of them in sync.
  */
 export class LayoutMetrics {
-  private static defaultDb: Object<UIMetricType, Metric>;
+  private static defaultDb: { [key: string]: Metric };
 
-  private static metricToClientMetric: Object<UIMetricType, ClientUIMetricType> = {};
+  private static metricToClientMetric: { [key: string]: ClientUIMetricType } = {};
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
@@ -131,7 +131,7 @@ export class LayoutMetrics {
   }
 
   public toJson(): string {
-    let sb: StringBuilder = new StringBuilder();
+    let sb: ss.StringBuilder = new ss.StringBuilder();
     sb.append('{\n');
     let length: number = 0;
     for (const entry of LayoutMetrics.defaultDb) {

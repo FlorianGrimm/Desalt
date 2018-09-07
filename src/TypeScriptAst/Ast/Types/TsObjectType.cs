@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsObjectType.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -20,9 +20,10 @@ namespace TypeScriptAst.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null)
+        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null, bool forceSingleLine = false)
         {
             TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
+            ForceSingleLine = forceSingleLine;
         }
 
         //// ===========================================================================================================
@@ -30,6 +31,8 @@ namespace TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public ImmutableArray<ITsTypeMember> TypeMembers { get; }
+
+        public bool ForceSingleLine { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -39,15 +42,19 @@ namespace TypeScriptAst.Ast.Types
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        protected override void EmitInternal(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter)
+        {
+            bool multiLine = !ForceSingleLine;
             emitter.WriteList(
                 TypeMembers,
                 indent: true,
-                prefix: "{", suffix: "}",
+                prefix: ForceSingleLine ? "{ " : "{",
+                suffix: ForceSingleLine ? " }" : "}",
                 itemDelimiter: ";" + emitter.Options.Newline,
-                delimiterAfterLastItem: true,
-                newLineAfterPrefix: true,
-                newLineAfterLastItem: true,
+                delimiterAfterLastItem: multiLine,
+                newLineAfterPrefix: multiLine,
+                newLineAfterLastItem: multiLine,
                 emptyContents: "{}");
+        }
     }
 }
