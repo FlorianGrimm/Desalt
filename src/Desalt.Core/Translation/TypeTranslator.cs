@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TypeTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -169,10 +169,15 @@ namespace Desalt.Core.Translation
             var namedTypeSymbol = symbol as INamedTypeSymbol;
 
             // special case: Nullable<T> should be translated as 'T | null'
-            if (namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() == "System.Nullable<T>")
+            if (TryTranslateNullableT(
+                namedTypeSymbol,
+                typesToImport,
+                diagnostics,
+                getLocationFunc,
+                out ITsType unionType))
             {
-                ITsType translatedGenericArgument = TranslateSymbol(
-                    namedTypeSymbol.TypeArguments[0],
+                return unionType;
+            }
                     typesToImport,
                     diagnostics,
                     getLocationFunc);
@@ -251,6 +256,33 @@ namespace Desalt.Core.Translation
             }
 
             return Factory.TypeReference(Factory.Identifier(scriptName), translatedTypeMembers);
+        }
+
+        /// <summary>
+        /// Translates the symbol if it is an instance of <see cref="Nullable{T}"/>.
+        /// </summary>
+        private bool TryTranslateNullableT(
+            INamedTypeSymbol namedTypeSymbol,
+            ISet<ISymbol> typesToImport,
+            ICollection<Diagnostic> diagnostics,
+            Func<Location> getLocationFunc,
+            out ITsType unionType)
+        {
+            // special case: Nullable<T> should be translated as 'T | null'
+            if (namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() != "System.Nullable<T>")
+            {
+                unionType = null;
+                return false;
+            }
+
+            ITsType translatedGenericArgument = TranslateSymbol(
+                namedTypeSymbol.TypeArguments[0],
+                typesToImport,
+                diagnostics,
+                getLocationFunc);
+
+            unionType = Factory.UnionType(translatedGenericArgument, Factory.NullType);
+            return true;
         }
 
         /// <summary>
