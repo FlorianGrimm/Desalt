@@ -55,7 +55,7 @@ export abstract class BaseLogAppender implements ILogAppender {
     let argNum: number = 0;
     let prevPercent: boolean = false;
     for (let i = 0; i < message.length; i++) {
-      let currChar: Int32 = message.charCodeAt(i);
+      let currChar: number = message.charCodeAt(i);
       if (currChar === '%') {
         if (prevPercent) {
           sb.append('%');

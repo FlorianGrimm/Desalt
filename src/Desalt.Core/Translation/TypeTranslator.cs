@@ -32,6 +32,7 @@ namespace Desalt.Core.Translation
             (string nativeTypeName, ITsType translatedType)>
         {
             // Number Types
+            ["System.Char"] = ("number", Factory.NumberType),
             ["System.Byte"] = ("number", Factory.NumberType),
             ["System.SByte"] = ("number", Factory.NumberType),
             ["System.UInt16"] = ("number", Factory.NumberType),

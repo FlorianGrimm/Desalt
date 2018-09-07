@@ -96,7 +96,7 @@ export class MiscUtil {
    */
   public static encodeForWG(valueToEncode: string): string {
     let usernameValidChars: Object<string, string> = {};
-    let addCodes: (char: Int32, char: Int32) => void = (from: Int32, to: Int32) => {
+    let addCodes: (char: number, char: number) => void = (from: number, to: number) => {
       for (let i = from; i <= to; i++) {
         let s: string = string.fromCharCode(i);
         usernameValidChars[s] = s;
