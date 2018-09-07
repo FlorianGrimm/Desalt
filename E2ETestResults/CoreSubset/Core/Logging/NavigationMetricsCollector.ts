@@ -37,7 +37,7 @@ export class NavigationMetricsCollector {
    */
   private static navigationMetricsOrder: NavigationMetricsName[] = NavigationMetricsName.navigationStart;
 
-  private static navMetrics: Object<NavigationMetricsName, number> = null;
+  private static navMetrics: { [key: string]: number } = null;
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
@@ -66,7 +66,7 @@ export class NavigationMetricsCollector {
           metric = (metric === 0 ? 0 : metric - start);
           metricArray.push(metric);
         }
-        let parameters: Object<MetricsParameterName, any> = {};
+        let parameters: { [key: string]: any } = {};
         parameters[MetricsParameterName.values] = metricArray;
         let evt: MetricsEvent = new MetricsEvent(MetricsEventType.Navigation, MetricsSuites.Navigation, parameters);
         MetricsController.logEvent(evt);

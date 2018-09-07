@@ -285,7 +285,7 @@ export class Logger {
   }
 
   private static setupUrlFilters(): void {
-    let queryParams: Object<string, string[]> = MiscUtil.getUriQueryParameters(window.self.location.search);
+    let queryParams: { [key: string]: string[] } = MiscUtil.getUriQueryParameters(window.self.location.search);
     if (!ss.keyExists(queryParams, Logger.logQueryParam)) {
       return;
     }

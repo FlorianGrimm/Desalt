@@ -53,12 +53,12 @@ export class MetricsLogger {
   /**
    * Mapping of metrics parameter names to verbose/debugging names
    */
-  private static readonly debugParamNames: Object<MetricsParameterName, string>;
+  private static readonly debugParamNames: { [key: string]: string };
 
   /**
    * Mapping of metrics event types to verbose/debugging type names
    */
-  private static readonly debugEventNames: Object<MetricsEventType, string>;
+  private static readonly debugEventNames: { [key: string]: string };
 
   /**
    * Singleton instance for the class
@@ -259,7 +259,7 @@ export class MetricsLogger {
   /**
    * Given a dictionary of values, output the list of name+value pairs to the string builder
    */
-  private static formatDictionaryValues(strBuilder: ss.StringBuilder, dict: Object<string, any>, verbose: boolean): void {
+  private static formatDictionaryValues(strBuilder: ss.StringBuilder, dict: { [key: string]: any }, verbose: boolean): void {
     let delimiter: string = verbose ? ', ' : ',';
     let propSeparator: string = verbose ? ': ' : ':';
     let propCount: number = dict.count;
@@ -301,7 +301,7 @@ export class MetricsLogger {
         } else
           if (type === 'object') {
             strBuilder.append('{');
-            let dict: Object = Object.getDictionary(value);
+            let dict: { [key: string]: any } = Object.getDictionary(value);
             MetricsLogger.formatDictionaryValues(strBuilder, dict, verbose);
             strBuilder.append('}');
           } else {

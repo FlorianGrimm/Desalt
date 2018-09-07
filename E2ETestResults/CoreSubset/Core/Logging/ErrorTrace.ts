@@ -48,7 +48,7 @@ export class ErrorTrace {
 
   public static lastException: ss.Exception;
 
-  private static readonly sourceCache: Object<Object, string[]> = {};
+  private static readonly sourceCache: { [key: string]: string[] } = {};
 
   private static queuedTraces: StackTrace[] = [];
 
@@ -338,7 +338,7 @@ export class ErrorTrace {
     let err: Error = (<any>e)._error;
     let functionName: RegExp = new RegExp('function\\s+([_$a-zA-Z\x00a0-\xFFFF][_$a-zA-Z0-9\x00a0-\xFFFF]*)?\\s*\\(', 'i');
     let locations: StackLocation[] = [];
-    let funcs: Object<string, boolean> = {};
+    let funcs: { [key: string]: boolean } = {};
     let recursion: boolean = false;
     let curr: any = null;
     for (curr = (<any>ErrorTrace).computeStackTraceByWalkingCallerChain.caller; ss.isValue(curr) && !recursion; curr = curr.caller) {

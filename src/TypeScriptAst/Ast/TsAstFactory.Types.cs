@@ -22,6 +22,9 @@ namespace TypeScriptAst.Ast
 
         public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
 
+        public static ITsObjectType ObjectType(bool forceSingleLine, params ITsTypeMember[] typeMembers) =>
+            new TsObjectType(typeMembers, forceSingleLine);
+
         public static ITsArrayType ArrayType(ITsType type) => new TsArrayType(type);
 
         public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>

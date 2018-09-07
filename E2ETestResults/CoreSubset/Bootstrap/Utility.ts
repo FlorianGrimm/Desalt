@@ -70,12 +70,12 @@ export class Utility {
     return false;
   }
 
-  public static get urlLocationSearchParams(): Object<string, string> {
+  public static get urlLocationSearchParams(): { [key: string]: string } {
     return Utility.parseQueryParamString(Utility.urlLocationSearch.substring(1));
   }
 
-  public static get urlLocationHashData(): Object<string, string> {
-    let urlHashData: Object<string, string> = {};
+  public static get urlLocationHashData(): { [key: string]: string } {
+    let urlHashData: { [key: string]: string } = {};
     let fragmentId: string = Utility.urlLocationHash;
     if (fragmentId.length < 2) {
       return {};
@@ -96,7 +96,7 @@ export class Utility {
     return urlHashData;
   }
 
-  public static set urlLocationHashData(value: Object<string, string>) {
+  public static set urlLocationHashData(value: { [key: string]: string }) {
     let newFragmentId: ss.StringBuilder = new ss.StringBuilder();
     let first: boolean = true;
     let appendSeparator: () => void = () => {
@@ -147,8 +147,8 @@ export class Utility {
     return Utility.embedMode === EmbedMode.EmbeddedInWg ? window.parent : window.self;
   }
 
-  private static parseQueryParamString(urlStr: string): Object<string, string> {
-    let urlData: Object<string, string> = {};
+  private static parseQueryParamString(urlStr: string): { [key: string]: string } {
+    let urlData: { [key: string]: string } = {};
     let pairs: string[] = urlStr.split('&');
     for (const pair of pairs) {
       let keyVal: string[] = pair.split('=');
@@ -469,12 +469,12 @@ export class Utility {
   }
 
   public static get hashClientNumber(): string {
-    let info: Object<string, string> = Utility.urlLocationHashData;
+    let info: { [key: string]: string } = Utility.urlLocationHashData;
     return ss.isValue(info) && ss.isValue(info[Utility.cLIENTNO]) ? info[Utility.cLIENTNO] : '';
   }
 
   public static addToUrlHash(key: string, value: string): void {
-    let urlHash: Object<string, string> = Utility.urlLocationHashData;
+    let urlHash: { [key: string]: string } = Utility.urlLocationHashData;
     urlHash[key] = value;
     Utility.urlLocationHashData = urlHash;
   }
@@ -490,12 +490,12 @@ export class Utility {
   }
 
   public static getValueFromUrlHash(key: string): string {
-    let urlHash: Object<string, string> = Utility.urlLocationHashData;
+    let urlHash: { [key: string]: string } = Utility.urlLocationHashData;
     return ss.keyExists(urlHash, key) ? urlHash[key] : '';
   }
 
   public static removeEntryFromUrlHash(key: string): void {
-    let fragInfo: Object<string, string> = Utility.urlLocationHashData;
+    let fragInfo: { [key: string]: string } = Utility.urlLocationHashData;
     delete fragInfo[key];
     Utility.urlLocationHashData = fragInfo;
   }

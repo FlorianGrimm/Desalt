@@ -23,13 +23,13 @@ export class MiscUtil {
     return WindowHelper.getLocation(window).pathname;
   }
 
-  public static get urlPathnameParts(): Object<PathnameKey, string> {
+  public static get urlPathnameParts(): { [key: number]: string } {
     let pathname: string = MiscUtil.pathName;
     let siteRoot: string = tsConfig.site_root;
     let index: number = pathname.indexOf(siteRoot, 0);
     let actualPath: string = pathname.substr(index + siteRoot.length);
     let pathnameParts: string[] = actualPath.split('/');
-    let pathnameProps: Object<PathnameKey, string> = {};
+    let pathnameProps: { [key: number]: string } = {};
     pathnameProps[PathnameKey.WorkbookName] = pathnameParts[<number>PathnameKey.WorkbookName];
     pathnameProps[PathnameKey.SheetId] = pathnameParts[<number>PathnameKey.SheetId];
     pathnameProps[PathnameKey.AuthoringSheet] = pathnameParts[<number>PathnameKey.AuthoringSheet];
@@ -65,7 +65,7 @@ export class MiscUtil {
    * not included as a key will be escaped.
    * @returns The encoded string
    */
-  public static percentEncode(valueToEncode: string, unreservedChars: Object<string, string>): string {
+  public static percentEncode(valueToEncode: string, unreservedChars: { [key: string]: string }): string {
     valueToEncode = string.encodeURIComponent(valueToEncode);
     if (ss.isNullOrUndefined(unreservedChars)) {
       return valueToEncode;
@@ -95,7 +95,7 @@ export class MiscUtil {
    * @returns The encoded string
    */
   public static encodeForWG(valueToEncode: string): string {
-    let usernameValidChars: Object<string, string> = {};
+    let usernameValidChars: { [key: string]: string } = {};
     let addCodes: (char: number, char: number) => void = (from: number, to: number) => {
       for (let i = from; i <= to; i++) {
         let s: string = string.fromCharCode(i);
@@ -141,7 +141,7 @@ export class MiscUtil {
     if (ss.isNullOrUndefined(args)) {
       return true;
     }
-    let dict: Object<string, number> = JsDictionary<string, number>.getDictionary(args);
+    let dict: { [key: string]: number } = JsDictionary<string, number>.getDictionary(args);
     if (ss.isValue(dict['length']) && dict['length'] === 0) {
       return true;
     }
@@ -201,8 +201,8 @@ export class MiscUtil {
    * @param uri The URI to decode, must contain a ? in order to indicate the start of params
    * @returns A set of key value pairs
    */
-  public static getUriQueryParameters(uri: Object): Object<string, string[]> {
-    let parameters: Object<string, string[]> = {};
+  public static getUriQueryParameters(uri: Object): { [key: string]: string[] } {
+    let parameters: { [key: string]: string[] } = {};
     if (ss.isNullOrUndefined(uri)) {
       return parameters;
     }
@@ -242,7 +242,7 @@ export class MiscUtil {
    * @param parameters The set of query paramters to use
    * @returns A uri with the query replaced(or appended)
    */
-  public static replaceUriQueryParameters(uri: Object, parameters: Object<string, string[]>): Object {
+  public static replaceUriQueryParameters(uri: Object, parameters: { [key: string]: string[] }): Object {
     if (parameters.count === 0) {
       return uri;
     }

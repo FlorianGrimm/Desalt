@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TypeTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -178,10 +178,16 @@ namespace Desalt.Core.Translation
             {
                 return unionType;
             }
-                    typesToImport,
-                    diagnostics,
-                    getLocationFunc);
-                return Factory.UnionType(translatedGenericArgument, Factory.NullType);
+
+            // special case: JsDictionary<TKey, TValue> should be translated as `{ [key: string]: TValue }`
+            if (TryTranslateJsDictionary(
+                namedTypeSymbol,
+                typesToImport,
+                diagnostics,
+                getLocationFunc,
+                out ITsType objectType))
+            {
+                return objectType;
             }
 
             // translate arrays
@@ -282,6 +288,61 @@ namespace Desalt.Core.Translation
                 getLocationFunc);
 
             unionType = Factory.UnionType(translatedGenericArgument, Factory.NullType);
+            return true;
+        }
+
+        /// <summary>
+        /// Translates the symbol if it is an instance of <c>JsDictionary{TKey, TValue}</c>.
+        /// </summary>
+        private bool TryTranslateJsDictionary(
+            INamedTypeSymbol namedTypeSymbol,
+            ISet<ISymbol> typesToImport,
+            ICollection<Diagnostic> diagnostics,
+            Func<Location> getLocationFunc,
+            out ITsType objectType)
+        {
+            // special case: JsDictionary<TKey, TValue> should be translated as `{ [key: string]: TValue }`
+            if (!JsDictionaryTranslator.IsJsDictionary(namedTypeSymbol))
+            {
+                objectType = null;
+                return false;
+            }
+
+            bool isParameterNumberType = false;
+            ITsType translatedValueType = Factory.AnyType;
+
+            // examine the type parameters for the key and value types
+            if (!namedTypeSymbol.TypeArguments.IsEmpty)
+            {
+                // see if the key is a number type or a string type
+                ITypeSymbol keySymbol = namedTypeSymbol.TypeArguments[0];
+                isParameterNumberType = s_nativeTypeMap.TryGetValue(
+                        keySymbol.ToDisplayString(s_displayFormat),
+                        out (string nativeTypeName, ITsType translatedType) value) &&
+                    value.nativeTypeName == "number";
+
+                // we also need to check enums
+                if (keySymbol.TypeKind == TypeKind.Enum)
+                {
+                    // [NamedValues] are string keys
+                    // [NumericValues] are number keys
+                    isParameterNumberType = !keySymbol.GetFlagAttribute(SaltarelleAttributeName.NamedValues);
+                }
+
+                translatedValueType = TranslateSymbol(
+                    namedTypeSymbol.TypeArguments[1],
+                    typesToImport,
+                    diagnostics,
+                    getLocationFunc);
+            }
+
+            objectType = Factory.ObjectType(
+                forceSingleLine: true,
+                typeMembers: Factory.IndexSignature(
+                    Factory.Identifier("key"),
+                    isParameterNumberType: isParameterNumberType,
+                    returnType: translatedValueType));
+
             return true;
         }
 

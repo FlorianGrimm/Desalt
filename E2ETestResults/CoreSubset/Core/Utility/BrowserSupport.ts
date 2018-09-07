@@ -522,7 +522,7 @@ export class BrowserSupport {
   }
 
   private static detectTransitionSupport(): void {
-    let transitions: Object<string, string> = new JsDictionary<string, string>('transition', 'transition', 'webkitTransition', '-webkit-transition', 'msTransition', '-ms-transition', 'mozTransition', '-moz-transition', 'oTransition', '-o-transition');
+    let transitions: { [key: string]: string } = new JsDictionary<string, string>('transition', 'transition', 'webkitTransition', '-webkit-transition', 'msTransition', '-ms-transition', 'mozTransition', '-moz-transition', 'oTransition', '-o-transition');
     for (const t of transitions) {
       if (!t.keyin) {
         continue;
@@ -533,7 +533,7 @@ export class BrowserSupport {
   }
 
   private static detectTransformSupport(): void {
-    let transforms: Object<string, string> = new JsDictionary<string, string>('transform', 'transform', 'webkitTransform', '-webkit-transform', 'msTransform', '-ms-transform', 'mozTransform', '-moz-transform', 'oTransform', '-o-transform');
+    let transforms: { [key: string]: string } = new JsDictionary<string, string>('transform', 'transform', 'webkitTransform', '-webkit-transform', 'msTransform', '-ms-transform', 'mozTransform', '-moz-transform', 'oTransform', '-o-transform');
     for (const t of transforms) {
       if (!t.keyin) {
         continue;

@@ -35,6 +35,7 @@ namespace Desalt.Core.Tests.Translation
             // parse the C# code and get the root syntax node
             string code = $@"
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 class Foo
@@ -73,15 +74,14 @@ class Foo
                 var translator = new TypeTranslator(scriptNameTable);
                 var diagnostics = new List<Diagnostic>();
 
-                translator.TranslateSymbol(
+                ITsType actualTranslation = translator.TranslateSymbol(
                         typeSymbol,
                         typesToImport: null,
                         diagnostics: diagnostics,
-                        getLocationFunc: variableDeclaration.Type.GetLocation)
-                    .Should()
-                    .BeEquivalentTo(expectedType);
+                        getLocationFunc: variableDeclaration.Type.GetLocation);
 
                 diagnostics.Should().BeEmpty();
+                actualTranslation.Should().BeEquivalentTo(expectedType);
             }
         }
 
@@ -175,6 +175,69 @@ class Foo
         public async Task TypeTranslator_should_handle_Nullable_T_types()
         {
             await AssertTypeTranslation("int?", Factory.UnionType(Factory.NumberType, Factory.NullType));
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_non_generic_JsDictionary_correctly()
+        {
+            await AssertTypeTranslation(
+                "JsDictionary",
+                Factory.ObjectType(
+                    Factory.IndexSignature(
+                        Factory.Identifier("key"),
+                        isParameterNumberType: false,
+                        returnType: Factory.AnyType)));
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_JsDictionary_with_string_type_keys_correctly()
+        {
+            await AssertTypeTranslation(
+                "JsDictionary<string, JsDate>",
+                Factory.ObjectType(
+                    Factory.IndexSignature(
+                        Factory.Identifier("key"),
+                        isParameterNumberType: false,
+                        returnType: Factory.TypeReference(Factory.Identifier("Date")))));
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_JsDictionary_with_number_type_keys_correctly()
+        {
+            // jQueryApi.EffectEasing is defined as [NamedValues]
+            await AssertTypeTranslation(
+                "JsDictionary<char, double>",
+                Factory.ObjectType(
+                    Factory.IndexSignature(
+                        Factory.Identifier("key"),
+                        isParameterNumberType: true,
+                        returnType: Factory.NumberType)));
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_JsDictionary_with_NamedValues_enum_type_keys_correctly()
+        {
+            // jQueryApi.EffectEasing is defined as [NamedValues]
+            await AssertTypeTranslation(
+                "JsDictionary<jQueryApi.EffectEasing, double>",
+                Factory.ObjectType(
+                    Factory.IndexSignature(
+                        Factory.Identifier("key"),
+                        isParameterNumberType: false,
+                        returnType: Factory.NumberType)));
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_JsDictionary_with_NumericValues_enum_type_keys_correctly()
+        {
+            // System.DayOfWeek is implicitly defined as [NumericValues]
+            await AssertTypeTranslation(
+                "JsDictionary<DayOfWeek, string>",
+                Factory.ObjectType(
+                    Factory.IndexSignature(
+                        Factory.Identifier("key"),
+                        isParameterNumberType: true,
+                        returnType: Factory.StringType)));
         }
     }
 }

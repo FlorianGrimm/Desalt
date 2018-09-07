@@ -50,7 +50,7 @@ export class MetricsController {
 
   private static $instance: MetricsController;
 
-  private static suiteNameLookup: Object<string, MetricsSuites>;
+  private static suiteNameLookup: { [key: string]: MetricsSuites };
 
   private nextContextID: number = 0;
 
@@ -134,7 +134,7 @@ export class MetricsController {
    * Or instead explicitly call the dispose() method on the returned MetricsContext object to complete the timing
    * of this context.
    */
-  public static createContext(description: string, suite: MetricsSuites = MetricsSuites.Debug, props: Object<string, any> = null): MetricsContext {
+  public static createContext(description: string, suite: MetricsSuites = MetricsSuites.Debug, props: { [key: string]: any } = null): MetricsContext {
     if (ss.isNullOrUndefined(suite)) {
       suite = MetricsSuites.Debug;
     }
@@ -228,8 +228,8 @@ export class MetricsController {
     MetricsController.$instance.logContextEnd(context);
   }
 
-  private static buildMetricsEventCommonParameters(context: MetricsContext): Object<MetricsParameterName, any> {
-    let parameters: Object<MetricsParameterName, any> = {};
+  private static buildMetricsEventCommonParameters(context: MetricsContext): { [key: string]: any } {
+    let parameters: { [key: string]: any } = {};
     parameters[MetricsParameterName.id] = context.id;
     parameters[MetricsParameterName.description] = context.description;
     if (context.properties.count > 0) {
@@ -251,7 +251,7 @@ export class MetricsController {
    * Log the current session identifying information so we can correlate it with the metrics events
    */
   private logSessionInfo(): void {
-    let parameters: Object<MetricsParameterName, any> = {};
+    let parameters: { [key: string]: any } = {};
     parameters[MetricsParameterName.id] = this.sessionId;
     parameters[MetricsParameterName.sessionId] = this.metricSessionId;
     parameters[MetricsParameterName.workbook] = this.workbookName;
@@ -264,7 +264,7 @@ export class MetricsController {
    * Logs an event for the close of a MetricsContext
    */
   private logContextEnd(context: MetricsContext): void {
-    let parameters: Object<MetricsParameterName, any> = MetricsController.buildMetricsEventCommonParameters(context);
+    let parameters: { [key: string]: any } = MetricsController.buildMetricsEventCommonParameters(context);
     parameters[MetricsParameterName.time] = context.endTime;
     parameters[MetricsParameterName.elapsed] = context.elapsedMS();
     MetricsController.logEvent(new MetricsEvent(MetricsEventType.ContextEnd, context.metricSuite, parameters));
@@ -284,7 +284,7 @@ export class MetricsContext implements ss.IDisposable {
 
   public readonly description: string;
 
-  private readonly propBag: Object<string, any>;
+  private readonly propBag: { [key: string]: any };
 
   protected start: number;
 
@@ -292,7 +292,7 @@ export class MetricsContext implements ss.IDisposable {
 
   protected open: boolean;
 
-  public constructor(contextID: number, suite: MetricsSuites, desc: string, props: Object<string, any>) {
+  public constructor(contextID: number, suite: MetricsSuites, desc: string, props: { [key: string]: any }) {
     this.id = contextID;
     this.metricSuite = suite;
     this.description = desc;
@@ -308,7 +308,7 @@ export class MetricsContext implements ss.IDisposable {
     return this.end;
   }
 
-  public get properties(): Object<string, any> {
+  public get properties(): { [key: string]: any } {
     return this.propBag;
   }
 
@@ -377,9 +377,9 @@ export class MetricsEvent {
 
   public readonly metricSuite: MetricsSuites;
 
-  public readonly parameters: Object<MetricsParameterName, any>;
+  public readonly parameters: { [key: string]: any };
 
-  public constructor(evtType: MetricsEventType, suite: MetricsSuites, eventParams: Object<MetricsParameterName, any>) {
+  public constructor(evtType: MetricsEventType, suite: MetricsSuites, eventParams: { [key: string]: any }) {
     this.eventType = evtType;
     this.metricSuite = suite;
     this.parameters = eventParams;

@@ -35,9 +35,9 @@ export const enum UIMetricType {
  * Make sure to keep both of them in sync.
  */
 export class LayoutMetrics {
-  private static defaultDb: Object<UIMetricType, Metric>;
+  private static defaultDb: { [key: string]: Metric };
 
-  private static metricToClientMetric: Object<UIMetricType, ClientUIMetricType> = {};
+  private static metricToClientMetric: { [key: string]: ClientUIMetricType } = {};
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
