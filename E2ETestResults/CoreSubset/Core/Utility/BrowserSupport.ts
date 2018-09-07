@@ -424,7 +424,14 @@ export class BrowserSupport {
     let body: HTMLElement = window.document.body;
     if (BrowserSupport.isWebKit && BrowserSupport.isMobile) {
       let target: Object = $.$('<div></div>');
-      target.css(new Object('position', 'absolute', 'top', '300px', 'left', '300px', 'width', '25px', 'height', '25px', 'z-index', '10000'));
+      target.css({
+        'position': 'absolute',
+        'top': '300px',
+        'left': '300px',
+        'width': '25px',
+        'height': '25px',
+        'z-index': '10000'
+      });
       let elem: HTMLElement = target.get(0);
       try {
         body.appendChild(elem);
@@ -522,7 +529,13 @@ export class BrowserSupport {
   }
 
   private static detectTransitionSupport(): void {
-    let transitions: { [key: string]: string } = new JsDictionary<string, string>('transition', 'transition', 'webkitTransition', '-webkit-transition', 'msTransition', '-ms-transition', 'mozTransition', '-moz-transition', 'oTransition', '-o-transition');
+    let transitions: { [key: string]: string } = {
+      'transition': 'transition',
+      'webkitTransition': '-webkit-transition',
+      'msTransition': '-ms-transition',
+      'mozTransition': '-moz-transition',
+      'oTransition': '-o-transition'
+    };
     for (const t of transitions) {
       if (!t.keyin) {
         continue;
@@ -533,7 +546,13 @@ export class BrowserSupport {
   }
 
   private static detectTransformSupport(): void {
-    let transforms: { [key: string]: string } = new JsDictionary<string, string>('transform', 'transform', 'webkitTransform', '-webkit-transform', 'msTransform', '-ms-transform', 'mozTransform', '-moz-transform', 'oTransform', '-o-transform');
+    let transforms: { [key: string]: string } = {
+      'transform': 'transform',
+      'webkitTransform': '-webkit-transform',
+      'msTransform': '-ms-transform',
+      'mozTransform': '-moz-transform',
+      'oTransform': '-o-transform'
+    };
     for (const t of transforms) {
       if (!t.keyin) {
         continue;
