@@ -109,9 +109,9 @@ namespace Desalt.Core.Translation
         /// <returns>true if the type name is a native TypeScript type; otherwise, false.</returns>
         public static bool IsNativeTypeScriptTypeName(string scriptNameOfType)
         {
-            // special cases that aren't in the table
             switch (scriptNameOfType)
             {
+                // special cases that aren't in the table
                 case "Object":
                 case "Error":
                     return true;
@@ -135,6 +135,17 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Returns a value indicating if the specified symbol represents a <see cref="Nullable{T}"/> instance.
+        /// </summary>
+        /// <param name="symbol">The symbol to check.</param>
+        /// <returns>True if the symbol is an instance of <see cref="Nullable{T}"/>; otherwise, false.</returns>
+        public static bool IsNullableType(ITypeSymbol symbol)
+        {
+            var namedTypeSymbol = symbol as INamedTypeSymbol;
+            return namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() == "System.Nullable<T>";
+        }
+
+        /// <summary>
         /// Translates a type symbol into the associated TypeScript equivalent.
         /// </summary>
         /// <param name="symbol">The type symbol to translate.</param>
@@ -155,6 +166,20 @@ namespace Desalt.Core.Translation
             typesToImport = typesToImport ?? new HashSet<ISymbol>();
             diagnostics = diagnostics ?? new List<Diagnostic>();
 
+            var namedTypeSymbol = symbol as INamedTypeSymbol;
+
+            // special case: Nullable<T> should be translated as 'T | null'
+            if (namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() == "System.Nullable<T>")
+            {
+                ITsType translatedGenericArgument = TranslateSymbol(
+                    namedTypeSymbol.TypeArguments[0],
+                    typesToImport,
+                    diagnostics,
+                    getLocationFunc);
+                return Factory.UnionType(translatedGenericArgument, Factory.NullType);
+            }
+
+            // translate arrays
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
                 ITsType elementType = TranslateSymbol(
@@ -176,7 +201,7 @@ namespace Desalt.Core.Translation
             // Action<T1, ...> and Func<T1, ...> are special cases
             if (fullTypeName.IsOneOf("System.Action", "System.Func"))
             {
-                return TranslateFunc((INamedTypeSymbol)symbol, typesToImport, diagnostics, getLocationFunc);
+                return TranslateFunc(namedTypeSymbol, typesToImport, diagnostics, getLocationFunc);
             }
 
             // type parameters don't have a script name - just use their name
@@ -184,8 +209,6 @@ namespace Desalt.Core.Translation
             {
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
-
-            var namedTypeSymbol = symbol as INamedTypeSymbol;
 
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
             if (scriptName == null)

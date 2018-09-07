@@ -322,7 +322,7 @@ export class MiscUtil {
    * Returns null so that you can clear the timeout and assign in one statement, e.g.:
    * myTimeout = MiscUtil.ClearTimeout(myTimeout);
    */
-  public static clearTimeout(handle: Nullable<number>): Nullable<number> {
+  public static clearTimeout(handle: number | null): number | null {
     if (handle.hasValue) {
       window.clearTimeout(handle.value);
     }

@@ -86,12 +86,12 @@ export class MetricsLogger {
    * Cached id of timer (via window.setTimeout) for callback to clean up beacon
    * images that are no longer needed
    */
-  private beaconCleanupTimerId: Nullable<number>;
+  private beaconCleanupTimerId: number | null;
 
   /**
    * Cached timerID for buffer processing timer
    */
-  private bufferProcessTimerId: Nullable<number>;
+  private bufferProcessTimerId: number | null;
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.

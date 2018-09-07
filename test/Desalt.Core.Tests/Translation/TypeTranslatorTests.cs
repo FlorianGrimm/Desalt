@@ -170,5 +170,11 @@ class Foo
                 Factory.ArrayType(Factory.StringType),
                 SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_handle_Nullable_T_types()
+        {
+            await AssertTypeTranslation("int?", Factory.UnionType(Factory.NumberType, Factory.NullType));
+        }
     }
 }
