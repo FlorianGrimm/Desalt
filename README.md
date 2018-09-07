@@ -30,3 +30,17 @@ compiler that was no longer supported. Additionally, new code within Tableau was
 being written predominately in TypeScript and we wanted a way to easily port our
 existing Saltarelle-based code to TypeScript. Hence, Desalt, written in
 my spare time over the course of several months.
+
+## Status
+The project is mostly working, but I don't yet have an entry point (either a CLI
+or an MSBuild task). I have an end-to-end test that runs over real code taken
+from our "Core" library at Tableau and am using that to implement features
+little by little.
+
+In short, this is not ready for prime time yet, although it does quite a bit
+already. Here's a snapshot of a recent build with the C# on the left and the
+TypeScript on the right.
+
+![Desalt screen shot](DesaltScreenShot.png)
+
+The remaining features are tracked [here](https://github.com/jrockwood/Desalt/projects/1).
