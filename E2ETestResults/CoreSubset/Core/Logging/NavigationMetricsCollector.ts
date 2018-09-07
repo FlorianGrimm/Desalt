@@ -4,28 +4,28 @@ import 'mscorlib';
 
 import { _ } from 'Underscore';
 
-export enum NavigationMetricsName {
-  navigationStart,
-  unloadEventStart,
-  unloadEventEnd,
-  redirectStart,
-  redirectEnd,
-  fetchStart,
-  domainLookupStart,
-  domainLookupEnd,
-  connectStart,
-  connectEnd,
-  secureConnectionStart,
-  requestStart,
-  responseStart,
-  responseEnd,
-  domLoading,
-  domInteractive,
-  domContentLoadedEventStart,
-  domContentLoadedEventEnd,
-  domComplete,
-  loadEventStart,
-  loadEventEnd,
+export const enum NavigationMetricsName {
+  navigationStart = 'navigationStart',
+  unloadEventStart = 'unloadEventStart',
+  unloadEventEnd = 'unloadEventEnd',
+  redirectStart = 'redirectStart',
+  redirectEnd = 'redirectEnd',
+  fetchStart = 'fetchStart',
+  domainLookupStart = 'domainLookupStart',
+  domainLookupEnd = 'domainLookupEnd',
+  connectStart = 'connectStart',
+  connectEnd = 'connectEnd',
+  secureConnectionStart = 'secureConnectionStart',
+  requestStart = 'requestStart',
+  responseStart = 'responseStart',
+  responseEnd = 'responseEnd',
+  domLoading = 'domLoading',
+  domInteractive = 'domInteractive',
+  domContentLoadedEventStart = 'domContentLoadedEventStart',
+  domContentLoadedEventEnd = 'domContentLoadedEventEnd',
+  domComplete = 'domComplete',
+  loadEventStart = 'loadEventStart',
+  loadEventEnd = 'loadEventEnd',
 }
 
 /**
@@ -67,8 +67,8 @@ export class NavigationMetricsCollector {
           metricArray.push(metric);
         }
         let parameters: Object<MetricsParameterName, any> = {};
-        parameters[MetricsParameterName.v] = metricArray;
-        let evt: MetricsEvent = new MetricsEvent(MetricsEventType.nav, MetricsSuites.navigation, parameters);
+        parameters[MetricsParameterName.values] = metricArray;
+        let evt: MetricsEvent = new MetricsEvent(MetricsEventType.Navigation, MetricsSuites.Navigation, parameters);
         MetricsController.logEvent(evt);
       }
     }

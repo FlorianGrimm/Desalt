@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CompilerOptions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -130,6 +130,9 @@ namespace Desalt.Core
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public CompilerOptions WithRenameRules(RenameRules value) =>
+            RenameRules.Equals(value) ? this : new CompilerOptions(this, renameRules: value);
 
         public CompilerOptions WithOutputPath(string value)
         {

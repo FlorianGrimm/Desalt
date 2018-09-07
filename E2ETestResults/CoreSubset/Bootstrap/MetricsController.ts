@@ -5,39 +5,39 @@ import { tsConfig } from 'TypeDefs';
 import { TypeUtil } from 'NativeJsTypeDefs';
 
 export enum MetricsSuites {
-  none = 0x0,
-  navigation = 0x1,
-  bootstrap = 0x2,
-  rendering = 0x4,
-  commands = 0x8,
-  hitTest = 0x10,
-  debug = 0x20,
-  toolbar = 0x40,
-  fonts = 0x80,
-  min = 0x3,
-  core = 0xf,
-  all = 0xff,
+  None = 0x0,
+  Navigation = 0x1,
+  Bootstrap = 0x2,
+  Rendering = 0x4,
+  Commands = 0x8,
+  HitTest = 0x10,
+  Debug = 0x20,
+  Toolbar = 0x40,
+  Fonts = 0x80,
+  Min = 0x3,
+  Core = 0xf,
+  All = 0xff,
 }
 
-export enum MetricsParameterName {
-  d,
-  t,
-  id,
-  e,
-  v,
-  sid,
-  wb,
-  s,
-  m,
-  p,
+export const enum MetricsParameterName {
+  description = 'd',
+  time = 't',
+  id = 'id',
+  elapsed = 'e',
+  values = 'v',
+  sessionId = 'sid',
+  workbook = 'wb',
+  sheet = 's',
+  isMobile = 'm',
+  properties = 'p',
 }
 
-export enum MetricsEventType {
-  nav,
-  wps,
-  wp,
-  gen,
-  init,
+export const enum MetricsEventType {
+  Navigation = 'nav',
+  ContextStart = 'wps',
+  ContextEnd = 'wp',
+  Generic = 'gen',
+  SessionInit = 'init',
 }
 
 /**
@@ -68,7 +68,7 @@ export class MetricsController {
 
   private metricSessionId: string = '';
 
-  private metricsFilter: MetricsSuites = MetricsSuites.none;
+  private metricsFilter: MetricsSuites = MetricsSuites.None;
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
@@ -85,23 +85,23 @@ export class MetricsController {
       MetricsController.getTiming = () => new Date().getTime() - MetricsController.epoch;
     }
     MetricsController.suiteNameLookup = {};
-    MetricsController.suiteNameLookup['none'] = MetricsSuites.none;
-    MetricsController.suiteNameLookup['navigation'] = MetricsSuites.navigation;
-    MetricsController.suiteNameLookup['bootstrap'] = MetricsSuites.bootstrap;
-    MetricsController.suiteNameLookup['rendering'] = MetricsSuites.rendering;
-    MetricsController.suiteNameLookup['commands'] = MetricsSuites.commands;
-    MetricsController.suiteNameLookup['toolbar'] = MetricsSuites.toolbar;
-    MetricsController.suiteNameLookup['hittest'] = MetricsSuites.hitTest;
-    MetricsController.suiteNameLookup['debug'] = MetricsSuites.debug;
-    MetricsController.suiteNameLookup['fonts'] = MetricsSuites.fonts;
-    MetricsController.suiteNameLookup['min'] = MetricsSuites.min;
-    MetricsController.suiteNameLookup['core'] = MetricsSuites.core;
-    MetricsController.suiteNameLookup['all'] = MetricsSuites.all;
+    MetricsController.suiteNameLookup['none'] = MetricsSuites.None;
+    MetricsController.suiteNameLookup['navigation'] = MetricsSuites.Navigation;
+    MetricsController.suiteNameLookup['bootstrap'] = MetricsSuites.Bootstrap;
+    MetricsController.suiteNameLookup['rendering'] = MetricsSuites.Rendering;
+    MetricsController.suiteNameLookup['commands'] = MetricsSuites.Commands;
+    MetricsController.suiteNameLookup['toolbar'] = MetricsSuites.Toolbar;
+    MetricsController.suiteNameLookup['hittest'] = MetricsSuites.HitTest;
+    MetricsController.suiteNameLookup['debug'] = MetricsSuites.Debug;
+    MetricsController.suiteNameLookup['fonts'] = MetricsSuites.Fonts;
+    MetricsController.suiteNameLookup['min'] = MetricsSuites.Min;
+    MetricsController.suiteNameLookup['core'] = MetricsSuites.Core;
+    MetricsController.suiteNameLookup['all'] = MetricsSuites.All;
   }
 
   private constructor() {
     if (ss.isValue(tsConfig.metricsFilter) && tsConfig.metricsFilter !== '') {
-      let filter: MetricsSuites = MetricsSuites.none;
+      let filter: MetricsSuites = MetricsSuites.None;
       let filters: string[] = tsConfig.metricsFilter.split(string.fromCharCode('|'));
       for (const suite of filters) {
         let trimmedSuite: string = (typeof (suite['trim']) === 'function') ? suite.trim() : suite;
@@ -134,11 +134,11 @@ export class MetricsController {
    * Or instead explicitly call the dispose() method on the returned MetricsContext object to complete the timing
    * of this context.
    */
-  public static createContext(description: string, suite: MetricsSuites = MetricsSuites.debug, props: Object<string, any> = null): MetricsContext {
+  public static createContext(description: string, suite: MetricsSuites = MetricsSuites.Debug, props: Object<string, any> = null): MetricsContext {
     if (ss.isNullOrUndefined(suite)) {
-      suite = MetricsSuites.debug;
+      suite = MetricsSuites.Debug;
     }
-    let filteredMetric: boolean = (suite === MetricsSuites.none || (suite & MetricsController.instance.metricsFilter) !== suite);
+    let filteredMetric: boolean = (suite === MetricsSuites.None || (suite & MetricsController.instance.metricsFilter) !== suite);
     if (ss.isNullOrUndefined(props)) {
       props = {};
     }
@@ -157,11 +157,11 @@ export class MetricsController {
    * the server for recording in the log
    */
   public static logEvent(evt: MetricsEvent): void {
-    if (evt.metricSuite === MetricsSuites.none || (evt.metricSuite & MetricsController.instance.metricsFilter) !== evt.metricSuite) {
+    if (evt.metricSuite === MetricsSuites.None || (evt.metricSuite & MetricsController.instance.metricsFilter) !== evt.metricSuite) {
       return;
     }
     if (ss.isValue(MetricsController.instance.eventLogger)) {
-      evt.parameters[MetricsParameterName.sid] = MetricsController.instance.metricSessionId;
+      evt.parameters[MetricsParameterName.sessionId] = MetricsController.instance.metricSessionId;
       MetricsController.instance.eventLogger(evt);
     } else {
       MetricsController.instance.eventBuffer.push(evt);
@@ -176,7 +176,7 @@ export class MetricsController {
     MetricsController.instance.eventLogger = logger;
     if (ss.isValue(logger) && (MetricsController.$instance.eventBuffer.length > 0)) {
       for (const bufferedEvt of MetricsController.$instance.eventBuffer) {
-        bufferedEvt.parameters[MetricsParameterName.sid] = MetricsController.$instance.metricSessionId;
+        bufferedEvt.parameters[MetricsParameterName.sessionId] = MetricsController.$instance.metricSessionId;
         MetricsController.$instance.eventLogger(bufferedEvt);
       }
       MetricsController.$instance.eventBuffer = [];
@@ -231,9 +231,9 @@ export class MetricsController {
   private static buildMetricsEventCommonParameters(context: MetricsContext): Object<MetricsParameterName, any> {
     let parameters: Object<MetricsParameterName, any> = {};
     parameters[MetricsParameterName.id] = context.id;
-    parameters[MetricsParameterName.d] = context.description;
+    parameters[MetricsParameterName.description] = context.description;
     if (context.properties.count > 0) {
-      parameters[MetricsParameterName.p] = context.properties;
+      parameters[MetricsParameterName.properties] = context.properties;
     }
     return parameters;
   }
@@ -253,11 +253,11 @@ export class MetricsController {
   private logSessionInfo(): void {
     let parameters: Object<MetricsParameterName, any> = {};
     parameters[MetricsParameterName.id] = this.sessionId;
-    parameters[MetricsParameterName.sid] = this.metricSessionId;
-    parameters[MetricsParameterName.wb] = this.workbookName;
-    parameters[MetricsParameterName.s] = this.sheetName;
-    parameters[MetricsParameterName.m] = tsConfig.is_mobile;
-    MetricsController.logEvent(new MetricsEvent(MetricsEventType.init, MetricsSuites.bootstrap, parameters));
+    parameters[MetricsParameterName.sessionId] = this.metricSessionId;
+    parameters[MetricsParameterName.workbook] = this.workbookName;
+    parameters[MetricsParameterName.sheet] = this.sheetName;
+    parameters[MetricsParameterName.isMobile] = tsConfig.is_mobile;
+    MetricsController.logEvent(new MetricsEvent(MetricsEventType.SessionInit, MetricsSuites.Bootstrap, parameters));
   }
 
   /**
@@ -265,9 +265,9 @@ export class MetricsController {
    */
   private logContextEnd(context: MetricsContext): void {
     let parameters: Object<MetricsParameterName, any> = MetricsController.buildMetricsEventCommonParameters(context);
-    parameters[MetricsParameterName.t] = context.endTime;
-    parameters[MetricsParameterName.e] = context.elapsedMS();
-    MetricsController.logEvent(new MetricsEvent(MetricsEventType.wp, context.metricSuite, parameters));
+    parameters[MetricsParameterName.time] = context.endTime;
+    parameters[MetricsParameterName.elapsed] = context.elapsedMS();
+    MetricsController.logEvent(new MetricsEvent(MetricsEventType.ContextEnd, context.metricSuite, parameters));
   }
 }
 

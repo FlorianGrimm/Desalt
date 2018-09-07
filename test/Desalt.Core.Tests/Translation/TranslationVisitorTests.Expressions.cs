@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitorTests.Expressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -87,14 +87,14 @@ class Logger
     }
 }",
                 @"enum LoggerLevel {
-  all = 0,
+  All = 0,
 }
 
 class Logger {
   public static loggerLevelNames: string[] = [];
 
   private static init(): void {
-    Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
+    Logger.loggerLevelNames[<number>LoggerLevel.All] = 'all';
   }
 }
 ",

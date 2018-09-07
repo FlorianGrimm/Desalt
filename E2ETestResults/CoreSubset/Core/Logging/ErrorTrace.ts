@@ -15,13 +15,13 @@ import { TypeUtil } from 'NativeJsTypeDefs';
 /**
  * Method used to collect the stack trace.
  */
-export enum StackTraceMode {
-  stack,
-  stackTrace,
-  multiLine,
-  callers,
-  onError,
-  failed,
+export const enum StackTraceMode {
+  Stack = 'stack',
+  StackTrace = 'stackTrace',
+  MultiLine = 'multiLine',
+  Callers = 'callers',
+  OnError = 'onError',
+  Failed = 'failed',
 }
 
 /**
@@ -133,7 +133,7 @@ export class ErrorTrace {
       let location: StackLocation = new StackLocation(url, lineNo);
       location.functionName = ErrorTrace.guessFunctionName(location);
       location.context = ErrorTrace.gatherContext(location);
-      stack = new StackTrace(StackTraceMode.onError, <string>message);
+      stack = new StackTrace(StackTraceMode.OnError, <string>message);
       stack.name = 'window.onError';
       stack.locations = [location];
     }
@@ -308,7 +308,7 @@ export class ErrorTrace {
   }
 
   public static getStackTraceFor(e: Exception): StackTrace {
-    let defaultTrace: StackTrace = new StackTrace(StackTraceMode.stack, e.message);
+    let defaultTrace: StackTrace = new StackTrace(StackTraceMode.Stack, e.message);
     defaultTrace.name = <string>(<any>e).name;
     if (ErrorTrace.getStack) {
       let stackTraceComputers: Array<(exception: Exception) => StackTrace> = [];
@@ -330,7 +330,7 @@ export class ErrorTrace {
     } else {
       return defaultTrace;
     }
-    defaultTrace.traceMode = StackTraceMode.failed;
+    defaultTrace.traceMode = StackTraceMode.Failed;
     return defaultTrace;
   }
 
@@ -374,7 +374,7 @@ export class ErrorTrace {
       }
       locations.push(item);
     }
-    let result: StackTrace = new StackTrace(StackTraceMode.callers, e.message);
+    let result: StackTrace = new StackTrace(StackTraceMode.Callers, e.message);
     result.name = <string>err['name'];
     result.locations = locations;
     ErrorTrace.augmentStackTraceWithInitialElement(result, <string>(err['sourceURL']) || (err['fileName']), <number>(err['line']) || (err['lineNumber']), <string>(e.message) || (err['description']));
@@ -449,7 +449,7 @@ export class ErrorTrace {
     if (locations.length === 0) {
       return null;
     }
-    let stack: StackTrace = new StackTrace(StackTraceMode.stack, e.message);
+    let stack: StackTrace = new StackTrace(StackTraceMode.Stack, e.message);
     stack.name = <string>(<any>e).name;
     stack.locations = locations;
     return stack;
@@ -544,7 +544,7 @@ export class StackLocation {
 export class StackTrace {
   public readonly userAgent: string = window.navigator.userAgent;
 
-  public traceMode: StackTraceMode = StackTraceMode.onError;
+  public traceMode: StackTraceMode = StackTraceMode.OnError;
 
   public message: Object;
 
@@ -576,7 +576,7 @@ export class StackTraceAppender extends BaseLogAppender {
    */
   public static __ctor() {
     StackTraceAppender.enableLogging((l: Logger, ll: LoggerLevel) => {
-      return ll > LoggerLevel.info;
+      return ll > LoggerLevel.Info;
     });
   }
 
@@ -610,7 +610,7 @@ export class StackTraceAppender extends BaseLogAppender {
 
   protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void {
     message = this.formatMessage(ss.replaceAllString(message, '\n', '<br />'), args);
-    if (level > LoggerLevel.info) {
+    if (level > LoggerLevel.Info) {
       try {
         throw new Exception('Logged(' + Logger.loggerLevelNames[<number>level] + ', from ' + source.name + '): ' + message);
       } catch (e) {

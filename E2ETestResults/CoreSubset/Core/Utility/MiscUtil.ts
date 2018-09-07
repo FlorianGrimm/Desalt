@@ -9,9 +9,9 @@ import { Utility } from '../../Bootstrap/Utility';
 import { WindowHelper } from '../../CoreSlim/WindowHelper';
 
 export enum PathnameKey {
-  workbookName = 2,
-  sheetId = 3,
-  authoringSheet = 4,
+  WorkbookName = 2,
+  SheetId = 3,
+  AuthoringSheet = 4,
 }
 
 /**
@@ -30,9 +30,9 @@ export class MiscUtil {
     let actualPath: string = pathname.substr(index + siteRoot.length);
     let pathnameParts: string[] = actualPath.split('/');
     let pathnameProps: Object<PathnameKey, string> = {};
-    pathnameProps[PathnameKey.workbookName] = pathnameParts[<number>PathnameKey.workbookName];
-    pathnameProps[PathnameKey.sheetId] = pathnameParts[<number>PathnameKey.sheetId];
-    pathnameProps[PathnameKey.authoringSheet] = pathnameParts[<number>PathnameKey.authoringSheet];
+    pathnameProps[PathnameKey.WorkbookName] = pathnameParts[<number>PathnameKey.WorkbookName];
+    pathnameProps[PathnameKey.SheetId] = pathnameParts[<number>PathnameKey.SheetId];
+    pathnameProps[PathnameKey.AuthoringSheet] = pathnameParts[<number>PathnameKey.AuthoringSheet];
     return pathnameProps;
   }
 

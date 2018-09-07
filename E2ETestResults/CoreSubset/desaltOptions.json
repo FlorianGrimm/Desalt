@@ -8,6 +8,7 @@
     "DSC1012": "suppress"
   },
   "renameRules": {
+    "enumRule": "matchCSharpName",
     "fieldRule": "dollarPrefixOnlyForDuplicateName"
   },
   "symbolTableOverrides": {

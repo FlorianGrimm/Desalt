@@ -11,12 +11,12 @@ import { ScriptEx } from '../../CoreSlim/ScriptEx';
  * {@link Logger.LoggerLevelNames}
  */
 export enum LoggerLevel {
-  all = 0,
-  debug = 1,
-  info = 2,
-  warn = 3,
-  error = 4,
-  off = 5,
+  All = 0,
+  Debug = 1,
+  Info = 2,
+  Warn = 3,
+  Error = 4,
+  Off = 5,
 }
 
 /**
@@ -44,12 +44,12 @@ export class Logger {
   // block to inline initializations.
   public static __ctor() {
     Logger.setupUrlFilters();
-    Logger.loggerLevelNames[<number>LoggerLevel.all] = 'all';
-    Logger.loggerLevelNames[<number>LoggerLevel.debug] = 'debug';
-    Logger.loggerLevelNames[<number>LoggerLevel.info] = 'info';
-    Logger.loggerLevelNames[<number>LoggerLevel.warn] = 'warn';
-    Logger.loggerLevelNames[<number>LoggerLevel.error] = 'error';
-    Logger.loggerLevelNames[<number>LoggerLevel.off] = 'off';
+    Logger.loggerLevelNames[<number>LoggerLevel.All] = 'all';
+    Logger.loggerLevelNames[<number>LoggerLevel.Debug] = 'debug';
+    Logger.loggerLevelNames[<number>LoggerLevel.Info] = 'info';
+    Logger.loggerLevelNames[<number>LoggerLevel.Warn] = 'warn';
+    Logger.loggerLevelNames[<number>LoggerLevel.Error] = 'error';
+    Logger.loggerLevelNames[<number>LoggerLevel.Off] = 'off';
   }
 
   private constructor(name: string) {
@@ -122,7 +122,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByLogger(validLogger: Logger, minLogLevel?: LoggerLevel): void {
-    minLogLevel = (minLogLevel) || (LoggerLevel.all);
+    minLogLevel = (minLogLevel) || (LoggerLevel.All);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return l === validLogger && ll >= minLogLevel;
     });
@@ -142,7 +142,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByType(t: Function, minLogLevel?: LoggerLevel): void {
-    minLogLevel = (minLogLevel) || (LoggerLevel.all);
+    minLogLevel = (minLogLevel) || (LoggerLevel.All);
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return ll >= minLogLevel && l.name === t.name;
     });
@@ -161,7 +161,7 @@ export class Logger {
    * @param minLogLevel The minimum level to accept
    */
   public static filterByName(namePattern: string, minLogLevel?: LoggerLevel): void {
-    minLogLevel = (minLogLevel) || (LoggerLevel.all);
+    minLogLevel = (minLogLevel) || (LoggerLevel.All);
     let regex: RegExp = new RegExp(namePattern, 'i');
     Logger.addFilter((l: Logger, ll: LoggerLevel) => {
       return ll >= minLogLevel && ss.isValue(l.name.match(regex));
@@ -247,7 +247,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public debug(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.debug, message, args);
+    this.logInternal(LoggerLevel.Debug, message, args);
   }
 
   /**
@@ -256,7 +256,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public info(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.info, message, args);
+    this.logInternal(LoggerLevel.Info, message, args);
   }
 
   /**
@@ -265,7 +265,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public warn(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.warn, message, args);
+    this.logInternal(LoggerLevel.Warn, message, args);
   }
 
   /**
@@ -274,7 +274,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public error(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.error, message, args);
+    this.logInternal(LoggerLevel.Error, message, args);
   }
 
   /**
@@ -292,11 +292,11 @@ export class Logger {
     Logger.clearFilters();
     let logParams: string[] = queryParams[Logger.logQueryParam];
     if (logParams.length === 0) {
-      Logger.filterByName('.*', LoggerLevel.all);
+      Logger.filterByName('.*', LoggerLevel.All);
     }
     for (const logParam of logParams) {
       let logVals: string[] = logParam.split(string.fromCharCode(':'));
-      let level: LoggerLevel = LoggerLevel.debug;
+      let level: LoggerLevel = LoggerLevel.Debug;
       if (logVals.length > 0 && ss.isValue(logVals[1])) {
         let key: string = logVals[1].toLowerCase();
         let index: number = ss.indexOf(Logger.loggerLevelNames, key);

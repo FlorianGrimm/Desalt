@@ -97,22 +97,22 @@ export class MetricsLogger {
   // block to inline initializations.
   public static __ctor() {
     MetricsLogger.debugParamNames = {};
-    MetricsLogger.debugParamNames[MetricsParameterName.d] = 'DESC';
-    MetricsLogger.debugParamNames[MetricsParameterName.t] = 'TIME';
+    MetricsLogger.debugParamNames[MetricsParameterName.description] = 'DESC';
+    MetricsLogger.debugParamNames[MetricsParameterName.time] = 'TIME';
     MetricsLogger.debugParamNames[MetricsParameterName.id] = 'ID';
-    MetricsLogger.debugParamNames[MetricsParameterName.sid] = 'SESSION_ID';
-    MetricsLogger.debugParamNames[MetricsParameterName.e] = 'ELAPSED';
-    MetricsLogger.debugParamNames[MetricsParameterName.v] = 'VALS';
-    MetricsLogger.debugParamNames[MetricsParameterName.wb] = 'WORKBOOK';
-    MetricsLogger.debugParamNames[MetricsParameterName.s] = 'SHEET_NAME';
-    MetricsLogger.debugParamNames[MetricsParameterName.p] = 'PROPS';
-    MetricsLogger.debugParamNames[MetricsParameterName.m] = 'MOBILE';
+    MetricsLogger.debugParamNames[MetricsParameterName.sessionId] = 'SESSION_ID';
+    MetricsLogger.debugParamNames[MetricsParameterName.elapsed] = 'ELAPSED';
+    MetricsLogger.debugParamNames[MetricsParameterName.values] = 'VALS';
+    MetricsLogger.debugParamNames[MetricsParameterName.workbook] = 'WORKBOOK';
+    MetricsLogger.debugParamNames[MetricsParameterName.sheet] = 'SHEET_NAME';
+    MetricsLogger.debugParamNames[MetricsParameterName.properties] = 'PROPS';
+    MetricsLogger.debugParamNames[MetricsParameterName.isMobile] = 'MOBILE';
     MetricsLogger.debugEventNames = {};
-    MetricsLogger.debugEventNames[MetricsEventType.nav] = 'Navigation';
-    MetricsLogger.debugEventNames[MetricsEventType.wps] = 'ProfileStart';
-    MetricsLogger.debugEventNames[MetricsEventType.wp] = 'ProfileEnd';
-    MetricsLogger.debugEventNames[MetricsEventType.gen] = 'Generic';
-    MetricsLogger.debugEventNames[MetricsEventType.init] = 'SessionInit';
+    MetricsLogger.debugEventNames[MetricsEventType.Navigation] = 'Navigation';
+    MetricsLogger.debugEventNames[MetricsEventType.ContextStart] = 'ProfileStart';
+    MetricsLogger.debugEventNames[MetricsEventType.ContextEnd] = 'ProfileEnd';
+    MetricsLogger.debugEventNames[MetricsEventType.Generic] = 'Generic';
+    MetricsLogger.debugEventNames[MetricsEventType.SessionInit] = 'SessionInit';
   }
 
   private constructor() {
@@ -204,7 +204,7 @@ export class MetricsLogger {
     }
     for (let i = 0; i < numEvents; i++) {
       let evt: MetricsEvent = evts[i];
-      if (evt.eventType === MetricsEventType.wps) {
+      if (evt.eventType === MetricsEventType.ContextStart) {
         continue;
       }
       let formattedEvent: string = MetricsLogger.formatEvent(evt, false);
@@ -240,7 +240,7 @@ export class MetricsLogger {
       let i: number = 0;
       let propSeparator: string = verbose ? ': ' : ':';
       for (const key of evt.parameters.keys) {
-        if (key === MetricsParameterName.id && evt.eventType !== MetricsEventType.init) {
+        if (key === MetricsParameterName.id && evt.eventType !== MetricsEventType.SessionInit) {
           continue;
         }
         if (i++ > 0) {

@@ -152,6 +152,10 @@ namespace Desalt.Core.SymbolTables
                         : DetermineScriptNameFromAttributes(typeSymbol) ?? typeSymbol.Name;
                     break;
 
+                case IFieldSymbol fieldSymbol when fieldSymbol.ContainingType.TypeKind == TypeKind.Enum:
+                    scriptName = DetermineEnumFieldScriptName(fieldSymbol, renameRules.EnumRule);
+                    break;
+
                 case IFieldSymbol fieldSymbol:
                     scriptName = DetermineFieldScriptName(fieldSymbol, renameRules.FieldRule);
                     break;
@@ -260,6 +264,43 @@ namespace Desalt.Core.SymbolTables
         }
 
         /// <summary>
+        /// Determines the name that an enum field should have in the generated code without taking
+        /// an <see cref="EnumRenameRule"/> into account.
+        /// </summary>
+        /// <param name="enumFieldSymbol">The enum field for which to determine the script name.</param>
+        /// <returns>The name the enum field should have in the generated code.</returns>
+        public static string DetermineEnumFieldDefaultScriptName(IFieldSymbol enumFieldSymbol) =>
+            DetermineScriptNameFromAttributes(enumFieldSymbol) ?? ToCamelCase(enumFieldSymbol.Name);
+
+        /// <summary>
+        /// Determines the name that an enum field should have in the generated code.
+        /// </summary>
+        /// <param name="enumFieldSymbol">The enum field for which to determine the script name.</param>
+        /// <param name="renameRule">Options on how to rename enum member fields.</param>
+        /// <returns>The name the enum field should have in the generated code.</returns>
+        private static string DetermineEnumFieldScriptName(IFieldSymbol enumFieldSymbol, EnumRenameRule renameRule)
+        {
+            string fieldName = enumFieldSymbol.Name;
+
+            // Determine how the field should be named using this algorithm:
+            // 1) If there is a [NamedValues] attribute on the parent enum declaration, then use the
+            //    naming rules from the compiler options
+            // 2) Otherwise use [ScriptName], [PreserveName] or other attribute that controls naming
+            // 3) Otherwise use the rename rules from the options
+
+            string fieldScriptNameFromOptions = renameRule == EnumRenameRule.MatchCSharpName
+                ? fieldName
+                : ToCamelCase(fieldName);
+
+            bool isNamedValues = enumFieldSymbol.ContainingType.GetFlagAttribute(SaltarelleAttributeName.NamedValues);
+            string fieldScriptName = isNamedValues
+                ? fieldScriptNameFromOptions
+                : DetermineScriptNameFromAttributes(enumFieldSymbol) ?? fieldScriptNameFromOptions;
+
+            return fieldScriptName;
+        }
+
+        /// <summary>
         /// Determines the name that a field should have in the generated code.
         /// </summary>
         /// <param name="fieldSymbol">The field for which to determine the script name.</param>
@@ -319,7 +360,7 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a method should have in the generated code.
         /// </summary>
         /// <param name="methodSymbol">The method for which to determine the script name.</param>
-        /// <returns>The name the method shoudl have in the generated code.</returns>
+        /// <returns>The name the method should have in the generated code.</returns>
         private static string DetermineMethodScriptName(IMethodSymbol methodSymbol)
         {
             string methodName = methodSymbol.Name;

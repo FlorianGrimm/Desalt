@@ -148,13 +148,11 @@ namespace Desalt.Core.Tests.SymbolTables
         public async Task ScriptNameSymbolTable_should_make_members_camelCase_by_default()
         {
             await AssertDocumentEntriesInSymbolTable(
-                "class C { int MyInt; } interface I { void MyMethod(); } enum MyEnum { One }",
+                "class C { int MyInt; } interface I { void MyMethod(); }",
                 new KeyValuePair<string, string>("C", "C"),
                 new KeyValuePair<string, string>("C.MyInt", "myInt"),
                 new KeyValuePair<string, string>("I", "I"),
-                new KeyValuePair<string, string>("I.MyMethod()", "myMethod"),
-                new KeyValuePair<string, string>("MyEnum", "MyEnum"),
-                new KeyValuePair<string, string>("MyEnum.One", "one"));
+                new KeyValuePair<string, string>("I.MyMethod()", "myMethod"));
         }
 
         [TestMethod]
