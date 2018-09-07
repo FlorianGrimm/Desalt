@@ -147,9 +147,7 @@ namespace Desalt.Core.SymbolTables
             switch (symbol)
             {
                 case ITypeSymbol typeSymbol:
-                    scriptName = TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
-                        ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
-                        : DetermineScriptNameFromAttributes(typeSymbol) ?? typeSymbol.Name;
+                    scriptName = DetermineTypeScriptName(typeSymbol);
                     break;
 
                 case IFieldSymbol fieldSymbol when fieldSymbol.ContainingType.TypeKind == TypeKind.Enum:
@@ -261,6 +259,18 @@ namespace Desalt.Core.SymbolTables
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Determines the name that a type should have in the generated code.
+        /// </summary>
+        /// <param name="typeSymbol">The type for which to determine the script name.</param>
+        /// <returns>The name the type should have in the generated code.</returns>
+        private static string DetermineTypeScriptName(ITypeSymbol typeSymbol)
+        {
+            return TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol)
+                ? TypeTranslator.GetNativeTypeScriptTypeName(typeSymbol)
+                : DetermineScriptNameFromAttributes(typeSymbol) ?? typeSymbol.Name;
         }
 
         /// <summary>
