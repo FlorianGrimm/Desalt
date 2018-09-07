@@ -1,8 +1,8 @@
-import 'mscorlib';
-
 import { ILogAppender } from './ILogAppender';
 
 import { Logger, LoggerLevel } from './Logger';
+
+import 'mscorlib';
 
 /**
  * A base class for log appenders.
@@ -51,7 +51,7 @@ export abstract class BaseLogAppender implements ILogAppender {
     if (ss.isNullOrUndefined(args) || args.length === 0) {
       return message;
     }
-    let sb: StringBuilder = new StringBuilder();
+    let sb: ss.StringBuilder = new ss.StringBuilder();
     let argNum: number = 0;
     let prevPercent: boolean = false;
     for (let i = 0; i < message.length; i++) {

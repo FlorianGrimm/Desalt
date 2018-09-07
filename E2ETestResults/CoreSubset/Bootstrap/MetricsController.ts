@@ -277,7 +277,7 @@ MetricsController.__ctor();
 /**
  * Class representing a single timing context for the MetricsController
  */
-export class MetricsContext implements IDisposable {
+export class MetricsContext implements ss.IDisposable {
   public readonly id: number;
 
   public readonly metricSuite: MetricsSuites;

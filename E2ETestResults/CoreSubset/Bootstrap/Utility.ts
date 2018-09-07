@@ -97,7 +97,7 @@ export class Utility {
   }
 
   public static set urlLocationHashData(value: Object<string, string>) {
-    let newFragmentId: StringBuilder = new StringBuilder();
+    let newFragmentId: ss.StringBuilder = new ss.StringBuilder();
     let first: boolean = true;
     let appendSeparator: () => void = () => {
       newFragmentId.append(first ? '#' : '&');
@@ -204,7 +204,7 @@ export class Utility {
             }
           }
         } catch (e) {
-          invokeError(new Exception('Invalid JSON'));
+          invokeError(new ss.Exception('Invalid JSON'));
         }
         if (byteOffset === 0) {
           firstChunkCallback(json);
@@ -237,7 +237,7 @@ export class Utility {
         if (Utility.isSuccessStatus(xhr)) {
           consumeJSONChunks();
         } else {
-          invokeError(new Exception('Unable to load ' + uri + '; status: ' + xhr.status));
+          invokeError(new ss.Exception('Unable to load ' + uri + '; status: ' + xhr.status));
         }
       } catch (ex) {
         if (typeof ss.getType('ss') === 'undefined') {
@@ -291,7 +291,7 @@ export class Utility {
           invokeError(x);
         }
       } else {
-        invokeError(new Exception('Unable to load ' + uri + '; status: ' + xhr.status));
+        invokeError(new ss.Exception('Unable to load ' + uri + '; status: ' + xhr.status));
       }
     };
     try {
@@ -409,7 +409,7 @@ export class Utility {
     try {
       return new ActiveXObject('Microsoft.XMLHTTP');
     } catch (e) { }
-    throw new Exception('XMLHttpRequest not supported');
+    throw new ss.Exception('XMLHttpRequest not supported');
   }
 
   public static getViewport(): Metric {
@@ -524,7 +524,7 @@ export class Utility {
     return false;
   }
 
-  private static invokeErrorDelegate(xhr: XMLHttpRequest, errBack: (object: any) => void, e: Exception): void {
+  private static invokeErrorDelegate(xhr: XMLHttpRequest, errBack: (object: any) => void, e: ss.Exception): void {
     if (errBack === null) {
       return;
     }

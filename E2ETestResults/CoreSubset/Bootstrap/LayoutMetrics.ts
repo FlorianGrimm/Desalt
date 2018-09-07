@@ -131,7 +131,7 @@ export class LayoutMetrics {
   }
 
   public toJson(): string {
-    let sb: StringBuilder = new StringBuilder();
+    let sb: ss.StringBuilder = new ss.StringBuilder();
     sb.append('{\n');
     let length: number = 0;
     for (const entry of LayoutMetrics.defaultDb) {

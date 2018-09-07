@@ -158,7 +158,7 @@ class Foo
         {
             await AssertTypeTranslation(
                 "Lazy<string>",
-                Factory.TypeReference(Factory.Identifier("Lazy"), Factory.StringType),
+                Factory.TypeReference(Factory.QualifiedName("ss", "Lazy"), Factory.StringType),
                 SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 

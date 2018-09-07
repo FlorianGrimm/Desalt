@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitor.Tests.Statements.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -151,7 +151,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C implements IDisposable {
+class C implements ss.IDisposable {
   private method(): void {
     let i: number = 0;
     {
@@ -194,7 +194,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C implements IDisposable {
+class C implements ss.IDisposable {
   private method(): void {
     let i: number = 0;
     let c1: C = new C();
@@ -241,7 +241,7 @@ class C : IDisposable
 }
 ",
                 @"
-class C implements IDisposable {
+class C implements ss.IDisposable {
   private method(): void {
     let i: number = 0;
     let c1: C = new C();

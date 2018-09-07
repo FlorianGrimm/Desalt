@@ -231,7 +231,7 @@ export class MetricsLogger {
    */
   private static formatEvent(evt: MetricsEvent, verbose: boolean): string {
     let delimiter: string = verbose ? ', ' : ',';
-    let strBuilder: StringBuilder = new StringBuilder();
+    let strBuilder: ss.StringBuilder = new ss.StringBuilder();
     strBuilder.append(verbose ? MetricsLogger.debugEventNames[evt.eventType] : evt.eventType.toString());
     let count: number = evt.parameters.count;
     if (count > 0) {
@@ -259,7 +259,7 @@ export class MetricsLogger {
   /**
    * Given a dictionary of values, output the list of name+value pairs to the string builder
    */
-  private static formatDictionaryValues(strBuilder: StringBuilder, dict: Object<string, any>, verbose: boolean): void {
+  private static formatDictionaryValues(strBuilder: ss.StringBuilder, dict: Object<string, any>, verbose: boolean): void {
     let delimiter: string = verbose ? ', ' : ',';
     let propSeparator: string = verbose ? ': ' : ':';
     let propCount: number = dict.count;
@@ -280,7 +280,7 @@ export class MetricsLogger {
   /**
    * Given a specific object, output it's value to the stringbuilder with the appropriate format
    */
-  private static formatValue(strBuilder: StringBuilder, value: any, verbose: boolean): void {
+  private static formatValue(strBuilder: ss.StringBuilder, value: any, verbose: boolean): void {
     let type: string = typeof value;
     if (type === 'number' && Math.floor(<number>value) !== <number>value) {
       strBuilder.append((<number>value).toFixed(1));

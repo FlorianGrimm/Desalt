@@ -627,5 +627,32 @@ class C
                 new KeyValuePair<string, string>("C.Method(int i)", "overloaded"),
                 new KeyValuePair<string, string>("C.Method(string s)", "overloaded"));
         }
+
+        [TestMethod]
+        public async Task ScriptNameSymbolTable_should_prefix_ss_to_mscorlib_types()
+        {
+            const string code = @"
+using System.Runtime.CompilerServices;
+using System.Text;
+
+class C
+{
+    private StringBuilder _builder = new StringBuilder();
+}
+";
+            using (var tempProject = await TempProject.CreateAsync(code))
+            {
+                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
+                var scriptNameTable = context.ScriptNameSymbolTable;
+
+                // get the StringBuilder symbol
+                var stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
+                        context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().Single().Declaration.Type)
+                    .Type;
+
+                scriptNameTable.TryGetValue(stringBuilderSymbol, out string scriptName).Should().BeTrue();
+                scriptName.Should().Be("ss.StringBuilder");
+            }
+        }
     }
 }

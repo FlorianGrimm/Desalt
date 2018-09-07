@@ -70,7 +70,7 @@ export class MiscUtil {
     if (ss.isNullOrUndefined(unreservedChars)) {
       return valueToEncode;
     }
-    let sb: StringBuilder = new StringBuilder();
+    let sb: ss.StringBuilder = new ss.StringBuilder();
     let i: number = 0;
     while (i < valueToEncode.length) {
       let s: string = valueToEncode.substr(i, 1);
@@ -246,7 +246,7 @@ export class MiscUtil {
     if (parameters.count === 0) {
       return uri;
     }
-    let newQueryString: StringBuilder = new StringBuilder();
+    let newQueryString: ss.StringBuilder = new ss.StringBuilder();
     let first: boolean = true;
     let appendSeparator: () => void = () => {
       newQueryString.append(first ? '?' : '&');
