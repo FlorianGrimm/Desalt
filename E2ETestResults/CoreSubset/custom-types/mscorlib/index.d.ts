@@ -6,6 +6,7 @@
 declare namespace ss {
   function isNullOrUndefined(o: any): boolean;
   function isValue(o: any): boolean;
+  function coalesce<T>(a: T, b: T): T;
 
   ///////////////////////////////////////////////////////////////////////////////
   // Object Extensions
