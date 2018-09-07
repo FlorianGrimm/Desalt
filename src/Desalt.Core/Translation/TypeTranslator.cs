@@ -31,9 +31,7 @@ namespace Desalt.Core.Translation
         private static readonly ImmutableDictionary<string, (string nativeTypeName, ITsType translatedType)> s_nativeTypeMap = new Dictionary<string,
             (string nativeTypeName, ITsType translatedType)>
         {
-            ["System.Void"] = ("void", Factory.VoidType),
-            ["System.Boolean"] = ("boolean", Factory.BooleanType),
-            ["System.String"] = ("string", Factory.StringType),
+            // Number Types
             ["System.Byte"] = ("number", Factory.NumberType),
             ["System.SByte"] = ("number", Factory.NumberType),
             ["System.UInt16"] = ("number", Factory.NumberType),
@@ -45,11 +43,20 @@ namespace Desalt.Core.Translation
             ["System.Decimal"] = ("number", Factory.NumberType),
             ["System.Single"] = ("number", Factory.NumberType),
             ["System.Double"] = ("number", Factory.NumberType),
+
+            // Object Types
             ["System.Object"] = ("any", Factory.AnyType),
             ["dynamic"] = ("any", Factory.AnyType),
-            ["System.Array"] = ("Array", null),
+
+            // Function Types
             ["System.Action"] = ("Function", null),
             ["System.Func"] = ("Function", null),
+
+            // Other Types
+            ["System.Array"] = ("Array", null),
+            ["System.Boolean"] = ("boolean", Factory.BooleanType),
+            ["System.String"] = ("string", Factory.StringType),
+            ["System.Void"] = ("void", Factory.VoidType),
             ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
         }.ToImmutableDictionary();
 
@@ -176,7 +183,7 @@ namespace Desalt.Core.Translation
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
 
-            INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
+            var namedTypeSymbol = symbol as INamedTypeSymbol;
 
             string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
             if (scriptName == null)
