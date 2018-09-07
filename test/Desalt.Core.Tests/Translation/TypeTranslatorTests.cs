@@ -91,6 +91,7 @@ class Foo
             await AssertTypeTranslation("bool", Factory.BooleanType);
             await AssertTypeTranslation("string", Factory.StringType);
             await AssertTypeTranslation("char", Factory.NumberType);
+            await AssertTypeTranslation("object", Factory.AnyType);
         }
 
         [TestMethod]
@@ -107,6 +108,12 @@ class Foo
             await AssertTypeTranslation("decimal", Factory.NumberType);
             await AssertTypeTranslation("float", Factory.NumberType);
             await AssertTypeTranslation("double", Factory.NumberType);
+        }
+
+        [TestMethod]
+        public async Task TypeTranslator_should_translate_native_JavaScript_objects()
+        {
+            await AssertTypeTranslation("JsDate", Factory.TypeReference(Factory.Identifier("Date")));
         }
 
         [TestMethod]

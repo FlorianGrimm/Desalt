@@ -196,7 +196,7 @@ export class MetricsController {
     localInstance.sessionId = tsConfig.sessionid;
     localInstance.workbookName = tsConfig.workbookName;
     localInstance.sheetName = currentSheet;
-    let now: JsDate = new Date();
+    let now: Date = new Date();
     localInstance.metricSessionId = now.getTime().toString(36);
     localInstance.metricSessionId = localInstance.metricSessionId.substr(localInstance.metricSessionId.length - 6);
     if (localInstance.sessionId.length >= 5) {

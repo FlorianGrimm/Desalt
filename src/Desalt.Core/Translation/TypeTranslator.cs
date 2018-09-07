@@ -56,6 +56,7 @@ namespace Desalt.Core.Translation
             // Other Types
             ["System.Array"] = ("Array", null),
             ["System.Boolean"] = ("boolean", Factory.BooleanType),
+            ["System.JsDate"] = ("Date", Factory.TypeReference(Factory.Identifier("Date"))),
             ["System.String"] = ("string", Factory.StringType),
             ["System.Void"] = ("void", Factory.VoidType),
             ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
