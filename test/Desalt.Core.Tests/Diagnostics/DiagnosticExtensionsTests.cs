@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DiagnosticExtensionsTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -67,7 +67,7 @@ namespace Desalt.Core.Tests.Diagnostics
                 ReportDiagnostic.Suppress
             })
             {
-                ImmutableDictionary<string, ReportDiagnostic> dict = ImmutableDictionary.CreateRange(
+                var dict = ImmutableDictionary.CreateRange(
                     new[] { new KeyValuePair<string, ReportDiagnostic>("id", reportAction) });
                 var options = new CompilerOptions(outputPath: "out", specificDiagnosticOptions: dict);
 
@@ -181,11 +181,11 @@ namespace Desalt.Core.Tests.Diagnostics
         [TestMethod]
         public void WithSeverity_should_create_a_copy_of_the_Diagnostic_with_the_severity_changed()
         {
-            Location location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());
+            var location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());
             var additionalLocations = new[] { Location.Create("file2.cs", new TextSpan(), new LinePositionSpan()), };
             string[] customTags = { WellKnownDiagnosticTags.EditAndContinue };
 
-            Diagnostic diagnostic = Diagnostic.Create(
+            var diagnostic = Diagnostic.Create(
                 "id",
                 "category",
                 "message",
