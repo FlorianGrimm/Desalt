@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DiagnosticList.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -28,13 +28,13 @@ namespace Desalt.Core.Diagnostics
         public static readonly DiagnosticList Empty = new DiagnosticList(null);
 
         private readonly List<Diagnostic> _diagnostics;
-        private readonly CompilerOptions _options;
+        private readonly DiagnosticOptions _options;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private DiagnosticList(CompilerOptions options, IEnumerable<Diagnostic> diagnostics = null)
+        private DiagnosticList(DiagnosticOptions options, IEnumerable<Diagnostic> diagnostics = null)
         {
             _options = options;
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
@@ -42,13 +42,13 @@ namespace Desalt.Core.Diagnostics
 
         public static DiagnosticList Create(CompilerOptions options, params Diagnostic[] diagnostics)
         {
-            return new DiagnosticList(options ?? throw new ArgumentNullException(nameof(options)), diagnostics);
+            return new DiagnosticList(options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)), diagnostics);
         }
 
         public static DiagnosticList From(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
         {
             return new DiagnosticList(
-                options ?? throw new ArgumentNullException(nameof(options)),
+                options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)),
                 diagnostics ?? throw new ArgumentNullException(nameof(diagnostics)));
         }
 
@@ -145,7 +145,7 @@ namespace Desalt.Core.Diagnostics
             _diagnostics.Clear();
         }
 
-        private static Diagnostic Filter(CompilerOptions options, Diagnostic diagnostic)
+        private static Diagnostic Filter(DiagnosticOptions options, Diagnostic diagnostic)
         {
             ReportDiagnostic reportAction = diagnostic.CalculateReportAction(options);
             Diagnostic filteredDiagnostic = diagnostic.WithReportDiagnostic(reportAction);
@@ -160,7 +160,7 @@ namespace Desalt.Core.Diagnostics
         }
 
         private static IEnumerable<Diagnostic> Filter(
-            CompilerOptions options,
+            DiagnosticOptions options,
             IEnumerable<Diagnostic> diagnostics = null)
         {
             diagnostics = diagnostics ?? Enumerable.Empty<Diagnostic>();

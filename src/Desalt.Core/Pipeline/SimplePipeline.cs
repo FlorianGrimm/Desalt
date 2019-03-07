@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="SimplePipeline.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -37,7 +37,7 @@ namespace Desalt.Core.Pipeline
         /// Gets the internal implementation of <see cref="Stages"/> as an <see cref="IList{T}"/> for
         /// derived classes to use.
         /// </summary>
-        protected IList<IPipelineStage> StagesInner = new List<IPipelineStage>();
+        protected IList<IPipelineStage> StagesInner { get; } = new List<IPipelineStage>();
 
         //// ===========================================================================================================
         //// Methods
@@ -87,7 +87,7 @@ namespace Desalt.Core.Pipeline
 
             var previousOutputs = new List<object> { input };
 
-            DiagnosticList diagnostics = DiagnosticList.Create(options);
+            var diagnostics = DiagnosticList.Create(options);
             foreach (IPipelineStage stage in StagesInner)
             {
                 // find the next input, which is the latest previous output of a compatible type
