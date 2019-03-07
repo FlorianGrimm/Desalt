@@ -33,8 +33,10 @@ namespace Desalt.Core
 
         public static readonly CompilerOptions Default = new CompilerOptions(instanceToCopy: null);
 
-        private const WarningLevel DefaultWarningLevel = WarningLevel.Informational;
-        private const ReportDiagnostic DefaultGeneralDiagnosticOption = ReportDiagnostic.Default;
+        private const WarningLevel DefaultWarningLevel = DiagnosticOptions.DefaultWarningLevel;
+
+        private const ReportDiagnostic DefaultGeneralDiagnosticOption =
+            DiagnosticOptions.DefaultGeneralDiagnosticOption;
 
         //// ===========================================================================================================
         //// Constructors
@@ -78,16 +80,21 @@ namespace Desalt.Core
             SymbolTableOverrides symbolTableOverrides = null)
         {
             OutputPath = outputPath ?? instanceToCopy?.OutputPath ?? string.Empty;
-            WarningLevel = warningLevel ?? instanceToCopy?.WarningLevel ?? DefaultWarningLevel;
-            GeneralDiagnosticOption = generalDiagnosticOption ??
-                instanceToCopy?.GeneralDiagnosticOption ?? DefaultGeneralDiagnosticOption;
-
-            SpecificDiagnosticOptions = specificDiagnosticOptions ??
-                instanceToCopy?.SpecificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
-
             RenameRules = renameRules ?? instanceToCopy?.RenameRules ?? RenameRules.Default;
             SymbolTableOverrides = symbolTableOverrides ??
                 instanceToCopy?.SymbolTableOverrides ?? SymbolTableOverrides.Empty;
+
+            // initialize the diagnostic options
+            WarningLevel warningLevelToUse = warningLevel ?? instanceToCopy?.WarningLevel ?? DefaultWarningLevel;
+            ReportDiagnostic generalDiagnosticOptionToUse = generalDiagnosticOption ??
+                instanceToCopy?.GeneralDiagnosticOption ?? DefaultGeneralDiagnosticOption;
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptionsToUse = specificDiagnosticOptions ??
+                instanceToCopy?.SpecificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
+
+            DiagnosticOptions = new DiagnosticOptions(
+                warningLevelToUse,
+                generalDiagnosticOptionToUse,
+                specificDiagnosticOptionsToUse);
         }
 
         //// ===========================================================================================================
@@ -103,18 +110,19 @@ namespace Desalt.Core
         /// Gets the global warning level.
         /// </summary>
         [DefaultValue(DefaultWarningLevel)]
-        public WarningLevel WarningLevel { get; }
+        public WarningLevel WarningLevel => DiagnosticOptions.WarningLevel;
 
         /// <summary>
         /// Global warning report option.
         /// </summary>
         [DefaultValue(DefaultGeneralDiagnosticOption)]
-        public ReportDiagnostic GeneralDiagnosticOption { get; }
+        public ReportDiagnostic GeneralDiagnosticOption => DiagnosticOptions.GeneralDiagnosticOption;
 
         /// <summary>
         /// Warning report option for each warning.
         /// </summary>
-        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
+        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions =>
+            DiagnosticOptions.SpecificDiagnosticOptions;
 
         /// <summary>
         /// Gets the renaming rules to apply during TypeScript translation.
@@ -126,6 +134,8 @@ namespace Desalt.Core
         /// [ScriptName].
         /// </summary>
         public SymbolTableOverrides SymbolTableOverrides { get; }
+
+        internal DiagnosticOptions DiagnosticOptions { get; }
 
         //// ===========================================================================================================
         //// Methods

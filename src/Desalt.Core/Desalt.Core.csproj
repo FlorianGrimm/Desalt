@@ -162,6 +162,7 @@
     <Compile Include="Diagnostics\DiagnosticFactory.cs" />
     <Compile Include="Diagnostics\DiagnosticFactory.Descriptors.cs" />
     <Compile Include="Diagnostics\DiagnosticList.cs" />
+    <Compile Include="Diagnostics\DiagnosticOptions.cs" />
     <Compile Include="IExtendedResult.cs" />
     <Compile Include="Pipeline\ExtendedResult.cs" />
     <Compile Include="Pipeline\IPipelineStage.cs" />
