@@ -175,7 +175,13 @@
     <Compile Include="SymbolTables\AlternateSignatureSymbolTableTests.cs" />
     <Compile Include="SymbolTables\ImportSymbolTableTests.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTableTests.cs" />
+    <Compile Include="SymbolTables\ScriptAssemblySymbolTests.cs" />
+    <Compile Include="SymbolTables\ScriptEnumSymbolTests.cs" />
+    <Compile Include="SymbolTables\ScriptEventSymbolTests.cs" />
+    <Compile Include="SymbolTables\ScriptFieldSymbolTests.cs" />
+    <Compile Include="SymbolTables\ScriptMethodSymbolTests.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTableTests.cs" />
+    <Compile Include="SymbolTables\ScriptSymbolTests.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensionsTests.cs" />
     <Compile Include="TestUtility\RoslynExtensionsForTesting.cs" />
     <Compile Include="TestUtility\TempProject.cs" />
