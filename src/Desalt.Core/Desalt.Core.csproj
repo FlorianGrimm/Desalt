@@ -185,6 +185,7 @@
     <Compile Include="SymbolTables\IScriptEventSymbol.cs" />
     <Compile Include="SymbolTables\IScriptFieldSymbol.cs" />
     <Compile Include="SymbolTables\IScriptMethodSymbol.cs" />
+    <Compile Include="SymbolTables\IScriptNamer.cs" />
     <Compile Include="SymbolTables\IScriptPropertySymbol.cs" />
     <Compile Include="SymbolTables\IScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\IScriptSymbol.cs" />

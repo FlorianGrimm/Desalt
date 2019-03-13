@@ -75,17 +75,18 @@ namespace Desalt.Core.SymbolTables
             IAssemblySymbol mscorlibAssemblySymbol =
                 SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation);
 
+            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
+            var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, renameRules);
+
             // process the types defined in the documents
             var documentSymbols = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
-                .SelectMany(context => ProcessSymbolsInDocument(context, mscorlibAssemblySymbol, cancellationToken))
+                .SelectMany(context => ProcessSymbolsInDocument(context, scriptNamer, cancellationToken))
                 .ToImmutableArray();
-
-            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
 
             // process the externally referenced types
             var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
-                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, renameRules, mscorlibAssemblySymbol))
+                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, scriptNamer))
                 .ToImmutableArray();
 
             // process all of the types and members in referenced assemblies
@@ -95,7 +96,7 @@ namespace Desalt.Core.SymbolTables
                     symbol => new KeyValuePair<ISymbol, Lazy<string>>(
                         symbol,
                         new Lazy<string>(
-                            () => ScriptNamer.DetermineScriptNameForSymbol(symbol, renameRules, mscorlibAssemblySymbol),
+                            () => scriptNamer.DetermineScriptNameForSymbol(symbol),
                             isThreadSafe: true)))
                 .ToImmutableArray();
 
@@ -111,7 +112,7 @@ namespace Desalt.Core.SymbolTables
         /// </summary>
         private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
-            IAssemblySymbol mscorlibAssemblySymbol,
+            ScriptNamer scriptNamer,
             CancellationToken cancellationToken)
         {
             return context.RootSyntax
@@ -123,11 +124,7 @@ namespace Desalt.Core.SymbolTables
                 .Where(symbol => symbol.TypeKind != TypeKind.Delegate)
 
                 // and get all of the members of the type that can have a script name
-                .SelectMany(
-                    symbol => DiscoverScriptNameOnTypeAndMembers(
-                        symbol,
-                        context.Options.RenameRules,
-                        mscorlibAssemblySymbol));
+                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, scriptNamer));
         }
 
         private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
@@ -135,14 +132,13 @@ namespace Desalt.Core.SymbolTables
 
         private static IEnumerable<KeyValuePair<ISymbol, string>> DiscoverScriptNameOnTypeAndMembers(
             ITypeSymbol typeSymbol,
-            RenameRules renameRules,
-            IAssemblySymbol mscorlibAssemblySymbol)
+            ScriptNamer scriptNamer)
         {
             return DiscoverTypeAndMembers(typeSymbol)
                 .Select(
                     symbol => new KeyValuePair<ISymbol, string>(
                         symbol,
-                        ScriptNamer.DetermineScriptNameForSymbol(symbol, renameRules, mscorlibAssemblySymbol)));
+                        scriptNamer.DetermineScriptNameForSymbol(symbol)));
         }
 
         private static bool ShouldProcessMember(ISymbol member)

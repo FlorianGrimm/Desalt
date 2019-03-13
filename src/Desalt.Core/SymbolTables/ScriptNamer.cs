@@ -16,34 +16,46 @@ namespace Desalt.Core.SymbolTables
     /// <summary>
     /// Determines the compiled name for a C# symbol.
     /// </summary>
-    internal static class ScriptNamer
+    internal class ScriptNamer : IScriptNamer
     {
+        private readonly IAssemblySymbol _mscorlibAssemblySymbol;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScriptNamer"/> class.
+        /// </summary>
+        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
+        /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
+        /// <returns>The name the specified symbol should have in the generated script.</returns>
+        public ScriptNamer(IAssemblySymbol mscorlibAssemblySymbol, RenameRules renameRules = null)
+        {
+            _mscorlibAssemblySymbol =
+                mscorlibAssemblySymbol ?? throw new ArgumentNullException(nameof(mscorlibAssemblySymbol));
+
+            RenameRules = renameRules ?? RenameRules.Default;
+        }
+
+        public RenameRules RenameRules { get; }
+
         /// <summary>
         /// Determines the name a symbol should have in the generated script.
         /// </summary>
         /// <param name="symbol">The symbol for which to discover the script name.</param>
-        /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
-        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
-        /// <returns>The name the specified symbol should have in the generated script.</returns>
-        public static string DetermineScriptNameForSymbol(
-            ISymbol symbol,
-            RenameRules renameRules,
-            IAssemblySymbol mscorlibAssemblySymbol)
+        public string DetermineScriptNameForSymbol(ISymbol symbol)
         {
             string scriptName;
 
             switch (symbol)
             {
                 case ITypeSymbol typeSymbol:
-                    scriptName = DetermineTypeScriptName(typeSymbol, mscorlibAssemblySymbol);
+                    scriptName = DetermineTypeScriptName(typeSymbol);
                     break;
 
                 case IFieldSymbol fieldSymbol when fieldSymbol.ContainingType.TypeKind == TypeKind.Enum:
-                    scriptName = DetermineEnumFieldScriptName(fieldSymbol, renameRules.EnumRule);
+                    scriptName = DetermineEnumFieldScriptName(fieldSymbol);
                     break;
 
                 case IFieldSymbol fieldSymbol:
-                    scriptName = DetermineFieldScriptName(fieldSymbol, renameRules.FieldRule);
+                    scriptName = DetermineFieldScriptName(fieldSymbol);
                     break;
 
                 case IMethodSymbol methodSymbol:
@@ -116,9 +128,8 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a type should have in the generated code.
         /// </summary>
         /// <param name="typeSymbol">The type for which to determine the script name.</param>
-        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
         /// <returns>The name the type should have in the generated code.</returns>
-        private static string DetermineTypeScriptName(ITypeSymbol typeSymbol, IAssemblySymbol mscorlibAssemblySymbol)
+        private string DetermineTypeScriptName(ITypeSymbol typeSymbol)
         {
             // if this is a native type (bool, string, etc.) use the special name
             if (TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol))
@@ -130,12 +141,12 @@ namespace Desalt.Core.SymbolTables
             string scriptName = baseName;
 
             // if this is a type that belongs to mscorlib, prefix it with 'ss'
-            if (typeSymbol.ContainingAssembly.Equals(mscorlibAssemblySymbol))
+            if (typeSymbol.ContainingAssembly.Equals(_mscorlibAssemblySymbol))
             {
                 // find the script namespace by searching on the type first, then the assembly
                 string scriptNamespace =
                     typeSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace) ??
-                    mscorlibAssemblySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace);
+                    _mscorlibAssemblySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace);
                 if (scriptNamespace != null)
                 {
                     scriptName = $"{scriptNamespace}.{baseName}";
@@ -158,9 +169,8 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that an enum field should have in the generated code.
         /// </summary>
         /// <param name="enumFieldSymbol">The enum field for which to determine the script name.</param>
-        /// <param name="renameRule">Options on how to rename enum member fields.</param>
         /// <returns>The name the enum field should have in the generated code.</returns>
-        private static string DetermineEnumFieldScriptName(IFieldSymbol enumFieldSymbol, EnumRenameRule renameRule)
+        private string DetermineEnumFieldScriptName(IFieldSymbol enumFieldSymbol)
         {
             string fieldName = enumFieldSymbol.Name;
 
@@ -170,7 +180,7 @@ namespace Desalt.Core.SymbolTables
             // 2) Otherwise use [ScriptName], [PreserveName] or other attribute that controls naming
             // 3) Otherwise use the rename rules from the options
 
-            string fieldScriptNameFromOptions = renameRule == EnumRenameRule.MatchCSharpName
+            string fieldScriptNameFromOptions = RenameRules.EnumRule == EnumRenameRule.MatchCSharpName
                 ? fieldName
                 : ToCamelCase(fieldName);
 
@@ -186,13 +196,12 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a field should have in the generated code.
         /// </summary>
         /// <param name="fieldSymbol">The field for which to determine the script name.</param>
-        /// <param name="renameRule">Options on how to rename fields.</param>
         /// <returns>The name the field should have in the generated code.</returns>
-        private static string DetermineFieldScriptName(IFieldSymbol fieldSymbol, FieldRenameRule renameRule)
+        private string DetermineFieldScriptName(IFieldSymbol fieldSymbol)
         {
             string scriptName;
 
-            switch (renameRule)
+            switch (RenameRules.FieldRule)
             {
                 // ReSharper disable once RedundantCaseLabel
                 case FieldRenameRule.LowerCaseFirstChar:
