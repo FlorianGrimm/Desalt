@@ -191,7 +191,7 @@ namespace Desalt.Core.Tests.TestUtility
             CompilerOptions? options = null,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
-            ImmutableArray<DocumentTranslationContextWithSymbolTables> allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
+            var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
             DocumentTranslationContextWithSymbolTables thisContext =
                 allContexts.First(context => context.Document.Name == fileName);
 

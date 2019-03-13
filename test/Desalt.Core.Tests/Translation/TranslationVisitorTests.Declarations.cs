@@ -184,12 +184,15 @@ class A {
         }
 
         [Test]
-        public async Task Translate_should_skip_methods_with_InlineCode()
+        public async Task Translate_should_skip_methods_and_ctors_marked_with_InlineCode_in_declarations()
         {
             await AssertTranslation(
                 @"
 class A
 {
+    [InlineCode(""new object()"")]
+    public A() { }
+
     [InlineCode(""ss.contains()"")]
     public static bool Contains()
     {
@@ -199,6 +202,26 @@ class A
 ",
                 @"
 class A {
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_should_skip_methods_but_not_ctors_marked_with_ScriptSkip_in_declarations()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ScriptSkip]
+    public A() { }
+
+    [ScriptSkip]
+    public void Method() { }
+}",
+                @"
+class A {
+  public constructor() { }
 }
 ");
         }

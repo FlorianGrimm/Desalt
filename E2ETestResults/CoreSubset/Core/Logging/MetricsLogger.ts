@@ -208,14 +208,14 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     let strBuilder: ss.StringBuilder = new ss.StringBuilder();
     strBuilder.append(verbose ? MetricsLogger.debugEventNames[evt.eventType] : evt.eventType.toString());
     let parameters: MetricsEventParameters = evt.parameters;
-    let eventDict: { [key: string]: any } = JsNativeExtensionMethods.reinterpretAs(parameters);
+    let eventDict: { [key: string]: any } = parameters;
     if (parameters.ei !== null) {
       eventDict = <{ [key: string]: any }>MiscUtil.cloneObject(eventDict);
       let extraInfoParts: string[] = parameters.ei.split(': ');
       if (extraInfoParts.length > 1) {
         let fakeProps: { [key: string]: string } = new JsDictionary<string, string>(extraInfoParts);
         eventDict[MetricsParameterName.properties] = fakeProps;
-        delete eventDict[JsNativeExtensionMethods.reinterpretAs('ei')];
+        delete eventDict['ei'];
       }
     }
     let count: number = eventDict.count;
@@ -292,7 +292,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
         } else
           if (type === 'object') {
             strBuilder.append('{');
-            let dict: { [key: string]: any } = Object.getDictionary(value);
+            let dict: { [key: string]: any } = value;
             MetricsLogger.formatDictionaryValues(strBuilder, dict, verbose);
             strBuilder.append('}');
           } else {

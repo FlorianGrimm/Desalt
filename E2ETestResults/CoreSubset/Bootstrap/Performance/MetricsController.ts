@@ -317,7 +317,7 @@ export class MetricsController {
   }
 
   public static getFriendlyEventDescription(desc: string): string {
-    return JsNativeExtensionMethods.reinterpretAs(MetricsController.fullMetricNameLookup)[desc] || desc;
+    return MetricsController.fullMetricNameLookup[desc] || desc;
   }
 
   /**

@@ -41,7 +41,7 @@ export class WindowHelper {
       };
     } else {
       WindowHelper.innerWidthFunc = (w: Object) => {
-        return ss.reinterpret(w.document.documentElement).offsetWidth;
+        return w.document.documentElement.offsetWidth;
       };
     }
     if ('outerWidth' in window) {
@@ -57,7 +57,7 @@ export class WindowHelper {
       };
     } else {
       WindowHelper.innerHeightFunc = (w: Object) => {
-        return ss.reinterpret(w.document.documentElement).offsetHeight;
+        return w.document.documentElement.offsetHeight;
       };
     }
     if ('outerHeight' in window) {

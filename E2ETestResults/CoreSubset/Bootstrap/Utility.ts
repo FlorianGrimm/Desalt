@@ -44,7 +44,7 @@ export class Utility {
           return;
         }
         let chunkStart: number = match[0].length;
-        let chunkLength: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(match[1]));
+        let chunkLength: number = ss.parseInt(match[1]);
         if (chunkStart + chunkLength > newData.length) {
           return;
         }
@@ -66,9 +66,9 @@ export class Utility {
           invokeError(new ss.Exception('Invalid JSON'));
         }
         if (byteOffset === 0) {
-          firstChunkCallback(JsNativeExtensionMethods.reinterpretAs(json));
+          firstChunkCallback(json);
         } else {
-          secondaryChunkCallback(JsNativeExtensionMethods.reinterpretAs(json));
+          secondaryChunkCallback(json);
         }
         byteOffset += chunkStart + chunkLength;
       }
