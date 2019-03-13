@@ -109,7 +109,7 @@ namespace Desalt.Core.Translation
             if (isNamedValues)
             {
                 IFieldSymbol fieldSymbol = _semanticModel.GetDeclaredSymbol(node);
-                string defaultFieldName = ScriptNameSymbolTable.DetermineEnumFieldDefaultScriptName(fieldSymbol);
+                string defaultFieldName = ScriptNamer.DetermineEnumFieldDefaultScriptName(fieldSymbol);
                 value = Factory.String(defaultFieldName);
             }
 
