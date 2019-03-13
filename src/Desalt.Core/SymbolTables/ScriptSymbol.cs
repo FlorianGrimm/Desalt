@@ -78,31 +78,5 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         public override string ToString() => Symbol.ToHashDisplay();
-
-        ///// <summary>
-        ///// Returns a value indicating whether the specified symbol has the specified attribute.
-        ///// </summary>
-        ///// <param name="symbol">The symbol to query.</param>
-        ///// <param name="attributeNameMinusSuffix">
-        ///// The name of the attribute to find, minus the "Attribute" suffix. For example,
-        ///// "InlineCode", which represents the <c>System.Runtime.CompilerServices.InlineCodeAttribute</c>.
-        ///// </param>
-        ///// <param name="isTypeAttribute">Indicates whether the attribute is only valid on a type.</param>
-        ///// <returns>
-        ///// True if the attribute was found; false if the symbol does not have an attached attribute
-        ///// of the given name.
-        ///// </returns>
-        //protected static bool HasAttribute(
-        //    ISymbol symbol,
-        //    string attributeNameMinusSuffix,
-        //    bool isTypeAttribute = false)
-        //{
-        //    if (isTypeAttribute && !(symbol is INamedTypeSymbol))
-        //    {
-        //        symbol = symbol.ContainingType;
-        //    }
-
-        //    return symbol != null && FindAttribute(symbol, attributeNameMinusSuffix) != null;
-        //}
     }
 }
