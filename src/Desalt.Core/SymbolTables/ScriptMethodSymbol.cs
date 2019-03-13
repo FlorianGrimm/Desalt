@@ -19,32 +19,90 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         public ScriptMethodSymbol(IMethodSymbol methodSymbol)
+            : this(methodSymbol, instanceToCopy: null)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ScriptMethodSymbol"/> class. Values are set using the
+        /// following precedence:
+        /// * The named parameter, if specified
+        /// * Otherwise, the value of <paramref name="instanceToCopy"/>, if specified
+        /// * Otherwise, the default value of the parameter's type
+        /// </summary>
+        // ReSharper disable once FunctionComplexityOverflow
+        private ScriptMethodSymbol(
+            IMethodSymbol methodSymbol,
+            IScriptMethodSymbol instanceToCopy = null,
+            bool? alternateSignature = null,
+            bool? dontGenerate = null,
+            bool? enumerateAsArray = null,
+            bool? expandParams = null,
+            string inlineCode = null,
+            string inlineCodeGeneratedMethodName = null,
+            string inlineCodeNonExpendedFormCode = null,
+            string inlineCodeNonVirtualCode = null,
+            bool? instanceMethodOnFirstArgument = null,
+            bool? intrinsicOperator = null,
+            bool? objectLiteral = null,
+            string scriptAlias = null,
+            bool? scriptSkip = null)
             : base(methodSymbol)
         {
-            AlternateSignature = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature);
-            DontGenerate = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.DontGenerate);
-            EnumerateAsArray = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.EnumerateAsArray);
-            ExpandParams = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ExpandParams);
+            AlternateSignature = alternateSignature ?? instanceToCopy?.AlternateSignature ??
+                methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature);
 
-            InlineCode = methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode);
-            InlineCodeGeneratedMethodName = methodSymbol.GetAttributeValueOrDefault(
-                SaltarelleAttributeName.InlineCode,
-                propertyName: SaltarelleAttributeArgumentName.GeneratedMethodName);
-            InlineCodeNonExpandedFormCode = methodSymbol.GetAttributeValueOrDefault(
-                SaltarelleAttributeName.InlineCode,
-                propertyName: SaltarelleAttributeArgumentName.NonExpandedFormCode);
-            InlineCodeNonVirtualCode = methodSymbol.GetAttributeValueOrDefault(
-                SaltarelleAttributeName.InlineCode,
-                propertyName: SaltarelleAttributeArgumentName.NonVirtualCode);
+            DontGenerate = dontGenerate ??
+                instanceToCopy?.DontGenerate ?? methodSymbol.GetFlagAttribute(SaltarelleAttributeName.DontGenerate);
 
-            InstanceMethodOnFirstArgument =
+            EnumerateAsArray = enumerateAsArray ??
+                instanceToCopy?.EnumerateAsArray ??
+                methodSymbol.GetFlagAttribute(SaltarelleAttributeName.EnumerateAsArray);
+
+            ExpandParams = expandParams ??
+                instanceToCopy?.ExpandParams ?? methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ExpandParams);
+
+            InlineCode = inlineCode ??
+                instanceToCopy?.InlineCode ??
+                methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.InlineCode);
+
+            InlineCodeGeneratedMethodName = inlineCodeGeneratedMethodName ??
+                instanceToCopy?.InlineCodeGeneratedMethodName ??
+                methodSymbol.GetAttributeValueOrDefault(
+                    SaltarelleAttributeName.InlineCode,
+                    propertyName: SaltarelleAttributeArgumentName.GeneratedMethodName);
+
+            InlineCodeNonExpandedFormCode = inlineCodeNonExpendedFormCode ??
+                instanceToCopy?.InlineCodeNonExpandedFormCode ??
+                methodSymbol.GetAttributeValueOrDefault(
+                    SaltarelleAttributeName.InlineCode,
+                    propertyName: SaltarelleAttributeArgumentName.NonExpandedFormCode);
+
+            InlineCodeNonVirtualCode = inlineCodeNonVirtualCode ??
+                instanceToCopy?.InlineCodeNonVirtualCode ??
+                methodSymbol.GetAttributeValueOrDefault(
+                    SaltarelleAttributeName.InlineCode,
+                    propertyName: SaltarelleAttributeArgumentName.NonVirtualCode);
+
+            InstanceMethodOnFirstArgument = instanceMethodOnFirstArgument ??
+                instanceToCopy?.InstanceMethodOnFirstArgument ??
                 methodSymbol.GetFlagAttribute(SaltarelleAttributeName.InstanceMethodOnFirstArgument);
 
-            IntrinsicOperator = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.IntrinsicOperator);
+            IntrinsicOperator = intrinsicOperator ??
+                instanceToCopy?.IntrinsicOperator ??
+                methodSymbol.GetFlagAttribute(SaltarelleAttributeName.IntrinsicOperator);
+
             MethodSymbol = methodSymbol;
-            ObjectLiteral = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ObjectLiteral);
-            ScriptAlias = methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptAlias);
-            ScriptSkip = methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ScriptSkip);
+
+            ObjectLiteral = objectLiteral ??
+                instanceToCopy?.ObjectLiteral ?? methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ObjectLiteral);
+
+            ScriptAlias = scriptAlias ??
+                instanceToCopy?.ScriptAlias ??
+                methodSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptAlias);
+
+            ScriptSkip = scriptSkip ??
+                instanceToCopy?.ScriptSkip ?? methodSymbol.GetFlagAttribute(SaltarelleAttributeName.ScriptSkip);
         }
 
         //// ===========================================================================================================
@@ -95,6 +153,9 @@ namespace Desalt.Core.SymbolTables
         /// name must be the fully qualified type name in this case.
         /// </summary>
         public string InlineCode { get; }
+
+        public ScriptMethodSymbol WithInlineCode(string value) =>
+            new ScriptMethodSymbol(MethodSymbol, this, inlineCode: value);
 
         /// <summary>
         /// If set, a method with this name will be generated from the method source.

@@ -189,6 +189,7 @@
     <Compile Include="SymbolTables\IScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\IScriptSymbol.cs" />
     <Compile Include="SymbolTables\IScriptTypeSymbol.cs" />
+    <Compile Include="SymbolTables\NewSymbolTable.cs" />
     <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptAssemblySymbol.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="SymbolTables\ScriptFieldSymbol.cs" />
     <Compile Include="SymbolTables\ScriptMethodSymbol.cs" />
     <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
+    <Compile Include="SymbolTables\ScriptSymbolExtensions.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\ScriptPropertySymbol.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="SymbolTables\ScriptSymbol.cs" />
     <Compile Include="SymbolTables\ScriptTypeSymbol.cs" />
     <Compile Include="SymbolTables\SymbolTableDiscoveryKind.cs" />
+    <Compile Include="SymbolTables\SymbolTableKey.cs" />
     <Compile Include="SymbolTables\SymbolTableUtils.cs" />
     <Compile Include="Translation\AlternateSignatureTranslator.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />
