@@ -19,8 +19,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptDelegateSymbol(ITypeSymbol delegateSymbol)
-            : base(delegateSymbol)
+        public ScriptDelegateSymbol(ITypeSymbol delegateSymbol, string computedScriptName)
+            : base(delegateSymbol, computedScriptName)
         {
             if (delegateSymbol.TypeKind != TypeKind.Delegate)
             {

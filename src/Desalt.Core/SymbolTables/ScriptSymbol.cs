@@ -14,15 +14,28 @@ namespace Desalt.Core.SymbolTables
     /// <summary>
     /// Represents a symbol that can be used in the translation process.
     /// </summary>
-    internal class ScriptSymbol : IScriptSymbol
+    internal abstract class ScriptSymbol : IScriptSymbol
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptSymbol(ISymbol symbol)
+        protected internal ScriptSymbol(ISymbol symbol, string computedScriptName)
         {
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
+
+            if (computedScriptName == null)
+            {
+                throw new ArgumentNullException(nameof(computedScriptName));
+            }
+
+            if (string.IsNullOrWhiteSpace(computedScriptName))
+            {
+                throw new ArgumentException("String is empty or whitespace", nameof(computedScriptName));
+            }
+
+            ComputedScriptName = computedScriptName;
+
             ScriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
             PreserveCase = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveCase);
             PreserveName = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveName);
@@ -34,6 +47,11 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
+
+        /// <summary>
+        /// The computed script name is what should be used when generating code for this symbol.
+        /// </summary>
+        public string ComputedScriptName { get; }
 
         /// <summary>
         /// Indicates that the type should not be emitted into generated script, as it represents

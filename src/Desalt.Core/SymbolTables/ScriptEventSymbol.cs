@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptEventSymbol(IEventSymbol eventSymbol)
-            : base(eventSymbol)
+        public ScriptEventSymbol(IEventSymbol eventSymbol, string computedScriptName)
+            : base(eventSymbol, computedScriptName)
         {
             BackingFieldName = eventSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.BackingFieldName);
             CustomInitialization =

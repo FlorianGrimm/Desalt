@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptPropertySymbol(IPropertySymbol propertySymbol)
-            : base(propertySymbol)
+        public ScriptPropertySymbol(IPropertySymbol propertySymbol, string computedScriptName)
+            : base(propertySymbol, computedScriptName)
         {
             BackingFieldName = propertySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.BackingFieldName);
             CustomInitializationCode =

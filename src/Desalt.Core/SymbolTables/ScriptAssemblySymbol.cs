@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptAssemblySymbol(IAssemblySymbol assemblySymbol)
-            : base(assemblySymbol)
+        public ScriptAssemblySymbol(IAssemblySymbol assemblySymbol, string computedScriptName)
+            : base(assemblySymbol, computedScriptName)
         {
             AssemblySymbol = assemblySymbol;
             DefaultReflectability = assemblySymbol.GetAttributeValueOrDefault(

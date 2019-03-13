@@ -39,7 +39,7 @@ class C
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
 
-                var methodScriptSymbol = new ScriptMethodSymbol(methodSymbol);
+                var methodScriptSymbol = new ScriptMethodSymbol(methodSymbol, "ComputedScriptName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(methodSymbol, methodScriptSymbol);
 
                 methodScriptSymbol.AlternateSignature.Should().BeFalse();
@@ -89,7 +89,7 @@ class C
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
 
-                var methodScriptSymbol = new ScriptMethodSymbol(methodSymbol);
+                var methodScriptSymbol = new ScriptMethodSymbol(methodSymbol, "ComputedScriptName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(methodSymbol, methodScriptSymbol);
 
                 methodScriptSymbol.AlternateSignature.Should().BeTrue();

@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptTypeSymbol(ITypeSymbol typeSymbol)
-            : base(typeSymbol)
+        public ScriptTypeSymbol(ITypeSymbol typeSymbol, string computedScriptName)
+            : base(typeSymbol, computedScriptName)
         {
             DefaultMemberReflectability = typeSymbol.GetAttributeValueOrDefault(
                 SaltarelleAttributeName.DefaultMemberReflectability,

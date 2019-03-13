@@ -19,8 +19,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptEnumSymbol(INamedTypeSymbol symbol)
-            : base(symbol)
+        public ScriptEnumSymbol(INamedTypeSymbol symbol, string computedScriptName)
+            : base(symbol, computedScriptName)
         {
             if (symbol.TypeKind != TypeKind.Enum)
             {

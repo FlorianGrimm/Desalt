@@ -59,11 +59,13 @@ namespace Desalt.Core.SymbolTables
         /// Creates a new <see cref="NewSymbolTable"/> for the specified translation contexts.
         /// </summary>
         /// <param name="contexts">The contexts from which to retrieve symbols.</param>
+        /// <param name="scriptNamer">names for the generated script given C# symbols.</param>
         /// <param name="discoveryKind">The kind of discovery to use (mainly for unit tests).</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="NewSymbolTable"/>.</returns>
         public static NewSymbolTable Create(
             ImmutableArray<DocumentTranslationContext> contexts,
+            IScriptNamer scriptNamer,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -74,7 +76,7 @@ namespace Desalt.Core.SymbolTables
             // process the types defined in the documents
             var documentSymbols = contexts.AsParallel()
                 .WithCancellation(cancellationToken)
-                .SelectMany(context => ProcessSymbolsInDocument(context, cancellationToken))
+                .SelectMany(context => ProcessSymbolsInDocument(context, scriptNamer, cancellationToken))
                 .ToImmutableDictionary();
 
             // process the externally referenced types
@@ -83,8 +85,9 @@ namespace Desalt.Core.SymbolTables
                 discoveryKind,
                 cancellationToken);
 
-            var directlyReferencedExternalSymbols =
-                directlyReferencedExternalTypeSymbols.SelectMany(ProcessTypeAndMembers).ToImmutableDictionary();
+            var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
+                .SelectMany(typeSymbol => ProcessTypeAndMembers(typeSymbol, scriptNamer))
+                .ToImmutableDictionary();
 
             var indirectlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
                 directlyReferencedExternalTypeSymbols,
@@ -95,7 +98,7 @@ namespace Desalt.Core.SymbolTables
             var indirectlyReferencedSymbols = indirectlyReferencedExternalTypeSymbols.Select(
                     typeSymbol => new KeyValuePair<ISymbol, Lazy<IScriptSymbol>>(
                         typeSymbol,
-                        new Lazy<IScriptSymbol>(() => CreateScriptSymbol(typeSymbol), isThreadSafe: true)))
+                        new Lazy<IScriptSymbol>(() => CreateScriptSymbol(typeSymbol, scriptNamer), isThreadSafe: true)))
                 .ToImmutableDictionary();
 
             return new NewSymbolTable(
@@ -258,10 +261,11 @@ namespace Desalt.Core.SymbolTables
 
         private static ImmutableDictionary<ISymbol, IScriptSymbol> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
+            IScriptNamer scriptNamer,
             CancellationToken cancellationToken)
         {
             var dictionary = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                .SelectMany(ProcessTypeAndMembers)
+                .SelectMany(typeSymbol => ProcessTypeAndMembers(typeSymbol, scriptNamer))
                 .ToImmutableDictionary();
 
             return dictionary;
@@ -270,16 +274,20 @@ namespace Desalt.Core.SymbolTables
         private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
             typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
 
-        private static IEnumerable<KeyValuePair<ISymbol, IScriptSymbol>> ProcessTypeAndMembers(ITypeSymbol typeSymbol)
+        private static IEnumerable<KeyValuePair<ISymbol, IScriptSymbol>> ProcessTypeAndMembers(
+            ITypeSymbol typeSymbol,
+            IScriptNamer scriptNamer)
         {
             return from symbol in DiscoverTypeAndMembers(typeSymbol)
-                   let scriptSymbol = CreateScriptSymbol(symbol)
+                   let scriptSymbol = CreateScriptSymbol(symbol, scriptNamer)
                    where scriptSymbol != null
                    select new KeyValuePair<ISymbol, IScriptSymbol>(symbol, scriptSymbol);
         }
 
-        private static IScriptSymbol CreateScriptSymbol(ISymbol symbol)
+        private static IScriptSymbol CreateScriptSymbol(ISymbol symbol, IScriptNamer scriptNamer)
         {
+            string computedScriptName = scriptNamer.DetermineScriptNameForSymbol(symbol);
+
             switch (symbol)
             {
                 case INamedTypeSymbol typeSymbol:
@@ -287,25 +295,25 @@ namespace Desalt.Core.SymbolTables
                     {
                         case TypeKind.Class:
                         case TypeKind.Interface:
-                            return new ScriptTypeSymbol(typeSymbol);
+                            return new ScriptTypeSymbol(typeSymbol, computedScriptName);
 
                         case TypeKind.Struct:
-                            return new ScriptStructSymbol(typeSymbol);
+                            return new ScriptStructSymbol(typeSymbol, computedScriptName);
 
                         case TypeKind.Delegate:
-                            return new ScriptDelegateSymbol(typeSymbol);
+                            return new ScriptDelegateSymbol(typeSymbol, computedScriptName);
                     }
 
                     break;
 
                 case IFieldSymbol fieldSymbol:
-                    return new ScriptFieldSymbol(fieldSymbol);
+                    return new ScriptFieldSymbol(fieldSymbol, computedScriptName);
 
                 case IPropertySymbol propertySymbol:
-                    return new ScriptPropertySymbol(propertySymbol);
+                    return new ScriptPropertySymbol(propertySymbol, computedScriptName);
 
                 case IMethodSymbol methodSymbol:
-                    return new ScriptMethodSymbol(methodSymbol);
+                    return new ScriptMethodSymbol(methodSymbol, computedScriptName);
             }
 
             return null;

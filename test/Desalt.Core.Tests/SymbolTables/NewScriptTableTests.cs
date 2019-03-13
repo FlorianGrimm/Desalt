@@ -21,10 +21,20 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
 
     [TestClass]
     public class NewScriptTableTests
     {
+        private static IScriptNamer CreateFakeScriptNamer()
+        {
+            var fakeScriptNamer = new Mock<IScriptNamer>();
+            fakeScriptNamer.Setup(mock => mock.DetermineScriptNameForSymbol(It.IsAny<ISymbol>()))
+                .Returns("ComputedScriptName");
+
+            return fakeScriptNamer.Object;
+        }
+
         private static async Task AssertDocumentEntriesInSymbolTable(
             string code,
             params string[] expectedEntries)
@@ -34,7 +44,10 @@ namespace Desalt.Core.Tests.SymbolTables
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts, SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                var symbolTable = NewSymbolTable.Create(
+                    contexts,
+                    CreateFakeScriptNamer(),
+                    SymbolTableDiscoveryKind.OnlyDocumentTypes);
 
                 symbolTable.DocumentSymbols
                     .Select(pair => pair.Key.ToHashDisplay())
@@ -115,7 +128,7 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts);
+                var symbolTable = NewSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
                 // check a directly-reference symbol
                 InvocationExpressionSyntax invocationExpressionSyntax =
@@ -152,7 +165,7 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts);
+                var symbolTable = NewSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
                 // make sure we read the [Imported] from class C
                 ClassDeclarationSyntax classDeclarationSyntax =
@@ -205,7 +218,10 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync(options: options);
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts, SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                var symbolTable = NewSymbolTable.Create(
+                    contexts,
+                    CreateFakeScriptNamer(),
+                    SymbolTableDiscoveryKind.OnlyDocumentTypes);
 
                 // get the C.Method() symbol
                 ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")

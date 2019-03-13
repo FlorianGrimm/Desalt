@@ -70,7 +70,7 @@ namespace Desalt.Core.SymbolTables
             return scriptName;
         }
 
-        private static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+        public static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
         /// <summary>
         /// Attempts to find the script name for the specified symbol based on attributes defined on

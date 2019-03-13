@@ -41,7 +41,7 @@ class C
                     .Cast<IFieldSymbol>()
                     .Single();
 
-                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol);
+                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
 
                 eventScriptSymbol.CustomInitialization.Should().BeNull();
@@ -75,7 +75,7 @@ class C
                     .Cast<IFieldSymbol>()
                     .Single();
 
-                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol);
+                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
 
                 eventScriptSymbol.CustomInitialization.Should().Be("code");

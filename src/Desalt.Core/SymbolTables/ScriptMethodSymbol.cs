@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptMethodSymbol(IMethodSymbol methodSymbol)
-            : this(methodSymbol, instanceToCopy: null)
+        public ScriptMethodSymbol(IMethodSymbol methodSymbol, string computedScriptName)
+            : this(methodSymbol, computedScriptName, instanceToCopy: null)
         {
         }
 
@@ -33,6 +33,7 @@ namespace Desalt.Core.SymbolTables
         // ReSharper disable once FunctionComplexityOverflow
         private ScriptMethodSymbol(
             IMethodSymbol methodSymbol,
+            string computedScriptName,
             IScriptMethodSymbol instanceToCopy = null,
             bool? alternateSignature = null,
             bool? dontGenerate = null,
@@ -47,7 +48,7 @@ namespace Desalt.Core.SymbolTables
             bool? objectLiteral = null,
             string scriptAlias = null,
             bool? scriptSkip = null)
-            : base(methodSymbol)
+            : base(methodSymbol, computedScriptName)
         {
             AlternateSignature = alternateSignature ?? instanceToCopy?.AlternateSignature ??
                 methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature);
@@ -155,7 +156,7 @@ namespace Desalt.Core.SymbolTables
         public string InlineCode { get; }
 
         public ScriptMethodSymbol WithInlineCode(string value) =>
-            new ScriptMethodSymbol(MethodSymbol, this, inlineCode: value);
+            new ScriptMethodSymbol(MethodSymbol, ComputedScriptName, this, inlineCode: value);
 
         /// <summary>
         /// If set, a method with this name will be generated from the method source.

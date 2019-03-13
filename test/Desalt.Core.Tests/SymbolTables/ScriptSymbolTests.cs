@@ -47,7 +47,7 @@ namespace Desalt.Core.Tests.SymbolTables
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
 
-                var scriptSymbol = new ScriptSymbol(methodSymbol);
+                var scriptSymbol = new TestScriptSymbol(methodSymbol);
                 AssertScriptSymbolDefaultValues(methodSymbol, scriptSymbol);
             }
         }
@@ -77,7 +77,7 @@ class C
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
 
-                var scriptSymbol = new ScriptSymbol(methodSymbol);
+                var scriptSymbol = new TestScriptSymbol(methodSymbol);
                 scriptSymbol.PreserveCase.Should().BeTrue();
                 scriptSymbol.PreserveName.Should().BeTrue();
                 scriptSymbol.Reflectable.Should().BeTrue();
@@ -109,11 +109,19 @@ class C
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
 
-                var scriptSymbol = new ScriptSymbol(methodSymbol);
+                var scriptSymbol = new TestScriptSymbol(methodSymbol);
                 scriptSymbol.Imported.Should().BeTrue();
                 scriptSymbol.PreserveName.Should().BeFalse();
                 scriptSymbol.Reflectable.Should().BeFalse();
             }
+        }
+    }
+
+    internal class TestScriptSymbol : ScriptSymbol
+    {
+        public TestScriptSymbol(ISymbol symbol)
+            : base(symbol, "ComputedScriptName")
+        {
         }
     }
 }

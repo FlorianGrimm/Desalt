@@ -27,7 +27,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var assemblySymbol = context.SemanticModel.Compilation.Assembly;
 
-                var assemblyScriptSymbol = new ScriptAssemblySymbol(assemblySymbol);
+                var assemblyScriptSymbol = new ScriptAssemblySymbol(assemblySymbol, "AssemblyName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(assemblySymbol, assemblyScriptSymbol);
 
                 assemblyScriptSymbol.AssemblySymbol.Should().Be(assemblySymbol);

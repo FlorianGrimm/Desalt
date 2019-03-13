@@ -18,8 +18,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptFieldSymbol(IFieldSymbol fieldSymbol)
-            : base(fieldSymbol)
+        public ScriptFieldSymbol(IFieldSymbol fieldSymbol, string computedScriptName)
+            : base(fieldSymbol, computedScriptName)
         {
             CustomInitialization =
                 fieldSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.CustomInitialization);
