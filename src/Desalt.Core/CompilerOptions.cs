@@ -244,7 +244,7 @@ namespace Desalt.Core
                 ContractResolver = contractResolver,
                 Converters = new List<JsonConverter>
                 {
-                    new StringEnumConverter(camelCaseText: true)
+                    new StringEnumConverter(new CamelCaseNamingStrategy())
                     {
                         AllowIntegerValues = false
                     },
