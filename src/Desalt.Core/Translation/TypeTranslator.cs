@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TypeTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -65,7 +65,7 @@ namespace Desalt.Core.Translation
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
-        private readonly ScriptNameSymbolTable _scriptNameSymbolTable;
+        private readonly NewSymbolTable _scriptNameSymbolTable;
 
         //// ===========================================================================================================
         //// Constructors
@@ -78,7 +78,7 @@ namespace Desalt.Core.Translation
         /// The script name symbol table. For example, List{T} gets translated to a native array, so
         /// it has a [ScriptName("Array")] attribute.
         /// </param>
-        public TypeTranslator(ScriptNameSymbolTable scriptNameSymbolTable)
+        public TypeTranslator(NewSymbolTable scriptNameSymbolTable)
         {
             _scriptNameSymbolTable =
                 scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
@@ -221,7 +221,7 @@ namespace Desalt.Core.Translation
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
 
-            string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
+            string scriptName = _scriptNameSymbolTable.GetComputedScriptNameOrDefault(symbol, null);
             if (scriptName == null)
             {
                 Diagnostic error = DiagnosticFactory.UnknownTypeReference(

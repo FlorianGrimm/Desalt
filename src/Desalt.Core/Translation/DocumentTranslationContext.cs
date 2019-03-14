@@ -132,7 +132,7 @@ namespace Desalt.Core.Translation
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
             ImportSymbolTable importSymbolTable,
-            ScriptNameSymbolTable scriptNameSymbolTable,
+            NewSymbolTable scriptNameSymbolTable,
             InlineCodeSymbolTable inlineCodeSymbolTable,
             AlternateSignatureSymbolTable alternateSignatureSymbolTable) : base(
             context.Document,
@@ -159,7 +159,7 @@ namespace Desalt.Core.Translation
 
         public ImportSymbolTable ImportSymbolTable { get; }
 
-        public ScriptNameSymbolTable ScriptNameSymbolTable { get; }
+        public NewSymbolTable ScriptNameSymbolTable { get; }
 
         public InlineCodeSymbolTable InlineCodeSymbolTable { get; }
 

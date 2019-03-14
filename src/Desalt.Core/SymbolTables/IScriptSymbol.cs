@@ -19,6 +19,11 @@ namespace Desalt.Core.SymbolTables
         //// ===========================================================================================================
 
         /// <summary>
+        /// The computed script name is what should be used when generating code for this symbol.
+        /// </summary>
+        string ComputedScriptName { get; }
+
+        /// <summary>
         /// Indicates that the type should not be emitted into generated script, as it represents
         /// existing script or native types. All members without another naming attribute are
         /// considered to use <see cref="PreserveName"/>.

@@ -32,7 +32,7 @@ namespace Desalt.Core.Translation
 
         private readonly SemanticModel _semanticModel;
         private readonly InlineCodeSymbolTable _inlineCodeSymbolTable;
-        private readonly ScriptNameSymbolTable _scriptNameSymbolTable;
+        private readonly NewSymbolTable _scriptNameSymbolTable;
 
         //// ===========================================================================================================
         //// Constructors
@@ -53,7 +53,7 @@ namespace Desalt.Core.Translation
         public InlineCodeTranslator(
             SemanticModel semanticModel,
             InlineCodeSymbolTable inlineCodeSymbolTable,
-            ScriptNameSymbolTable scriptNameSymbolTable)
+            NewSymbolTable scriptNameSymbolTable)
         {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
@@ -248,9 +248,9 @@ namespace Desalt.Core.Translation
                 return fullTypeName;
             }
 
-            if (_scriptNameSymbolTable.TryGetValue(typeSymbol, out string scriptName))
+            if (_scriptNameSymbolTable.TryGetValue(typeSymbol, out IScriptSymbol scriptSymbol))
             {
-                return scriptName;
+                return scriptSymbol.ComputedScriptName;
             }
 
             context.AddParseError($"Cannot find '{typeSymbol}' in the ScriptName symbol table");

@@ -271,17 +271,27 @@ namespace Desalt.Core.SymbolTables
                 return defaultName;
             }
 
-            // check for [AlternateSignature] and then find the name of the other method
+            // check for [AlternateSignature] and then find the name of the implementing method
             if (methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature))
             {
-                IMethodSymbol otherMethod = methodSymbol.ContainingType.GetMembers()
+                IMethodSymbol implementingMethod = methodSymbol.ContainingType.GetMembers()
                     .OfType<IMethodSymbol>()
                     .Single(
                         m => !Equals(m, methodSymbol) &&
+
+                            // the implementing method needs to be the same (static or instance)
                             m.IsStatic == methodSymbol.IsStatic &&
+
+                            // the implementing method needs to be named the same
                             m.Name == methodSymbol.Name &&
+
+                            // the implementing method cannot be marked with [InlineCode]
+                            !m.HasAttribute(SaltarelleAttributeName.InlineCode) &&
+
+                            // and the implementing method should not be marked with [AlternateSignature]
                             !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature));
-                string scriptName = DetermineMethodScriptName(otherMethod);
+
+                string scriptName = DetermineMethodScriptName(implementingMethod);
                 return scriptName;
             }
 

@@ -35,7 +35,7 @@ namespace Desalt.Core.Translation
         private readonly ICollection<Diagnostic> _diagnostics;
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
-        private readonly ScriptNameSymbolTable _scriptNameTable;
+        private readonly NewSymbolTable _scriptNameTable;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
@@ -141,7 +141,7 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier("Error");
             }
 
-            if (!_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            if (!_scriptNameTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
                 ReportUnsupportedTranslataion(
                     DiagnosticFactory.InternalError(
@@ -150,7 +150,7 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier("Error");
             }
 
-            return Factory.Identifier(scriptName);
+            return Factory.Identifier(scriptSymbol.ComputedScriptName);
         }
 
         /// <summary>

@@ -60,16 +60,9 @@ class Foo
                 }
 
                 // create the script name symbol table
-                ImmutableArray<ITypeSymbol> directlyReferencedExternalTypes =
-                    SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
-
-                var scriptNameTable = ScriptNameSymbolTable.Create(
-                    contexts,
-                    directlyReferencedExternalTypes,
-                    SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
-                        directlyReferencedExternalTypes,
-                        context.SemanticModel.Compilation,
-                        discoveryKind: discoveryKind));
+                var scriptNamer = new ScriptNamer(
+                    SymbolTableUtils.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
+                var scriptNameTable = NewSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
                 var translator = new TypeTranslator(scriptNameTable);
                 var diagnostics = new List<Diagnostic>();

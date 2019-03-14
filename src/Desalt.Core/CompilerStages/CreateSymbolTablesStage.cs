@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CreateSymbolTablesStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -61,6 +61,11 @@ namespace Desalt.Core.CompilerStages
                     input.FirstOrDefault()?.SemanticModel.Compilation,
                     cancellationToken);
 
+            // create a script namer
+            var mscorlibAssemblySymbol =
+                SymbolTableUtils.GetMscorlibAssemblySymbol(input.First().SemanticModel.Compilation);
+            var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, options.RenameRules);
+
             // construct each symbol table in parallel
             var tasks = new List<Task<object>>
             {
@@ -71,11 +76,10 @@ namespace Desalt.Core.CompilerStages
 
                 // create the script name symbol table
                 Task.Run<object>(
-                    () => ScriptNameSymbolTable.Create(
+                    () => NewSymbolTable.Create(
                         input,
-                        directlyReferencedExternalTypeSymbols,
-                        indirectlyReferencedExternalTypeSymbols,
-                        overrides.ScriptNameOverrides,
+                        scriptNamer,
+                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken),
                     cancellationToken),
 
@@ -98,7 +102,7 @@ namespace Desalt.Core.CompilerStages
             await Task.WhenAll(tasks);
 
             var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
-            var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
+            var scriptNameSymbolTable = (NewSymbolTable)tasks[1].Result;
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;

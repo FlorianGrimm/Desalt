@@ -200,7 +200,6 @@
     <Compile Include="SymbolTables\ScriptFieldSymbol.cs" />
     <Compile Include="SymbolTables\ScriptMethodSymbol.cs" />
     <Compile Include="SymbolTables\ScriptNamer.cs" />
-    <Compile Include="SymbolTables\ScriptNameSymbolTable.cs" />
     <Compile Include="SymbolTables\ScriptSymbolExtensions.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolTableBase.cs" />

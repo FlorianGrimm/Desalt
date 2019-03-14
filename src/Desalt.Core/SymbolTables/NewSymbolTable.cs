@@ -86,7 +86,11 @@ namespace Desalt.Core.SymbolTables
                 cancellationToken);
 
             var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
-                .SelectMany(typeSymbol => ProcessTypeAndMembers(typeSymbol, scriptNamer))
+                .SelectMany(DiscoverTypeAndMembers)
+                // Distinct is needed because of nested types, where we might directly reference a class and a nested class
+                .Distinct()
+                .Select(typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol>(typeSymbol, CreateScriptSymbol(typeSymbol, scriptNamer)))
+                .Where(pair => pair.Value != null)
                 .ToImmutableDictionary();
 
             var indirectlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
@@ -164,17 +168,29 @@ namespace Desalt.Core.SymbolTables
         public bool HasSymbol(ISymbol symbol) => TryGetValue(symbol, out IScriptSymbol _);
 
         /// <summary>
+        /// Gets the computed script name corresponding to the specified symbol, or the default value
+        /// if the symbol is not in the symbol table.
+        /// </summary>
+        /// <param name="symbol">The symbol to look up.</param>
+        /// <param name="defaultValue">The default value to use if the symbol is not present.</param>
+        /// <returns>Either the symbol's computed script name or the default value.</returns>
+        public string GetComputedScriptNameOrDefault(ISymbol symbol, string defaultValue)
+        {
+            return TryGetValue(symbol, out IScriptSymbol scriptSymbol) ? scriptSymbol.ComputedScriptName : defaultValue;
+        }
+
+        /// <summary>
         /// Gets the type-specific symbol from the symbol table.
         /// </summary>
         /// <typeparam name="TScriptSymbol">
         /// One of the inherited script symbol types (from <see cref="IScriptSymbol"/>).
         /// </typeparam>
-        /// <param name="key">The C# symbol to lookup.</param>
-        /// <returns>A <see cref="IScriptSymbol"/> corresponding to the specified key.</returns>
-        public TScriptSymbol Get<TScriptSymbol>(ISymbol key)
+        /// <param name="symbol">The C# symbol to lookup.</param>
+        /// <returns>A <see cref="IScriptSymbol"/> corresponding to the specified symbol.</returns>
+        public TScriptSymbol Get<TScriptSymbol>(ISymbol symbol)
             where TScriptSymbol : class, IScriptSymbol
         {
-            if (!TryGetValue(key, out TScriptSymbol scriptSymbol))
+            if (!TryGetValue(symbol, out TScriptSymbol scriptSymbol))
             {
                 throw new KeyNotFoundException();
             }
@@ -183,7 +199,7 @@ namespace Desalt.Core.SymbolTables
         }
 
         /// <summary>
-        /// Attempts to get the value associated with the specified key.
+        /// Attempts to get the value associated with the specified symbol.
         /// </summary>
         /// <typeparam name="TScriptSymbol">
         /// One of the inherited script symbol types (from <see cref="IScriptSymbol"/>).
@@ -302,6 +318,9 @@ namespace Desalt.Core.SymbolTables
 
                         case TypeKind.Delegate:
                             return new ScriptDelegateSymbol(typeSymbol, computedScriptName);
+
+                        case TypeKind.Enum:
+                            return new ScriptEnumSymbol(typeSymbol, computedScriptName);
                     }
 
                     break;

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TempProject.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -159,6 +159,8 @@ namespace Desalt.Core.Tests.TestUtility
                 CompilerOptions options = null,
                 SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
+            options = options ?? Options;
+
             // add all of the symbols from all of the documents in the project
             var contexts = (await Task.WhenAll(
                 _workspace.CurrentSolution.Projects.Single()
@@ -177,10 +179,11 @@ namespace Desalt.Core.Tests.TestUtility
             var importTable = ImportSymbolTable.Create(contexts, directlyReferencedExternalTypeSymbols);
 
             // create the script name symbol table
-            var scriptNameTable = ScriptNameSymbolTable.Create(
-                contexts,
-                directlyReferencedExternalTypeSymbols,
-                indirectlyReferencedExternalTypeSymbols);
+            var scriptNamer = new ScriptNamer(
+                SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
+                options.RenameRules);
+
+            var scriptNameTable = NewSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
             // create the inline code symbol table
             var inlineCodeTable = InlineCodeSymbolTable.Create(

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="NoDuplicateFieldAndPropertyNamesValidator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -54,8 +54,8 @@ namespace Desalt.Core.Validation
                 where fieldSymbol != null && propertySymbol != null
 
                 // lookup the compiled names
-                let fieldScriptName = context.ScriptNameSymbolTable[fieldSymbol]
-                let propertyScriptName = context.ScriptNameSymbolTable[propertySymbol]
+                let fieldScriptName = context.ScriptNameSymbolTable[fieldSymbol].ComputedScriptName
+                let propertyScriptName = context.ScriptNameSymbolTable[propertySymbol].ComputedScriptName
 
                 // and check for any duplicate names
                 where string.Equals(fieldScriptName, propertyScriptName, StringComparison.Ordinal)

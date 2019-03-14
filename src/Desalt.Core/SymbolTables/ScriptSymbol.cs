@@ -24,17 +24,8 @@ namespace Desalt.Core.SymbolTables
         {
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
 
-            if (computedScriptName == null)
-            {
-                throw new ArgumentNullException(nameof(computedScriptName));
-            }
-
-            if (string.IsNullOrWhiteSpace(computedScriptName))
-            {
-                throw new ArgumentException("String is empty or whitespace", nameof(computedScriptName));
-            }
-
-            ComputedScriptName = computedScriptName;
+            // empty script names are allowed
+            ComputedScriptName = computedScriptName ?? throw new ArgumentNullException(nameof(computedScriptName));
 
             ScriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
             PreserveCase = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveCase);

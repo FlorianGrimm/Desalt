@@ -187,7 +187,7 @@
     <Compile Include="SymbolTables\ScriptEventSymbolTests.cs" />
     <Compile Include="SymbolTables\ScriptFieldSymbolTests.cs" />
     <Compile Include="SymbolTables\ScriptMethodSymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptNameSymbolTableTests.cs" />
+    <Compile Include="SymbolTables\ScriptNamerTests.cs" />
     <Compile Include="SymbolTables\ScriptSymbolTests.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensionsTests.cs" />
     <Compile Include="TestUtility\RoslynExtensionsForTesting.cs" />
