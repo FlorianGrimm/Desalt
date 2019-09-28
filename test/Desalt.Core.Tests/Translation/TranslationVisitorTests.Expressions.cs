@@ -335,6 +335,41 @@ class C {
                 SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
+        [TestMethod]
+        public async Task ObjectCreationExpression_should_detect_expressions_in_JsDictionary_initialization()
+        {
+            await AssertTranslation(
+                @"
+class Strings
+{
+    public const string Key2 = ""key2"";
+}
+
+class C
+{
+    private JsDictionary notGeneric = new JsDictionary(""key1"", ""value1"", Strings.Key2, ""value2"");
+    private JsDictionary<int, bool> generic = new JsDictionary<int, bool>(1, true, 2, false);
+}",
+                @"
+class Strings {
+  public static readonly key2: string = 'key2';
+}
+
+class C {
+  private notGeneric: { [key: string]: any } = {
+    'key1': 'value1',
+    [Strings.key2]: 'value2'
+  };
+
+  private generic: { [key: number]: boolean } = {
+    1: true,
+    2: false
+  };
+}
+",
+                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+        }
+
         //// ===========================================================================================================
         //// Invocation Expression Tests
         //// ===========================================================================================================
