@@ -41,11 +41,11 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Attempts to translate an <see cref="ObjectCreationExpressionSyntax"/> of the form:
         /// <code>
-        /// new JsDictionary("key", "value");
+        /// new JsDictionary("key", "value", expr, "value2");
         /// </code>
         /// to
         /// <code>
-        /// { 'key': 'value' }
+        /// { 'key': 'value', [expr]: 'value2' }
         /// </code>
         /// </summary>
         /// <param name="node">The <see cref="ObjectCreationExpressionSyntax"/> node to translate.</param>
@@ -65,12 +65,15 @@ namespace Desalt.Core.Translation
             ICollection<Diagnostic> diagnostics,
             out ITsObjectLiteral translation)
         {
+            // Nothing to translate if we don't have a JsDictionary.
             if (!IsJsDictionary(semanticModel.GetTypeInfo(node).Type))
             {
                 translation = null;
                 return false;
             }
 
+            // Arguments must be in pairs, so if there are less than 2 this initializer is just going
+            // to be a normal ctor call, which is handled elsewhere.
             int argCount = node.ArgumentList.Arguments.Count;
             if (argCount < 2)
             {
@@ -78,6 +81,7 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
+            // Check some preconditions that the Saltarelle compiler should have enforced.
             if (argCount % 2 != 0)
             {
                 diagnostics.Add(
@@ -98,13 +102,20 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
+            // Create the TypeScript object creation node.
             var propertyDefinitions = new List<ITsPropertyDefinition>();
             for (int i = 0; i < argCount; i += 2)
             {
                 ITsExpression key = translatedArgumentList.Arguments[i].Argument;
                 ITsExpression value = translatedArgumentList.Arguments[i + 1].Argument;
 
+                // We may have an expression as a property name, which would have been translated as
+                // an expression instead of a literal string or number.
                 var propertyName = key as ITsPropertyName;
+                if (propertyName == null && key is ITsExpression translatedExpression)
+                {
+                    propertyName = Factory.ComputedPropertyName(translatedExpression);
+                }
 
                 ITsPropertyDefinition propertyDefinition = Factory.PropertyAssignment(propertyName, value);
                 propertyDefinitions.Add(propertyDefinition);

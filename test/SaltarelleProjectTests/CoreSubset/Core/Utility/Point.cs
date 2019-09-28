@@ -30,14 +30,14 @@ namespace Tableau.JavaScript.Vql.Core
 
     /// <summary> A variation of Point record that uses floats instead of ints. </summary>
     [Imported, Serializable]
-    public sealed class PointF
+    public sealed class PointD
     {
-        public float X;
+        public double X;
 
-        public float Y;
+        public double Y;
 
         [ObjectLiteral]
-        public PointF(float x, float y)
+        public PointD(double x, double y)
         {
             this.X = x;
             this.Y = y;

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitor.Functions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -172,15 +172,26 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
-            ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            ITsType parameterType = _typeTranslator.TranslateSymbol(
-                parameterTypeSymbol,
-                _typesToImport,
-                _diagnostics,
-                () => node.Type.GetLocation());
+            ITsType parameterType;
+
+            // anonymous delegates don't always have a TypeSyntax, for example `(x, y) => ...`
+            if (node.Type == null)
+            {
+                parameterType = null;
+            }
+            else
+            {
+                ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+                parameterType = _typeTranslator.TranslateSymbol(
+                    parameterTypeSymbol,
+                    _typesToImport,
+                    _diagnostics,
+                    () => node.Type.GetLocation());
+            }
 
             ITsAstNode parameter;
 
+            // check for default parameter values
             if (node.Default == null)
             {
                 parameter = Factory.BoundRequiredParameter(parameterName, parameterType);

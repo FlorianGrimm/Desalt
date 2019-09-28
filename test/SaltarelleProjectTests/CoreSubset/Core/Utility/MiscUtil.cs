@@ -11,17 +11,17 @@ namespace Tableau.JavaScript.Vql.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.TypedArrays;
     using System.Diagnostics.CodeAnalysis;
     using System.Html;
     using System.Runtime.CompilerServices;
     using System.Serialization;
     using System.Text;
     using System.Text.RegularExpressions;
-    using jQueryApi;
     using Tableau.JavaScript.CoreSlim;
     using Tableau.JavaScript.Vql.Bootstrap;
     using Tableau.JavaScript.Vql.TypeDefs;
-    using Underscore;
+    using UnderscoreJs;
 
     [NumericValues]
     public enum PathnameKey
@@ -58,7 +58,7 @@ namespace Tableau.JavaScript.Vql.Core
 
                 JsDictionary<PathnameKey, string> pathnameProps = new JsDictionary<PathnameKey, string>();
 
-                //TODO: change this to iterate over Enum.GetValues when we upgrade to script sharp version that supports this.
+                // TODO: change this to iterate over Enum.GetValues when we upgrade to script sharp version that supports this.
                 pathnameProps[PathnameKey.WorkbookName] = pathnameParts[(int)PathnameKey.WorkbookName];
                 pathnameProps[PathnameKey.SheetId] = pathnameParts[(int)PathnameKey.SheetId];
                 pathnameProps[PathnameKey.AuthoringSheet] = pathnameParts[(int)PathnameKey.AuthoringSheet];
@@ -67,26 +67,31 @@ namespace Tableau.JavaScript.Vql.Core
         }
 
         /// <summary>
-        /// Lazily initializes a static field (field on a type).  This is necessary at times to workaround the
-        /// Script# initialization process for static blocks as the ordering there is beyond our control.
-        ///
-        /// When using this method for initialization the field should not be declared by the type.
+        /// Performs a shallow equals of two given objects.
         /// </summary>
-        /// <param name="t">The type to contain the field</param>
-        /// <param name="fieldName">The field name</param>
-        /// <param name="initializer">A function for providing the default field value</param>
-        /// <returns>The field's value, initialized the first time this method is called</returns>
-        public static object LazyInitStaticField(Type t, string fieldName, Func<object> initializer)
+        /// <param name="valueA">An object or <c>null</c></param>
+        /// <param name="valueB">Another object or <c>null</c></param>
+        /// <returns><c>true</c> if all keys are <c>===</c> between the two objects.</returns>
+        public static bool ShallowEquals(object valueA, object valueB)
         {
-            object value = ((dynamic)t)[fieldName];
+            if (valueA == valueB) { return true; }
+            if (valueA == null || valueB == null) { return false; }
 
-            if (Script.IsNullOrUndefined(value))
+            var keysA = Keys(valueA);
+            var keysB = Keys(valueB);
+            if (keysA.Length != keysB.Length)
             {
-                value = initializer();
-                ((dynamic)t)[fieldName] = value;
+                return false;
             }
-
-            return value;
+            for (int i = 0; i < keysA.Length; i++)
+            {
+                var key = keysA[i];
+                if (!HasOwnProperty(valueB, key) || TypeUtil.GetField<object>(valueA, key) != TypeUtil.GetField<object>(valueB, key))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -141,7 +146,7 @@ namespace Tableau.JavaScript.Vql.Core
         {
             JsDictionary<string, string> usernameValidChars = new JsDictionary<string, string>();
 
-            Action<char, char> addCodes = delegate(char from, char to)
+            Action<char, char> addCodes = (char from, char to) =>
             {
                 for (char i = from; i <= to; i++)
                 {
@@ -199,7 +204,7 @@ namespace Tableau.JavaScript.Vql.Core
                 return true;
             }
 
-            //B46804: corrected semantics for this function.
+            // B46804: corrected semantics for this function.
             JsDictionary<string, int> dict = JsDictionary<string, int>.GetDictionary(args);
             if (Script.IsValue(dict["length"]) && dict["length"] == 0)
             {
@@ -217,6 +222,28 @@ namespace Tableau.JavaScript.Vql.Core
         public static bool IsNullOrEmpty(this string s)
         {
             return string.IsNullOrEmpty(s);
+        }
+
+        /// <summary>
+        /// Overload of same IsNullOrEmpty for generic List objects
+        /// <param name="list">the List object to check</param>
+        /// </summary>
+        /// <typeparam name="T">The object type contained by the List</typeparam>
+        [IncludeGenericArguments(false)]
+        public static bool IsNullOrEmpty<T>(this List<T> list)
+        {
+            return list == null || list.Count == 0;
+        }
+
+        /// <summary>
+        /// Overload of same IsNullOrEmpty for generic JsArray objects
+        /// <param name="array">the array object to check</param>
+        /// </summary>
+        /// <typeparam name="T">The object type contained by the List</typeparam>
+        [IncludeGenericArguments(false)]
+        public static bool IsNullOrEmpty<T>(this JsArray<T> array)
+        {
+            return array == null || array.Length == 0;
         }
 
         /// <summary>
@@ -269,52 +296,13 @@ namespace Tableau.JavaScript.Vql.Core
         }
 
         /// <summary>
-        /// Parses the URI's query parameters and returns a map containing each key/value pair.  Each
-        /// query parameter and value is also URI decoded.
+        /// Determines whether or not the user has the ability to view the data tab
         /// </summary>
-        /// <param name="uri">The URI to decode, must contain a ? in order to indicate the start of params</param>
-        /// <returns>A set of key value pairs</returns>
-        public static JsDictionary<string, List<string>> GetUriQueryParameters(URLStr uri)
+        /// <returns>True if the data tab should be enabled, false if not</returns>
+        public static bool ShouldShowDataTab()
         {
-            JsDictionary<string, List<string>> parameters = new JsDictionary<string, List<string>>();
-
-            if (Script.IsNullOrUndefined(uri)) { return parameters; }
-
-            int indexOfQuery = ((string)uri).IndexOf("?");
-            if (indexOfQuery < 0) { return parameters; }
-
-            string query = ((string)uri).Substr(indexOfQuery + 1);
-            int indexOfHash = query.IndexOf("#");
-            if (indexOfHash >= 0)
-            {
-                query = query.Substr(0, indexOfHash);
-            }
-
-            if (string.IsNullOrEmpty(query)) { return parameters; }
-
-            string[] paramPairs = query.Split("&");
-            foreach (string pair in paramPairs)
-            {
-                string[] keyValue = pair.Split("=");
-                string key = string.DecodeUriComponent(keyValue[0]);
-                List<string> values;
-                if (parameters.ContainsKey(key))
-                {
-                    values = parameters[key];
-                }
-                else
-                {
-                    values = new List<string>();
-                    parameters[key] = values;
-                }
-
-                if (keyValue.Length > 1)
-                {
-                    values.Add(string.DecodeUriComponent(keyValue[1]));
-                }
-            }
-
-            return parameters;
+            return (TsConfig.AllowAddNewDatasource && FeatureFlags.IsEnabled(FeatureFlagIds.DataToTheWeb) &&
+                (!TsConfig.IsMobile || (TsConfig.IsMobile && FeatureFlags.IsEnabled(FeatureFlagIds.DataToTheWebMobile))));
         }
 
         /// <summary>
@@ -323,7 +311,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="uri">A uri</param>
         /// <param name="parameters">The set of query paramters to use</param>
         /// <returns>A uri with the query replaced(or appended)</returns>
-        public static URLStr ReplaceUriQueryParameters(URLStr uri, JsDictionary<string, List<string>> parameters)
+        public static URLStr ReplaceUriQueryParameters(URLStr uri, JsDictionary<string, JsArray<string>> parameters)
         {
             if (parameters.Count == 0)
             {
@@ -359,7 +347,7 @@ namespace Tableau.JavaScript.Vql.Core
 
             string hash = "";
             string baseUri = "";
-            if (uri.As<string>().Length > 0)
+            if (uri.ReinterpretAs<string>().Length > 0)
             {
                 int indexOfQuery = ((string)uri).IndexOf("?");
                 int indexOfHash = ((string)uri).IndexOf("#");
@@ -411,13 +399,16 @@ namespace Tableau.JavaScript.Vql.Core
         /// <typeparam name="T">The type of the class to dispose</typeparam>
         [IncludeGenericArguments(false)]
         public static List<T> Dispose<T>(List<T> d)
-            where T : IDisposable 
+            where T : IDisposable
         {
             if (Script.IsValue(d))
             {
                 foreach (var v in d)
                 {
-                    v.Dispose();
+                    if (Script.IsValue(v))
+                    {
+                        v.Dispose();
+                    }
                 }
                 d.Clear();
             }
@@ -438,12 +429,39 @@ namespace Tableau.JavaScript.Vql.Core
             return null;
         }
 
+        public static int? ClearInterval(int? handle)
+        {
+            if (handle.HasValue)
+            {
+                Window.ClearInterval(handle.Value);
+            }
+            return null;
+        }
+
         /// <summary>
         /// Returns a deep clone of the given object
         /// </summary>
         public static object CloneObject(object src)
         {
-            string objStr = Json.Stringify(src);
+            string objStr = Json.Stringify(src, (k, v) =>
+            {
+                /*
+                 * This is necessary because the runtime HUTT serializer sends over data
+                 * in associative containers and javascript does not have a definition for handling them.
+                 * This code snippet forces them to be interpreted as standard arrays for the purpose
+                 * of serialization.
+                 */
+#if REMOVE_WHEN_SUPPORTED_IN_DESALT
+                if (v is Uint32Array || v is Int32Array || v is Float64Array || v is Float32Array)
+                {
+                    // cannot call slice on v directly because typed arrays do not support slice in IE
+                    // below should compile to `Array.prototype.slice.call(v);`
+                    return ((dynamic)typeof(JsArray<object>).Prototype).slice.call(v);
+                }
+#endif
+                return v;
+            });
+
             return Json.Parse(objStr);
         }
     }

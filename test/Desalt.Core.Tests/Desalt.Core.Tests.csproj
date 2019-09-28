@@ -219,34 +219,36 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\SaltarelleBinaries\mscorlib.dll">
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\jQuery.dll">
+      <Link>TestUtility\jQuery.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\mscorlib.dll">
       <Link>TestUtility\mscorlib.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\NativeJsTypeDefs.dll">
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\NativeJsTypeDefs.dll">
       <Link>TestUtility\NativeJsTypeDefs.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Saltarelle.jQuery.dll">
-      <Link>TestUtility\Saltarelle.jQuery.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Saltarelle.Web.dll">
-      <Link>TestUtility\Saltarelle.Web.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\TypeDefs.dll">
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\TypeDefs.dll">
       <Link>TestUtility\TypeDefs.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Underscore.dll">
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Underscore.dll">
       <Link>TestUtility\Underscore.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Web.dll">
+      <Link>TestUtility\Web.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\..\Desalt.CommonProps.targets" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

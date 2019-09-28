@@ -1,58 +1,31 @@
-import { BaseLogAppender } from './BaseLogAppender';
+import { BaseLogAppender } from '../../CoreSlim/Logging/BaseLogAppender';
 
-import { $ } from 'Saltarelle.jQuery';
+import { $ } from 'jQuery';
 
-import { Logger, LoggerLevel } from './Logger';
+import { LogAppenderInstance } from '../../CoreSlim/Logging/LogAppenderInstance';
+
+import { Logger, LoggerLevel } from '../../CoreSlim/Logging/Logger';
 
 import 'mscorlib';
-
-import { ScriptEx } from '../../CoreSlim/ScriptEx';
 
 /**
  * A logger that writes to a floating window.  Designed for use by the TiledViewerRegions with mouse.
  * MobileWindowAppender.cs should probably be made a subclass of this one?
  */
 export class WindowAppender extends BaseLogAppender {
-  private static globalAppender: WindowAppender;
+  public static readonly globalAppender: LogAppenderInstance<WindowAppender> = new LogAppenderInstance<WindowAppender>(() => new WindowAppender());
 
   private logDiv: Object;
 
   /**
    */
   public static __ctor() {
-    WindowAppender.enableLogging((l: Logger, ll: LoggerLevel) => {
-      return l.name === 'WindowAppender';
-    });
+    WindowAppender.globalAppender.enableLogging((logger, _) => logger.name === 'WindowAppender');
   }
 
   /**
    */
   private constructor() { }
-
-  /**
-   * Enables logging using this appender type.
-   * @param filter The filter to apply to this appender or `null` to enable for all loggers
-   */
-  public static enableLogging(filter: (logger: Logger, loggerLevel: LoggerLevel) => boolean): void {
-    if (ss.isNullOrUndefined(WindowAppender.globalAppender)) {
-      WindowAppender.globalAppender = new WindowAppender();
-      Logger.addAppender(WindowAppender.globalAppender);
-    }
-    WindowAppender.globalAppender.addFilter((filter) || (() => {
-      return true;
-    }));
-  }
-
-  /**
-   * Disables logging using this appender type.
-   */
-  public static disableLogging(): void {
-    if (ss.isNullOrUndefined(WindowAppender.globalAppender)) {
-      return;
-    }
-    Logger.removeAppender(WindowAppender.globalAppender);
-    WindowAppender.globalAppender = null;
-  }
 
   protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void {
     if (ss.isNullOrUndefined(this.logDiv)) {

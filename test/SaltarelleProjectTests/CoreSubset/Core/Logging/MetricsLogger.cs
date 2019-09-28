@@ -14,7 +14,6 @@ namespace Tableau.JavaScript.Vql.Core
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Html;
-    using System.Runtime.CompilerServices;
     using System.Text;
     using jQueryApi;
     using Tableau.JavaScript.Vql.Bootstrap;
@@ -23,7 +22,7 @@ namespace Tableau.JavaScript.Vql.Core
     /// <summary>
     /// class for logging metrics events
     /// </summary>
-    public class MetricsLogger
+    public class MetricsLogger : IWebClientMetricsLogger
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -74,14 +73,9 @@ namespace Tableau.JavaScript.Vql.Core
         private static readonly JsDictionary<MetricsEventType, string> debugEventNames;
 
         /// <summary>
-        /// Singleton instance for the class
-        /// </summary>
-        private static MetricsLogger instance;
-
-        /// <summary>
         /// Logged events waiting to be transmitted to the server
         /// </summary>
-        private JsArray<MetricsEvent> eventBuffer;
+        private JsArray<MetricsEvent> eventBuffer = new JsArray<MetricsEvent>();
 
         /// <summary>
         /// Logger object for outputting metrics to the console
@@ -93,18 +87,18 @@ namespace Tableau.JavaScript.Vql.Core
         /// We must hold on to these until they are "complete", ie the src attribute is updated
         /// and the browser has made the request/gotten the response
         /// </summary>
-        private JsArray<ImageElement> beaconImages;
+        private JsArray<ImageElement> beaconImages = new JsArray<ImageElement>();
 
         /// <summary>
         /// Cached id of timer (via window.setTimeout) for callback to clean up beacon
         /// images that are no longer needed
         /// </summary>
-        private int? beaconCleanupTimerId;
+        private int? beaconCleanupTimerId = null;
 
         /// <summary>
         /// Cached timerID for buffer processing timer
         /// </summary>
-        private int? bufferProcessTimerId;
+        private int? bufferProcessTimerId = null;
 
         //// ===========================================================================================================
         //// Constructors
@@ -126,18 +120,9 @@ namespace Tableau.JavaScript.Vql.Core
 
             debugEventNames = new JsDictionary<MetricsEventType, string>();
             debugEventNames[MetricsEventType.Navigation] = "Navigation";
-            debugEventNames[MetricsEventType.ContextStart] = "ProfileStart";
             debugEventNames[MetricsEventType.ContextEnd] = "ProfileEnd";
             debugEventNames[MetricsEventType.Generic] = "Generic";
             debugEventNames[MetricsEventType.SessionInit] = "SessionInit";
-        }
-
-        private MetricsLogger()
-        {
-            this.eventBuffer = new JsArray<MetricsEvent>();
-            this.beaconImages = new JsArray<ImageElement>();
-            this.bufferProcessTimerId = null;
-            this.beaconCleanupTimerId = null;
         }
 
         //// ===========================================================================================================
@@ -148,28 +133,12 @@ namespace Tableau.JavaScript.Vql.Core
         //// Properties
         //// ===========================================================================================================
 
-        /// <summary>
-        /// Gets singleton instance of the MetricsLogger, creating it if necessary
-        /// </summary>
-        public static MetricsLogger Instance
-        {
-            get
-            {
-                if (!Script.IsValue(MetricsLogger.instance))
-                {
-                    MetricsLogger.instance = new MetricsLogger();
-                }
-
-                return MetricsLogger.instance;
-            }
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
         /// <summary>
-        /// Logs the specified metric event
+        /// Logs the specified metric event.
         /// </summary>
         public void LogEvent(MetricsEvent evt)
         {
@@ -186,22 +155,9 @@ namespace Tableau.JavaScript.Vql.Core
             this.StartProcessingTimer();
         }
 
-        /// <summary>
-        /// Attach the Logger to the MetricsController
-        /// </summary>
-        public void Attach()
-        {
-            MetricsController.SetEventLogger(this.LogEvent);
-        }
-
-        [AlternateSignature, SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        private extern void StartProcessingTimer();
-
-        private void StartProcessingTimer(int delay)
+        private void StartProcessingTimer(int delay = MetricsLogger.DefaultProcessingDelay)
         {
             if (this.bufferProcessTimerId.HasValue) { return; }
-
-            delay = Script.Coalesce(delay, MetricsLogger.DefaultProcessingDelay);
             this.bufferProcessTimerId = Window.SetTimeout(this.ProcessBufferedEvents, delay);
         }
 
@@ -220,8 +176,8 @@ namespace Tableau.JavaScript.Vql.Core
             {
                 // if we have more events than we can process, slice the first few off the array
                 // and then kick off a timer to ensure we come back to process the rest
-                metricsToProcess = (JsArray<MetricsEvent>)this.eventBuffer.Slice(0, MetricsLogger.MaxEventsToProcess);
-                this.eventBuffer = (JsArray<MetricsEvent>)this.eventBuffer.Slice(MetricsLogger.MaxEventsToProcess);
+                metricsToProcess = this.eventBuffer.Slice(0, MetricsLogger.MaxEventsToProcess);
+                this.eventBuffer = this.eventBuffer.Slice(MetricsLogger.MaxEventsToProcess);
 
                 this.StartProcessingTimer(MetricsLogger.OverflowProcessingDelay);
             }
@@ -233,7 +189,7 @@ namespace Tableau.JavaScript.Vql.Core
 
             this.OutputEventsToConsole(metricsToProcess);
 
-            if (TsConfig.MetricsReportingEnabled)
+            if (IsLoggerEnabled())
             {
                 try
                 {
@@ -244,6 +200,11 @@ namespace Tableau.JavaScript.Vql.Core
                     // just ignore exceptions here - no point in bringing down the client
                 }
             }
+        }
+
+        public static bool IsLoggerEnabled()
+        {
+            return TsConfig.MetricsReportingEnabled;
         }
 
         /// <summary>
@@ -278,9 +239,6 @@ namespace Tableau.JavaScript.Vql.Core
             for (int i = 0; i < numEvents; i++)
             {
                 MetricsEvent evt = evts[i];
-
-                // ignore context start events - they don't really provide value at the moment
-                if (evt.EventType == MetricsEventType.ContextStart) { continue; }
                 string formattedEvent = FormatEvent(evt, false);
                 if (payload.Length > 0 && payload.Length + formattedEvent.Length > MaxPayloadLength)
                 {
@@ -319,8 +277,24 @@ namespace Tableau.JavaScript.Vql.Core
             // build up string with description and key+value pairs
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.Append(verbose ? debugEventNames[evt.EventType] : evt.EventType.ToString());
+            MetricsEventParameters parameters = evt.Parameters;
+            JsDictionary<MetricsParameterName, object> eventDict = parameters.ReinterpretAs<JsDictionary<MetricsParameterName, object>>();
 
-            int count = evt.Parameters.Count;
+            // hack to make the old metrics parsing python happy
+            if (parameters.ExtraInfo != null)
+            {
+                // this hack modifies the event, so clone it first.
+                eventDict = (JsDictionary<MetricsParameterName, object>)MiscUtil.CloneObject(eventDict);
+                string[] extraInfoParts = parameters.ExtraInfo.Split(": ");
+                if (extraInfoParts.Length > 1)
+                {
+                    JsDictionary<string, string> fakeProps = new JsDictionary<string, string>(extraInfoParts);
+                    eventDict[MetricsParameterName.properties] = fakeProps;
+                    eventDict.Remove("ei".ReinterpretAs<MetricsParameterName>());
+                }
+            }
+
+            int count = eventDict.Count;
             if (count > 0)
             {
                 strBuilder.Append("=");
@@ -329,7 +303,7 @@ namespace Tableau.JavaScript.Vql.Core
                 int i = 0;
 
                 string propSeparator = verbose ? ": " : ":";
-                foreach (MetricsParameterName key in evt.Parameters.Keys)
+                foreach (MetricsParameterName key in eventDict.Keys)
                 {
                     // don't output context ID unless it's a session init event
                     if (key == MetricsParameterName.id && evt.EventType != MetricsEventType.SessionInit)
@@ -344,7 +318,7 @@ namespace Tableau.JavaScript.Vql.Core
                     strBuilder.Append(verbose ? debugParamNames[key] : key.ToString());
                     strBuilder.Append(propSeparator);
 
-                    object val = evt.Parameters[key];
+                    object val = eventDict[key];
                     FormatValue(strBuilder, val, verbose);
                 }
 
@@ -381,7 +355,7 @@ namespace Tableau.JavaScript.Vql.Core
         }
 
         /// <summary>
-        /// Given a specific object, output it's value to the stringbuilder with the appropriate format
+        /// Given a specific object, output its value to the stringbuilder with the appropriate format
         /// </summary>
         private static void FormatValue(StringBuilder strBuilder, object value, bool verbose)
         {
@@ -394,11 +368,25 @@ namespace Tableau.JavaScript.Vql.Core
             }
             else if (type == "string")
             {
-                if (verbose)
+                // If the value contains '/' it causes errors on trying to deserialize the metrics
+                // Ex.: gen=[{d:MDLOAD,p:built-dojo/tableau/clientweb,t:3309.0,e:58.0,sid:8hb67b12}
+                // The solution is to force "verbose" behavior in this case, to surround the value with
+                // quotes, so the deserializer works properly with the string. Of course, this also means
+                // that the string will need to be encoded prior to be added to the string builder
+                if (verbose || (value != null && ((string)value).Contains("/")))
                 {
-                    strBuilder.Append("\"");
-                    strBuilder.Append(value);
-                    strBuilder.Append("\"");
+                    StringBuilder tempBuffer = new StringBuilder();
+                    tempBuffer.Append("\"");
+                    tempBuffer.Append(value);
+                    tempBuffer.Append("\"");
+                    if (verbose)
+                    {
+                        strBuilder.Append(tempBuffer);
+                    }
+                    else
+                    {
+                        strBuilder.Append(string.EncodeUriComponent(tempBuffer.ToString()));
+                    }
                 }
                 else
                 {

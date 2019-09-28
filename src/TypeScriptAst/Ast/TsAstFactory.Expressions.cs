@@ -99,6 +99,9 @@ namespace TypeScriptAst.Ast
             return new TsPropertyAssignment(propertyName, initializer);
         }
 
+        /// <summary>
+        /// Creates a computed property name in the following form: '[expression]'.
+        /// </summary>
         public static ITsComputedPropertyName ComputedPropertyName(ITsExpression expression) =>
             new TsComputedPropertyName(expression);
 

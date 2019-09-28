@@ -32,6 +32,12 @@ namespace Tableau.JavaScript.Vql.Core
 
         private static readonly double LowerBound = 1.0 / OnePlusEpsilon;
 
+        // Approximate 64-bit integer limits based on the first 15 digits of 2^63.
+        // http://stackoverflow.com/questions/9297434/parseint-rounds-incorrectly
+        private const double LongMaxValue = 9223372036854770000.0;
+
+        private const double LongMinValue = -LongMaxValue;
+
         private static Logger Log
         {
             get
@@ -141,6 +147,130 @@ namespace Tableau.JavaScript.Vql.Core
         {
             double val = double.Parse(s);
             return double.IsFinite(val) ? val : (double?)null;
+        }
+
+        /// <summary>
+        /// Returns double.Parse(s) if it yields a value, or the default otherwise
+        /// </summary>
+        public static double TryParseDouble(string s, double defaultValue)
+        {
+            double val = double.Parse(s);
+
+            if (double.IsNaN(val) || !double.IsFinite(val))
+            {
+                return defaultValue;
+            }
+
+            return val;
+        }
+
+        /// <summary>
+        /// Returns true if string can be parsed into a double
+        /// </summary>
+        public static bool IsValidDouble(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+
+            return jQueryExtensions.IsNumeric(s);
+        }
+
+        /// <summary>
+        /// Uses parseInt in javascript to parse string
+        /// This means that accuracy is not guaranteed to 64-bits
+        /// See:http://stackoverflow.com/questions/9297434/parseint-rounds-incorrectly
+        /// </summary>
+        public static long? Parse64BitInteger(string s)
+        {
+            long parsed;
+            if (!long.TryParse(s, out parsed))
+            {
+                return (long?)null;
+            }
+
+            double? validDouble = ParseValidDouble(s);
+            if (validDouble > LongMaxValue || validDouble < LongMinValue)
+            {
+                return (long?)null;
+            }
+
+            return parsed;
+        }
+
+        /// <summary>
+        /// Returns true if string can be parsed into a 32-bit integer
+        /// Returns false if string can be parsed, but overflows or underflows
+        /// </summary>
+        public static bool IsValid32BitInteger(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+
+            long? parsed = Parse64BitInteger(s);
+            if (parsed == null)
+            {
+                return false;
+            }
+
+            return (parsed <= int.MaxValue) && (parsed >= int.MinValue);
+        }
+
+        /// <summary>
+        /// Returns true if string can be parsed into a 64-bit integer
+        /// </summary>
+        public static bool IsValid64BitInteger(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+
+            long? parsed = Parse64BitInteger(s);
+            if (parsed == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns a double if the string represents a double, NaN otherwise
+        /// Protects against double.Parse parsing of "1a" into "1"
+        /// </summary>
+        public static double ParseValidDouble(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return double.NaN;
+            }
+
+            // Protect against double.Parse parsing of "1a" into "1"
+            if (!IsValidDouble(s))
+            {
+                return double.NaN;
+            }
+
+            return double.Parse(s);
+        }
+
+        public static double MultiplyBy100(double num)
+        {
+            return (num * 1000) / 10; // Workaround for when JS computes .58 * 100 = 57.9999
+        }
+
+        public static double TruncateTwoDecimalPlaces(double num)
+        {
+            return (int)(MultiplyBy100(num)) / 100f;
+        }
+
+        public static double RoundTwoDecimalPlaces(double num)
+        {
+            return Math.Round(MultiplyBy100(num)) / 100f; // Used for when JS uses .98 as .97999999, causing truncating problems
         }
     }
 }

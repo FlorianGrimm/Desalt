@@ -1,12 +1,16 @@
+import { FeatureFlagIds, tsConfig } from 'TypeDefs';
+
+import { FeatureFlags } from './FeatureFlags';
+
 import 'mscorlib';
 
-import { tsConfig } from 'TypeDefs';
+import { TypeUtil } from 'NativeJsTypeDefs';
 
 import { _ } from 'Underscore';
 
 import { Utility } from '../../Bootstrap/Utility';
 
-import { WindowHelper } from '../../CoreSlim/WindowHelper';
+import { WindowHelper } from '../../CoreSlim/Utility/WindowHelper';
 
 export enum PathnameKey {
   WorkbookName = 2,
@@ -37,22 +41,30 @@ export class MiscUtil {
   }
 
   /**
-   * Lazily initializes a static field (field on a type).  This is necessary at times to workaround the
-   * Script# initialization process for static blocks as the ordering there is beyond our control.
-   * 
-   * When using this method for initialization the field should not be declared by the type.
-   * @param t The type to contain the field
-   * @param fieldName The field name
-   * @param initializer A function for providing the default field value
-   * @returns The field's value, initialized the first time this method is called
+   * Performs a shallow equals of two given objects.
+   * @param valueA An object or `null`
+   * @param valueB Another object or `null`
+   * @returns `true` if all keys are `===` between the two objects.
    */
-  public static lazyInitStaticField(t: Function, fieldName: string, initializer: () => any): any {
-    let value: any = (<any>t)[fieldName];
-    if (ss.isNullOrUndefined(value)) {
-      value = initializer();
-      (<any>t)[fieldName] = value;
+  public static shallowEquals(valueA: any, valueB: any): boolean {
+    if (valueA === valueB) {
+      return true;
     }
-    return value;
+    if (valueA === null || valueB === null) {
+      return false;
+    }
+    let keysA: string[] = any.keys(valueA);
+    let keysB: string[] = any.keys(valueB);
+    if (keysA.length !== keysB.length) {
+      return false;
+    }
+    for (let i = 0; i < keysA.length; i++) {
+      let key: string = keysA[i];
+      if (!valueB.hasOwnProperty(key) || valueA[key] !== valueB[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -158,6 +170,22 @@ export class MiscUtil {
   }
 
   /**
+   * Overload of same IsNullOrEmpty for generic List objects
+   * typeparam T The object type contained by the List
+   */
+  public static isNullOrEmpty$2<T>(list: T[]): boolean {
+    return list === null || list.length === 0;
+  }
+
+  /**
+   * Overload of same IsNullOrEmpty for generic JsArray objects
+   * typeparam T The object type contained by the List
+   */
+  public static isNullOrEmpty$3<T>(array: T[]): boolean {
+    return array === null || array.length === 0;
+  }
+
+  /**
    * check if the given index is valid in the given array
    * @param index index of the array
    * @param arr the array to check
@@ -196,44 +224,11 @@ export class MiscUtil {
   }
 
   /**
-   * Parses the URI's query parameters and returns a map containing each key/value pair.  Each
-   * query parameter and value is also URI decoded.
-   * @param uri The URI to decode, must contain a ? in order to indicate the start of params
-   * @returns A set of key value pairs
+   * Determines whether or not the user has the ability to view the data tab
+   * @returns True if the data tab should be enabled, false if not
    */
-  public static getUriQueryParameters(uri: Object): { [key: string]: string[] } {
-    let parameters: { [key: string]: string[] } = {};
-    if (ss.isNullOrUndefined(uri)) {
-      return parameters;
-    }
-    let indexOfQuery: number = (<string>uri).indexOf('?');
-    if (indexOfQuery < 0) {
-      return parameters;
-    }
-    let query: string = (<string>uri).substr(indexOfQuery + 1);
-    let indexOfHash: number = query.indexOf('#');
-    if (indexOfHash >= 0) {
-      query = query.substr(0, indexOfHash);
-    }
-    if (ss.isNullOrEmptyString(query)) {
-      return parameters;
-    }
-    let paramPairs: string[] = query.split('&');
-    for (const pair of paramPairs) {
-      let keyValue: string[] = pair.split('=');
-      let key: string = string.decodeURIComponent(keyValue[0]);
-      let values: string[];
-      if (ss.keyExists(parameters, key)) {
-        values = parameters[key];
-      } else {
-        values = [];
-        parameters[key] = values;
-      }
-      if (keyValue.length > 1) {
-        values.push(string.decodeURIComponent(keyValue[1]));
-      }
-    }
-    return parameters;
+  public static shouldShowDataTab(): boolean {
+    return (tsConfig.allow_add_new_datasource && FeatureFlags.isEnabled(FeatureFlagIds.DataToTheWeb) && (!tsConfig.is_mobile || (tsConfig.is_mobile && FeatureFlags.isEnabled(FeatureFlagIds.DataToTheWebMobile))));
   }
 
   /**
@@ -267,7 +262,7 @@ export class MiscUtil {
     }
     let hash: string = '';
     let baseUri: string = '';
-    if (uri.As().length > 0) {
+    if (uri.ReinterpretAs().length > 0) {
       let indexOfQuery: number = (<string>uri).indexOf('?');
       let indexOfHash: number = (<string>uri).indexOf('#');
       let indexOfEnd: number = Math.min(indexOfQuery < 0 ? (<string>uri).length : indexOfQuery, indexOfHash < 0 ? (<string>uri).length : indexOfHash);
@@ -310,7 +305,9 @@ export class MiscUtil {
   public static dispose$1<T>(d: T[]): T[] {
     if (ss.isValue(d)) {
       for (const v of d) {
-        v.dispose();
+        if (ss.isValue(v)) {
+          v.dispose();
+        }
       }
       ss.clear(d);
     }
@@ -329,11 +326,20 @@ export class MiscUtil {
     return null;
   }
 
+  public static clearInterval(handle: number | null): number | null {
+    if (handle.hasValue) {
+      window.clearInterval(handle.value);
+    }
+    return null;
+  }
+
   /**
    * Returns a deep clone of the given object
    */
   public static cloneObject(src: any): any {
-    let objStr: string = JSON.stringify(src);
+    let objStr: string = JSON.stringify(src, (k, v) => {
+      return v;
+    });
     return JSON.parse(objStr);
   }
 }

@@ -136,8 +136,8 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
-            // don't import types from the Saltarelle.Web assembly, since those are already built-in to TypeScript
-            if (symbol.ContainingAssembly?.Name == "Saltarelle.Web")
+            // don't import types from the Web assembly, since those are already built-in to TypeScript
+            if (symbol.ContainingAssembly?.Name == "Web")
             {
                 return false;
             }

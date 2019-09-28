@@ -1,0 +1,1654 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Underscore</name>
+    </assembly>
+    <members>
+        <member name="T:UnderscoreJs.Underscore">
+            <summary>
+            Interface into the <a href="http://documentcloud.github.com/underscore">Underscore</a> external library.
+            </summary>
+            <remarks>
+            jrockwood-2014-07-01: The order of the methods is the same as what is listed on the Underscore web site,
+            <see href="http://underscorejs.org/"/>. This is to help when updating the library when there are changes.
+            </remarks>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Each``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayIterator{``0})">
+            <summary>
+            Iterates over a list of elements, yielding each in turn to an iterator function. The iterator is bound to the
+            context object, if one is passed. Each invocation of iterator is called with three arguments: (element, index, list).
+            Delegates to the native forEach function if it exists.
+            <example><![CDATA[
+            _.each([1, 2, 3], alert);
+            => alerts each number in turn...
+            _.each({one: 1, two: 2, three: 3}, alert);
+            => alerts each number value in turn...
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Map``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMap{``0,``1})">
+            <summary>
+            Produces a new array of values by mapping each value in list through a transformation function (iterator).
+            If the native map method exists, it will be used instead.
+            <example><![CDATA[
+            _.map([1, 2, 3], function(num){ return num * 3; });
+            => [3, 6, 9]
+            _.map({one: 1, two: 2, three: 3}, function(num, key){ return num * 3; });
+            => [3, 6, 9]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Reduce``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayReduce{``0,``1},``1)">
+            <summary>
+            Also known as inject and foldl, reduce boils down a list of values into a single value. Memo is the initial
+            state of the reduction, and each successive step of it should be returned by iterator. The iterator is passed
+            four arguments: the memo, then the value and index (or key) of the iteration, and finally a reference to the
+            entire list.
+            <example><![CDATA[
+            var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+            => 6
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.ReduceRight``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayReduce{``0,``1},``1)">
+            <summary>
+            The right-associative version of reduce. Delegates to the JavaScript 1.8 version of reduceRight, if it exists.
+            Foldr is not as useful in JavaScript as it would be in a language with lazy evaluation.
+            <example><![CDATA[
+            var list = [[0, 1], [2, 3], [4, 5]];
+            var flat = _.reduceRight(list, function(a, b) { return a.concat(b); }, []);
+            => [4, 5, 2, 3, 0, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Find``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Looks through each value in the list, returning the first one that passes a truth test (predicate).
+            The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
+            <example><![CDATA[
+            var even = _.find([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => 2
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Filter``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Looks through each value in the list, returning an array of all the values that pass a truth test (predicate).
+            Delegates to the native filter method, if it exists.
+            <example><![CDATA[
+            var evens = _.filter([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => [2, 4, 6]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Where(System.Collections.Generic.JsDictionary{System.String,System.Object},System.Collections.Generic.JsDictionary{System.String,System.Object})">
+            <summary>
+            Looks through each value in the list, returning an array of all the values that contain all of the key-value
+            pairs listed in properties.
+            <example><![CDATA[
+            _.where(listOfPlays, {author: "Shakespeare", year: 1611});
+            => [{title: "Cymbeline", author: "Shakespeare", year: 1611},
+                {title: "The Tempest", author: "Shakespeare", year: 1611}]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.FindWhere``1(System.Collections.Generic.JsDictionary{System.String,``0},System.Object)">
+            <summary>
+            Looks through the list and returns the first value that matches all of the key-value pairs listed in properties.
+            If no match is found, or if list is empty, undefined will be returned.
+            <example><![CDATA[
+            _.findWhere(publicServicePulitzers, {newsroom: "The New York Times"});
+            => {year: 1918, newsroom: "The New York Times",
+                reason: "For its public service in publishing in full so many official reports,
+                        documents and speeches by European statesmen relating to the progress and
+                        conduct of the war."}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Reject``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Returns the values in list without the elements that the truth test (predicate) passes. The opposite of filter.
+            <example><![CDATA[
+            var odds = _.reject([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => [1, 3, 5]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Every``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Returns true if all of the values in the list pass the predicate truth test. Delegates to the native method
+            every, if present.
+            <example><![CDATA[
+            _.every([true, 1, null, 'yes'], _.identity);
+            => false
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Any``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Returns true if any of the values in the list pass the iterator truth test. Short-circuits and stops traversing the
+            list if a true element is found. Delegates to the native method some, if present.
+            <example><![CDATA[
+            _.some([null, 0, 'yes', false]);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Contains``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns true if the value is present in the list. Uses indexOf internally, if list is an Array.
+            <example><![CDATA[
+            _.contains([1, 2, 3], 3);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Invoke``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Object[])">
+            <summary>
+            Calls the method named by methodName on each value in the list. Any extra arguments passed to invoke will be
+            forwarded on to the method invocation.
+            <example><![CDATA[
+            _.invoke([[5, 1, 7], [3, 2, 1]], 'sort');
+            => [[1, 5, 7], [1, 2, 3]]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Pluck``2(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            A convenient version of what is perhaps the most common use-case for map: extracting a list of property values.
+            <example><![CDATA[
+            var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+            _.pluck(stooges, 'name');
+            => ["moe", "larry", "curly"]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Max``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the maximum value in list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Max``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMinMaxIterator{``0,``1})">
+            <summary>
+            Returns the maximum value in list. If iterator is passed, it will be used on each value to generate the criterion
+            by which the value is ranked.
+            <example><![CDATA[
+            var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+            _.max(stooges, function(stooge){ return stooge.age; });
+            => {name: 'curly', age: 60};
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Min``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the minimum value in list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Min``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMinMaxIterator{``0,``1})">
+            <summary>
+            Returns the minimum value in list. If iterator is passed, it will be used on each value to generate the criterion
+            by which the value is ranked.
+            <example><![CDATA[
+            var numbers = [10, 5, 100, 2, 1000];
+            _.min(numbers);
+            => 2
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.SortBy``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMap{``0,``1})">
+            <summary>
+            Returns a sorted copy of list, ranked in ascending order by the results of running each value through iterator.
+            <example><![CDATA[
+            _.sortBy([1, 2, 3, 4, 5, 6], function(num){ return Math.sin(num); });
+            => [5, 4, 6, 3, 1, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.GroupBy``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMap{``0,``1})">
+            <summary>
+            Splits a collection into sets, grouped by the result of running each value through iterator.
+            <example><![CDATA[
+            ]]></example>
+            _.groupBy([1.3, 2.1, 2.4], function(num){ return Math.floor(num); });
+            => {1: [1.3], 2: [2.1, 2.4]}
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.GroupBy``2(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Splits a collection into sets, grouped by the result of running each value through iterator. If iterator is
+            a string instead of a function, groups by the property named by iterator on each of the values.
+            <example><![CDATA[
+            ]]></example>
+            _.groupBy(['one', 'two', 'three'], 'length');
+            => {3: ["one", "two"], 5: ["three"]}
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IndexBy``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMap{``0,``1})">
+            <summary>
+            Given a list, and an iterator function that returns a key for each element in the list (or a property name),
+            returns an object with an index of each item. Just like groupBy, but for when you know your keys are unique.
+            <example><![CDATA[
+            ]]></example>
+            var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+            _.indexBy(stooges, 'age');
+            => {
+              "40": {name: 'moe', age: 40},
+              "50": {name: 'larry', age: 50},
+              "60": {name: 'curly', age: 60}
+            }
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.CountBy``2(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayMap{``0,``1})">
+            <summary>
+            Sorts a list into groups and returns a count for the number of objects in each group. Similar to groupBy,
+            but instead of returning a list of values, returns a count for the number of values in that group.
+            <example><![CDATA[
+            _.countBy([1, 2, 3, 4, 5], function(num) {
+              return num % 2 == 0 ? 'even': 'odd';
+            });
+            => {odd: 3, even: 2}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Shuffle``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a shuffled copy of the list, using a version of the Fisher-Yates shuffle.
+            <example><![CDATA[
+            _.shuffle([1, 2, 3, 4, 5, 6]);
+            => [4, 1, 6, 3, 5, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Sample``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Produce a random sample from the list. A single random item will be returned.
+            <example><![CDATA[
+            _.sample([1, 2, 3, 4, 5, 6]);
+            => 4
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Sample``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Produce a random sample from the list. Pass a number to return n random elements from the list.
+            <example><![CDATA[
+            _.sample([1, 2, 3, 4, 5, 6], 3);
+            => [1, 6, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.ToArray``1(System.Object)">
+            <summary>
+            Creates a real Array from the list (anything that can be iterated over).
+            Useful for transmuting the arguments object.
+            <example><![CDATA[
+            (function(){ return _.toArray(arguments).slice(1); })(1, 2, 3, 4);
+            => [2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Size``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return the number of values in the list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Size``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Return the number of values in the list.
+            <example><![CDATA[_.size({one: 1, two: 2, three: 3}); => 3]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.First``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the first element of an array.
+            <example><![CDATA[_.first([5, 4, 3, 2, 1]); => 5]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.First``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns the first element of an array. Passing n will return the first n elements of the array.
+            <example><![CDATA[_.first([5, 4, 3, 2, 1]); => 5]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Initial``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns everything but the last entry of the array. Especially useful on the arguments object.
+            <example><![CDATA[
+            _.initial([5, 4, 3, 2, 1]);
+            => [5, 4, 3, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Initial``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns everything but the last entry of the array. Especially useful on the arguments object. Pass n to
+            exclude the last n elements from the result.
+            <example><![CDATA[
+            _.initial([5, 4, 3, 2, 1]);
+            => [5, 4, 3, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Last``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the last element of an array.
+            <example><![CDATA[_.last([5, 4, 3, 2, 1]); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Last``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns the last element of an array. Passing n will return the last n elements of the array.
+            <example><![CDATA[_.last([5, 4, 3, 2, 1]); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Rest``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the rest of the elements in an array.
+            <example><![CDATA[
+            _.rest([5, 4, 3, 2, 1]);
+            => [4, 3, 2, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Rest``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns the rest of the elements in an array. Pass an index to return the values of the array from that index onward.
+            <example><![CDATA[
+            _.rest([5, 4, 3, 2, 1]);
+            => [4, 3, 2, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Compact``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a copy of the array with all falsy values removed. In JavaScript, false, null, 0, "", undefined and NaN are
+            all falsy.
+            <example><![CDATA[_.compact([0, 1, false, 2, '', 3]); => [1, 2, 3]]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Flatten``1(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Flattens a nested array (the nesting can be to any depth). If you pass shallow, the array will only be
+            flattened a single level.
+            <example><![CDATA[
+            _.flatten([1, [2], [3, [[4]]]]);
+            => [1, 2, 3, 4];
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Flatten``1(System.Collections.Generic.IEnumerable{System.Object},System.Boolean)">
+            <summary>
+            Flattens a nested array (the nesting can be to any depth). If you pass shallow, the array will only be
+            flattened a single level.
+            <example><![CDATA[
+            _.flatten([1, [2], [3, [[4]]]], true);
+            => [1, 2, 3, [[4]]];
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Without``1(System.Collections.Generic.IEnumerable{``0},``0[])">
+            <summary>
+            Returns a copy of the array with all instances of the values removed.
+            <example><![CDATA[
+            _.without([1, 2, 1, 0, 3, 1, 4], 0, 1);
+            => [2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Partition``1(System.Collections.Generic.IEnumerable{``0},UnderscoreJs.ArrayPredicate{``0})">
+            <summary>
+            Split array into two arrays: one whose elements all satisfy predicate and one whose elements all do not
+            satisfy predicate.
+            <example><![CDATA[
+            _.partition([0, 1, 2, 3, 4, 5], isOdd);
+            => [[1, 3, 5], [0, 2, 4]]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Union``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}[])">
+            <summary>
+            Computes the union of the passed-in arrays: the list of unique items, in order, that are present in one or
+            more of the arrays.
+            <example><![CDATA[
+            _.union([1, 2, 3], [101, 2, 1, 10], [2, 1]);
+            => [1, 2, 3, 101, 10]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Intersection``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}[])">
+            <summary>
+            Computes the list of values that are the intersection of all the arrays. Each value in the result is present
+            in each of the arrays.
+            <example><![CDATA[
+            _.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]);
+            => [1, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Difference``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}[])">
+            <summary>
+            Similar to without, but returns the values from array that are not present in the other arrays.
+            <example><![CDATA[
+            _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
+            => [1, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Uniq``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Produces a duplicate-free version of the array, using === to test object equality. If you know in
+            advance that the array is sorted, passing true for isSorted will run a much faster algorithm. If you
+            want to compute unique items based on a transformation, pass an iterator function.
+            <example><![CDATA[
+            _.uniq([1, 2, 1, 3, 1, 4]);
+            => [1, 2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Zip``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}[])">
+             <summary>
+             Merges together the values of each of the arrays with the values at the corresponding position. Useful when
+             you have separate data sources that are coordinated through matching array indexes. If you're working with a
+             matrix of nested arrays, _.zip.apply can transpose the matrix in a similar fashion.
+             <example><![CDATA[
+             _.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false, false]);
+             => [["moe", 30, true], ["larry", 40, false], ["curly", 50, false]]
+            
+             _.zip.apply(_, arrayOfRowsOfData);
+             => arrayOfColumnsOfData
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Object``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+            <summary>
+            Converts arrays into objects. Pass either a list of keys, and a list
+            of values. If duplicate keys exist, the last value wins.
+            <example><![CDATA[
+            _.object(['moe', 'larry', 'curly'], [30, 40, 50]);
+            => {moe: 30, larry: 40, curly: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Object``2(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Converts arrays into objects. Pass a single list of [key, value] pairs. If duplicate keys exist, the last value wins.
+            <example><![CDATA[
+            _.object([['moe', 30], ['larry', 40], ['curly', 50]]);
+            => {moe: 30, larry: 40, curly: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IndexOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns the index at which value can be found in the array, or -1 if value is not present in the array. Uses
+            the native indexOf function unless it's missing. If you're working with a large array, and you know that the
+            array is already sorted, pass true for isSorted to use a faster binary search ... or, pass a number as the
+            third argument in order to look for the first matching value in the array after the given index.
+            <example><![CDATA[_.indexOf([1, 2, 3], 2); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.LastIndexOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns the index of the last occurrence of value in the array, or -1 if value is not present. Uses the
+            native lastIndexOf function if possible. Pass fromIndex to start your search at a given index.
+            <example><![CDATA[_.lastIndexOf([1, 2, 3, 1, 2, 3], 2); => 4]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.SortedIndex``1(System.Collections.Generic.IEnumerable{``0},``0)">
+             <summary>
+             Uses a binary search to determine the index at which the value should be inserted into the list in order to
+             maintain the list's sorted order. If an iterator function is provided, it will be used to compute the sort
+             ranking of each value, including the value you pass. Iterator may also be the string name of the property to
+             sort by (eg. length).
+             <example><![CDATA[
+             _.sortedIndex([10, 20, 30, 40, 50], 35);
+             => 3
+            
+             var stooges = [{name: 'moe', age: 40}, {name: 'curly', age: 60}];
+             _.sortedIndex(stooges, {name: 'larry', age: 50}, 'age');
+             => 1
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Range(System.Int32)">
+            <summary>
+            A function to create flexibly-numbered lists of integers, handy for each and map loops. start, if omitted,
+            defaults to 0; step defaults to 1. Returns a list of integers from start to stop, incremented (or decremented)
+            by step, exclusive. Note that ranges that stop before they start are considered to be zero-length instead of
+            negative — if you'd like a negative range, use a negative step.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Partial``3(System.Func{``0,``1,``2},``0)">
+            <summary>
+            Partially apply a function by filling in any number of its arguments, without changing its dynamic this
+            value. A close cousin of bind. You may pass _ in your list of arguments to specify an argument that should
+            not be pre-filled, but left open to supply at call-time.
+            <example><![CDATA[
+            var add = function(a, b) { return a + b; };
+            add5 = _.partial(add, 5);
+            add5(10);
+            => 15
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Memoize``2(System.Func{``0,``1})">
+            <summary>
+            Memoizes a given function by caching the computed result. Useful for speeding up slow-running computations.
+            If passed an optional hashFunction, it will be used to compute the hash key for storing the result, based on
+            the arguments to the original function. The default hashFunction just uses the first argument to the memoized
+            function as the key.
+            <example><![CDATA[
+            var fibonacci = _.memoize(function(n) {
+              return n &lt; 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
+            });
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Delay(System.Action,System.Int32)">
+            <summary>
+            Much like setTimeout, invokes function after wait milliseconds. If you pass the optional arguments, they
+            will be forwarded on to the function when it is invoked.
+            <example><![CDATA[
+            var log = _.bind(console.log, console);
+            _.delay(log, 1000, 'logged later');
+            => 'logged later' // Appears after one second.
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Defer(System.Action)">
+            <summary>
+            Defers invoking the function until the current call stack has cleared, similar to using setTimeout with a delay of 0.
+            Useful for performing expensive computations or HTML rendering in chunks without blocking the UI thread from updating.
+            If you pass the optional arguments, they will be forwarded on to the function when it is invoked.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Throttle(System.Action,System.Int32)">
+            <summary>
+            Creates and returns a new, throttled version of the passed function, that, when invoked repeatedly, will
+            only actually call the original function at most once per every wait milliseconds. Useful for rate-limiting
+            events that occur faster than you can keep up with.
+            By default, throttle will execute the function as soon as you call it for the first time, and, if you call
+            it again any number of times during the wait period, as soon as that period is over. If you'd like to disable
+            the leading-edge call, pass {leading: false}, and if you'd like to disable the execution on the trailing-edge,
+            pass {trailing: false}.
+            <example><![CDATA[
+            var throttled = _.throttle(updatePosition, 100);
+            $(window).scroll(throttled);
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Debounce(System.Action,System.Int32)">
+            <summary>
+            Creates and returns a new debounced version of the passed function which will postpone its execution until
+            after wait milliseconds have elapsed since the last time it was invoked. Useful for implementing behavior
+            that should only happen after the input has stopped arriving. For example: rendering a preview of a Markdown
+            comment, recalculating a layout after the window has stopped being resized, and so on.
+            Pass true for the immediate parameter to cause debounce to trigger the function on the leading instead of the
+            trailing edge of the wait interval. Useful in circumstances like preventing accidental double-clicks on a
+            "submit" button from firing a second time.
+            <example><![CDATA[
+            var lazyLayout = _.debounce(calculateLayout, 300);
+            $(window).resize(lazyLayout);
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Once(System.Action)">
+            <summary>
+            Creates a version of the function that can only be called one time. Repeated calls to the modified function
+            will have no effect, returning the value from the original call. Useful for initialization functions, instead
+            of having to set a boolean flag and then check it later.
+            <example><![CDATA[
+            var initialize = _.once(createApplication);
+            initialize();
+            initialize();
+            // Application is only created once.
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.After(System.Int32,System.Action)">
+            <summary>
+            Creates a version of the function that will only be run after first being called count times. Useful for
+            grouping asynchronous responses, where you want to be sure that all the async calls have finished, before
+            proceeding.
+            <example><![CDATA[
+            var renderNotes = _.after(notes.length, render);
+            _.each(notes, function(note) {
+              note.asyncSave({success: renderNotes});
+            });
+            // renderNotes is run once, after all notes have saved.
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Now">
+            <summary>
+            Returns an integer timestamp for the current time, using the fastest method available in the runtime. Useful
+            for implementing timing/animation functions.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Wrap(System.Action,System.Action{System.Action})">
+            <summary>
+            Wraps the first function inside of the wrapper function, passing it as the first argument. This allows the
+            wrapper to execute code before and after the function runs, adjust the arguments, and execute it conditionally.
+            <example><![CDATA[
+            var hello = function(name) { return "hello: " + name; };
+            hello = _.wrap(hello, function(func) {
+              return "before, " + func("moe") + ", after";
+            });
+            hello();
+            => 'before, hello: moe, after'
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Compose``3(System.Func{``0,``1},System.Func{``1,``2})">
+            <summary>
+            Returns the composition of a list of functions, where each function consumes the return value of the function
+            that follows. In math terms, composing the functions f(), g(), and h() produces f(g(h())).
+            <example><![CDATA[
+            var greet    = function(name){ return "hi: " + name; };
+            var exclaim  = function(statement){ return statement.toUpperCase() + "!"; };
+            var welcome = _.compose(greet, exclaim);
+            welcome('moe');
+            => 'hi: MOE!'
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Keys``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Retrieve all the names of the object's properties.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Values``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Return all of the values of the object's properties.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Pairs``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Convert an object into a list of [key, value] pairs.
+            <example><![CDATA[
+            _.pairs({one: 1, two: 2, three: 3});
+            => [["one", 1], ["two", 2], ["three", 3]]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Invert``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Returns a copy of the object where the keys have become the values and the values the keys. For this to work,
+            all of your object's values should be unique and string serializable.
+            <example><![CDATA[
+            _.invert({Moe: "Moses", Larry: "Louis", Curly: "Jerome"});
+            => {Moses: "Moe", Louis: "Larry", Jerome: "Curly"};
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Functions(System.Object)">
+            <summary>
+            Returns a sorted list of the names of every method in an object — that is to say, the name of every function
+            property of the object.
+            <example><![CDATA[
+            _.functions(_);
+            => ["all", "any", "bind", "bindAll", "clone", "compact", "compose" ...
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Extend(System.Object,System.Object[])">
+            <summary>
+            Copy all of the properties in the source objects over to the destination object, and return the destination
+            object. It's in-order, so the last source will override properties of the same name in previous arguments.
+            <example><![CDATA[
+            _.extend({name: 'moe'}, {age: 50});
+            => {name: 'moe', age: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Pick(System.Object,System.String[])">
+            <summary>
+            Return a copy of the object, filtered to only have values for the whitelisted keys (or array of valid keys).
+            <example><![CDATA[
+            _.pick({name: 'moe', age: 50, userid: 'moe1'}, 'name', 'age');
+            => {name: 'moe', age: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Extend``2(``0,``1[])">
+            <summary>
+            Shallow copy all of the properties in the source objects over to the destination object, and return the destination
+            object. It's in-order, so the last source will override properties of the same name in previous arguments.
+            <example><![CDATA[
+            _.extend({name: 'moe'}, {age: 50});
+            => {name: 'moe', age: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Omit(System.Object,System.String[])">
+            <summary>
+            Return a copy of the object, filtered to omit the blacklisted keys (or array of keys).
+            <example><![CDATA[
+            _.omit({name: 'moe', age: 50, userid: 'moe1'}, 'userid');
+            => {name: 'moe', age: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Defaults``1(``0,``0[])">
+            <summary>
+            Fill in undefined properties in object with values from the defaults objects, and return the object. As
+            soon as the property is filled, further defaults will have no effect.
+            <example><![CDATA[
+            var iceCream = {flavor: "chocolate"};
+            _.defaults(iceCream, {flavor: "vanilla", sprinkles: "lots"});
+            => {flavor: "chocolate", sprinkles: "lots"}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Clone``1(``0)">
+            <summary>
+            Create a shallow-copied clone of the object. Any nested objects or arrays will be copied by reference, not duplicated.
+            <example><![CDATA[_.clone({name: 'moe'}); => {name: 'moe'};]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Tap``1(``0,System.Action{``0})">
+            <summary>
+            Invokes interceptor with the object, and then returns object. The primary purpose of this method is to
+            "tap into" a method chain, in order to perform operations on intermediate results within the chain.
+            <example><![CDATA[
+            _.chain([1,2,3,200])
+              .filter(function(num) { return num % 2 == 0; })
+              .tap(alert)
+              .map(function(num) { return num * num })
+              .value();
+            => // [2, 200] (alerted)
+            => [4, 40000]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Has(System.Object,System.String)">
+            <summary>
+            Does the object contain the given key? Identical to object.hasOwnProperty(key), but uses a safe reference to
+            the hasOwnProperty function, in case it has been overridden accidentally.
+            <example><![CDATA[
+            _.has({a: 1, b: 2, c: 3}, "b");
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Property(System.String)">
+            <summary>
+            Returns a function that will itself return the key property of any passed-in object.
+            <example><![CDATA[
+            var moe = {name: 'moe'};
+            'moe' === _.property('name')(moe);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Matches``2(System.Collections.Generic.JsDictionary{``0,``1})">
+            <summary>
+            Returns a predicate function that will tell you if a passed in object contains all of the key/value
+            properties present in attrs.
+            <example><![CDATA[
+            var ready = _.matches({selected: true, visible: true});
+            var readyToGoList = _.filter(list, ready);
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsEqual(System.Object,System.Object)">
+            <summary>
+            Performs an optimized deep comparison between the two objects, to determine if they should be considered equal.
+            <example><![CDATA[
+            var moe   = {name: 'moe', luckyNumbers: [13, 27, 34]};
+            var clone = {name: 'moe', luckyNumbers: [13, 27, 34]};
+            moe == clone;
+            => false
+            _.isEqual(moe, clone);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsEmpty(System.Object)">
+            <summary>
+            Returns true if object contains no values (no enumerable own-properties).
+            <example><![CDATA[
+            _.isEmpty([1, 2, 3]);
+            => false
+            _.isEmpty({});
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsElement(System.Object)">
+            <summary>
+            Returns true if object is a DOM element.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsObject(System.Object)">
+            <summary>
+            Returns true if value is an Object. Note that JavaScript arrays and functions are objects, while (normal)
+            strings and numbers are not.
+            <example><![CDATA[
+            _.isObject({});
+            => true
+            _.isObject(1);
+            => false
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsArguments(System.Object)">
+            <summary>
+            Returns true if object is an Arguments object.
+            <example><![CDATA[
+            (function(){ return _.isArguments(arguments); })(1, 2, 3);
+            => true
+            _.isArguments([1,2,3]);
+            => false
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.IsNaN(System.Object)">
+            <summary>
+            Returns true if object is NaN.
+            Note: this is not the same as the native isNaN function, which will also return true for many other not-number
+            values, such as undefined.
+            <example><![CDATA[
+            _.isNaN(NaN);
+            => true
+            isNaN(undefined);
+            => true
+            _.isNaN(undefined);
+            => false
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.NoConflict">
+            <summary>
+            Give control of the "_" variable back to its previous owner. Returns a reference to the Underscore object.
+            <example><![CDATA[var underscore = _.noConflict();]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Identity``1(``0)">
+            <summary>
+            Returns the same value that is used as the argument. In math: f(x) = x
+            This function looks useless, but is used throughout Underscore as a default iterator.
+            <example><![CDATA[
+            var moe = {name: 'moe'};
+            moe === _.identity(moe);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Constant``1(``0)">
+            <summary>
+            Creates a function that returns the same value that is used as the argument of _.constant.
+            <example><![CDATA[
+            var moe = {name: 'moe'};
+            moe === _.constant(moe)();
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Times``1(System.Int32,System.Func{System.Int32,``0})">
+            <summary>
+            Invokes the given iterator function n times. Each invocation of iterator is called with an index argument.
+            Produces an array of the returned values.
+            Note: this example uses the chaining syntax.
+            <example><![CDATA[_(3).times(function(n){ genie.grantWishNumber(n); });]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Random(System.Int32)">
+            <summary>
+            Returns a random integer between min and max, inclusive. If you only pass one argument, it will return a
+            number between 0 and that number.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Mixin(System.Collections.Generic.JsDictionary{System.String,System.Object})">
+            <summary>
+            Allows you to extend Underscore with your own utility functions. Pass a hash of {name: function} definitions
+            to have your functions added to the Underscore object, as well as the OOP wrapper.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.UniqueId">
+            <summary>
+            Generate a globally-unique id for client-side models or DOM elements that need one. If prefix is passed, the
+            id will be appended to it.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Escape(System.String)">
+            <summary>
+            Escapes a string for insertion into HTML, replacing &amp;, &lt;, &gt;, ", and ' characters.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Unescape(System.String)">
+            <summary>
+            The opposite of escape, replaces &amp;amp;, &amp;lt;, &amp;gt;, &amp;quot;, and &amp;#x27; with their
+            unescaped counterparts.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Result``1(System.Object,System.String)">
+            <summary>
+            If the value of the named property is a function then invoke it with the object as context; otherwise, return it.
+            <example><![CDATA[
+            var object = {cheese: 'crumpets', stuff: function(){ return 'nonsense'; }};
+            _.result(object, 'cheese');
+            => "crumpets"
+            _.result(object, 'stuff');
+            => "nonsense"
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Template``1(System.String)">
+             <summary>
+             Compiles JavaScript templates into functions that can be evaluated for rendering. Useful for rendering
+             complicated bits of HTML from JSON data sources. Template functions can both interpolate variables, using
+             &lt;%= … %&gt;, as well as execute arbitrary JavaScript code, with &lt;% … %&gt;. If you wish to interpolate a value,
+             and have it be HTML-escaped, use &lt;%- … %&gt; When you evaluate a template function, pass in a data object that
+             has properties corresponding to the template's free variables. If you're writing a one-off, you can pass the
+             data object as the second parameter to template in order to render immediately instead of returning a template
+             function. The settings argument should be a hash containing any _.templateSettings that should be overridden.
+             <example><![CDATA[
+             var compiled = _.template("hello: <%= name %>");
+             compiled({name: 'moe'});
+             => "hello: moe"
+            
+             var list = "<% _.each(people, function(name) { %> <li><%= name %></li> <% }); %>";
+             _.template(list, {people: ['moe', 'curly', 'larry']});
+             => "<li>moe</li><li>curly</li><li>larry</li>"
+            
+             var template = _.template("<b><%- value %></b>");
+             template({value: '<script>'});
+             => "<b><script></b>"
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.Underscore.Chain``1(System.Collections.Generic.IEnumerable{``0})">
+             <summary>
+             Calling chain will cause all future method calls to return wrapped objects. When you've finished the
+             computation, use value to retrieve the final value. Here's an example of chaining together a map/flatten/reduce,
+             in order to get the word count of every word in a song.
+             <example><![CDATA[
+             var lyrics = [
+               {line: 1, words: "I'm a lumberjack and I'm okay"},
+               {line: 2, words: "I sleep all night and I work all day"},
+               {line: 3, words: "He's a lumberjack and he's okay"},
+               {line: 4, words: "He sleeps all night and he works all day"}
+             ];
+            
+             _.chain(lyrics)
+               .map(function(line) { return line.words.split(' '); })
+               .flatten()
+               .reduce(function(counts, word) {
+                 counts[word] = (counts[word] || 0) + 1;
+                 return counts;
+               }, {})
+               .value();
+            
+               => {lumberjack: 2, all: 4, night: 2 ... }
+             ]]></example>
+             </summary>
+        </member>
+        <member name="T:UnderscoreJs.UnderscoreTemplateSettings">
+             <summary>
+             If ERB-style delimiters aren't your cup of tea, you can change Underscore's template settings to use different
+             symbols to set off interpolated code. Define an interpolate regex to match expressions that should be interpolated
+             verbatim, an escape regex to match expressions that should be inserted after being HTML escaped, and an evaluate
+             regex to match expressions that should be evaluated without insertion into the resulting string. You may define
+             or omit any combination of the three. For example, to perform Mustache.js style templating:
+             <example><![CDATA[
+             _.templateSettings = {
+               interpolate: /\{\{(.+?)\}\}/g
+             };
+            
+             var template = _.template("Hello {{ name }}!");
+             template({name: "Mustache"});
+             => "Hello Mustache!"
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Concat(System.Object[])">
+            <summary>
+            Combines two or more arrays.
+            </summary>
+            <param name="items">Optional. Additional items to add to the end of the array.</param>
+            <returns>An Array object containing the concatenation of this array
+            and any other supplied items.</returns>
+            <remarks><para>Returns an Array object containing the
+            concatenation of array1 and any other supplied items.</para>
+            <para>The items to be added (item1 itemN) to the array are added, in
+            order, starting from the first item in the list. If one of the items
+            is an array, its contents are added to the end of array1. If the item
+            is anything other than an array, it is added to the end of the array
+            as a single array element.</para>
+            <para>Elements of source arrays are copied to the resulting array as follows:</para>
+            <list type="bullet"><item><description>
+            If an object is copied from any of the arrays being concatenated to
+            the new array, the object reference continues to point to the same
+            object. A change in either the new array or the original array will
+            result in a change to the other.</description></item>
+            <item><description>If a number or string value is added to the new
+            array, only the value is copied. Changing the value in one array does
+            not affect the value in the other.</description></item></list>
+            </remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Join">
+            <summary>
+            Adds all the elements of an array separated by the specified separator string.
+            </summary>
+            <returns>A string with all of the elements separated by the specified
+            separator string.</returns>
+            <remarks>If any element of the array is undefined or null, it is
+            treated as an empty string.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Join(System.String)">
+            <summary>
+            Adds all the elements of an array separated by the specified separator string.
+            </summary>
+            <param name="separator">Optional. A string used to separate one element
+            of an array from the next in the resulting String. If omitted, the
+            array elements are separated with a comma.</param>
+            <returns>A string with all of the elements separated by the specified
+            separator string.</returns>
+            <remarks>If any element of the array is undefined or null, it is
+            treated as an empty string.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Pop">
+            <summary>
+            Removes the last element from an array and returns it.
+            </summary>
+            <returns>The last element from the array or undefined.</returns>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Push(`0[])">
+            <summary>
+            Appends new elements to an array, and returns the new length of the array.
+            </summary>
+            <param name="items">Optional. New elements of the Array.</param>
+            <returns>The new length of the array.</returns>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Reverse">
+            <summary>
+            Reverses the elements in an Array.
+            </summary>
+            <returns>The reversed array.</returns>
+            <remarks><para>The reverse method reverses the elements of an Array
+            object in place. It does not create a new Array object during
+            execution.</para>
+            <para>If the array is not contiguous, the reverse method creates
+            elements in the array that fill the gaps in the array. Each of these
+            created elements has the value undefined.</para></remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Shift">
+            <summary>
+            Removes the first element from an array and returns it.
+            </summary>
+            <returns>The element that was removed.</returns>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Slice(System.Int32)">
+            <summary>
+            Returns a section of an array.
+            </summary>
+            <param name="start">Required. The beginning of the specified portion of the array.</param>
+            <returns>An Array object containing the specified portion of the array.</returns>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Slice(System.Int32,System.Int32)">
+            <summary>
+            Returns a section of an array.
+            </summary>
+            <param name="start">Required. The beginning of the specified portion of the array.</param>
+            <param name="end">Optional. The end of the specified portion of the array.</param>
+            <returns>An Array object containing the specified portion of the array.</returns>
+            <remarks>The slice method copies up to, but not including, the element
+            indicated by <paramref name="end"/>. If <paramref name="start"/> is
+            negative, it is treated as length + <paramref name="start"/>, where
+            length is the length of the array. If <paramref name="end"/> is negative,
+            it is treated as length + <paramref name="end"/> where length is the
+            length of the array. If <paramref name="end"/> is omitted, extraction
+            continues to the end of the array. If <paramref name="end"/> occurs
+            before <paramref name="start"/>, no elements are copied to the new array.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Sort">
+            <summary>
+            Sorts an array.
+            </summary>
+            <returns>The sorted array.</returns>
+            <remarks>The sort method sorts the Array object in place; no new
+            Array object is created during execution.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Sort(System.Collections.Generic.CompareCallback{`0})">
+            <summary>
+            Sorts an array.
+            </summary>
+            <param name="sortFunction">Optional. The name of the function used to
+            determine the order of the elements. If omitted, the elements are
+            sorted in ascending, ASCII character order.</param>
+            <returns>The sorted array.</returns>
+            <remarks>The sort method sorts the Array object in place; no new
+            Array object is created during execution.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Splice(System.Int32,System.Int32,`0[])">
+            <summary>
+            Removes elements from an array and, if necessary, inserts new elements
+            in their place, returning the deleted elements.
+            </summary>
+            <param name="start">Required. The zero-based location in the array
+            from which to start removing elements.</param>
+            <param name="deleteCount">Required. The number of elements to remove.</param>
+            <param name="items">Optional. Elements to insert into the array in
+            place of the deleted elements.</param>
+            <returns>An array of deleted items.</returns>
+            <remarks>The splice method modifies the array by removing the specified
+            number of elements from position start and inserting new elements.
+            The deleted elements are returned as a new Array object.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Unshift(`0[])">
+            <summary>
+            Inserts new elements at the start of an array.
+            </summary>
+            <param name="items">Elements to insert at the start of the Array.</param>
+            <remarks>Inserts elements into the start of an
+            array, so they appear in the same order in which they appear in the
+            argument list.</remarks>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Each(UnderscoreJs.ArrayIterator{`0})">
+            <summary>
+            Iterates over a list of elements, yielding each in turn to an iterator function. The iterator is bound to the
+            context object, if one is passed. Each invocation of iterator is called with three arguments: (element, index, list).
+            Delegates to the native forEach function if it exists.
+            <example><![CDATA[
+            _.each([1, 2, 3], alert);
+            => alerts each number in turn...
+            _.each({one: 1, two: 2, three: 3}, alert);
+            => alerts each number value in turn...
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Map``1(UnderscoreJs.ArrayMap{`0,``0})">
+            <summary>
+            Produces a new array of values by mapping each value in list through a transformation function (iterator).
+            If the native map method exists, it will be used instead.
+            <example><![CDATA[
+            _.map([1, 2, 3], function(num){ return num * 3; });
+            => [3, 6, 9]
+            _.map({one: 1, two: 2, three: 3}, function(num, key){ return num * 3; });
+            => [3, 6, 9]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Reduce``1(UnderscoreJs.ArrayReduce{`0,``0},``0)">
+            <summary>
+            Also known as inject and foldl, reduce boils down a list of values into a single value. Memo is the initial
+            state of the reduction, and each successive step of it should be returned by iterator. The iterator is passed
+            four arguments: the memo, then the value and index (or key) of the iteration, and finally a reference to the
+            entire list.
+            <example><![CDATA[
+            var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+            => 6
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.ReduceRight``1(UnderscoreJs.ArrayReduce{`0,``0},``0)">
+            <summary>
+            The right-associative version of reduce. Delegates to the JavaScript 1.8 version of reduceRight, if it exists.
+            Foldr is not as useful in JavaScript as it would be in a language with lazy evaluation.
+            <example><![CDATA[
+            var list = [[0, 1], [2, 3], [4, 5]];
+            var flat = _.reduceRight(list, function(a, b) { return a.concat(b); }, []);
+            => [4, 5, 2, 3, 0, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Find(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Looks through each value in the list, returning the first one that passes a truth test (predicate).
+            The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
+            <example><![CDATA[
+            var even = _.find([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => 2
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Filter(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Looks through each value in the list, returning an array of all the values that pass a truth test (predicate).
+            Delegates to the native filter method, if it exists.
+            <example><![CDATA[
+            var evens = _.filter([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => [2, 4, 6]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Where(System.Collections.Generic.JsDictionary{System.String,System.Object})">
+            <summary>
+            Looks through each value in the list, returning an array of all the values that contain all of the key-value
+            pairs listed in properties.
+            <example><![CDATA[
+            _.where(listOfPlays, {author: "Shakespeare", year: 1611});
+            => [{title: "Cymbeline", author: "Shakespeare", year: 1611},
+                {title: "The Tempest", author: "Shakespeare", year: 1611}]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.FindWhere(System.Collections.Generic.JsDictionary{System.String,System.Object})">
+            <summary>
+            Looks through the list and returns the first value that matches all of the key-value pairs listed in properties.
+            If no match is found, or if list is empty, undefined will be returned.
+            <example><![CDATA[
+            _.findWhere(publicServicePulitzers, {newsroom: "The New York Times"});
+            => {year: 1918, newsroom: "The New York Times",
+                reason: "For its public service in publishing in full so many official reports,
+                        documents and speeches by European statesmen relating to the progress and
+                        conduct of the war."}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Reject(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Returns the values in list without the elements that the truth test (predicate) passes. The opposite of filter.
+            <example><![CDATA[
+            var odds = _.reject([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+            => [1, 3, 5]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Every(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Returns true if all of the values in the list pass the predicate truth test. Delegates to the native method
+            every, if present.
+            <example><![CDATA[
+            _.every([true, 1, null, 'yes'], _.identity);
+            => false
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Any(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Returns true if any of the values in the list pass the iterator truth test. Short-circuits and stops traversing the
+            list if a true element is found. Delegates to the native method some, if present.
+            <example><![CDATA[
+            _.some([null, 0, 'yes', false]);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Contains(`0)">
+            <summary>
+            Returns true if the value is present in the list. Uses indexOf internally, if list is an Array.
+            <example><![CDATA[
+            _.contains([1, 2, 3], 3);
+            => true
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Invoke(System.String,System.Object[])">
+            <summary>
+            Calls the method named by methodName on each value in the list. Any extra arguments passed to invoke will be
+            forwarded on to the method invocation.
+            <example><![CDATA[
+            _.invoke([[5, 1, 7], [3, 2, 1]], 'sort');
+            => [[1, 5, 7], [1, 2, 3]]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Pluck``1(System.String)">
+            <summary>
+            A convenient version of what is perhaps the most common use-case for map: extracting a list of property values.
+            <example><![CDATA[
+            var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+            _.pluck(stooges, 'name');
+            => ["moe", "larry", "curly"]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Max">
+            <summary>
+            Returns the maximum value in list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Max``1(UnderscoreJs.ArrayMinMaxIterator{`0,``0})">
+            <summary>
+            Returns the maximum value in list. If iterator is passed, it will be used on each value to generate the criterion
+            by which the value is ranked.
+            <example><![CDATA[
+            var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+            _.max(stooges, function(stooge){ return stooge.age; });
+            => {name: 'curly', age: 60};
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Min">
+            <summary>
+            Returns the minimum value in list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Min``1(UnderscoreJs.ArrayMinMaxIterator{`0,``0})">
+            <summary>
+            Returns the minimum value in list. If iterator is passed, it will be used on each value to generate the criterion
+            by which the value is ranked.
+            <example><![CDATA[
+            var numbers = [10, 5, 100, 2, 1000];
+            _.min(numbers);
+            => 2
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.SortBy``1(UnderscoreJs.ArrayMap{`0,``0})">
+            <summary>
+            Returns a sorted copy of list, ranked in ascending order by the results of running each value through iterator.
+            <example><![CDATA[
+            _.sortBy([1, 2, 3, 4, 5, 6], function(num){ return Math.sin(num); });
+            => [5, 4, 6, 3, 1, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.GroupBy``1(UnderscoreJs.ArrayMap{`0,``0})">
+            <summary>
+            Splits a collection into sets, grouped by the result of running each value through iterator.
+            <example><![CDATA[
+            ]]></example>
+            _.groupBy([1.3, 2.1, 2.4], function(num){ return Math.floor(num); });
+            => {1: [1.3], 2: [2.1, 2.4]}
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.GroupBy``1(System.String)">
+            <summary>
+            Splits a collection into sets, grouped by the result of running each value through iterator. If iterator is
+            a string instead of a function, groups by the property named by iterator on each of the values.
+            <example><![CDATA[
+            ]]></example>
+            _.groupBy(['one', 'two', 'three'], 'length');
+            => {3: ["one", "two"], 5: ["three"]}
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.IndexBy``1(UnderscoreJs.ArrayMap{`0,``0})">
+            <summary>
+            Given a list, and an iterator function that returns a key for each element in the list (or a property name),
+            returns an object with an index of each item. Just like groupBy, but for when you know your keys are unique.
+            <example><![CDATA[
+            ]]></example>
+            var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+            _.indexBy(stooges, 'age');
+            => {
+              "40": {name: 'moe', age: 40},
+              "50": {name: 'larry', age: 50},
+              "60": {name: 'curly', age: 60}
+            }
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.CountBy``1(UnderscoreJs.ArrayMap{`0,``0})">
+            <summary>
+            Sorts a list into groups and returns a count for the number of objects in each group. Similar to groupBy,
+            but instead of returning a list of values, returns a count for the number of values in that group.
+            <example><![CDATA[
+            _.countBy([1, 2, 3, 4, 5], function(num) {
+              return num % 2 == 0 ? 'even': 'odd';
+            });
+            => {odd: 3, even: 2}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Shuffle">
+            <summary>
+            Returns a shuffled copy of the list, using a version of the Fisher-Yates shuffle.
+            <example><![CDATA[
+            _.shuffle([1, 2, 3, 4, 5, 6]);
+            => [4, 1, 6, 3, 5, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Sample">
+            <summary>
+            Produce a random sample from the list. A single random item will be returned.
+            <example><![CDATA[
+            _.sample([1, 2, 3, 4, 5, 6]);
+            => 4
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Sample(System.Int32)">
+            <summary>
+            Produce a random sample from the list. Pass a number to return n random elements from the list.
+            <example><![CDATA[
+            _.sample([1, 2, 3, 4, 5, 6], 3);
+            => [1, 6, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.ToArray">
+            <summary>
+            Creates a real Array from the list (anything that can be iterated over).
+            Useful for transmuting the arguments object.
+            <example><![CDATA[
+            (function(){ return _.toArray(arguments).slice(1); })(1, 2, 3, 4);
+            => [2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Size">
+            <summary>
+            Return the number of values in the list.
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Size``1(System.Collections.Generic.JsDictionary{``0,`0})">
+            <summary>
+            Return the number of values in the list.
+            <example><![CDATA[_.size({one: 1, two: 2, three: 3}); => 3]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.First">
+            <summary>
+            Returns the first element of an array.
+            <example><![CDATA[_.first([5, 4, 3, 2, 1]); => 5]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.First(System.Int32)">
+            <summary>
+            Returns the first element of an array. Passing n will return the first n elements of the array.
+            <example><![CDATA[_.first([5, 4, 3, 2, 1]); => 5]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Initial">
+            <summary>
+            Returns everything but the last entry of the array. Especially useful on the arguments object.
+            <example><![CDATA[
+            _.initial([5, 4, 3, 2, 1]);
+            => [5, 4, 3, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Initial(System.Int32)">
+            <summary>
+            Returns everything but the last entry of the array. Especially useful on the arguments object. Pass n to
+            exclude the last n elements from the result.
+            <example><![CDATA[
+            _.initial([5, 4, 3, 2, 1]);
+            => [5, 4, 3, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Last">
+            <summary>
+            Returns the last element of an array.
+            <example><![CDATA[_.last([5, 4, 3, 2, 1]); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Last(System.Int32)">
+            <summary>
+            Returns the last element of an array. Passing n will return the last n elements of the array.
+            <example><![CDATA[_.last([5, 4, 3, 2, 1]); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Rest">
+            <summary>
+            Returns the rest of the elements in an array.
+            <example><![CDATA[
+            _.rest([5, 4, 3, 2, 1]);
+            => [4, 3, 2, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Rest(System.Int32)">
+            <summary>
+            Returns the rest of the elements in an array. Pass an index to return the values of the array from that index onward.
+            <example><![CDATA[
+            _.rest([5, 4, 3, 2, 1]);
+            => [4, 3, 2, 1]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Compact">
+            <summary>
+            Returns a copy of the array with all falsy values removed. In JavaScript, false, null, 0, "", undefined and NaN are
+            all falsy.
+            <example><![CDATA[_.compact([0, 1, false, 2, '', 3]); => [1, 2, 3]]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Flatten">
+            <summary>
+            Flattens a nested array (the nesting can be to any depth). If you pass shallow, the array will only be
+            flattened a single level.
+            <example><![CDATA[
+            _.flatten([1, [2], [3, [[4]]]]);
+            => [1, 2, 3, 4];
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Flatten(System.Boolean)">
+            <summary>
+            Flattens a nested array (the nesting can be to any depth). If you pass shallow, the array will only be
+            flattened a single level.
+            <example><![CDATA[
+            _.flatten([1, [2], [3, [[4]]]], true);
+            => [1, 2, 3, [[4]]];
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Without(`0[])">
+            <summary>
+            Returns a copy of the array with all instances of the values removed.
+            <example><![CDATA[
+            _.without([1, 2, 1, 0, 3, 1, 4], 0, 1);
+            => [2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Partition(UnderscoreJs.ArrayPredicate{`0})">
+            <summary>
+            Split array into two arrays: one whose elements all satisfy predicate and one whose elements all do not
+            satisfy predicate.
+            <example><![CDATA[
+            _.partition([0, 1, 2, 3, 4, 5], isOdd);
+            => [[1, 3, 5], [0, 2, 4]]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Union(System.Collections.Generic.JsReadOnlyArray{`0}[])">
+            <summary>
+            Computes the union of the passed-in arrays: the list of unique items, in order, that are present in one or
+            more of the arrays.
+            <example><![CDATA[
+            _.union([1, 2, 3], [101, 2, 1, 10], [2, 1]);
+            => [1, 2, 3, 101, 10]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Intersection(System.Collections.Generic.JsReadOnlyArray{`0}[])">
+            <summary>
+            Computes the list of values that are the intersection of all the arrays. Each value in the result is present
+            in each of the arrays.
+            <example><![CDATA[
+            _.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]);
+            => [1, 2]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Difference(System.Collections.Generic.JsReadOnlyArray{`0}[])">
+            <summary>
+            Similar to without, but returns the values from array that are not present in the other arrays.
+            <example><![CDATA[
+            _.difference([1, 2, 3, 4, 5], [5, 2, 10]);
+            => [1, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Uniq">
+            <summary>
+            Produces a duplicate-free version of the array, using === to test object equality. If you know in
+            advance that the array is sorted, passing true for isSorted will run a much faster algorithm. If you
+            want to compute unique items based on a transformation, pass an iterator function.
+            <example><![CDATA[
+            _.uniq([1, 2, 1, 3, 1, 4]);
+            => [1, 2, 3, 4]
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Zip(System.Collections.Generic.JsReadOnlyArray{`0}[])">
+             <summary>
+             Merges together the values of each of the arrays with the values at the corresponding position. Useful when
+             you have separate data sources that are coordinated through matching array indexes. If you're working with a
+             matrix of nested arrays, _.zip.apply can transpose the matrix in a similar fashion.
+             <example><![CDATA[
+             _.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false, false]);
+             => [["moe", 30, true], ["larry", 40, false], ["curly", 50, false]]
+            
+             _.zip.apply(_, arrayOfRowsOfData);
+             => arrayOfColumnsOfData
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Object``1(System.Collections.Generic.JsReadOnlyArray{``0},System.Collections.Generic.JsReadOnlyArray{`0})">
+            <summary>
+            Converts arrays into objects. Pass either a list of keys, and a list
+            of values. If duplicate keys exist, the last value wins.
+            <example><![CDATA[
+            _.object(['moe', 'larry', 'curly'], [30, 40, 50]);
+            => {moe: 30, larry: 40, curly: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Object``1(System.Collections.Generic.JsReadOnlyArray{System.Object})">
+            <summary>
+            Converts arrays into objects. Pass a single list of [key, value] pairs. If duplicate keys exist, the last value wins.
+            <example><![CDATA[
+            _.object([['moe', 30], ['larry', 40], ['curly', 50]]);
+            => {moe: 30, larry: 40, curly: 50}
+            ]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.IndexOf(`0)">
+            <summary>
+            Returns the index at which value can be found in the array, or -1 if value is not present in the array. Uses
+            the native indexOf function unless it's missing. If you're working with a large array, and you know that the
+            array is already sorted, pass true for isSorted to use a faster binary search ... or, pass a number as the
+            third argument in order to look for the first matching value in the array after the given index.
+            <example><![CDATA[_.indexOf([1, 2, 3], 2); => 1]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.LastIndexOf(`0)">
+            <summary>
+            Returns the index of the last occurrence of value in the array, or -1 if value is not present. Uses the
+            native lastIndexOf function if possible. Pass fromIndex to start your search at a given index.
+            <example><![CDATA[_.lastIndexOf([1, 2, 3, 1, 2, 3], 2); => 4]]></example>
+            </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.SortedIndex(`0)">
+             <summary>
+             Uses a binary search to determine the index at which the value should be inserted into the list in order to
+             maintain the list's sorted order. If an iterator function is provided, it will be used to compute the sort
+             ranking of each value, including the value you pass. Iterator may also be the string name of the property to
+             sort by (eg. length).
+             <example><![CDATA[
+             _.sortedIndex([10, 20, 30, 40, 50], 35);
+             => 3
+            
+             var stooges = [{name: 'moe', age: 40}, {name: 'curly', age: 60}];
+             _.sortedIndex(stooges, {name: 'larry', age: 50}, 'age');
+             => 1
+             ]]></example>
+             </summary>
+        </member>
+        <member name="M:UnderscoreJs.UnderscoreArray`1.Range(System.Int32)">
+            <summary>
+            A function to create flexibly-numbered lists of integers, handy for each and map loops. start, if omitted,
+            defaults to 0; step defaults to 1. Returns a list of integers from start to stop, incremented (or decremented)
+            by step, exclusive. Note that ranges that stop before they start are considered to be zero-length instead of
+            negative — if you'd like a negative range, use a negative step.
+            </summary>
+        </member>
+    </members>
+</doc>

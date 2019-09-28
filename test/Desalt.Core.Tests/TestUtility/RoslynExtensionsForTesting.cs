@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="RoslynExtensionsForTesting.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -21,12 +21,12 @@ namespace Desalt.Core.Tests.TestUtility
     {
         private static readonly string[] s_standardAssemblies =
         {
+            "jQuery.dll",
             "mscorlib.dll",
             "NativeJsTypeDefs.dll",
-            "Saltarelle.jQuery.dll",
-            "Saltarelle.Web.dll",
             "TypeDefs.dll",
-            "Underscore.dll"
+            "Underscore.dll",
+            "Web.dll",
         };
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Desalt.Core.Tests.TestUtility
         /// <returns>The loaded assembly stream.</returns>
         private static Stream GetSaltarelleAssemblyStream(string assemblyName)
         {
-            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+            var thisAssembly = Assembly.GetExecutingAssembly();
             return thisAssembly.GetManifestResourceStream(typeof(RoslynExtensionsForTesting), assemblyName);
         }
     }

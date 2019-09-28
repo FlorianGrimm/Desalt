@@ -29,9 +29,11 @@ namespace Tableau.JavaScript.Vql.Core
         public static PointPresModel ToPresModel(Point pt)
         {
             if (Script.IsNullOrUndefined(pt)) { return null; }
-            PointPresModel pointPM = new PointPresModel();
-            pointPM.X = pt.X;
-            pointPM.Y = pt.Y;
+            PointPresModel pointPM = new PointPresModel
+            {
+                X = Math.Round(pt.X.ReinterpretAs<double>()),
+                Y = Math.Round(pt.Y.ReinterpretAs<double>())
+            };
             return pointPM;
         }
 
@@ -43,6 +45,14 @@ namespace Tableau.JavaScript.Vql.Core
         public static Point FromPosition(jQueryPosition position)
         {
             return new Point(position.Left.RoundToInt(), position.Top.RoundToInt());
+        }
+
+        /// <summary>
+        /// Converts a <see cref="PointD"/> to a <see cref="Point"/>.
+        /// </summary>
+        public static Point FromPointD(PointD pointD)
+        {
+            return new Point(pointD.X.RoundToInt(), pointD.Y.RoundToInt());
         }
 
         /// <summary>
@@ -72,6 +82,17 @@ namespace Tableau.JavaScript.Vql.Core
         public static Point Subtract(Point first, Point second)
         {
             return new Point(first.X - second.X, first.Y - second.Y);
+        }
+
+        /// <summary>
+        /// Multiplys first * second and returns the product of the X components and Y components.
+        /// </summary>
+        /// <param name="first">The first point.</param>
+        /// <param name="second">The second point.</param>
+        /// <returns>The product of first * second.</returns>
+        public static Point Multiply(Point first, Point second)
+        {
+            return new Point(first.X * second.X, first.Y * second.Y);
         }
 
         /// <summary>
@@ -115,10 +136,15 @@ namespace Tableau.JavaScript.Vql.Core
         {
             return Script.IsValue(p) && Script.IsValue(p2) && p2.X == p.X && p2.Y == p.Y;
         }
+
+        public static Point TimesScalar(Point p, int scalar)
+        {
+            return new Point(p.X * scalar, p.Y * scalar);
+        }
     }
 
-    /// <summary> This class provides methods that operate on PointF records. </summary>
-    public static class PointFUtil
+    /// <summary> This class provides methods that operate on PointD records. </summary>
+    public static class PointDUtil
     {
         /// <summary>
         /// Subtracts first - second and returns the result. Normally this would be an operator overload, but Script#
@@ -127,17 +153,17 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="first">The first point.</param>
         /// <param name="second">The second point.</param>
         /// <returns>The difference of first - second.</returns>
-        public static PointF Subtract(PointF first, PointF second)
+        public static PointD Subtract(PointD first, PointD second)
         {
-            return new PointF(first.X - second.X, first.Y - second.Y);
+            return new PointD(first.X - second.X, first.Y - second.Y);
         }
 
-        public static PointF TimesScalar(Point p, float scalar)
+        public static PointD TimesScalar(Point p, float scalar)
         {
-            return new PointF(p.X * scalar, p.Y * scalar);
+            return new PointD(p.X * scalar, p.Y * scalar);
         }
 
-        public static Point Round(PointF p)
+        public static Point Round(PointD p)
         {
             return new Point(Math.JsRound(p.X), Math.JsRound(p.Y));
         }

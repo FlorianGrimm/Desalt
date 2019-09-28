@@ -84,50 +84,22 @@ namespace Tableau.JavaScript.Vql.Core
         }
     }
 
-    /// <summary> BBoxRectF record for a bounding box rect. Four script fields: x, y, w, h. </summary>
+    /// <summary> BBoxRectD record for a bounding box rect. Four script fields: x, y, w, h. </summary>
     [Imported, Serializable]
-    public sealed class BBoxRectF
+    public sealed class BBoxRectD
     {
-        public float MinX;
-        public float MinY;
-        public float MaxX;
-        public float MaxY;
+        public double MinX;
+        public double MinY;
+        public double MaxX;
+        public double MaxY;
 
         [ObjectLiteral]
-        public BBoxRectF(float minX, float minY, float maxX, float maxY)
+        public BBoxRectD(double minX, double minY, double maxX, double maxY)
         {
             this.MinX = minX;
             this.MinY = minY;
             this.MaxX = maxX;
             this.MaxY = maxY;
-        }
-    }
-
-    /// <summary> RegionRect is a LTWH rectangle with a region name. Script fields: l, t, w, h, r. </summary>
-    [Imported, Serializable]
-    public sealed class RegionRect
-    {
-        public int X;
-
-        public int Y;
-
-        [ScriptName("w")]
-        public int Width;
-
-        [ScriptName("h")]
-        public int Height;
-
-        [ScriptName("r")]
-        public string RegionType;
-
-        [ObjectLiteral]
-        public RegionRect(int x, int y, int width, int height, string regionType)
-        {
-            this.X = x;
-            this.Y = y;
-            this.Width = width;
-            this.Height = height;
-            this.RegionType = regionType;
         }
     }
 }
