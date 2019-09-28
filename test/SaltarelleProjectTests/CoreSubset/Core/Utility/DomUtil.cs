@@ -12,6 +12,7 @@ namespace Tableau.JavaScript.Vql.Core
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Html;
     using System.Runtime.CompilerServices;
@@ -19,17 +20,21 @@ namespace Tableau.JavaScript.Vql.Core
     using System.Xml;
     using jQueryApi;
     using Tableau.JavaScript.Vql.TypeDefs;
-    using Underscore;
+    using UnderscoreJs;
 
     /// <summary>
     /// Contains utility methods for DOM.
     /// </summary>
     public static class DomUtil
     {
+        private const string TestWaitAttributeName = "data-tab-test-wait";
+
         // used by GetTransformOffset, StyleCop forces us to put it up here
         // see https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function#matrix%28%2
         private static readonly JsDictionary<string, int> translationFuncIndexer = new JsDictionary<string, int>(
             "matrix", 4, "matrix3d", 12, "translate", 0, "translate3d", 0, "translateX", 0, "translateY", -1);
+
+        private static long uniqueId = new JsDate().GetTime();
 
         private static Logger Log
         {
@@ -54,7 +59,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public static Style GetComputedStyle(Element e)
         {
-            if (BrowserSupport.GetComputedStyle)
+            if (BrowserSupport.GetComputedStyle())
             {
                 Style s = Window.GetComputedStyle(e);
                 if (Script.IsValue(s))
@@ -76,27 +81,27 @@ namespace Tableau.JavaScript.Vql.Core
         /// <returns>The computed z-index of the element, defaults to 0</returns>
         public static int GetComputedZIndex(Element child)
         {
-            //Given a child element
+            // Given a child element
             Param.VerifyValue(child, "child");
 
-            //Start with the child
+            // Start with the child
             jQueryObject iter = jQuery.FromElement(child);
             jQueryObject lastPositioned = iter;
             Element html = Document.DocumentElement;
             Element body = Document.Body;
 
-            //Iterate upward, stop when reaching the root
+            // Iterate upward, stop when reaching the root
             while (iter.Length != 0 && iter[0] != body && iter[0] != html)
             {
                 string pos = iter.GetCSS("position");
                 if (pos == "absolute" || pos == "fixed")
                 {
-                    lastPositioned = iter; //store the last absolutely positioned element prior to reaching the root
+                    lastPositioned = iter; // store the last absolutely positioned element prior to reaching the root
                 }
 
-                iter = iter.OffsetParent(); //OffsetParent finds the closest _positioned_ ancestor, otherwise returns <html> or <body>
+                iter = iter.OffsetParent(); // OffsetParent finds the closest _positioned_ ancestor, otherwise returns <html> or <body>
             }
-            return ParseZIndexProperty(lastPositioned); //returns 0 by default
+            return ParseZIndexProperty(lastPositioned); // returns 0 by default
         }
 
         /// <summary>
@@ -123,10 +128,10 @@ namespace Tableau.JavaScript.Vql.Core
         {
             jQueryObject obj = jQuery.FromElement(e);
             return new Rect(
-                ScriptEx.Value(int.Parse(obj.GetCSS("padding-left"), 10), 0),
-                ScriptEx.Value(int.Parse(obj.GetCSS("padding-top"), 10), 0),
-                obj.GetWidth(),
-                obj.GetHeight());
+                ScriptEx.Value(Script.ParseInt(obj.GetCSS("padding-left"), 10).ReinterpretAs<int>(), 0),
+                ScriptEx.Value(Script.ParseInt(obj.GetCSS("padding-top"), 10).ReinterpretAs<int>(), 0),
+                obj.GetWidth().RoundToInt(),
+                obj.GetHeight().RoundToInt());
         }
 
         /// <summary>
@@ -142,6 +147,13 @@ namespace Tableau.JavaScript.Vql.Core
         /// <summary>
         /// Sets the equivalent of dojo.marginBox(e, rect).
         /// </summary>
+        [AlternateSignature, SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
+        public static extern void SetMarginBox(Element e, Size size);
+
+        /// <summary>
+        /// Sets the equivalent of dojo.marginBox(e, rect).
+        /// </summary>
+        [PreserveName]
         public static void SetMarginBox(Element e, Rect r)
         {
             SetMarginBoxJQ(jQuery.FromElement(e), r);
@@ -152,9 +164,20 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public static void SetMarginBoxJQ(jQueryObject o, Rect r)
         {
-            DomUtil.SetMarginSizeJQ(o, RecordCast.RectAsSize(r));
-            if (!double.IsNaN(r.Top)) { o.CSS("top", r.Top + "px"); }
-            if (!double.IsNaN(r.Left)) { o.CSS("left", r.Left + "px"); }
+            Element rawElement = o[0];
+            Style elementStyle = rawElement.Style;
+            Style computedStyle = Window.GetComputedStyle(rawElement);
+            DomUtil.SetMarginSizeJQ(computedStyle, r.ReinterpretAs<Size>(), rawElement);
+
+            if (!double.IsNaN(r.Top))
+            {
+                elementStyle.Top = r.Top + "px";
+            }
+
+            if (!double.IsNaN(r.Left))
+            {
+                elementStyle.Left = r.Left + "px";
+            }
         }
 
         /// <summary>
@@ -188,18 +211,60 @@ namespace Tableau.JavaScript.Vql.Core
             return new Rect(
                 p.Left.RoundToInt(),
                 p.Top.RoundToInt(),
-                o.GetOuterWidth(true),
-                o.GetOuterHeight(true));
+                o.GetOuterWidth(true).RoundToInt(),
+                o.GetOuterHeight(true).RoundToInt());
         }
 
-        /// <summary> Gets the page offset Rect equivalent of dojo.coords(e). </summary>
+        /// <summary>
+        /// Gets the location and area of the element relative to the document itself.  I.e. in the coordinate space
+        /// of the document, not the viewport.  So it will be the same no matter how much you have scrolled or zoomed
+        /// in.
+        /// </summary>
+        /// <remarks>This is basically equivalent to the old dojo.coords(e) function.</remarks>
         public static RectXY GetRectXY(jQueryObject o)
         {
             int x = o.GetPageOffset().Left.RoundToInt();
             int y = o.GetPageOffset().Top.RoundToInt();
-            int w = o.GetOuterWidth(true);
-            int h = o.GetOuterHeight(true);
+            int w = o.GetOuterWidth(true).RoundToInt();
+            int h = o.GetOuterHeight(true).RoundToInt();
+
             return new RectXY(x, y, w, h);
+        }
+
+        /// <summary>
+        /// Similar to GetRectXY (above),
+        /// but it also supports includeScroll parameter
+        /// (also ported from Dojo)
+        /// </summary>
+        public static RectXY GetRectXY(jQueryObject o, bool includeScroll)
+        {
+            RectXY result = GetRectXY(o);
+            if (includeScroll)
+            {
+                Point scroll = DocScroll();
+                result.X += scroll.X;
+                result.Y += scroll.Y;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Port of dojo's docScroll function
+        /// http://dojotoolkit.org/reference-guide/1.10/dojo/dom-geometry/docScroll.html
+        /// </summary>
+        /// <returns>
+        /// Returns a normalized object with {x, y} with corresponding offsets for the scroll position for the current document.
+        /// </returns>
+        public static Point DocScroll()
+        {
+            int x = Script.Coalesce(Window.PageXOffset,
+                Script.Coalesce(Document.DocumentElement.ScrollLeft, Script.Coalesce(DocumentBody.ScrollLeft, 0)));
+
+            int y = Script.Coalesce(Window.PageYOffset,
+                Script.Coalesce(Document.DocumentElement.ScrollTop, Script.Coalesce(DocumentBody.ScrollTop, 0)));
+
+            return new Point(x, y);
         }
 
         /// <summary>
@@ -233,55 +298,31 @@ namespace Tableau.JavaScript.Vql.Core
             return (ancestor == child || IsAncestorOf(ancestor, child));
         }
 
-        [AlternateSignature, SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        public static extern void SetElementPosition(jQueryObject e, int pageX, int pageY);
-
-        [AlternateSignature, SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        public static extern void SetElementPosition(jQueryObject e, int pageX, int pageY, string duration);
-
         /// <summary>
         /// Sets an elements position using either CSS transform or absolute positioning, depending on what
         /// is supported.  Assumes element is added to body.
         /// </summary>
-        public static void SetElementPosition(jQueryObject e, int pageX, int pageY, string duration, bool? useTransform)
+        public static void SetElementPosition(jQueryObject e, int pageX, int pageY, string duration = null, bool? useTransform = null)
         {
-            if ((!useTransform.HasValue || useTransform.Value) && BrowserSupport.CssTransform)
+            if ((!useTransform.HasValue || useTransform.Value))
             {
                 // This prevents visibility: hidden elements from displacing the translation.
-                JsDictionary styling = new JsDictionary("top", "0px", "left", "0px");
-                if (BrowserSupport.CssTranslate3D)
+                var styling = new JsDictionary("top", "0px", "left", "0px");
+
+                string transformVal = new StringBuilder("translate3d(")
+                    .Append(pageX).Append("px,")
+                    .Append(pageY).Append("px,")
+                    .Append("0px)").ToString();
+                styling[BrowserSupport.CssTransformName()] = transformVal;
+                if (Script.IsValue(duration))
                 {
-                    string transformVal = new StringBuilder("translate3d(")
-                        .Append(pageX).Append("px,")
-                        .Append(pageY).Append("px,")
-                        .Append("0px)").ToString();
-                    styling[BrowserSupport.CssTransformName] = transformVal;
-                    if (Script.IsValue(duration))
-                    {
-                        styling[BrowserSupport.CssTransitionName + "-duration"] = duration;
-                    }
-                    e.CSS(styling);
-                    return;
+                    styling[BrowserSupport.CssTransitionName() + "-duration"] = duration;
                 }
-                if (BrowserSupport.CssTranslate2D)
-                {
-                    string transformVal = new StringBuilder("translate(")
-                        .Append(pageX).Append("px,")
-                        .Append(pageY).Append("px)").ToString();
-                    styling[BrowserSupport.CssTransformName] = transformVal;
-                    if (Script.IsValue(duration))
-                    {
-                        styling[BrowserSupport.CssTransitionName + "-duration"] = duration;
-                    }
-                    e.CSS(styling);
-                    return;
-                }
+                e.CSS(styling);
+                return;
             }
-            JsDictionary css = new JsDictionary("position", "absolute", "top", pageY + "px", "left", pageX + "px");
-            if (BrowserSupport.CssTransform)
-            {
-                css[BrowserSupport.CssTransformName] = "";
-            }
+            var css = new JsDictionary("position", "absolute", "top", pageY + "px", "left", pageX + "px");
+            css[BrowserSupport.CssTransformName()] = "";
             e.CSS(css);
         }
 
@@ -307,7 +348,7 @@ namespace Tableau.JavaScript.Vql.Core
             // Getting the element position relative to the body results in page-based coordinates,
             // so we need to subtract out any scroll position for the page to get the client coordinates.
             p.X -= jQuery.FromElement((Element)Document.DocumentElement).GetScrollLeft();
-            p.Y -= jQuery.FromElement((Element)Document.DocumentElement).GetScrollTop();
+            p.Y -= jQuery.FromElement((Element)Document.DocumentElement).GetScrollTop().RoundToInt();
 
             return p;
         }
@@ -332,7 +373,7 @@ namespace Tableau.JavaScript.Vql.Core
             }
 
             string[] transform = fullTransform.Split("(");
-            
+
             int? index = translationFuncIndexer[transform[0]];
             if (index == null)
             {
@@ -382,31 +423,69 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public static jQueryPosition GetPageOffset(this jQueryObject e)
         {
-            DOMRect r = e[0].GetBoundingClientRect();
+            PointD pageOffset = e[0].GetPageOffset();
 
-            /* FIXME 2016-06-22 ckovatch:
-             * To make the following even worse, Chrome reports different values when the browser is "pinch-to-"zoomed
-             * vs. when zoomed via text-scaling (e.g. by pushing CTRL-+/CTRL--). Until Chrome fixes their bug, or until
-             * we determine a way to detect the difference between these two zooming scenarios, we are only fixing this
-             * on Chrome mobile -- because pinch-to-zoom is the only zooming scenario on mobile, and text-scaling is by
-             * far the more common scenario on desktop browsers. Unfortunately this means this method will return the
-             * wrong thing when pinch-to-zoomed on Chrome on Desktop.
-             */
-            if (BrowserSupport.IsChrome && TsConfig.IsMobile && ((double)Window.InnerWidth / (double)Window.OuterWidth <= 0.9))
+            return new jQueryPosition(pageOffset.X, pageOffset.Y);
+        }
+
+        /// <summary>
+        /// Non-jQuery version of <see cref="GetPageOffset(jQueryObject)"/>.
+        /// </summary>
+        public static PointD GetPageOffset(this XmlElement e)
+        {
+            if (e == null)
             {
-               /* NOTE 2016-05-26 ckovatch:
-                * This will almost certainly need to be removed in a future version of Chrome!
-                * The viewport against which 'GetBoundingClientRect' is measured has changed
-                * more than once in Chrome. It appears there are plans to change it back to being
-                * consistent with other browsers in the near future. If/when this happens, let's
-                * add some good version sniffing here.
-                * TFSID 508885, https://bugs.chromium.org/p/chromium/issues/detail?id=489206
-                */
-                return new jQueryPosition(r.Left, r.Top);
+                Debug.Assert(false, "Tried to getPageOffset of null element");
+                return new PointD(0, 0);
+            }
+
+            // 2017-04-17: You may be tempted to just return window.pageX/YOffset + elementRect, but this gives bad values for
+            // some browsers (currently, this means Chrome and Edge) when pinched-to-zoom.
+            // The reason is that, under their viewport models, getBoundingClientRect and window.pageX/YOffset refer to different
+            // coordinate systems (but this will likely change in the future to be the same coordinate system).
+            // See https://bugs.chromium.org/p/chromium/issues/detail?id=489206 for more context.
+            // So, instead, we make sure we're always working in the same coordinate system by comparing the element's client
+            // rect with the document element's client rect.
+            DOMRect elementRect = e.GetBoundingClientRect();
+            DOMRect documentElementRect = Document.DocumentElement.GetBoundingClientRect();
+
+            return new PointD(elementRect.Left - documentElementRect.Left, elementRect.Top - documentElementRect.Top);
+        }
+
+        public static jQueryPosition GetScrollPosition(this jQueryObject o)
+        {
+            return new jQueryPosition(left: o[0].ScrollLeft, top: o[0].ScrollTop);
+        }
+
+        public static void ScrollPosition(this jQueryObject o, jQueryPosition pos)
+        {
+            o[0].ScrollLeft = pos.Left.ReinterpretAs<int>();
+            o[0].ScrollTop = pos.Top.ReinterpretAs<int>();
+        }
+
+        /// <summary>
+        /// Sets focus to a child node and resets the scroll position of its scrollable container afterward.
+        /// The user-facing effect is that focus can be set on a child element without the default "scroll to center" browser behavior.
+        /// </summary>
+        /// <param name="focusMethod">Callback that sets focus on the relevant child node</param>
+        /// <param name="scrollNode">The scrollable ancestor node of the child</param>
+        public static void FocusWithoutScrolling(Action focusMethod, jQueryObject scrollNode)
+        {
+            if (scrollNode == null || scrollNode.Length == 0)
+            {
+                focusMethod();
             }
             else
             {
-                return new jQueryPosition(r.Left + Window.PageXOffset, r.Top + Window.PageYOffset);
+                scrollNode.Attribute(TestWaitAttributeName, "");
+                Window.SetTimeout(() =>
+                    {
+                        var scrollPos = scrollNode.GetScrollPosition();
+                        focusMethod();
+                        scrollNode.ScrollPosition(scrollPos);
+                        scrollNode.RemoveAttr(TestWaitAttributeName);
+                    },
+                    200); // TFSID 618960: allow some time for scrolling animation before reading the new scroll position
             }
         }
 
@@ -451,7 +530,7 @@ namespace Tableau.JavaScript.Vql.Core
         {
             if (Script.IsValue(style) && !MiscUtil.IsNullOrEmpty(style.Width))
             {
-                return int.Parse(style.Width);
+                return Script.ParseInt(style.Width).ReinterpretAs<int>();
             }
 
             return JsNumber.NaN;
@@ -465,7 +544,7 @@ namespace Tableau.JavaScript.Vql.Core
         {
             if (Script.IsValue(style) && !MiscUtil.IsNullOrEmpty(style.Height))
             {
-                return int.Parse(style.Height);
+                return Script.ParseInt(style.Height).ReinterpretAs<int>();
             }
 
             return JsNumber.NaN;
@@ -488,9 +567,6 @@ namespace Tableau.JavaScript.Vql.Core
             return eventName.ToString();
         }
 
-        [AlternateSignature, SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-        public static extern void StopPropagationOfInputEvents(jQueryObject o);
-
         /// <summary>
         /// Stop propagation of mouse and touch input events.
         /// </summary>
@@ -498,10 +574,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="eventNamespace">The event namespace to be used in the binding.</param>
         public static void StopPropagationOfInputEvents(jQueryObject o, string eventNamespace)
         {
-            jQueryEventHandler stopPropagation = delegate(jQueryEvent e)
-            {
-                e.StopPropagation();
-            };
+            jQueryEventHandler stopPropagation = (jQueryEvent e) => e.StopPropagation();
             HandleInputEvents(o, eventNamespace, stopPropagation);
         }
 
@@ -597,7 +670,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// false, events can also fire at descendants of this element.</param>
         public static void SetCapture(XmlElement e, bool retargetToElement)
         {
-            if (!BrowserSupport.MouseCapture)
+            if (!BrowserSupport.MouseCapture())
             {
                 return;
             }
@@ -610,7 +683,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public static void ReleaseCapture()
         {
-            if (!BrowserSupport.MouseCapture)
+            if (!BrowserSupport.MouseCapture())
             {
                 return;
             }
@@ -624,55 +697,64 @@ namespace Tableau.JavaScript.Vql.Core
         {
             // we don't blur if active element is document.body
             // https://connect.microsoft.com/IE/feedback/details/790929/document-activeelement-blur
+            // $NOTE-dscheidt-2016-09-08: IE11 has been seen occasionally returning an empty javascript object
+            // instead of the document body or null when querying for the activeElement from within an iFrame.
+            // This behavior is the cause of TFSID:558859, and is mitigated by the HasMethod check.
 
             var activeElem = Document.ActiveElement;
-            if (Script.IsValue(activeElem) && activeElem != DocumentBody)
+            if (Script.IsValue(activeElem) && activeElem != DocumentBody && TypeUtil.HasMethod(activeElem, "blur"))
             {
                 activeElem.Blur();
             }
         }
 
-        private static int ConvertCssToInt(jQueryObject o, string css, int defaultValue)
+        private static int ConvertCssToInt(string cssValue, int defaultValue)
         {
-            int x = int.Parse(o.GetCSS(css), 10);
+            int x = Script.ParseInt(cssValue, 10).ReinterpretAs<int>();
             return float.IsNaN(x) ? defaultValue : x;
+        }
+
+        public static int GetSizeFromCssPixelProperty(jQueryObject element, string propertyName)
+        {
+            string strValue = element.GetCSS(propertyName);
+            return ConvertCssToInt(strValue, 0);
         }
 
         // These provide a safe (though slow) "outer" (including margin) setters
         // Dojo provided this functionality, jQuery does not
-        private static void SetOuterWidth(jQueryObject o, int outerWidth)
+        private static void SetOuterWidth(Style computedStyle, int outerWidth, Element element)
         {
-            int marginLeft = ConvertCssToInt(o, "margin-left", 0);
-            int borderLeft = ConvertCssToInt(o, "border-left-width", 0);
-            int paddingLeft = ConvertCssToInt(o, "padding-left", 0);
-            int paddingRight = ConvertCssToInt(o, "padding-right", 0);
-            int borderRight = ConvertCssToInt(o, "border-right-width", 0);
-            int marginRight = ConvertCssToInt(o, "margin-right", 0);
+            int marginLeft = ConvertCssToInt(computedStyle.MarginLeft, 0);
+            int borderLeft = ConvertCssToInt(computedStyle.BorderLeftWidth, 0);
+            int paddingLeft = ConvertCssToInt(computedStyle.PaddingLeft, 0);
+            int paddingRight = ConvertCssToInt(computedStyle.PaddingRight, 0);
+            int borderRight = ConvertCssToInt(computedStyle.BorderRightWidth, 0);
+            int marginRight = ConvertCssToInt(computedStyle.MarginRight, 0);
             int newVal = Math.Max(outerWidth - marginLeft - borderLeft - paddingLeft
                                   - paddingRight - borderRight - marginRight, 0);
-            o.Width(newVal);
+            element.Style.Width = newVal + "px";
         }
 
-        private static void SetOuterHeight(jQueryObject o, int outerHeight)
+        private static void SetOuterHeight(Style computedStyle, int outerHeight, Element element)
         {
-            int marginTop = ConvertCssToInt(o, "margin-top", 0);
-            int borderTop = ConvertCssToInt(o, "border-top-width", 0);
-            int paddingTop = ConvertCssToInt(o, "padding-top", 0);
-            int paddingBottom = ConvertCssToInt(o, "padding-bottom", 0);
-            int borderBottom = ConvertCssToInt(o, "border-bottom-width", 0);
-            int marginBottom = ConvertCssToInt(o, "margin-bottom", 0);
+            int marginTop = ConvertCssToInt(computedStyle.MarginTop, 0);
+            int borderTop = ConvertCssToInt(computedStyle.BorderTopWidth, 0);
+            int paddingTop = ConvertCssToInt(computedStyle.PaddingTop, 0);
+            int paddingBottom = ConvertCssToInt(computedStyle.PaddingBottom, 0);
+            int borderBottom = ConvertCssToInt(computedStyle.BorderBottomWidth, 0);
+            int marginBottom = ConvertCssToInt(computedStyle.MarginBottom, 0);
             int newVal = Math.Max(outerHeight - marginTop - borderTop - paddingTop
                                   - paddingBottom - borderBottom - marginBottom, 0);
-            o.Height(newVal);
+            element.Style.Height = newVal + "px";
         }
 
         /// <summary>
         /// Sets the equivalent of dojo.marginBox(o, size) given size-only values.
         /// </summary>
-        private static void SetMarginSizeJQ(jQueryObject o, Size s)
+        private static void SetMarginSizeJQ(Style computedStyle, Size s, Element element)
         {
-            if (s.Width >= 0) { DomUtil.SetOuterWidth(o, s.Width); }
-            if (s.Height >= 0) { DomUtil.SetOuterHeight(o, s.Height); }
+            if (s.Width >= 0) { DomUtil.SetOuterWidth(computedStyle, s.Width, element); }
+            if (s.Height >= 0) { DomUtil.SetOuterHeight(computedStyle, s.Height, element); }
         }
 
         /// <summary>
@@ -683,10 +765,10 @@ namespace Tableau.JavaScript.Vql.Core
         /// <returns>The z-index of the parameter, defaults to zero</returns>
         private static int ParseZIndexProperty(jQueryObject o)
         {
-            //Given an parameter
+            // Given an parameter
             Param.VerifyValue(o, "o");
 
-            //In Firefox/Chrome/>=IE9 this returns a string, but in <IE9 it returns an int.
+            // In Firefox/Chrome/>=IE9 this returns a string, but in <IE9 it returns an int.
             object zindexProperty = o.GetCSS("z-index");
 
             if (Underscore.IsNumber(zindexProperty))
@@ -696,10 +778,10 @@ namespace Tableau.JavaScript.Vql.Core
 
             if (Underscore.IsString(zindexProperty))
             {
-                //As per CSS spec the z-index property can be "auto", "inherits", or an integer.
+                // As per CSS spec the z-index property can be "auto", "inherits", or an integer.
                 if (!string.IsNullOrEmpty((string)zindexProperty) && (string)zindexProperty != "auto" && (string)zindexProperty != "inherits")
                 {
-                    return int.Parse((string)zindexProperty, 10);
+                    return Script.ParseInt((string)zindexProperty, 10).ReinterpretAs<int>();
                 }
             }
 
@@ -722,11 +804,11 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="selectionEnd">The index of the character after the last selected character</param>
         public static void SetSelectionRangeOnInput(Element inputElement, int selectionStart, int selectionEnd)
         {
-            if (BrowserSupport.SetSelectionRange)
+            if (BrowserSupport.SetSelectionRange())
             {
                 try
                 {
-                    inputElement.As<InputElement>().SetSelectionRange(selectionStart, selectionEnd);
+                    inputElement.ReinterpretAs<InputElement>().SetSelectionRange(selectionStart, selectionEnd);
                 }
                 catch // not all input types support setSelectionRange
                 {
@@ -742,9 +824,9 @@ namespace Tableau.JavaScript.Vql.Core
         {
             try
             {
-                if (BrowserSupport.SetSelectionRange)
+                if (BrowserSupport.SetSelectionRange())
                 {
-                    inputElement.GetElement(0).As<InputElement>().SetSelectionRange(0, inputElement.GetValue().Length);
+                    inputElement.GetElement(0).ReinterpretAs<InputElement>().SetSelectionRange(0, inputElement.GetValue().Length);
                 }
                 else
                 {
@@ -755,7 +837,40 @@ namespace Tableau.JavaScript.Vql.Core
             {
             }
         }
-        
+
+        public static void SetCursorPosition(InputElement input, int pos)
+        {
+            if (TypeUtil.HasMethod(input, "createTextRange")) // Internet Explorer
+            {
+                var rng = input.CreateTextRange();
+                rng.Move(JsTextRange.Unit.Character, pos);
+                rng.Select();
+                rng.ScrollIntoView();
+                input.Focus();
+            }
+            else if (BrowserSupport.IsSafari() && BrowserSupport.SetSelectionRange())
+            {
+                input.Focus();
+                input.SetSelectionRange(pos, pos);
+            }
+            else
+            {
+                input.Blur();
+                input.SelectionStart = input.SelectionEnd = pos;
+                input.Focus();
+            }
+        }
+
+        public static void ReplaceSelection(InputElement input, string text)
+        {
+            var oldVal = input.Value;
+            var prefix = oldVal.Substring(0, input.SelectionStart);
+            var suffix = oldVal.Substring(input.SelectionEnd);
+            var newCursorPos = input.SelectionStart + text.Length;
+            input.Value = prefix + text + suffix;
+            SetCursorPosition(input, newCursorPos);
+        }
+
         /// <summary>
         /// Sets the hover tooltip of an element. Normally uses the standard HTML 'title' attribute.
         /// On mobile, this will add a lightweight div that is appeared (always to the right) using
@@ -784,6 +899,68 @@ namespace Tableau.JavaScript.Vql.Core
                     obj.Append(tooltipDiv);
                 }
             }
+        }
+
+        public static bool NodeHasTextSelection(XmlNode node)
+        {
+            var windowSelection = Window.GetSelection();
+
+            for (int ii = windowSelection.RangeCount - 1; ii >= 0; --ii)
+            {
+                var range = windowSelection.GetRangeAt(ii);
+
+                if (node == range.StartContainer ||
+                    node.Contains(range.StartContainer) ||
+                    node == range.EndContainer ||
+                    node.Contains(range.EndContainer))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Get a scoped unique id, intended to be used when elements need a DOM id, e.g. for associating a label
+        /// element with an input element
+        /// </summary>
+        public static string GenerateUniqueId()
+        {
+            return "tab-ui-id-" + uniqueId++;
+        }
+
+        /// <summary>
+        /// Get a string array containing the id attributes of a jQueryObject collection.
+        /// </summary>
+        public static string[] GetIds(jQueryObject collection)
+        {
+            if (collection == null)
+            {
+                return new string[0];
+            }
+
+            return collection.Map((index, element) => element.Id).GetItems().ReinterpretAs<string[]>();
+        }
+
+        public static string AsIDSelector(this string selector)
+        {
+            return "#" + selector;
+        }
+
+        public static string AsClassSelector(this string selector)
+        {
+            return "." + selector;
+        }
+
+        public static string ToMsString(this int value)
+        {
+            return value + "ms";
+        }
+
+        public static Point ToPoint(this jQueryPosition pos)
+        {
+            return new Point((int)pos.Left, (int)pos.Top);
         }
     }
 }

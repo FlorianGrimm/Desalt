@@ -9,9 +9,7 @@
 
 namespace Tableau.JavaScript.Vql.Core
 {
-    using System;
-    using System.Diagnostics;
-    using Tableau.JavaScript.Vql.TypeDefs;
+    using TypeDefs;
 
     /// <summary>
     /// Use this class to treat records (basic property bag objects) like other records.
@@ -21,52 +19,19 @@ namespace Tableau.JavaScript.Vql.Core
     /// </summary>
     public static class RecordCast
     {
-        public static Size RectAsSize(Rect r)
-        {
-            Debug.Assert(Script.IsValue(r.Width), "Record mismatch");
-            Debug.Assert(Script.IsValue(r.Height), "Record mismatch");
-            return (Size)(object)r;
-        }
-
-        public static Size RegionRectAsSize(RegionRect r)
-        {
-            Debug.Assert(Script.IsValue(r.Width), "Record mismatch");
-            Debug.Assert(Script.IsValue(r.Height), "Record mismatch");
-            return (Size)(object)r;
-        }
-
         public static RectXY RectPresModelAsRectXY(RectanglePresModel rpm)
         {
-            if (Script.IsNullOrUndefined(rpm))
-            {
-                return null;
-            }
-
-            return new RectXY(rpm.Left, rpm.Top, rpm.Width, rpm.Height);
+            return rpm == null ? null : new RectXY(rpm.Left, rpm.Top, rpm.Width, rpm.Height);
         }
 
         public static DoubleRectXY DoubleRectPresModelAsDoubleRectXY(DoubleRectanglePresModel rpm)
         {
-            if (Script.IsNullOrUndefined(rpm))
-            {
-                return null;
-            }
-
-            return new DoubleRectXY(rpm.Left, rpm.Top, rpm.Width, rpm.Height);
+            return rpm == null ? null : new DoubleRectXY(rpm.Left, rpm.Top, rpm.Width, rpm.Height);
         }
 
         public static SizePresModel SizeAsSizePresModel(Size sz)
         {
-            if (Script.IsNullOrUndefined(sz))
-            {
-                return null;
-            }
-
-            SizePresModel spm = new SizePresModel();
-            spm.Width = sz.Width;
-            spm.Height = sz.Height;
-
-            return spm;
+            return sz == null ? null : new SizePresModel { Width = sz.Width, Height = sz.Height };
         }
     }
 }

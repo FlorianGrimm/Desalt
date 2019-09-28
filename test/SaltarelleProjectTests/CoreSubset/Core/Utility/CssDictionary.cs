@@ -6,6 +6,7 @@
 //   Unlicensed use of the contents of this file is prohibited. Please refer to the NOTICES.txt file for further details.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
+
 namespace Tableau.JavaScript.Vql.Core
 {
     using System;
@@ -45,6 +46,15 @@ namespace Tableau.JavaScript.Vql.Core
     }
 
     [Imported, NamedValues]
+    public enum CSSTextOverflow
+    {
+        Clip,
+        Ellipsis,
+        Inherit,
+        Initial
+    }
+
+    [Imported, NamedValues]
     public enum CssOverflow
     {
         Visible,
@@ -69,7 +79,7 @@ namespace Tableau.JavaScript.Vql.Core
         All,
         Inherit
     }
-    
+
     [Imported, NamedValues]
     public enum CssVisibility
     {
@@ -84,6 +94,7 @@ namespace Tableau.JavaScript.Vql.Core
         None,
         Inline,
         Block,
+        Flex,
         [ScriptName("inline-block")]
         InlineBlock,
         [ScriptName("table-cell")]
@@ -123,8 +134,8 @@ namespace Tableau.JavaScript.Vql.Core
     }
 
     /// <summary>
-    /// Utility class for giving us a compiler safe way of specifying CSS attributes to be passed to 
-    /// <see cref="jQueryObject.CSS(JsDictionary)"/>.  All of this should compile away and at runtime we're just 
+    /// Utility class for giving us a compiler safe way of specifying CSS attributes to be passed to
+    /// <see cref="jQueryObject.CSS(JsDictionary)"/>.  All of this should compile away and at runtime we're just
     /// creating JS objects.
     /// Please add new CSS properties to this class as you need them.
     /// </summary>
@@ -141,11 +152,11 @@ namespace Tableau.JavaScript.Vql.Core
     /// </code>
     /// would compile down to:
     /// <code>
-    /// this.get_template().get_domRoot().css({ 
-    ///     width: zoneVm.get_width() + 'px', 
-    ///     height: zoneVm.get_height() + 'px', 
-    ///     top: zoneVm.get_y() + 'px', 
-    ///     left: zoneVm.get_x() + 'px' 
+    /// this.get_template().get_domRoot().css({
+    ///     width: zoneVm.get_width() + 'px',
+    ///     height: zoneVm.get_height() + 'px',
+    ///     top: zoneVm.get_y() + 'px',
+    ///     left: zoneVm.get_x() + 'px'
     /// });
     /// </code>
     /// </example>
@@ -168,8 +179,14 @@ namespace Tableau.JavaScript.Vql.Core
 
         public TypeOption<CssSize, string> Margin;
 
+        [ScriptName("margin-top")]
+        public TypeOption<CssSize, string> MarginTop;
+
         [ScriptName("margin-left")]
         public TypeOption<CssSize, string> MarginLeft;
+
+        [ScriptName("margin-bottom")]
+        public TypeOption<CssSize, string> MarginBottom;
 
         [ScriptName("margin-right")]
         public TypeOption<CssSize, string> MarginRight;
@@ -202,22 +219,25 @@ namespace Tableau.JavaScript.Vql.Core
         [ScriptName("text-decoration")]
         public TypeOption<CssTextDecorationLine, string> TextDecoration;
 
+        [ScriptName("text-decoration-line")]
+        public TypeOption<CssTextDecorationLine, string> TextDecorationLine;
+
         [ScriptName("white-space")]
         public TypeOption<CssWhiteSpace, string> WhiteSpace;
 
         // PhantomJS converts padding to padding-top, padding-right and etc
         // use explicit padding properties to avoid unit test surprise failures
         [ScriptName("padding-top")]
-        public string PaddingTop;
+        public TypeOption<CssSize, string> PaddingTop;
 
         [ScriptName("padding-right")]
-        public string PaddingRight;
+        public TypeOption<CssSize, string> PaddingRight;
 
         [ScriptName("padding-bottom")]
-        public string PaddingBottom;
+        public TypeOption<CssSize, string> PaddingBottom;
 
         [ScriptName("padding-left")]
-        public string PaddingLeft;
+        public TypeOption<CssSize, string> PaddingLeft;
 
         public string Border;
 
@@ -227,11 +247,47 @@ namespace Tableau.JavaScript.Vql.Core
         [ScriptName("border-width")]
         public TypeOption<CssSize, string> BorderWidth;
 
+        [ScriptName("border-top-width")]
+        public TypeOption<CssSize, string> BorderTopWidth;
+
+        [ScriptName("border-left-width")]
+        public TypeOption<CssSize, string> BorderLeftWidth;
+
+        [ScriptName("border-bottom-width")]
+        public TypeOption<CssSize, string> BorderBottomWidth;
+
+        [ScriptName("border-right-width")]
+        public TypeOption<CssSize, string> BorderRightWidth;
+
         [ScriptName("border-color")]
         public string BorderColor;
 
+        [ScriptName("border-top-color")]
+        public string BorderTopColor;
+
+        [ScriptName("border-left-color")]
+        public string BorderLeftColor;
+
+        [ScriptName("border-bottom-color")]
+        public string BorderBottomColor;
+
+        [ScriptName("border-right-color")]
+        public string BorderRightColor;
+
         [ScriptName("border-style")]
         public string BorderStyle;
+
+        [ScriptName("border-top-style")]
+        public string BorderTopStyle;
+
+        [ScriptName("border-left-style")]
+        public string BorderLeftStyle;
+
+        [ScriptName("border-bottom-style")]
+        public string BorderBottomStyle;
+
+        [ScriptName("border-right-style")]
+        public string BorderRightStyle;
 
         [ScriptName("text-align")]
         public TypeOption<CssTextAlign, string> TextAlign;
@@ -239,7 +295,7 @@ namespace Tableau.JavaScript.Vql.Core
         [ScriptName("line-height")]
         public string LineHeight;
 
-        [ScriptName("box-sizing")] 
+        [ScriptName("box-sizing")]
         public CssSizeKeyword BoxSizing;
 
         public TypeOption<CssDisplay, string> Display;
@@ -249,6 +305,8 @@ namespace Tableau.JavaScript.Vql.Core
 
         public TypeOption<CssVisibility, string> Visibility;
 
+        public TypeOption<CSSTextOverflow, string> TextOverflow;
+
         public TypeOption<CssOverflow, string> Overflow;
 
         [ScriptName("overflow-x")]
@@ -256,6 +314,24 @@ namespace Tableau.JavaScript.Vql.Core
 
         [ScriptName("overflow-y")]
         public TypeOption<CssOverflow, string> OverflowY;
+
+        [ScriptName("flex-grow")]
+        public string FlexGrow;
+
+        [ScriptName("flex-shrink")]
+        public string FlexShrink;
+
+        [ScriptName("flex-basis")]
+        public TypeOption<CssSize, string> FlexBasis;
+
+        [ScriptName("order")]
+        public string Order;
+
+        [ScriptName("transform")]
+        public string Transform;
+
+        [ScriptName("transform-origin")]
+        public string TransformOrigin;
 
         [ObjectLiteral]
         public CssDictionary() { }
@@ -277,6 +353,12 @@ namespace Tableau.JavaScript.Vql.Core
     public sealed class CssSize
     {
         private CssSize() { }
+
+        [ScriptSkip]
+        public static implicit operator string(CssSize s)
+        {
+            return s;
+        }
     }
 
     [Imported]
@@ -308,6 +390,12 @@ namespace Tableau.JavaScript.Vql.Core
 
         [InlineCode("{i} + 'pt'"), SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "i")]
         public static CssSize AsPt(this uint i)
+        {
+            return null;
+        }
+
+        [InlineCode("'scale(' + {x} + ',' + {y} + ')'"), SuppressMessage("Microsoft.Usage", "CA1801", MessageId = "x"), SuppressMessage("Microsoft.Usage", "CA1801", MessageId = "y")]
+        public static string AsTransformScale(float x, float y)
         {
             return null;
         }

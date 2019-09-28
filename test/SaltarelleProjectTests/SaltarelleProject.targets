@@ -14,9 +14,18 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
+  <!-- Tools directories and file paths -->
+  <PropertyGroup>
+    <DotNetExePath Condition=" '$(ProgramW6432)' != '' ">$(ProgramW6432)\dotnet\dotnet.exe</DotNetExePath>
+    <DotNetExePath Condition=" '$(ProgramW6432)' == '' ">$(ProgramFiles)\dotnet\dotnet.exe</DotNetExePath>
+  </PropertyGroup>
+
+
   <!-- Versioned tools directories -->
   <PropertyGroup>
-    <SaltarelleAssemblyRefsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\SaltarelleBinaries\'))</SaltarelleAssemblyRefsDir>
+    <SaltarelleDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\SaltarelleBinaries\'))</SaltarelleDir>
+    <SaltarelleAssemblyRefsDir>$(SaltarelleDir)Runtime\</SaltarelleAssemblyRefsDir>
+    <SaltarelleCompilerExePath>$(SaltarelleDir)Cli\sc.dll</SaltarelleCompilerExePath>
   </PropertyGroup>
 
   <!-- Default C# properties -->
@@ -28,8 +37,7 @@
     <FileAlignment>4096</FileAlignment>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <SignAssembly>false</SignAssembly>
-    <TargetFrameworkVersion Condition=" '$(OS)' != 'Unix' And '$(TargetFrameworkVersion)' == '' ">v4.5.1</TargetFrameworkVersion>
-    <TargetFrameworkVersion Condition=" '$(OS)' == 'Unix' And '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

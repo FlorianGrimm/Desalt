@@ -2,7 +2,7 @@
 // <copyright file="WindowAppender.cs" company="Tableau Software">
 //   This file is the copyrighted property of Tableau Software and is protected by registered patents and other
 //   applicable U.S. and international laws and regulations.
-//   
+//
 //   Unlicensed use of the contents of this file is prohibited. Please refer to the NOTICES.txt file for further details.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ namespace Tableau.JavaScript.Vql.Core
         //// Member Variables
         //// ===========================================================================================================
 
-        private static WindowAppender globalAppender;
+        public static readonly LogAppenderInstance<WindowAppender> GlobalAppender = new LogAppenderInstance<WindowAppender>(() => new WindowAppender());
 
         private jQueryObject logDiv;
 
@@ -36,10 +36,7 @@ namespace Tableau.JavaScript.Vql.Core
         static WindowAppender()
         {
             // by default we're going to enable console.log for Warn+ in debug
-            EnableLogging(delegate(Logger l, LoggerLevel ll)
-            {
-                return l.Name == "WindowAppender";
-            });
+            GlobalAppender.EnableLogging((logger, _) => logger.Name == "WindowAppender");
         }
 
 #endif
@@ -51,36 +48,6 @@ namespace Tableau.JavaScript.Vql.Core
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Enables logging using this appender type.
-        /// </summary>
-        /// <param name="filter">The filter to apply to this appender or <c>null</c> to enable for all loggers</param>
-        public static void EnableLogging(Func<Logger, LoggerLevel, bool> filter)
-        {
-            if (Script.IsNullOrUndefined(globalAppender))
-            {
-                globalAppender = new WindowAppender();
-                Logger.AddAppender(globalAppender);
-            }
-
-            globalAppender.AddFilter(ScriptEx.Value(filter, delegate { return true; }));
-        }
-
-        /// <summary>
-        /// Disables logging using this appender type.
-        /// </summary>
-        public static void DisableLogging()
-        {
-            if (Script.IsNullOrUndefined(globalAppender))
-            {
-                return;
-            }
-
-            Logger.RemoveAppender(globalAppender);
-            globalAppender = null;
-        }
-
         protected override void LogInternal(Logger source, LoggerLevel level, string message, object[] args)
         {
             if (Script.IsNullOrUndefined(this.logDiv))

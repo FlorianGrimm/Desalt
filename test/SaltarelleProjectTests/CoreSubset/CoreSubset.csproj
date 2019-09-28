@@ -13,24 +13,31 @@
     <SaltarelleProject>True</SaltarelleProject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap\LayoutMetrics.cs" />
-    <Compile Include="Bootstrap\MetricsController.cs" />
-    <Compile Include="Core\Utility\BrowserSupport.cs" />
+    <Compile Include="Bootstrap\BootstrapResponse.cs" />
+    <Compile Include="Bootstrap\Performance\IWebClientMetricsLogger.cs" />
+    <Compile Include="Bootstrap\Performance\MetricsController.cs" />
+    <Compile Include="Bootstrap\Performance\MetricsEvent.cs" />
+    <Compile Include="Bootstrap\Performance\PerformanceReporting.cs" />
+    <Compile Include="Bootstrap\Utility.cs" />
+    <Compile Include="CoreSlim\Logging\BaseLogAppender.cs" />
+    <Compile Include="CoreSlim\Logging\ConsoleLogAppender.cs" />
+    <Compile Include="CoreSlim\Logging\ILogAppender.cs" />
+    <Compile Include="CoreSlim\Logging\LogAppenderInstance.cs" />
+    <Compile Include="CoreSlim\Logging\Logger.cs" />
+    <Compile Include="CoreSlim\Utility\ScriptEx.cs" />
+    <Compile Include="CoreSlim\Utility\UriExtensions.cs" />
+    <Compile Include="CoreSlim\Utility\WindowHelper.cs" />
     <Compile Include="Core\Utility\CssDictionary.cs" />
     <Compile Include="Core\Utility\DomUtil.cs" />
-    <Compile Include="Core\Logging\BaseLogAppender.cs" />
-    <Compile Include="Core\Logging\ConsoleLogAppender.cs" />
     <Compile Include="Core\Logging\ErrorTrace.cs" />
-    <Compile Include="Core\Logging\ILogAppender.cs" />
-    <Compile Include="Core\Logging\Logger.cs" />
     <Compile Include="Core\Logging\MetricsLogger.cs" />
     <Compile Include="Core\Logging\NavigationMetricsCollector.cs" />
     <Compile Include="Core\Logging\WindowAppender.cs" />
     <Compile Include="Core\Utility\DoubleUtil.cs" />
+    <Compile Include="Core\Utility\FeatureFlags.cs" />
     <Compile Include="Core\Utility\IBrowserViewport.cs" />
+    <Compile Include="Core\Utility\jQueryExtensions.cs" />
     <Compile Include="Core\Utility\MiscUtil.cs" />
-    <Compile Include="CoreSlim\WindowHelper.cs" />
-    <Compile Include="CoreSlim\ScriptEx.cs" />
     <Compile Include="Core\Utility\Param.cs" />
     <Compile Include="Core\Utility\Point.cs" />
     <Compile Include="Core\Utility\PointUtil.cs" />
@@ -38,23 +45,26 @@
     <Compile Include="Core\Utility\Rect.cs" />
     <Compile Include="Core\Utility\Size.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Bootstrap\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NativeJsTypeDefs, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SaltarelleBinaries\NativeJsTypeDefs.dll</HintPath>
+      <HintPath>..\..\SaltarelleBinaries\Runtime\NativeJsTypeDefs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TypeDefs, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SaltarelleBinaries\TypeDefs.dll</HintPath>
+      <HintPath>..\..\SaltarelleBinaries\Runtime\TypeDefs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Underscore, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SaltarelleBinaries\Underscore.dll</HintPath>
+      <HintPath>..\..\SaltarelleBinaries\Runtime\Underscore.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="vqlbrowsersupport, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SaltarelleBinaries\Runtime\vqlbrowsersupport.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="..\SaltarelleProject.targets" />

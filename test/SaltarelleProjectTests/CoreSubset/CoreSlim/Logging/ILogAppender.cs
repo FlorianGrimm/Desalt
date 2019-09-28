@@ -10,15 +10,17 @@
 namespace Tableau.JavaScript.Vql.Core
 {
     using System;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// An interface for all Log appenders.
     /// </summary>
+    [Imported]
     public interface ILogAppender
     {
         /// <summary>
         /// Adds a function used to filter calls to <see cref="Log"/>.  Should return <c>true</c>
-        /// to include a log message or <see langword="false" /> to exclude.
+        /// to include a log message or <c>false</c> to exclude.
         /// </summary>
         void AddFilter(Func<Logger, LoggerLevel, bool> f);
 

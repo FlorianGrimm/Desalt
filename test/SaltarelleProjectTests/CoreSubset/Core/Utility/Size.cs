@@ -32,16 +32,16 @@ namespace Tableau.JavaScript.Vql.Core
 
     /// <summary> Basic W,H size.  Use SizeUtil to manipulate. </summary>
     [Imported, Serializable]
-    public sealed class SizeF
+    public sealed class SizeD
     {
         [ScriptName("w")]
-        public float Width;
+        public double Width;
 
         [ScriptName("h")]
-        public float Height;
+        public double Height;
 
         [ObjectLiteral]
-        public SizeF(float width, float height)
+        public SizeD(double width, double height)
         {
             this.Width = width;
             this.Height = height;

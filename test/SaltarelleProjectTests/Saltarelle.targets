@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
 
+  <UsingTask TaskName="SaltarellePreprocessor" AssemblyFile="$(SaltarelleDir)Preprocessor\Saltarelle.Preprocessor.MSBuild.dll" />
+
   <!-- Saltarelle specific settings -->
   <PropertyGroup>
     <DebugSymbols>true</DebugSymbols>
@@ -11,6 +13,9 @@
     <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
     <DefineConstants>$(DefineConstants);SALTARELLE</DefineConstants>
     <NoStdLib>True</NoStdLib>
+    <!-- Saltarelle only supports up to C# 5 right now -->
+    <LangVersion>5</LangVersion>
+
     <!-- CS1591 = Missing XML comment for publicly visible type or member 'Type_or_Member'-->
     <!-- CS0626 = is marked as an external but has no DllImport attribute-->
     <!-- CS0824 = Constructor is marked `external' but has no external implementation specified -->
@@ -19,8 +24,8 @@
     <!-- CS0067 = A public event is never used -->
     <!-- CS1635 = Cannot restore warning `CS0414' because it was disabled globally -->
     <!-- CS0219 = The variable is assigned but its value is never used -->
-    <NoWarn Condition=" '$(OS)' != 'Unix' ">1591</NoWarn>
-    <NoWarn Condition=" '$(OS)' == 'Unix' ">1591, 0626, 0824, 1574, 0414, 0067, 1635, 0219</NoWarn>
+    <!-- CS7536 = The type parameter `TExpected` is not available for use in script (Saltarelle-specific) -->
+    <NoWarn>1591;0626;0824;1574;0414;0067;1635;0219;7536</NoWarn>
     <SaltarelleRunAjaxMinOnCompile Condition=" '$(SaltarelleRunAjaxMinOnCompile)' == '' ">false</SaltarelleRunAjaxMinOnCompile>
     <ReferencePath>$(SaltarelleAssemblyRefsDir)</ReferencePath>
     <DeploymentPath Condition=" '$(DeploymentPath)' == '' and '$(StandaloneDeployment)' == 'true'">$(JsDeploymentPath)</DeploymentPath>
@@ -29,27 +34,34 @@
     <AdditionalDeploymentPath Condition=" '$(AdditionalDeploymentPath)' != '' and !HasTrailingSlash('$(AdditionalDeploymentPath)') ">$(AdditionalDeploymentPath)\</AdditionalDeploymentPath>
     <SaltarelleEmitDebugInformation Condition=" '$(Configuration)' == 'Debug' ">true</SaltarelleEmitDebugInformation>
     <SaltarelleEmitDebugInformation Condition=" '$(SaltarelleEmitDebugInformation)' == '' ">false</SaltarelleEmitDebugInformation>
+
+    <!-- Tableau-specific additions to the compiler -->
+    <SaltarelleGenerateFunctionNames Condition=" '$(Configuration)' == 'Debug' ">true</SaltarelleGenerateFunctionNames>
+    <SaltarelleGenerateFunctionNames Condition=" '$(SaltarelleGenerateFunctionNames)' == '' ">false</SaltarelleGenerateFunctionNames>
+    <SaltarelleStrictMode Condition=" '$(SaltarelleStrictMode)' == '' ">false</SaltarelleStrictMode>
+    <SaltarellePreserveComments Condition=" '$(SaltarellePreserveComments)' == '' ">false</SaltarellePreserveComments>
+
     <SaltarelleDocumentationFile Condition=" $(UseDocumentationFile) != false ">$(OutputPath)$(AssemblyName).doc.js</SaltarelleDocumentationFile>
+
     <SaltarelleSuppressDocumentation Condition=" $(UseDocumentationFile) == true ">false</SaltarelleSuppressDocumentation>
     <SaltarelleSuppressDocumentation Condition=" '$(SaltarelleSuppressDocumentation)' == '' ">true</SaltarelleSuppressDocumentation>
+
     <SaltarelleOutputFileNameExtension Condition=" '$(SaltarelleOutputFileNameExtension)' == '' and '$(Configuration)' == 'Debug' ">.debug.js</SaltarelleOutputFileNameExtension>
     <SaltarelleOutputFileNameExtension Condition=" '$(SaltarelleOutputFileNameExtension)' == '' and '$(Configuration)' == 'Release' ">.js</SaltarelleOutputFileNameExtension>
+
     <SaltarelleMinimize Condition=" '$(Configuration)' == 'Debug' ">false</SaltarelleMinimize>
     <SaltarelleMinimize Condition=" '$(Configuration)' == 'Release' ">true</SaltarelleMinimize>
   </PropertyGroup>
-
-  <!-- This is the assembly that defines how to compile using Saltarelle -->
-  <UsingTask TaskName="SCTask"  AssemblyFile="$(SaltarelleAssemblyRefsDir)SCTask.dll" Condition=" '$(OS)' != 'Unix' " />
 
   <!-- All of the Saltarelle metadata and script projects require these assemblies -->
   <ItemGroup>
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Saltarelle.Web">
+    <Reference Include="Web">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Saltarelle.jQuery">
+    <Reference Include="jQuery">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -62,14 +74,75 @@
     <AssemblySearchPaths>$(SaltarelleAssemblyRefsDir);$(AssemblySearchPaths)</AssemblySearchPaths>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <SaltarelleAssemblyName Condition=" '$(SaltarelleAssemblyName)' == '' ">$(AssemblyName)</SaltarelleAssemblyName>
-    <SaltarelleMainOutputFile>$(OutputPath)$(SaltarelleAssemblyName)$(SaltarelleOutputFileNameExtension)</SaltarelleMainOutputFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <!-- Main outputs -->
-    <SaltarelleOutputFile Include="$(SaltarelleMainOutputFile)" />
-  </ItemGroup>
+  <Target Name="CalculateSaltarelleOutputFiles">
+    <PropertyGroup>
+      <SaltarelleAssemblyName Condition=" '$(SaltarelleAssemblyName)' == '' ">$(AssemblyName)</SaltarelleAssemblyName>
+      <SaltarelleMainOutputFile>$(OutputPath)$(SaltarelleAssemblyName)$(SaltarelleOutputFileNameExtension)</SaltarelleMainOutputFile>
+
+      <_TempSaltarelleCompileOutputFile>$(IntermediateOutputPath)$(SaltarelleAssemblyName).compiledCode$(SaltarelleOutputFileNameExtension)</_TempSaltarelleCompileOutputFile>
+      <_TempSaltarelleMainPreprocessOutputFile>$(IntermediateOutputPath)$(SaltarelleAssemblyName).afterPreprocess$(SaltarelleOutputFileNameExtension)</_TempSaltarelleMainPreprocessOutputFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Main outputs -->
+      <SaltarelleOutputFile Include="$(SaltarelleMainOutputFile)" />
+      <SaltarelleOutputFile Include="$(DeploymentPath)$(SaltarelleAssemblyName)$(SaltarelleOutputFileNameExtension)" Condition=" '$(DeploymentPath)' != '' " />
+      <SaltarelleOutputFile Include="$(AdditionalDeploymentPath)$(SaltarelleAssemblyName)$(SaltarelleOutputFileNameExtension)" Condition=" '$(AdditionalDeploymentPath)' != '' " />
+
+      <!-- Temp files -->
+      <SaltarelleTempFiles Include="$(_TempSaltarelleCompileOutputFile)" />
+      <SaltarelleTempFiles Include="$(_TempSaltarelleMainPreprocessOutputFile)" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+  Determine the command line arguments to pass to the Saltarelle compiler and write them to a
+  response file, with one line per argument. The $(SaltarelleResponseFile) contains the path to the
+  response file.
+  -->
+  <Target Name="WriteSaltarelleExecResponseFile">
+    <PropertyGroup>
+      <SaltarelleResponseFile>$(IntermediateOutputPath)ResponseFile.txt</SaltarelleResponseFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_NoWarnAsItemGroup Include="$(NoWarn)" />
+      <_DefineAsItemGroup Include="$(DefineConstants)" />
+
+      <_SaltarelleResponseFileContents Include="-target:$(OutputType)" />
+      <_SaltarelleResponseFileContents Include="-debug" Condition="$(SaltarelleEmitDebugInformation) == true" />
+      <_SaltarelleResponseFileContents Include="-warn:$(WarningLevel)" />
+      <_SaltarelleResponseFileContents Include="@(_NoWarnAsItemGroup -> '-nowarn:%(Identity)')" />
+      <_SaltarelleResponseFileContents Include="-warnaserror" Condition="$(TreatWarningsAsErrors) == true" />
+      <_SaltarelleResponseFileContents Include="@(_DefineAsItemGroup -> '-define:%(Identity)')" />
+      <_SaltarelleResponseFileContents Include="-doc:$(SaltarelleDocumentationFile)" Condition=" '$(SaltarelleDocumentationFile)' != '' " />
+      <_SaltarelleResponseFileContents Include="@(IntermediateAssembly -> '-outasm:%(Identity)')" />
+
+      <!-- Tableau-specific additions to the compiler -->
+      <_SaltarelleResponseFileContents Include="-funcnames+" Condition="$(SaltarelleGenerateFunctionNames) == true" />
+      <_SaltarelleResponseFileContents Include="-funcnames-" Condition="$(SaltarelleGenerateFunctionNames) == false" />
+
+      <_SaltarelleResponseFileContents Include="-strictmode+" Condition="$(SaltarelleStrictMode) == true" />
+      <_SaltarelleResponseFileContents Include="-strictmode-" Condition="$(SaltarelleStrictMode) == false" />
+
+      <_SaltarelleResponseFileContents Include="-comments+" Condition="$(SaltarellePreserveComments) == true" />
+      <_SaltarelleResponseFileContents Include="-comments-" Condition="$(SaltarellePreserveComments) == false" />
+
+      <!-- Put the long references and sources last to make the command easier to read -->
+      <_SaltarelleResponseFileContents Include="@(AdditionalLibPaths -> '-lib:%(Identity)')" />
+      <_SaltarelleResponseFileContents Include="@(ReferencePath -> '-reference:%(Identity)')" Condition=" '@(ReferencePath)' != '' " />
+      <_SaltarelleResponseFileContents Include="@(ReferenceDependencyPaths -> '-reference:%(Identity)')" Condition=" '@(ReferenceDependencyPaths)' != '' " />
+
+      <!-- Add all of the source files -->
+      <_SaltarelleResponseFileContents Include="@(Compile)" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(SaltarelleResponseFile)" Lines="@(_SaltarelleResponseFileContents)" Overwrite="true" />
+
+    <!-- Add the response file to the list of files to clean -->
+    <ItemGroup>
+      <FileWrites Include="$(SaltarelleResponseFile)" />
+    </ItemGroup>
+  </Target>
 
   <!--
   Compile using Saltarelle only if we're a Saltarelle project (vs. a metadata project). We also don't
@@ -77,39 +150,37 @@
   not the built JavaScript.
   -->
   <Target Name="SaltarelleCompile" AfterTargets="AfterCompile"
+          DependsOnTargets="CalculateSaltarelleOutputFiles;WriteSaltarelleExecResponseFile"
           Condition=" '$(SaltarelleProject)' == 'true' and '$(Configuration)' != 'CodeAnalysis' "
           Inputs="@(Compile);@(IntermediateAssembly);$(TemplateFile);@(TemplateFileDependency)"
           Outputs="@(SaltarelleOutputFile)">
 
-    <SCTask
-      AdditionalLibPaths="$(AdditionalLibPaths)"
-      AlreadyCompiled="true"
-      DefineConstants="$(DefineConstants)"
-      DisabledWarnings="$(NoWarn)"
-      DocumentationFile="$(SaltarelleDocumentationFile)"
-      EmitDebugInformation="$(SaltarelleEmitDebugInformation)"
-      KeyContainer="$(KeyContainerName)"
-      KeyFile="$(KeyOriginatorFile)"
-      MainEntryPoint="$(StartupObject)"
-      OutputAssembly="@(IntermediateAssembly)"
-      OutputScript="$(SaltarelleMainOutputFile)"
-      References="@(ReferencePath);@(ReferenceDependencyPaths)"
-      Resources="@(EmbeddedResource)"
-      Sources="@(Compile)"
-      TargetType="$(OutputType)"
-      TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
-      WarningLevel="$(WarningLevel)"
-      WarningsAsErrors="$(WarningsAsErrors)"
-      WarningsNotAsErrors="$(WarningsNotAsErrors)">
-    </SCTask>
+    <Message Importance="low" Text="Running Saltarelle compiler" />
+    <PropertyGroup>
+      <SaltarelleStartTicks>$([System.DateTime]::UtcNow.Ticks)</SaltarelleStartTicks>
+    </PropertyGroup>
+
+    <Exec Command="&quot;$(DotNetExePath)&quot; &quot;$(SaltarelleCompilerExePath)&quot; -outscript:&quot;$(_TempSaltarelleCompileOutputFile)&quot; &quot;@$(SaltarelleResponseFile)&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+
+    <PropertyGroup>
+      <SaltarelleFinishTicks>$([System.DateTime]::UtcNow.Ticks)</SaltarelleFinishTicks>
+      <SaltarelleElapsedTicks>$([MSBuild]::Subtract($(SaltarelleFinishTicks), $(SaltarelleStartTicks)))</SaltarelleElapsedTicks>
+      <SaltarelleElapsedTime>$([System.TimeSpan]::FromTicks($(SaltarelleElapsedTicks)))</SaltarelleElapsedTime>
+    </PropertyGroup>
+    <Message Importance="normal" Text="Saltarelle compile time: $(SaltarelleElapsedTime)" />
   </Target>
 
   <!--
   The main Saltarelle output will be cleaned up by the main build, but we need to clean
   up some other stuff left behind by custom targets defined here.
   -->
-  <Target Name="CleanSaltarelleFiles" AfterTargets="CoreClean" Condition=" '$(Configuration)' != 'CodeAnalysis' ">
+  <Target Name="CleanSaltarelleFiles" AfterTargets="CoreClean"
+          Condition=" '$(Configuration)' != 'CodeAnalysis' "
+          DependsOnTargets="CalculateSaltarelleOutputFiles">
     <Message Importance="low" Text="Cleaning up Saltarelle compilation detritus" />
-    <Delete  ContinueOnError="true" TreatErrorsAsWarnings="true" Files="@(SaltarelleOutputFile)" />
+
+    <!-- Clean up the temporary files -->
+    <Delete  ContinueOnError="true" TreatErrorsAsWarnings="true" Files="@(SaltarelleTempFiles)" />
   </Target>
 </Project>
