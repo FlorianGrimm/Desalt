@@ -10,11 +10,11 @@
 namespace Tableau.JavaScript.Vql.Core
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Html;
-    using System.Runtime.CompilerServices;
     using System.Text.RegularExpressions;
 
     /// <summary>
@@ -47,10 +47,13 @@ namespace Tableau.JavaScript.Vql.Core
         /// The translation of logging priority into string names, indexed by level value.
         /// <seealso cref="LoggerLevel"/>
         /// </summary>
-        public static readonly List<string> LoggerLevelNames = new List<string>();
+        public static readonly JsArray<string> LoggerLevelNames = new JsArray<string>();
 
         private const string LogQueryParam = ":log";
 
+        private static readonly JsArray<ILogAppender> Appenders = new JsArray<ILogAppender>();
+        private static readonly JsArray<Func<Logger, LoggerLevel, bool>> Filters = new JsArray<Func<Logger, LoggerLevel, bool>>();
+        private static readonly Logger NullLog = new Logger("");
         private readonly string name;
 
         static Logger()
@@ -85,49 +88,7 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public string Name
         {
-            get { return name; }
-        }
-
-        /// <summary>
-        /// Gets the list of static appenders.  You might ask yourself, why do I need to do some crazy initialization like this,
-        /// can't I just use a static field? Sadly the answer is no.  This is because of ordering dependencies in the way
-        /// Script# initializes static variables.  Because we want to be able to register appenders inside of other static
-        /// initializers we need to make sure that Appenders don't depend on the order of static init.
-        /// </summary>
-        private static List<ILogAppender> Appenders
-        {
-            get
-            {
-                return (List<ILogAppender>)MiscUtil.LazyInitStaticField(
-                    typeof(Logger), "appenders", delegate { return new List<ILogAppender>(); });
-            }
-        }
-
-        /// <summary>
-        /// Gets the list of static filters.  You might ask yourself, why do I need to do some crazy initialization like this,
-        /// can't I just use a static field? Sadly the answer is no.  This is because of ordering dependencies in the way
-        /// Script# initializes static variables.
-        /// </summary>
-        private static List<Func<Logger, LoggerLevel, bool>> Filters
-        {
-            get
-            {
-                return (List<Func<Logger, LoggerLevel, bool>>)MiscUtil.LazyInitStaticField(
-                    typeof(Logger), "filters", delegate { return new List<Func<Logger, LoggerLevel, bool>>(); });
-            }
-        }
-
-        /// <summary>
-        /// Gets the Null logger.  Again, have to do crazy static lazy init here to avoid issues with Script#
-        /// compilation/static init.
-        /// </summary>
-        private static Logger NullLog
-        {
-            get
-            {
-                return (Logger)MiscUtil.LazyInitStaticField(
-                    typeof(Logger), "nullLog", delegate { return new Logger(""); });
-            }
+            get { return this.name; }
         }
 
         /// <summary>
@@ -140,16 +101,8 @@ namespace Tableau.JavaScript.Vql.Core
             {
                 logAppender.ClearFilters();
             }
-            Filters.Clear();
+            Filters.Splice(0, Filters.Length);
         }
-
-        /// <summary>
-        /// Adds a filter to allow logging from the given logger at any level.
-        /// </summary>
-        /// <param name="l">The logger to accept</param>
-        [AlternateSignature]
-        [Conditional("DEBUG")]
-        public static extern void FilterByLogger(Logger l);
 
         /// <summary>
         /// Adds a filter to allow logging from the given logger at the specified level.
@@ -161,24 +114,12 @@ namespace Tableau.JavaScript.Vql.Core
         {
             minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.All);
 
-            AddFilter(delegate(Logger l, LoggerLevel ll)
-            {
-                return l == validLogger && ll >= minLogLevel;
-            });
+            AddFilter((Logger l, LoggerLevel ll) => l == validLogger && ll >= minLogLevel);
         }
 
         /// <summary>
-        /// Adds a filter to allow logging from the given type at any level.  Assumes
-        /// that the type contains a static logger generated using <see cref="GetLogger(System.Type)"/>.
-        /// </summary>
-        /// <param name="t">The type used for creating the logger</param>
-        [AlternateSignature]
-        [Conditional("DEBUG")]
-        public static extern void FilterByType(Type t);
-
-        /// <summary>
         /// Adds a filter to allow logging from the given type at the specified level.  Assumes
-        /// that the type contains a static logger generated using <see cref="GetLogger(System.Type)"/>.
+        /// that the type contains a static logger generated using <see cref="GetLogger(System.Type, LoggerLevel?)"/>.
         /// </summary>
         /// <param name="t">The type used for creating the logger</param>
         /// <param name="minLogLevel">The minimum level to accept</param>
@@ -187,19 +128,8 @@ namespace Tableau.JavaScript.Vql.Core
         {
             minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.All);
 
-            AddFilter(delegate(Logger l, LoggerLevel ll)
-            {
-                return ll >= minLogLevel && l.Name == t.Name;
-            });
+            AddFilter((Logger l, LoggerLevel ll) => ll >= minLogLevel && l.Name == t.Name);
         }
-
-        /// <summary>
-        /// Adds a filter to allow logging from a logger that matches the given pattern at any level.
-        /// </summary>
-        /// <param name="namePattern">A regular expression to match against the logger name</param>
-        [AlternateSignature]
-        [Conditional("DEBUG")]
-        public static extern void FilterByName(string namePattern);
 
         /// <summary>
         /// Adds a filter to allow logging from a logger that matches the given pattern at the specified
@@ -211,12 +141,9 @@ namespace Tableau.JavaScript.Vql.Core
         public static void FilterByName(string namePattern, LoggerLevel minLogLevel)
         {
             minLogLevel = ScriptEx.Value(minLogLevel, LoggerLevel.All);
-            Regex regex = new Regex(namePattern, "i");
+            var regex = new Regex(namePattern, "i");
 
-            AddFilter(delegate(Logger l, LoggerLevel ll)
-            {
-                return ll >= minLogLevel && Script.IsValue(l.Name.Match(regex));
-            });
+            AddFilter((Logger l, LoggerLevel ll) => ll >= minLogLevel && Script.IsValue(l.Name.Match(regex)));
         }
 
         /// <summary>
@@ -224,7 +151,17 @@ namespace Tableau.JavaScript.Vql.Core
         /// </summary>
         public static void ClearAppenders()
         {
-            Appenders.Clear();
+            Appenders.Splice(0, Filters.Length);
+        }
+
+        /// <summary>
+        /// Is the given appender already added
+        /// </summary>
+        /// <param name="appender">The appender to check for</param>
+        /// <returns>If the appender has been added</returns>
+        public static bool HasAppender(ILogAppender appender)
+        {
+            return Appenders.IndexOf(appender) > -1;
         }
 
         /// <summary>
@@ -238,7 +175,7 @@ namespace Tableau.JavaScript.Vql.Core
                 appender.AddFilter(filter);
             }
 
-            Appenders.Add(appender);
+            Appenders.Push(appender);
         }
 
         /// <summary>
@@ -247,7 +184,11 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="appender">The appender to be removed</param>
         public static void RemoveAppender(ILogAppender appender)
         {
-            Appenders.Remove(appender);
+            int indexOfAppender = Appenders.IndexOf(appender);
+            if (indexOfAppender > -1)
+            {
+                Appenders.Splice(indexOfAppender, 1);
+            }
         }
 
         /// <summary>
@@ -259,16 +200,17 @@ namespace Tableau.JavaScript.Vql.Core
         /// <returns>The type's logger</returns>
         public static Logger LazyGetLogger(Type t)
         {
-            return Script.Reinterpret<Logger>(MiscUtil.LazyInitStaticField(t, "_logger", delegate { return GetLogger(t); }));
-        }
+            const string FieldName = "_logger";
+            var logger = JsDictionary.GetDictionary(t)[FieldName].ReinterpretAs<Logger>();
 
-        /// <summary>
-        /// Creates a new instance of a log for the given type.
-        /// </summary>
-        /// <param name="t">The type to create a log for</param>
-        /// <returns>A new Log instance</returns>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters"), AlternateSignature]
-        public static extern Logger GetLogger(Type t);
+            if (Script.IsNullOrUndefined(logger))
+            {
+                logger = GetLogger(t);
+                JsDictionary.GetDictionary(t)[FieldName] = logger;
+            }
+
+            return logger;
+        }
 
         /// <summary>
         /// Creates a new instance of a log for the given type and includes a filter for the
@@ -279,12 +221,12 @@ namespace Tableau.JavaScript.Vql.Core
         /// <param name="t">The type to create a log for</param>
         /// <param name="ll">The min </param>
         /// <returns>A new Log instance</returns>
-        public static Logger GetLogger(Type t, LoggerLevel ll)
+        public static Logger GetLogger(Type t, LoggerLevel? ll = null)
         {
             Logger l = GetLoggerWithName(t.Name);
-            if (Script.IsValue(ll))
+            if (ll != null)
             {
-                FilterByLogger(l, ll);
+                FilterByLogger(l, ll.Value);
             }
             return l;
         }
@@ -363,13 +305,13 @@ namespace Tableau.JavaScript.Vql.Core
         [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "level"), Conditional("DEBUG")]
         private static void SetupUrlFilters()
         {
-            JsDictionary<string, List<string>> queryParams = MiscUtil.GetUriQueryParameters(Window.Self.Location.Search);
+            JsDictionary<string, JsArray<string>> queryParams = UriExtensions.GetUriQueryParameters(Window.Self.Location.Search);
             if (!queryParams.ContainsKey(LogQueryParam)) { return; }
 
             ClearFilters();
 
-            List<string> logParams = queryParams[LogQueryParam];
-            if (logParams.Count == 0)
+            JsArray<string> logParams = queryParams[LogQueryParam];
+            if (logParams.Length == 0)
             {
                 // allow debug for alll
                 FilterByName(".*", LoggerLevel.All);
@@ -394,7 +336,7 @@ namespace Tableau.JavaScript.Vql.Core
 
         private static void AddFilter(Func<Logger, LoggerLevel, bool> filterFunc)
         {
-            Filters.Add(filterFunc);
+            Filters.Push(filterFunc);
 
             foreach (ILogAppender logAppender in Appenders)
             {
@@ -429,6 +371,11 @@ namespace Tableau.JavaScript.Vql.Core
         public static Logger Get(object o)
         {
             return Logger.LazyGetLogger(o.GetType());
+        }
+
+        public static Logger Get(Type t)
+        {
+            return Logger.LazyGetLogger(t);
         }
     }
 }

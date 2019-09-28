@@ -383,7 +383,7 @@ class C
         {
             const string code = @"
 using System;
-using Underscore;
+using UnderscoreJs;
 
 class C
 {
@@ -396,8 +396,8 @@ class C
 
             await AssertExternalEntriesInSymbolTable(
                 code,
-                new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>", "UnderscoreValue"),
-                new KeyValuePair<string, string>("Underscore.UnderscoreValue<int>.Value()", "value"));
+                new KeyValuePair<string, string>("UnderscoreJs.UnderscoreValue<int>", "UnderscoreValue"),
+                new KeyValuePair<string, string>("UnderscoreJs.UnderscoreValue<int>.Value()", "value"));
         }
 
         [TestMethod]

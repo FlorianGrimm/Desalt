@@ -15,7 +15,7 @@ namespace Tableau.JavaScript.Vql.Core
     using System.Runtime.CompilerServices;
     using Tableau.JavaScript.Vql.Bootstrap;
     using Tableau.JavaScript.Vql.TypeDefs;
-    using Underscore;
+    using UnderscoreJs;
 
     [Imported]
     [NamedValues]
@@ -152,7 +152,7 @@ namespace Tableau.JavaScript.Vql.Core
         public static void CollectMetrics()
         {
             // check if window.performance.timing is present
-            if (Script.TypeOf(typeof(Window)) != "undefined" && Script.TypeOf(Window.Performance) != "undefined" && Script.TypeOf(Window.Performance.Timing) != "undefined")
+            if (Script.TypeOf(typeof(Window)) != "undefined" && Script.TypeOf(Window.Performance) != "undefined" && Script.TypeOf(Window.Performance.Timing) != "undefined" && Script.TypeOf(typeof(MetricsEvent)) != "undefined")
             {
                 // grab the metrics
                 navMetrics = Script.Reinterpret<JsDictionary<NavigationMetricsName, int>>(Window.Performance.Timing);
@@ -170,10 +170,9 @@ namespace Tableau.JavaScript.Vql.Core
                     }
 
                     // build up MetricsEvent object and log it
-                    JsDictionary<MetricsParameterName, object> parameters = new JsDictionary<MetricsParameterName, object>();
-                    parameters[MetricsParameterName.values] = metricArray;
+                    MetricsEventParameters parameters = new MetricsEventParameters { Values = metricArray };
                     MetricsEvent evt = new MetricsEvent(MetricsEventType.Navigation, MetricsSuites.Navigation, parameters);
-                    MetricsController.LogEvent(evt);
+                    MetricsController.LogEventInternalUse(evt);
                 }
             }
         }

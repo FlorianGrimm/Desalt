@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslateProjectStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -47,17 +47,19 @@ namespace Desalt.Core.CompilerStages
                 .Where(
                     context => context.Document.Name.IsOneOf(
                         "BaseLogAppender.cs",
-                        "BrowserSupport.cs",
+                        "BootstrapResponse.cs",
                         "ConsoleLogAppender.cs",
                         "ErrorTrace.cs",
                         "ILogAppender.cs",
-                        "LayoutMetrics.cs",
+                        "IWebClientMetricsLogger.cs",
                         "Logger.cs",
                         "MetricsController.cs",
+                        "MetricsEvent.cs",
                         "MetricsLogger.cs",
-                        "MiscUtil.cs",
                         "NavigationMetricsCollector.cs",
+                        "PerformanceReporting.cs",
                         "ScriptEx.cs",
+                        "UriExtensions.cs",
                         "Utility.cs",
                         "WindowAppender.cs",
                         "WindowHelper.cs"))
@@ -66,7 +68,7 @@ namespace Desalt.Core.CompilerStages
                 .Select(context => TranslateDocument(context, cancellationToken))
                 .ToImmutableArray();
 
-            ImmutableArray<string> translatedFilePaths = results.Select(result => result.Result).ToImmutableArray();
+            var translatedFilePaths = results.Select(result => result.Result).ToImmutableArray();
             IEnumerable<Diagnostic> mergedDiagnostics = results.SelectMany(result => result.Diagnostics);
 
             return new ExtendedResult<ImmutableArray<string>>(translatedFilePaths, mergedDiagnostics);

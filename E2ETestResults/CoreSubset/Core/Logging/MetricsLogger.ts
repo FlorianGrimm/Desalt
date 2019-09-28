@@ -1,21 +1,25 @@
-import { $ } from 'Saltarelle.jQuery';
+import { IWebClientMetricsLogger } from '../../Bootstrap/Performance/IWebClientMetricsLogger';
 
-import { Logger } from './Logger';
+import { $ } from 'jQuery';
+
+import { Logger } from '../../CoreSlim/Logging/Logger';
 
 import 'mscorlib';
 
-import { MetricsController, MetricsEvent, MetricsEventType, MetricsParameterName } from '../../Bootstrap/MetricsController';
+import { MetricsEvent, MetricsEventParameters, MetricsParameterName } from '../../Bootstrap/Performance/MetricsEvent';
+
+import { MetricsEventType } from '../../Bootstrap/Performance/MetricsController';
 
 import { MiscUtil } from '../Utility/MiscUtil';
 
-import { ScriptEx } from '../../CoreSlim/ScriptEx';
+import { ScriptEx } from '../../CoreSlim/Utility/ScriptEx';
 
 import { tsConfig } from 'TypeDefs';
 
 /**
  * class for logging metrics events
  */
-export class MetricsLogger {
+export class MetricsLogger implements IWebClientMetricsLogger {
   /**
    * Cap on # of image elements we keep around for beacon messages
    * simply to avoid out of memory issues.
@@ -61,14 +65,9 @@ export class MetricsLogger {
   private static readonly debugEventNames: { [key: string]: string };
 
   /**
-   * Singleton instance for the class
-   */
-  private static $instance: MetricsLogger;
-
-  /**
    * Logged events waiting to be transmitted to the server
    */
-  private eventBuffer: MetricsEvent[];
+  private eventBuffer: MetricsEvent[] = [];
 
   /**
    * Logger object for outputting metrics to the console
@@ -80,18 +79,18 @@ export class MetricsLogger {
    * We must hold on to these until they are "complete", ie the src attribute is updated
    * and the browser has made the request/gotten the response
    */
-  private beaconImages: Element[];
+  private beaconImages: Element[] = [];
 
   /**
    * Cached id of timer (via window.setTimeout) for callback to clean up beacon
    * images that are no longer needed
    */
-  private beaconCleanupTimerId: number | null;
+  private beaconCleanupTimerId: number | null = null;
 
   /**
    * Cached timerID for buffer processing timer
    */
-  private bufferProcessTimerId: number | null;
+  private bufferProcessTimerId: number | null = null;
 
   // Converted from the C# static constructor - it would be good to convert this
   // block to inline initializations.
@@ -109,31 +108,13 @@ export class MetricsLogger {
     MetricsLogger.debugParamNames[MetricsParameterName.isMobile] = 'MOBILE';
     MetricsLogger.debugEventNames = {};
     MetricsLogger.debugEventNames[MetricsEventType.Navigation] = 'Navigation';
-    MetricsLogger.debugEventNames[MetricsEventType.ContextStart] = 'ProfileStart';
     MetricsLogger.debugEventNames[MetricsEventType.ContextEnd] = 'ProfileEnd';
     MetricsLogger.debugEventNames[MetricsEventType.Generic] = 'Generic';
     MetricsLogger.debugEventNames[MetricsEventType.SessionInit] = 'SessionInit';
   }
 
-  private constructor() {
-    this.eventBuffer = [];
-    this.beaconImages = [];
-    this.bufferProcessTimerId = null;
-    this.beaconCleanupTimerId = null;
-  }
-
   /**
-   * Gets singleton instance of the MetricsLogger, creating it if necessary
-   */
-  public static get instance(): MetricsLogger {
-    if (!ss.isValue(MetricsLogger.$instance)) {
-      MetricsLogger.$instance = new MetricsLogger();
-    }
-    return MetricsLogger.$instance;
-  }
-
-  /**
-   * Logs the specified metric event
+   * Logs the specified metric event.
    */
   public logEvent(evt: MetricsEvent): void {
     if (this.eventBuffer.length >= MetricsLogger.maxEventBufferSize) {
@@ -143,20 +124,10 @@ export class MetricsLogger {
     this.startProcessingTimer();
   }
 
-  /**
-   * Attach the Logger to the MetricsController
-   */
-  public attach(): void {
-    MetricsController.setEventLogger(this.logEvent);
-  }
-
-  private startProcessingTimer(): void;
-
-  private startProcessingTimer(delay?: number): void {
+  private startProcessingTimer(delay: number = MetricsLogger.defaultProcessingDelay): void {
     if (this.bufferProcessTimerId.hasValue) {
       return;
     }
-    delay = ss.coalesce(delay, MetricsLogger.defaultProcessingDelay);
     this.bufferProcessTimerId = window.setTimeout(this.processBufferedEvents, delay);
   }
 
@@ -167,19 +138,23 @@ export class MetricsLogger {
     this.bufferProcessTimerId = null;
     let metricsToProcess: MetricsEvent[];
     if (this.eventBuffer.length > MetricsLogger.maxEventsToProcess) {
-      metricsToProcess = <MetricsEvent[]>this.eventBuffer.slice(0, MetricsLogger.maxEventsToProcess);
-      this.eventBuffer = <MetricsEvent[]>this.eventBuffer.slice(MetricsLogger.maxEventsToProcess);
+      metricsToProcess = this.eventBuffer.slice(0, MetricsLogger.maxEventsToProcess);
+      this.eventBuffer = this.eventBuffer.slice(MetricsLogger.maxEventsToProcess);
       this.startProcessingTimer(MetricsLogger.overflowProcessingDelay);
     } else {
       metricsToProcess = this.eventBuffer;
       this.eventBuffer = [];
     }
     this.outputEventsToConsole(metricsToProcess);
-    if (tsConfig.metricsReportingEnabled) {
+    if (MetricsLogger.isLoggerEnabled()) {
       try {
         this.outputEventsToServer(metricsToProcess);
       } catch { }
     }
+  }
+
+  public static isLoggerEnabled(): boolean {
+    return tsConfig.metricsReportingEnabled;
   }
 
   /**
@@ -204,9 +179,6 @@ export class MetricsLogger {
     }
     for (let i = 0; i < numEvents; i++) {
       let evt: MetricsEvent = evts[i];
-      if (evt.eventType === MetricsEventType.ContextStart) {
-        continue;
-      }
       let formattedEvent: string = MetricsLogger.formatEvent(evt, false);
       if (payload.length > 0 && payload.length + formattedEvent.length > MaxPayloadLength) {
         this.sendBeacon(tsConfig.metricsServerHostname, payload);
@@ -233,13 +205,24 @@ export class MetricsLogger {
     let delimiter: string = verbose ? ', ' : ',';
     let strBuilder: ss.StringBuilder = new ss.StringBuilder();
     strBuilder.append(verbose ? MetricsLogger.debugEventNames[evt.eventType] : evt.eventType.toString());
-    let count: number = evt.parameters.count;
+    let parameters: MetricsEventParameters = evt.parameters;
+    let eventDict: { [key: string]: any } = parameters.ReinterpretAs();
+    if (parameters.ei !== null) {
+      eventDict = <{ [key: string]: any }>MiscUtil.cloneObject(eventDict);
+      let extraInfoParts: string[] = parameters.ei.split(': ');
+      if (extraInfoParts.length > 1) {
+        let fakeProps: { [key: string]: string } = new JsDictionary<string, string>(extraInfoParts);
+        eventDict[MetricsParameterName.properties] = fakeProps;
+        delete eventDict['ei'.ReinterpretAs()];
+      }
+    }
+    let count: number = eventDict.count;
     if (count > 0) {
       strBuilder.append('=');
       strBuilder.append('{');
       let i: number = 0;
       let propSeparator: string = verbose ? ': ' : ':';
-      for (const key of evt.parameters.keys) {
+      for (const key of eventDict.keys) {
         if (key === MetricsParameterName.id && evt.eventType !== MetricsEventType.SessionInit) {
           continue;
         }
@@ -248,7 +231,7 @@ export class MetricsLogger {
         }
         strBuilder.append(verbose ? MetricsLogger.debugParamNames[key] : key.toString());
         strBuilder.append(propSeparator);
-        let val: any = evt.parameters[key];
+        let val: any = eventDict[key];
         MetricsLogger.formatValue(strBuilder, val, verbose);
       }
       strBuilder.append('}');
@@ -278,7 +261,7 @@ export class MetricsLogger {
   }
 
   /**
-   * Given a specific object, output it's value to the stringbuilder with the appropriate format
+   * Given a specific object, output its value to the stringbuilder with the appropriate format
    */
   private static formatValue(strBuilder: ss.StringBuilder, value: any, verbose: boolean): void {
     let type: string = typeof value;
@@ -286,10 +269,16 @@ export class MetricsLogger {
       strBuilder.append((<number>value).toFixed(1));
     } else
       if (type === 'string') {
-        if (verbose) {
-          strBuilder.append('\"');
-          strBuilder.append(value);
-          strBuilder.append('\"');
+        if (verbose || (value !== null && ((<string>value).indexOf('/') !== -1))) {
+          let tempBuffer: ss.StringBuilder = new ss.StringBuilder();
+          tempBuffer.append('\"');
+          tempBuffer.append(value);
+          tempBuffer.append('\"');
+          if (verbose) {
+            strBuilder.append(tempBuffer);
+          } else {
+            strBuilder.append(string.encodeURIComponent(tempBuffer.toString()));
+          }
         } else {
           strBuilder.append(string.encodeURIComponent(<string>value));
         }

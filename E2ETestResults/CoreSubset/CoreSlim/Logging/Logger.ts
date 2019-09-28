@@ -1,10 +1,10 @@
 import { ILogAppender } from './ILogAppender';
 
-import { MiscUtil } from '../Utility/MiscUtil';
-
 import 'mscorlib';
 
-import { ScriptEx } from '../../CoreSlim/ScriptEx';
+import { ScriptEx } from '../Utility/ScriptEx';
+
+import { UriExtensions } from '../Utility/UriExtensions';
 
 /**
  * The various levels of logging priority.
@@ -38,6 +38,12 @@ export class Logger {
 
   private static readonly logQueryParam: string = ':log';
 
+  private static readonly appenders: ILogAppender[] = [];
+
+  private static readonly filters: Array<(logger: Logger, loggerLevel: LoggerLevel) => boolean> = [];
+
+  private static readonly nullLog: Logger = new Logger('');
+
   private readonly $name: string;
 
   // Converted from the C# static constructor - it would be good to convert this
@@ -68,72 +74,24 @@ export class Logger {
   }
 
   /**
-   * Gets the list of static appenders.  You might ask yourself, why do I need to do some crazy initialization like this,
-   * can't I just use a static field? Sadly the answer is no.  This is because of ordering dependencies in the way
-   * Script# initializes static variables.  Because we want to be able to register appenders inside of other static
-   * initializers we need to make sure that Appenders don't depend on the order of static init.
-   */
-  private static get appenders(): ILogAppender[] {
-    return <ILogAppender[]>MiscUtil.lazyInitStaticField(Logger, 'appenders', () => {
-      return [];
-    });
-  }
-
-  /**
-   * Gets the list of static filters.  You might ask yourself, why do I need to do some crazy initialization like this,
-   * can't I just use a static field? Sadly the answer is no.  This is because of ordering dependencies in the way
-   * Script# initializes static variables.
-   */
-  private static get filters(): Array<(logger: Logger, loggerLevel: LoggerLevel) => boolean> {
-    return <Array<(logger: Logger, loggerLevel: LoggerLevel) => boolean>>MiscUtil.lazyInitStaticField(Logger, 'filters', () => {
-      return [];
-    });
-  }
-
-  /**
-   * Gets the Null logger.  Again, have to do crazy static lazy init here to avoid issues with Script#
-   * compilation/static init.
-   */
-  private static get nullLog(): Logger {
-    return <Logger>MiscUtil.lazyInitStaticField(Logger, 'nullLog', () => {
-      return new Logger('');
-    });
-  }
-
-  /**
    * Removes all existing filters.
    */
   public static clearFilters(): void {
     for (const logAppender of Logger.appenders) {
       logAppender.clearFilters();
     }
-    ss.clear(Logger.filters);
+    Logger.filters.splice(0, Logger.filters.length);
   }
-
-  /**
-   * Adds a filter to allow logging from the given logger at any level.
-   * @param l The logger to accept
-   */
-  public static filterByLogger(l: Logger): void;
 
   /**
    * Adds a filter to allow logging from the given logger at the specified level.
    * @param validLogger The logger to accept
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByLogger(validLogger: Logger, minLogLevel?: LoggerLevel): void {
+  public static filterByLogger(validLogger: Logger, minLogLevel: LoggerLevel): void {
     minLogLevel = (minLogLevel) || (LoggerLevel.All);
-    Logger.addFilter((l: Logger, ll: LoggerLevel) => {
-      return l === validLogger && ll >= minLogLevel;
-    });
+    Logger.addFilter((l: Logger, ll: LoggerLevel) => l === validLogger && ll >= minLogLevel);
   }
-
-  /**
-   * Adds a filter to allow logging from the given type at any level.  Assumes
-   * that the type contains a static logger generated using {@link Logger.GetLogger}.
-   * @param t The type used for creating the logger
-   */
-  public static filterByType(t: Function): void;
 
   /**
    * Adds a filter to allow logging from the given type at the specified level.  Assumes
@@ -141,18 +99,10 @@ export class Logger {
    * @param t The type used for creating the logger
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByType(t: Function, minLogLevel?: LoggerLevel): void {
+  public static filterByType(t: Function, minLogLevel: LoggerLevel): void {
     minLogLevel = (minLogLevel) || (LoggerLevel.All);
-    Logger.addFilter((l: Logger, ll: LoggerLevel) => {
-      return ll >= minLogLevel && l.name === t.name;
-    });
+    Logger.addFilter((l: Logger, ll: LoggerLevel) => ll >= minLogLevel && l.name === t.name);
   }
-
-  /**
-   * Adds a filter to allow logging from a logger that matches the given pattern at any level.
-   * @param namePattern A regular expression to match against the logger name
-   */
-  public static filterByName(namePattern: string): void;
 
   /**
    * Adds a filter to allow logging from a logger that matches the given pattern at the specified
@@ -160,19 +110,26 @@ export class Logger {
    * @param namePattern A regular expression to match against the logger name
    * @param minLogLevel The minimum level to accept
    */
-  public static filterByName(namePattern: string, minLogLevel?: LoggerLevel): void {
+  public static filterByName(namePattern: string, minLogLevel: LoggerLevel): void {
     minLogLevel = (minLogLevel) || (LoggerLevel.All);
     let regex: RegExp = new RegExp(namePattern, 'i');
-    Logger.addFilter((l: Logger, ll: LoggerLevel) => {
-      return ll >= minLogLevel && ss.isValue(l.name.match(regex));
-    });
+    Logger.addFilter((l: Logger, ll: LoggerLevel) => ll >= minLogLevel && ss.isValue(l.name.match(regex)));
   }
 
   /**
    * Clears all appenders.
    */
   public static clearAppenders(): void {
-    ss.clear(Logger.appenders);
+    Logger.appenders.splice(0, Logger.filters.length);
+  }
+
+  /**
+   * Is the given appender already added
+   * @param appender The appender to check for
+   * @returns If the appender has been added
+   */
+  public static hasAppender(appender: ILogAppender): boolean {
+    return Logger.appenders.indexOf(appender) > -1;
   }
 
   /**
@@ -191,7 +148,10 @@ export class Logger {
    * @param appender The appender to be removed
    */
   public static removeAppender(appender: ILogAppender): void {
-    ss.remove(Logger.appenders, appender);
+    let indexOfAppender: number = Logger.appenders.indexOf(appender);
+    if (indexOfAppender > -1) {
+      Logger.appenders.splice(indexOfAppender, 1);
+    }
   }
 
   /**
@@ -202,17 +162,14 @@ export class Logger {
    * @returns The type's logger
    */
   public static lazyGetLogger(t: Function): Logger {
-    return ss.reinterpret(MiscUtil.lazyInitStaticField(t, '_logger', () => {
-      return Logger.getLogger(t);
-    }));
+    const FieldName: string = '_logger';
+    let logger: Logger = Object.getDictionary(t)[FieldName].ReinterpretAs();
+    if (ss.isNullOrUndefined(logger)) {
+      logger = Logger.getLogger(t);
+      Object.getDictionary(t)[FieldName] = logger;
+    }
+    return logger;
   }
-
-  /**
-   * Creates a new instance of a log for the given type.
-   * @param t The type to create a log for
-   * @returns A new Log instance
-   */
-  public static getLogger(t: Function): Logger;
 
   /**
    * Creates a new instance of a log for the given type and includes a filter for the
@@ -222,10 +179,10 @@ export class Logger {
    * @param ll The min
    * @returns A new Log instance
    */
-  public static getLogger(t: Function, ll?: LoggerLevel): Logger {
+  public static getLogger(t: Function, ll: LoggerLevel | null = null): Logger {
     let l: Logger = Logger.getLoggerWithName(t.name);
-    if (ss.isValue(ll)) {
-      Logger.filterByLogger(l, ll);
+    if (ll !== null) {
+      Logger.filterByLogger(l, ll.value);
     }
     return l;
   }
@@ -285,7 +242,7 @@ export class Logger {
   }
 
   private static setupUrlFilters(): void {
-    let queryParams: { [key: string]: string[] } = MiscUtil.getUriQueryParameters(window.self.location.search);
+    let queryParams: { [key: string]: string[] } = UriExtensions.getUriQueryParameters(window.self.location.search);
     if (!ss.keyExists(queryParams, Logger.logQueryParam)) {
       return;
     }
@@ -299,7 +256,7 @@ export class Logger {
       let level: LoggerLevel = LoggerLevel.Debug;
       if (logVals.length > 0 && ss.isValue(logVals[1])) {
         let key: string = logVals[1].toLowerCase();
-        let index: number = ss.indexOf(Logger.loggerLevelNames, key);
+        let index: number = Logger.loggerLevelNames.indexOf(key);
         if (index >= 0) {
           level = <LoggerLevel>index;
         }
@@ -335,5 +292,9 @@ export class Log {
 
   public static get(o: any): Logger {
     return Logger.lazyGetLogger(ss.getInstanceType(o));
+  }
+
+  public static get$1(t: Function): Logger {
+    return Logger.lazyGetLogger(t);
   }
 }
