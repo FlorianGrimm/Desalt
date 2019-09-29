@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.SymbolTables
 {
+    using System;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -18,7 +19,7 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptTypeSymbol(ITypeSymbol typeSymbol, string computedScriptName)
+        public ScriptTypeSymbol(ITypeSymbol typeSymbol, string computedScriptName, ImportSymbolInfo importInfo)
             : base(typeSymbol, computedScriptName)
         {
             DefaultMemberReflectability = typeSymbol.GetAttributeValueOrDefault(
@@ -26,6 +27,7 @@ namespace Desalt.Core.SymbolTables
                 defaultValue: MemberReflectability.All);
 
             IgnoreNamespace = typeSymbol.GetFlagAttribute(SaltarelleAttributeName.IgnoreNamespace);
+            ImportInfo = importInfo ?? throw new ArgumentNullException(nameof(importInfo));
             IncludeGenericArguments = typeSymbol.GetFlagAttribute(SaltarelleAttributeName.IncludeGenericArguments);
             MixinExpression = typeSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.Mixin);
             ModuleName = typeSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ModuleName);
@@ -61,6 +63,12 @@ namespace Desalt.Core.SymbolTables
         /// don't exist at runtime.
         /// </summary>
         public bool IgnoreNamespace { get; }
+
+        /// <summary>
+        /// Contains information about where this symbol is defined and how it should be imported
+        /// when used in a TypeScript source file.
+        /// </summary>
+        public ImportSymbolInfo ImportInfo { get; }
 
         /// <summary>
         /// This attribute specifies that a generic type or method should have script generated as if

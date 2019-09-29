@@ -10,6 +10,7 @@ namespace Desalt.Core.SymbolTables
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using CompilerUtilities.Extensions;
@@ -33,33 +34,16 @@ namespace Desalt.Core.SymbolTables
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // get the symbol table overrides
-            ImmutableDictionary<string, SymbolTableOverride> overrides =
-                contexts.First().Options.SymbolTableOverrides.Overrides;
+            // get the symbol table overrides using the options from the first context - they should all be identical
+            CompilerOptions options = contexts.First().Options;
+            Debug.Assert(contexts.All(context => ReferenceEquals(context.Options, options)));
+            ImmutableDictionary<string, SymbolTableOverride> overrides = options.SymbolTableOverrides.Overrides;
 
-            // process the types defined in the documents
-            var documentSymbols = contexts.AsParallel()
-                .WithCancellation(cancellationToken)
-                .SelectMany(context => ProcessSymbolsInDocument(context, scriptNamer, cancellationToken))
-                .ToImmutableDictionary();
-
-            // process the externally referenced types
+            // discover the externally referenced types
             var directlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
                 contexts,
                 discoveryKind,
                 cancellationToken);
-
-            var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
-                .SelectMany(DiscoverTypeAndMembers)
-
-                // Distinct is needed because of nested types, where we might directly reference a class and a nested class
-                .Distinct()
-                .Select(
-                    typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol>(
-                        typeSymbol,
-                        CreateScriptSymbol(typeSymbol, scriptNamer)))
-                .Where(pair => pair.Value != null)
-                .ToImmutableDictionary();
 
             var indirectlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
                 directlyReferencedExternalTypeSymbols,
@@ -67,10 +51,42 @@ namespace Desalt.Core.SymbolTables
                 cancellationToken,
                 discoveryKind);
 
+            // create all of the import information for the type symbols
+            ImmutableDictionary<ITypeSymbol, ImportSymbolInfo> importSymbols = DiscoverImportSymbols(
+                contexts,
+                directlyReferencedExternalTypeSymbols,
+                indirectlyReferencedExternalTypeSymbols.CastArray<ITypeSymbol>(),
+                cancellationToken);
+
+            // process the types defined in the documents
+            var documentSymbols = contexts.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(context => ProcessSymbolsInDocument(context, scriptNamer, importSymbols, cancellationToken))
+                .ToImmutableDictionary();
+
+            // process symbols that are directly referenced by code in the documents
+            var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
+                .SelectMany(DiscoverTypeAndMembers)
+
+                // Distinct is needed because of nested types, where we might directly reference a
+                // type and its nested types
+                .Distinct()
+                .Select(
+                    typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol>(
+                        typeSymbol,
+                        CreateScriptSymbol(typeSymbol, scriptNamer, importSymbols)))
+                .Where(pair => pair.Value != null)
+                .ToImmutableDictionary();
+
+            // process all of the rest of the symbols in all of the referenced assemblies, but
+            // calculate their properties lazily on first access since the vast majority of them
+            // won't be needed
             var indirectlyReferencedSymbols = indirectlyReferencedExternalTypeSymbols.Select(
                     typeSymbol => new KeyValuePair<ISymbol, Lazy<IScriptSymbol>>(
                         typeSymbol,
-                        new Lazy<IScriptSymbol>(() => CreateScriptSymbol(typeSymbol, scriptNamer), isThreadSafe: true)))
+                        new Lazy<IScriptSymbol>(
+                            () => CreateScriptSymbol(typeSymbol, scriptNamer, importSymbols),
+                            isThreadSafe: true)))
                 .ToImmutableDictionary();
 
             return new ScriptSymbolTable(
@@ -80,52 +96,138 @@ namespace Desalt.Core.SymbolTables
                 indirectlyReferencedSymbols);
         }
 
+        /// <summary>
+        /// Discovers all of the import information for each symbol used in the document or directly
+        /// referenced from the document. This information will be handy when translating the
+        /// 'import' statements at the top of the compiled TypeScript files.
+        /// </summary>
+        private static ImmutableDictionary<ITypeSymbol, ImportSymbolInfo> DiscoverImportSymbols(
+            ImmutableArray<DocumentTranslationContext> contexts,
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols,
+            ImmutableArray<ITypeSymbol> indirectlyReferencedSymbols,
+            CancellationToken cancellationToken)
+        {
+            var documentImports = contexts.AsParallel()
+                .WithCancellation(cancellationToken)
+                .SelectMany(context => CreateDocumentImportMappings(context, cancellationToken))
+                .ToImmutableDictionary();
+
+            var externalImports = CreateExternalTypesImportMappings(
+                directlyReferencedExternalTypeSymbols.Concat(indirectlyReferencedSymbols).Distinct());
+
+            var importSymbols = ImmutableDictionary.CreateRange(documentImports.Concat(externalImports));
+            return importSymbols;
+        }
+
+        /// <summary>
+        /// Creates associated <see cref="ImportSymbolInfo"/> for all of the defined types in the document.
+        /// </summary>
+        private static IEnumerable<KeyValuePair<ITypeSymbol, ImportSymbolInfo>> CreateDocumentImportMappings(
+            DocumentTranslationContext context,
+            CancellationToken cancellationToken)
+        {
+            var symbolInfo = ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath);
+
+            return context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
+                .Select(typeSymbol => new KeyValuePair<ITypeSymbol, ImportSymbolInfo>(typeSymbol, symbolInfo));
+        }
+
+        /// <summary>
+        /// Creates an associated <see cref="ImportSymbolInfo"/> for the specified externally-referenced types.
+        /// </summary>
+        private static IEnumerable<KeyValuePair<ITypeSymbol, ImportSymbolInfo>> CreateExternalTypesImportMappings(
+            IEnumerable<ITypeSymbol> externallyReferencedTypes)
+        {
+            return externallyReferencedTypes.Select(
+                typeSymbol => new KeyValuePair<ITypeSymbol, ImportSymbolInfo>(
+                    typeSymbol,
+                    CreateExternalTypeImport(typeSymbol)));
+        }
+
+        /// <summary>
+        /// Creates an associated <see cref="ImportSymbolInfo"/> for the specified externally-referenced types.
+        /// </summary>
+        private static ImportSymbolInfo CreateExternalTypeImport(ITypeSymbol symbol)
+        {
+            var containingAssembly = symbol.ContainingAssembly;
+            string moduleName = containingAssembly.Name;
+            var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
+            return symbolInfo;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="scriptNamer"></param>
+        /// <param name="importSymbols"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private static ImmutableDictionary<ISymbol, IScriptSymbol> ProcessSymbolsInDocument(
             DocumentTranslationContext context,
             IScriptNamer scriptNamer,
+            IReadOnlyDictionary<ITypeSymbol, ImportSymbolInfo> importSymbols,
             CancellationToken cancellationToken)
         {
             var dictionary = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-                .SelectMany(typeSymbol => ProcessTypeAndMembers(typeSymbol, scriptNamer))
+                .SelectMany(typeSymbol => ProcessTypeAndMembers(typeSymbol, scriptNamer, importSymbols))
                 .ToImmutableDictionary();
 
             return dictionary;
         }
 
+        /// <summary>
+        /// Returns an enumerable of the specified type and all of its members that should be processed.
+        /// </summary>
         private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
             typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
 
         private static IEnumerable<KeyValuePair<ISymbol, IScriptSymbol>> ProcessTypeAndMembers(
             ITypeSymbol typeSymbol,
-            IScriptNamer scriptNamer)
+            IScriptNamer scriptNamer,
+            IReadOnlyDictionary<ITypeSymbol, ImportSymbolInfo> importSymbols)
         {
             return from symbol in DiscoverTypeAndMembers(typeSymbol)
-                   let scriptSymbol = CreateScriptSymbol(symbol, scriptNamer)
+                   let scriptSymbol = CreateScriptSymbol(symbol, scriptNamer, importSymbols)
                    where scriptSymbol != null
                    select new KeyValuePair<ISymbol, IScriptSymbol>(symbol, scriptSymbol);
         }
 
-        private static IScriptSymbol CreateScriptSymbol(ISymbol symbol, IScriptNamer scriptNamer)
+        /// <summary>
+        /// Factory method for creating an instance if a <see cref="IScriptSymbol"/> from the
+        /// specified Roslyn <see cref="ISymbol"/>.
+        /// </summary>
+        private static IScriptSymbol CreateScriptSymbol(
+            ISymbol symbol,
+            IScriptNamer scriptNamer,
+            IReadOnlyDictionary<ITypeSymbol, ImportSymbolInfo> importSymbols)
         {
             string computedScriptName = scriptNamer.DetermineScriptNameForSymbol(symbol);
 
             switch (symbol)
             {
                 case INamedTypeSymbol typeSymbol:
+                    if (!importSymbols.TryGetValue(typeSymbol, out ImportSymbolInfo importInfo))
+                    {
+                        throw new InvalidOperationException(
+                            $"Could not find an instance of ImportSymbolInfo for symbol '{typeSymbol.ToHashDisplay()}'");
+                    }
+
                     switch (typeSymbol.TypeKind)
                     {
                         case TypeKind.Class:
                         case TypeKind.Interface:
-                            return new ScriptTypeSymbol(typeSymbol, computedScriptName);
+
+                            return new ScriptTypeSymbol(typeSymbol, computedScriptName, importInfo);
 
                         case TypeKind.Struct:
-                            return new ScriptStructSymbol(typeSymbol, computedScriptName);
+                            return new ScriptStructSymbol(typeSymbol, computedScriptName, importInfo);
 
                         case TypeKind.Delegate:
                             return new ScriptDelegateSymbol(typeSymbol, computedScriptName);
 
                         case TypeKind.Enum:
-                            return new ScriptEnumSymbol(typeSymbol, computedScriptName);
+                            return new ScriptEnumSymbol(typeSymbol, computedScriptName, importInfo);
                     }
 
                     break;
@@ -152,28 +254,23 @@ namespace Desalt.Core.SymbolTables
                 return false;
             }
 
-            // don't skip non-method members
-            if (member.Kind != SymbolKind.Method || !(member is IMethodSymbol methodSymbol))
+            // include all methods except static constructors, property get/set methods, and event
+            // add/remove methods
+            if (member is IMethodSymbol methodSymbol)
             {
-                return true;
+                return !methodSymbol.MethodKind.IsOneOf(
+                    MethodKind.StaticConstructor,
+                    MethodKind.PropertyGet,
+                    MethodKind.PropertySet,
+                    MethodKind.EventAdd,
+                    MethodKind.EventRemove);
             }
 
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (methodSymbol.MethodKind)
+            // there's an apparent corruption in the NativeTypeDefs.TypeUtil assembly and this
+            // compiler-generated symbol is not valid - just skip it
+            if (member.ToDisplayString() == "System.TypeUtil.<>o__3")
             {
-                // skip static constructors
-                case MethodKind.StaticConstructor:
-                    return false;
-
-                // skip property get/set methods
-                case MethodKind.PropertyGet:
-                case MethodKind.PropertySet:
-                    return false;
-
-                // skip event add/remove
-                case MethodKind.EventAdd:
-                case MethodKind.EventRemove:
-                    return false;
+                return false;
             }
 
             return true;

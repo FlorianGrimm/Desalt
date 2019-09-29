@@ -121,7 +121,7 @@ namespace Desalt.Core.Translation
 
     /// <summary>
     /// Contains information about how to validate or translate a C# document into TypeScript, with a
-    /// valid <see cref="ImportSymbolTable"/>.
+    /// valid <see cref="ScriptSymbolTable"/>.
     /// </summary>
     internal sealed class DocumentTranslationContextWithSymbolTables : DocumentTranslationContext
     {
@@ -131,7 +131,6 @@ namespace Desalt.Core.Translation
 
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
-            ImportSymbolTable importSymbolTable,
             ScriptSymbolTable scriptSymbolTable,
             InlineCodeSymbolTable inlineCodeSymbolTable,
             AlternateSignatureSymbolTable alternateSignatureSymbolTable) : base(
@@ -141,8 +140,6 @@ namespace Desalt.Core.Translation
             context.RootSyntax,
             context.SemanticModel)
         {
-            ImportSymbolTable = importSymbolTable ?? throw new ArgumentNullException(nameof(importSymbolTable));
-
             ScriptSymbolTable =
                 scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
 
@@ -156,8 +153,6 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
-
-        public ImportSymbolTable ImportSymbolTable { get; }
 
         public ScriptSymbolTable ScriptSymbolTable { get; }
 

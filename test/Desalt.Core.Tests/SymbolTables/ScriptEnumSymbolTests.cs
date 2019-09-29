@@ -34,7 +34,11 @@ namespace Desalt.Core.Tests.SymbolTables
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single();
 
-                var enumScriptSymbol = new ScriptEnumSymbol(enumSymbol, "ComputedScriptName");
+                var enumScriptSymbol = new ScriptEnumSymbol(
+                    enumSymbol,
+                    "ComputedScriptName",
+                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
 
                 enumScriptSymbol.NamedValues.Should().BeFalse();
@@ -60,7 +64,11 @@ enum E { }";
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single();
 
-                var enumScriptSymbol = new ScriptEnumSymbol(enumSymbol, "ComputedScriptName");
+                var enumScriptSymbol = new ScriptEnumSymbol(
+                    enumSymbol,
+                    "ComputedScriptName",
+                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
 
                 enumScriptSymbol.NamedValues.Should().BeTrue();
@@ -85,7 +93,11 @@ class E { }";
                     .Single();
 
                 // ReSharper disable once ObjectCreationAsStatement
-                Action action = () => new ScriptEnumSymbol(classSymbol, "ComputedScriptName");
+                Action action = () => new ScriptEnumSymbol(
+                    classSymbol,
+                    "ComputedScriptName",
+                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+
                 action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("symbol");
             }
         }

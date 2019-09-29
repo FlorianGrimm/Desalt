@@ -19,8 +19,8 @@ namespace Desalt.Core.SymbolTables
         //// Constructors
         //// ===========================================================================================================
 
-        public ScriptStructSymbol(ITypeSymbol typeSymbol, string computedScriptName)
-            : base(typeSymbol, computedScriptName)
+        public ScriptStructSymbol(ITypeSymbol typeSymbol, string computedScriptName, ImportSymbolInfo importInfo)
+            : base(typeSymbol, computedScriptName, importInfo)
         {
             if (typeSymbol.TypeKind != TypeKind.Struct)
             {

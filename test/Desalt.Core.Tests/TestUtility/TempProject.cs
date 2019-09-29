@@ -175,9 +175,6 @@ namespace Desalt.Core.Tests.TestUtility
                     contexts.FirstOrDefault()?.SemanticModel.Compilation,
                     discoveryKind: discoveryKind);
 
-            // create the import symbol table
-            var importTable = ImportSymbolTable.Create(contexts, directlyReferencedExternalTypeSymbols);
-
             // create the script symbol table
             var scriptNamer = new ScriptNamer(
                 SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
@@ -199,7 +196,6 @@ namespace Desalt.Core.Tests.TestUtility
             return contexts.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
-                        importTable,
                         scriptSymbolTable,
                         inlineCodeTable,
                         alternateSignatureTable))

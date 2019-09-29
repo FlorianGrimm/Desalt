@@ -9,7 +9,9 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
+    using System.Threading;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
@@ -21,21 +23,33 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Translates import declarations for a set of types.
     /// </summary>
-    internal static class ImportsTranslator
+    internal class ImportsTranslator
     {
-        /// <summary>
-        /// Adds all of the import statements to the top of the file.
-        /// </summary>
-        public static IExtendedResult<IEnumerable<ITsImportDeclaration>> TranslateImports(
-            DocumentTranslationContextWithSymbolTables context,
-            IEnumerable<ISymbol> typesToImport)
+        private readonly ScriptSymbolTable _scriptSymbolTable;
+
+        public ImportsTranslator(ScriptSymbolTable scriptSymbolTable)
         {
+            _scriptSymbolTable = scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
+        }
+
+        /// <summary>
+        /// Creates import statements, grouping them by file and module for each of the types to import.
+        /// </summary>
+        public IExtendedResult<IEnumerable<ITsImportDeclaration>> TranslateImports(
+            DocumentTranslationContext context,
+            IEnumerable<ITypeSymbol> typesToImport,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             // get all of the types that we should import
-            ISymbol[] importTypes = typesToImport.Where(symbol => ShouldImport(symbol, context)).ToArray();
+            var importTypes = typesToImport.Where(ShouldImport).ToImmutableArray();
 
             // find all of the imports that aren't defined anywhere and create an error
-            ISymbol[] undefinedTypes =
-                importTypes.Where(symbol => !context.ImportSymbolTable.HasSymbol(symbol)).ToArray();
+            ITypeSymbol[] undefinedTypes = importTypes.Where(symbol => !_scriptSymbolTable.HasSymbol(symbol)).ToArray();
 
             var undefinedTypeErrors = undefinedTypes.Select(
                 importType => DiagnosticFactory.UnknownType(importType.ToHashDisplay()));
@@ -50,7 +64,7 @@ namespace Desalt.Core.Translation
                 .Select(
                     symbol =>
                     {
-                        ImportSymbolInfo importInfo = context.ImportSymbolTable[symbol];
+                        ImportSymbolInfo importInfo = _scriptSymbolTable.Get<IScriptTypeSymbol>(symbol).ImportInfo;
                         string relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
                         if (importInfo.IsInternalReference)
                         {
@@ -77,8 +91,7 @@ namespace Desalt.Core.Translation
 
                         return new
                         {
-                            TypeName =
-                                context.ScriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name),
+                            TypeName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name),
                             RelativePathOrModuleName = relativePathOrModuleName
                         };
                     })
@@ -115,7 +128,7 @@ namespace Desalt.Core.Translation
             return new ExtendedResult<IEnumerable<ITsImportDeclaration>>(importDeclarations, diagnostics);
         }
 
-        private static bool ShouldImport(ISymbol symbol, DocumentTranslationContextWithSymbolTables context)
+        private bool ShouldImport(ITypeSymbol symbol)
         {
             // don't import array types
             if (symbol is IArrayTypeSymbol)
@@ -131,7 +144,7 @@ namespace Desalt.Core.Translation
             }
 
             // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
-            if (context.ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol) &&
+            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol) &&
                 TypeTranslator.IsNativeTypeScriptTypeName(scriptSymbol.ComputedScriptName))
             {
                 return false;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\build\Microsoft.CodeAnalysis.Analyzers.props')" />
   <Import Project="..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props')" />
@@ -177,7 +177,6 @@
     <Compile Include="SymbolTables\AlternateSignatureSymbolTable.cs" />
     <Compile Include="SymbolTables\ExternalTypeWalker.cs" />
     <Compile Include="SymbolTables\ImportSymbolInfo.cs" />
-    <Compile Include="SymbolTables\ImportSymbolTable.cs" />
     <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
     <Compile Include="SymbolTables\IScriptAssemblySymbol.cs" />
     <Compile Include="SymbolTables\IScriptDelegateSymbol.cs" />

@@ -28,6 +28,12 @@ namespace Desalt.Core.SymbolTables
         bool IgnoreNamespace { get; }
 
         /// <summary>
+        /// Contains information about where this symbol is defined and how it should be imported
+        /// when used in a TypeScript source file.
+        /// </summary>
+        ImportSymbolInfo ImportInfo { get; }
+
+        /// <summary>
         /// This attribute specifies that a generic type or method should have script generated as if
         /// it was a non-generic one. Any uses of the type arguments inside the method (eg.
         /// <c>typeof(T)</c>, or calling another generic method with T as a type argument) will cause
