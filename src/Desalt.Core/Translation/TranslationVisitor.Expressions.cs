@@ -82,7 +82,7 @@ namespace Desalt.Core.Translation
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
-            ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -493,7 +493,7 @@ namespace Desalt.Core.Translation
                     return TsAssignmentOperator.BitwiseOrAssign;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsAssignmentOperator.SimpleAssign;
             }
         }
@@ -522,7 +522,7 @@ namespace Desalt.Core.Translation
                     return TsUnaryOperator.LogicalNot;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsUnaryOperator.Plus;
             }
         }
@@ -588,7 +588,7 @@ namespace Desalt.Core.Translation
                     return TsBinaryOperator.LogicalOr;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsBinaryOperator.Add;
             }
         }

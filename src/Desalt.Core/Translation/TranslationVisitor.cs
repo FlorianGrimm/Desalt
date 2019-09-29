@@ -94,7 +94,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> DefaultVisit(SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
-            ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -104,7 +104,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to add and report.</param>
         /// <returns>An empty <see cref="IEnumerable{ITsAstNode}"/>.</returns>
-        private void ReportUnsupportedTranslataion(Diagnostic diagnostic)
+        private void ReportUnsupportedTranslatation(Diagnostic diagnostic)
         {
             _diagnostics.Add(diagnostic);
 #if DEBUG
@@ -137,13 +137,13 @@ namespace Desalt.Core.Translation
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             if (symbol == null)
             {
-                ReportUnsupportedTranslataion(DiagnosticFactory.IdentifierNotSupported(node));
+                ReportUnsupportedTranslatation(DiagnosticFactory.IdentifierNotSupported(node));
                 return Factory.Identifier("Error");
             }
 
             if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
-                ReportUnsupportedTranslataion(
+                ReportUnsupportedTranslatation(
                     DiagnosticFactory.InternalError(
                         $"Node should have been added to the ScriptSymbolTable: {node}",
                         node.GetLocation()));

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TranslationVisitor.Statements.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -320,7 +320,7 @@ namespace Desalt.Core.Translation
             // Case 2: when there's an expression
             // ----------------------------------
             // C#:
-            // using (c.GetDipose()) {}
+            // using (c.GetDispose()) {}
             //
             // TypeScript:
             // {

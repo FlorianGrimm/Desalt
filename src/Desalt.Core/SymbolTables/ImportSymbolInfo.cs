@@ -8,7 +8,8 @@
 namespace Desalt.Core.SymbolTables
 {
     /// <summary>
-    /// Represents an imported symbol that is contained in an <see cref="ImportSymbolTable"/>.
+    /// Represents an imported symbol and whether it is a project-relative import or an external
+    /// module import.
     /// </summary>
     internal class ImportSymbolInfo
     {

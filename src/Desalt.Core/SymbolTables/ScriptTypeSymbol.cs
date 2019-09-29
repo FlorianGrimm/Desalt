@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-
 namespace Desalt.Core.SymbolTables
 {
+    using Microsoft.CodeAnalysis;
+
     /// <summary>
     /// Represents a class, interface, struct, or enum symbol that can be used in the translation process.
     /// </summary>

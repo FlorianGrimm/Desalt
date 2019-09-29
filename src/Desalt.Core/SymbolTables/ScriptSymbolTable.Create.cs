@@ -23,7 +23,7 @@ namespace Desalt.Core.SymbolTables
         /// Creates a new <see cref="ScriptSymbolTable"/> for the specified translation contexts.
         /// </summary>
         /// <param name="contexts">The contexts from which to retrieve symbols.</param>
-        /// <param name="scriptNamer">names for the generated script given C# symbols.</param>
+        /// <param name="scriptNamer">Determines names for the generated script given C# symbols.</param>
         /// <param name="discoveryKind">The kind of discovery to use (mainly for unit tests).</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
         /// <returns>A new <see cref="ScriptSymbolTable"/>.</returns>

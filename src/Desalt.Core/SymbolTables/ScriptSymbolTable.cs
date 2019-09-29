@@ -26,19 +26,19 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// Initializes a new <see cref="ScriptSymbolTable"/> with the specified values.
         /// </summary>
-        ///// <param name="overrideSymbols">
-        ///// An array of overrides that takes precedence over any of the other symbols. This is to
-        ///// allow creating exceptions without changing the Saltarelle assembly source code.
-        ///// </param>
-        ///// <param name="documentSymbols">The symbols defined in the documents.</param>
-        ///// <param name="directlyReferencedExternalSymbols">
-        ///// The symbols directly referenced in the documents but residing in external assemblies.
-        ///// </param>
-        ///// <param name="indirectlyReferencedExternalSymbols">
-        ///// Values that will be computed on demand and then cached. This is mostly useful for
-        ///// externally-referenced types in an assembly that may never be accessed. There is a
-        ///// performance hit for processing potentially hundreds of values when they may not be used.
-        ///// </param>
+        /// <param name="overrideSymbols">
+        /// An array of overrides that takes precedence over any of the other symbols. This is to
+        /// allow creating exceptions without changing the Saltarelle assembly source code.
+        /// </param>
+        /// <param name="documentSymbols">The symbols defined in the documents.</param>
+        /// <param name="directlyReferencedExternalSymbols">
+        /// The symbols directly referenced in the documents but residing in external assemblies.
+        /// </param>
+        /// <param name="indirectlyReferencedExternalSymbols">
+        /// Values that will be computed on demand and then cached. This is mostly useful for
+        /// externally-referenced types in an assembly that may never be accessed. There is a
+        /// performance hit for processing potentially hundreds of values when they may not be used.
+        /// </param>
         private ScriptSymbolTable(
             ImmutableDictionary<string, SymbolTableOverride> overrideSymbols,
             ImmutableDictionary<ISymbol, IScriptSymbol> documentSymbols,
