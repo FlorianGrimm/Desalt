@@ -35,14 +35,14 @@ namespace Desalt.Core.Tests.Translation
 
         private static async Task AssertNoImports(
             string codeSnippet,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             await AssertImports(codeSnippet, discoveryKind);
         }
 
         private static async Task AssertImports(
             string codeSnippet,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
             string[] expectedImportLines = null)
         {
             string code = $@"
@@ -67,7 +67,7 @@ class C
         private static async Task AssertImports(
             string code,
             GetSymbolsFunc getSymbolsFunc,
-            SymbolTableDiscoveryKind discoveryKind,
+            SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLines)
         {
             await AssertImports(
@@ -80,7 +80,7 @@ class C
         private static async Task AssertImports(
             TempProjectFile[] codeFiles,
             GetSymbolsFunc getSymbolsFunc,
-            SymbolTableDiscoveryKind discoveryKind,
+            SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
             using (var tempProject = await TempProject.CreateAsync(codeFiles))
@@ -130,20 +130,20 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
         {
-            await AssertNoImports("List<int> list;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
-            await AssertNoImports("JsArray<int> array;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("List<int> list;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsArray<int> array;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
         {
-            await AssertNoImports("JsDictionary<string, int> dict;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsDictionary<string, int> dict;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
-            await AssertNoImports("Error err;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("Error err;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -173,7 +173,7 @@ class C
                     new TempProjectFile("Classes.cs", "class B {} class A {} class C {}")
                 },
                 GetSymbols,
-                SymbolTableDiscoveryKind.OnlyDocumentTypes,
+                SymbolDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B, C } from './Classes';");
         }
 
@@ -199,7 +199,7 @@ class C
                     new TempProjectFile("C.cs", "class C {}"),
                 },
                 GetSymbols,
-                SymbolTableDiscoveryKind.OnlyDocumentTypes,
+                SymbolDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B } from './AandB';",
                 "import { C } from './C';");
         }

@@ -44,7 +44,7 @@ public class C
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(
                         "File.cs",
-                        discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDuplicateFieldAndPropertyNamesValidator();
                 IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
@@ -90,7 +90,7 @@ public class C
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(
                         "File.cs",
-                        discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDuplicateFieldAndPropertyNamesValidator();
                 IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());

@@ -57,7 +57,7 @@ namespace Desalt.Core.CompilerStages
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
                 SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
                     input,
-                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                    SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
                     cancellationToken);
 
             ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
@@ -78,7 +78,7 @@ namespace Desalt.Core.CompilerStages
                     () => ScriptSymbolTable.Create(
                         input,
                         scriptNamer,
-                        SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                        SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken),
                     cancellationToken),
 

@@ -32,7 +32,7 @@ namespace Desalt.Core.Tests.Validation
             {
                 var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     "File.cs",
-                    discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 var classDeclarationSyntax =
                     context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().First();

@@ -31,7 +31,7 @@ namespace Desalt.Core.SymbolTables
         public static ScriptSymbolTable Create(
             ImmutableArray<DocumentTranslationContext> contexts,
             IScriptNamer scriptNamer,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // get the symbol table overrides using the options from the first context - they should all be identical

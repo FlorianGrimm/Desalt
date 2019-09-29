@@ -47,7 +47,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 var symbolTable = ScriptSymbolTable.Create(
                     contexts,
                     CreateFakeScriptNamer(),
-                    SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                    SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 symbolTable.DocumentSymbols
                     .Select(pair => pair.Key.ToHashDisplay())
@@ -221,7 +221,7 @@ class C
                 var symbolTable = ScriptSymbolTable.Create(
                     contexts,
                     CreateFakeScriptNamer(),
-                    SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                    SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 // get the C.Method() symbol
                 ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")

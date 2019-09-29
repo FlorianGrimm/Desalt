@@ -202,12 +202,12 @@
     <Compile Include="SymbolTables\ScriptSymbolTable.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolDiscoverer.cs" />
+    <Compile Include="SymbolTables\SymbolDiscoveryKind.cs" />
     <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\ScriptPropertySymbol.cs" />
     <Compile Include="SymbolTables\ScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\ScriptSymbol.cs" />
     <Compile Include="SymbolTables\ScriptTypeSymbol.cs" />
-    <Compile Include="SymbolTables\SymbolTableDiscoveryKind.cs" />
     <Compile Include="SymbolTables\SymbolTableKey.cs" />
     <Compile Include="Translation\AlternateSignatureTranslator.cs" />
     <Compile Include="Translation\CSharpToTypeScriptTranslator.cs" />

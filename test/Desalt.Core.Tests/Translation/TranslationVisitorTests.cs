@@ -25,7 +25,7 @@ namespace Desalt.Core.Tests.Translation
         private static Task AssertTranslationWithClassCAndMethod(
             string codeSnippet,
             string expectedTypeScriptCode,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             return AssertTranslation(
                 $@"
@@ -49,7 +49,7 @@ class C {{
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
             Func<CompilerOptions, CompilerOptions> populateOptionsFunc = null)
         {
             string code = $@"

@@ -33,7 +33,7 @@ public interface TestInterface
             using (var tempProject = await TempProject.CreateAsync(code))
             {
                 var contexts = await tempProject.CreateContextsWithSymbolTablesAsync(
-                    discoveryKind: SymbolTableDiscoveryKind.OnlyDocumentTypes);
+                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDefaultParametersInInterfacesValidator();
                 IExtendedResult<bool> result = validator.Validate(contexts);

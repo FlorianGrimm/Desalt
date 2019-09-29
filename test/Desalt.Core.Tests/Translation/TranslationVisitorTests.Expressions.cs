@@ -98,7 +98,7 @@ class Logger {
   }
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         //// ===========================================================================================================
@@ -306,7 +306,7 @@ class C {
   private list4: number[] = ss.arrayClone([1, 2, 3]);
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+                SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         [TestMethod]
@@ -332,7 +332,7 @@ class C {
   };
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -367,7 +367,7 @@ class C {
   };
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         //// ===========================================================================================================
@@ -386,7 +386,7 @@ class C {
     let list: number[] = [];
     ss.arrayAddRange(list, [1, 2, 3]);
 ",
-                SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+                SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         /// <remarks>
@@ -411,7 +411,7 @@ class C {
     let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
       return window[requestFuncName](callback);
     };
-", SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+", SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         [TestMethod]
@@ -472,7 +472,7 @@ class C {
   }
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

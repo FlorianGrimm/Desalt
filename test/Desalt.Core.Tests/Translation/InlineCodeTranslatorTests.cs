@@ -34,7 +34,7 @@ namespace Desalt.Core.Tests.Translation
             ITsAstNode expectedResult,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             string code = $@"
 using System;
@@ -97,7 +97,7 @@ class C
                 expectedResult: Factory.Call(Factory.MemberDot(s_ss, "clear"), Factory.ArgumentList(leftSide)),
                 translatedLeftSide: leftSide,
                 translatedArgumentList: Factory.ArgumentList(),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ class C
                     Factory.Argument(Factory.Identifier("charArray")),
                     Factory.Argument(Factory.Number(1)),
                     Factory.Argument(Factory.Number(10))),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ class C
                     Factory.Argument(Factory.Number(1)),
                     Factory.Argument(Factory.Number(2)),
                     Factory.Argument(Factory.Number(3))),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

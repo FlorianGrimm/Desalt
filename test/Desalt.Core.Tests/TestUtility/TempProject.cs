@@ -157,7 +157,7 @@ namespace Desalt.Core.Tests.TestUtility
         public async Task<ImmutableArray<DocumentTranslationContextWithSymbolTables>>
             CreateContextsWithSymbolTablesAsync(
                 CompilerOptions options = null,
-                SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+                SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
             options = options ?? Options;
 
@@ -189,7 +189,7 @@ namespace Desalt.Core.Tests.TestUtility
         public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
             string fileName = "File.cs",
             CompilerOptions options = null,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
             var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
             DocumentTranslationContextWithSymbolTables thisContext =

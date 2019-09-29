@@ -169,7 +169,7 @@ class C implements ss.IDisposable {
   public dispose(): void { }
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -213,7 +213,7 @@ class C implements ss.IDisposable {
   public dispose(): void { }
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -280,7 +280,7 @@ class C implements ss.IDisposable {
   }
 }
 ",
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

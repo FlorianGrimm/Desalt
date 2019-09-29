@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertTypeTranslation(
             string csharpType,
             ITsType expectedType,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             // parse the C# code and get the root syntax node
             string code = $@"
@@ -152,7 +152,7 @@ class Foo
             await AssertTypeTranslation(
                 "Lazy<string>",
                 Factory.TypeReference(Factory.QualifiedName("ss", "Lazy"), Factory.StringType),
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -161,7 +161,7 @@ class Foo
             await AssertTypeTranslation(
                 "List<string>",
                 Factory.ArrayType(Factory.StringType),
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
