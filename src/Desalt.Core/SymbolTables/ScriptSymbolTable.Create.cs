@@ -40,12 +40,12 @@ namespace Desalt.Core.SymbolTables
             ImmutableDictionary<string, SymbolTableOverride> overrides = options.SymbolTableOverrides.Overrides;
 
             // discover the externally referenced types
-            var directlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+            var directlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
                 contexts,
                 discoveryKind,
                 cancellationToken);
 
-            var indirectlyReferencedExternalTypeSymbols = SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+            var indirectlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
                 directlyReferencedExternalTypeSymbols,
                 contexts.FirstOrDefault()?.SemanticModel.Compilation,
                 cancellationToken,

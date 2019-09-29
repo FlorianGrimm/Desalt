@@ -168,7 +168,7 @@ namespace Desalt.Core.Tests.TestUtility
 
             // create the script symbol table
             var scriptNamer = new ScriptNamer(
-                SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
+                SymbolDiscoverer.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
                 options.RenameRules);
 
             var scriptSymbolTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);

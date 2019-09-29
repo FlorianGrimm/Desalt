@@ -42,7 +42,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
                 var mscorlibAssemblySymbol =
-                    SymbolTableUtils.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation);
+                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation);
 
                 var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, renameRules);
 
@@ -413,7 +413,7 @@ class C
                     .Type;
 
                 var scriptNamer = new ScriptNamer(
-                    SymbolTableUtils.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
+                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
 
                 scriptNamer.DetermineScriptNameForSymbol(stringBuilderSymbol).Should().Be("ss.StringBuilder");
             }

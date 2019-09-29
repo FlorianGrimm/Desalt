@@ -55,19 +55,19 @@ namespace Desalt.Core.CompilerStages
             // the documents and types in referenced assemblies, compute them once and then pass them
             // into each symbol table
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+                SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
                     input,
                     SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
                     cancellationToken);
 
             ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
                     directlyReferencedExternalTypeSymbols,
                     compilation,
                     cancellationToken);
 
             // create a script namer
-            var mscorlibAssemblySymbol = SymbolTableUtils.GetMscorlibAssemblySymbol(compilation);
+            var mscorlibAssemblySymbol = SymbolDiscoverer.GetMscorlibAssemblySymbol(compilation);
             var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, options.RenameRules);
 
             // construct each symbol table in parallel

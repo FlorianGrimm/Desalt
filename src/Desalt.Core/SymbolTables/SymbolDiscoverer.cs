@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="SymbolTableUtils.cs" company="Justin Rockwood">
+// <copyright file="SymbolDiscoverer.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -16,10 +16,9 @@ namespace Desalt.Core.SymbolTables
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Contains static utility methods for using a symbol table. Pulled out into a separate class
-    /// because statics aren't shared between generic instances.
+    /// Contains static utility methods for discovering symbols from a compilation.
     /// </summary>
-    internal static class SymbolTableUtils
+    internal static class SymbolDiscoverer
     {
         //// ===========================================================================================================
         //// Member Variables
