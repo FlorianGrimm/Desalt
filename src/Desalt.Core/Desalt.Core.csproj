@@ -203,7 +203,6 @@
     <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolDiscoverer.cs" />
     <Compile Include="SymbolTables\SymbolDiscoveryKind.cs" />
-    <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\ScriptPropertySymbol.cs" />
     <Compile Include="SymbolTables\ScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\ScriptSymbol.cs" />

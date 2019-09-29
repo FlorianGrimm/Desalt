@@ -8,7 +8,7 @@
 namespace Desalt.Core.SymbolTables
 {
     /// <summary>
-    /// Controls how a <see cref="SymbolTableBase{T}"/> discovers types to add to the symbol table.
+    /// Controls how a <see cref="ScriptSymbolTable"/> discovers types to add to the symbol table.
     /// </summary>
     internal enum SymbolDiscoveryKind
     {
