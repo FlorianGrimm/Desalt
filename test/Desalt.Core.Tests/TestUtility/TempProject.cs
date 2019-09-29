@@ -166,27 +166,12 @@ namespace Desalt.Core.Tests.TestUtility
                 _workspace.CurrentSolution.Projects.Single()
                     .Documents.Select(doc => CreateContextForFileAsync(doc.Name, options)))).ToImmutableArray();
 
-            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
-
-            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
-                    directlyReferencedExternalTypeSymbols,
-                    contexts.FirstOrDefault()?.SemanticModel.Compilation,
-                    discoveryKind: discoveryKind);
-
             // create the script symbol table
             var scriptNamer = new ScriptNamer(
                 SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
                 options.RenameRules);
 
             var scriptSymbolTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
-
-            // create the inline code symbol table
-            var inlineCodeTable = InlineCodeSymbolTable.Create(
-                contexts,
-                directlyReferencedExternalTypeSymbols,
-                indirectlyReferencedExternalTypeSymbols);
 
             // create the alternate signature symbol table
             var result = AlternateSignatureSymbolTable.Create(contexts);
@@ -197,7 +182,6 @@ namespace Desalt.Core.Tests.TestUtility
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         scriptSymbolTable,
-                        inlineCodeTable,
                         alternateSignatureTable))
                 .ToImmutableArray();
         }

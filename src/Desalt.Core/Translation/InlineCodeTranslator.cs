@@ -31,7 +31,6 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private readonly SemanticModel _semanticModel;
-        private readonly InlineCodeSymbolTable _inlineCodeSymbolTable;
         private readonly ScriptSymbolTable _scriptSymbolTable;
 
         //// ===========================================================================================================
@@ -43,22 +42,13 @@ namespace Desalt.Core.Translation
         /// semantic model and symbol tables.
         /// </summary>
         /// <param name="semanticModel">The semantic model to use.</param>
-        /// <param name="inlineCodeSymbolTable">
-        /// A symbol table containing [InlineCode] attributes for various symbols.
-        /// </param>
         /// <param name="scriptSymbolTable">
         /// A symbol table containing script names given a symbol. Used for {$Namespace.Type}
         /// parameter substitutions.
         /// </param>
-        public InlineCodeTranslator(
-            SemanticModel semanticModel,
-            InlineCodeSymbolTable inlineCodeSymbolTable,
-            ScriptSymbolTable scriptSymbolTable)
+        public InlineCodeTranslator(SemanticModel semanticModel, ScriptSymbolTable scriptSymbolTable)
         {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
-
-            _inlineCodeSymbolTable =
-                inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
 
             _scriptSymbolTable =
                 scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
@@ -97,10 +87,11 @@ namespace Desalt.Core.Translation
             // see if there's an [InlineCode] entry for the method invocation
             // ReSharper disable once UsePatternMatching
             if (_semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol is IMethodSymbol methodSymbol &&
-                _inlineCodeSymbolTable.TryGetValue(methodSymbol, out string inlineCode))
+                _scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol methodScriptSymbol) &&
+                methodScriptSymbol.InlineCode != null)
             {
                 var context = new Context(
-                    inlineCode,
+                    methodScriptSymbol.InlineCode,
                     methodExpressionSyntax,
                     methodSymbol,
                     translatedLeftSide,

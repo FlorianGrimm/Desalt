@@ -132,7 +132,6 @@ namespace Desalt.Core.Translation
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
             ScriptSymbolTable scriptSymbolTable,
-            InlineCodeSymbolTable inlineCodeSymbolTable,
             AlternateSignatureSymbolTable alternateSignatureSymbolTable) : base(
             context.Document,
             context.Options,
@@ -143,9 +142,6 @@ namespace Desalt.Core.Translation
             ScriptSymbolTable =
                 scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
 
-            InlineCodeSymbolTable =
-                inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
-
             AlternateSignatureSymbolTable = alternateSignatureSymbolTable ??
                 throw new ArgumentNullException(nameof(alternateSignatureSymbolTable));
         }
@@ -155,8 +151,6 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         public ScriptSymbolTable ScriptSymbolTable { get; }
-
-        public InlineCodeSymbolTable InlineCodeSymbolTable { get; }
 
         public AlternateSignatureSymbolTable AlternateSignatureSymbolTable { get; }
     }

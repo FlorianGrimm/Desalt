@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="InlineCodeTranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -58,22 +58,18 @@ class C
 
                 ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
 
-                var translator = new InlineCodeTranslator(
-                    context.SemanticModel,
-                    context.InlineCodeSymbolTable,
-                    context.ScriptSymbolTable);
+                var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
                 var diagnostics = new List<Diagnostic>();
-                translator.TryTranslate(
+                bool success = translator.TryTranslate(
                         methodSyntax,
                         translatedLeftSide,
                         translatedArgumentList,
                         diagnostics,
-                        out ITsAstNode result)
-                    .Should()
-                    .BeTrue(because: "there should be an [InlineCode] translation");
+                        out ITsAstNode result);
 
                 diagnostics.Should().BeEmpty();
+                success.Should().BeTrue(because: "there should be an [InlineCode] translation");
 
                 // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
                 string translated = result.EmitAsString(EmitOptions.UnixSpaces);

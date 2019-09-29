@@ -177,7 +177,6 @@
     <Compile Include="SymbolTables\AlternateSignatureSymbolTable.cs" />
     <Compile Include="SymbolTables\ExternalTypeWalker.cs" />
     <Compile Include="SymbolTables\ImportSymbolInfo.cs" />
-    <Compile Include="SymbolTables\InlineCodeSymbolTable.cs" />
     <Compile Include="SymbolTables\IScriptAssemblySymbol.cs" />
     <Compile Include="SymbolTables\IScriptDelegateSymbol.cs" />
     <Compile Include="SymbolTables\IScriptEnumSymbol.cs" />

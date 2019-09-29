@@ -65,10 +65,7 @@ namespace Desalt.Core.Translation
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptSymbolTable = context.ScriptSymbolTable;
-            _inlineCodeTranslator = new InlineCodeTranslator(
-                context.SemanticModel,
-                context.InlineCodeSymbolTable,
-                context.ScriptSymbolTable);
+            _inlineCodeTranslator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
             _typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
 

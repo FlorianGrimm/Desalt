@@ -82,16 +82,6 @@ namespace Desalt.Core.CompilerStages
                         cancellationToken),
                     cancellationToken),
 
-                // create the inline code symbol table
-                Task.Run<object>(
-                    () => InlineCodeSymbolTable.Create(
-                        input,
-                        directlyReferencedExternalTypeSymbols,
-                        indirectlyReferencedExternalTypeSymbols,
-                        overrides.InlineCodeOverrides,
-                        cancellationToken),
-                    cancellationToken),
-
                 // create the alternate signature symbol table
                 Task.Run<object>(
                     () => AlternateSignatureSymbolTable.Create(input, cancellationToken),
@@ -101,9 +91,8 @@ namespace Desalt.Core.CompilerStages
             await Task.WhenAll(tasks);
 
             var scriptSymbolTable = (ScriptSymbolTable)tasks[0].Result;
-            var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[1].Result;
 
-            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[2].Result;
+            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[1].Result;
             diagnostics.AddRange(alternateSignatureTableCreateResult.Diagnostics);
             var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
 
@@ -112,7 +101,6 @@ namespace Desalt.Core.CompilerStages
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         scriptSymbolTable,
-                        inlineCodeSymbolTable,
                         alternateSignatureSymbolTable))
                 .ToImmutableArray();
 

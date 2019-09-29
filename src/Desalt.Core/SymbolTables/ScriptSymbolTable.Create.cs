@@ -64,12 +64,13 @@ namespace Desalt.Core.SymbolTables
                 .SelectMany(context => ProcessSymbolsInDocument(context, scriptNamer, importSymbols, cancellationToken))
                 .ToImmutableDictionary();
 
+            // We need to use Distinct() in the queries below because of nested types. For example,
+            // we might directly reference `MyClass` and `MyClass.Nested` so when
+            // DiscoverTypeAndMembers is invoked, `MyClass.Nested` will be duplicated.
+
             // process symbols that are directly referenced by code in the documents
             var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
                 .SelectMany(DiscoverTypeAndMembers)
-
-                // Distinct is needed because of nested types, where we might directly reference a
-                // type and its nested types
                 .Distinct()
                 .Select(
                     typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol>(
@@ -81,7 +82,10 @@ namespace Desalt.Core.SymbolTables
             // process all of the rest of the symbols in all of the referenced assemblies, but
             // calculate their properties lazily on first access since the vast majority of them
             // won't be needed
-            var indirectlyReferencedSymbols = indirectlyReferencedExternalTypeSymbols.Select(
+            var indirectlyReferencedSymbols = indirectlyReferencedExternalTypeSymbols
+                .SelectMany(DiscoverTypeAndMembers)
+                .Distinct()
+                .Select(
                     typeSymbol => new KeyValuePair<ISymbol, Lazy<IScriptSymbol>>(
                         typeSymbol,
                         new Lazy<IScriptSymbol>(

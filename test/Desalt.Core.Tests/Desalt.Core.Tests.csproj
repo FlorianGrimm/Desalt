@@ -179,8 +179,7 @@
     <Compile Include="Pipeline\SimplePipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymbolTables\AlternateSignatureSymbolTableTests.cs" />
-    <Compile Include="SymbolTables\InlineCodeSymbolTableTests.cs" />
-    <Compile Include="SymbolTables\NewScriptTableTests.cs" />
+    <Compile Include="SymbolTables\ScriptSymbolTableTests.cs" />
     <Compile Include="SymbolTables\ScriptAssemblySymbolTests.cs" />
     <Compile Include="SymbolTables\ScriptEnumSymbolTests.cs" />
     <Compile Include="SymbolTables\ScriptEventSymbolTests.cs" />
