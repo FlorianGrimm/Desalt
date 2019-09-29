@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ImportsTranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -18,14 +18,13 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.Ast;
 
     [TestClass]
     public class ImportsTranslatorTests
     {
-        private delegate IEnumerable<ISymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
+        private delegate IEnumerable<ITypeSymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
 
-        private static IEnumerable<ISymbol> GetFirstFieldDeclarationSymbol(
+        private static IEnumerable<ITypeSymbol> GetFirstFieldDeclarationSymbol(
             DocumentTranslationContextWithSymbolTables context)
         {
             FieldDeclarationSyntax fieldDeclaration =
@@ -34,9 +33,16 @@ namespace Desalt.Core.Tests.Translation
             yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
         }
 
+        private static async Task AssertNoImports(
+            string codeSnippet,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
+        {
+            await AssertImports(codeSnippet, discoveryKind);
+        }
+
         private static async Task AssertImports(
             string codeSnippet,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
             string[] expectedImportLines = null)
         {
             string code = $@"
@@ -61,7 +67,7 @@ class C
         private static async Task AssertImports(
             string code,
             GetSymbolsFunc getSymbolsFunc,
-            SymbolTableDiscoveryKind discoveryKind,
+            SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLines)
         {
             await AssertImports(
@@ -74,7 +80,7 @@ class C
         private static async Task AssertImports(
             TempProjectFile[] codeFiles,
             GetSymbolsFunc getSymbolsFunc,
-            SymbolTableDiscoveryKind discoveryKind,
+            SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
             using (var tempProject = await TempProject.CreateAsync(codeFiles))
@@ -84,10 +90,10 @@ class C
                         codeFiles[0].FileName,
                         discoveryKind: discoveryKind);
 
-                IEnumerable<ISymbol> typesToImport = getSymbolsFunc(context);
+                IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
-                IExtendedResult<IEnumerable<ITsImportDeclaration>> results =
-                    ImportsTranslator.TranslateImports(context, typesToImport);
+                var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
+                var results = importsTranslator.TranslateImports(context, typesToImport);
 
                 results.Diagnostics.Should().BeEmpty();
 
@@ -99,57 +105,57 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_skip_native_types()
         {
-            await AssertImports("int x = 1; object o = null;");
+            await AssertNoImports("int x = 1; object o = null;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_skip_array_types()
         {
-            await AssertImports("int[] array;");
+            await AssertNoImports("int[] array;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_RegExp_types()
         {
-            await AssertImports("Regex r;");
+            await AssertNoImports("Regex r;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_Function_types()
         {
-            await AssertImports("Func<int, bool> func;");
-            await AssertImports("Action<int, bool> action;");
+            await AssertNoImports("Func<int, bool> func;");
+            await AssertNoImports("Action<int, bool> action;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
         {
-            await AssertImports("List<int> list;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
-            await AssertImports("JsArray<int> array;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("List<int> list;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsArray<int> array;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
         {
-            await AssertImports("JsDictionary<string, int> dict;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsDictionary<string, int> dict;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
-            await AssertImports("Error err;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("Error err;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_from_Saltarelle_Web()
         {
-            await AssertImports("HtmlElement div;");
+            await AssertNoImports("HtmlElement div;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_alphabetize_symbol_names_within_a_group()
         {
-            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
@@ -167,14 +173,14 @@ class C
                     new TempProjectFile("Classes.cs", "class B {} class A {} class C {}")
                 },
                 GetSymbols,
-                SymbolTableDiscoveryKind.OnlyDocumentTypes,
+                SymbolDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B, C } from './Classes';");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_get_all_of_the_referenced_files()
         {
-            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
@@ -193,7 +199,7 @@ class C
                     new TempProjectFile("C.cs", "class C {}"),
                 },
                 GetSymbols,
-                SymbolTableDiscoveryKind.OnlyDocumentTypes,
+                SymbolDiscoveryKind.OnlyDocumentTypes,
                 "import { A, B } from './AandB';",
                 "import { C } from './C';");
         }

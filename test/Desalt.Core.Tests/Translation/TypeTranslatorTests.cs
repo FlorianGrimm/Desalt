@@ -30,7 +30,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertTypeTranslation(
             string csharpType,
             ITsType expectedType,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             // parse the C# code and get the root syntax node
             string code = $@"
@@ -60,16 +60,9 @@ class Foo
                 }
 
                 // create the script name symbol table
-                ImmutableArray<ITypeSymbol> directlyReferencedExternalTypes =
-                    SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
-
-                var scriptNameTable = ScriptNameSymbolTable.Create(
-                    contexts,
-                    directlyReferencedExternalTypes,
-                    SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
-                        directlyReferencedExternalTypes,
-                        context.SemanticModel.Compilation,
-                        discoveryKind: discoveryKind));
+                var scriptNamer = new ScriptNamer(
+                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
+                var scriptNameTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
                 var translator = new TypeTranslator(scriptNameTable);
                 var diagnostics = new List<Diagnostic>();
@@ -159,7 +152,7 @@ class Foo
             await AssertTypeTranslation(
                 "Lazy<string>",
                 Factory.TypeReference(Factory.QualifiedName("ss", "Lazy"), Factory.StringType),
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -168,7 +161,7 @@ class Foo
             await AssertTypeTranslation(
                 "List<string>",
                 Factory.ArrayType(Factory.StringType),
-                SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]

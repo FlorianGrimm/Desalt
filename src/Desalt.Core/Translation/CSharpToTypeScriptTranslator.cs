@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CSharpToTypeScriptTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -30,9 +30,9 @@ namespace Desalt.Core.Translation
             var visitor = new TranslationVisitor(context, cancellationToken);
             var implementationModule = (ITsImplementationModule)visitor.Visit(context.RootSyntax).Single();
 
-            IExtendedResult<IEnumerable<ITsImportDeclaration>> addImportsResult = ImportsTranslator.TranslateImports(
-                context,
-                visitor.TypesToImport);
+            var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
+            IExtendedResult<IEnumerable<ITsImportDeclaration>> addImportsResult =
+                importsTranslator.TranslateImports(context, visitor.TypesToImport, cancellationToken);
             IEnumerable<ITsImportDeclaration> importDeclarations = addImportsResult.Result;
 
             // insert the imports at the top of the translated file

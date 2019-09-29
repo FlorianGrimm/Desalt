@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="ScriptNameSymbolTable.cs" company="Justin Rockwood">
+// <copyright file="ScriptNamer.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -8,169 +8,54 @@
 namespace Desalt.Core.SymbolTables
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Threading;
-    using CompilerUtilities.Extensions;
     using Desalt.Core.Translation;
-    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Contains mappings of defined types in a C# project to the translated names (what they will be
-    /// called in the TypeScript file). By default, Saltarelle converts type members to `camelCase`
-    /// names. It can also be changed using the [PreserveName] and [ScriptName] attributes.
+    /// Determines the compiled name for a C# symbol.
     /// </summary>
-    /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal class ScriptNameSymbolTable : SymbolTableBase<string>
+    internal class ScriptNamer : IScriptNamer
     {
-        //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        private ScriptNameSymbolTable(
-            ImmutableArray<KeyValuePair<string, string>> overrideSymbols,
-            ImmutableArray<KeyValuePair<ISymbol, string>> documentSymbols,
-            ImmutableArray<KeyValuePair<ISymbol, string>> directlyReferencedExternalSymbols,
-            ImmutableArray<KeyValuePair<ISymbol, Lazy<string>>> indirectlyReferencedExternalSymbols)
-            : base(
-                overrideSymbols,
-                documentSymbols,
-                directlyReferencedExternalSymbols,
-                indirectlyReferencedExternalSymbols)
-        {
-        }
-
-        //// ===========================================================================================================
-        //// Methods
-        //// ===========================================================================================================
+        private readonly IAssemblySymbol _mscorlibAssemblySymbol;
 
         /// <summary>
-        /// Creates a new <see cref="ScriptNameSymbolTable"/> for the specified translation contexts.
+        /// Initializes a new instance of the <see cref="ScriptNamer"/> class.
         /// </summary>
-        /// <param name="contexts">The contexts from which to retrieve symbols.</param>
-        /// <param name="directlyReferencedExternalTypeSymbols">
-        /// An array of symbols that are directly referenced in the documents, but are defined in
-        /// external assemblies.
-        /// </param>
-        /// <param name="indirectlyReferencedExternalTypeSymbols">
-        /// An array of symbols that are not directly referenced in the documents and are defined in
-        /// external assemblies.
-        /// </param>
-        /// <param name="overrideSymbols">
-        /// An array of overrides that takes precedence over any of the other symbols. This is to
-        /// allow creating exceptions without changing the Saltarelle assembly source code. The key
-        /// is what is returned from <see cref="RoslynExtensions.ToHashDisplay"/>.
-        /// </param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
-        /// <returns>A new <see cref="ScriptNameSymbolTable"/>.</returns>
-        public static ScriptNameSymbolTable Create(
-            ImmutableArray<DocumentTranslationContext> contexts,
-            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols,
-            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols,
-            IEnumerable<KeyValuePair<string, string>> overrideSymbols = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
+        /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
+        /// <returns>The name the specified symbol should have in the generated script.</returns>
+        public ScriptNamer(IAssemblySymbol mscorlibAssemblySymbol, RenameRules renameRules = null)
         {
-            IAssemblySymbol mscorlibAssemblySymbol =
-                SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation);
+            _mscorlibAssemblySymbol =
+                mscorlibAssemblySymbol ?? throw new ArgumentNullException(nameof(mscorlibAssemblySymbol));
 
-            // process the types defined in the documents
-            var documentSymbols = contexts.AsParallel()
-                .WithCancellation(cancellationToken)
-                .SelectMany(context => ProcessSymbolsInDocument(context, mscorlibAssemblySymbol, cancellationToken))
-                .ToImmutableArray();
-
-            RenameRules renameRules = contexts.FirstOrDefault()?.Options.RenameRules ?? RenameRules.Default;
-
-            // process the externally referenced types
-            var directlyReferencedExternalSymbols = directlyReferencedExternalTypeSymbols
-                .SelectMany(symbol => DiscoverScriptNameOnTypeAndMembers(symbol, renameRules, mscorlibAssemblySymbol))
-                .ToImmutableArray();
-
-            // process all of the types and members in referenced assemblies
-            var indirectlyReferencedExternalSymbols = indirectlyReferencedExternalTypeSymbols
-                .SelectMany(DiscoverTypeAndMembers)
-                .Select(
-                    symbol => new KeyValuePair<ISymbol, Lazy<string>>(
-                        symbol,
-                        new Lazy<string>(
-                            () => DiscoverScriptNameForSymbol(symbol, renameRules, mscorlibAssemblySymbol),
-                            isThreadSafe: true)))
-                .ToImmutableArray();
-
-            return new ScriptNameSymbolTable(
-                overrideSymbols?.ToImmutableArray() ?? ImmutableArray<KeyValuePair<string, string>>.Empty,
-                documentSymbols,
-                directlyReferencedExternalSymbols,
-                indirectlyReferencedExternalSymbols);
+            RenameRules = renameRules ?? RenameRules.Default;
         }
 
-        /// <summary>
-        /// Adds all of the defined types in the document to the mapping.
-        /// </summary>
-        private static IEnumerable<KeyValuePair<ISymbol, string>> ProcessSymbolsInDocument(
-            DocumentTranslationContext context,
-            IAssemblySymbol mscorlibAssemblySymbol,
-            CancellationToken cancellationToken)
-        {
-            return context.RootSyntax
-
-                // get all of the declared types
-                .GetAllDeclaredTypes(context.SemanticModel, cancellationToken)
-
-                // except delegates
-                .Where(symbol => symbol.TypeKind != TypeKind.Delegate)
-
-                // and get all of the members of the type that can have a script name
-                .SelectMany(
-                    symbol => DiscoverScriptNameOnTypeAndMembers(
-                        symbol,
-                        context.Options.RenameRules,
-                        mscorlibAssemblySymbol));
-        }
-
-        private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
-            typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
-
-        private static IEnumerable<KeyValuePair<ISymbol, string>> DiscoverScriptNameOnTypeAndMembers(
-            ITypeSymbol typeSymbol,
-            RenameRules renameRules,
-            IAssemblySymbol mscorlibAssemblySymbol)
-        {
-            return DiscoverTypeAndMembers(typeSymbol)
-                .Select(
-                    symbol => new KeyValuePair<ISymbol, string>(
-                        symbol,
-                        DiscoverScriptNameForSymbol(symbol, renameRules, mscorlibAssemblySymbol)));
-        }
+        public RenameRules RenameRules { get; }
 
         /// <summary>
         /// Determines the name a symbol should have in the generated script.
         /// </summary>
         /// <param name="symbol">The symbol for which to discover the script name.</param>
-        /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
-        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
-        /// <returns>The name the specified symbol should have in the generated script.</returns>
-        private static string DiscoverScriptNameForSymbol(
-            ISymbol symbol,
-            RenameRules renameRules,
-            IAssemblySymbol mscorlibAssemblySymbol)
+        public string DetermineScriptNameForSymbol(ISymbol symbol)
         {
             string scriptName;
 
             switch (symbol)
             {
                 case ITypeSymbol typeSymbol:
-                    scriptName = DetermineTypeScriptName(typeSymbol, mscorlibAssemblySymbol);
+                    scriptName = DetermineTypeScriptName(typeSymbol);
                     break;
 
                 case IFieldSymbol fieldSymbol when fieldSymbol.ContainingType.TypeKind == TypeKind.Enum:
-                    scriptName = DetermineEnumFieldScriptName(fieldSymbol, renameRules.EnumRule);
+                    scriptName = DetermineEnumFieldScriptName(fieldSymbol);
                     break;
 
                 case IFieldSymbol fieldSymbol:
-                    scriptName = DetermineFieldScriptName(fieldSymbol, renameRules.FieldRule);
+                    scriptName = DetermineFieldScriptName(fieldSymbol);
                     break;
 
                 case IMethodSymbol methodSymbol:
@@ -185,44 +70,7 @@ namespace Desalt.Core.SymbolTables
             return scriptName;
         }
 
-        private static bool ShouldProcessMember(ISymbol member)
-        {
-            // skip over compiler-generated stuff like auto-property backing fields, event add/remove
-            // functions, and property get/set methods
-            if (member.IsImplicitlyDeclared)
-            {
-                return false;
-            }
-
-            // don't skip non-method members
-            if (member.Kind != SymbolKind.Method || !(member is IMethodSymbol methodSymbol))
-            {
-                return true;
-            }
-
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (methodSymbol.MethodKind)
-            {
-                // skip constructors
-                case MethodKind.Constructor:
-                case MethodKind.StaticConstructor:
-                    return false;
-
-                // skip property get/set methods
-                case MethodKind.PropertyGet:
-                case MethodKind.PropertySet:
-                    return false;
-
-                // skip event add/remove
-                case MethodKind.EventAdd:
-                case MethodKind.EventRemove:
-                    return false;
-            }
-
-            return true;
-        }
-
-        private static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+        public static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
         /// <summary>
         /// Attempts to find the script name for the specified symbol based on attributes defined on
@@ -280,9 +128,8 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a type should have in the generated code.
         /// </summary>
         /// <param name="typeSymbol">The type for which to determine the script name.</param>
-        /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
         /// <returns>The name the type should have in the generated code.</returns>
-        private static string DetermineTypeScriptName(ITypeSymbol typeSymbol, IAssemblySymbol mscorlibAssemblySymbol)
+        private string DetermineTypeScriptName(ITypeSymbol typeSymbol)
         {
             // if this is a native type (bool, string, etc.) use the special name
             if (TypeTranslator.TranslatesToNativeTypeScriptType(typeSymbol))
@@ -294,12 +141,12 @@ namespace Desalt.Core.SymbolTables
             string scriptName = baseName;
 
             // if this is a type that belongs to mscorlib, prefix it with 'ss'
-            if (typeSymbol.ContainingAssembly.Equals(mscorlibAssemblySymbol))
+            if (typeSymbol.ContainingAssembly.Equals(_mscorlibAssemblySymbol))
             {
                 // find the script namespace by searching on the type first, then the assembly
                 string scriptNamespace =
                     typeSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace) ??
-                    mscorlibAssemblySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace);
+                    _mscorlibAssemblySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace);
                 if (scriptNamespace != null)
                 {
                     scriptName = $"{scriptNamespace}.{baseName}";
@@ -322,9 +169,8 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that an enum field should have in the generated code.
         /// </summary>
         /// <param name="enumFieldSymbol">The enum field for which to determine the script name.</param>
-        /// <param name="renameRule">Options on how to rename enum member fields.</param>
         /// <returns>The name the enum field should have in the generated code.</returns>
-        private static string DetermineEnumFieldScriptName(IFieldSymbol enumFieldSymbol, EnumRenameRule renameRule)
+        private string DetermineEnumFieldScriptName(IFieldSymbol enumFieldSymbol)
         {
             string fieldName = enumFieldSymbol.Name;
 
@@ -334,7 +180,7 @@ namespace Desalt.Core.SymbolTables
             // 2) Otherwise use [ScriptName], [PreserveName] or other attribute that controls naming
             // 3) Otherwise use the rename rules from the options
 
-            string fieldScriptNameFromOptions = renameRule == EnumRenameRule.MatchCSharpName
+            string fieldScriptNameFromOptions = RenameRules.EnumRule == EnumRenameRule.MatchCSharpName
                 ? fieldName
                 : ToCamelCase(fieldName);
 
@@ -350,13 +196,12 @@ namespace Desalt.Core.SymbolTables
         /// Determines the name that a field should have in the generated code.
         /// </summary>
         /// <param name="fieldSymbol">The field for which to determine the script name.</param>
-        /// <param name="renameRule">Options on how to rename fields.</param>
         /// <returns>The name the field should have in the generated code.</returns>
-        private static string DetermineFieldScriptName(IFieldSymbol fieldSymbol, FieldRenameRule renameRule)
+        private string DetermineFieldScriptName(IFieldSymbol fieldSymbol)
         {
             string scriptName;
 
-            switch (renameRule)
+            switch (RenameRules.FieldRule)
             {
                 // ReSharper disable once RedundantCaseLabel
                 case FieldRenameRule.LowerCaseFirstChar:
@@ -426,17 +271,27 @@ namespace Desalt.Core.SymbolTables
                 return defaultName;
             }
 
-            // check for [AlternateSignature] and then find the name of the other method
+            // check for [AlternateSignature] and then find the name of the implementing method
             if (methodSymbol.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature))
             {
-                IMethodSymbol otherMethod = methodSymbol.ContainingType.GetMembers()
+                IMethodSymbol implementingMethod = methodSymbol.ContainingType.GetMembers()
                     .OfType<IMethodSymbol>()
                     .Single(
                         m => !Equals(m, methodSymbol) &&
+
+                            // the implementing method needs to be the same (static or instance)
                             m.IsStatic == methodSymbol.IsStatic &&
+
+                            // the implementing method needs to be named the same
                             m.Name == methodSymbol.Name &&
+
+                            // the implementing method cannot be marked with [InlineCode]
+                            !m.HasAttribute(SaltarelleAttributeName.InlineCode) &&
+
+                            // and the implementing method should not be marked with [AlternateSignature]
                             !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature));
-                string scriptName = DetermineMethodScriptName(otherMethod);
+
+                string scriptName = DetermineMethodScriptName(implementingMethod);
                 return scriptName;
             }
 
@@ -449,19 +304,18 @@ namespace Desalt.Core.SymbolTables
             // overloads are only renamed if the script name will be the same, so first run through
             // all of the methods and determine their script names
             var allMethodsWithThisScriptName =
-               from m in methodSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>()
-               where CanBeOverloaded(m)
+                from m in methodSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>()
+                where CanBeOverloaded(m)
 
-               // only look at static/instance methods (the same as what this method is), since it's
-               // fine to have a static method and an instance method that have the same script name
-               where m.IsStatic == methodSymbol.IsStatic
+                // only look at static/instance methods (the same as what this method is), since it's
+                // fine to have a static method and an instance method that have the same script name
+                where m.IsStatic == methodSymbol.IsStatic
 
-               // take out [AlternateSignature] methods since they use the name of the implementation method
-               where !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature)
-
-               let sname = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
-               where sname.Equals(defaultName, StringComparison.Ordinal)
-               select m;
+                // take out [AlternateSignature] methods since they use the name of the implementation method
+                where !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature)
+                let sname = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
+                where sname.Equals(defaultName, StringComparison.Ordinal)
+                select m;
 
             // find the index of this method (according to the order it was declared)
             int index = allMethodsWithThisScriptName.ToImmutableArray().IndexOf(methodSymbol);

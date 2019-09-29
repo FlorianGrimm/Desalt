@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -81,7 +82,7 @@ namespace Desalt.Core.Translation
             }
 
             var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
-            ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -147,14 +148,13 @@ namespace Desalt.Core.Translation
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
-            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            string scriptName = node.Keyword.ValueText;
+            if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
-                yield return Factory.Identifier(node.Keyword.Text);
+                scriptName = scriptSymbol.ComputedScriptName;
             }
-            else
-            {
-                yield return Factory.Identifier(scriptName);
-            }
+
+            yield return Factory.Identifier(scriptName);
         }
 
         /// <summary>
@@ -167,13 +167,13 @@ namespace Desalt.Core.Translation
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
-            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            if (symbol == null || !_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
                 yield return Factory.Identifier(node.Identifier.Text);
                 yield break;
             }
 
-            ITsExpression translated = TranslateIdentifierName(symbol, scriptName, node.SpanStart);
+            ITsExpression translated = TranslateIdentifierName(symbol, scriptSymbol.ComputedScriptName, node.SpanStart);
             yield return translated;
         }
 
@@ -199,7 +199,7 @@ namespace Desalt.Core.Translation
             if (symbol.IsStatic && containingType != null)
             {
                 string containingTypeScriptName =
-                    _scriptNameTable.GetValueOrDefault(containingType, containingType.Name);
+                    _scriptSymbolTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
 
                 expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
             }
@@ -217,7 +217,7 @@ namespace Desalt.Core.Translation
             // add this type to the import list if it doesn't belong to us
             if (!belongsToThisType)
             {
-                _typesToImport.Add(symbol);
+                _typesToImport.Add((ITypeSymbol)symbol);
             }
 
             return expression;
@@ -248,7 +248,7 @@ namespace Desalt.Core.Translation
             // bets are off with the type checking
             string scriptName = symbol == null
                 ? node.Name.Identifier.Text
-                : _scriptNameTable.GetValueOrDefault(symbol, node.Name.Identifier.Text);
+                : _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
 
             ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
             yield return translated;
@@ -493,7 +493,7 @@ namespace Desalt.Core.Translation
                     return TsAssignmentOperator.BitwiseOrAssign;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsAssignmentOperator.SimpleAssign;
             }
         }
@@ -522,7 +522,7 @@ namespace Desalt.Core.Translation
                     return TsUnaryOperator.LogicalNot;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsUnaryOperator.Plus;
             }
         }
@@ -588,7 +588,7 @@ namespace Desalt.Core.Translation
                     return TsBinaryOperator.LogicalOr;
 
                 default:
-                    ReportUnsupportedTranslataion(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                    ReportUnsupportedTranslatation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                     return TsBinaryOperator.Add;
             }
         }

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="SymbolTableUtils.cs" company="Justin Rockwood">
+// <copyright file="SymbolDiscoverer.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -16,10 +16,9 @@ namespace Desalt.Core.SymbolTables
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Contains static utility methods for using a symbol table. Pulled out into a separate class
-    /// because statics aren't shared between generic instances.
+    /// Contains static utility methods for discovering symbols from a compilation.
     /// </summary>
-    internal static class SymbolTableUtils
+    internal static class SymbolDiscoverer
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -67,15 +66,15 @@ namespace Desalt.Core.SymbolTables
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
         /// <returns>
         /// All of the externally-referenced type symbols. If <paramref name="discoveryKind"/> is
-        /// <see cref="SymbolTableDiscoveryKind.OnlyDocumentTypes"/>, then an empty array is returned
+        /// <see cref="SymbolDiscoveryKind.OnlyDocumentTypes"/>, then an empty array is returned
         /// and no work is done.
         /// </returns>
         public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
             ImmutableArray<DocumentTranslationContext> contexts,
-            SymbolTableDiscoveryKind discoveryKind,
+            SymbolDiscoveryKind discoveryKind,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return discoveryKind == SymbolTableDiscoveryKind.OnlyDocumentTypes
+            return discoveryKind == SymbolDiscoveryKind.OnlyDocumentTypes
                 ? ImmutableArray<ITypeSymbol>.Empty
                 : contexts.SelectMany(context => DiscoverDirectlyReferencedExternalTypes(context, cancellationToken))
                     .Distinct()
@@ -110,16 +109,16 @@ namespace Desalt.Core.SymbolTables
         /// <returns>
         /// All of the type symbols defined in external assemblies. If <paramref
         /// name="discoveryKind"/> is anything other than <see
-        /// cref="SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes"/>, an empty array is returned
+        /// cref="SymbolDiscoveryKind.DocumentAndAllAssemblyTypes"/>, an empty array is returned
         /// and no work is done.
         /// </returns>
         public static ImmutableArray<INamedTypeSymbol> DiscoverTypesInReferencedAssemblies(
             IEnumerable<ITypeSymbol> externalSymbols,
             Compilation compilation,
             CancellationToken cancellationToken = default(CancellationToken),
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
-            if (discoveryKind != SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+            if (discoveryKind != SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
             {
                 return ImmutableArray<INamedTypeSymbol>.Empty;
             }

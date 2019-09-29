@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="InlineCodeTranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -34,7 +34,7 @@ namespace Desalt.Core.Tests.Translation
             ITsAstNode expectedResult,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
             string code = $@"
 using System;
@@ -58,22 +58,18 @@ class C
 
                 ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
 
-                var translator = new InlineCodeTranslator(
-                    context.SemanticModel,
-                    context.InlineCodeSymbolTable,
-                    context.ScriptNameSymbolTable);
+                var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
                 var diagnostics = new List<Diagnostic>();
-                translator.TryTranslate(
+                bool success = translator.TryTranslate(
                         methodSyntax,
                         translatedLeftSide,
                         translatedArgumentList,
                         diagnostics,
-                        out ITsAstNode result)
-                    .Should()
-                    .BeTrue(because: "there should be an [InlineCode] translation");
+                        out ITsAstNode result);
 
                 diagnostics.Should().BeEmpty();
+                success.Should().BeTrue(because: "there should be an [InlineCode] translation");
 
                 // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
                 string translated = result.EmitAsString(EmitOptions.UnixSpaces);
@@ -101,7 +97,7 @@ class C
                 expectedResult: Factory.Call(Factory.MemberDot(s_ss, "clear"), Factory.ArgumentList(leftSide)),
                 translatedLeftSide: leftSide,
                 translatedArgumentList: Factory.ArgumentList(),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
@@ -139,7 +135,7 @@ class C
                     Factory.Argument(Factory.Identifier("charArray")),
                     Factory.Argument(Factory.Number(1)),
                     Factory.Argument(Factory.Number(10))),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
         [TestMethod]
@@ -157,7 +153,7 @@ class C
                     Factory.Argument(Factory.Number(1)),
                     Factory.Argument(Factory.Number(2)),
                     Factory.Argument(Factory.Number(3))),
-                discoveryKind: SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+                discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

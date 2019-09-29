@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TempProject.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -157,36 +157,21 @@ namespace Desalt.Core.Tests.TestUtility
         public async Task<ImmutableArray<DocumentTranslationContextWithSymbolTables>>
             CreateContextsWithSymbolTablesAsync(
                 CompilerOptions options = null,
-                SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes)
+                SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
+            options = options ?? Options;
+
             // add all of the symbols from all of the documents in the project
             var contexts = (await Task.WhenAll(
                 _workspace.CurrentSolution.Projects.Single()
                     .Documents.Select(doc => CreateContextForFileAsync(doc.Name, options)))).ToImmutableArray();
 
-            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(contexts, discoveryKind);
+            // create the script symbol table
+            var scriptNamer = new ScriptNamer(
+                SymbolDiscoverer.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
+                options.RenameRules);
 
-            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
-                    directlyReferencedExternalTypeSymbols,
-                    contexts.FirstOrDefault()?.SemanticModel.Compilation,
-                    discoveryKind: discoveryKind);
-
-            // create the import symbol table
-            var importTable = ImportSymbolTable.Create(contexts, directlyReferencedExternalTypeSymbols);
-
-            // create the script name symbol table
-            var scriptNameTable = ScriptNameSymbolTable.Create(
-                contexts,
-                directlyReferencedExternalTypeSymbols,
-                indirectlyReferencedExternalTypeSymbols);
-
-            // create the inline code symbol table
-            var inlineCodeTable = InlineCodeSymbolTable.Create(
-                contexts,
-                directlyReferencedExternalTypeSymbols,
-                indirectlyReferencedExternalTypeSymbols);
+            var scriptSymbolTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
             // create the alternate signature symbol table
             var result = AlternateSignatureSymbolTable.Create(contexts);
@@ -196,9 +181,7 @@ namespace Desalt.Core.Tests.TestUtility
             return contexts.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
-                        importTable,
-                        scriptNameTable,
-                        inlineCodeTable,
+                        scriptSymbolTable,
                         alternateSignatureTable))
                 .ToImmutableArray();
         }
@@ -206,7 +189,7 @@ namespace Desalt.Core.Tests.TestUtility
         public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
             string fileName = "File.cs",
             CompilerOptions options = null,
-            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndReferencedTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
             var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
             DocumentTranslationContextWithSymbolTables thisContext =

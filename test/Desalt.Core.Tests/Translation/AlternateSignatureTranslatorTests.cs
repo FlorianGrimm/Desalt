@@ -51,7 +51,7 @@ using System.Runtime.CompilerServices;
                     .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
                     .First(symbol => symbol.ToHashDisplay() == methodKey);
 
-                var typeTranslator = new TypeTranslator(context.ScriptNameSymbolTable);
+                var typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
 
                 var translator = new AlternateSignatureTranslator(
                     context.AlternateSignatureSymbolTable,

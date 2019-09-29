@@ -151,6 +151,9 @@ namespace Desalt.Core
                 : new CompilerOptions(this, outputPath: value);
         }
 
+        public CompilerOptions WithSymbolTableOverrides(SymbolTableOverrides value) =>
+            SymbolTableOverrides.Equals(value) ? this : new CompilerOptions(this, symbolTableOverrides: value);
+
         /// <summary>
         /// Deserializes the options from a JSON file.
         /// </summary>

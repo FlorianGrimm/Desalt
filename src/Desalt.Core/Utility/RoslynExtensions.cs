@@ -73,10 +73,10 @@ namespace Desalt.Core.Utility
 
         public static ITsIdentifier GetScriptName(
             this ISymbol symbol,
-            ScriptNameSymbolTable scriptNameSymbolTable,
+            ScriptSymbolTable scriptSymbolTable,
             string defaultName)
         {
-            return Factory.Identifier(scriptNameSymbolTable.GetValueOrDefault(symbol, defaultName));
+            return Factory.Identifier(scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, defaultName));
         }
 
         /// <summary>

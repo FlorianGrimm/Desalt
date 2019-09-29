@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CreateSymbolTablesStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -9,6 +9,7 @@ namespace Desalt.Core.CompilerStages
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -46,46 +47,38 @@ namespace Desalt.Core.CompilerStages
             // get the symbol table overrides
             SymbolTableOverrides overrides = options.SymbolTableOverrides;
 
+            // the compilation should be the same in all of the contexts, so just use the first one
+            Compilation compilation = input.First().SemanticModel.Compilation;
+            Debug.Assert(input.All(context => ReferenceEquals(context.SemanticModel.Compilation, compilation)));
+
             // since most of the symbol tables will need references to types directly referenced in
             // the documents and types in referenced assemblies, compute them once and then pass them
             // into each symbol table
             ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverDirectlyReferencedExternalTypes(
+                SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
                     input,
-                    SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
+                    SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
                     cancellationToken);
 
             ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
-                SymbolTableUtils.DiscoverTypesInReferencedAssemblies(
+                SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
                     directlyReferencedExternalTypeSymbols,
-                    input.FirstOrDefault()?.SemanticModel.Compilation,
+                    compilation,
                     cancellationToken);
+
+            // create a script namer
+            var mscorlibAssemblySymbol = SymbolDiscoverer.GetMscorlibAssemblySymbol(compilation);
+            var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, options.RenameRules);
 
             // construct each symbol table in parallel
             var tasks = new List<Task<object>>
             {
-                // create the import symbol table
+                // create the script symbol table
                 Task.Run<object>(
-                    () => ImportSymbolTable.Create(input, directlyReferencedExternalTypeSymbols, cancellationToken),
-                    cancellationToken),
-
-                // create the script name symbol table
-                Task.Run<object>(
-                    () => ScriptNameSymbolTable.Create(
+                    () => ScriptSymbolTable.Create(
                         input,
-                        directlyReferencedExternalTypeSymbols,
-                        indirectlyReferencedExternalTypeSymbols,
-                        overrides.ScriptNameOverrides,
-                        cancellationToken),
-                    cancellationToken),
-
-                // create the inline code symbol table
-                Task.Run<object>(
-                    () => InlineCodeSymbolTable.Create(
-                        input,
-                        directlyReferencedExternalTypeSymbols,
-                        indirectlyReferencedExternalTypeSymbols,
-                        overrides.InlineCodeOverrides,
+                        scriptNamer,
+                        SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
                         cancellationToken),
                     cancellationToken),
 
@@ -97,11 +90,9 @@ namespace Desalt.Core.CompilerStages
 
             await Task.WhenAll(tasks);
 
-            var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
-            var scriptNameSymbolTable = (ScriptNameSymbolTable)tasks[1].Result;
-            var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
+            var scriptSymbolTable = (ScriptSymbolTable)tasks[0].Result;
 
-            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;
+            var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[1].Result;
             diagnostics.AddRange(alternateSignatureTableCreateResult.Diagnostics);
             var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
 
@@ -109,9 +100,7 @@ namespace Desalt.Core.CompilerStages
             var newContexts = input.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
-                        importSymbolTable,
-                        scriptNameSymbolTable,
-                        inlineCodeSymbolTable,
+                        scriptSymbolTable,
                         alternateSignatureSymbolTable))
                 .ToImmutableArray();
 

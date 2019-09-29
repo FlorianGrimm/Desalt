@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TypeTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -65,7 +65,7 @@ namespace Desalt.Core.Translation
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
-        private readonly ScriptNameSymbolTable _scriptNameSymbolTable;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
 
         //// ===========================================================================================================
         //// Constructors
@@ -74,14 +74,14 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeTranslator"/> class.
         /// </summary>
-        /// <param name="scriptNameSymbolTable">
+        /// <param name="scriptSymbolTable">
         /// The script name symbol table. For example, List{T} gets translated to a native array, so
         /// it has a [ScriptName("Array")] attribute.
         /// </param>
-        public TypeTranslator(ScriptNameSymbolTable scriptNameSymbolTable)
+        public TypeTranslator(ScriptSymbolTable scriptSymbolTable)
         {
-            _scriptNameSymbolTable =
-                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+            _scriptSymbolTable =
+                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
         }
 
         //// ===========================================================================================================
@@ -159,11 +159,11 @@ namespace Desalt.Core.Translation
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
         public ITsType TranslateSymbol(
             ITypeSymbol symbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
-            typesToImport = typesToImport ?? new HashSet<ISymbol>();
+            typesToImport = typesToImport ?? new HashSet<ITypeSymbol>();
             diagnostics = diagnostics ?? new List<Diagnostic>();
 
             var namedTypeSymbol = symbol as INamedTypeSymbol;
@@ -221,7 +221,7 @@ namespace Desalt.Core.Translation
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
 
-            string scriptName = _scriptNameSymbolTable.GetValueOrDefault(symbol, null);
+            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, null);
             if (scriptName == null)
             {
                 Diagnostic error = DiagnosticFactory.UnknownTypeReference(
@@ -269,7 +269,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private bool TryTranslateNullableT(
             INamedTypeSymbol namedTypeSymbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
             out ITsType unionType)
@@ -296,7 +296,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private bool TryTranslateJsDictionary(
             INamedTypeSymbol namedTypeSymbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
             out ITsType objectType)
@@ -352,7 +352,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private ITsFunctionType TranslateFunc(
             INamedTypeSymbol symbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {

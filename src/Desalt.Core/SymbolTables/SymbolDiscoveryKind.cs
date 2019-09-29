@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="SymbolTableDiscoveryKind.cs" company="Justin Rockwood">
+// <copyright file="SymbolDiscoveryKind.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -8,9 +8,9 @@
 namespace Desalt.Core.SymbolTables
 {
     /// <summary>
-    /// Controls how a <see cref="SymbolTableBase{T}"/> discovers types to add to the symbol table.
+    /// Controls how a <see cref="ScriptSymbolTable"/> discovers types to add to the symbol table.
     /// </summary>
-    internal enum SymbolTableDiscoveryKind
+    internal enum SymbolDiscoveryKind
     {
         /// <summary>
         /// Only types defined in the document are discovered.

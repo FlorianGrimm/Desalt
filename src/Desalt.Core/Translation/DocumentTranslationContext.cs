@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DocumentTranslationContext.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -121,7 +121,7 @@ namespace Desalt.Core.Translation
 
     /// <summary>
     /// Contains information about how to validate or translate a C# document into TypeScript, with a
-    /// valid <see cref="ImportSymbolTable"/>.
+    /// valid <see cref="ScriptSymbolTable"/>.
     /// </summary>
     internal sealed class DocumentTranslationContextWithSymbolTables : DocumentTranslationContext
     {
@@ -131,9 +131,7 @@ namespace Desalt.Core.Translation
 
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
-            ImportSymbolTable importSymbolTable,
-            ScriptNameSymbolTable scriptNameSymbolTable,
-            InlineCodeSymbolTable inlineCodeSymbolTable,
+            ScriptSymbolTable scriptSymbolTable,
             AlternateSignatureSymbolTable alternateSignatureSymbolTable) : base(
             context.Document,
             context.Options,
@@ -141,13 +139,8 @@ namespace Desalt.Core.Translation
             context.RootSyntax,
             context.SemanticModel)
         {
-            ImportSymbolTable = importSymbolTable ?? throw new ArgumentNullException(nameof(importSymbolTable));
-
-            ScriptNameSymbolTable =
-                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
-
-            InlineCodeSymbolTable =
-                inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
+            ScriptSymbolTable =
+                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
 
             AlternateSignatureSymbolTable = alternateSignatureSymbolTable ??
                 throw new ArgumentNullException(nameof(alternateSignatureSymbolTable));
@@ -157,11 +150,7 @@ namespace Desalt.Core.Translation
         //// Properties
         //// ===========================================================================================================
 
-        public ImportSymbolTable ImportSymbolTable { get; }
-
-        public ScriptNameSymbolTable ScriptNameSymbolTable { get; }
-
-        public InlineCodeSymbolTable InlineCodeSymbolTable { get; }
+        public ScriptSymbolTable ScriptSymbolTable { get; }
 
         public AlternateSignatureSymbolTable AlternateSignatureSymbolTable { get; }
     }

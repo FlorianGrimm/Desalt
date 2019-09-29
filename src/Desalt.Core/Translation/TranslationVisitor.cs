@@ -35,11 +35,11 @@ namespace Desalt.Core.Translation
         private readonly ICollection<Diagnostic> _diagnostics;
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
-        private readonly ScriptNameSymbolTable _scriptNameTable;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
-        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>();
+        private readonly ISet<ITypeSymbol> _typesToImport = new HashSet<ITypeSymbol>();
         private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         //// ===========================================================================================================
@@ -64,13 +64,10 @@ namespace Desalt.Core.Translation
         {
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
-            _scriptNameTable = context.ScriptNameSymbolTable;
-            _inlineCodeTranslator = new InlineCodeTranslator(
-                context.SemanticModel,
-                context.InlineCodeSymbolTable,
-                context.ScriptNameSymbolTable);
+            _scriptSymbolTable = context.ScriptSymbolTable;
+            _inlineCodeTranslator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
-            _typeTranslator = new TypeTranslator(context.ScriptNameSymbolTable);
+            _typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
 
             _alternateSignatureTranslator = new AlternateSignatureTranslator(
                 context.AlternateSignatureSymbolTable,
@@ -85,7 +82,7 @@ namespace Desalt.Core.Translation
 
         public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
 
-        public IEnumerable<ISymbol> TypesToImport => _typesToImport.AsEnumerable();
+        public IEnumerable<ITypeSymbol> TypesToImport => _typesToImport.AsEnumerable();
 
         //// ===========================================================================================================
         //// Visit Methods
@@ -94,7 +91,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> DefaultVisit(SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
-            ReportUnsupportedTranslataion(diagnostic);
+            ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -104,7 +101,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to add and report.</param>
         /// <returns>An empty <see cref="IEnumerable{ITsAstNode}"/>.</returns>
-        private void ReportUnsupportedTranslataion(Diagnostic diagnostic)
+        private void ReportUnsupportedTranslatation(Diagnostic diagnostic)
         {
             _diagnostics.Add(diagnostic);
 #if DEBUG
@@ -137,20 +134,20 @@ namespace Desalt.Core.Translation
             ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
             if (symbol == null)
             {
-                ReportUnsupportedTranslataion(DiagnosticFactory.IdentifierNotSupported(node));
+                ReportUnsupportedTranslatation(DiagnosticFactory.IdentifierNotSupported(node));
                 return Factory.Identifier("Error");
             }
 
-            if (!_scriptNameTable.TryGetValue(symbol, out string scriptName))
+            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
-                ReportUnsupportedTranslataion(
+                ReportUnsupportedTranslatation(
                     DiagnosticFactory.InternalError(
-                        $"Node should have been added to the ScriptNameSymbolTable: {node}",
+                        $"Node should have been added to the ScriptSymbolTable: {node}",
                         node.GetLocation()));
                 return Factory.Identifier("Error");
             }
 
-            return Factory.Identifier(scriptName);
+            return Factory.Identifier(scriptSymbol.ComputedScriptName);
         }
 
         /// <summary>
