@@ -39,7 +39,7 @@ namespace Desalt.Core.Translation
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
-        private readonly ISet<ISymbol> _typesToImport = new HashSet<ISymbol>();
+        private readonly ISet<ITypeSymbol> _typesToImport = new HashSet<ITypeSymbol>();
         private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         //// ===========================================================================================================
@@ -85,7 +85,7 @@ namespace Desalt.Core.Translation
 
         public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
 
-        public IEnumerable<ISymbol> TypesToImport => _typesToImport.AsEnumerable();
+        public IEnumerable<ITypeSymbol> TypesToImport => _typesToImport.AsEnumerable();
 
         //// ===========================================================================================================
         //// Visit Methods

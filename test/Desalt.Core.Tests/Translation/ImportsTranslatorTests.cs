@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ImportsTranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -18,14 +18,13 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.Ast;
 
     [TestClass]
     public class ImportsTranslatorTests
     {
-        private delegate IEnumerable<ISymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
+        private delegate IEnumerable<ITypeSymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
 
-        private static IEnumerable<ISymbol> GetFirstFieldDeclarationSymbol(
+        private static IEnumerable<ITypeSymbol> GetFirstFieldDeclarationSymbol(
             DocumentTranslationContextWithSymbolTables context)
         {
             FieldDeclarationSyntax fieldDeclaration =
@@ -84,10 +83,10 @@ class C
                         codeFiles[0].FileName,
                         discoveryKind: discoveryKind);
 
-                IEnumerable<ISymbol> typesToImport = getSymbolsFunc(context);
+                IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
-                IExtendedResult<IEnumerable<ITsImportDeclaration>> results =
-                    ImportsTranslator.TranslateImports(context, typesToImport);
+                var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
+                var results = importsTranslator.TranslateImports(context, typesToImport);
 
                 results.Diagnostics.Should().BeEmpty();
 
@@ -149,7 +148,7 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_alphabetize_symbol_names_within_a_group()
         {
-            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
@@ -174,7 +173,7 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_get_all_of_the_referenced_files()
         {
-            IEnumerable<ISymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();

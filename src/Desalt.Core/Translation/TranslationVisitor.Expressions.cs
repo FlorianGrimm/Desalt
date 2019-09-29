@@ -217,7 +217,7 @@ namespace Desalt.Core.Translation
             // add this type to the import list if it doesn't belong to us
             if (!belongsToThisType)
             {
-                _typesToImport.Add(symbol);
+                _typesToImport.Add((ITypeSymbol)symbol);
             }
 
             return expression;

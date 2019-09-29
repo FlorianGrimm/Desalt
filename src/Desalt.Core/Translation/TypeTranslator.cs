@@ -159,11 +159,11 @@ namespace Desalt.Core.Translation
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
         public ITsType TranslateSymbol(
             ITypeSymbol symbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
-            typesToImport = typesToImport ?? new HashSet<ISymbol>();
+            typesToImport = typesToImport ?? new HashSet<ITypeSymbol>();
             diagnostics = diagnostics ?? new List<Diagnostic>();
 
             var namedTypeSymbol = symbol as INamedTypeSymbol;
@@ -269,7 +269,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private bool TryTranslateNullableT(
             INamedTypeSymbol namedTypeSymbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
             out ITsType unionType)
@@ -296,7 +296,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private bool TryTranslateJsDictionary(
             INamedTypeSymbol namedTypeSymbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
             out ITsType objectType)
@@ -352,7 +352,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         private ITsFunctionType TranslateFunc(
             INamedTypeSymbol symbol,
-            ISet<ISymbol> typesToImport,
+            ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
