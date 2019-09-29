@@ -33,6 +33,13 @@ namespace Desalt.Core.Tests.Translation
             yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
         }
 
+        private static async Task AssertNoImports(
+            string codeSnippet,
+            SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes)
+        {
+            await AssertImports(codeSnippet, discoveryKind);
+        }
+
         private static async Task AssertImports(
             string codeSnippet,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.OnlyDocumentTypes,
@@ -98,51 +105,51 @@ class C
         [TestMethod]
         public async Task ImportsTranslator_should_skip_native_types()
         {
-            await AssertImports("int x = 1; object o = null;");
+            await AssertNoImports("int x = 1; object o = null;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_skip_array_types()
         {
-            await AssertImports("int[] array;");
+            await AssertNoImports("int[] array;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_RegExp_types()
         {
-            await AssertImports("Regex r;");
+            await AssertNoImports("Regex r;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_Function_types()
         {
-            await AssertImports("Func<int, bool> func;");
-            await AssertImports("Action<int, bool> action;");
+            await AssertNoImports("Func<int, bool> func;");
+            await AssertNoImports("Action<int, bool> action;");
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
         {
-            await AssertImports("List<int> list;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
-            await AssertImports("JsArray<int> array;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("List<int> list;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsArray<int> array;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
         {
-            await AssertImports("JsDictionary<string, int> dict;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("JsDictionary<string, int> dict;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
-            await AssertImports("Error err;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
+            await AssertNoImports("Error err;", SymbolTableDiscoveryKind.DocumentAndReferencedTypes);
         }
 
         [TestMethod]
         public async Task ImportsTranslator_should_not_import_types_from_Saltarelle_Web()
         {
-            await AssertImports("HtmlElement div;");
+            await AssertNoImports("HtmlElement div;");
         }
 
         [TestMethod]
