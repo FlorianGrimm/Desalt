@@ -35,7 +35,7 @@ namespace Desalt.Core.Translation
         private readonly ICollection<Diagnostic> _diagnostics;
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
-        private readonly NewSymbolTable _scriptNameTable;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
@@ -64,13 +64,13 @@ namespace Desalt.Core.Translation
         {
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
-            _scriptNameTable = context.ScriptNameSymbolTable;
+            _scriptSymbolTable = context.ScriptSymbolTable;
             _inlineCodeTranslator = new InlineCodeTranslator(
                 context.SemanticModel,
                 context.InlineCodeSymbolTable,
-                context.ScriptNameSymbolTable);
+                context.ScriptSymbolTable);
 
-            _typeTranslator = new TypeTranslator(context.ScriptNameSymbolTable);
+            _typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
 
             _alternateSignatureTranslator = new AlternateSignatureTranslator(
                 context.AlternateSignatureSymbolTable,
@@ -141,11 +141,11 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier("Error");
             }
 
-            if (!_scriptNameTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
                 ReportUnsupportedTranslataion(
                     DiagnosticFactory.InternalError(
-                        $"Node should have been added to the ScriptNameSymbolTable: {node}",
+                        $"Node should have been added to the ScriptSymbolTable: {node}",
                         node.GetLocation()));
                 return Factory.Identifier("Error");
             }

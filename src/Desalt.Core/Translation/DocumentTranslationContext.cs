@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DocumentTranslationContext.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -132,7 +132,7 @@ namespace Desalt.Core.Translation
         public DocumentTranslationContextWithSymbolTables(
             DocumentTranslationContext context,
             ImportSymbolTable importSymbolTable,
-            NewSymbolTable scriptNameSymbolTable,
+            ScriptSymbolTable scriptSymbolTable,
             InlineCodeSymbolTable inlineCodeSymbolTable,
             AlternateSignatureSymbolTable alternateSignatureSymbolTable) : base(
             context.Document,
@@ -143,8 +143,8 @@ namespace Desalt.Core.Translation
         {
             ImportSymbolTable = importSymbolTable ?? throw new ArgumentNullException(nameof(importSymbolTable));
 
-            ScriptNameSymbolTable =
-                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+            ScriptSymbolTable =
+                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
 
             InlineCodeSymbolTable =
                 inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
@@ -159,7 +159,7 @@ namespace Desalt.Core.Translation
 
         public ImportSymbolTable ImportSymbolTable { get; }
 
-        public NewSymbolTable ScriptNameSymbolTable { get; }
+        public ScriptSymbolTable ScriptSymbolTable { get; }
 
         public InlineCodeSymbolTable InlineCodeSymbolTable { get; }
 

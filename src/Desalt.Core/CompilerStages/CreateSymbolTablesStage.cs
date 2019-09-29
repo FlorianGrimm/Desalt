@@ -74,9 +74,9 @@ namespace Desalt.Core.CompilerStages
                     () => ImportSymbolTable.Create(input, directlyReferencedExternalTypeSymbols, cancellationToken),
                     cancellationToken),
 
-                // create the script name symbol table
+                // create the script symbol table
                 Task.Run<object>(
-                    () => NewSymbolTable.Create(
+                    () => ScriptSymbolTable.Create(
                         input,
                         scriptNamer,
                         SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
@@ -102,7 +102,7 @@ namespace Desalt.Core.CompilerStages
             await Task.WhenAll(tasks);
 
             var importSymbolTable = (ImportSymbolTable)tasks[0].Result;
-            var scriptNameSymbolTable = (NewSymbolTable)tasks[1].Result;
+            var scriptSymbolTable = (ScriptSymbolTable)tasks[1].Result;
             var inlineCodeSymbolTable = (InlineCodeSymbolTable)tasks[2].Result;
 
             var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[3].Result;
@@ -114,7 +114,7 @@ namespace Desalt.Core.CompilerStages
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         importSymbolTable,
-                        scriptNameSymbolTable,
+                        scriptSymbolTable,
                         inlineCodeSymbolTable,
                         alternateSignatureSymbolTable))
                 .ToImmutableArray();

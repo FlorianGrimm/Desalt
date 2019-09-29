@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.3\build\Microsoft.CodeAnalysis.Analyzers.props')" />
   <Import Project="..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props')" />
@@ -190,8 +190,6 @@
     <Compile Include="SymbolTables\IScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\IScriptSymbol.cs" />
     <Compile Include="SymbolTables\IScriptTypeSymbol.cs" />
-    <Compile Include="SymbolTables\NewSymbolTable.Create.cs" />
-    <Compile Include="SymbolTables\NewSymbolTable.cs" />
     <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
     <Compile Include="SymbolTables\ScriptAssemblySymbol.cs" />
@@ -202,6 +200,8 @@
     <Compile Include="SymbolTables\ScriptMethodSymbol.cs" />
     <Compile Include="SymbolTables\ScriptNamer.cs" />
     <Compile Include="SymbolTables\ScriptSymbolExtensions.cs" />
+    <Compile Include="SymbolTables\ScriptSymbolTable.Create.cs" />
+    <Compile Include="SymbolTables\ScriptSymbolTable.cs" />
     <Compile Include="SymbolTables\SymbolAttributeExtensions.cs" />
     <Compile Include="SymbolTables\SymbolTableBase.cs" />
     <Compile Include="SymbolTables\ScriptPropertySymbol.cs" />

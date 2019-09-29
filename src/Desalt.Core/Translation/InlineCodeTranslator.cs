@@ -32,7 +32,7 @@ namespace Desalt.Core.Translation
 
         private readonly SemanticModel _semanticModel;
         private readonly InlineCodeSymbolTable _inlineCodeSymbolTable;
-        private readonly NewSymbolTable _scriptNameSymbolTable;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
 
         //// ===========================================================================================================
         //// Constructors
@@ -46,22 +46,22 @@ namespace Desalt.Core.Translation
         /// <param name="inlineCodeSymbolTable">
         /// A symbol table containing [InlineCode] attributes for various symbols.
         /// </param>
-        /// <param name="scriptNameSymbolTable">
+        /// <param name="scriptSymbolTable">
         /// A symbol table containing script names given a symbol. Used for {$Namespace.Type}
         /// parameter substitutions.
         /// </param>
         public InlineCodeTranslator(
             SemanticModel semanticModel,
             InlineCodeSymbolTable inlineCodeSymbolTable,
-            NewSymbolTable scriptNameSymbolTable)
+            ScriptSymbolTable scriptSymbolTable)
         {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
             _inlineCodeSymbolTable =
                 inlineCodeSymbolTable ?? throw new ArgumentNullException(nameof(inlineCodeSymbolTable));
 
-            _scriptNameSymbolTable =
-                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+            _scriptSymbolTable =
+                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
         }
 
         //// ===========================================================================================================
@@ -248,7 +248,7 @@ namespace Desalt.Core.Translation
                 return fullTypeName;
             }
 
-            if (_scriptNameSymbolTable.TryGetValue(typeSymbol, out IScriptSymbol scriptSymbol))
+            if (_scriptSymbolTable.TryGetValue(typeSymbol, out IScriptSymbol scriptSymbol))
             {
                 return scriptSymbol.ComputedScriptName;
             }

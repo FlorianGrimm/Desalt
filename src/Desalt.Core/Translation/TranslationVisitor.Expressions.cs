@@ -149,7 +149,7 @@ namespace Desalt.Core.Translation
 
             // if there's no symbol then just return an identifier
             string scriptName = node.Keyword.ValueText;
-            if (symbol != null && _scriptNameTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
                 scriptName = scriptSymbol.ComputedScriptName;
             }
@@ -167,7 +167,7 @@ namespace Desalt.Core.Translation
             ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
-            if (symbol == null || !_scriptNameTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (symbol == null || !_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
             {
                 yield return Factory.Identifier(node.Identifier.Text);
                 yield break;
@@ -199,7 +199,7 @@ namespace Desalt.Core.Translation
             if (symbol.IsStatic && containingType != null)
             {
                 string containingTypeScriptName =
-                    _scriptNameTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
+                    _scriptSymbolTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
 
                 expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
             }
@@ -248,7 +248,7 @@ namespace Desalt.Core.Translation
             // bets are off with the type checking
             string scriptName = symbol == null
                 ? node.Name.Identifier.Text
-                : _scriptNameTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
+                : _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
 
             ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
             yield return translated;

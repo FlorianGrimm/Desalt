@@ -12,7 +12,7 @@ namespace Desalt.Core.SymbolTables
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// Represents a key into the <see cref="NewSymbolTable"/>.
+    /// Represents a key into the <see cref="ScriptSymbolTable"/>.
     /// </summary>
     internal sealed class SymbolTableKey : IEquatable<SymbolTableKey>
     {

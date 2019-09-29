@@ -62,7 +62,7 @@ class Foo
                 // create the script name symbol table
                 var scriptNamer = new ScriptNamer(
                     SymbolTableUtils.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
-                var scriptNameTable = NewSymbolTable.Create(contexts, scriptNamer, discoveryKind);
+                var scriptNameTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
                 var translator = new TypeTranslator(scriptNameTable);
                 var diagnostics = new List<Diagnostic>();

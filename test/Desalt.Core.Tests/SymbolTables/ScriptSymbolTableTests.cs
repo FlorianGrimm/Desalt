@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="NewScriptTableTests.cs" company="Justin Rockwood">
+// <copyright file="ScriptSymbolTableTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -24,7 +24,7 @@ namespace Desalt.Core.Tests.SymbolTables
     using Moq;
 
     [TestClass]
-    public class NewScriptTableTests
+    public class ScriptSymbolTableTests
     {
         private static IScriptNamer CreateFakeScriptNamer()
         {
@@ -44,7 +44,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(
+                var symbolTable = ScriptSymbolTable.Create(
                     contexts,
                     CreateFakeScriptNamer(),
                     SymbolTableDiscoveryKind.OnlyDocumentTypes);
@@ -128,7 +128,7 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts, CreateFakeScriptNamer());
+                var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
                 // check a directly-reference symbol
                 InvocationExpressionSyntax invocationExpressionSyntax =
@@ -165,7 +165,7 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(contexts, CreateFakeScriptNamer());
+                var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
                 // make sure we read the [Imported] from class C
                 ClassDeclarationSyntax classDeclarationSyntax =
@@ -218,7 +218,7 @@ class C
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync(options: options);
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = NewSymbolTable.Create(
+                var symbolTable = ScriptSymbolTable.Create(
                     contexts,
                     CreateFakeScriptNamer(),
                     SymbolTableDiscoveryKind.OnlyDocumentTypes);

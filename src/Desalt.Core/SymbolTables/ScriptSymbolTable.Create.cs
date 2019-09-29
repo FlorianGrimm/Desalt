@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="NewSymbolTable.Create.cs" company="Justin Rockwood">
+// <copyright file="ScriptSymbolTable.Create.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -17,17 +17,17 @@ namespace Desalt.Core.SymbolTables
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
-    internal sealed partial class NewSymbolTable
+    internal sealed partial class ScriptSymbolTable
     {
         /// <summary>
-        /// Creates a new <see cref="NewSymbolTable"/> for the specified translation contexts.
+        /// Creates a new <see cref="ScriptSymbolTable"/> for the specified translation contexts.
         /// </summary>
         /// <param name="contexts">The contexts from which to retrieve symbols.</param>
         /// <param name="scriptNamer">names for the generated script given C# symbols.</param>
         /// <param name="discoveryKind">The kind of discovery to use (mainly for unit tests).</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for cancellation.</param>
-        /// <returns>A new <see cref="NewSymbolTable"/>.</returns>
-        public static NewSymbolTable Create(
+        /// <returns>A new <see cref="ScriptSymbolTable"/>.</returns>
+        public static ScriptSymbolTable Create(
             ImmutableArray<DocumentTranslationContext> contexts,
             IScriptNamer scriptNamer,
             SymbolTableDiscoveryKind discoveryKind = SymbolTableDiscoveryKind.DocumentAndAllAssemblyTypes,
@@ -73,7 +73,7 @@ namespace Desalt.Core.SymbolTables
                         new Lazy<IScriptSymbol>(() => CreateScriptSymbol(typeSymbol, scriptNamer), isThreadSafe: true)))
                 .ToImmutableDictionary();
 
-            return new NewSymbolTable(
+            return new ScriptSymbolTable(
                 overrides,
                 documentSymbols,
                 directlyReferencedExternalSymbols,

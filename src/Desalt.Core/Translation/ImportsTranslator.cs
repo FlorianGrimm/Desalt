@@ -78,7 +78,7 @@ namespace Desalt.Core.Translation
                         return new
                         {
                             TypeName =
-                                context.ScriptNameSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name),
+                                context.ScriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name),
                             RelativePathOrModuleName = relativePathOrModuleName
                         };
                     })
@@ -131,7 +131,7 @@ namespace Desalt.Core.Translation
             }
 
             // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
-            if (context.ScriptNameSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol) &&
+            if (context.ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol) &&
                 TypeTranslator.IsNativeTypeScriptTypeName(scriptSymbol.ComputedScriptName))
             {
                 return false;

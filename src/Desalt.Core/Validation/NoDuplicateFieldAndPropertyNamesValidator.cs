@@ -54,8 +54,8 @@ namespace Desalt.Core.Validation
                 where fieldSymbol != null && propertySymbol != null
 
                 // lookup the compiled names
-                let fieldScriptName = context.ScriptNameSymbolTable[fieldSymbol].ComputedScriptName
-                let propertyScriptName = context.ScriptNameSymbolTable[propertySymbol].ComputedScriptName
+                let fieldScriptName = context.ScriptSymbolTable[fieldSymbol].ComputedScriptName
+                let propertyScriptName = context.ScriptSymbolTable[propertySymbol].ComputedScriptName
 
                 // and check for any duplicate names
                 where string.Equals(fieldScriptName, propertyScriptName, StringComparison.Ordinal)

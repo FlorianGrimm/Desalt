@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="NewSymbolTable.cs" company="Justin Rockwood">
+// <copyright file="ScriptSymbolTable.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -17,14 +17,14 @@ namespace Desalt.Core.SymbolTables
     /// Represents a symbol table holding information about how to translate a C# symbol into TypeScript.
     /// </summary>
     /// <remarks>This type is thread-safe and is able to be accessed concurrently.</remarks>
-    internal sealed partial class NewSymbolTable
+    internal sealed partial class ScriptSymbolTable
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         /// <summary>
-        /// Initializes a new <see cref="NewSymbolTable"/> with the specified values.
+        /// Initializes a new <see cref="ScriptSymbolTable"/> with the specified values.
         /// </summary>
         ///// <param name="overrideSymbols">
         ///// An array of overrides that takes precedence over any of the other symbols. This is to
@@ -39,7 +39,7 @@ namespace Desalt.Core.SymbolTables
         ///// externally-referenced types in an assembly that may never be accessed. There is a
         ///// performance hit for processing potentially hundreds of values when they may not be used.
         ///// </param>
-        private NewSymbolTable(
+        private ScriptSymbolTable(
             ImmutableDictionary<string, SymbolTableOverride> overrideSymbols,
             ImmutableDictionary<ISymbol, IScriptSymbol> documentSymbols,
             ImmutableDictionary<ISymbol, IScriptSymbol> directlyReferencedExternalSymbols,

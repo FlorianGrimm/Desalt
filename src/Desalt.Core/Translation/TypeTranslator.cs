@@ -65,7 +65,7 @@ namespace Desalt.Core.Translation
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
-        private readonly NewSymbolTable _scriptNameSymbolTable;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
 
         //// ===========================================================================================================
         //// Constructors
@@ -74,14 +74,14 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeTranslator"/> class.
         /// </summary>
-        /// <param name="scriptNameSymbolTable">
+        /// <param name="scriptSymbolTable">
         /// The script name symbol table. For example, List{T} gets translated to a native array, so
         /// it has a [ScriptName("Array")] attribute.
         /// </param>
-        public TypeTranslator(NewSymbolTable scriptNameSymbolTable)
+        public TypeTranslator(ScriptSymbolTable scriptSymbolTable)
         {
-            _scriptNameSymbolTable =
-                scriptNameSymbolTable ?? throw new ArgumentNullException(nameof(scriptNameSymbolTable));
+            _scriptSymbolTable =
+                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
         }
 
         //// ===========================================================================================================
@@ -221,7 +221,7 @@ namespace Desalt.Core.Translation
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
 
-            string scriptName = _scriptNameSymbolTable.GetComputedScriptNameOrDefault(symbol, null);
+            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, null);
             if (scriptName == null)
             {
                 Diagnostic error = DiagnosticFactory.UnknownTypeReference(

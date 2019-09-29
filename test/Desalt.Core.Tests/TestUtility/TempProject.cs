@@ -178,12 +178,12 @@ namespace Desalt.Core.Tests.TestUtility
             // create the import symbol table
             var importTable = ImportSymbolTable.Create(contexts, directlyReferencedExternalTypeSymbols);
 
-            // create the script name symbol table
+            // create the script symbol table
             var scriptNamer = new ScriptNamer(
                 SymbolTableUtils.GetMscorlibAssemblySymbol(contexts.First().SemanticModel.Compilation),
                 options.RenameRules);
 
-            var scriptNameTable = NewSymbolTable.Create(contexts, scriptNamer, discoveryKind);
+            var scriptSymbolTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
             // create the inline code symbol table
             var inlineCodeTable = InlineCodeSymbolTable.Create(
@@ -200,7 +200,7 @@ namespace Desalt.Core.Tests.TestUtility
                     context => new DocumentTranslationContextWithSymbolTables(
                         context,
                         importTable,
-                        scriptNameTable,
+                        scriptSymbolTable,
                         inlineCodeTable,
                         alternateSignatureTable))
                 .ToImmutableArray();
