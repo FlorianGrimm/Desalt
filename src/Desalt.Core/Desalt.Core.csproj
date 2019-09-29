@@ -190,6 +190,7 @@
     <Compile Include="SymbolTables\IScriptStructSymbol.cs" />
     <Compile Include="SymbolTables\IScriptSymbol.cs" />
     <Compile Include="SymbolTables\IScriptTypeSymbol.cs" />
+    <Compile Include="SymbolTables\NewSymbolTable.Create.cs" />
     <Compile Include="SymbolTables\NewSymbolTable.cs" />
     <Compile Include="SymbolTables\SaltarelleAttributeName.cs" />
     <Compile Include="SymbolTables\ScriptableTypesSymbolVisitor.cs" />
