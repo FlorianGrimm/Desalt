@@ -21,18 +21,14 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
 
     [TestClass]
     public class ScriptSymbolTableTests
     {
         private static IScriptNamer CreateFakeScriptNamer()
         {
-            var fakeScriptNamer = new Mock<IScriptNamer>();
-            fakeScriptNamer.Setup(mock => mock.DetermineScriptNameForSymbol(It.IsAny<ISymbol>()))
-                .Returns("ComputedScriptName");
-
-            return fakeScriptNamer.Object;
+            var fakeScriptNamer = new FakeScriptNamer("ComputedScriptName");
+            return fakeScriptNamer;
         }
 
         private static async Task AssertDocumentEntriesInSymbolTable(
@@ -229,6 +225,30 @@ class C
                     .Single();
 
                 symbolTable.Get<IScriptMethodSymbol>(methodSymbol).InlineCode.Should().Be("OVERRIDE");
+            }
+        }
+
+        //// ===========================================================================================================
+        //// Classes
+        //// ===========================================================================================================
+
+        private class FakeScriptNamer : IScriptNamer
+        {
+            public FakeScriptNamer(string scriptNameForAllSymbols)
+            {
+                ScriptNameForAllSymbols = scriptNameForAllSymbols;
+            }
+
+            public string ScriptNameForAllSymbols { get; }
+
+            /// <summary>
+            /// Determines the name a symbol should have in the generated script.
+            /// </summary>
+            /// <param name="symbol">The symbol for which to discover the script name.</param>
+            /// <returns>The name the specified symbol should have in the generated script.</returns>
+            public string DetermineScriptNameForSymbol(ISymbol symbol)
+            {
+                return ScriptNameForAllSymbols;
             }
         }
     }

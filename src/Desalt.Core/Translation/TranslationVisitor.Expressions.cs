@@ -190,8 +190,9 @@ namespace Desalt.Core.Translation
             INamedTypeSymbol containingType = symbol.ContainingType;
 
             // see if the identifier is declared within this type
-            bool belongsToThisType = containingType ==
-                _semanticModel.GetEnclosingSymbol(nodeSpanStart, _cancellationToken)?.ContainingType;
+            bool belongsToThisType = SymbolEqualityComparer.Default.Equals(
+                containingType,
+                _semanticModel.GetEnclosingSymbol(nodeSpanStart, _cancellationToken)?.ContainingType);
 
             ITsExpression expression;
 

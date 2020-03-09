@@ -141,7 +141,7 @@ namespace Desalt.Core.SymbolTables
             string scriptName = baseName;
 
             // if this is a type that belongs to mscorlib, prefix it with 'ss'
-            if (typeSymbol.ContainingAssembly.Equals(_mscorlibAssemblySymbol))
+            if (SymbolEqualityComparer.Default.Equals(typeSymbol.ContainingAssembly, _mscorlibAssemblySymbol))
             {
                 // find the script namespace by searching on the type first, then the assembly
                 string scriptNamespace =
@@ -235,7 +235,7 @@ namespace Desalt.Core.SymbolTables
             var query = from member in fieldSymbol.ContainingType.GetMembers()
 
                             // don't include the field we're searching against
-                        where !Equals(member, fieldSymbol)
+                        where !SymbolEqualityComparer.Default.Equals(member, fieldSymbol)
 
                         // find the potential script name of the member
                         let scriptName = DetermineScriptNameFromAttributes(member) ?? ToCamelCase(member.Name)
@@ -277,7 +277,7 @@ namespace Desalt.Core.SymbolTables
                 IMethodSymbol implementingMethod = methodSymbol.ContainingType.GetMembers()
                     .OfType<IMethodSymbol>()
                     .Single(
-                        m => !Equals(m, methodSymbol) &&
+                        m => !SymbolEqualityComparer.Default.Equals(m, methodSymbol) &&
 
                             // the implementing method needs to be the same (static or instance)
                             m.IsStatic == methodSymbol.IsStatic &&
