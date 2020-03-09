@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Desalt.ConsoleApp</RootNamespace>
     <AssemblyName>Desalt.ConsoleApp</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkProfile />
