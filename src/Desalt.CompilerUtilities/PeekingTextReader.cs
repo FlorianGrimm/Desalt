@@ -207,19 +207,9 @@ namespace Desalt.CompilerUtilities
         /// <c>Zs</c>, horizontal tab characters '\t', vertical tab characters '\v', and form feed
         /// characters '\f'.
         /// </summary>
-        /// <param name="includeLineFeeds">
-        /// Whether to include line feeds, which are any characters with Unicode class <c>Zl</c>.
-        /// </param>
-        public void SkipWhitespace(bool includeLineFeeds = false)
+        public void SkipWhitespace()
         {
-            if (includeLineFeeds)
-            {
-                ReadWhile(IsWhitespace);
-            }
-            else
-            {
-                ReadWhile(IsWhitespaceNoLineFeeds);
-            }
+            ReadWhile(IsWhitespace);
         }
 
         //// ===========================================================================================================

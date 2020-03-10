@@ -960,19 +960,5 @@ namespace Desalt.CompilerUtilities.Tests
                     reader.ReadToEnd().Should().Be("Nonspace");
                 });
         }
-
-        [Fact]
-        public void PeekingTextReader_SkipWhitespace_should_skip_lines_if_requested()
-        {
-            // http://www.fileformat.info/info/unicode/category/Zl/list.htm
-            DoTest(
-                "\r\n\x20282nd line",
-                reader =>
-                {
-                    reader.SkipWhitespace(includeLineFeeds: true);
-                    reader.Location.Line.Should().Be(2);
-                    reader.ReadToEnd().Should().Be("2nd line");
-                });
-        }
     }
 }
