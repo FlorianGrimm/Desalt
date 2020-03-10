@@ -114,16 +114,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CompilerUtilities\CompilerUtilities.csproj">
-      <Project>{e7223b23-39b8-4542-a3f3-6c56cd6e5ae1}</Project>
-      <Name>CompilerUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TypeScriptAst\TypeScriptAst.csproj">
-      <Project>{a479830b-124b-4371-af44-f27e98fb4da8}</Project>
-      <Name>TypeScriptAst</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Build.Locator">
       <Version>1.2.6</Version>
     </PackageReference>
@@ -139,6 +129,16 @@
     <PackageReference Include="System.Collections.Immutable">
       <Version>1.7.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj">
+      <Project>{9e9be60d-71a7-4b2a-b6d3-edf6bdada7a8}</Project>
+      <Name>Desalt.CompilerUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Desalt.TypeScriptAst\Desalt.TypeScriptAst.csproj">
+      <Project>{b48c4c55-5cea-4007-94bc-ad5e39e62aef}</Project>
+      <Name>Desalt.TypeScriptAst</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

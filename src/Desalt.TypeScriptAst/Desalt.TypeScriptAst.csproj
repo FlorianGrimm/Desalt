@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Parses and generates TypeScript abstract syntax trees (AST) from .NET.</Description>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>TypeScriptAst.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CompilerUtilities\CompilerUtilities.csproj" />
+    <ProjectReference Include="..\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj" />
   </ItemGroup>
 </Project>

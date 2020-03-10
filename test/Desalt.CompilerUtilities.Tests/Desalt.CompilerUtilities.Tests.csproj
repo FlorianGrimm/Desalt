@@ -3,14 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <Authors>Justin Rockwood</Authors>
-    <Product>TypeScriptAst</Product>
-    <Copyright>Copyright (c) Justin Rockwood. All rights reserved.</Copyright>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\src\TypeScriptAst\TypeScriptAst.snk</AssemblyOriginatorKeyFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TypeScriptAst\TypeScriptAst.csproj" />
+    <ProjectReference Include="..\..\src\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj" />
   </ItemGroup>
 </Project>

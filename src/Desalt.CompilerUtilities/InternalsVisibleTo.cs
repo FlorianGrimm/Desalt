@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="InternalsVisibleTo.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -7,12 +7,8 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly:
-    InternalsVisibleTo(
-        "CompilerUtilities.Tests, " +
-        "PublicKey=" +
-        "0024000004800000940000000602000000240000525341310004000001000100854e920b83c499" +
-        "3b117d30a3317782b5f676e8e9093a45ebbf47fe8c46d5e41288984bf329449ce78db4658e2a7a" +
-        "771eaaaca862a57db43a2675ae57aa2c175d4129fdd4f24207cc1fdbb5a3bf5a7607e07ef2195d" +
-        "51210e6806b6574dc600d2a4c2f4cf33c48e5fb46696fccb65f9d0f7455b48413707041c641b90" +
-        "007fbfba")]
+[assembly: InternalsVisibleTo("Desalt.CompilerUtilities.Tests, " +
+    "PublicKey=0024000004800000940000000602000000240000525341310004000001000100cf741486e6566f05de" +
+    "9dab6707a1187a0e1ed97f287091f00397624b345d25cb55be71d3e2633b33c119057c69dbdbcfe5b165a539d5c9" +
+    "da54be251357ae8741af24b68e94c25218b6b221ae767d3a9971c66ab684c0b77521623ae43b7a933f82e21c55fb" +
+    "ee2229ca0a9a40f6d03f266b38c6a7a19e9d8fc23583b9536036d4")]

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -79,17 +79,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CompilerUtilities\CompilerUtilities.csproj">
-      <Project>{e7223b23-39b8-4542-a3f3-6c56cd6e5ae1}</Project>
-      <Name>CompilerUtilities</Name>
+    <ProjectReference Include="..\..\src\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj">
+      <Project>{9e9be60d-71a7-4b2a-b6d3-edf6bdada7a8}</Project>
+      <Name>Desalt.CompilerUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj">
       <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
       <Name>Desalt.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\TypeScriptAst\TypeScriptAst.csproj">
-      <Project>{a479830b-124b-4371-af44-f27e98fb4da8}</Project>
-      <Name>TypeScriptAst</Name>
+    <ProjectReference Include="..\..\src\Desalt.TypeScriptAst\Desalt.TypeScriptAst.csproj">
+      <Project>{b48c4c55-5cea-4007-94bc-ad5e39e62aef}</Project>
+      <Name>Desalt.TypeScriptAst</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

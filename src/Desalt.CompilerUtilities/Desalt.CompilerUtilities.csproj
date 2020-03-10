@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Utilities for hand-writing compilers.</Description>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>CompilerUtilities.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>
