@@ -140,6 +140,5 @@
       <Version>1.7.0</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="..\..\Desalt.CommonProps.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
