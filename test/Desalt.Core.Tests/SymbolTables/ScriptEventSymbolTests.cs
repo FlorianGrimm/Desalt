@@ -32,10 +32,10 @@ class C
     public event EventHandler MyEvent;
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var eventSymbol = context.RootSyntax.DescendantNodes()
+                IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<EventFieldDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
                     .Cast<IEventSymbol>()
@@ -64,10 +64,10 @@ class C
     public event EventHandler MyEvent;
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var eventSymbol = context.RootSyntax.DescendantNodes()
+                IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<EventFieldDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
                     .Cast<IEventSymbol>()

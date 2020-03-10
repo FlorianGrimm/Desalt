@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsLexicalDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -42,7 +42,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitLexicalDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitLexicalDeclaration(this);
+        }
 
         public override string CodeDisplay => (IsConst ? "const " : "let ") + $"{Declarations.ToElidedList()};";
 

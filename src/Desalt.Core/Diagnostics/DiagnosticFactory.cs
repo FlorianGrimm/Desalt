@@ -41,7 +41,7 @@ namespace Desalt.Core.Diagnostics
         private static DiagnosticInfoAttribute InfoFromDiagnosticKind(DiagnosticId diagnosticId)
         {
             MemberInfo memberInfo = typeof(DiagnosticId).GetMember(diagnosticId.ToString()).First();
-            var info = memberInfo.GetCustomAttribute<DiagnosticInfoAttribute>();
+            DiagnosticInfoAttribute info = memberInfo.GetCustomAttribute<DiagnosticInfoAttribute>();
             return info;
         }
 

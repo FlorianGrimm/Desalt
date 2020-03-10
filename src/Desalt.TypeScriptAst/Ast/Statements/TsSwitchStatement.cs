@@ -38,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitSwitchStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitSwitchStatement(this);
+        }
 
         public override string CodeDisplay => $"switch ({Condition}) {{ {Clauses.ToElidedList()} }}";
 

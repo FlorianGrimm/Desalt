@@ -28,13 +28,13 @@ namespace Desalt.Core.Tests.Validation
         {
             const string code = "public partial class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     "File.cs",
                     discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                var classDeclarationSyntax =
+                ClassDeclarationSyntax classDeclarationSyntax =
                     context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
 
                 var validator = new NoPartialClassesValidator();

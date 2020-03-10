@@ -35,12 +35,22 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectBindingPattern(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitObjectBindingPattern(this);
+        }
 
         public override string CodeDisplay => $"{{{Properties.ToElidedList()}}}";
 
-        protected override void EmitInternal(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter)
+        {
             emitter.WriteList(
-                Properties, indent: false, prefix: "{", suffix: "}", itemDelimiter: ", ", emptyContents: "{}");
+                Properties,
+                indent: false,
+                prefix: "{",
+                suffix: "}",
+                itemDelimiter: ", ",
+                emptyContents: "{}");
+        }
     }
 }

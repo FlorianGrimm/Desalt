@@ -133,66 +133,82 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="e">The <see cref="Exception"/> that represents the error.</param>
         /// <param name="location">An optional associated location in the source code.</param>
-        public static Diagnostic InternalError(Exception e, Location location = null) =>
-            Create(DiagnosticId.InternalError, location ?? Location.None, e.Message);
+        public static Diagnostic InternalError(Exception e, Location location = null)
+        {
+            return Create(DiagnosticId.InternalError, location ?? Location.None, e.Message);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Internal error: {0}"
         /// </summary>
         /// <param name="error">An error message.</param>
         /// <param name="location">An optional associated location in the source code.</param>
-        public static Diagnostic InternalError(string error, Location location = null) =>
-            Create(DiagnosticId.InternalError, location ?? Location.None, error);
+        public static Diagnostic InternalError(string error, Location location = null)
+        {
+            return Create(DiagnosticId.InternalError, location ?? Location.None, error);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Document has no C# syntax tree".
         /// </summary>
         /// <param name="document">The document that does not contain a syntax tree.</param>
-        public static Diagnostic DocumentContainsNoSyntaxTree(Document document) =>
-            Create(
-                DiagnosticId.DocumentContainsNoSyntaxTree,
-                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+        public static Diagnostic DocumentContainsNoSyntaxTree(Document document)
+        {
+            return Create(
+DiagnosticId.DocumentContainsNoSyntaxTree,
+Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Document has no C# semantic model".
         /// </summary>
         /// <param name="document">The document that does not contain a syntax tree.</param>
-        public static Diagnostic DocumentContainsNoSemanticModel(Document document) =>
-            Create(
-                DiagnosticId.DocumentContainsNoSemanticModel,
-                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+        public static Diagnostic DocumentContainsNoSemanticModel(Document document)
+        {
+            return Create(
+DiagnosticId.DocumentContainsNoSemanticModel,
+Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "C# syntax node of type '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic TranslationNotSupported(SyntaxNode node) =>
-            Create(DiagnosticId.TranslationNotSupported, node.GetLocation(), node.GetType().Name, node);
+        public static Diagnostic TranslationNotSupported(SyntaxNode node)
+        {
+            return Create(DiagnosticId.TranslationNotSupported, node.GetLocation(), node.GetType().Name, node);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "C# literal expression of kind '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported literal expression syntax node.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic LiteralExpressionTranslationNotSupported(LiteralExpressionSyntax node) =>
-            Create(DiagnosticId.LiteralExpressionTranslationNotSupported, node.GetLocation(), node.Kind(), node);
+        public static Diagnostic LiteralExpressionTranslationNotSupported(LiteralExpressionSyntax node)
+        {
+            return Create(DiagnosticId.LiteralExpressionTranslationNotSupported, node.GetLocation(), node.Kind(), node);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "C# identifier node of type '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic IdentifierNotSupported(SyntaxNode node) =>
-            Create(DiagnosticId.IdentifierNotSupported, node.GetLocation(), node.GetType().Name, node);
+        public static Diagnostic IdentifierNotSupported(SyntaxNode node)
+        {
+            return Create(DiagnosticId.IdentifierNotSupported, node.GetLocation(), node.GetType().Name, node);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "C# operator token of kind '{0}' not supported: {1}".
         /// </summary>
         /// <param name="token">The unsupported syntax token.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic OperatorKindNotSupported(SyntaxToken token) =>
-            Create(DiagnosticId.OperatorKindNotSupported, token.GetLocation(), token.Kind(), token);
+        public static Diagnostic OperatorKindNotSupported(SyntaxToken token)
+        {
+            return Create(DiagnosticId.OperatorKindNotSupported, token.GetLocation(), token.Kind(), token);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Interface method '{0}.{1}' contains parameter '{2}' with a default value.".
@@ -218,8 +234,10 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="typeName">The name of the unknown type.</param>
         /// <param name="location">The location of the error.</param>
-        public static Diagnostic UnknownType(string typeName, Location location = null) =>
-            Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
+        public static Diagnostic UnknownType(string typeName, Location location = null)
+        {
+            return Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "TypeScript has no equivalent to C#'s {0} accessibility.
@@ -246,24 +264,30 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="text">The unstructured text.</param>
         /// <param name="location">The location of the error.</param>
-        public static Diagnostic UnstructuredXmlTextNotSupported(string text, Location location) =>
-            Create(DiagnosticId.UnstructuredXmlTextNotSupported, location, text);
+        public static Diagnostic UnstructuredXmlTextNotSupported(string text, Location location)
+        {
+            return Create(DiagnosticId.UnstructuredXmlTextNotSupported, location, text);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Element access with more than one expression is not supported: {0}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic ElementAccessWithMoreThanOneExpressionNotAllowed(BracketedArgumentListSyntax node) =>
-            Create(DiagnosticId.ElementAccessWithMoreThanOneExpressionNotAllowed, node.GetLocation(), node);
+        public static Diagnostic ElementAccessWithMoreThanOneExpressionNotAllowed(BracketedArgumentListSyntax node)
+        {
+            return Create(DiagnosticId.ElementAccessWithMoreThanOneExpressionNotAllowed, node.GetLocation(), node);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Catch clauses with more than one parameter are not yet supported: {0}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
         /// <returns>A new <see cref="Diagnostic"/>.</returns>
-        public static Diagnostic CatchClausesWithMoreThanOneParameterNotYetSupported(SyntaxNode node) =>
-            Create(DiagnosticId.CatchClausesWithMoreThanOneParameterNotYetSupported, node.GetLocation(), node);
+        public static Diagnostic CatchClausesWithMoreThanOneParameterNotYetSupported(SyntaxNode node)
+        {
+            return Create(DiagnosticId.CatchClausesWithMoreThanOneParameterNotYetSupported, node.GetLocation(), node);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Class '{0}' contains a field and property, '{1}', that
@@ -282,14 +306,18 @@ namespace Desalt.Core.Diagnostics
         /// <summary>
         /// Returns a diagnostic of the form "Class '{0}' is declared as partial, which is not supported".
         /// </summary>
-        public static Diagnostic PartialClassesNotSupported(ClassDeclarationSyntax node) =>
-            Create(DiagnosticId.PartialClassesNotSupported, node.GetLocation(), node.Identifier.Text);
+        public static Diagnostic PartialClassesNotSupported(ClassDeclarationSyntax node)
+        {
+            return Create(DiagnosticId.PartialClassesNotSupported, node.GetLocation(), node.Identifier.Text);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Type '{0}' is not a known type reference".
         /// </summary>
-        public static Diagnostic UnknownTypeReference(string typeName, Location location = null) =>
-            Create(DiagnosticId.UnknownTypeReference, location ?? Location.None, typeName);
+        public static Diagnostic UnknownTypeReference(string typeName, Location location = null)
+        {
+            return Create(DiagnosticId.UnknownTypeReference, location ?? Location.None, typeName);
+        }
 
         /// <summary>
         /// Returns a diagnostic of the form "Error parsing inline code '{0}' for '{1}': {2}".
@@ -313,7 +341,9 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="filePath">The file path of the invalid JSON file.</param>
         /// <param name="errorMessage">The error when reading the file.</param>
-        public static Diagnostic InvalidOptionsFile(string filePath, string errorMessage) =>
-            Create(DiagnosticId.InvalidOptionsFile, Location.None, filePath, errorMessage);
+        public static Diagnostic InvalidOptionsFile(string filePath, string errorMessage)
+        {
+            return Create(DiagnosticId.InvalidOptionsFile, Location.None, filePath, errorMessage);
+        }
     }
 }

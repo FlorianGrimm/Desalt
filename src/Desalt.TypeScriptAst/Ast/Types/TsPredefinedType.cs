@@ -46,10 +46,16 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitPredefinedType(this);
+        }
 
         public override string CodeDisplay => Name;
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write(Name);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write(Name);
+        }
     }
 }

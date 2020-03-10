@@ -26,11 +26,11 @@ using System.Collections.Generic;
 {csharpCode}
 ";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
                 var translator = new CSharpToTypeScriptTranslator();
-                var result = translator.TranslateDocument(context);
+                IExtendedResult<TypeScriptAst.Ast.ITsImplementationModule> result = translator.TranslateDocument(context);
 
                 result.Diagnostics.Should().BeEmpty();
 

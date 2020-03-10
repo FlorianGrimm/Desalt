@@ -240,7 +240,7 @@ namespace Desalt.Core.Translation
 
                 if (_exceptionTextBuilders != null)
                 {
-                    foreach (var typeAndBuilderPair in _exceptionTextBuilders)
+                    foreach (KeyValuePair<string, ImmutableArray<string>.Builder> typeAndBuilderPair in _exceptionTextBuilders)
                     {
                         _comment._exceptionTexts.Add(typeAndBuilderPair.Key, typeAndBuilderPair.Value.ToImmutable());
                     }

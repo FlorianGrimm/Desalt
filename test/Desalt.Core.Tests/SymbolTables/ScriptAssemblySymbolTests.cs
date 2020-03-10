@@ -22,10 +22,10 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C { public void Method() {} }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var assemblySymbol = context.SemanticModel.Compilation.Assembly;
+                Microsoft.CodeAnalysis.IAssemblySymbol assemblySymbol = context.SemanticModel.Compilation.Assembly;
 
                 var assemblyScriptSymbol = new ScriptAssemblySymbol(assemblySymbol, "AssemblyName");
                 ScriptSymbolTests.AssertScriptSymbolDefaultValues(assemblySymbol, assemblyScriptSymbol);

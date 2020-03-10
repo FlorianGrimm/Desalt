@@ -90,7 +90,7 @@ namespace Desalt.Core.Tests.TestUtility
                 var compilationOptions = new CSharpCompilationOptions(
                     OutputKind.DynamicallyLinkedLibrary,
                     warningLevel: 1);
-                var projectInfo = ProjectInfo.Create(
+                ProjectInfo projectInfo = ProjectInfo.Create(
                         id: projectId,
                         filePath: Path.Combine(ProjectDir, $"{ProjectName}.csproj"),
                         version: version,
@@ -100,7 +100,7 @@ namespace Desalt.Core.Tests.TestUtility
                         compilationOptions: compilationOptions)
                     .WithSaltarelleReferences();
 
-                var project = workspace.AddProject(projectInfo);
+                Project project = workspace.AddProject(projectInfo);
 
                 // add all of the files to the project
                 foreach (TempProjectFile sourceFile in sourceFiles)
@@ -174,9 +174,9 @@ namespace Desalt.Core.Tests.TestUtility
             var scriptSymbolTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
 
             // create the alternate signature symbol table
-            var result = AlternateSignatureSymbolTable.Create(contexts);
+            IExtendedResult<AlternateSignatureSymbolTable> result = AlternateSignatureSymbolTable.Create(contexts);
             result.Diagnostics.Should().BeEmpty();
-            var alternateSignatureTable = result.Result;
+            AlternateSignatureSymbolTable alternateSignatureTable = result.Result;
 
             return contexts.Select(
                     context => new DocumentTranslationContextWithSymbolTables(
@@ -191,7 +191,7 @@ namespace Desalt.Core.Tests.TestUtility
             CompilerOptions options = null,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
-            var allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
+            ImmutableArray<DocumentTranslationContextWithSymbolTables> allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
             DocumentTranslationContextWithSymbolTables thisContext =
                 allContexts.First(context => context.Document.Name == fileName);
 

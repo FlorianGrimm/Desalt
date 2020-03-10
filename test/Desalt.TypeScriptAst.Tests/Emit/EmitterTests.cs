@@ -31,7 +31,10 @@ namespace Desalt.TypeScriptAst.Tests.Emit
 
         private sealed class Identifier : ITsAstNode
         {
-            public Identifier(string name) => Name = name;
+            public Identifier(string name)
+            {
+                Name = name;
+            }
 
             private string Name { get; }
 
@@ -40,19 +43,35 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             public ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; } = ImmutableArray<ITsAstTriviaNode>.Empty;
             public ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; } = ImmutableArray<ITsAstTriviaNode>.Empty;
 
-            public void Accept(TsVisitor visitor) => throw new NotImplementedException();
-
-            public void Emit(Emitter emitter) => emitter.Write(Name);
-
-            public string EmitAsString(EmitOptions options = null) => Name;
-
-            public ITsAstNode WithLeadingTrivia(params ITsAstTriviaNode[] triviaNodes) =>
+            public void Accept(TsVisitor visitor)
+            {
                 throw new NotImplementedException();
+            }
 
-            public ITsAstNode WithTrailingTrivia(params ITsAstTriviaNode[] triviaNodes) =>
+            public void Emit(Emitter emitter)
+            {
+                emitter.Write(Name);
+            }
+
+            public string EmitAsString(EmitOptions options = null)
+            {
+                return Name;
+            }
+
+            public ITsAstNode WithLeadingTrivia(params ITsAstTriviaNode[] triviaNodes)
+            {
                 throw new NotImplementedException();
+            }
 
-            public bool Equals(ITsAstNode other) => throw new NotImplementedException();
+            public ITsAstNode WithTrailingTrivia(params ITsAstTriviaNode[] triviaNodes)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Equals(ITsAstNode other)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]
@@ -82,7 +101,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         [Fact]
         public void Ctor_should_store_the_options_parameter_in_the_property()
         {
-            var options = EmitOptions.Default.WithIndentationPrefix("\v");
+            EmitOptions options = EmitOptions.Default.WithIndentationPrefix("\v");
             var emitter = new Emitter(new MemoryStream(), options: options);
             emitter.Options.Should().BeSameAs(options);
         }

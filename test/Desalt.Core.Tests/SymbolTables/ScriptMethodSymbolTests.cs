@@ -31,10 +31,10 @@ class C
     public void Method() {}
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var methodSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();
@@ -81,10 +81,10 @@ class C
     public void Method() {}
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var methodSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
                     .Single();

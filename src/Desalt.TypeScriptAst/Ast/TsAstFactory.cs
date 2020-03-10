@@ -35,7 +35,10 @@ namespace Desalt.TypeScriptAst.Ast
         //// Identifiers
         //// ===========================================================================================================
 
-        public static ITsIdentifier Identifier(string name) => TsIdentifier.Get(name);
+        public static ITsIdentifier Identifier(string name)
+        {
+            return TsIdentifier.Get(name);
+        }
 
         /// <summary>
         /// Creates a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
@@ -88,7 +91,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
         public static ITsGenericTypeName GenericTypeName(string dottedName, params ITsType[] typeArguments)
         {
-            var qualifiedName = QualifiedName(dottedName);
+            ITsQualifiedName qualifiedName = QualifiedName(dottedName);
             return new TsGenericTypeName(qualifiedName.Right, qualifiedName.Left, typeArguments);
         }
     }

@@ -100,7 +100,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitForStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitForStatement(this);
+        }
 
         public override string CodeDisplay
         {

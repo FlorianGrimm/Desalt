@@ -37,10 +37,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitObjectLiteral(this);
+        }
 
         public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.WriteCommaNewlineSeparatedBlock(PropertyDefinitions);
+        }
     }
 }

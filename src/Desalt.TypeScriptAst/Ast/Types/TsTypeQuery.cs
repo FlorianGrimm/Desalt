@@ -34,7 +34,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTypeQuery(this);
+        }
 
         public override string CodeDisplay => $"typeof {Query}";
 

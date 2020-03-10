@@ -39,7 +39,10 @@ namespace Desalt.TypeScriptAst.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitGenericTypeName(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitGenericTypeName(this);
+        }
 
         public override string CodeDisplay =>
             base.CodeDisplay + (TypeArguments.Length > 0 ? $"<{TypeArguments.ToElidedList()}>" : "");

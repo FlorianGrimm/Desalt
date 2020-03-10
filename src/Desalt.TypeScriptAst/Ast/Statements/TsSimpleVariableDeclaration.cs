@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleVariableDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitSimpleVariableDeclaration(this);
+        }
 
         public override string CodeDisplay
         {

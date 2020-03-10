@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitAssignmentExpression(this);
+        }
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 

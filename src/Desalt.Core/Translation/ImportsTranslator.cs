@@ -115,7 +115,7 @@ namespace Desalt.Core.Translation
                     ITsImportSpecifier[] importNames = grouping.Select(
                             item => Factory.ImportSpecifier(Factory.Identifier(item.TypeName)))
                         .ToArray();
-                    var importClause = Factory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
+                    ITsImportClause importClause = Factory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
 
                     // create the from clause
                     ITsFromClause fromClause = Factory.FromClause(Factory.String(grouping.Key));

@@ -36,7 +36,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientBinding(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitAmbientBinding(this);
+        }
 
         public override string CodeDisplay => $"{VariableName}{VariableType.OptionalTypeAnnotation()}";
 

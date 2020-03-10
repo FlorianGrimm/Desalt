@@ -15,12 +15,14 @@ namespace Desalt.TypeScriptAst.Parsing
 
     public partial class TsParser
     {
-        private static bool IsNumericLiteral(TsTokenCode tokenCode) =>
-            tokenCode.IsOneOf(
-                TsTokenCode.DecimalLiteral,
-                TsTokenCode.BinaryIntegerLiteral,
-                TsTokenCode.OctalIntegerLiteral,
-                TsTokenCode.HexIntegerLiteral);
+        private static bool IsNumericLiteral(TsTokenCode tokenCode)
+        {
+            return tokenCode.IsOneOf(
+TsTokenCode.DecimalLiteral,
+TsTokenCode.BinaryIntegerLiteral,
+TsTokenCode.OctalIntegerLiteral,
+TsTokenCode.HexIntegerLiteral);
+        }
 
         /// <summary>
         /// Parses a literal.
@@ -192,7 +194,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 else
                 {
                     ITsPropertyName propertyName = ParsePropertyName();
-                    ITsIdentifier identifier = propertyName as ITsIdentifier;
+                    var identifier = propertyName as ITsIdentifier;
 
                     // PropertyName : AssignmentExpression
                     if (_reader.ReadIf(TsTokenCode.Colon))

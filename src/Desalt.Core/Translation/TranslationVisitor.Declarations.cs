@@ -231,14 +231,14 @@ namespace Desalt.Core.Translation
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
             {
                 ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
-                var variableName = symbol.GetScriptName(_scriptSymbolTable, variableDeclaration.Identifier.Text);
+                ITsIdentifier variableName = symbol.GetScriptName(_scriptSymbolTable, variableDeclaration.Identifier.Text);
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
                 bool isReadOnly = node.Modifiers.Any(
                     token => token.IsKind(SyntaxKind.ReadOnlyKeyword) || token.IsKind(SyntaxKind.ConstKeyword));
 
-                var typeAnnotation = _typeTranslator.TranslateSymbol(
+                ITsType typeAnnotation = _typeTranslator.TranslateSymbol(
                     node.Declaration.Type.GetTypeSymbol(_semanticModel),
                     _typesToImport,
                     _diagnostics,
@@ -382,7 +382,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
-            var propertyType = _typeTranslator.TranslateSymbol(
+            ITsType propertyType = _typeTranslator.TranslateSymbol(
                 typeSymbol,
                 _typesToImport,
                 _diagnostics,

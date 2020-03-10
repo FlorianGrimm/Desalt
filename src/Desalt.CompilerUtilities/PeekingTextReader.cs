@@ -207,10 +207,7 @@ namespace Desalt.CompilerUtilities
         /// <c>Zs</c>, horizontal tab characters '\t', vertical tab characters '\v', and form feed
         /// characters '\f'.
         /// </summary>
-        /// <param name="includeLineFeeds">
-        /// Whether to include line feeds, which are any characters with Unicode class <c>Zl</c>.
-        /// </param>
-        public void SkipWhitespace(bool includeLineFeeds = false)
+        public void SkipWhitespace()
         {
             ReadWhile(IsWhitespace);
         }
@@ -341,7 +338,7 @@ namespace Desalt.CompilerUtilities
         {
             Param.VerifyNotNull(find, "find");
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             string nextChunk;
 
             // Read until we see the first character of the find string.
@@ -384,7 +381,7 @@ namespace Desalt.CompilerUtilities
         {
             Param.VerifyNotNull(find, "find");
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             while (Peek(find.Length) == find)
             {
@@ -473,7 +470,7 @@ namespace Desalt.CompilerUtilities
             {
                 location = currentLocation;
             }
-            else if (c == '\r' && nextC != '\n' || c == '\n')
+            else if ((c == '\r' && nextC != '\n') || c == '\n')
             {
                 location = currentLocation.IncrementLine();
             }
@@ -520,7 +517,7 @@ namespace Desalt.CompilerUtilities
             Func<char, bool> predicate = c => until ? c != findChar : c == findChar;
             if (findChars.Length > 0)
             {
-                HashSet<char> set = new HashSet<char>(findChars)
+                var set = new HashSet<char>(findChars)
                 {
                     findChar
                 };
@@ -561,7 +558,7 @@ namespace Desalt.CompilerUtilities
 
         private string ReadPredicate(Func<char, bool> predicate)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int c;
             while ((c = Peek()) != -1 && predicate((char)c))
             {

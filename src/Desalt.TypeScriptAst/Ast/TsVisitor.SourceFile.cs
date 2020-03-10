@@ -13,12 +13,18 @@ namespace Desalt.TypeScriptAst.Ast
         /// Visits a TypeScript implementation source file (extension '.ts'), containing statements
         /// and declarations.
         /// </summary>
-        public virtual void VisitImplementationScript(ITsImplementationScript node) => Visit(node);
+        public virtual void VisitImplementationScript(ITsImplementationScript node)
+        {
+            Visit(node);
+        }
 
         /// <summary>
         /// Visits a TypeScript implementation source file (extension '.ts'), containing exported
         /// statements and declarations.
         /// </summary>
-        public virtual void VisitImplementationModule(ITsImplementationModule node) => Visit(node);
+        public virtual void VisitImplementationModule(ITsImplementationModule node)
+        {
+            Visit(node);
+        }
     }
 }

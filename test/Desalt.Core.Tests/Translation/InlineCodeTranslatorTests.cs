@@ -50,9 +50,9 @@ class C
     private object eval = Script.Eval(""[]"");
 }}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     "File.cs",
                     discoveryKind: discoveryKind);
 
@@ -78,11 +78,15 @@ class C
             }
         }
 
-        private static ExpressionSyntax GetMethodOfObjectCreationSyntax(CompilationUnitSyntax syntax) =>
-            syntax.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().First();
+        private static ExpressionSyntax GetMethodOfObjectCreationSyntax(CompilationUnitSyntax syntax)
+        {
+            return syntax.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().First();
+        }
 
-        private static ExpressionSyntax GetInvocationMethod(CompilationUnitSyntax syntax) =>
-            syntax.DescendantNodes().OfType<InvocationExpressionSyntax>().First().Expression;
+        private static ExpressionSyntax GetInvocationMethod(CompilationUnitSyntax syntax)
+        {
+            return syntax.DescendantNodes().OfType<InvocationExpressionSyntax>().First().Expression;
+        }
 
         [TestMethod]
         public async Task InlineCodeTranslator_should_replace_this_parameters_with_the_left_side_expression()

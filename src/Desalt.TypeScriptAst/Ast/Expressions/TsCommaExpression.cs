@@ -41,11 +41,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCommaExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitCommaExpression(this);
+        }
 
         public override string CodeDisplay => Expressions.ToElidedList();
 
-        protected override void EmitInternal(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter)
+        {
             emitter.WriteList(Expressions, indent: false, itemDelimiter: ", ");
+        }
     }
 }

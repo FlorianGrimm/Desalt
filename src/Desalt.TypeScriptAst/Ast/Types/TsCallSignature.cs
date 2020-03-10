@@ -40,7 +40,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitCallSignature(this);
+        }
 
         public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
 

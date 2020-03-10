@@ -104,7 +104,10 @@ namespace Desalt.Core.SymbolTables
         /// specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol to look up.</param>
-        public bool HasSymbol(ISymbol symbol) => TryGetValue(symbol, out IScriptSymbol _);
+        public bool HasSymbol(ISymbol symbol)
+        {
+            return TryGetValue(symbol, out IScriptSymbol _);
+        }
 
         /// <summary>
         /// Gets the computed script name corresponding to the specified symbol, or the default value

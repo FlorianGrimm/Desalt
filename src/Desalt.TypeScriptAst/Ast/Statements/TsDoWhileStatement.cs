@@ -36,7 +36,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitDoWhileStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitDoWhileStatement(this);
+        }
 
         public override string CodeDisplay => $"do {DoStatement} while ({WhileCondition});";
 

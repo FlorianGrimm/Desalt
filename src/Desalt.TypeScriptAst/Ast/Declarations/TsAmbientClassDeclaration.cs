@@ -47,7 +47,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientClassDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitAmbientClassDeclaration(this);
+        }
 
         public override string CodeDisplay =>
             $"class {ClassName}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";

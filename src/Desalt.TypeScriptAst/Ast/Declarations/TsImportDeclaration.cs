@@ -42,7 +42,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitImportDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitImportDeclaration(this);
+        }
 
         public override string CodeDisplay =>
             $"import {Module?.CodeDisplay}{ImportClause?.CodeDisplay} {FromClause?.CodeDisplay} ;";

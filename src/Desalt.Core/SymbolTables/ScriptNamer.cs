@@ -70,7 +70,10 @@ namespace Desalt.Core.SymbolTables
             return scriptName;
         }
 
-        public static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+        public static string ToCamelCase(string name)
+        {
+            return char.ToLowerInvariant(name[0]) + name.Substring(1);
+        }
 
         /// <summary>
         /// Attempts to find the script name for the specified symbol based on attributes defined on
@@ -162,8 +165,10 @@ namespace Desalt.Core.SymbolTables
         /// </summary>
         /// <param name="enumFieldSymbol">The enum field for which to determine the script name.</param>
         /// <returns>The name the enum field should have in the generated code.</returns>
-        public static string DetermineEnumFieldDefaultScriptName(IFieldSymbol enumFieldSymbol) =>
-            DetermineScriptNameFromAttributes(enumFieldSymbol) ?? ToCamelCase(enumFieldSymbol.Name);
+        public static string DetermineEnumFieldDefaultScriptName(IFieldSymbol enumFieldSymbol)
+        {
+            return DetermineScriptNameFromAttributes(enumFieldSymbol) ?? ToCamelCase(enumFieldSymbol.Name);
+        }
 
         /// <summary>
         /// Determines the name that an enum field should have in the generated code.

@@ -55,24 +55,43 @@ namespace Desalt.Core.SymbolTables
         //// Operator Overloads
         //// ===========================================================================================================
 
-        public static implicit operator string(SymbolTableKey value) => value.Key;
+        public static implicit operator string(SymbolTableKey value)
+        {
+            return value.Key;
+        }
 
-        public static bool operator ==(SymbolTableKey left, SymbolTableKey right) => Equals(left, right);
+        public static bool operator ==(SymbolTableKey left, SymbolTableKey right)
+        {
+            return Equals(left, right);
+        }
 
-        public static bool operator !=(SymbolTableKey left, SymbolTableKey right) => !Equals(left, right);
+        public static bool operator !=(SymbolTableKey left, SymbolTableKey right)
+        {
+            return !Equals(left, right);
+        }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public bool Equals(SymbolTableKey other) =>
-            !(other is null) && (ReferenceEquals(this, other) || string.Equals(Key, other.Key));
+        public bool Equals(SymbolTableKey other)
+        {
+            return !(other is null) && (ReferenceEquals(this, other) || string.Equals(Key, other.Key));
+        }
 
-        public override bool Equals(object obj) =>
-            !(obj is null) && (ReferenceEquals(this, obj) || (obj is SymbolTableKey other && Equals(other)));
+        public override bool Equals(object obj)
+        {
+            return !(obj is null) && (ReferenceEquals(this, obj) || (obj is SymbolTableKey other && Equals(other)));
+        }
 
-        public override int GetHashCode() => Key.GetHashCode();
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
+        }
 
-        public override string ToString() => Key;
+        public override string ToString()
+        {
+            return Key;
+        }
     }
 }

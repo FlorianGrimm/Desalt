@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitBinaryExpression(this);
+        }
 
         public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
 

@@ -36,10 +36,16 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitBlockStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitBlockStatement(this);
+        }
 
         public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.WriteBlock(Statements, skipNewlines: true);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.WriteBlock(Statements, skipNewlines: true);
+        }
     }
 }

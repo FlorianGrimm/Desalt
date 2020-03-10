@@ -23,7 +23,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsTupleType(ITsType elementType, params ITsType[] elementTypes)
         {
-            if (elementType == null) { throw new ArgumentNullException(nameof(elementType)); }
+            if (elementType == null)
+            { throw new ArgumentNullException(nameof(elementType)); }
             ElementTypes = new[] { elementType }.Concat(elementTypes ?? new ITsType[0]).ToImmutableArray();
         }
 
@@ -37,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTupleType(this);
+        }
 
         public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 

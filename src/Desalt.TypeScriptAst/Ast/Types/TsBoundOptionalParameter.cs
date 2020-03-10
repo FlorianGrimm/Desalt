@@ -44,7 +44,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitBoundOptionalParameter(this);
+        }
 
         public override string CodeDisplay =>
             $"{Modifier.OptionalCodeDisplay()}" +

@@ -79,7 +79,7 @@ namespace Desalt.Core.Translation
             bool isConst = node.IsConst;
 
             // get the type of all of the declarations
-            var typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
+            ITypeSymbol typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
             ITsType type = _typeTranslator.TranslateSymbol(
                 typeSymbol,
                 _typesToImport,
@@ -102,7 +102,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsSimpleLexicalBinding"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
-            var variableName = Factory.Identifier(node.Identifier.Text);
+            ITsIdentifier variableName = Factory.Identifier(node.Identifier.Text);
 
             ITsExpression initializer = null;
             if (node.Initializer != null)
@@ -145,7 +145,7 @@ namespace Desalt.Core.Translation
         {
             var ifCondition = (ITsExpression)Visit(node.Condition).Single();
             var ifStatement = (ITsStatement)Visit(node.Statement).Single();
-            var elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
+            ITsStatement elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
 
             ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
             yield return translated;
@@ -232,11 +232,11 @@ namespace Desalt.Core.Translation
                 _lastCatchIdentifier = catchParameter;
             }
 
-            var catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
+            ITsBlockStatement catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
 
             // translate the finally block if present
             bool hasFinally = node.Finally != null;
-            var finallyBlock = hasFinally ? (ITsBlockStatement)Visit(node.Finally.Block).Single() : null;
+            ITsBlockStatement finallyBlock = hasFinally ? (ITsBlockStatement)Visit(node.Finally.Block).Single() : null;
 
             // translate the try/catch/finally statement
             ITsTryStatement translated;
@@ -383,7 +383,7 @@ namespace Desalt.Core.Translation
                     Factory.Block(Factory.Call(Factory.MemberDot(variableNameIdentifier, "dispose")).ToStatement())));
 
             // create the try/finally statement
-            var tryFinally = Factory.TryFinally(tryBlock, finallyBlock);
+            ITsTryStatement tryFinally = Factory.TryFinally(tryBlock, finallyBlock);
             statements.Add(tryFinally);
 
             // wrap the declaration inside of a block so that scoping will be correct
@@ -458,7 +458,7 @@ namespace Desalt.Core.Translation
             else
             {
                 // translate all of the initializers and create a comma expression from them
-                var initializers = node.Initializers.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+                ITsExpression[] initializers = node.Initializers.SelectMany(Visit).Cast<ITsExpression>().ToArray();
                 initializer = initializers.Length == 1 ? initializers[0] : Factory.CommaExpression(initializers);
             }
 
@@ -466,7 +466,7 @@ namespace Desalt.Core.Translation
             var statement = (ITsStatement)Visit(node.Statement).Single();
 
             // translate all of the incrementors and create a comma expression from them
-            var incrementors = node.Incrementors.SelectMany(Visit).Cast<ITsExpression>().ToArray();
+            ITsExpression[] incrementors = node.Incrementors.SelectMany(Visit).Cast<ITsExpression>().ToArray();
             ITsExpression incrementor =
                 incrementors.Length == 1 ? incrementors[0] : Factory.CommaExpression(incrementors);
 
@@ -526,8 +526,8 @@ namespace Desalt.Core.Translation
         /// <returns>An enumerable of <see cref="ITsCaseOrDefaultClause"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitSwitchSection(SwitchSectionSyntax node)
         {
-            var labels = node.Labels.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>().ToArray();
-            var statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
+            ITsCaseOrDefaultClause[] labels = node.Labels.SelectMany(Visit).Cast<ITsCaseOrDefaultClause>().ToArray();
+            ITsStatementListItem[] statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
 
             // attach the statements to the last label
             labels[labels.Length - 1] = labels[labels.Length - 1].WithStatements(statements);

@@ -49,7 +49,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitClassDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitClassDeclaration(this);
+        }
 
         public override string CodeDisplay =>
             (IsAbstract ? "abstract " : "") +

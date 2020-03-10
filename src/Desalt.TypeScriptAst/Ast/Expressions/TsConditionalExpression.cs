@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitConditionalExpression(this);
+        }
 
         public override string CodeDisplay => $"{Condition} ? {WhenTrue} : {WhenFalse}";
 

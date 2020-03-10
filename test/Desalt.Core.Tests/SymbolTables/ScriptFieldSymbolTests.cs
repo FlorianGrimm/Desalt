@@ -32,10 +32,10 @@ class C
     public int MyField;
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var fieldSymbol = context.RootSyntax.DescendantNodes()
+                IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<FieldDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
                     .Cast<IFieldSymbol>()
@@ -66,10 +66,10 @@ class C
     public int MyField;
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var fieldSymbol = context.RootSyntax.DescendantNodes()
+                IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<FieldDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
                     .Cast<IFieldSymbol>()

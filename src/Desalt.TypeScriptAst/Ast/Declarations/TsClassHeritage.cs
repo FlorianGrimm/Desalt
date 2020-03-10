@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitClassHeritage(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitClassHeritage(this);
+        }
 
         public override string CodeDisplay =>
             (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +

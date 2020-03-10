@@ -507,7 +507,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsTypeQuery ParseTypeQuery()
         {
             Read(TsTokenCode.Typeof);
-            var qualifiedName = ParseQualifiedName();
+            ITsQualifiedName qualifiedName = ParseQualifiedName();
             return Factory.TypeQuery(qualifiedName);
         }
 
@@ -561,7 +561,7 @@ namespace Desalt.TypeScriptAst.Parsing
                     constraint = ParseType();
                 }
 
-                var typeParameter = Factory.TypeParameter(typeName, constraint);
+                ITsTypeParameter typeParameter = Factory.TypeParameter(typeName, constraint);
                 typeParameters.Add(typeParameter);
             }
             while (!_reader.IsAtEnd && _reader.ReadIf(TsTokenCode.Comma));
@@ -610,7 +610,10 @@ namespace Desalt.TypeScriptAst.Parsing
         /// TypeAnnotation:
         ///     : Type
         /// ]]></code></remarks>
-        private ITsType ParseOptionalTypeAnnotation() => _reader.ReadIf(TsTokenCode.Colon) ? ParseType() : null;
+        private ITsType ParseOptionalTypeAnnotation()
+        {
+            return _reader.ReadIf(TsTokenCode.Colon) ? ParseType() : null;
+        }
 
         /// <summary>
         /// Parses a type annotation of the form ': type'.

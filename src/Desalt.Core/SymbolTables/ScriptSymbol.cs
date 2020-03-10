@@ -86,6 +86,9 @@ namespace Desalt.Core.SymbolTables
         //// Methods
         //// ===========================================================================================================
 
-        public override string ToString() => Symbol.ToHashDisplay();
+        public override string ToString()
+        {
+            return Symbol.ToHashDisplay();
+        }
     }
 }

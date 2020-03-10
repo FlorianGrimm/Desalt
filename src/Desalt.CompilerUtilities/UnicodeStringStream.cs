@@ -138,7 +138,10 @@ namespace Desalt.CompilerUtilities
             int bytesRead = 0;
             while (bytesRead < count)
             {
-                if (_position >= _byteLength) { return bytesRead; }
+                if (_position >= _byteLength)
+                {
+                    return bytesRead;
+                }
 
                 if (!SuppressByteOrderMark && _position >= 0 && _position < _byteOrderMark.Length)
                 {

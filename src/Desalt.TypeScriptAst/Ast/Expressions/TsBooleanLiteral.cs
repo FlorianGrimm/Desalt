@@ -41,10 +41,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitBooleanLiteral(this);
+        }
 
         public override string CodeDisplay => Value ? "true" : "false";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write(CodeDisplay);
+        }
     }
 }

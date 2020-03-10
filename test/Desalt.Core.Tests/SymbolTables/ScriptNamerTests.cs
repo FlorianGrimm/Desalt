@@ -36,18 +36,18 @@ namespace Desalt.Core.Tests.SymbolTables
             RenameRules renameRules,
             params string[] expectedScriptNames)
         {
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var mscorlibAssemblySymbol =
+                IAssemblySymbol mscorlibAssemblySymbol =
                     SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation);
 
                 var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, renameRules);
 
                 var actualScriptNames = new List<string>();
-                var allTypes = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, CancellationToken.None);
+                IEnumerable<INamedTypeSymbol> allTypes = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, CancellationToken.None);
                 foreach (INamedTypeSymbol type in allTypes)
                 {
                     actualScriptNames.Add(scriptNamer.DetermineScriptNameForSymbol(type));
@@ -403,12 +403,12 @@ class C
     private StringBuilder _builder = new StringBuilder();
 }
 ";
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextForFileAsync();
+                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
 
                 // get the StringBuilder symbol
-                var stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
+                ITypeSymbol stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
                         context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().Single().Declaration.Type)
                     .Type;
 

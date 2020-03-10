@@ -81,7 +81,7 @@ namespace Desalt.Core.Translation
                     return Factory.Null.ToSingleEnumerable();
             }
 
-            var diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
+            Diagnostic diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
             ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }

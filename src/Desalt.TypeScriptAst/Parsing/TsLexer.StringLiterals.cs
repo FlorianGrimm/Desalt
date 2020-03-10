@@ -12,7 +12,10 @@ namespace Desalt.TypeScriptAst.Parsing
 
     public sealed partial class TsLexer
     {
-        private static bool IsStringLiteralStartChar(char c) => c == '\'' || c == '"';
+        private static bool IsStringLiteralStartChar(char c)
+        {
+            return c == '\'' || c == '"';
+        }
 
         /// <summary>
         /// Lexes a string literal of the form 'string' or "string".

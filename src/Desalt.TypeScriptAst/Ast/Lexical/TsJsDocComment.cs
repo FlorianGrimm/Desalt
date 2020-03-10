@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsJsDocComment.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -207,46 +207,70 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// Methods
         //// ===========================================================================================================
 
-        public ITsJsDocComment WithDescription(ITsJsDocBlock value) =>
-            Description.Equals(value) ? this : new TsJsDocComment(this, description: value);
+        public ITsJsDocComment WithDescription(ITsJsDocBlock value)
+        {
+            return Description.Equals(value) ? this : new TsJsDocComment(this, description: value);
+        }
 
-        public ITsJsDocComment WithSummaryTag(ITsJsDocBlock value) =>
-            SummaryTag.Equals(value) ? this : new TsJsDocComment(this, summaryTag: value);
+        public ITsJsDocComment WithSummaryTag(ITsJsDocBlock value)
+        {
+            return SummaryTag.Equals(value) ? this : new TsJsDocComment(this, summaryTag: value);
+        }
 
-        public ITsJsDocComment WithFileTag(ITsJsDocBlock value) =>
-            FileTag.Equals(value) ? this : new TsJsDocComment(this, fileTag: value);
+        public ITsJsDocComment WithFileTag(ITsJsDocBlock value)
+        {
+            return FileTag.Equals(value) ? this : new TsJsDocComment(this, fileTag: value);
+        }
 
-        public ITsJsDocComment WithCopyrightTag(ITsJsDocBlock value) =>
-            CopyrightTag.Equals(value) ? this : new TsJsDocComment(this, copyrightTag: value);
+        public ITsJsDocComment WithCopyrightTag(ITsJsDocBlock value)
+        {
+            return CopyrightTag.Equals(value) ? this : new TsJsDocComment(this, copyrightTag: value);
+        }
 
-        public ITsJsDocComment WithIsPackagePrivate(bool value) =>
-            IsPackagePrivate.Equals(value) ? this : new TsJsDocComment(this, isPackagePrivate: value);
+        public ITsJsDocComment WithIsPackagePrivate(bool value)
+        {
+            return IsPackagePrivate.Equals(value) ? this : new TsJsDocComment(this, isPackagePrivate: value);
+        }
 
-        public ITsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value) =>
-            ParamsTags.SequenceEqual(value, (x, y) => x.paramName == y.paramName && x.text.Equals(y.text))
+        public ITsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value)
+        {
+            return ParamsTags.SequenceEqual(value, (x, y) => x.paramName == y.paramName && x.text.Equals(y.text))
                 ? this
                 : new TsJsDocComment(this, paramsTags: value);
+        }
 
-        public ITsJsDocComment WithTypeParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value) =>
-            TypeParamsTags.SequenceEqual(value, (x, y) => x.paramName == y.paramName && x.text.Equals(y.text))
+        public ITsJsDocComment WithTypeParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value)
+        {
+            return TypeParamsTags.SequenceEqual(value, (x, y) => x.paramName == y.paramName && x.text.Equals(y.text))
                 ? this
                 : new TsJsDocComment(this, typeParamTags: value);
+        }
 
-        public ITsJsDocComment WithReturnsTag(ITsJsDocBlock value) =>
-            ReturnsTag.Equals(value) ? this : new TsJsDocComment(this, returnsTag: value);
+        public ITsJsDocComment WithReturnsTag(ITsJsDocBlock value)
+        {
+            return ReturnsTag.Equals(value) ? this : new TsJsDocComment(this, returnsTag: value);
+        }
 
-        public ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value) =>
-            ThrowsTags.SequenceEqual(value, (x, y) => x.typeName == y.typeName && x.text.Equals(y.text))
+        public ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value)
+        {
+            return ThrowsTags.SequenceEqual(value, (x, y) => x.typeName == y.typeName && x.text.Equals(y.text))
                 ? this
                 : new TsJsDocComment(this, throwsTags: value);
+        }
 
-        public ITsJsDocComment WithExampleTags(ImmutableArray<ITsJsDocBlock> value) =>
-            ExampleTags.SequenceEqual(value, (x, y) => x.Equals(y))
+        public ITsJsDocComment WithExampleTags(ImmutableArray<ITsJsDocBlock> value)
+        {
+            return ExampleTags.SequenceEqual(value, (x, y) => x.Equals(y))
                 ? this
                 : new TsJsDocComment(this, exampleTags: value);
+        }
 
-        public ITsJsDocComment WithSeeTags(ImmutableArray<ITsJsDocBlock> value) =>
-            SeeTags.SequenceEqual(value, (x, y) => x.Equals(y)) ? this : new TsJsDocComment(this, seeTags: value);
+        public ITsJsDocComment WithSeeTags(ImmutableArray<ITsJsDocBlock> value)
+        {
+            return SeeTags.SequenceEqual(value, (x, y) => x.Equals(y))
+                ? this
+                : new TsJsDocComment(this, seeTags: value);
+        }
 
         /// <summary>
         /// Emits this AST node into code using the specified <see cref="Emitter"/>.
@@ -294,13 +318,13 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             }
 
             // typeparam (not a real jsdoc tag)
-            foreach (var (paramName, text) in TypeParamsTags)
+            foreach ((string paramName, ITsJsDocBlock text) in TypeParamsTags)
             {
                 AddLines(text, $"typeparam {paramName}", lines, options);
             }
 
             // @param
-            foreach (var (paramName, text) in ParamsTags)
+            foreach ((string paramName, ITsJsDocBlock text) in ParamsTags)
             {
                 AddLines(text, $"{TagNames.Param} {paramName}", lines, options);
             }
@@ -309,7 +333,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             AddLines(ReturnsTag, TagNames.Returns, lines, options);
 
             // @throws
-            foreach (var (typeName, text) in ThrowsTags)
+            foreach ((string typeName, ITsJsDocBlock text) in ThrowsTags)
             {
                 AddLines(text, $"{TagNames.Throws} {{{typeName}}}", lines, options);
             }

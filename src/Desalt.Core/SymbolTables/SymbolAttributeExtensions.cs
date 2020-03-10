@@ -66,8 +66,10 @@ namespace Desalt.Core.SymbolTables
         /// True if the attribute was found; false if the symbol does not have an attached attribute
         /// of the given name.
         /// </returns>
-        public static bool HasAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix) =>
-            FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix) != null;
+        public static bool HasAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
+        {
+            return FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix) != null;
+        }
 
         /// <summary>
         /// Returns a value indicating whether the specified symbol has the specified attribute.
@@ -78,8 +80,10 @@ namespace Desalt.Core.SymbolTables
         /// True if the attribute was found; false if the symbol does not have an attached attribute
         /// of the given name.
         /// </returns>
-        public static bool HasAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName) =>
-            HasAttribute(symbol, FullyQualifiedName(attributeName));
+        public static bool HasAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
+        {
+            return HasAttribute(symbol, FullyQualifiedName(attributeName));
+        }
 
         /// <summary>
         /// Tries to gets the value of the first constructor argument of the attribute attached to
@@ -301,10 +305,14 @@ namespace Desalt.Core.SymbolTables
         /// <param name="symbol">The symbol to query.</param>
         /// <param name="attributeName">The Saltarelle attribute to find.</param>
         /// <returns>The value of the flag attribute.</returns>
-        public static bool GetFlagAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName) =>
-            GetFlagAttribute(symbol, FullyQualifiedName(attributeName));
+        public static bool GetFlagAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
+        {
+            return GetFlagAttribute(symbol, FullyQualifiedName(attributeName));
+        }
 
-        private static string FullyQualifiedName(SaltarelleAttributeName attributeName) =>
-            $"System.Runtime.CompilerServices.{attributeName}";
+        private static string FullyQualifiedName(SaltarelleAttributeName attributeName)
+        {
+            return $"System.Runtime.CompilerServices.{attributeName}";
+        }
     }
 }

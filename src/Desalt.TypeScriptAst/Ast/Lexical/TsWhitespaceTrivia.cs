@@ -31,7 +31,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             Text = text;
         }
 
-        public static TsWhitespaceTrivia Create(string text) => new TsWhitespaceTrivia(isNewline: false, text: text);
+        public static TsWhitespaceTrivia Create(string text)
+        {
+            return new TsWhitespaceTrivia(isNewline: false, text: text);
+        }
 
         //// ===========================================================================================================
         //// Properties

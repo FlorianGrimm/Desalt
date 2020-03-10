@@ -37,10 +37,10 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C { public void Method() {} }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var methodSymbol = context.RootSyntax
+                IMethodSymbol methodSymbol = context.RootSyntax
                     .DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Where(node => node.Identifier.ValueText == "Method")
@@ -68,10 +68,10 @@ class C
     public void Method() {}
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var methodSymbol = context.RootSyntax.DescendantNodes()
+                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Where(node => node.Identifier.ValueText == "Method")
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
@@ -100,10 +100,10 @@ class C
     public void Method() {}
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var methodSymbol = context.RootSyntax.DescendantNodes()
+                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Where(node => node.Identifier.ValueText == "Method")
                     .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))

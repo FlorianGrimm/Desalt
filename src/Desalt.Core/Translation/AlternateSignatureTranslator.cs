@@ -105,18 +105,18 @@ namespace Desalt.Core.Translation
                 .ToImmutableArray();
 
             // adjust all of the required and optional parameters
-            var requiredParameters = AdjustRequiredParameters(
+            ImmutableArray<ITsBoundRequiredParameter> requiredParameters = AdjustRequiredParameters(
                 methodGroup,
                 translatedRequiredParameters,
                 diagnosticsList);
 
-            var optionalParameters = AdjustOptionalParameters(
+            ImmutableArray<ITsBoundOptionalParameter> optionalParameters = AdjustOptionalParameters(
                 methodGroup,
                 translatedRequiredParameters,
                 translatedOptionalParameters,
                 diagnosticsList);
 
-            var restParameter = translatedParameterList.RestParameter;
+            ITsRestParameter restParameter = translatedParameterList.RestParameter;
 
             // create the new parameter list and compare against the old one
             adjustedParameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
@@ -218,7 +218,7 @@ namespace Desalt.Core.Translation
                     .GetSyntax()
                     .GetLocation();
 
-            var translatedTypes = group.TypesForParameter(parameterIndex)
+            ITsType[] translatedTypes = group.TypesForParameter(parameterIndex)
                 .Select(
                     typeSymbol => _typeTranslator.TranslateSymbol(
                         typeSymbol,

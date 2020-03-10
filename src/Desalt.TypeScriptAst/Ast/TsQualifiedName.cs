@@ -39,7 +39,10 @@ namespace Desalt.TypeScriptAst.Ast
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitQualifiedName(this);
+        }
 
         public override string CodeDisplay
         {

@@ -49,8 +49,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a function declaration of the form 'function [name] signature { body }'.
         /// </summary>
-        public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature) =>
-            TsFunctionDeclaration.Create(callSignature);
+        public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature)
+        {
+            return TsFunctionDeclaration.Create(callSignature);
+        }
 
         /// <summary>
         /// Creates a function declaration of the form 'function name signature { }'.
@@ -76,8 +78,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a type alias of the form 'type alias&lt;T&gt; = type'.
         /// </summary>
-        public static ITsTypeAliasDeclaration TypeAliasDeclaration(ITsIdentifier aliasName, ITsType type) =>
-            new TsTypeAliasDeclaration(aliasName, type);
+        public static ITsTypeAliasDeclaration TypeAliasDeclaration(ITsIdentifier aliasName, ITsType type)
+        {
+            return new TsTypeAliasDeclaration(aliasName, type);
+        }
 
         /// <summary>
         /// Creates a type alias of the form 'type alias&lt;T&gt; = type'.
@@ -169,8 +173,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an index member declaration in a class.
         /// </summary>
-        public static ITsIndexMemberDeclaration IndexMemberDeclaration(ITsIndexSignature indexSignature) =>
-            new TsIndexMemberDeclaration(indexSignature);
+        public static ITsIndexMemberDeclaration IndexMemberDeclaration(ITsIndexSignature indexSignature)
+        {
+            return new TsIndexMemberDeclaration(indexSignature);
+        }
 
         /// <summary>
         /// Creates a class heritage of the form 'extends type implements type, type'.
@@ -185,8 +191,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a class heritage of the form 'implements type, type'.
         /// </summary>
-        public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes) =>
-            new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes);
+        public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes)
+        {
+            return new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes);
+        }
 
         /// <summary>
         /// Creates a class declaration.
@@ -216,8 +224,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an enum member of the form, 'name = value'.
         /// </summary>
-        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null) =>
-            new TsEnumMember(name, value);
+        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null)
+        {
+            return new TsEnumMember(name, value);
+        }
 
         /// <summary>
         /// Creates an enum declaration.
@@ -244,8 +254,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an enum declaration.
         /// </summary>
-        public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody) =>
-            new TsEnumDeclaration(enumName, enumBody);
+        public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody)
+        {
+            return new TsEnumDeclaration(enumName, enumBody);
+        }
 
         /// <summary>
         /// Creates a namespace declaration.
@@ -260,14 +272,18 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an exported variable statement.
         /// </summary>
-        public static ITsExportedVariableStatement ExportedVariableStatement(ITsVariableStatement statement) =>
-            new TsExportedVariableStatement(statement);
+        public static ITsExportedVariableStatement ExportedVariableStatement(ITsVariableStatement statement)
+        {
+            return new TsExportedVariableStatement(statement);
+        }
 
         /// <summary>
         /// Creates an exported declaration.
         /// </summary>
-        public static ITsExportedDeclaration ExportedDeclaration(ITsDeclaration declaration) =>
-            new TsExportedDeclaration(declaration);
+        public static ITsExportedDeclaration ExportedDeclaration(ITsDeclaration declaration)
+        {
+            return new TsExportedDeclaration(declaration);
+        }
 
         /// <summary>
         /// Creates an import alias declaration of the form, 'import alias = dotted.name'.
@@ -282,8 +298,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an ambient variable binding of the form 'name: type'.
         /// </summary>
-        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null) =>
-            new TsAmbientBinding(variableName, variableType);
+        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null)
+        {
+            return new TsAmbientBinding(variableName, variableType);
+        }
 
         /// <summary>
         /// Creates an ambient variable declaration of the form, 'var|let|const x, y: type;'.
@@ -344,8 +362,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an index member declaration in a class.
         /// </summary>
-        public static ITsIndexMemberDeclaration AmbientIndexMemberDeclaration(ITsIndexSignature indexSignature) =>
-            new TsIndexMemberDeclaration(indexSignature);
+        public static ITsIndexMemberDeclaration AmbientIndexMemberDeclaration(ITsIndexSignature indexSignature)
+        {
+            return new TsIndexMemberDeclaration(indexSignature);
+        }
 
         /// <summary>
         /// Creates an ambient class declaration.
@@ -434,25 +454,34 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Create an import specifier, which is either an identifier or 'identifier as identifier'.
         /// </summary>
-        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null) =>
-            new TsImportSpecifier(name, asName);
+        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null)
+        {
+            return new TsImportSpecifier(name, asName);
+        }
 
         /// <summary>
         /// Create a from clause in an import or export statement, of the form 'from moduleName'.
         /// </summary>
-        public static ITsFromClause FromClause(ITsStringLiteral module) => new TsFromClause(module);
+        public static ITsFromClause FromClause(ITsStringLiteral module)
+        {
+            return new TsFromClause(module);
+        }
 
         /// <summary>
         /// Create an import clause of the form 'identifier'.
         /// </summary>
-        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding) =>
-            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding: null);
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding)
+        {
+            return TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding: null);
+        }
 
         /// <summary>
         /// Create an import clause of the form 'identifier' or 'identifier, * as identifier'.
         /// </summary>
-        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding) =>
-            TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding);
+        public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding)
+        {
+            return TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding);
+        }
 
         /// <summary>
         /// Create an import clause of the form 'identifier' or 'identifier, { importSpecifier, importSpecifier }'.
@@ -467,8 +496,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Create an import clause of the form '* as identifier'.
         /// </summary>
-        public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding) =>
-            TsImportClause.CreateNamespaceBinding(namespaceBinding);
+        public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding)
+        {
+            return TsImportClause.CreateNamespaceBinding(namespaceBinding);
+        }
 
         /// <summary>
         /// Create an import clause of the form '{ importSpecifier, importSpecifier }'.
@@ -483,14 +514,18 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Create an import declaration of the form 'import ImportClause FromClause;'.
         /// </summary>
-        public static ITsImportDeclaration ImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause) =>
-            new TsImportDeclaration(importClause, fromClause);
+        public static ITsImportDeclaration ImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause)
+        {
+            return new TsImportDeclaration(importClause, fromClause);
+        }
 
         /// <summary>
         /// Create an import declaration of the form 'import Module;'.
         /// </summary>
-        public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module) =>
-            new TsImportDeclaration(module);
+        public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module)
+        {
+            return new TsImportDeclaration(module);
+        }
 
         /// <summary>
         /// Create an import declaration using 'require', of the form 'import name = require(string);'.

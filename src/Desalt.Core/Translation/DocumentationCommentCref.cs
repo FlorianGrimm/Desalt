@@ -12,7 +12,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.CompilerUtilities;
-    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using CrefKind = DocumentationCommentCrefKind;
 
@@ -108,9 +107,15 @@ namespace Desalt.Core.Translation
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => Kind == CrefKind.Type ? TypeName : $"{TypeName}.{MemberName}";
+        public override string ToString()
+        {
+            return Kind == CrefKind.Type ? TypeName : $"{TypeName}.{MemberName}";
+        }
 
-        public string ToFullString() => Kind == CrefKind.Type ? FullTypeName : $"{FullTypeName}.{MemberName}";
+        public string ToFullString()
+        {
+            return Kind == CrefKind.Type ? FullTypeName : $"{FullTypeName}.{MemberName}";
+        }
 
         private static (string typeName, string memberName) SplitQualifiedName(string qualifiedName)
         {

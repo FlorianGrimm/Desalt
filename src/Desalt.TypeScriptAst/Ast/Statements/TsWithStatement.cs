@@ -36,7 +36,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitWithStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitWithStatement(this);
+        }
 
         public override string CodeDisplay => $"with ({Expression}) {Statement}";
 

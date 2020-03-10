@@ -26,10 +26,10 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"enum E { }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var enumSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<EnumDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single();
@@ -56,10 +56,10 @@ using System.Runtime.CompilerServices;
 [NumericValues]
 enum E { }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var enumSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<EnumDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single();
@@ -84,10 +84,10 @@ using System.Runtime.CompilerServices;
 
 class E { }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single();

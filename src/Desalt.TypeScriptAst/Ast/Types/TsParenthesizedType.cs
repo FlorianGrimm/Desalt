@@ -34,7 +34,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitParenthesizedType(this);
+        }
 
         public override string CodeDisplay => $"({Type.CodeDisplay})";
 

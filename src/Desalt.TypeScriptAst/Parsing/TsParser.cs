@@ -160,10 +160,15 @@ namespace Desalt.TypeScriptAst.Parsing
         ///     Identifier
         ///     [~Yield] yield
         /// ]]></code></remarks>
-        private ITsIdentifier ParseIdentifierReference() => ParseIdentifier();
+        private ITsIdentifier ParseIdentifierReference()
+        {
+            return ParseIdentifier();
+        }
 
-        private static bool IsStartOfIdentifier(TsTokenCode tokenCode) =>
-            tokenCode == TsTokenCode.Identifier || tokenCode > TsTokenCode.LastReservedWord;
+        private static bool IsStartOfIdentifier(TsTokenCode tokenCode)
+        {
+            return tokenCode == TsTokenCode.Identifier || tokenCode > TsTokenCode.LastReservedWord;
+        }
 
         private bool TryParseIdentifier(out ITsIdentifier identifier)
         {
@@ -172,7 +177,7 @@ namespace Desalt.TypeScriptAst.Parsing
             // keywords can be identifiers as long as they're not reserved words
             if (_reader.Peek().TokenCode > TsTokenCode.LastReservedWord)
             {
-                var keywordAsIdentifierToken = _reader.Read();
+                TsToken keywordAsIdentifierToken = _reader.Read();
                 identifierToken = TsToken.Identifier(
                     keywordAsIdentifierToken.Text,
                     keywordAsIdentifierToken.Text,
@@ -249,7 +254,7 @@ namespace Desalt.TypeScriptAst.Parsing
             }
             catch (TsParserException)
             {
-                result = default(T);
+                result = default;
                 return false;
             }
         }

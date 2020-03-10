@@ -90,7 +90,7 @@ namespace Desalt.Core.Translation
 
         public override IEnumerable<ITsAstNode> DefaultVisit(SyntaxNode node)
         {
-            var diagnostic = DiagnosticFactory.TranslationNotSupported(node);
+            Diagnostic diagnostic = DiagnosticFactory.TranslationNotSupported(node);
             ReportUnsupportedTranslatation(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
@@ -225,8 +225,8 @@ namespace Desalt.Core.Translation
             ITsImplementationElement translatedDeclaration,
             BaseTypeDeclarationSyntax node)
         {
-            var exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
-            var withDocComment = AddDocumentationComment(exportedDeclaration, node);
+            ITsImplementationModuleElement exportedDeclaration = ExportIfNeeded(translatedDeclaration, node);
+            ITsImplementationModuleElement withDocComment = AddDocumentationComment(exportedDeclaration, node);
             return withDocComment;
         }
 

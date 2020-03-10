@@ -16,7 +16,6 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
     /// <summary>

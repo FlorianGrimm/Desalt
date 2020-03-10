@@ -34,7 +34,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitExportImplementationElement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitExportImplementationElement(this);
+        }
 
         public override string CodeDisplay => $"export {ExportedElement}";
 

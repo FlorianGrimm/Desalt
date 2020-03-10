@@ -64,7 +64,7 @@ namespace Desalt.Core.Tests
                      ReportDiagnostic.Suppress)).ToImmutableDictionary();
 
             // for now, add a $ prefix to private fields until we implement rewriters
-            var renameRules =
+            RenameRules renameRules =
                 RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName);
 
             // create the symbol table overrides

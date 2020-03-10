@@ -62,6 +62,9 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public override string CodeDisplay => Types.ToElidedList(Delimiter);
 
-        protected override void EmitInternal(Emitter emitter) => emitter.WriteList(Types, indent: false, itemDelimiter: Delimiter);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.WriteList(Types, indent: false, itemDelimiter: Delimiter);
+        }
     }
 }

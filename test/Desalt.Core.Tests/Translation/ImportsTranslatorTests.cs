@@ -83,7 +83,7 @@ class C
             SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
-            using (var tempProject = await TempProject.CreateAsync(codeFiles))
+            using (TempProject tempProject = await TempProject.CreateAsync(codeFiles))
             {
                 DocumentTranslationContextWithSymbolTables context =
                     await tempProject.CreateContextWithSymbolTablesForFileAsync(
@@ -93,11 +93,11 @@ class C
                 IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
                 var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
-                var results = importsTranslator.TranslateImports(context, typesToImport);
+                IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
 
                 results.Diagnostics.Should().BeEmpty();
 
-                var actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
+                IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
                 actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
             }
         }

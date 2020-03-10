@@ -74,10 +74,7 @@ namespace Desalt.Core.Tests.Utility
         [TestMethod]
         public void ParseFragment_should_rethrow_any_errors()
         {
-            void ParseCallback(XmlReader reader, object arg)
-            {
-                reader.ReadInnerXml();
-            }
+            void ParseCallback(XmlReader reader, object arg) => reader.ReadInnerXml();
 
             Action action = () => new XmlFragmentParser().ParseFragment(@"<invalidTag>a</tag>", ParseCallback, new object());
             action.Should().Throw<XmlException>();

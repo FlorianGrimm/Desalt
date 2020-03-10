@@ -155,8 +155,10 @@ namespace Desalt.Core.SymbolTables
         /// </summary>
         public string InlineCode { get; }
 
-        public ScriptMethodSymbol WithInlineCode(string value) =>
-            new ScriptMethodSymbol(MethodSymbol, ComputedScriptName, this, inlineCode: value);
+        public ScriptMethodSymbol WithInlineCode(string value)
+        {
+            return new ScriptMethodSymbol(MethodSymbol, ComputedScriptName, this, inlineCode: value);
+        }
 
         /// <summary>
         /// If set, a method with this name will be generated from the method source.

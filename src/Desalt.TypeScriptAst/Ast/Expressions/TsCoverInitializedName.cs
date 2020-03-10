@@ -36,7 +36,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitCoverInitializedName(this);
+        }
 
         public override string CodeDisplay => $"{Identifier} = ${Initializer}";
 
