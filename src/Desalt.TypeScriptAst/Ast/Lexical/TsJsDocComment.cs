@@ -5,15 +5,15 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Lexical
+namespace Desalt.TypeScriptAst.Ast.Lexical
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Text;
-    using CompilerUtilities.Extensions;
-    using TypeScriptAst.Emit;
+    using Desalt.CompilerUtilities.Extensions;
+    using Desalt.TypeScriptAst.Emit;
     using TagNames = TsJsDocTagNames;
 
     /// <summary>

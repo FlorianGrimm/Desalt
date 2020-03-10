@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.IO;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Abstract base class for all abstract syntax tree (AST) nodes.

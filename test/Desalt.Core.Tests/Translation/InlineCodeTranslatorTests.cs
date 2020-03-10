@@ -14,13 +14,13 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Expressions;
+    using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Ast.Expressions;
-    using TypeScriptAst.Emit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     [TestClass]

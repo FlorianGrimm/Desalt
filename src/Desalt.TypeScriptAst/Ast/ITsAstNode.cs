@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Immutable;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.

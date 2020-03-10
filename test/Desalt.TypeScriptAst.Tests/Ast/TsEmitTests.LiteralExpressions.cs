@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Ast
+namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using System;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Expressions;
     using FluentAssertions;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Ast.Expressions;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

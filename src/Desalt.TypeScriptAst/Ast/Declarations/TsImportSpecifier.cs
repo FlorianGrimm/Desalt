@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Declarations
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.

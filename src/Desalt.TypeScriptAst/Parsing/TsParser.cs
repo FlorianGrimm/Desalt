@@ -5,13 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Parsing
+namespace Desalt.TypeScriptAst.Parsing
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using CompilerUtilities;
-    using TypeScriptAst.Ast;
+    using Desalt.CompilerUtilities;
+    using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>

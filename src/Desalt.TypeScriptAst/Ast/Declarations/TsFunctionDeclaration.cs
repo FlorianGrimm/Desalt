@@ -5,13 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Declarations
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.

@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Statements
+namespace Desalt.TypeScriptAst.Ast.Statements
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents an array binding pattern of the form '[x = y, z, ...p]'.

@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     public abstract partial class TsVisitor
     {

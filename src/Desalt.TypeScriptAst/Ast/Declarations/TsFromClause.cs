@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Declarations
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a from clause in an import or export statement, of the form 'from moduleName'.

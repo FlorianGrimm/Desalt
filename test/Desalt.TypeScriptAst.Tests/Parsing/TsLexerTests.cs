@@ -5,13 +5,13 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Parsing
+namespace Desalt.TypeScriptAst.Tests.Parsing
 {
     using System;
     using System.Linq;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
+    using Desalt.TypeScriptAst.Parsing;
     using FluentAssertions;
-    using TypeScriptAst.Parsing;
     using Xunit;
 
     public class TsLexerTests

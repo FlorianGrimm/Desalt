@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Immutable;
-    using TypeScriptAst.Ast.Expressions;
+    using Desalt.TypeScriptAst.Ast.Expressions;
 
     /***********************************************************************************************
      * Ecma-262 6.0 (ES 2015) Grammar

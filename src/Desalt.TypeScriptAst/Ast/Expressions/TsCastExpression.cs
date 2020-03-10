@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast.Expressions
 {
     using System;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a unary cast expression of the form, '&lt;Type&gt;.

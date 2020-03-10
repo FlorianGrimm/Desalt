@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Ast.Lexical
+namespace Desalt.TypeScriptAst.Tests.Ast.Lexical
 {
     using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.TypeScriptAst.Ast.Lexical;
     using FluentAssertions;
-    using TypeScriptAst.Ast.Lexical;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

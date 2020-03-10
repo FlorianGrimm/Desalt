@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Emit
+namespace Desalt.TypeScriptAst.Emit
 {
     using System;
 

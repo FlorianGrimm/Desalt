@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast.Expressions
 {
     /// <summary>
     /// Contains all of the assignment operators.

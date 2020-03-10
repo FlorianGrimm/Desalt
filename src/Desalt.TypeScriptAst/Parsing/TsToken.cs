@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Parsing
+namespace Desalt.TypeScriptAst.Parsing
 {
     using System;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
 
     /// <summary>
     /// Represents a token in TypeScript source code.

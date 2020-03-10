@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Ast
+namespace Desalt.TypeScriptAst.Tests.Ast
 {
-    using TypeScriptAst.Ast.Expressions;
+    using Desalt.TypeScriptAst.Ast.Expressions;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

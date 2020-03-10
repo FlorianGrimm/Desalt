@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Lexical
+namespace Desalt.TypeScriptAst.Ast.Lexical
 {
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents whitespace that can appear before or after another <see cref="ITsAstNode"/>.

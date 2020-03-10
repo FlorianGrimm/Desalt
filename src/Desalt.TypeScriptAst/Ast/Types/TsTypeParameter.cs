@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Types
+namespace Desalt.TypeScriptAst.Ast.Types
 {
     using System;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.

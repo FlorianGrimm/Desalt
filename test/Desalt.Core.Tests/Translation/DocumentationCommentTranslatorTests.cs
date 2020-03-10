@@ -10,13 +10,13 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using Desalt.Core.Translation;
     using Desalt.Core.Utility;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Emit;
 
     [TestClass]
     public class DocumentationCommentTranslatorTests

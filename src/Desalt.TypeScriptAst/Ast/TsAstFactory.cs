@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using TypeScriptAst.Ast.Types;
+    using Desalt.TypeScriptAst.Ast.Types;
 
     /// <summary>
     /// Provides factory methods for creating TypeScript AST nodes.

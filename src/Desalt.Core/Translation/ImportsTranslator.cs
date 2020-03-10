@@ -16,8 +16,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
+    using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>

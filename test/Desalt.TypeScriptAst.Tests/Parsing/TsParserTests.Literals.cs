@@ -5,10 +5,10 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Parsing
+namespace Desalt.TypeScriptAst.Tests.Parsing
 {
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Ast.Expressions;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Expressions;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

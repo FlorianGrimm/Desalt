@@ -5,9 +5,9 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Types
+namespace Desalt.TypeScriptAst.Ast.Types
 {
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.

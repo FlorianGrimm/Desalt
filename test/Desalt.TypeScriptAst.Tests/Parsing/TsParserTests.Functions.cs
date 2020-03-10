@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Parsing
+namespace Desalt.TypeScriptAst.Tests.Parsing
 {
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;

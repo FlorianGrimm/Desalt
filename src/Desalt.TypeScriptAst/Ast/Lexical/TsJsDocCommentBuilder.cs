@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Lexical
+namespace Desalt.TypeScriptAst.Ast.Lexical
 {
     using System.Collections.Generic;
     using System.Linq;

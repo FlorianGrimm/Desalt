@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Statements
+namespace Desalt.TypeScriptAst.Ast.Statements
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.

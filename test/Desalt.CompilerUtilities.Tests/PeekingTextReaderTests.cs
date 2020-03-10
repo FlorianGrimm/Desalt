@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace CompilerUtilities.Tests
+namespace Desalt.CompilerUtilities.Tests
 {
     using System;
     using System.Collections.Generic;

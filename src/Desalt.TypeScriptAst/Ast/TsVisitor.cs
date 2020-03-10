@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     /// <summary>
     /// Represents an <see cref="ITsAstNode"/> visitor that visits only the single node passed

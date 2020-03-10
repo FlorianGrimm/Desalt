@@ -5,14 +5,14 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Emit
+namespace Desalt.TypeScriptAst.Emit
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using CompilerUtilities;
-    using TypeScriptAst.Ast;
+    using Desalt.CompilerUtilities;
+    using Desalt.TypeScriptAst.Ast;
 
     /// <summary>
     /// General-purpose emitter for serializing abstract syntax nodes into code.

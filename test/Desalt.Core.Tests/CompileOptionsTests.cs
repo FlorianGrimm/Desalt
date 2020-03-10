@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests
     using System.Collections.Immutable;
     using System.IO;
     using System.Text;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;

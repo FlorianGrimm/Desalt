@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Parsing
+namespace Desalt.TypeScriptAst.Tests.Parsing
 {
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Parsing;
     using FluentAssertions;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Parsing;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

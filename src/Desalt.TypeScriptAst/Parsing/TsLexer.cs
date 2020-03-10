@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Parsing
+namespace Desalt.TypeScriptAst.Parsing
 {
     using System;
     using System.Collections.Immutable;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
 
     /// <summary>
     /// Parses TypeScript code into tokens.

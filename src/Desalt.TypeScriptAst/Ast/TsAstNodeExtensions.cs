@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
 
     /// <summary>
     /// Contains extension methods for working with <see cref="ITsAstNode"/> objects.

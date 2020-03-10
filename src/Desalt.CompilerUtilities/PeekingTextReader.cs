@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace CompilerUtilities
+namespace Desalt.CompilerUtilities
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace CompilerUtilities
     using System.IO;
     using System.Linq;
     using System.Text;
-    using CompilerUtilities.Extensions;
+    using Desalt.CompilerUtilities.Extensions;
 
     /// <summary>
     /// Represents a <see cref="TextReader"/> optimized for peeking ahead more than one character.

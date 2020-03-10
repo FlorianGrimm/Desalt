@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace CompilerUtilities
+namespace Desalt.CompilerUtilities
 {
     using System;
     using System.Globalization;
@@ -45,20 +45,19 @@ namespace CompilerUtilities
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns a value that indicates whether the values of two <see
-        /// cref="T:CompilerUtilities.TextReaderLocation"/> objects are equal.
+        /// Returns a value that indicates whether the values of two <see cref="TextReaderLocation"/> objects are equal.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>
         /// <returns>
-        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
-        /// value; otherwise, false.
+        /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the
+        /// same value; otherwise, false.
         /// </returns>
         public static bool operator ==(TextReaderLocation left, TextReaderLocation right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value that indicates whether two <see
-        /// cref="T:CompilerUtilities.TextReaderLocation"/> objects have different values.
+        /// Returns a value that indicates whether two <see cref="TextReaderLocation"/> objects have
+        /// different values.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
         /// <param name="right">The second value to compare.</param>

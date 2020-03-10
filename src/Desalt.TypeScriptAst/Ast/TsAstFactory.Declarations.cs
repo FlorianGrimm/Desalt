@@ -5,12 +5,12 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast
+namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
     using System.Linq;
-    using CompilerUtilities.Extensions;
-    using TypeScriptAst.Ast.Declarations;
+    using Desalt.CompilerUtilities.Extensions;
+    using Desalt.TypeScriptAst.Ast.Declarations;
 
     public static partial class TsAstFactory
     {

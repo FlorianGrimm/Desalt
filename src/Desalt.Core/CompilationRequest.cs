@@ -7,7 +7,7 @@
 
 namespace Desalt.Core
 {
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
     using Desalt.Core.Utility;
 
     /// <summary>

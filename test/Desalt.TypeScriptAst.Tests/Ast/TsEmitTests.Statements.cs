@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Ast
+namespace Desalt.TypeScriptAst.Tests.Ast
 {
-    using CompilerUtilities.Extensions;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Ast.Expressions;
+    using Desalt.CompilerUtilities.Extensions;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Expressions;
     using Xunit;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 

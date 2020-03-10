@@ -11,7 +11,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Pipeline;
-    using TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>

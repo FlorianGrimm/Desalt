@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast.Expressions
 {
     using System;
-    using CompilerUtilities;
-    using TypeScriptAst.Emit;
+    using Desalt.CompilerUtilities;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a member expression of the form 'expression.name'.

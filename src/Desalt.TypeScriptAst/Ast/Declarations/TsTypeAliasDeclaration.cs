@@ -5,11 +5,11 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Ast.Declarations
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using TypeScriptAst.Ast.Types;
-    using TypeScriptAst.Emit;
+    using Desalt.TypeScriptAst.Ast.Types;
+    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.

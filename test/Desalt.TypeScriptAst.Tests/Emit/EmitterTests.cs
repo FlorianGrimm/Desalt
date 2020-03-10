@@ -5,17 +5,17 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace TypeScriptAst.Tests.Emit
+namespace Desalt.TypeScriptAst.Tests.Emit
 {
     using System;
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using CompilerUtilities.Extensions;
+    using Desalt.CompilerUtilities.Extensions;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Emit;
     using Xunit;
 
     public class EmitterTests
