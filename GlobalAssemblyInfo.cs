@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 
+#if NETFRAMEWORK
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
@@ -18,9 +19,15 @@ using System.Runtime.InteropServices;
 
 // Product Information
 [assembly: AssemblyCompany("Justin Rockwood")]
-[assembly: AssemblyCopyright("Copyright © Justin Rockwood. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright Â© Justin Rockwood. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyProduct("Desalt Toolset")]
+
+// Version Information
+[assembly: AssemblyVersion("0.1.0")]
+[assembly: AssemblyFileVersion("0.1.0")]
+[assembly: AssemblyInformationalVersion("0.1 Pre-Release")]
+#endif
 
 // Globalization and Localization
 [assembly: AssemblyCulture("")]
@@ -29,8 +36,3 @@ using System.Runtime.InteropServices;
 // COM and CLS Compliance
 [assembly: CLSCompliant(false)]
 [assembly: ComVisible(false)]
-
-// Version Information
-[assembly: AssemblyVersion("0.1.0")]
-[assembly: AssemblyFileVersion("0.1.0")]
-[assembly: AssemblyInformationalVersion("0.1 Pre-Release")]
