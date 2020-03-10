@@ -11,7 +11,7 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using CrefKind = DocumentationCommentCrefKind;

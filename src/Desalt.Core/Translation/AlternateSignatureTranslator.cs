@@ -12,9 +12,9 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.SymbolTables;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Ast.Types;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>

@@ -13,13 +13,13 @@ namespace Desalt.Core.CompilerStages
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using CompilerUtilities.Extensions;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.Utility;
+    using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Emit;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.Ast;
-    using TypeScriptAst.Emit;
 
     /// <summary>
     /// Pipeline stage that compiles all of the C# files in a .csproj file to TypeScript.

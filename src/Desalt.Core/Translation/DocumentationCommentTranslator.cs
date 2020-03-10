@@ -11,12 +11,12 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using CompilerUtilities;
+    using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Utility;
+    using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
-    using TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
     using XmlNames = DocumentationCommentXmlNames;
 

@@ -10,9 +10,9 @@ namespace Desalt.Core.Tests.Translation
     using System.Threading.Tasks;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using TypeScriptAst.Emit;
 
     [TestClass]
     public class CSharpToTypeScriptTranslatorTests

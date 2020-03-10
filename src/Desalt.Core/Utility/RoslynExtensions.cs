@@ -13,10 +13,10 @@ namespace Desalt.Core.Utility
     using System.Threading;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
+    using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
