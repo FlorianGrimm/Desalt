@@ -12,7 +12,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsEmitTests
@@ -52,7 +52,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             }
         }
 
-        [Fact]
+        [Test]
         public void Emit_generic_type_name()
         {
             VerifyOutput(

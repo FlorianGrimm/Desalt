@@ -11,7 +11,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
     using Desalt.CompilerUtilities;
     using Desalt.TypeScriptAst.Parsing;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
 
     public class TsTokenReaderTests
     {
@@ -20,14 +20,14 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         private static readonly TsToken s_token3 = new TsToken(TsTokenCode.Caret, "^", new TextReaderLocation(1, 4));
         private static readonly TsToken[] s_tokens = { s_token1, s_token2, s_token3 };
 
-        [Fact]
+        [Test]
         public void TsTokenReader_Peek_should_return_EndOfTokens_if_there_are_no_tokens_left()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
             reader.Peek().Should().Be(TsToken.EndOfTokens);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_Peek_should_return_the_next_token_without_advancing()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -35,14 +35,14 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Peek().Should().Be(s_token1);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_Read_should_return_EndOfTokens_if_there_are_no_tokens_left()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
             reader.Read().Should().Be(TsToken.EndOfTokens);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_Read_should_return_the_next_token_and_advance()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -52,21 +52,21 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Read().Should().Be(TsToken.EndOfTokens);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsAtEnd_should_return_true_on_an_empty_reader()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
             reader.IsAtEnd.Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsAtEnd_should_return_false_on_a_non_empty_reader()
         {
             var reader = new TsTokenReader(s_tokens);
             reader.IsAtEnd.Should().BeFalse();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_ReadIf_should_return_false_and_not_advance_if_the_next_token_does_not_match()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -75,7 +75,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Peek().Should().Be(s_token1);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_ReadIf_should_return_true_and_advance_if_the_next_token_matches()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -84,42 +84,42 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Read().Should().Be(s_token2);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_ReadIf_should_return_false_if_at_the_end_of_the_tokens()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
             reader.ReadIf(TsTokenCode.Abstract, out _).Should().BeFalse();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsNext_should_return_false_if_the_token_codes_to_not_match()
         {
             var reader = new TsTokenReader(s_tokens);
             reader.IsNext(s_token1.TokenCode, s_token2.TokenCode, TsTokenCode.Any).Should().BeFalse();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsNext_should_return_true_if_all_the_token_codes_match()
         {
             var reader = new TsTokenReader(s_tokens);
             reader.IsNext(s_token1.TokenCode, s_token2.TokenCode, s_token3.TokenCode).Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsNext_should_return_false_if_there_are_not_enough_tokens_left()
         {
             var reader = new TsTokenReader(new[] { s_token1 });
             reader.IsNext(s_token1.TokenCode, TsTokenCode.Async, TsTokenCode.Any).Should().BeFalse();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_IsNext_should_return_true_if_there_are_more_tokens_left_but_there_is_only_one_token_to_find()
         {
             var reader = new TsTokenReader(s_tokens);
             reader.IsNext(s_token1.TokenCode).Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_Skip_should_skip_the_next_token()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -127,7 +127,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Read().Should().Be(s_token2);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_SkipIf_should_return_false_and_not_advance_if_the_next_token_does_not_match()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -135,7 +135,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Peek().Should().Be(s_token1);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_SkipIf_should_return_true_and_advance_if_the_next_token_matches()
         {
             var reader = new TsTokenReader(s_tokens);
@@ -143,14 +143,14 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             reader.Read().Should().Be(s_token2);
         }
 
-        [Fact]
+        [Test]
         public void TsTokenReader_SkipIf_should_return_false_if_at_the_end_of_the_tokens()
         {
             var reader = new TsTokenReader(Enumerable.Empty<TsToken>());
             reader.SkipIf(TsTokenCode.Abstract).Should().BeFalse();
         }
 
-        [Fact]
+        [Test]
         public void
             TsTokenReader_ReadWithSavedState_should_preserve_the_state_before_running_the_function_and_restore_it()
         {

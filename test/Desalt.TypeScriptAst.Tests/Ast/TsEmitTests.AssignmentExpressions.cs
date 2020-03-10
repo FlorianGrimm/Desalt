@@ -7,13 +7,13 @@
 
 namespace Desalt.TypeScriptAst.Tests.Ast
 {
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
     using Op = TypeScriptAst.Ast.Expressions.TsAssignmentOperator;
 
     public partial class TsEmitTests
     {
-        [Fact]
+        [Test]
         public void Emit_all_assignment_expressions()
         {
             VerifyOutput(Factory.Assignment(s_x, Op.SimpleAssign, s_y), "x = y");
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             VerifyOutput(Factory.Assignment(s_x, Op.BitwiseOrAssign, s_y), "x |= y");
         }
 
-        [Fact]
+        [Test]
         public void Emit_comma_expressions()
         {
             VerifyOutput(Factory.CommaExpression(s_x, s_y), "x, y");

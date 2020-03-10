@@ -9,42 +9,42 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [Fact]
+        [Test]
         public void Emit_type_parameter_with_no_constraint()
         {
             VerifyOutput(Factory.TypeParameter(s_T), "T");
         }
 
-        [Fact]
+        [Test]
         public void Emit_type_parameter_with_constraint()
         {
             VerifyOutput(Factory.TypeParameter(s_T, s_MyTypeRef), "T extends MyType");
         }
 
-        [Fact]
+        [Test]
         public void Emit_parenthesized_type()
         {
             VerifyOutput(Factory.SymbolType.WithParentheses(), "(symbol)");
         }
 
-        [Fact]
+        [Test]
         public void Emit_simple_type_reference_with_no_type_arguments()
         {
             VerifyOutput(s_TRef, "T");
         }
 
-        [Fact]
+        [Test]
         public void Emit_qualified_name_type_reference_with_no_type_arguments()
         {
             VerifyOutput(Factory.TypeReference(Factory.QualifiedName("Ns.Class")), "Ns.Class");
         }
 
-        [Fact]
+        [Test]
         public void Emit_type_reference_with_type_arguments()
         {
             VerifyOutput(
@@ -55,7 +55,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "Sub<T1<T2>>");
         }
 
-        [Fact]
+        [Test]
         public void Emit_object_property_signatures()
         {
             VerifyOutput(Factory.PropertySignature(s_x), "x");
@@ -64,7 +64,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             VerifyOutput(Factory.PropertySignature(s_x, isOptional: true, propertyType: Factory.StringType), "x?: string");
         }
 
-        [Fact]
+        [Test]
         public void Emit_full_call_signature()
         {
             VerifyOutput(
@@ -76,7 +76,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "<T extends MyType>(private x: T): any");
         }
 
-        [Fact]
+        [Test]
         public void Emit_call_signature_with_no_type_parameters()
         {
             VerifyOutput(
@@ -87,7 +87,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "(protected x: T): any");
         }
 
-        [Fact]
+        [Test]
         public void Emit_call_signature_with_no_type_parameters_or_return_type()
         {
             VerifyOutput(
@@ -97,7 +97,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "(x: T)");
         }
 
-        [Fact]
+        [Test]
         public void Emit_full_ctor_signature()
         {
             VerifyOutput(
@@ -109,7 +109,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "new <T extends MyType>(private x: T): any");
         }
 
-        [Fact]
+        [Test]
         public void Emit_ctor_signature_with_no_type_parameters()
         {
             VerifyOutput(
@@ -120,7 +120,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "new (public x: T): any");
         }
 
-        [Fact]
+        [Test]
         public void Emit_ctor_signature_with_no_type_parameters_or_return_type()
         {
             VerifyOutput(
@@ -130,7 +130,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "new (x: T)");
         }
 
-        [Fact]
+        [Test]
         public void Emit_index_signatures()
         {
             VerifyOutput(
@@ -142,7 +142,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[key: number]: MyType");
         }
 
-        [Fact]
+        [Test]
         public void Emit_method_signature()
         {
             VerifyOutput(
@@ -158,7 +158,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "x?(y)");
         }
 
-        [Fact]
+        [Test]
         public void Emit_object_type()
         {
             VerifyOutput(Factory.ObjectType(), "{}");
@@ -183,13 +183,13 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 }".Replace("\r\n", "\n"));
         }
 
-        [Fact]
+        [Test]
         public void Emit_array_type()
         {
             VerifyOutput(Factory.ArrayType(Factory.StringType), "string[]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_array_of_functions_type_using_Array_of_T_instead_of_brackets()
         {
             VerifyOutput(
@@ -203,7 +203,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "Array<<T extends MyType>(x: T, y: string) => boolean>");
         }
 
-        [Fact]
+        [Test]
         public void Emit_tuple_type()
         {
             VerifyOutput(
@@ -211,7 +211,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[boolean, string]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_union_types()
         {
             VerifyOutput(
@@ -219,7 +219,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "T | string | number[]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_intersection_types()
         {
             VerifyOutput(
@@ -227,7 +227,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "T & string & number[]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_function_type()
         {
             VerifyOutput(
@@ -244,7 +244,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "(x, y) => string");
         }
 
-        [Fact]
+        [Test]
         public void Emit_ctor_type()
         {
             VerifyOutput(
@@ -261,19 +261,19 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "new (x, y) => string");
         }
 
-        [Fact]
+        [Test]
         public void Emit_type_query()
         {
             VerifyOutput(Factory.TypeQuery(Factory.QualifiedName("a.b.c")), "typeof a.b.c");
         }
 
-        [Fact]
+        [Test]
         public void Emit_this_type()
         {
             VerifyOutput(Factory.ThisType, "this");
         }
 
-        [Fact]
+        [Test]
         public void Emit_parameter_list_with_only_required_parameters()
         {
             VerifyOutput(
@@ -284,7 +284,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "x, y: 'value', z: \"hello\"");
         }
 
-        [Fact]
+        [Test]
         public void Emit_parameter_list_with_required_and_optional_parameters()
         {
             VerifyOutput(
@@ -300,7 +300,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "x, y?: 'value', z: number = 0, p?: boolean, noType?");
         }
 
-        [Fact]
+        [Test]
         public void Emit_parameter_list_with_required_optional_and_rest_parameters()
         {
             VerifyOutput(
@@ -312,7 +312,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "x, y: boolean = false, ... z: MyType");
         }
 
-        [Fact]
+        [Test]
         public void Emit_type_alias_declaration()
         {
             VerifyOutput(

@@ -10,7 +10,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Parsing;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsParserTests
@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_function_declarations()
         {
             AssertParseDeclaration(

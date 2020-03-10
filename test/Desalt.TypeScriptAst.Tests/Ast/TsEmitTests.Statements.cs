@@ -10,30 +10,30 @@ namespace Desalt.TypeScriptAst.Tests.Ast
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsEmitTests
     {
-        [Fact]
+        [Test]
         public void Emit_debugger_statement()
         {
             VerifyOutput(Factory.Debugger, "debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_block_statements()
         {
             VerifyOutput(Factory.Block(Factory.Debugger, Factory.Debugger), "{\n  debugger;\n  debugger;\n}");
         }
 
-        [Fact]
+        [Test]
         public void Emit_empty_statement()
         {
             VerifyOutput(Factory.EmptyStatement, ";\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_simple_variable_declarations()
         {
             VerifyOutput(Factory.SimpleVariableDeclaration(s_x), "x");
@@ -46,14 +46,14 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "x: string = 'hello'");
         }
 
-        [Fact]
+        [Test]
         public void Emit_single_name_binding()
         {
             VerifyOutput(Factory.SingleNameBinding(s_z), "z");
             VerifyOutput(Factory.SingleNameBinding(s_x, s_y), "x = y");
         }
 
-        [Fact]
+        [Test]
         public void Emit_object_binding_pattern()
         {
             VerifyOutput(
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "{x, y}");
         }
 
-        [Fact]
+        [Test]
         public void Emit_object_binding_pattern_with_default_values()
         {
             VerifyOutput(
@@ -71,7 +71,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "{x = null, y = 10}");
         }
 
-        [Fact]
+        [Test]
         public void Emit_a_recursive_pattern_binding()
         {
             VerifyOutput(
@@ -89,7 +89,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "{size = 'big', cords = {\n  x: 0,\n  y: 0\n}, radius = 25} = {}");
         }
 
-        [Fact]
+        [Test]
         public void Emit_array_binding_pattern()
         {
             VerifyOutput(
@@ -97,7 +97,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[x, y]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_array_binding_pattern_with_default_values()
         {
             VerifyOutput(
@@ -107,7 +107,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[x = null, y = 10]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_array_binding_pattern_with_a_rest_parameter()
         {
             VerifyOutput(
@@ -115,7 +115,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[x, ... y]");
         }
 
-        [Fact]
+        [Test]
         public void Emit_destructuring_variable_declaration_with_no_type_annotation()
         {
             VerifyOutput(
@@ -125,7 +125,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[x, y] = z");
         }
 
-        [Fact]
+        [Test]
         public void Emit_destructuring_variable_declaration_with_type_annotation()
         {
             VerifyOutput(
@@ -136,7 +136,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "[x, y]: number[] = z");
         }
 
-        [Fact]
+        [Test]
         public void Emit_variable_declaration_statements()
         {
             VerifyOutput(
@@ -147,7 +147,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "var x: boolean = y && z, p;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_expression_statements()
         {
             VerifyOutput(Factory.EmptyObject.ToStatement(), "{};\n");
@@ -155,7 +155,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 Factory.ExpressionStatement(Factory.UnaryExpression(s_x, TsUnaryOperator.BitwiseNot)), "~x;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_if_statement_with_blocks()
         {
             VerifyOutput(
@@ -168,7 +168,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "if (x === y) {\n  z = true;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_if_statement_without_blocks()
         {
             VerifyOutput(
@@ -180,7 +180,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "if (x === y)\n  z = true;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_if_else_statement_with_blocks()
         {
             VerifyOutput(
@@ -193,7 +193,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "if (x !== y) {\n  z = false;\n} else {\n  p++;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_if_else_statement_without_blocks()
         {
             VerifyOutput(
@@ -205,7 +205,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "if (x !== y)\n  z = false;\nelse\n  p++;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_try_only_statement()
         {
             VerifyOutput(
@@ -213,7 +213,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "try {\n  x += y;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_try_catch_statement()
         {
             VerifyOutput(
@@ -230,7 +230,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "try {\n  x = new Widget();\n} catch (err) {\n  console.log(err);\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_try_catch_with_no_parameter_statement()
         {
             VerifyOutput(
@@ -247,7 +247,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "try {\n  x = new Widget();\n} catch {\n  console.log(err);\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_try_finally_statement()
         {
             VerifyOutput(
@@ -257,7 +257,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "try {\n  debugger;\n} finally {\n  x();\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_try_catch_finally_statement()
         {
             VerifyOutput(
@@ -270,7 +270,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "try {\n  debugger;\n} catch (e) {\n  super(e);\n} finally {\n  var p = 1.2;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_do_while_loop_without_block()
         {
             VerifyOutput(
@@ -280,7 +280,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "do\n  x--;\nwhile (x >= 0);\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_do_while_loop_with_block()
         {
             VerifyOutput(
@@ -290,7 +290,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "do {\n  x--;\n} while (x >= 0);\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_while_loop_without_block()
         {
             VerifyOutput(
@@ -300,7 +300,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "while (x >= 0)\n  x--;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_while_loop_with_block()
         {
             VerifyOutput(
@@ -310,7 +310,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "while (x >= 0) {\n  x--;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_basic_for_loop()
         {
             VerifyOutput(
@@ -322,7 +322,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "for (x = 0; x < 10; x++)\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_for_loop_with_variable_declaration()
         {
             VerifyOutput(
@@ -334,7 +334,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "for (var x = 0; x < 10; x++)\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_for_loop_with_const_and_let_declarations()
         {
             VerifyOutput(
@@ -354,13 +354,13 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "for (let x: number = 0; x < 10; x++)\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_basic_for_in_loop()
         {
             VerifyOutput(Factory.ForIn(s_x, s_y, Factory.Debugger.ToBlock()), "for (x in y) {\n  debugger;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_for_in_loop_with_declarations()
         {
             VerifyOutput(
@@ -388,13 +388,13 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "for (var x in [1, 2])\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_basic_for_of_loop()
         {
             VerifyOutput(Factory.ForOf(s_x, s_y, Factory.Debugger.ToBlock()), "for (x of y) {\n  debugger;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_for_of_loop_with_declarations()
         {
             VerifyOutput(
@@ -422,7 +422,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "for (var x of [1, 2])\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_case_clause()
         {
             VerifyOutput(
@@ -430,7 +430,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "case x:\n  debugger;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_case_clause_with_block()
         {
             VerifyOutput(
@@ -438,13 +438,13 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "case x:\n  {\n    debugger;\n  }");
         }
 
-        [Fact]
+        [Test]
         public void Emit_case_clause_with_empty_statements_should_not_indent_next_line()
         {
             VerifyOutput(Factory.CaseClause(s_x), "case x:\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_default_clause()
         {
             VerifyOutput(
@@ -452,7 +452,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "default:\n  x(y, z);\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_switch_statement()
         {
             VerifyOutput(
@@ -477,44 +477,44 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 ".Replace("\r\n", "\n"));
         }
 
-        [Fact]
+        [Test]
         public void Emit_continue_statement_with_no_label()
         {
             VerifyOutput(Factory.Continue(), "continue;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_continue_statement_with_label()
         {
             VerifyOutput(Factory.Continue(s_x), "continue x;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_break_statement_with_no_label()
         {
             VerifyOutput(Factory.Break(), "break;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_break_statement_with_label()
         {
             VerifyOutput(Factory.Break(s_x), "break x;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_a_return_statement()
         {
             VerifyOutput(
                 Factory.Return(Factory.BinaryExpression(s_x, TsBinaryOperator.Divide, s_y)), "return x / y;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_a_return_statement_with_no_expression()
         {
             VerifyOutput(Factory.Return(), "return;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_with_statements()
         {
             VerifyOutput(
@@ -526,7 +526,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "with ({\n  foo: 1,\n  ['bar']: null\n})\n  return 50;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_labelled_statement_with_label_at_same_indentation_level()
         {
             VerifyOutput(
@@ -534,7 +534,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "Label:\nreturn;\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_labelled_statement_with_label_on_one_less_indentation_level()
         {
             VerifyOutput(
@@ -546,7 +546,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 "switch (x) {\n  case 1:\n  Label:\n    return;\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Emit_throw_statement()
         {
             VerifyOutput(

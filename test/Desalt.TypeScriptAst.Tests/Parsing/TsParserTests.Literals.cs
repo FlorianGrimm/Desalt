@@ -9,12 +9,12 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
 {
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
-    using Xunit;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsParserTests
     {
-        [Fact]
+        [Test]
         public void TsParser_should_parse_literals()
         {
             AssertParseExpression("null", Factory.Null);
@@ -28,7 +28,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             AssertParseExpression("\"str\"", Factory.String("str", StringLiteralQuoteKind.DoubleQuote));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_array_literals()
         {
             AssertParseExpression("[]", Factory.Array());
@@ -48,7 +48,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         //// Object Literals
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_object_literals_with_a_single_element()
         {
             AssertParseExpression("{}", Factory.Object());
@@ -57,7 +57,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             AssertParseExpression("{ x = 10 }", Factory.Object(Factory.CoverInitializedName(s_x, Factory.Number(10))));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parese_object_literals_with_string_or_number_keys()
         {
             AssertParseExpression(
@@ -69,7 +69,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                 Factory.Object(Factory.PropertyAssignment(Factory.ComputedPropertyName(s_x), Factory.Number(123))));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_pares_an_object_literal_with_multiple_elements()
         {
             AssertParseExpression(
@@ -79,7 +79,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                     Factory.PropertyAssignment(s_y, Factory.Number(10))));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_object_literals_with_a_getter()
         {
             AssertParseExpression(
@@ -91,7 +91,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                         Factory.Return(Factory.String("s")))));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_object_literals_with_a_setter()
         {
             AssertParseExpression(
@@ -108,7 +108,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                             .ToStatement())));
         }
 
-        [Fact]
+        [Test]
         public void TsParser_should_parse_object_literals_with_methods()
         {
             AssertParseExpression(
