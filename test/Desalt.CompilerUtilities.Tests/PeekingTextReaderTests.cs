@@ -13,7 +13,7 @@ namespace Desalt.CompilerUtilities.Tests
     using System.IO;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
 
     public class PeekingTextReaderTests
     {
@@ -29,7 +29,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// Construction/Destruction Tests
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Ctor_should_throw_on_null_args()
         {
             // ReSharper disable once ObjectCreationAsStatement
@@ -41,14 +41,14 @@ namespace Desalt.CompilerUtilities.Tests
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("contents");
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Ctor_should_start_at_line_1_column_1()
         {
             var reader = new PeekingTextReader("hi");
             reader.Location.Should().Be(new TextReaderLocation(1, 1));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Ctor_should_start_at_the_initial_line_and_column()
         {
             var reader = new PeekingTextReader("hi")
@@ -62,7 +62,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// Close Tests
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Close_should_close_the_stream_when_disposing()
         {
             var stream = new MemoryStream();
@@ -73,7 +73,7 @@ namespace Desalt.CompilerUtilities.Tests
             action.Should().ThrowExactly<ObjectDisposedException>();
         }
 
-        [Fact]
+        [Test]
         [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
         public void PeekingTextReader_Close_should_throw_ObjectDisposedException_when_doing_a_synchronous_operation_on_a_closed_reader()
         {
@@ -115,7 +115,7 @@ namespace Desalt.CompilerUtilities.Tests
             }
         }
 
-        [Fact]
+        [Test]
         [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
         public void
             PeekingTextReader_Close_should_throw_ObjectDisposedException_when_doing_an_asynchronous_operation_on_a_closed_reader()
@@ -145,7 +145,7 @@ namespace Desalt.CompilerUtilities.Tests
 
         public class PeekingTextReaderLocation
         {
-            [Fact]
+            [Test]
             public void PeekingTextReader_Location_should_increment_the_line_and_column_correctly()
             {
                 var reader = new PeekingTextReader(new UnicodeStringStream("abc\n123"));
@@ -168,7 +168,7 @@ namespace Desalt.CompilerUtilities.Tests
                 }
             }
 
-            [Fact]
+            [Test]
             public void PeekingTextReader_Location_should_increment_the_line_correctly()
             {
                 var reader = new PeekingTextReader(new UnicodeStringStream("abc\n123"));
@@ -181,14 +181,14 @@ namespace Desalt.CompilerUtilities.Tests
         //// AdvanceLocation
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_AdvanceLocation_should_not_change_the_location_on_end_of_stream()
         {
             var current = new TextReaderLocation(10, 2);
             PeekingTextReader.AdvanceLocation(-1, -1, current).Should().Be(current);
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_AdvanceLocation_should_increment_the_column_on_a_non_line_ending()
         {
             PeekingTextReader.AdvanceLocation('a', 'b', new TextReaderLocation(1, 1))
@@ -196,7 +196,7 @@ namespace Desalt.CompilerUtilities.Tests
                 .Be(new TextReaderLocation(1, 2));
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_AdvanceLocation_should_increment_the_column_but_not_the_line_when_reading_the_first_char_of_a_crlf_combo()
         {
@@ -205,7 +205,7 @@ namespace Desalt.CompilerUtilities.Tests
                 .Be(new TextReaderLocation(1, 2));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_cr()
         {
             PeekingTextReader.AdvanceLocation('\r', 'a', new TextReaderLocation(1, 1))
@@ -213,7 +213,7 @@ namespace Desalt.CompilerUtilities.Tests
                 .Be(new TextReaderLocation(2, 1));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_AdvanceLocation_should_increment_the_line_when_reading_a_single_lf()
         {
             PeekingTextReader.AdvanceLocation('\n', 'a', new TextReaderLocation(1, 1))
@@ -225,19 +225,19 @@ namespace Desalt.CompilerUtilities.Tests
         //// IsAtEnd
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_IsAtEnd_should_return_true_if_at_the_end_of_an_empty_string()
         {
             DoTest(string.Empty, reader => reader.IsAtEnd.Should().BeTrue());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_IsAtEnd_should_return_false_if_not_at_the_end()
         {
             DoTest("abc", reader => reader.IsAtEnd.Should().BeFalse());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_IsAtEnd_should_return_true_if_at_the_end_after_a_read()
         {
             DoTest(
@@ -253,13 +253,13 @@ namespace Desalt.CompilerUtilities.Tests
         //// Peek
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Peek_should_return_neg1_if_at_the_end()
         {
             DoTest(string.Empty, reader => reader.Peek().Should().Be(-1));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Peek_should_be_able_to_peek_ahead_multiple_characters()
         {
             DoTest(
@@ -272,20 +272,20 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_Peek_should_be_able_to_return_a_partial_result_if_there_arent_enough_characters_in_the_stream()
         {
             DoTest("1234", reader => reader.Peek(10).Should().Be("1234"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Peek_should_return_null_if_at_the_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.Peek(2).Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Peek_should_be_able_to_peek_ahead_only_enough_to_fill_the_buffer()
         {
             DoTest(
@@ -297,7 +297,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Peek_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -313,25 +313,25 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekUntil
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntil_should_be_able_to_peek_ahead_until_a_single_character_is_seen()
         {
             DoTest("foo()", reader => reader.PeekUntil('(').Should().Be("foo"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntil_should_be_able_to_peek_ahead_until_one_of_a_few_characters_is_seen()
         {
             DoTest("foo(1,2)", reader => reader.PeekUntil(',', ')').Should().Be("foo(1"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntil_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekUntil('*').Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntil_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -347,7 +347,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekUntil(string)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_throw_if_the_string_is_null()
         {
             DoTest(
@@ -359,7 +359,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_continue_peeking_until_the_find_string_is_hit()
         {
             DoTest(
@@ -371,32 +371,32 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_continue_to_peek_even_if_part_of_the_string_is_hit()
         {
             DoTest("partial", reader => reader.PeekUntil("arty").Should().Be("partial"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_continue_peeking_until_the_end_of_stream_is_hit()
         {
             DoTest("/*comment", reader => reader.PeekUntil("*/").Should().Be("/*comment"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekUntil("Chum bucket").Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_PeekUntilString_should_return_an_empty_string_if_there_are_still_things_to_read_but_the_find_string_was_first()
         {
             DoTest("abc123", reader => reader.PeekUntil("abc").Should().Be(string.Empty));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilString_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -412,7 +412,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekUntil(predicate)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_throw_if_the_predicate_is_null()
         {
             DoTest(
@@ -424,13 +424,13 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_peek_until_the_predicate_returns_true()
         {
             DoTest("abcd efg", reader => reader.PeekUntil(char.IsWhiteSpace).Should().Be("abcd"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_peek_but_not_remove_characters_from_the_read_stream()
         {
             DoTest(
@@ -442,26 +442,26 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_peek_until_the_end_of_stream_is_hit()
         {
             DoTest("abc", reader => reader.PeekUntil(char.IsWhiteSpace).Should().Be("abc"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekUntil(c => false).Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_PeekUntilPredicate_should_return_an_empty_string_if_the_predicate_returns_true_on_the_first_character()
         {
             DoTest("abc", reader => reader.PeekUntil(c => c == 'a').Should().Be(string.Empty));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekUntilPredicate_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -477,25 +477,25 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekWhile(char, char[])
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhile_should_be_able_to_peek_ahead_until_a_single_character_is_seen()
         {
             DoTest("foo()", reader => reader.PeekWhile('f').Should().Be("f"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhile_should_be_able_to_peek_ahead_until_one_of_a_few_characters_is_seen()
         {
             DoTest("foo(1,2)", reader => reader.PeekWhile('f', 'o').Should().Be("foo"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhile_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekWhile('*').Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhile_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -511,7 +511,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekWhile(string)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_throw_if_the_string_is_null()
         {
             DoTest(
@@ -523,13 +523,13 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_peek_while_the_string_is_found()
         {
             DoTest("PeePeePoop", reader => reader.PeekWhile("Pee").Should().Be("PeePee"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_peek_but_not_remove_characters_from_the_read_stream()
         {
             DoTest(
@@ -541,26 +541,26 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_peek_until_the_end_of_stream_is_hit()
         {
             DoTest("aaa", reader => reader.PeekWhile("a").Should().Be("aaa"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekWhile("Hi").Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_PeekWhileString_should_return_an_empty_string_if_the_predicate_returns_false_on_the_first_character()
         {
             DoTest("aaa", reader => reader.PeekWhile("b").Should().Be(string.Empty));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhileString_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -576,7 +576,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekWhile(predicate)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_throw_if_the_predicate_is_null()
         {
             DoTest(
@@ -588,13 +588,13 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_peek_until_the_predicate_returns_false()
         {
             DoTest("abcd efg", reader => reader.PeekWhile(c => !char.IsWhiteSpace(c)).Should().Be("abcd"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_peek_but_not_remove_characters_from_the_read_stream()
         {
             DoTest(
@@ -606,26 +606,26 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_peek_until_the_end_of_stream_is_hit()
         {
             DoTest("abc", reader => reader.PeekWhile(c => !char.IsWhiteSpace(c)).Should().Be("abc"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekWhile(c => true).Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_PeekWhilePredicate_should_return_an_empty_string_if_the_predicate_returns_false_on_the_first_character()
         {
             DoTest("abc", reader => reader.PeekWhile(c => c != 'a').Should().Be(string.Empty));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekWhilePredicate_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -641,7 +641,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// PeekLine
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekLine_should_be_able_to_peek_ahead_one_line()
         {
             DoTest(
@@ -655,7 +655,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekLine_should_return_an_empty_string_if_its_a_blank_line()
         {
             DoTest(
@@ -669,13 +669,13 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekLine_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.PeekLine().Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_PeekLine_should_not_change_the_location_when_peeking()
         {
             DoTest(
@@ -691,7 +691,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// Read
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Read_should_read_from_the_buffer_first_if_there_was_a_peek()
         {
             DoTest(
@@ -704,7 +704,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Read_should_not_strip_line_characters()
         {
             const string contents = "a\nb\rc\r\nd\n";
@@ -721,27 +721,27 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Read_should_return_neg1_if_at_the_end()
         {
             DoTest(string.Empty, reader => reader.Read().Should().Be(-1));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Read_should_be_able_to_read_ahead_multiple_characters()
         {
             const string contents = "123456";
             DoTest(contents, reader => reader.Read(6).Should().Be(contents));
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_Read_should_be_able_to_return_a_partial_result_if_there_arent_enough_characters_in_the_stream()
         {
             DoTest("1234", reader => reader.Read(10).Should().Be("1234"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_Read_should_return_null_if_at_the_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.Read(2).Should().BeNull());
@@ -751,7 +751,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// ReadUntil(char, params char[])
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilChars_should_be_able_to_read_ahead_until_a_single_character_is_seen()
         {
             DoTest(
@@ -763,7 +763,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_ReadUntilChars_should_be_able_to_read_ahead_until_one_of_a_few_characters_is_seen()
         {
@@ -777,7 +777,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilChars_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.ReadUntil('*').Should().BeNull());
@@ -787,7 +787,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// ReadUntil(string)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilString_should_throw_if_the_string_is_null()
         {
             DoTest(
@@ -799,7 +799,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilString_should_continue_reading_until_the_find_string_is_hit()
         {
             DoTest(
@@ -811,25 +811,25 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilString_should_continue_to_read_even_if_part_of_the_string_is_hit()
         {
             DoTest("partial", reader => reader.ReadUntil("arty").Should().Be("partial"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilString_should_continue_reading_until_the_end_of_stream_is_hit()
         {
             DoTest("/*comment", reader => reader.ReadUntil("*/").Should().Be("/*comment"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilString_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.ReadUntil("Chum bucket").Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_ReadUntilString_should_return_an_empty_string_if_there_are_still_things_to_read_but_the_find_string_was_first()
         {
@@ -840,7 +840,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// ReadUntil(predicate)
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilPredicate_should_throw_if_the_predicate_is_null()
         {
             DoTest(
@@ -852,7 +852,7 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilPredicate_should_read_until_the_predicate_returns_true()
         {
             DoTest(
@@ -864,19 +864,19 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilPredicate_should_read_until_the_end_of_stream_is_hit()
         {
             DoTest("abc", reader => reader.ReadUntil(char.IsWhiteSpace).Should().Be("abc"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadUntilPredicate_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.ReadUntil(c => false).Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void
             PeekingTextReader_ReadUntilPredicate_should_return_an_empty_string_if_the_predicate_returns_true_on_the_first_character()
         {
@@ -887,7 +887,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// ReadWhile(char, char[])
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadWhile_should_be_able_to_read_ahead_while_a_single_character_is_seen()
         {
             DoTest(
@@ -899,19 +899,19 @@ namespace Desalt.CompilerUtilities.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadWhile_should_be_able_to_read_ahead_while_one_of_a_few_characters_is_seen()
         {
             DoTest("foo(1,2)", reader => reader.ReadWhile('f', 'o').Should().Be("foo"));
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadWhile_should_return_null_if_at_end_of_stream()
         {
             DoTest(string.Empty, reader => reader.ReadWhile('*').Should().BeNull());
         }
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_ReadWhile_should_change_the_location_when_reading()
         {
             DoTest(
@@ -927,7 +927,7 @@ namespace Desalt.CompilerUtilities.Tests
         //// SkipWhitespace
         //// ===========================================================================================================
 
-        [Fact]
+        [Test]
         public void PeekingTextReader_SkipWhitespace_should_skip_spaces_tabs_and_other_Unicode_whitespace_characters()
         {
             // http://www.fileformat.info/info/unicode/category/Zs/list.htm
