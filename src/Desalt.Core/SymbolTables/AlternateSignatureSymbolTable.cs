@@ -91,13 +91,18 @@ namespace Desalt.Core.SymbolTables
             return new ExtendedResult<AlternateSignatureSymbolTable>(table, allDiagnostics);
         }
 
-        public bool TryGetValue(IMethodSymbol symbol, out AlternateSignatureMethodGroup value) =>
-            Entries.TryGetValue(GetMethodName(symbol), out value);
+        public bool TryGetValue(IMethodSymbol symbol, out AlternateSignatureMethodGroup value)
+        {
+            return Entries.TryGetValue(GetMethodName(symbol), out value);
+        }
 
         /// <summary>
         /// Gets the key given a symbol. Only exposed for unit tests.
         /// </summary>
-        private static string GetMethodName(ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+        private static string GetMethodName(ISymbol symbol)
+        {
+            return symbol?.ToDisplayString(s_symbolDisplayFormat);
+        }
 
         private static ImmutableArray<IExtendedResult<AlternateSignatureMethodGroup>>
             GetCtorsAndMethodsInDocument(DocumentTranslationContext context, CancellationToken cancellationToken)

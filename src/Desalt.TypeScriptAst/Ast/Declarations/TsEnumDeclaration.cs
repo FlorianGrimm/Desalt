@@ -43,7 +43,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitEnumDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitEnumDeclaration(this);
+        }
 
         public override string CodeDisplay =>
             (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";

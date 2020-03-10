@@ -186,7 +186,7 @@ namespace Desalt.CompilerUtilities.Tests
             TextReaderLocation_DecrementColumn_should_return_a_new_object_with_the_column_decremented_and_the_line_the_same()
         {
             var location = new TextReaderLocation(100, 50, "source");
-            var decrement = location.DecrementColumn();
+            TextReaderLocation decrement = location.DecrementColumn();
             decrement.Line.Should().Be(100);
             decrement.Column.Should().Be(49);
             decrement.Source.Should().Be("source");

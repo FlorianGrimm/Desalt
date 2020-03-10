@@ -69,7 +69,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(ITsAstTriviaNode left, TsAstTriviaNode right) => Equals(left, right);
+        public static bool operator ==(ITsAstTriviaNode left, TsAstTriviaNode right)
+        {
+            return Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether the values of two <see cref="TsAstTriviaNode"/>
@@ -81,7 +84,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(TsAstTriviaNode left, ITsAstTriviaNode right) => Equals(left, right);
+        public static bool operator ==(TsAstTriviaNode left, ITsAstTriviaNode right)
+        {
+            return Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TsAstTriviaNode"/> objects have
@@ -92,7 +98,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(ITsAstTriviaNode left, TsAstTriviaNode right) => !Equals(left, right);
+        public static bool operator !=(ITsAstTriviaNode left, TsAstTriviaNode right)
+        {
+            return !Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TsAstTriviaNode"/> objects have
@@ -103,7 +112,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(TsAstTriviaNode left, ITsAstTriviaNode right) => !Equals(left, right);
+        public static bool operator !=(TsAstTriviaNode left, ITsAstTriviaNode right)
+        {
+            return !Equals(left, right);
+        }
 
         //// ===========================================================================================================
         //// Methods
@@ -144,7 +156,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <see langword="true"/> if the specified object is equal to the current object; otherwise,
         /// <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj) => Equals(obj as TsAstTriviaNode);
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TsAstTriviaNode);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -154,7 +169,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
-        bool IEquatable<ITsAstTriviaNode>.Equals(ITsAstTriviaNode other) => Equals(other as TsAstTriviaNode);
+        bool IEquatable<ITsAstTriviaNode>.Equals(ITsAstTriviaNode other)
+        {
+            return Equals(other as TsAstTriviaNode);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -188,6 +206,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// Serves as the default hash function.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
-        public override int GetHashCode() => EmitAsString().GetHashCode();
+        public override int GetHashCode()
+        {
+            return EmitAsString().GetHashCode();
+        }
     }
 }

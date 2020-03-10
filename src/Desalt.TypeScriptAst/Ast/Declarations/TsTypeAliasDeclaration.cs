@@ -42,7 +42,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTypeAliasDeclaration(this);
+        }
 
         public override string CodeDisplay => $"type {AliasName}{TypeParameters} = {Type};";
 

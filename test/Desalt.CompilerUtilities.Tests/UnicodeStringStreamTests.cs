@@ -28,9 +28,9 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public void Writing_or_Flushing_should_throw_NotSupportedException()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
-                (string MethodName, Action Action)[] actions = new(string MethodName, Action Action)[]
+                var actions = new (string MethodName, Action Action)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("Flush", () => stream.Flush()),
@@ -50,11 +50,11 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public async Task An_asynchronous_write_or_flush_operation_should_throw_NotSupportedException()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
-                (string MethodName, Func<Task> Function)[] actions = new(string MethodName, Func<Task> Function)[]
+                var actions = new (string MethodName, Func<Task> Function)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("FlushAsync", () => stream.FlushAsync()),
@@ -79,13 +79,13 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public void A_synchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
                 // ReSharper disable once NotAccessedVariable
                 long dummyLong;
-                (string MethodName, Action Action)[] actions = new(string MethodName, Action Action)[]
+                var actions = new (string MethodName, Action Action)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("CopyTo(Stream)", () => stream.CopyTo(new MemoryStream())),
@@ -109,11 +109,11 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public async Task An_asynchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
-                (string MethodName, Func<Task> Function)[] actions = new(string MethodName, Func<Task> Function)[]
+                var actions = new (string MethodName, Func<Task> Function)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("CopyToAsync(Stream)", () => stream.CopyToAsync(new MemoryStream())),
@@ -137,11 +137,11 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public async Task An_asynchronous_read_operation_on_a_closed_reader_should_throw_NotSupportedException()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
-                (string MethodName, Func<Task> Function)[] actions = new(string MethodName, Func<Task> Function)[]
+                var actions = new (string MethodName, Func<Task> Function)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("ReadAsync", () => stream.ReadAsync(new byte[1], 0, 1)),
@@ -164,11 +164,11 @@ namespace Desalt.CompilerUtilities.Tests
         [Fact]
         public void CanX_properties_when_closed_should_return_false()
         {
-            using (UnicodeStringStream stream = new UnicodeStringStream("Sample"))
+            using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
-                (string MethodName, Func<bool> Function)[] actions = new(string MethodName, Func<bool> Function)[]
+                var actions = new (string MethodName, Func<bool> Function)[]
                 {
                     // ReSharper disable AccessToDisposedClosure
                     ("CanRead", () => stream.CanRead),

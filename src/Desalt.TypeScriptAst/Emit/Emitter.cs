@@ -47,14 +47,9 @@ namespace Desalt.TypeScriptAst.Emit
             Encoding = encoding ?? DefaultEncoding;
             Options = options ?? EmitOptions.Default;
 
-            _streamWriter = new StreamWriter(outputStream, Encoding, bufferSize: 1024, leaveOpen: true)
-            {
-                AutoFlush = true
-            };
-            _writer = new IndentedTextWriter(_streamWriter, Options.IndentationPrefix)
-            {
-                NewLine = Options.Newline
-            };
+            _streamWriter =
+                new StreamWriter(outputStream, Encoding, bufferSize: 1024, leaveOpen: true) { AutoFlush = true };
+            _writer = new IndentedTextWriter(_streamWriter, Options.IndentationPrefix) { NewLine = Options.Newline };
         }
 
         //// ===========================================================================================================
@@ -218,7 +213,10 @@ namespace Desalt.TypeScriptAst.Emit
             bool newLineAfterLastItem = false,
             string emptyContents = null)
         {
-            if (items == null) { throw new ArgumentNullException(nameof(items)); }
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             prefix = prefix ?? string.Empty;
             suffix = suffix ?? string.Empty;
@@ -237,7 +235,8 @@ namespace Desalt.TypeScriptAst.Emit
                 newlineAfterItems = true;
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 2);
             }
-            else if (itemDelimiter.EndsWith("\r", StringComparison.Ordinal) || itemDelimiter.EndsWith("\n", StringComparison.Ordinal))
+            else if (itemDelimiter.EndsWith("\r", StringComparison.Ordinal) ||
+                itemDelimiter.EndsWith("\n", StringComparison.Ordinal))
             {
                 newlineAfterItems = true;
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 1);
@@ -270,8 +269,7 @@ namespace Desalt.TypeScriptAst.Emit
                 }
 
                 // write a new line after the last item if necessary
-                if (i < items.Count - 1 && newlineAfterItems ||
-                    i == items.Count - 1 && newLineAfterLastItem)
+                if (i < items.Count - 1 && newlineAfterItems || i == items.Count - 1 && newLineAfterLastItem)
                 {
                     WriteLine();
                 }

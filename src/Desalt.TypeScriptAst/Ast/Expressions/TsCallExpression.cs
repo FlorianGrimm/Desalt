@@ -50,14 +50,20 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public static TsCallExpression Create(ITsExpression leftSide, ITsArgumentList arguments = null) =>
-            new TsCallExpression(leftSide, CallKind.Call, arguments);
+        public static TsCallExpression Create(ITsExpression leftSide, ITsArgumentList arguments = null)
+        {
+            return new TsCallExpression(leftSide, CallKind.Call, arguments);
+        }
 
-        public static TsCallExpression CreateNew(ITsExpression leftSide, ITsArgumentList arguments = null) =>
-            new TsCallExpression(leftSide, CallKind.New, arguments);
+        public static TsCallExpression CreateNew(ITsExpression leftSide, ITsArgumentList arguments = null)
+        {
+            return new TsCallExpression(leftSide, CallKind.New, arguments);
+        }
 
-        public static TsCallExpression CreateSuper(ITsArgumentList arguments = null) =>
-            new TsCallExpression(TsIdentifier.Get("super"), CallKind.Super, arguments);
+        public static TsCallExpression CreateSuper(ITsArgumentList arguments = null)
+        {
+            return new TsCallExpression(TsIdentifier.Get("super"), CallKind.Super, arguments);
+        }
 
         public override void Accept(TsVisitor visitor)
         {

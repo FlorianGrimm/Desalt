@@ -65,10 +65,10 @@ using System.Runtime.CompilerServices;
             // get rid of \r\n sequences in the expected output
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var options = populateOptionsFunc?.Invoke(tempProject.Options);
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                CompilerOptions options = populateOptionsFunc?.Invoke(tempProject.Options);
+                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                     discoveryKind: discoveryKind,
                     options: options);
 

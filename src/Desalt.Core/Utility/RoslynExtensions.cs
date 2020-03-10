@@ -56,7 +56,10 @@ namespace Desalt.Core.Utility
         /// hash table or for using in unit tests.
         /// </summary>
         /// <param name="symbol">The symbol to display.</param>
-        public static string ToHashDisplay(this ISymbol symbol) => symbol?.ToDisplayString(s_symbolDisplayFormat);
+        public static string ToHashDisplay(this ISymbol symbol)
+        {
+            return symbol?.ToDisplayString(s_symbolDisplayFormat);
+        }
 
         /// <summary>
         /// Extracts the semantic type symbol from the specified type syntax node.

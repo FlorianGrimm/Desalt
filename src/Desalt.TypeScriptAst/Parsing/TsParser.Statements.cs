@@ -93,10 +93,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ExpressionStatement:
         ///   [lookahead not { {, function, class, let [ }] Expression ;
         /// ]]></code></remarks>
-        private bool IsStartOfExpressionStatement() =>
-            !_reader.Peek().TokenCode.IsOneOf(TsTokenCode.LeftBrace, TsTokenCode.Function, TsTokenCode.Class) &&
-            !_reader.IsNext(TsTokenCode.Let, TsTokenCode.LeftBracket) &&
-            IsStartOfExpression();
+        private bool IsStartOfExpressionStatement()
+        {
+            return !_reader.Peek().TokenCode.IsOneOf(TsTokenCode.LeftBrace, TsTokenCode.Function, TsTokenCode.Class) &&
+                !_reader.IsNext(TsTokenCode.Let, TsTokenCode.LeftBracket) &&
+                IsStartOfExpression();
+        }
 
         /// <summary>
         /// Parses a statement.
@@ -232,7 +234,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsVariableStatement ParseVariableStatement()
         {
             Read(TsTokenCode.Var);
-            var declarations = ParseVariableDeclarationList();
+            ITsVariableDeclaration[] declarations = ParseVariableDeclarationList();
             Read(TsTokenCode.Semicolon);
 
             return Factory.VariableStatement(declarations);

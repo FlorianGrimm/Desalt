@@ -67,7 +67,7 @@ namespace Desalt.Core.CompilerStages
                     cancellationToken);
 
             // create a script namer
-            var mscorlibAssemblySymbol = SymbolDiscoverer.GetMscorlibAssemblySymbol(compilation);
+            IAssemblySymbol mscorlibAssemblySymbol = SymbolDiscoverer.GetMscorlibAssemblySymbol(compilation);
             var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, options.RenameRules);
 
             // construct each symbol table in parallel
@@ -94,7 +94,7 @@ namespace Desalt.Core.CompilerStages
 
             var alternateSignatureTableCreateResult = (IExtendedResult<AlternateSignatureSymbolTable>)tasks[1].Result;
             diagnostics.AddRange(alternateSignatureTableCreateResult.Diagnostics);
-            var alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
+            AlternateSignatureSymbolTable alternateSignatureSymbolTable = alternateSignatureTableCreateResult.Result;
 
             // create new context objects with the symbol table
             var newContexts = input.Select(

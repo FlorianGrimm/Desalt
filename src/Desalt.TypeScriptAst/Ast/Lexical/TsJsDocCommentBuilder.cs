@@ -79,8 +79,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text) =>
-            Set(ref _description, text);
+        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text)
+        {
+            return Set(ref _description, text);
+        }
 
         public ITsJsDocCommentBuilder SetSummaryTag(string text)
         {
@@ -88,7 +90,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text) => Set(ref _summaryTag, text);
+        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text)
+        {
+            return Set(ref _summaryTag, text);
+        }
 
         public ITsJsDocCommentBuilder SetFileTag(string text)
         {
@@ -96,7 +101,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text) => Set(ref _fileTag, text);
+        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text)
+        {
+            return Set(ref _fileTag, text);
+        }
 
         public ITsJsDocCommentBuilder SetCopyrightTag(string text)
         {
@@ -104,8 +112,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text) =>
-            Set(ref _copyrightTag, text);
+        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text)
+        {
+            return Set(ref _copyrightTag, text);
+        }
 
         public ITsJsDocCommentBuilder SetIsPackagePrivate(bool value)
         {
@@ -113,8 +123,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddParamTag(string name, string text) =>
-            AddParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
+        public ITsJsDocCommentBuilder AddParamTag(string name, string text)
+        {
+            return AddParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
+        }
 
         public ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock text)
         {
@@ -132,8 +144,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddTypeParamTag(string name, string text) =>
-            AddTypeParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
+        public ITsJsDocCommentBuilder AddTypeParamTag(string name, string text)
+        {
+            return AddTypeParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
+        }
 
         public ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text)
         {
@@ -157,10 +171,15 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text) => Set(ref _returnsTag, text);
+        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text)
+        {
+            return Set(ref _returnsTag, text);
+        }
 
-        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text) =>
-            AddThrowsTag(typeName, Factory.JsDocBlock(text ?? string.Empty));
+        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text)
+        {
+            return AddThrowsTag(typeName, Factory.JsDocBlock(text ?? string.Empty));
+        }
 
         public ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock text)
         {
@@ -178,8 +197,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddExampleTag(string text) =>
-            AddExampleTag(Factory.JsDocBlock(text ?? string.Empty));
+        public ITsJsDocCommentBuilder AddExampleTag(string text)
+        {
+            return AddExampleTag(Factory.JsDocBlock(text ?? string.Empty));
+        }
 
         public ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock text)
         {
@@ -198,8 +219,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddSeeTag(string text) =>
-            AddSeeTag(Factory.JsDocBlock(text ?? string.Empty));
+        public ITsJsDocCommentBuilder AddSeeTag(string text)
+        {
+            return AddSeeTag(Factory.JsDocBlock(text ?? string.Empty));
+        }
 
         public ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock text)
         {

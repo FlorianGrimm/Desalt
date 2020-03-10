@@ -15,8 +15,10 @@ namespace Desalt.TypeScriptAst.Ast
     {
         public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
 
-        public static ITsBlockStatement Block(params ITsStatementListItem[] statements) =>
-            new TsBlockStatement(statements);
+        public static ITsBlockStatement Block(params ITsStatementListItem[] statements)
+        {
+            return new TsBlockStatement(statements);
+        }
 
         public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
 
@@ -63,8 +65,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.
         /// </summary>
-        public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties) =>
-            new TsObjectBindingPattern(properties);
+        public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties)
+        {
+            return new TsObjectBindingPattern(properties);
+        }
 
         /// <summary>
         /// Creates an array binding pattern of the form '[x = y, z, ...p]'.
@@ -79,8 +83,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an array binding pattern of the form '[x = y, z]'.
         /// </summary>
-        public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement[] elements) =>
-            new TsArrayBindingPattern(elements);
+        public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement[] elements)
+        {
+            return new TsArrayBindingPattern(elements);
+        }
 
         /// <summary>
         /// Creates a single name binding within an object or array pattern binding, of the form
@@ -120,8 +126,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an expression in statement form.
         /// </summary>
-        public static ITsExpressionStatement ExpressionStatement(ITsExpression expression) =>
-            new TsExpressionStatement(expression);
+        public static ITsExpressionStatement ExpressionStatement(ITsExpression expression)
+        {
+            return new TsExpressionStatement(expression);
+        }
 
         /// <summary>
         /// Creates an 'if' statement of the form 'if (expression) statement else statement'.
@@ -134,7 +142,10 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsIfStatement(ifCondition, ifStatement, elseStatement);
         }
 
-        public static ITsTryStatement Try(ITsBlockStatement tryBlock) => TsTryStatement.CreateTry(tryBlock);
+        public static ITsTryStatement Try(ITsBlockStatement tryBlock)
+        {
+            return TsTryStatement.CreateTry(tryBlock);
+        }
 
         public static ITsTryStatement TryCatch(
             ITsBlockStatement tryBlock,
@@ -178,14 +189,18 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a do/while statement.
         /// </summary>
-        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition) =>
-            new TsDoWhileStatement(doStatement, whileCondition);
+        public static ITsDoWhileStatement DoWhile(ITsStatement doStatement, ITsExpression whileCondition)
+        {
+            return new TsDoWhileStatement(doStatement, whileCondition);
+        }
 
         /// <summary>
         /// Creates a while loop.
         /// </summary>
-        public static ITsWhileStatement While(ITsExpression whileCondition, ITsStatement whileStatement) =>
-            new TsWhileStatement(whileCondition, whileStatement);
+        public static ITsWhileStatement While(ITsExpression whileCondition, ITsStatement whileStatement)
+        {
+            return new TsWhileStatement(whileCondition, whileStatement);
+        }
 
         /// <summary>
         /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
@@ -282,50 +297,66 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a case clause in a switch statement.
         /// </summary>
-        public static ITsCaseClause CaseClause(ITsExpression expression, params ITsStatementListItem[] statements) =>
-            TsSwitchClause.Case(expression, statements);
+        public static ITsCaseClause CaseClause(ITsExpression expression, params ITsStatementListItem[] statements)
+        {
+            return TsSwitchClause.Case(expression, statements);
+        }
 
         /// <summary>
         /// Creates a default clause in a switch statement of the form 'default: statements'.
         /// </summary>
-        public static ITsDefaultClause DefaultClause(params ITsStatementListItem[] statements) =>
-            TsSwitchClause.Default(statements);
+        public static ITsDefaultClause DefaultClause(params ITsStatementListItem[] statements)
+        {
+            return TsSwitchClause.Default(statements);
+        }
 
         /// <summary>
         /// Creates a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
         /// </summary>
-        public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses) =>
-            new TsSwitchStatement(condition, clauses);
+        public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses)
+        {
+            return new TsSwitchStatement(condition, clauses);
+        }
 
         /// <summary>
         /// Creates a continue statement with an optional label to continue to.
         /// </summary>
-        public static ITsContinueStatement Continue(ITsIdentifier label = null) =>
-            new TsContinueOrBreakStatement(isContinue: true, label: label);
+        public static ITsContinueStatement Continue(ITsIdentifier label = null)
+        {
+            return new TsContinueOrBreakStatement(isContinue: true, label: label);
+        }
 
         /// <summary>
         /// Creates a break statement with an optional label to break to.
         /// </summary>
-        public static ITsBreakStatement Break(ITsIdentifier label = null) =>
-            new TsContinueOrBreakStatement(isContinue: false, label: label);
+        public static ITsBreakStatement Break(ITsIdentifier label = null)
+        {
+            return new TsContinueOrBreakStatement(isContinue: false, label: label);
+        }
 
         /// <summary>
         /// Create a 'return' statement.
         /// </summary>
-        public static ITsReturnStatement Return(ITsExpression expression = null) =>
-            new TsReturnStatement(expression);
+        public static ITsReturnStatement Return(ITsExpression expression = null)
+        {
+            return new TsReturnStatement(expression);
+        }
 
         /// <summary>
         /// Creates a 'with' statement of the form, 'with (expression) statement'.
         /// </summary>
-        public static ITsWithStatement With(ITsExpression expression, ITsStatement statement) =>
-            new TsWithStatement(expression, statement);
+        public static ITsWithStatement With(ITsExpression expression, ITsStatement statement)
+        {
+            return new TsWithStatement(expression, statement);
+        }
 
         /// <summary>
         /// Creates a new labelled statement.
         /// </summary>
-        public static ITsLabelledStatement LabelledStatement(ITsIdentifier label, ITsStatement statement) =>
-            new TsLabelledStatement(label, statement);
+        public static ITsLabelledStatement LabelledStatement(ITsIdentifier label, ITsStatement statement)
+        {
+            return new TsLabelledStatement(label, statement);
+        }
 
         /// <summary>
         /// Creates a new labelled statement.
@@ -340,6 +371,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a new 'throw' statement.
         /// </summary>
-        public static ITsThrowStatement Throw(ITsExpression expression) => new TsThrowStatement(expression);
+        public static ITsThrowStatement Throw(ITsExpression expression)
+        {
+            return new TsThrowStatement(expression);
+        }
     }
 }

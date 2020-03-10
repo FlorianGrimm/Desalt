@@ -90,7 +90,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         [Fact]
         public void Emit_a_single_line_JSDoc_comment_on_one_line_if_the_options_specify()
         {
-            var options = EmitOptions.UnixSpaces.WithSingleLineJsDocCommentsOnOneLine(true);
+            EmitOptions options = EmitOptions.UnixSpaces.WithSingleLineJsDocCommentsOnOneLine(true);
 
             VerifyOutput(Factory.JsDocComment(fileTag: Factory.JsDocBlock("File")), "/** @file File */", options);
             VerifyOutput(

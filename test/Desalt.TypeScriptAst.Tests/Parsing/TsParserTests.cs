@@ -225,18 +225,18 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             // B = C << (x+y)--
             // C = x() * y
 
-            var c = Factory.BinaryExpression(Factory.Call(s_x), TsBinaryOperator.Multiply, s_y);
-            var b = Factory.BinaryExpression(
+            ITsBinaryExpression c = Factory.BinaryExpression(Factory.Call(s_x), TsBinaryOperator.Multiply, s_y);
+            ITsBinaryExpression b = Factory.BinaryExpression(
                 c,
                 TsBinaryOperator.LeftShift,
                 Factory.UnaryExpression(
                     Factory.BinaryExpression(s_x, TsBinaryOperator.Add, s_y).WithParentheses(),
                     TsUnaryOperator.PostfixDecrement));
-            var a = Factory.BinaryExpression(
+            ITsBinaryExpression a = Factory.BinaryExpression(
                 b,
                 TsBinaryOperator.Subtract,
                 Factory.UnaryExpression(Factory.MemberDot(Factory.This, "x"), TsUnaryOperator.Minus));
-            var expected = Factory.BinaryExpression(
+            ITsBinaryExpression expected = Factory.BinaryExpression(
                 a,
                 TsBinaryOperator.Add,
                 Factory.Array(Factory.Number(1), Factory.Number(2), Factory.Number(3)));

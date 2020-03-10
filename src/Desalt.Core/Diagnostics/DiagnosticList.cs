@@ -79,16 +79,30 @@ namespace Desalt.Core.Diagnostics
             return GetEnumerator();
         }
 
-        public IEnumerator<Diagnostic> GetEnumerator() => _diagnostics.GetEnumerator();
+        public IEnumerator<Diagnostic> GetEnumerator()
+        {
+            return _diagnostics.GetEnumerator();
+        }
 
-        bool ICollection<Diagnostic>.Contains(Diagnostic item) => _diagnostics.Contains(item);
+        bool ICollection<Diagnostic>.Contains(Diagnostic item)
+        {
+            return _diagnostics.Contains(item);
+        }
 
-        void ICollection<Diagnostic>.CopyTo(Diagnostic[] array, int arrayIndex) =>
+        void ICollection<Diagnostic>.CopyTo(Diagnostic[] array, int arrayIndex)
+        {
             _diagnostics.CopyTo(array, arrayIndex);
+        }
 
-        bool ICollection<Diagnostic>.Remove(Diagnostic item) => _diagnostics.Remove(item);
+        bool ICollection<Diagnostic>.Remove(Diagnostic item)
+        {
+            return _diagnostics.Remove(item);
+        }
 
-        void ICollection<Diagnostic>.Add(Diagnostic item) => Add(item);
+        void ICollection<Diagnostic>.Add(Diagnostic item)
+        {
+            Add(item);
+        }
 
         /// <summary>
         /// Adds a new diagnostic to the list, but only if the compiler options don't dictate that it

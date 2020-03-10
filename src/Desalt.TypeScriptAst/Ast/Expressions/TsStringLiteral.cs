@@ -37,10 +37,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitStringLiteral(this);
+        }
 
         public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write(CodeDisplay);
+        }
     }
 }

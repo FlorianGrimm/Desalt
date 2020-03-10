@@ -17,18 +17,30 @@ namespace Desalt.TypeScriptAst.Ast
         //// Types
         //// ===========================================================================================================
 
-        public static ITsTypeReference TypeReference(ITsTypeName typeName, params ITsType[] typeArguments) =>
-            new TsTypeReference(typeName, typeArguments);
+        public static ITsTypeReference TypeReference(ITsTypeName typeName, params ITsType[] typeArguments)
+        {
+            return new TsTypeReference(typeName, typeArguments);
+        }
 
-        public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers) => new TsObjectType(typeMembers);
+        public static ITsObjectType ObjectType(params ITsTypeMember[] typeMembers)
+        {
+            return new TsObjectType(typeMembers);
+        }
 
-        public static ITsObjectType ObjectType(bool forceSingleLine, params ITsTypeMember[] typeMembers) =>
-            new TsObjectType(typeMembers, forceSingleLine);
+        public static ITsObjectType ObjectType(bool forceSingleLine, params ITsTypeMember[] typeMembers)
+        {
+            return new TsObjectType(typeMembers, forceSingleLine);
+        }
 
-        public static ITsArrayType ArrayType(ITsType type) => new TsArrayType(type);
+        public static ITsArrayType ArrayType(ITsType type)
+        {
+            return new TsArrayType(type);
+        }
 
-        public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes) =>
-            new TsTupleType(elementType, elementTypes);
+        public static ITsTupleType TupleType(ITsType elementType, params ITsType[] elementTypes)
+        {
+            return new TsTupleType(elementType, elementTypes);
+        }
 
         public static ITsFunctionType FunctionType(
             ITsTypeParameters typeParameters,
@@ -38,11 +50,15 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsFunctionOrConstructorType(typeParameters, parameters, returnType, isConstructorType: false);
         }
 
-        public static ITsFunctionType FunctionType(ITsParameterList parameters, ITsType returnType) =>
-            new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: false);
+        public static ITsFunctionType FunctionType(ITsParameterList parameters, ITsType returnType)
+        {
+            return new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: false);
+        }
 
-        public static ITsFunctionType FunctionType(ITsType returnType) =>
-            new TsFunctionOrConstructorType(returnType, isConstructorType: false);
+        public static ITsFunctionType FunctionType(ITsType returnType)
+        {
+            return new TsFunctionOrConstructorType(returnType, isConstructorType: false);
+        }
 
         public static ITsConstructorType ConstructorType(
             ITsTypeParameters typeParameters,
@@ -52,13 +68,20 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsFunctionOrConstructorType(typeParameters, parameters, returnType, isConstructorType: true);
         }
 
-        public static ITsConstructorType ConstructorType(ITsParameterList parameters, ITsType returnType) =>
-            new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: true);
+        public static ITsConstructorType ConstructorType(ITsParameterList parameters, ITsType returnType)
+        {
+            return new TsFunctionOrConstructorType(parameters, returnType, isConstructorType: true);
+        }
 
-        public static ITsConstructorType ConstructorType(ITsType returnType) =>
-            new TsFunctionOrConstructorType(returnType, isConstructorType: true);
+        public static ITsConstructorType ConstructorType(ITsType returnType)
+        {
+            return new TsFunctionOrConstructorType(returnType, isConstructorType: true);
+        }
 
-        public static ITsTypeQuery TypeQuery(ITsTypeName query) => new TsTypeQuery(query);
+        public static ITsTypeQuery TypeQuery(ITsTypeName query)
+        {
+            return new TsTypeQuery(query);
+        }
 
         public static ITsPropertySignature PropertySignature(
             ITsPropertyName propertyName,
@@ -88,13 +111,20 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
 
-        public static ITsParameterList ParameterList() => new TsParameterList();
+        public static ITsParameterList ParameterList()
+        {
+            return new TsParameterList();
+        }
 
-        public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters) =>
-            new TsParameterList(requiredParameters.Select(p => BoundRequiredParameter(p)));
+        public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters)
+        {
+            return new TsParameterList(requiredParameters.Select(p => BoundRequiredParameter(p)));
+        }
 
-        public static ITsParameterList ParameterList(params ITsRequiredParameter[] requiredParameters) =>
-            new TsParameterList(requiredParameters);
+        public static ITsParameterList ParameterList(params ITsRequiredParameter[] requiredParameters)
+        {
+            return new TsParameterList(requiredParameters);
+        }
 
         public static ITsParameterList ParameterList(
             IEnumerable<ITsRequiredParameter> requiredParameters = null,
@@ -107,16 +137,23 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an empty type parameters list.
         /// </summary>
-        public static ITsTypeParameters TypeParameters() => TsTypeParameters.Empty;
+        public static ITsTypeParameters TypeParameters()
+        {
+            return TsTypeParameters.Empty;
+        }
 
         /// <summary>
         /// Creates a list of type parameters of the form '&lt;type, type&gt;'.
         /// </summary>
-        public static ITsTypeParameters TypeParameters(params ITsTypeParameter[] typeParameters) =>
-            new TsTypeParameters(typeParameters);
+        public static ITsTypeParameters TypeParameters(params ITsTypeParameter[] typeParameters)
+        {
+            return new TsTypeParameters(typeParameters);
+        }
 
-        public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null) =>
-            new TsTypeParameter(typeName, constraint);
+        public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null)
+        {
+            return new TsTypeParameter(typeName, constraint);
+        }
 
         public static ITsBoundRequiredParameter BoundRequiredParameter(
             ITsBindingIdentifierOrPattern parameterName,
@@ -149,8 +186,10 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsStringParameter(parameterName, stringLiteral, isOptional: true);
         }
 
-        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType parameterType = null) =>
-            new TsRestParameter(parameterName, parameterType);
+        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType parameterType = null)
+        {
+            return new TsRestParameter(parameterName, parameterType);
+        }
 
         public static ITsConstructSignature ConstructSignature(
             ITsParameterList parameterList = null,
@@ -186,13 +225,17 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a union type of the form 'type1 | type2'.
         /// </summary>
-        public static ITsUnionType UnionType(params ITsType[] types) =>
-            new TsUnionOrIntersectionType(types[0], types[1], types.Skip(2).ToArray(), isUnion: true);
+        public static ITsUnionType UnionType(params ITsType[] types)
+        {
+            return new TsUnionOrIntersectionType(types[0], types[1], types.Skip(2).ToArray(), isUnion: true);
+        }
 
         /// <summary>
         /// Creates an intersection type of the form 'type1 &amp; type2'.
         /// </summary>
-        public static ITsIntersectionType IntersectionType(ITsType type1, ITsType type2, params ITsType[] otherTypes) =>
-            new TsUnionOrIntersectionType(type1, type2, otherTypes, isUnion: false);
+        public static ITsIntersectionType IntersectionType(ITsType type1, ITsType type2, params ITsType[] otherTypes)
+        {
+            return new TsUnionOrIntersectionType(type1, type2, otherTypes, isUnion: false);
+        }
     }
 }

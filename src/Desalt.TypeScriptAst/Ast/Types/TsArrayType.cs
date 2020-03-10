@@ -34,7 +34,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitArrayType(this);
+        }
 
         public override string CodeDisplay =>
             Type is ITsFunctionType ? $"Array<{Type.CodeDisplay}>" : $"{Type.CodeDisplay}[]";

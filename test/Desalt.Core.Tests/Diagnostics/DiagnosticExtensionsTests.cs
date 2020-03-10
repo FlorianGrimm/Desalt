@@ -182,7 +182,7 @@ namespace Desalt.Core.Tests.Diagnostics
         public void WithSeverity_should_create_a_copy_of_the_Diagnostic_with_the_severity_changed()
         {
             var location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());
-            var additionalLocations = new[] { Location.Create("file2.cs", new TextSpan(), new LinePositionSpan()), };
+            Location[] additionalLocations = new[] { Location.Create("file2.cs", new TextSpan(), new LinePositionSpan()), };
             string[] customTags = { WellKnownDiagnosticTags.EditAndContinue };
 
             var diagnostic = Diagnostic.Create(

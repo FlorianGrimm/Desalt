@@ -43,7 +43,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitPropertyFunction(this);
+        }
 
         public override string CodeDisplay =>
             $"{PropertyName.CodeDisplay}{CallSignature.CodeDisplay} {{ {FunctionBody.ToElidedList()} }}";

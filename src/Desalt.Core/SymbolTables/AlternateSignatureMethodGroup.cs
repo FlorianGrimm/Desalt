@@ -133,7 +133,10 @@ namespace Desalt.Core.SymbolTables
         /// Gets all of the valid types for the specified parameter across all of the methods in the group.
         /// </summary>
         /// <param name="index">The index of the parameter to retrieve.</param>
-        public ImmutableArray<ITypeSymbol> TypesForParameter(int index) => _parameterTypeUnions.Value[index];
+        public ImmutableArray<ITypeSymbol> TypesForParameter(int index)
+        {
+            return _parameterTypeUnions.Value[index];
+        }
 
         private ImmutableArray<ImmutableArray<ITypeSymbol>> GatherTypesForParameters()
         {
@@ -142,11 +145,11 @@ namespace Desalt.Core.SymbolTables
 
             var allMethods = ImplementingMethod.ToSingleEnumerable().Concat(AlternateSignatureMethods);
 
-            foreach (var methodSymbol in allMethods)
+            foreach (IMethodSymbol methodSymbol in allMethods)
             {
                 for (int i = 0; i < methodSymbol.Parameters.Length; i++)
                 {
-                    var parameterType = methodSymbol.Parameters[i].Type;
+                    ITypeSymbol parameterType = methodSymbol.Parameters[i].Type;
 
                     List<ITypeSymbol> typesForParameter = typesForParameters[i];
                     if (!typesForParameter.Contains(parameterType))

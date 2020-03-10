@@ -38,7 +38,7 @@ namespace Desalt.Core.Tests.Translation
     public class DocumentationCommentCrefTests
     {
 #pragma warning disable 169, 414
-        private string _thisField = null;
+        private readonly string _thisField = null;
 #pragma warning restore 169, 414
 
         [TestMethod]

@@ -38,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitNamespaceDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitNamespaceDeclaration(this);
+        }
 
         public override string CodeDisplay => $"namespace {NamespaceName} {{ {Body.ToElidedList()} }}";
 

@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Validation
 {
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
@@ -30,10 +31,11 @@ public interface TestInterface
     void InvalidMethod(int defaultValue = 0);
 }";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var contexts = await tempProject.CreateContextsWithSymbolTablesAsync(
-                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
+                ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts =
+                    await tempProject.CreateContextsWithSymbolTablesAsync(
+                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
                 var validator = new NoDefaultParametersInInterfacesValidator();
                 IExtendedResult<bool> result = validator.Validate(contexts);

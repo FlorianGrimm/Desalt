@@ -38,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTypeReference(this);
+        }
 
         public override string CodeDisplay =>
             TypeArguments.Length == 0 ? TypeName.CodeDisplay : $"{TypeName}<{TypeArguments.ToElidedList()}>";

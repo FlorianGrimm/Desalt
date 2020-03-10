@@ -41,11 +41,15 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public static TsMemberDotExpression Create(ITsExpression leftSide, string dotName) =>
-            new TsMemberDotExpression(leftSide, dotName, isSuper: false);
+        public static TsMemberDotExpression Create(ITsExpression leftSide, string dotName)
+        {
+            return new TsMemberDotExpression(leftSide, dotName, isSuper: false);
+        }
 
-        public static TsMemberDotExpression CreateSuper(string dotName) =>
-            new TsMemberDotExpression(TsIdentifier.Get("super"), dotName, isSuper: true);
+        public static TsMemberDotExpression CreateSuper(string dotName)
+        {
+            return new TsMemberDotExpression(TsIdentifier.Get("super"), dotName, isSuper: true);
+        }
 
         public override void Accept(TsVisitor visitor)
         {

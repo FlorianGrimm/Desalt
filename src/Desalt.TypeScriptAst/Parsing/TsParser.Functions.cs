@@ -109,7 +109,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 }
             }
 
-            var statements = ParseStatementList();
+            ITsStatementListItem[] statements = ParseStatementList();
 
             if (withBraces)
             {
@@ -222,7 +222,7 @@ namespace Desalt.TypeScriptAst.Parsing
                     throw NewParseException("Cannot have required parameters after optional parameters");
                 }
 
-                ITsIdentifier parameterIdentifier = parameterName as ITsIdentifier;
+                var parameterIdentifier = parameterName as ITsIdentifier;
                 if (stringLiteral != null && parameterIdentifier == null)
                 {
                     throw NewParseException("A string literal parameter must have an identifier");

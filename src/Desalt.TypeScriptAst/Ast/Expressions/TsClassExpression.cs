@@ -42,7 +42,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitClassExpression(this);
+        }
 
         public override string CodeDisplay =>
             $"class {ClassName}{Heritage?.CodeDisplay} {{ {ClassBody.ToElidedList()} }}";

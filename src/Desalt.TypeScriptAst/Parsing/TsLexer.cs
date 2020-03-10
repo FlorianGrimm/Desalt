@@ -42,11 +42,14 @@ namespace Desalt.TypeScriptAst.Parsing
             return lexer.Lex();
         }
 
-        private static bool IsHexDigit(char c) => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+        private static bool IsHexDigit(char c)
+        {
+            return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+        }
 
         private ImmutableArray<TsToken> Lex()
         {
-            var builder = ImmutableArray.CreateBuilder<TsToken>();
+            ImmutableArray<TsToken>.Builder builder = ImmutableArray.CreateBuilder<TsToken>();
 
             using (_reader = new PeekingTextReader(_code))
             {

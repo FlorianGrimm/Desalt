@@ -141,8 +141,10 @@ namespace Desalt.Core
         //// Methods
         //// ===========================================================================================================
 
-        public CompilerOptions WithRenameRules(RenameRules value) =>
-            RenameRules.Equals(value) ? this : new CompilerOptions(this, renameRules: value);
+        public CompilerOptions WithRenameRules(RenameRules value)
+        {
+            return RenameRules.Equals(value) ? this : new CompilerOptions(this, renameRules: value);
+        }
 
         public CompilerOptions WithOutputPath(string value)
         {
@@ -151,8 +153,10 @@ namespace Desalt.Core
                 : new CompilerOptions(this, outputPath: value);
         }
 
-        public CompilerOptions WithSymbolTableOverrides(SymbolTableOverrides value) =>
-            SymbolTableOverrides.Equals(value) ? this : new CompilerOptions(this, symbolTableOverrides: value);
+        public CompilerOptions WithSymbolTableOverrides(SymbolTableOverrides value)
+        {
+            return SymbolTableOverrides.Equals(value) ? this : new CompilerOptions(this, symbolTableOverrides: value);
+        }
 
         /// <summary>
         /// Deserializes the options from a JSON file.
@@ -170,7 +174,7 @@ namespace Desalt.Core
             }
             catch (Exception e) when (e is IOException || e is JsonException || e is ArgumentException)
             {
-                var diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(path, e.Message) };
+                Diagnostic[] diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(path, e.Message) };
                 return new ExtendedResult<CompilerOptions>(null, diagnostics);
             }
         }
@@ -195,15 +199,15 @@ namespace Desalt.Core
                     leaveOpen: true))
                 using (var jsonReader = new JsonTextReader(reader))
                 {
-                    var serializer = CreateSerializer();
-                    var deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
+                    JsonSerializer serializer = CreateSerializer();
+                    CompilerOptions deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
                     return new ExtendedResult<CompilerOptions>(deserialized);
                 }
             }
             catch (JsonException e)
             {
                 filePath = string.IsNullOrWhiteSpace(filePath) ? string.Empty : Path.GetFullPath(filePath);
-                var diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(filePath, e.Message) };
+                Diagnostic[] diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(filePath, e.Message) };
                 return new ExtendedResult<CompilerOptions>(null, diagnostics);
             }
         }
@@ -221,7 +225,7 @@ namespace Desalt.Core
             using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 4096, leaveOpen: true))
             using (var jsonWriter = new JsonTextWriter(writer))
             {
-                var serializer = CreateSerializer();
+                JsonSerializer serializer = CreateSerializer();
                 serializer.Serialize(jsonWriter, this);
             }
         }
@@ -327,7 +331,7 @@ namespace Desalt.Core
                     string symbolName = reader.Value.ToString();
                     reader.Read();
 
-                    var symbolOverride = serializer.Deserialize<SymbolTableOverride>(reader);
+                    SymbolTableOverride symbolOverride = serializer.Deserialize<SymbolTableOverride>(reader);
                     pairs.Add(new KeyValuePair<string, SymbolTableOverride>(symbolName, symbolOverride));
 
                     // it is expected that we read the end object, even though the serializer will read the beginning

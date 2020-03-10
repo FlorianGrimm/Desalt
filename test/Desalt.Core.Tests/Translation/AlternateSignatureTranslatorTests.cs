@@ -11,7 +11,6 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.CompilerUtilities.Extensions;
-    using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.Core.Utility;
@@ -42,11 +41,11 @@ using System.Runtime.CompilerServices;
 
 {codeSnippet}
 ";
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
-                var context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
+                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
 
-                var methodSymbol = context.RootSyntax.DescendantNodes()
+                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<BaseMethodDeclarationSyntax>()
                     .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
                     .First(symbol => symbol.ToHashDisplay() == methodKey);
@@ -74,7 +73,7 @@ using System.Runtime.CompilerServices;
         public async Task
             TryAdjustParameterList_should_return_false_for_a_method_that_does_not_have_an_AlternateSignature()
         {
-            var translatedParameterList =
+            ITsParameterList translatedParameterList =
                 Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType));
 
             await AssertTryAdjustParameterListTypesAsync(

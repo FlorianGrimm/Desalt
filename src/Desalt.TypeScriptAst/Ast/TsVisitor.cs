@@ -13,21 +13,33 @@ namespace Desalt.TypeScriptAst.Ast
     /// </summary>
     public abstract partial class TsVisitor
     {
-        public virtual void Visit(ITsAstNode node) => node?.Accept(this);
+        public virtual void Visit(ITsAstNode node)
+        {
+            node?.Accept(this);
+        }
 
         /// <summary>
         /// Visits a TypeScript identifier.
         /// </summary>
-        public virtual void VisitIdentifier(ITsIdentifier node) => Visit(node);
+        public virtual void VisitIdentifier(ITsIdentifier node)
+        {
+            Visit(node);
+        }
 
         /// <summary>
         /// Visits a TypeScript qualified name, which is a full name with dots separating components.
         /// </summary>
-        public virtual void VisitQualifiedName(ITsQualifiedName node) => Visit(node);
+        public virtual void VisitQualifiedName(ITsQualifiedName node)
+        {
+            Visit(node);
+        }
 
         /// <summary>
         /// Visits a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.
         /// </summary>
-        public virtual void VisitGenericTypeName(ITsGenericTypeName node) => Visit(node);
+        public virtual void VisitGenericTypeName(ITsGenericTypeName node)
+        {
+            Visit(node);
+        }
     }
 }

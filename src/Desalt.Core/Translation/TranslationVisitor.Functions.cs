@@ -89,7 +89,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
             ITsCallSignature callSignature = TranslateCallSignature(node.ParameterList);
-            var body = Visit(node.Body).Single();
+            ITsAstNode body = Visit(node.Body).Single();
 
             ITsArrowFunction translated;
             switch (body)

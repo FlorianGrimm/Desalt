@@ -26,10 +26,10 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single(m => m.Name == "C");
@@ -48,10 +48,10 @@ using System.Runtime.CompilerServices;
 [Imported]
 class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single(m => m.Name == "C");
@@ -66,10 +66,10 @@ class C {}";
         {
             const string code = @"class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single(m => m.Name == "C");
@@ -94,10 +94,10 @@ using System.Runtime.CompilerServices;
 [ScriptName(""Success"")]
 class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single(m => m.Name == "C");
@@ -122,10 +122,10 @@ using System.Runtime.CompilerServices;
 [Imported(ObeysTypeSystem=true)]
 class C {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var classSymbol = context.RootSyntax.DescendantNodes()
+                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                     .Single(m => m.Name == "C");
@@ -159,7 +159,7 @@ class NoAttribute {}
 [PreserveMemberCase(false)] class WithUnnamedFalseArg {}
 [PreserveMemberCase(true)] class WithUnnamedTrueArg {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 context.RootSyntax.DescendantNodes()
@@ -193,7 +193,7 @@ class NoAttribute {}
 [PreserveMemberCase(false)] class WithUnnamedFalseArg {}
 [PreserveMemberCase(true)] class WithUnnamedTrueArg {}";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 context.RootSyntax.DescendantNodes()

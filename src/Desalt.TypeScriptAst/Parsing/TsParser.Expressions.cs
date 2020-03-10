@@ -177,8 +177,10 @@ namespace Desalt.TypeScriptAst.Parsing
             return expression;
         }
 
-        private static bool IsAssignmentOperator(TsTokenCode tokenCode) =>
-            s_assignmentOperatorMap.ContainsKey(tokenCode);
+        private static bool IsAssignmentOperator(TsTokenCode tokenCode)
+        {
+            return s_assignmentOperatorMap.ContainsKey(tokenCode);
+        }
 
         /// <summary>
         /// Parses a logical OR expression of the form x || y.
@@ -539,7 +541,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             // NewExpression and CallExpression both start with a MemberExpression
             // (the 'new NewExpression' production is handled as part of the member expression)
-            var expression = ParseMemberExpression();
+            ITsExpression expression = ParseMemberExpression();
             if (_reader.IsNext(TsTokenCode.LeftParen))
             {
                 ITsArgumentList arguments = ParseArguments();

@@ -40,7 +40,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitArgument(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitArgument(this);
+        }
 
         public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Argument;
 

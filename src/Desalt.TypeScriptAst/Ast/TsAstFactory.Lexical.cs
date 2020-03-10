@@ -21,7 +21,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates whitespace that can appear before or after another <see cref="ITsAstNode"/>.
         /// </summary>
-        public static ITsWhitespaceTrivia Whitespace(string text) => TsWhitespaceTrivia.Create(text);
+        public static ITsWhitespaceTrivia Whitespace(string text)
+        {
+            return TsWhitespaceTrivia.Create(text);
+        }
 
         /// <summary>
         /// Creates a TypeScript single-line comment of the form '// comment'.
@@ -56,13 +59,18 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a builder for <see cref="ITsJsDocComment"/> objects.
         /// </summary>
-        public static ITsJsDocCommentBuilder JsDocCommentBuilder() => new TsJsDocCommentBuilder();
+        public static ITsJsDocCommentBuilder JsDocCommentBuilder()
+        {
+            return new TsJsDocCommentBuilder();
+        }
 
         /// <summary>
         /// Creates a structured JSDoc comment before a declaration.
         /// </summary>
-        public static ITsJsDocComment JsDocComment(string description) =>
-            new TsJsDocComment(description: new TsJsDocBlock(new[] { new TsJsDocInlineText(description) }));
+        public static ITsJsDocComment JsDocComment(string description)
+        {
+            return new TsJsDocComment(description: new TsJsDocBlock(new[] { new TsJsDocInlineText(description) }));
+        }
 
         /// <summary>
         /// Creates a structured JSDoc comment before a declaration.
@@ -111,12 +119,17 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates plain text within a JSDoc block tag.
         /// </summary>
-        public static ITsJsDocInlineText JsDocInlineText(string text) => new TsJsDocInlineText(text);
+        public static ITsJsDocInlineText JsDocInlineText(string text)
+        {
+            return new TsJsDocInlineText(text);
+        }
 
         /// <summary>
         /// Cretes a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
         /// </summary>
-        public static ITsJsDocLinkTag JsDocLinkTag(string namepathOrUrl, string text = null) =>
-            new TsJsDocLinkTag(namepathOrUrl, text);
+        public static ITsJsDocLinkTag JsDocLinkTag(string namepathOrUrl, string text = null)
+        {
+            return new TsJsDocLinkTag(namepathOrUrl, text);
+        }
     }
 }

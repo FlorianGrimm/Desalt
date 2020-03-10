@@ -65,7 +65,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             ITsIdentifier defaultBinding,
             IEnumerable<ITsImportSpecifier> namedImports = null)
         {
-            ImmutableArray<ITsImportSpecifier>? array = namedImports?.ToImmutableArray();
+            var array = namedImports?.ToImmutableArray();
 
             if (array.GetValueOrDefault().IsDefaultOrEmpty)
             {
@@ -81,11 +81,13 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         /// <summary>
         /// Create an import clause of the form '* as identifier'.
         /// </summary>
-        public static TsImportClause CreateNamespaceBinding(ITsIdentifier namespaceBinding) =>
-            new TsImportClause(
+        public static TsImportClause CreateNamespaceBinding(ITsIdentifier namespaceBinding)
+        {
+            return new TsImportClause(
                 defaultBinding: null,
                 namespaceBinding: namespaceBinding ?? throw new ArgumentNullException(nameof(namespaceBinding)),
                 namedImports: null);
+        }
 
         /// <summary>
         /// Create an import clause of the form '{ importSpecifier, importSpecifier }'.
@@ -97,7 +99,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
                 throw new ArgumentNullException(nameof(namedImports));
             }
 
-            ImmutableArray<ITsImportSpecifier> array = namedImports.ToImmutableArray();
+            var array = namedImports.ToImmutableArray();
             if (array.IsEmpty)
             {
                 throw new ArgumentException("Empty import specifier list", nameof(namedImports));
@@ -109,7 +111,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
                 namedImports: array);
         }
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitImportClause(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitImportClause(this);
+        }
 
         public override string CodeDisplay
         {

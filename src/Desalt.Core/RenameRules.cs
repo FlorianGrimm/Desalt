@@ -54,16 +54,20 @@ namespace Desalt.Core
         /// </summary>
         public EnumRenameRule EnumRule { get; }
 
-        public RenameRules WithEnumRule(EnumRenameRule value) =>
-            value == EnumRule ? this : new RenameRules(this, enumRule: value);
+        public RenameRules WithEnumRule(EnumRenameRule value)
+        {
+            return value == EnumRule ? this : new RenameRules(this, enumRule: value);
+        }
 
         /// <summary>
         /// Gets a value indicating how fields are translated from C# to TypeScript.
         /// </summary>
         public FieldRenameRule FieldRule { get; }
 
-        public RenameRules WithFieldRule(FieldRenameRule value) =>
-            value == FieldRule ? this : new RenameRules(this, fieldRule: value);
+        public RenameRules WithFieldRule(FieldRenameRule value)
+        {
+            return value == FieldRule ? this : new RenameRules(this, fieldRule: value);
+        }
     }
 
     /// <summary>

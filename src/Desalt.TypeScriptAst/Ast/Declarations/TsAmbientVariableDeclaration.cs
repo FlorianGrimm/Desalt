@@ -40,7 +40,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientVariableDeclaration(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitAmbientVariableDeclaration(this);
+        }
 
         public override string CodeDisplay => $"{DeclarationKind.CodeDisplay()}{Declarations.ToElidedList()};";
 

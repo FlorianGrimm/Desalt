@@ -38,11 +38,15 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public static TsMemberBracketExpression Create(ITsExpression leftSide, ITsExpression bracketContents) =>
-            new TsMemberBracketExpression(leftSide, bracketContents, isSuper: false);
+        public static TsMemberBracketExpression Create(ITsExpression leftSide, ITsExpression bracketContents)
+        {
+            return new TsMemberBracketExpression(leftSide, bracketContents, isSuper: false);
+        }
 
-        public static TsMemberBracketExpression CreateSuper(ITsExpression bracketContents) =>
-            new TsMemberBracketExpression(TsIdentifier.Get("super"), bracketContents, isSuper: true);
+        public static TsMemberBracketExpression CreateSuper(ITsExpression bracketContents)
+        {
+            return new TsMemberBracketExpression(TsIdentifier.Get("super"), bracketContents, isSuper: true);
+        }
 
         public override void Accept(TsVisitor visitor)
         {

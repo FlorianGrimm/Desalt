@@ -212,7 +212,7 @@ namespace Desalt.Core.Translation
                 return parameterName;
             }
 
-            var translatedArgument = context.TranslatedArgumentList.Arguments[index];
+            ITsArgument translatedArgument = context.TranslatedArgumentList.Arguments[index];
             return translatedArgument.EmitAsString();
         }
 

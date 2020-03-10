@@ -11,7 +11,6 @@ namespace Desalt.Core.Tests.Translation
     using System.Collections.Generic;
     using System.Linq;
     using Desalt.CompilerUtilities;
-    using Desalt.Core.Utility;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using XmlElem = Desalt.Core.Translation.DocumentationCommentXmlElement;
@@ -27,7 +26,7 @@ namespace Desalt.Core.Tests.Translation
         {
             using (var reader = new PeekingTextReader(text))
             {
-                XmlElem actual = XmlElem.Parse(reader);
+                var actual = XmlElem.Parse(reader);
                 actual.ElementName.Should().Be(expectedElementName);
                 actual.Content.Should().Be(expectedContent);
 

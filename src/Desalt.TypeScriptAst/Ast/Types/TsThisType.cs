@@ -36,10 +36,16 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitThisType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitThisType(this);
+        }
 
         public override string CodeDisplay => "this";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write("this");
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write("this");
+        }
     }
 }

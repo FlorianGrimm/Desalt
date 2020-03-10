@@ -46,8 +46,9 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <summary>
         /// Returns a value indicating whether the token code is a potential start of the Declaration production.
         /// </summary>
-        public bool IsStartOfDeclaration() =>
-            _reader.Peek()
+        public bool IsStartOfDeclaration()
+        {
+            return _reader.Peek()
                 .TokenCode.IsOneOf(
                     TsTokenCode.Function,
                     TsTokenCode.Class,
@@ -56,6 +57,7 @@ namespace Desalt.TypeScriptAst.Parsing
                     TsTokenCode.Interface,
                     TsTokenCode.Type,
                     TsTokenCode.Enum);
+        }
 
         /// <summary>
         /// Parses a hoistable declaration, which is either a function or generator function declaration.

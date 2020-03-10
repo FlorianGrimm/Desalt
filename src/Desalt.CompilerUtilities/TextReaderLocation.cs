@@ -53,7 +53,10 @@ namespace Desalt.CompilerUtilities
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the
         /// same value; otherwise, false.
         /// </returns>
-        public static bool operator ==(TextReaderLocation left, TextReaderLocation right) => left.Equals(right);
+        public static bool operator ==(TextReaderLocation left, TextReaderLocation right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TextReaderLocation"/> objects have
@@ -64,23 +67,36 @@ namespace Desalt.CompilerUtilities
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(TextReaderLocation left, TextReaderLocation right) => !left.Equals(right);
+        public static bool operator !=(TextReaderLocation left, TextReaderLocation right)
+        {
+            return !left.Equals(right);
+        }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public TextReaderLocation IncrementLine() => new TextReaderLocation(Line + 1, 1, Source);
+        public TextReaderLocation IncrementLine()
+        {
+            return new TextReaderLocation(Line + 1, 1, Source);
+        }
 
-        public TextReaderLocation IncrementColumn() => new TextReaderLocation(Line, Column + 1, Source);
+        public TextReaderLocation IncrementColumn()
+        {
+            return new TextReaderLocation(Line, Column + 1, Source);
+        }
 
-        public TextReaderLocation DecrementColumn() =>
-            Column == 1
+        public TextReaderLocation DecrementColumn()
+        {
+            return Column == 1
                 ? throw new InvalidOperationException("Cannot decrement the column before the beginning of the line.")
                 : new TextReaderLocation(Line, Column - 1, Source);
+        }
 
-        public override string ToString() =>
-            string.Format(CultureInfo.InvariantCulture, "{0}({1},{2})", Source, Line, Column);
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0}({1},{2})", Source, Line, Column);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -90,8 +106,10 @@ namespace Desalt.CompilerUtilities
         /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
-        public bool Equals(TextReaderLocation other) =>
-            string.Equals(Source, other.Source) && Line == other.Line && Column == other.Column;
+        public bool Equals(TextReaderLocation other)
+        {
+            return string.Equals(Source, other.Source) && Line == other.Line && Column == other.Column;
+        }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.

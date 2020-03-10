@@ -45,7 +45,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public static TsTryStatement CreateTry(ITsBlockStatement tryBlock) => new TsTryStatement(tryBlock);
+        public static TsTryStatement CreateTry(ITsBlockStatement tryBlock)
+        {
+            return new TsTryStatement(tryBlock);
+        }
 
         public static TsTryStatement CreateTryCatch(
             ITsBlockStatement tryBlock,
@@ -100,7 +103,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 finallyBlock: finallyBlock ?? throw new ArgumentNullException(nameof(finallyBlock)));
         }
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTryStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTryStatement(this);
+        }
 
         public override string CodeDisplay
         {

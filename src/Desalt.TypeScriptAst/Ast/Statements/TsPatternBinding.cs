@@ -36,7 +36,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitPatternBinding(this);
+        }
 
         public override string CodeDisplay => $"{BindingPattern}{Initializer.OptionalAssignment()}";
 

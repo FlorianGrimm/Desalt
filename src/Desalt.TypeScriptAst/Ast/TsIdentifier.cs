@@ -46,7 +46,10 @@ namespace Desalt.TypeScriptAst.Ast
         //// Operator Overloads
         //// ===========================================================================================================
 
-        public static implicit operator TsIdentifier(string text) => Get(text);
+        public static implicit operator TsIdentifier(string text)
+        {
+            return Get(text);
+        }
 
         //// ===========================================================================================================
         //// Methods
@@ -69,6 +72,9 @@ namespace Desalt.TypeScriptAst.Ast
 
         public override string CodeDisplay => Text;
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write(Text);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write(Text);
+        }
     }
 }

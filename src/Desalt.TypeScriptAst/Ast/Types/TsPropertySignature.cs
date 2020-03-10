@@ -41,7 +41,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitPropertySignature(this);
+        }
 
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
             PropertyType.OptionalTypeAnnotation();

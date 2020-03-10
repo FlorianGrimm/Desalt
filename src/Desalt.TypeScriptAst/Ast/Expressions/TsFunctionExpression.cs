@@ -43,7 +43,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitFunctionExpression(this);
+        }
 
         public override string CodeDisplay =>
             "function " +

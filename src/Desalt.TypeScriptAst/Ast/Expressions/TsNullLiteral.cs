@@ -32,10 +32,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitNullLiteral(this);
+        }
 
         public override string CodeDisplay => "null";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write("null");
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write("null");
+        }
     }
 }

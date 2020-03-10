@@ -36,10 +36,16 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitEmptyStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitEmptyStatement(this);
+        }
 
         public override string CodeDisplay => ";";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.WriteLine(";");
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.WriteLine(";");
+        }
     }
 }

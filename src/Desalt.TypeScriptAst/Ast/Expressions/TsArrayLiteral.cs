@@ -35,7 +35,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitArrayLiteral(this);
+        }
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 

@@ -37,7 +37,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyNameBinding(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitPropertyNameBinding(this);
+        }
 
         public override string CodeDisplay => $"{PropertyName}: {BindingElement}";
 

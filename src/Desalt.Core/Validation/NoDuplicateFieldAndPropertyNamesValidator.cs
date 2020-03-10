@@ -34,7 +34,7 @@ namespace Desalt.Core.Validation
             }
 
             SemanticModel semanticModel = contexts[0].SemanticModel;
-            var context = contexts[0];
+            DocumentTranslationContextWithSymbolTables context = contexts[0];
 
             IEnumerable<Diagnostic> errors =
 

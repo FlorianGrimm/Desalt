@@ -35,7 +35,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitTemplatePart(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitTemplatePart(this);
+        }
 
         public override string CodeDisplay =>
             (Template ?? "") + (Expression != null ? "${" + Expression + "}" : "");

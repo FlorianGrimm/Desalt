@@ -96,14 +96,20 @@ namespace Desalt.TypeScriptAst.Emit
         /// </summary>
         public string Newline { get; }
 
-        public EmitOptions WithNewline(string value) => new EmitOptions(this, newline: value);
+        public EmitOptions WithNewline(string value)
+        {
+            return new EmitOptions(this, newline: value);
+        }
 
         /// <summary>
         /// Gets the prefix to use for indenting blocks.
         /// </summary>
         public string IndentationPrefix { get; }
 
-        public EmitOptions WithIndentationPrefix(string value) => new EmitOptions(this, indentationPrefix: value);
+        public EmitOptions WithIndentationPrefix(string value)
+        {
+            return new EmitOptions(this, indentationPrefix: value);
+        }
 
         /// <summary>
         /// Gets a value indicating whether single-line JSDoc comments should be emitted on a single
@@ -111,7 +117,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// </summary>
         public bool SingleLineJsDocCommentsOnOneLine { get; }
 
-        public EmitOptions WithSingleLineJsDocCommentsOnOneLine(bool value) =>
-            new EmitOptions(this, singleLineJsDocCommentsOnOneLine: value);
+        public EmitOptions WithSingleLineJsDocCommentsOnOneLine(bool value)
+        {
+            return new EmitOptions(this, singleLineJsDocCommentsOnOneLine: value);
+        }
     }
 }

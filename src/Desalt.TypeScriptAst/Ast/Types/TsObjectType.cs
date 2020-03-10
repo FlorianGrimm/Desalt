@@ -38,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitObjectType(this);
+        }
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 

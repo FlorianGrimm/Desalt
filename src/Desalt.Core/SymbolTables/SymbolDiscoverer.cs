@@ -142,7 +142,9 @@ namespace Desalt.Core.SymbolTables
         /// </summary>
         /// <param name="compilation">The compilation to use for looking up mscorlib.</param>
         /// <returns>An <see cref="IAssemblySymbol"/> for mscorlib.</returns>
-        public static IAssemblySymbol GetMscorlibAssemblySymbol(Compilation compilation) =>
-            compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
+        public static IAssemblySymbol GetMscorlibAssemblySymbol(Compilation compilation)
+        {
+            return compilation.GetSpecialType(SpecialType.System_Boolean).ContainingAssembly;
+        }
     }
 }

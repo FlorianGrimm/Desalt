@@ -40,7 +40,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitVariableStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitVariableStatement(this);
+        }
 
         public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
 

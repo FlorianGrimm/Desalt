@@ -38,10 +38,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitRegularExpressionLiteral(this);
+        }
 
         public override string CodeDisplay => $"/{Body}/{Flags}";
 
-        protected override void EmitInternal(Emitter emitter) => emitter.Write(CodeDisplay);
+        protected override void EmitInternal(Emitter emitter)
+        {
+            emitter.Write(CodeDisplay);
+        }
     }
 }

@@ -79,7 +79,7 @@ namespace Desalt.Core.Translation
             return string.Equals(name1, name2, StringComparison.Ordinal);
         }
 
-        public new static bool Equals(object left, object right)
+        public static new bool Equals(object left, object right)
         {
             return object.Equals(left, right);
         }

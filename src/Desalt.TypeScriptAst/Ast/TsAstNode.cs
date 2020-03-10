@@ -72,7 +72,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(ITsAstNode left, TsAstNode right) => Equals(left, right);
+        public static bool operator ==(ITsAstNode left, TsAstNode right)
+        {
+            return Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether the values of two <see cref="TsAstNode"/>
@@ -84,7 +87,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(TsAstNode left, ITsAstNode right) => Equals(left, right);
+        public static bool operator ==(TsAstNode left, ITsAstNode right)
+        {
+            return Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TsAstNode"/> objects have
@@ -95,7 +101,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(ITsAstNode left, TsAstNode right) => !Equals(left, right);
+        public static bool operator !=(ITsAstNode left, TsAstNode right)
+        {
+            return !Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TsAstNode"/> objects have
@@ -106,7 +115,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(TsAstNode left, ITsAstNode right) => !Equals(left, right);
+        public static bool operator !=(TsAstNode left, ITsAstNode right)
+        {
+            return !Equals(left, right);
+        }
 
         //// ===========================================================================================================
         //// Methods
@@ -122,7 +134,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => CodeDisplay;
+        public override string ToString()
+        {
+            return CodeDisplay;
+        }
 
         /// <summary>
         /// Emits this AST node into code using the specified <see cref="Emitter"/>.
@@ -209,7 +224,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the specified object is equal to the current object; otherwise, false.
         /// </returns>
         /// <param name="obj">The object to compare with the current object.</param>
-        public override bool Equals(object obj) => Equals(obj as TsAstNode);
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TsAstNode);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -218,7 +236,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        bool IEquatable<ITsAstNode>.Equals(ITsAstNode other) => Equals(other as TsAstNode);
+        bool IEquatable<ITsAstNode>.Equals(ITsAstNode other)
+        {
+            return Equals(other as TsAstNode);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -251,6 +272,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// Serves as the default hash function.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
-        public override int GetHashCode() => EmitAsString().GetHashCode();
+        public override int GetHashCode()
+        {
+            return EmitAsString().GetHashCode();
+        }
     }
 }

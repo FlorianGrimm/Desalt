@@ -32,7 +32,7 @@ namespace Desalt.Core.SymbolTables
             ImmutableArray<DocumentTranslationContext> contexts,
             IScriptNamer scriptNamer,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             // get the symbol table overrides using the options from the first context - they should all be identical
             CompilerOptions options = contexts.First().Options;
@@ -40,12 +40,12 @@ namespace Desalt.Core.SymbolTables
             ImmutableDictionary<string, SymbolTableOverride> overrides = options.SymbolTableOverrides.Overrides;
 
             // discover the externally referenced types
-            var directlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
+            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
                 contexts,
                 discoveryKind,
                 cancellationToken);
 
-            var indirectlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
+            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
                 directlyReferencedExternalTypeSymbols,
                 contexts.FirstOrDefault()?.SemanticModel.Compilation,
                 cancellationToken,
@@ -116,7 +116,7 @@ namespace Desalt.Core.SymbolTables
                 .SelectMany(context => CreateDocumentImportMappings(context, cancellationToken))
                 .ToImmutableDictionary();
 
-            var externalImports = CreateExternalTypesImportMappings(
+            IEnumerable<KeyValuePair<ITypeSymbol, ImportSymbolInfo>> externalImports = CreateExternalTypesImportMappings(
                 directlyReferencedExternalTypeSymbols.Concat(indirectlyReferencedSymbols).Distinct());
 
             var importSymbols = ImmutableDictionary.CreateRange(documentImports.Concat(externalImports));
@@ -153,7 +153,7 @@ namespace Desalt.Core.SymbolTables
         /// </summary>
         private static ImportSymbolInfo CreateExternalTypeImport(ITypeSymbol symbol)
         {
-            var containingAssembly = symbol.ContainingAssembly;
+            IAssemblySymbol containingAssembly = symbol.ContainingAssembly;
             string moduleName = containingAssembly.Name;
             var symbolInfo = ImportSymbolInfo.CreateExternalReference(moduleName);
             return symbolInfo;
@@ -183,8 +183,10 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// Returns an enumerable of the specified type and all of its members that should be processed.
         /// </summary>
-        private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol) =>
-            typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
+        private static IEnumerable<ISymbol> DiscoverTypeAndMembers(INamespaceOrTypeSymbol typeSymbol)
+        {
+            return typeSymbol.ToSingleEnumerable().Concat(typeSymbol.GetMembers().Where(ShouldProcessMember));
+        }
 
         private static IEnumerable<KeyValuePair<ISymbol, IScriptSymbol>> ProcessTypeAndMembers(
             ITypeSymbol typeSymbol,

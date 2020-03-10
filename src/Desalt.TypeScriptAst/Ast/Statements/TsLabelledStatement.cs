@@ -43,7 +43,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitLabelledStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitLabelledStatement(this);
+        }
 
         public override string CodeDisplay => $"{Label}: {Statement?.CodeDisplay}{FunctionDeclaration?.CodeDisplay}";
 

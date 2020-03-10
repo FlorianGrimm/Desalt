@@ -14,7 +14,6 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
-    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -35,7 +34,7 @@ namespace Desalt.Core.Translation
 
         public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
         {
-            var comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
+            DocumentationComment comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
 
             var diagnostics = new List<Diagnostic>();
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
@@ -130,7 +129,7 @@ namespace Desalt.Core.Translation
             // ReSharper disable once ImplicitlyCapturedClosure
             void AddNextTextItem(PeekingTextReader reader)
             {
-                DocumentationCommentXmlElement element = DocumentationCommentXmlElement.Parse(reader, diagnostics);
+                var element = DocumentationCommentXmlElement.Parse(reader, diagnostics);
                 string elementName = element.ElementName;
 
                 // <c>x</c> and <code>x</code> translates to `x`

@@ -53,7 +53,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientNamespaceElement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitAmbientNamespaceElement(this);
+        }
 
         public override string CodeDisplay =>
             HasExportKeyword ? "export " : "" +

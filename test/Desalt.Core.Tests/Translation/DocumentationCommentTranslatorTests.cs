@@ -51,7 +51,7 @@ class Foo
             SemanticModel semanticModel = compilation.GetSemanticModel(syntaxTree);
 
             // find the type symbol for the class member
-            var methodDeclaration = root.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
+            MethodDeclarationSyntax methodDeclaration = root.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
             IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclaration);
 
             // get the documentation comment
@@ -59,7 +59,7 @@ class Foo
             docComment.Should().NotBeSameAs(DocumentationComment.Empty);
 
             // translate the documentation comment
-            var result = DocumentationCommentTranslator.Translate(docComment);
+            IExtendedResult<ITsJsDocComment> result = DocumentationCommentTranslator.Translate(docComment);
             result.Diagnostics.Should().BeEmpty();
 
             ITsJsDocComment jsdocComment = result.Result;

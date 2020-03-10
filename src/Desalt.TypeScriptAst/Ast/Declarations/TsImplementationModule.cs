@@ -36,11 +36,16 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationModule(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitImplementationModule(this);
+        }
 
         public override string CodeDisplay => $"{GetType().Name}, Elements.Length = {Elements.Length}";
 
-        protected override void EmitInternal(Emitter emitter) =>
+        protected override void EmitInternal(Emitter emitter)
+        {
             emitter.WriteList(Elements, indent: false, itemDelimiter: emitter.Options.Newline);
+        }
     }
 }

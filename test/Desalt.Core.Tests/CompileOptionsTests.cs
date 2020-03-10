@@ -93,7 +93,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_contains_invalid_chars()
         {
             string invalidPath = @"N:\InvalidPath" + Path.GetInvalidFileNameChars()[0];
-            var result = CompilerOptions.Deserialize(invalidPath);
+            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(invalidPath);
             result.Diagnostics.Should()
                 .BeEquivalentTo(DiagnosticFactory.InvalidOptionsFile(invalidPath, "Illegal characters in path."));
         }
@@ -102,7 +102,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_cannot_be_read()
         {
             const string invalidPath = @"N:\NotExistingPath";
-            var result = CompilerOptions.Deserialize(invalidPath);
+            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(invalidPath);
             result.Diagnostics.Should()
                 .BeEquivalentTo(
                     DiagnosticFactory.InvalidOptionsFile(
@@ -116,7 +116,7 @@ namespace Desalt.Core.Tests
             using (var stream = new UnicodeStringStream("{ invalidJson {} }"))
             {
                 string file = Path.GetFullPath("file");
-                var result = CompilerOptions.Deserialize(stream, file);
+                IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream, file);
                 result.Diagnostics.Should()
                     .BeEquivalentTo(
                         DiagnosticFactory.InvalidOptionsFile(
@@ -131,7 +131,7 @@ namespace Desalt.Core.Tests
         {
             using (var stream = new UnicodeStringStream("{}"))
             {
-                var result = CompilerOptions.Deserialize(stream);
+                IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream);
                 result.Diagnostics.Should().BeEmpty();
                 result.Result.Should().BeEquivalentTo(CompilerOptions.Default);
             }

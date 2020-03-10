@@ -203,7 +203,9 @@ namespace Desalt.Core.Diagnostics
         /// true if the Diagnostic is not configurable, meaning that the severity cannot be changed;
         /// otherwise, false.
         /// </returns>
-        private static bool IsNotConfigurable(this Diagnostic diagnostic) =>
-            diagnostic.Descriptor.CustomTags.Contains(WellKnownDiagnosticTags.NotConfigurable);
+        private static bool IsNotConfigurable(this Diagnostic diagnostic)
+        {
+            return diagnostic.Descriptor.CustomTags.Contains(WellKnownDiagnosticTags.NotConfigurable);
+        }
     }
 }

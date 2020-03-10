@@ -59,8 +59,10 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             return new TsConstructorDeclaration(false, accessibilityModifier, parameterList, functionBody);
         }
 
-        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList parameterList = null) =>
-            new TsConstructorDeclaration(true, parameterList: parameterList);
+        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList parameterList = null)
+        {
+            return new TsConstructorDeclaration(true, parameterList: parameterList);
+        }
 
         public override void Accept(TsVisitor visitor)
         {

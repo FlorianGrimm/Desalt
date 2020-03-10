@@ -84,7 +84,7 @@ namespace Desalt.CompilerUtilities.Tests
 
                 var actions = new Dictionary<string, Action>
                 {
-                    { "Location", () => { var x = reader.Location; } },
+                    { "Location", () => { TextReaderLocation x = reader.Location; } },
                     // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                     { "Peek", () => reader.Peek() },
                     { "PeekN", () => reader.Peek(2) },
@@ -149,7 +149,7 @@ namespace Desalt.CompilerUtilities.Tests
             public void PeekingTextReader_Location_should_increment_the_line_and_column_correctly()
             {
                 var reader = new PeekingTextReader(new UnicodeStringStream("abc\n123"));
-                var expectedLocations = new[]
+                TextReaderLocation[] expectedLocations = new[]
                 {
                     new TextReaderLocation(1, 1),
                     new TextReaderLocation(1, 2),

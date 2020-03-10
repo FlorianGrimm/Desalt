@@ -26,45 +26,60 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="type">The type to wrap inside of parentheses.</param>
         /// <returns>A new <see cref="ITsParenthesizedType"/> wrapping the specified type.</returns>
-        public static ITsParenthesizedType WithParentheses(this ITsType type) => new TsParenthesizedType(type);
+        public static ITsParenthesizedType WithParentheses(this ITsType type)
+        {
+            return new TsParenthesizedType(type);
+        }
 
         /// <summary>
         /// Creates a new <see cref="ITsParenthesizedExpression"/> wrapping the specified expression.
         /// </summary>
         /// <param name="expression">The expression to wrap inside of parentheses.</param>
         /// <returns>A new <see cref="ITsParenthesizedExpression"/> wrapping the specified expression.</returns>
-        public static ITsParenthesizedExpression WithParentheses(this ITsExpression expression) =>
-            new TsParenthesizedExpression(expression);
+        public static ITsParenthesizedExpression WithParentheses(this ITsExpression expression)
+        {
+            return new TsParenthesizedExpression(expression);
+        }
 
         /// <summary>
         /// Creates a new statement from the expression.
         /// </summary>
-        public static ITsExpressionStatement ToStatement(this ITsExpression expression) =>
-            new TsExpressionStatement(expression);
+        public static ITsExpressionStatement ToStatement(this ITsExpression expression)
+        {
+            return new TsExpressionStatement(expression);
+        }
 
         /// <summary>
         /// Wraps the statement in a block statement.
         /// </summary>
-        public static ITsBlockStatement ToBlock(this ITsStatement statement) =>
-            new TsBlockStatement(statement.ToSafeArray());
+        public static ITsBlockStatement ToBlock(this ITsStatement statement)
+        {
+            return new TsBlockStatement(statement.ToSafeArray());
+        }
 
         /// <summary>
         /// Converts the expression to a statement and wraps it in a block statement.
         /// </summary>
-        public static ITsBlockStatement ToBlock(this ITsExpression expression) =>
-            new TsBlockStatement(expression.ToStatement().ToSafeArray());
+        public static ITsBlockStatement ToBlock(this ITsExpression expression)
+        {
+            return new TsBlockStatement(expression.ToStatement().ToSafeArray());
+        }
 
         /// <summary>
         /// Converts the variable statement to an exported variable statement.
         /// </summary>
-        public static ITsExportedVariableStatement ToExported(this ITsVariableStatement statement) =>
-            new TsExportedVariableStatement(statement);
+        public static ITsExportedVariableStatement ToExported(this ITsVariableStatement statement)
+        {
+            return new TsExportedVariableStatement(statement);
+        }
 
         /// <summary>
         /// Converts the declaration to an exported declaration.
         /// </summary>
-        public static ITsExportedDeclaration ToExported(this ITsDeclaration declaration) =>
-            new TsExportedDeclaration(declaration);
+        public static ITsExportedDeclaration ToExported(this ITsDeclaration declaration)
+        {
+            return new TsExportedDeclaration(declaration);
+        }
 
         /// <summary>
         /// Converts a unary operator to its code representation.
@@ -73,9 +88,12 @@ namespace Desalt.TypeScriptAst.Ast
         {
             switch (unaryOperator)
             {
-                case TsUnaryOperator.Delete: return "delete";
-                case TsUnaryOperator.Void: return "void";
-                case TsUnaryOperator.Typeof: return "typeof";
+                case TsUnaryOperator.Delete:
+                    return "delete";
+                case TsUnaryOperator.Void:
+                    return "void";
+                case TsUnaryOperator.Typeof:
+                    return "typeof";
 
                 case TsUnaryOperator.PrefixIncrement:
                 case TsUnaryOperator.PostfixIncrement:
@@ -85,10 +103,14 @@ namespace Desalt.TypeScriptAst.Ast
                 case TsUnaryOperator.PostfixDecrement:
                     return "--";
 
-                case TsUnaryOperator.Plus: return "+";
-                case TsUnaryOperator.Minus: return "-";
-                case TsUnaryOperator.BitwiseNot: return "~";
-                case TsUnaryOperator.LogicalNot: return "!";
+                case TsUnaryOperator.Plus:
+                    return "+";
+                case TsUnaryOperator.Minus:
+                    return "-";
+                case TsUnaryOperator.BitwiseNot:
+                    return "~";
+                case TsUnaryOperator.LogicalNot:
+                    return "!";
 
                 case TsUnaryOperator.Cast:
                     throw new InvalidOperationException($"Use {nameof(TsCastExpression.Emit)} instead");
@@ -105,29 +127,52 @@ namespace Desalt.TypeScriptAst.Ast
         {
             switch (binaryOperator)
             {
-                case TsBinaryOperator.Multiply: return "*";
-                case TsBinaryOperator.Divide: return "/";
-                case TsBinaryOperator.Modulo: return "%";
-                case TsBinaryOperator.Add: return "+";
-                case TsBinaryOperator.Subtract: return "-";
-                case TsBinaryOperator.LeftShift: return "<<";
-                case TsBinaryOperator.SignedRightShift: return ">>";
-                case TsBinaryOperator.UnsignedRightShift: return ">>>";
-                case TsBinaryOperator.LessThan: return "<";
-                case TsBinaryOperator.GreaterThan: return ">";
-                case TsBinaryOperator.LessThanEqual: return "<=";
-                case TsBinaryOperator.GreaterThanEqual: return ">=";
-                case TsBinaryOperator.InstanceOf: return "instanceof";
-                case TsBinaryOperator.In: return "in";
-                case TsBinaryOperator.Equals: return "==";
-                case TsBinaryOperator.NotEquals: return "!=";
-                case TsBinaryOperator.StrictEquals: return "===";
-                case TsBinaryOperator.StrictNotEquals: return "!==";
-                case TsBinaryOperator.BitwiseAnd: return "&";
-                case TsBinaryOperator.BitwiseXor: return "^";
-                case TsBinaryOperator.BitwiseOr: return "|";
-                case TsBinaryOperator.LogicalAnd: return "&&";
-                case TsBinaryOperator.LogicalOr: return "||";
+                case TsBinaryOperator.Multiply:
+                    return "*";
+                case TsBinaryOperator.Divide:
+                    return "/";
+                case TsBinaryOperator.Modulo:
+                    return "%";
+                case TsBinaryOperator.Add:
+                    return "+";
+                case TsBinaryOperator.Subtract:
+                    return "-";
+                case TsBinaryOperator.LeftShift:
+                    return "<<";
+                case TsBinaryOperator.SignedRightShift:
+                    return ">>";
+                case TsBinaryOperator.UnsignedRightShift:
+                    return ">>>";
+                case TsBinaryOperator.LessThan:
+                    return "<";
+                case TsBinaryOperator.GreaterThan:
+                    return ">";
+                case TsBinaryOperator.LessThanEqual:
+                    return "<=";
+                case TsBinaryOperator.GreaterThanEqual:
+                    return ">=";
+                case TsBinaryOperator.InstanceOf:
+                    return "instanceof";
+                case TsBinaryOperator.In:
+                    return "in";
+                case TsBinaryOperator.Equals:
+                    return "==";
+                case TsBinaryOperator.NotEquals:
+                    return "!=";
+                case TsBinaryOperator.StrictEquals:
+                    return "===";
+                case TsBinaryOperator.StrictNotEquals:
+                    return "!==";
+                case TsBinaryOperator.BitwiseAnd:
+                    return "&";
+                case TsBinaryOperator.BitwiseXor:
+                    return "^";
+                case TsBinaryOperator.BitwiseOr:
+                    return "|";
+                case TsBinaryOperator.LogicalAnd:
+                    return "&&";
+                case TsBinaryOperator.LogicalOr:
+                    return "||";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null);
             }
@@ -140,18 +185,30 @@ namespace Desalt.TypeScriptAst.Ast
         {
             switch (assignmentOperator)
             {
-                case TsAssignmentOperator.SimpleAssign: return "=";
-                case TsAssignmentOperator.MultiplyAssign: return "*=";
-                case TsAssignmentOperator.DivideAssign: return "/=";
-                case TsAssignmentOperator.ModuloAssign: return "%=";
-                case TsAssignmentOperator.AddAssign: return "+=";
-                case TsAssignmentOperator.SubtractAssign: return "-=";
-                case TsAssignmentOperator.LeftShiftAssign: return "<<=";
-                case TsAssignmentOperator.SignedRightShiftAssign: return ">>=";
-                case TsAssignmentOperator.UnsignedRightShiftAssign: return ">>>=";
-                case TsAssignmentOperator.BitwiseAndAssign: return "&=";
-                case TsAssignmentOperator.BitwiseXorAssign: return "^=";
-                case TsAssignmentOperator.BitwiseOrAssign: return "|=";
+                case TsAssignmentOperator.SimpleAssign:
+                    return "=";
+                case TsAssignmentOperator.MultiplyAssign:
+                    return "*=";
+                case TsAssignmentOperator.DivideAssign:
+                    return "/=";
+                case TsAssignmentOperator.ModuloAssign:
+                    return "%=";
+                case TsAssignmentOperator.AddAssign:
+                    return "+=";
+                case TsAssignmentOperator.SubtractAssign:
+                    return "-=";
+                case TsAssignmentOperator.LeftShiftAssign:
+                    return "<<=";
+                case TsAssignmentOperator.SignedRightShiftAssign:
+                    return ">>=";
+                case TsAssignmentOperator.UnsignedRightShiftAssign:
+                    return ">>>=";
+                case TsAssignmentOperator.BitwiseAndAssign:
+                    return "&=";
+                case TsAssignmentOperator.BitwiseXorAssign:
+                    return "^=";
+                case TsAssignmentOperator.BitwiseOrAssign:
+                    return "|=";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(assignmentOperator), assignmentOperator, message: null);
             }
@@ -161,15 +218,19 @@ namespace Desalt.TypeScriptAst.Ast
         /// Converts a <see cref="VariableDeclarationKind"/> to a code display representation, which
         /// includes a trailing space.
         /// </summary>
-        public static string CodeDisplay(this VariableDeclarationKind declarationKind) =>
-            declarationKind.ToString().ToLowerInvariant() + " ";
+        public static string CodeDisplay(this VariableDeclarationKind declarationKind)
+        {
+            return declarationKind.ToString().ToLowerInvariant() + " ";
+        }
 
         /// <summary>
         /// Emits a <see cref="VariableDeclarationKind"/> to the specified emitter, which includes a
         /// trailing space.
         /// </summary>
-        public static void Emit(this VariableDeclarationKind declarationKind, Emitter emitter) =>
+        public static void Emit(this VariableDeclarationKind declarationKind, Emitter emitter)
+        {
             emitter.Write(declarationKind.CodeDisplay());
+        }
 
         /// <summary>
         /// Emits a comma-separated list, but only if the items are not null. Shortcut for
@@ -256,8 +317,10 @@ namespace Desalt.TypeScriptAst.Ast
             }
         }
 
-        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier) =>
-            accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
+        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier)
+        {
+            return accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
+        }
 
         public static void EmitOptional(this TsAccessibilityModifier? accessibilityModifier, Emitter emitter)
         {

@@ -38,7 +38,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Methods
         //// ===========================================================================================================
 
-        public override void Accept(TsVisitor visitor) => visitor.VisitIfStatement(this);
+        public override void Accept(TsVisitor visitor)
+        {
+            visitor.VisitIfStatement(this);
+        }
 
         public override string CodeDisplay =>
             $"if ({IfCondition}) {IfStatement}" + (ElseStatement != null ? $" else {ElseStatement}" : "");

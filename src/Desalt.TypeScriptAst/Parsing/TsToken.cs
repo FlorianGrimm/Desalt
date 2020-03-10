@@ -93,7 +93,10 @@ namespace Desalt.TypeScriptAst.Parsing
         /// true if the <paramref name="left"/> and <paramref name="right"/> parameters have the same
         /// value; otherwise, false.
         /// </returns>
-        public static bool operator ==(TsToken left, TsToken right) => Equals(left, right);
+        public static bool operator ==(TsToken left, TsToken right)
+        {
+            return Equals(left, right);
+        }
 
         /// <summary>
         /// Returns a value that indicates whether two <see cref="TsToken"/> objects have different values.
@@ -103,17 +106,24 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <returns>
         /// true if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.
         /// </returns>
-        public static bool operator !=(TsToken left, TsToken right) => !Equals(left, right);
+        public static bool operator !=(TsToken left, TsToken right)
+        {
+            return !Equals(left, right);
+        }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static TsToken Identifier(string text, string identifier, TextReaderLocation location) =>
-            WithValue(TsTokenCode.Identifier, text, identifier, location);
+        public static TsToken Identifier(string text, string identifier, TextReaderLocation location)
+        {
+            return WithValue(TsTokenCode.Identifier, text, identifier, location);
+        }
 
-        public static TsToken StringLiteral(string text, string value, TextReaderLocation location) =>
-            WithValue(TsTokenCode.StringLiteral, text, value, location);
+        public static TsToken StringLiteral(string text, string value, TextReaderLocation location)
+        {
+            return WithValue(TsTokenCode.StringLiteral, text, value, location);
+        }
 
         public static TsToken NumericLiteral(
             TsTokenCode tokenCode,
@@ -124,14 +134,19 @@ namespace Desalt.TypeScriptAst.Parsing
             return WithValue(tokenCode, text, value, location);
         }
 
-        public static TsToken WithValue<T>(TsTokenCode tokenCode, string text, T value, TextReaderLocation location) =>
-            new TsTokenWithValue<T>(tokenCode, text, value, location);
+        public static TsToken WithValue<T>(TsTokenCode tokenCode, string text, T value, TextReaderLocation location)
+        {
+            return new TsTokenWithValue<T>(tokenCode, text, value, location);
+        }
 
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"TokenCode={TokenCode}, Text={Text}, Value={Value}";
+        public override string ToString()
+        {
+            return $"TokenCode={TokenCode}, Text={Text}, Value={Value}";
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

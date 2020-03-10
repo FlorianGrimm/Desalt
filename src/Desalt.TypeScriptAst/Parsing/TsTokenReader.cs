@@ -81,7 +81,10 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <returns>
         /// The next token or <see cref="TsToken.EndOfTokens"/> if there are no more tokens.
         /// </returns>
-        public TsToken Peek() => _index < _tokens.Length ? _tokens[_index] : TsToken.EndOfTokens;
+        public TsToken Peek()
+        {
+            return _index < _tokens.Length ? _tokens[_index] : TsToken.EndOfTokens;
+        }
 
         /// <summary>
         /// Peeks ahead <paramref name="count"/> tokens and returns those tokens without advancing the reader.
@@ -125,19 +128,28 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <summary>
         /// Skips the next token.
         /// </summary>
-        public void Skip() => Read();
+        public void Skip()
+        {
+            Read();
+        }
 
         /// <summary>
         /// Skips the next <paramref name="count"/> tokens.
         /// </summary>
-        public void Skip(int count) => Read(count);
+        public void Skip(int count)
+        {
+            Read(count);
+        }
 
         /// <summary>
         /// Reads the next token, but only if the token code matches.
         /// </summary>
         /// <param name="tokenCode">The token code to match.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
-        public bool ReadIf(TsTokenCode tokenCode) => ReadIf(tokenCode, out _);
+        public bool ReadIf(TsTokenCode tokenCode)
+        {
+            return ReadIf(tokenCode, out _);
+        }
 
         /// <summary>
         /// Reads the next token, but only if the token code matches.
@@ -180,14 +192,20 @@ namespace Desalt.TypeScriptAst.Parsing
         /// </summary>
         /// <param name="expectedTokenFunc">The function to match a token code.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
-        public bool ReadIf(Func<TsTokenCode, bool> expectedTokenFunc) => ReadIf(expectedTokenFunc, out _);
+        public bool ReadIf(Func<TsTokenCode, bool> expectedTokenFunc)
+        {
+            return ReadIf(expectedTokenFunc, out _);
+        }
 
         /// <summary>
         /// Skips the next token, but only if the token code matches.
         /// </summary>
         /// <param name="tokenCode">The token code to match.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
-        public bool SkipIf(TsTokenCode tokenCode) => ReadIf(tokenCode, out _);
+        public bool SkipIf(TsTokenCode tokenCode)
+        {
+            return ReadIf(tokenCode, out _);
+        }
 
         /// <summary>
         /// Preserves the state of the reader while <paramref name="action"/> is called and restores

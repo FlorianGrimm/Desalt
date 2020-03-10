@@ -49,7 +49,10 @@ namespace Desalt.Core.Pipeline
         /// <param name="stage">The stage to add.</param>
         public void AddStage(IPipelineStage stage)
         {
-            if (stage == null) { throw new ArgumentNullException(nameof(stage)); }
+            if (stage == null)
+            {
+                throw new ArgumentNullException(nameof(stage));
+            }
 
             // check the first stage to make sure it accepts TInput
             if (StagesInner.Count == 0 && !typeof(TInput).IsAssignableFrom(stage.InputType))

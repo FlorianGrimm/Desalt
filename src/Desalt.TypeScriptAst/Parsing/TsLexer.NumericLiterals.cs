@@ -14,12 +14,18 @@ namespace Desalt.TypeScriptAst.Parsing
 
     public sealed partial class TsLexer
     {
-        private static bool IsDecimalDigit(char c) => c >= '0' && c <= '9';
+        private static bool IsDecimalDigit(char c)
+        {
+            return c >= '0' && c <= '9';
+        }
 
         /// <summary>
         /// Returns a value indicating whether the character is a valid start character for a numeric literal.
         /// </summary>
-        private static bool IsNumericLiteralStartChar(char c) => c >= '0' && c <= '9' || c == '.';
+        private static bool IsNumericLiteralStartChar(char c)
+        {
+            return c >= '0' && c <= '9' || c == '.';
+        }
 
         /// <summary>
         /// Lexes a numeric literal.

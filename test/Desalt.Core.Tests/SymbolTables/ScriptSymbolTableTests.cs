@@ -35,7 +35,7 @@ namespace Desalt.Core.Tests.SymbolTables
             string code,
             params string[] expectedEntries)
         {
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
@@ -119,7 +119,7 @@ class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
@@ -133,7 +133,7 @@ class C
                 symbolTable.DirectlyReferencedExternalSymbols.Should().ContainKey(scriptIsValueSymbol);
 
                 // check an implicitly referenced symbol
-                var stringBuilderSymbol =
+                INamedTypeSymbol stringBuilderSymbol =
                     scriptIsValueSymbol.ContainingAssembly.GetTypeByMetadataName("System.Text.StringBuilder");
                 symbolTable.IndirectlyReferencedExternalSymbols.Should().ContainKey(stringBuilderSymbol);
             }
@@ -156,7 +156,7 @@ class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
@@ -203,13 +203,13 @@ class C
 }
 ";
 
-            using (var tempProject = await TempProject.CreateAsync(code))
+            using (TempProject tempProject = await TempProject.CreateAsync(code))
             {
                 var overrides = new SymbolTableOverrides(
                     new KeyValuePair<string, SymbolTableOverride>(
                         "C.Method()",
                         new SymbolTableOverride(inlineCode: "OVERRIDE")));
-                var options = tempProject.Options.WithSymbolTableOverrides(overrides);
+                CompilerOptions options = tempProject.Options.WithSymbolTableOverrides(overrides);
 
                 DocumentTranslationContext context = await tempProject.CreateContextForFileAsync(options: options);
                 var contexts = context.ToSingleEnumerable().ToImmutableArray();
