@@ -16,12 +16,11 @@ namespace Desalt.Core.Tests.SymbolTables
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class SymbolAttributeExtensionsTests
     {
-        [TestMethod]
+        [Test]
         public async Task FindAttribute_should_return_null_when_not_found()
         {
             const string code = @"class C {}";
@@ -39,7 +38,7 @@ namespace Desalt.Core.Tests.SymbolTables
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task FindAttribute_should_find_the_named_attribute()
         {
             const string code = @"
@@ -61,7 +60,7 @@ class C {}";
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Try_and_GetAttributeValue_should_return_false_if_the_attribute_is_not_present()
         {
             const string code = @"class C {}";
@@ -85,7 +84,7 @@ class C {}";
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Try_and_GetAttributeValue_should_return_true_and_the_value_if_the_attribute_is_present()
         {
             const string code = @"
@@ -113,7 +112,7 @@ class C {}";
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Try_and_GetAttributeValue_should_return_the_value_of_a_named_argument()
         {
             const string code = @"
@@ -147,7 +146,7 @@ class C {}";
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetFlagAttribute_should_return_the_correct_values_for_flag_type_attributes()
         {
             const string code = @"
@@ -181,7 +180,7 @@ class NoAttribute {}
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task TryGetAttributeValue_should_return_the_correct_values_for_flag_type_attributes()
         {
             const string code = @"

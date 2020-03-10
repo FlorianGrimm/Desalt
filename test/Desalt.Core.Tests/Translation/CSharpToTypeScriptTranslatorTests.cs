@@ -12,9 +12,8 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Translation;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class CSharpToTypeScriptTranslatorTests
     {
         private static async Task AssertTranslationAsync(string csharpCode, string expectedTypeScriptCode)
@@ -40,7 +39,7 @@ using System.Collections.Generic;
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task TranslateDocument_should_translate_an_interface_declaration_with_members_and_doc_comments()
         {
             await AssertTranslationAsync(
@@ -63,7 +62,7 @@ export interface MyInterface {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TranslateDocument_should_find_types_defined_in_mscorlib()
         {
             await AssertTranslationAsync(

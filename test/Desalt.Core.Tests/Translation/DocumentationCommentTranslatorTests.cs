@@ -16,9 +16,8 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class DocumentationCommentTranslatorTests
     {
         private static void AssertTranslation(string csharpComment, params string[] expectedJsDocLines)
@@ -68,43 +67,43 @@ class Foo
             actualJsDoc.Should().Be(expectedJsDoc);
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_a_summary_section()
         {
             AssertTranslation("///<summary>Test</summary>", "Test");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_a_summary_section_with_newlines()
         {
             AssertTranslation("///<summary>\n/// Test\n/// </summary>", "Test");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_a_remarks_section()
         {
             AssertTranslation("///<remarks>Remarks</remarks>", "Remarks");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_a_remarks_section_with_newlines()
         {
             AssertTranslation("///<remarks>\n/// Remarks\n/// </remarks>", "Remarks");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_an_example_section()
         {
             AssertTranslation("///<example>Example</example>", "@example Example");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_an_example_section_with_newlines()
         {
             AssertTranslation("///<example>\n/// Example\n/// </example>", "@example Example");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_type_param_tags()
         {
             AssertTranslation(
@@ -113,7 +112,7 @@ class Foo
                 "typeparam TResult TypeParam2");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_param_tags()
         {
             AssertTranslation(
@@ -122,13 +121,13 @@ class Foo
                 "@param p1 This is p1");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_the_returns_tag()
         {
             AssertTranslation("///<returns>A value</returns>", "@returns A value");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_exception_tags()
         {
             AssertTranslation(
@@ -140,40 +139,40 @@ class Foo
                 "@throws {InvalidOperationException} Something is wrong");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_see_langword_to_markdown_backticks()
         {
             AssertTranslation("///<summary><see langword=\"null\"/></summary>", "`null`");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_c_elements_to_markdown_backticks()
         {
             AssertTranslation("///<summary><c>some code</c></summary>", "`some code`");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_see_references()
         {
             AssertTranslation(@"///<summary><see cref=""Console""/></summary>", "{@link Console}");
             AssertTranslation(@"///<summary><see cref=""StringBuilder""/></summary>", "{@link StringBuilder}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_a_seealso_reference_to_a_JSDoc_see_reference()
         {
             AssertTranslation(@"///<summary><seealso cref=""Console""/></summary>", "{@link Console}");
             AssertTranslation(@"///<summary><seealso cref=""StringBuilder""/></summary>", "{@link StringBuilder}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_alink_tags()
         {
             AssertTranslation("///<summary><a href=\"http://somewhere\"/></summary>", "{@link http://somewhere}");
             AssertTranslation("///<summary><a href=\"http://somewhere\">Text</a></summary>", "[Text]{@link http://somewhere}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_write_sections_in_the_correct_order()
         {
             const string csharpComment = @"
@@ -201,13 +200,13 @@ class Foo
             AssertTranslation(csharpComment, jsDocLines);
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_crefs_of_types_to_a_shortened_name()
         {
             AssertTranslation("///<summary><see cref=\"System.IDisposable\"/></summary>", "{@link IDisposable}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_crefs_of_methods_to_a_shortened_name()
         {
             AssertTranslation(
@@ -215,7 +214,7 @@ class Foo
                 "{@link IDisposable.Dispose}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_crefs_of_methods_with_a_full_signature_to_a_shortened_name()
         {
             AssertTranslation(
@@ -223,7 +222,7 @@ class Foo
                 "{@link Console.WriteLine}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_crefs_of_properties_to_a_shortened_name()
         {
             AssertTranslation(
@@ -231,7 +230,7 @@ class Foo
                 "{@link Environment.NewLine}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_crefs_of_events_to_a_shortened_name()
         {
             AssertTranslation(
@@ -240,7 +239,7 @@ class Foo
         }
 
         [Ignore("TODO")]
-        [TestMethod]
+        [Test]
         public void Translate_should_convert_nested_types_without_shortening_the_containing_type()
         {
             AssertTranslation(
@@ -249,14 +248,14 @@ class Foo
         }
 
         [Ignore("TODO")]
-        [TestMethod]
+        [Test]
         public void
             Translate_should_not_show_the_type_name_if_referencing_a_member_within_the_same_type_for_cref_references()
         {
             AssertTranslation("///<summary><see cref=\"Foo.Prop\"/></summary>", "{@link Prop}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_recognize_text_within_a_see_or_seealso_tag()
         {
             AssertTranslation(
@@ -267,13 +266,13 @@ class Foo
                 "[the console]{@link Console}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_recognize_see_with_href_as_empty_element()
         {
             AssertTranslation("///<summary><see href=\"http://something\"/></summary>", "{@link http://something}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_recognize_see_with_href_as_element()
         {
             AssertTranslation(
@@ -281,7 +280,7 @@ class Foo
                 "[Text]{@link http://something}");
         }
 
-        [TestMethod]
+        [Test]
         public void Translate_should_add_spaces_around_translated_link_tags()
         {
             AssertTranslation(

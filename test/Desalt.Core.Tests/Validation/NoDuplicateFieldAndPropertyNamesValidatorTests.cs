@@ -18,12 +18,11 @@ namespace Desalt.Core.Tests.Validation
     using Desalt.Core.Validation;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class NoDuplicateFieldAndPropertyNamesValidatorTests
     {
-        [TestMethod]
+        [Test]
         public async Task Having_a_duplicate_field_and_property_name_in_a_class_should_log_a_diagnostic()
         {
             const string code = @"
@@ -66,7 +65,7 @@ public class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Having_a_duplicate_field_and_property_but_with_a_ScriptName_should_prevent_a_diagnostic()
         {
             const string code = @"

@@ -16,9 +16,8 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptSymbolTests
     {
         internal static void AssertScriptSymbolDefaultValues(ISymbol symbol, ScriptSymbol scriptSymbol)
@@ -32,7 +31,7 @@ namespace Desalt.Core.Tests.SymbolTables
             scriptSymbol.Symbol.Should().Be(symbol);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptSymbol_should_use_the_right_defaults_when_there_are_no_attributes()
         {
             const string code = @"class C { public void Method() {} }";
@@ -52,7 +51,7 @@ namespace Desalt.Core.Tests.SymbolTables
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptSymbol_should_read_the_correct_values_from_attributes()
         {
             const string code = @"
@@ -85,7 +84,7 @@ class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptSymbol_should_correctly_use_inheritance_when_reading_attributes()
         {
             const string code = @"

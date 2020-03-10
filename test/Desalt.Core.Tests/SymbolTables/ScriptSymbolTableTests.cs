@@ -20,9 +20,8 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptSymbolTableTests
     {
         private static IScriptNamer CreateFakeScriptNamer()
@@ -52,7 +51,7 @@ namespace Desalt.Core.Tests.SymbolTables
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Create_should_find_all_of_the_types_and_members_in_the_document()
         {
             const string code = @"
@@ -103,7 +102,7 @@ struct S
                 "S.Method()");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Create_should_find_all_of_the_types_and_members_in_external_references()
         {
             const string code = @"
@@ -139,7 +138,7 @@ class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task All_attributes_should_be_correctly_read_from_all_references()
         {
             const string code = @"
@@ -190,7 +189,7 @@ class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task TryGetValue_should_use_the_overrides_if_present()
         {
             const string code = @"

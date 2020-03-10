@@ -17,9 +17,8 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ImportsTranslatorTests
     {
         private delegate IEnumerable<ITypeSymbol> GetSymbolsFunc(DocumentTranslationContextWithSymbolTables context);
@@ -102,57 +101,57 @@ class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_skip_native_types()
         {
             await AssertNoImports("int x = 1; object o = null;");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_skip_array_types()
         {
             await AssertNoImports("int[] array;");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_RegExp_types()
         {
             await AssertNoImports("Regex r;");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_Function_types()
         {
             await AssertNoImports("Func<int, bool> func;");
             await AssertNoImports("Action<int, bool> action;");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Array()
         {
             await AssertNoImports("List<int> list;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
             await AssertNoImports("JsArray<int> array;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Object()
         {
             await AssertNoImports("JsDictionary<string, int> dict;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_types_that_get_translated_to_Error()
         {
             await AssertNoImports("Error err;", SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_not_import_types_from_Saltarelle_Web()
         {
             await AssertNoImports("HtmlElement div;");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_alphabetize_symbol_names_within_a_group()
         {
             IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
@@ -177,7 +176,7 @@ class C
                 "import { A, B, C } from './Classes';");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ImportsTranslator_should_get_all_of_the_referenced_files()
         {
             IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)

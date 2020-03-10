@@ -15,12 +15,11 @@ namespace Desalt.Core.Tests.Pipeline
     using Desalt.Core.Pipeline;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class SimplePipelineTests
     {
-        [TestMethod]
+        [Test]
         public void AddStage_should_throw_on_null_arguments()
         {
             var pipeline = new SimplePipeline<object, object>();
@@ -28,7 +27,7 @@ namespace Desalt.Core.Tests.Pipeline
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stage");
         }
 
-        [TestMethod]
+        [Test]
         public void AddStage_should_throw_if_the_first_stage_does_not_accept_the_right_type()
         {
             var pipeline = new SimplePipeline<string, string>();
@@ -36,7 +35,7 @@ namespace Desalt.Core.Tests.Pipeline
             action.Should().ThrowExactly<ArgumentException>().And.Message.Should().Contain(typeof(string).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void AddStage_should_throw_if_a_stage_is_added_where_no_previous_stages_output_a_compatible_value()
         {
             var pipeline = new SimplePipeline<int, string>();
@@ -45,7 +44,7 @@ namespace Desalt.Core.Tests.Pipeline
             action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("stage");
         }
 
-        [TestMethod]
+        [Test]
         public void AddStage_should_allow_multiple_stages_accepting_the_same_input_type()
         {
             var pipeline = new SimplePipeline<int, char[]>();
@@ -55,7 +54,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.Stages.Count().Should().Be(3);
         }
 
-        [TestMethod]
+        [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_a_superclass_of_a_previous_output()
         {
             var pipeline = new SimplePipeline<int, bool>();
@@ -64,7 +63,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.Stages.Count().Should().Be(2);
         }
 
-        [TestMethod]
+        [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_an_interface_of_a_previous_output()
         {
             var pipeline = new SimplePipeline<int, bool>();
@@ -74,7 +73,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.Stages.Count().Should().Be(2);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Execute_should_throw_if_the_last_stage_does_not_output_a_compatible_type()
         {
             var pipeline = new SimplePipeline<int, DateTime>();
@@ -93,7 +92,7 @@ namespace Desalt.Core.Tests.Pipeline
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task Execute_should_run_the_stages_in_order()
         {
             var pipeline = new SimplePipeline<int, char[]>();
@@ -104,7 +103,7 @@ namespace Desalt.Core.Tests.Pipeline
             result.Result.Should().Equal('1', '2', '3');
         }
 
-        [TestMethod]
+        [Test]
         public async Task Execute_should_preserve_the_outputs_between_stages()
         {
             var pipeline = new SimplePipeline<string, string>();
@@ -117,7 +116,7 @@ namespace Desalt.Core.Tests.Pipeline
             result.Result.Should().BeSameAs(inputString);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Execute_should_stop_on_the_first_stage_that_has_a_failure()
         {
             var pipeline = new SimplePipeline<int, string>();

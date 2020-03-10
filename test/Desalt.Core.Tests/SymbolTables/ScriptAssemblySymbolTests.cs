@@ -12,12 +12,11 @@ namespace Desalt.Core.Tests.SymbolTables
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptAssemblySymbolTests
     {
-        [TestMethod]
+        [Test]
         public async Task ScriptAssemblySymbol_should_use_the_right_defaults_when_there_are_no_attributes()
         {
             const string code = @"class C { public void Method() {} }";

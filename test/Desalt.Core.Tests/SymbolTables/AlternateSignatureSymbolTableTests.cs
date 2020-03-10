@@ -15,9 +15,8 @@ namespace Desalt.Core.Tests.SymbolTables
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Utility;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class AlternateSignatureSymbolTableTests
     {
         private static async Task AssertEntriesInTableAsync(
@@ -53,7 +52,7 @@ using System.Runtime.CompilerServices;
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task AlternateSignatureSymbolTable_should_find_all_instances_of_a_method_with_the_attribute()
         {
             await AssertEntriesInTableAsync(
@@ -79,7 +78,7 @@ class C
                 expectedAlternateSignatures: new[] { "C.Method()", "C.Method(int x)" });
         }
 
-        [TestMethod]
+        [Test]
         public async Task AlternateSignatureSymbolTable_should_work_on_ctors()
         {
             await AssertEntriesInTableAsync(

@@ -12,10 +12,9 @@ namespace Desalt.Core.Tests.Translation
     using System.Linq;
     using Desalt.CompilerUtilities;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using XmlElem = Desalt.Core.Translation.DocumentationCommentXmlElement;
 
-    [TestClass]
     public class DocumentationCommentXmlElementTests
     {
         private static void VerifyElement(
@@ -34,26 +33,26 @@ namespace Desalt.Core.Tests.Translation
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Create_should_throw_on_blank_element_name()
         {
             Action action = () => XmlElem.Create(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementName");
         }
 
-        [TestMethod]
+        [Test]
         public void Create_should_convert_a_null_attribute_list_to_an_empty_dictionary()
         {
             XmlElem.Create("element").Attributes.Should().BeEmpty();
         }
 
-        [TestMethod]
+        [Test]
         public void Create_should_convert_a_null_content_value_to_an_empty_string()
         {
             XmlElem.Create("element").Content.Should().BeSameAs(string.Empty);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_throw_an_exception_if_the_reader_isnt_positioned_at_a_lt_character()
         {
             using (var reader = new PeekingTextReader("not valid"))
@@ -64,47 +63,47 @@ namespace Desalt.Core.Tests.Translation
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_get_the_element_name_for_an_empty_element()
         {
             VerifyElement("<c/>", "c");
             VerifyElement("<c  />", "c");
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_get_the_content_of_an_element()
         {
             VerifyElement("<a>content</a>", "a", "content");
             VerifyElement("<a  >content</a  >", "a", "content");
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_get_the_attributes_in_an_empty_element()
         {
             VerifyElement("<a one=\"1\" two=\"2\"/>", "a", "", ("one", "1"), ("two", "2"));
             VerifyElement("<a one = \"1\"  two = \"2\"  />", "a", "", ("one", "1"), ("two", "2"));
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_get_the_attributes_in_an_element()
         {
             VerifyElement("<a one=\"1\" two=\"2\">content</a>", "a", "content", ("one", "1"), ("two", "2"));
             VerifyElement("<a one = \"1\"  two = \"2\"  >content</a>", "a", "content", ("one", "1"), ("two", "2"));
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_should_just_show_the_element_name_if_there_is_no_content_or_attributes()
         {
             XmlElem.Create("element").ToString().Should().Be("<element/>");
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_should_include_the_contents_if_present()
         {
             XmlElem.Create("element", content: "content").ToString().Should().Be("<element>content</element>");
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_should_include_any_attributes_in_an_empty_element_in_sorted_order()
         {
             XmlElem.Create(
@@ -120,7 +119,7 @@ namespace Desalt.Core.Tests.Translation
                 .Be("<a b=\"c\" d=\"e\" x=\"y\"/>");
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_should_include_any_attributes_in_an_element_in_sorted_order()
         {
             XmlElem.Create(

@@ -9,11 +9,11 @@ namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     public partial class TranslationVisitorTests
     {
-        [TestMethod]
+        [Test]
         public async Task Translate_anonymous_methods_should_correctly_infer_the_return_type()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -33,7 +33,7 @@ namespace Desalt.Core.Tests.Translation
         //// Loops Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Translate_while_statements()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -51,7 +51,7 @@ namespace Desalt.Core.Tests.Translation
     }");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_do_while_statements()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -69,7 +69,7 @@ namespace Desalt.Core.Tests.Translation
     } while (i < 10);");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_for_statements()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -87,7 +87,7 @@ namespace Desalt.Core.Tests.Translation
         //// Switch Statment Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Translate_switch_statements()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -130,7 +130,7 @@ namespace Desalt.Core.Tests.Translation
         //// Using Statement Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Translate_a_single_using_block_with_a_declaration()
         {
             await AssertTranslation(
@@ -172,7 +172,7 @@ class C implements ss.IDisposable {
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_a_single_using_block_with_an_expression()
         {
             await AssertTranslation(
@@ -216,7 +216,7 @@ class C implements ss.IDisposable {
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_nested_using_blocks()
         {
             await AssertTranslation(

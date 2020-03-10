@@ -18,12 +18,11 @@ namespace Desalt.Core.Tests.Validation
     using Desalt.Core.Validation;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class NoPartialClassesValidatorTests
     {
-        [TestMethod]
+        [Test]
         public async Task Having_a_partial_class_should_log_a_diagnostic()
         {
             const string code = "public partial class C {}";

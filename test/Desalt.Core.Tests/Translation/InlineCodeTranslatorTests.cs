@@ -20,10 +20,9 @@ namespace Desalt.Core.Tests.Translation
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
-    [TestClass]
     public class InlineCodeTranslatorTests
     {
         private static readonly ITsIdentifier s_ss = Factory.Identifier("ss");
@@ -88,7 +87,7 @@ class C
             return syntax.DescendantNodes().OfType<InvocationExpressionSyntax>().First().Expression;
         }
 
-        [TestMethod]
+        [Test]
         public async Task InlineCodeTranslator_should_replace_this_parameters_with_the_left_side_expression()
         {
             // Inline code for List.Clear:
@@ -104,7 +103,7 @@ class C
                 discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task InlineCodeTranslator_should_replace_arguments_in_an_argument_list()
         {
             // Taken from the Saltarelle String ctor:
@@ -142,7 +141,7 @@ class C
                 discoveryKind: SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task InlineCodeTranslator_should_replace_rest_arguments_in_an_argument_list()
         {
             // Inline code for List.Ctor:

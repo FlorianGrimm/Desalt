@@ -17,12 +17,11 @@ namespace Desalt.Core.Tests.Validation
     using Desalt.Core.Validation;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class NoDefaultParametersInInterfacesValidatorTests
     {
-        [TestMethod]
+        [Test]
         public async Task An_error_should_be_logged_for_a_default_parameter_in_an_interface()
         {
             const string code = @"
