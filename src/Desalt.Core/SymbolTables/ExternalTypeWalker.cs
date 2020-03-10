@@ -106,7 +106,7 @@ namespace Desalt.Core.SymbolTables
             _cancellationToken.ThrowIfCancellationRequested();
 
             // don't add the type if it's defined in our assembly
-            if (typeSymbol == null || Equals(typeSymbol.ContainingAssembly, _assemblyBeingTranslated))
+            if (typeSymbol == null || SymbolEqualityComparer.Default.Equals(typeSymbol.ContainingAssembly, _assemblyBeingTranslated))
             {
                 return;
             }

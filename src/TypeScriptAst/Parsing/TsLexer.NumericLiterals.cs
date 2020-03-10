@@ -150,7 +150,7 @@ namespace TypeScriptAst.Parsing
                 (!string.IsNullOrEmpty(decimalPart) ? $".{decimalPart}" : string.Empty) +
                 (!string.IsNullOrEmpty(exponentPart) ? $"e{exponentPart}" : string.Empty);
 
-            if (!double.TryParse(valueStr, out double value))
+            if (!double.TryParse(valueStr, out double value) || double.IsInfinity(value) || double.IsNaN(value))
             {
                 throw LexException($"Invalid decimal literal '{text}'", location);
             }

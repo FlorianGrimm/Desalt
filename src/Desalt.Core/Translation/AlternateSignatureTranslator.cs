@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="AlternateSignatureTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -89,7 +89,7 @@ namespace Desalt.Core.Translation
             // make sure the calculated implementing method is actually the same as the methodSymbol
             // that is passed in since we only want to translate the implementing method
             IMethodSymbol implementingMethod = methodGroup.ImplementingMethod;
-            if (!Equals(methodSymbol, implementingMethod))
+            if (!SymbolEqualityComparer.Default.Equals(methodSymbol, implementingMethod))
             {
                 return false;
             }
