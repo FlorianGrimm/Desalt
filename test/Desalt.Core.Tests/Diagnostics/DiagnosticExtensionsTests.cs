@@ -17,12 +17,12 @@ namespace Desalt.Core.Tests.Diagnostics
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [SuppressMessage("ReSharper", "InvokeAsExtensionMethod"), TestClass]
+    [SuppressMessage("ReSharper", "InvokeAsExtensionMethod")]
     public class DiagnosticExtensionsTests
     {
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_throw_on_null_parameters()
         {
             Action action = () => DiagnosticExtensions.CalculateReportAction(null, DiagnosticOptions.Default);
@@ -32,7 +32,7 @@ namespace Desalt.Core.Tests.Diagnostics
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_return_Default_when_not_configurable_and_enabled()
         {
             ReportDiagnostic reportAction = DiagnosticExtensions.CalculateReportAction(
@@ -42,7 +42,7 @@ namespace Desalt.Core.Tests.Diagnostics
             reportAction.Should().Be(ReportDiagnostic.Default);
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_return_Suppress_when_not_configurable_and_disabled()
         {
             ReportDiagnostic reportAction = DiagnosticExtensions.CalculateReportAction(
@@ -54,7 +54,7 @@ namespace Desalt.Core.Tests.Diagnostics
             reportAction.Should().Be(ReportDiagnostic.Suppress);
         }
 
-        [TestMethod]
+        [Test]
         public void
             CalculateReportAction_should_return_the_level_of_whatever_is_specified_in_the_options_for_a_specific_warning()
         {
@@ -75,7 +75,7 @@ namespace Desalt.Core.Tests.Diagnostics
             }
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_suppress_warnings_above_the_options_warning_level()
         {
             Diagnostic informationalWarning = DiagnosticsTestFactories.CreateWarning(warningLevel: 4);
@@ -89,7 +89,7 @@ namespace Desalt.Core.Tests.Diagnostics
             }
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_raise_warnings_to_errors_when_GeneralDiagnosticOption_is_Error()
         {
             Diagnostic error = DiagnosticsTestFactories.CreateWarning();
@@ -97,7 +97,7 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticExtensions.CalculateReportAction(error, options).Should().Be(ReportDiagnostic.Error);
         }
 
-        [TestMethod]
+        [Test]
         public void
             CalculateReportAction_should_not_raise_Info_or_Hidden_to_errors_when_GeneralDiagnosticOption_is_Error()
         {
@@ -109,7 +109,7 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticExtensions.CalculateReportAction(hidden, options).Should().Be(ReportDiagnostic.Default);
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_suppress_all_warnings_if_GeneralDiagnosticOption_is_Suppress()
         {
             Diagnostic warning = DiagnosticsTestFactories.CreateWarning();
@@ -117,7 +117,7 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticExtensions.CalculateReportAction(warning, options).Should().Be(ReportDiagnostic.Suppress);
         }
 
-        [TestMethod]
+        [Test]
         public void CalculateReportAction_should_not_suppress_errors_when_GeneralDiagnosticOption_is_Suppress()
         {
             Diagnostic error = DiagnosticsTestFactories.CreateDiagnostic();
@@ -125,13 +125,13 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticExtensions.CalculateReportAction(error, options).Should().Be(ReportDiagnostic.Default);
         }
 
-        [TestMethod]
+        [Test]
         public void WithReportDiagnostic_should_return_null_on_a_null_diagnostic_parameter()
         {
             DiagnosticExtensions.WithReportDiagnostic(null, ReportDiagnostic.Default).Should().BeNull();
         }
 
-        [TestMethod]
+        [Test]
         public void WithReportDiagnostic_should_pass_through_the_original_value_when_Default()
         {
             Diagnostic diagnostic = DiagnosticsTestFactories.CreateDiagnostic();
@@ -140,7 +140,7 @@ namespace Desalt.Core.Tests.Diagnostics
                 .BeSameAs(diagnostic);
         }
 
-        [TestMethod]
+        [Test]
         public void
             WithReportDiagnostic_should_return_the_same_diagnostic_for_Error_Warn_Info_and_Hidden_where_the_severity_matches()
         {
@@ -157,14 +157,14 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticExtensions.WithReportDiagnostic(hidden, ReportDiagnostic.Hidden).Should().BeSameAs(hidden);
         }
 
-        [TestMethod]
+        [Test]
         public void WithReportDiagnostic_should_return_null_for_Suppress()
         {
             Diagnostic diagnostic = DiagnosticsTestFactories.CreateDiagnostic();
             DiagnosticExtensions.WithReportDiagnostic(diagnostic, ReportDiagnostic.Suppress).Should().BeNull();
         }
 
-        [TestMethod]
+        [Test]
         public void WithReportDiagnostic_should_throw_an_exception_on_an_invalid_ReportDiagnostic()
         {
             Diagnostic diagnostic = DiagnosticsTestFactories.CreateDiagnostic();
@@ -172,13 +172,13 @@ namespace Desalt.Core.Tests.Diagnostics
             action.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ParamName.Should().Be("reportAction");
         }
 
-        [TestMethod]
+        [Test]
         public void WithSeverity_should_return_null_on_a_null_diagnostic()
         {
             DiagnosticExtensions.WithSeverity(null, DiagnosticSeverity.Error).Should().BeNull();
         }
 
-        [TestMethod]
+        [Test]
         public void WithSeverity_should_create_a_copy_of_the_Diagnostic_with_the_severity_changed()
         {
             var location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());

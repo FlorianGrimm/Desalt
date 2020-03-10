@@ -9,12 +9,11 @@ namespace Desalt.Core.Tests.Translation
 {
     using Desalt.Core.Translation;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class TemporaryVariableAllocatorTests
     {
-        [TestMethod]
+        [Test]
         public void Reserve_should_keep_incrementing_values()
         {
             var allocator = new TemporaryVariableAllocator();
@@ -23,7 +22,7 @@ namespace Desalt.Core.Tests.Translation
             allocator.Reserve("test").Should().Be("test3");
         }
 
-        [TestMethod]
+        [Test]
         public void Reserve_should_keep_track_of_different_prefixes()
         {
             var allocator = new TemporaryVariableAllocator();
@@ -32,7 +31,7 @@ namespace Desalt.Core.Tests.Translation
             allocator.Reserve("a").Should().Be("a2");
         }
 
-        [TestMethod]
+        [Test]
         public void Reserve_should_return_prefixes()
         {
             var allocator = new TemporaryVariableAllocator();

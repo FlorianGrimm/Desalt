@@ -9,11 +9,11 @@ namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     public partial class TranslationVisitorTests
     {
-        [TestMethod]
+        [Test]
         public async Task This_expression_assigning_numeric_literals()
         {
             await AssertTranslation(
@@ -21,7 +21,7 @@ namespace Desalt.Core.Tests.Translation
                 "class C {\n  private int32: number;\n\n  public constructor() {\n    this.int32 = 1;\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task This_expression_assigning_string_literals()
         {
             await AssertTranslation(
@@ -29,7 +29,7 @@ namespace Desalt.Core.Tests.Translation
                 "class C {\n  private str: string;\n\n  public constructor() {\n    this.str = 's';\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Cast_of_a_field_should_use_the_script_name()
         {
             await AssertTranslation(
@@ -38,7 +38,7 @@ namespace Desalt.Core.Tests.Translation
                 "let x: string = <string>this.str;\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Cast_of_a_method_invocation_should_use_the_script_name()
         {
             await AssertTranslation(
@@ -47,7 +47,7 @@ namespace Desalt.Core.Tests.Translation
                 "let x: string = <string>this.method();\n    return '';\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Invocation_expressions_on_instance_methods_should_prefix_this()
         {
             await AssertTranslation(
@@ -55,7 +55,7 @@ namespace Desalt.Core.Tests.Translation
                 "class C {\n  public method(): void {\n    this.method();\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Invocation_expression_on_static_method_should_prefix_class_name()
         {
             await AssertTranslation(
@@ -63,7 +63,7 @@ namespace Desalt.Core.Tests.Translation
                 "class X {\n  public static a(): void {\n    X.a();\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task IdentifierName_as_a_parameter()
         {
             await AssertTranslation(
@@ -71,7 +71,7 @@ namespace Desalt.Core.Tests.Translation
                 "class C {\n  private name: string;\n\n  private constructor(name: string) {\n    this.name = name;\n  }\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Complex_example_involving_referencing_an_enum_value_inside_of_a_element_access_expression()
         {
             await AssertTranslation(
@@ -105,7 +105,7 @@ class Logger {
         //// Unary and Binary Expressions
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Prefix_unary_expressions()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -128,7 +128,7 @@ class Logger {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Postfix_unary_expressions()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -144,7 +144,7 @@ class Logger {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Binary_expressions_on_numbers()
         {
             await AssertTranslationWithClassCAndMethod(@"
@@ -177,7 +177,7 @@ class Logger {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Binary_expressions_on_comparisons()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -203,7 +203,7 @@ class Logger {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Binary_expressions_on_booleans()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -221,7 +221,7 @@ class Logger {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Conditional_expressions()
         {
             await AssertTranslation(@"
@@ -245,7 +245,7 @@ class C {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Assignment_expressions()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -283,7 +283,7 @@ class C {
         //// Object Creation Expression Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task ObjectCreationExpression_should_use_InlineCode_for_ListT_creation()
         {
             await AssertTranslation(
@@ -309,7 +309,7 @@ class C {
                 SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ObjectCreationExpression_should_detect_JsDictionary_special_case_initialization()
         {
             await AssertTranslation(
@@ -335,7 +335,7 @@ class C {
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task ObjectCreationExpression_should_detect_expressions_in_JsDictionary_initialization()
         {
             await AssertTranslation(
@@ -374,7 +374,7 @@ class C {
         //// Invocation Expression Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
         {
             await AssertTranslationWithClassCAndMethod(
@@ -397,7 +397,7 @@ class C {
         ///     Cannot find parameter 'fieldName' in the translated argument list '(callback)'
         /// ]]>
         /// </remarks>
-        [TestMethod]
+        [Test]
         public async Task InvocationExpression_should_handle_nested_invocations_with_InlineCode()
         {
             await AssertTranslationWithClassCAndMethod(@"
@@ -414,7 +414,7 @@ class C {
 ", SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task InvocationExpression_should_use_the_correct_overloaded_name_for_locally_defined_methods()
         {
             await AssertTranslation(
@@ -450,7 +450,7 @@ class A {
         //// Other Expression Types Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task List_of_Func_type_should_translate_to_Array_of_func()
         {
             await AssertTranslation(

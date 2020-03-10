@@ -13,11 +13,11 @@ namespace Desalt.CompilerUtilities.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
 
     public class UnicodeStringStreamTests
     {
-        [Fact]
+        [Test]
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable once ObjectCreationAsStatement
@@ -25,7 +25,7 @@ namespace Desalt.CompilerUtilities.Tests
             action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("contents");
         }
 
-        [Fact]
+        [Test]
         public void Writing_or_Flushing_should_throw_NotSupportedException()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -47,7 +47,7 @@ namespace Desalt.CompilerUtilities.Tests
             }
         }
 
-        [Fact]
+        [Test]
         public async Task An_asynchronous_write_or_flush_operation_should_throw_NotSupportedException()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -76,7 +76,7 @@ namespace Desalt.CompilerUtilities.Tests
             await Task.Yield();
         }
 
-        [Fact]
+        [Test]
         public void A_synchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -106,7 +106,7 @@ namespace Desalt.CompilerUtilities.Tests
             }
         }
 
-        [Fact]
+        [Test]
         public async Task An_asynchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -134,7 +134,7 @@ namespace Desalt.CompilerUtilities.Tests
             await Task.Yield();
         }
 
-        [Fact]
+        [Test]
         public async Task An_asynchronous_read_operation_on_a_closed_reader_should_throw_NotSupportedException()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -161,7 +161,7 @@ namespace Desalt.CompilerUtilities.Tests
             await Task.Yield();
         }
 
-        [Fact]
+        [Test]
         public void CanX_properties_when_closed_should_return_false()
         {
             using (var stream = new UnicodeStringStream("Sample"))
@@ -190,25 +190,25 @@ namespace Desalt.CompilerUtilities.Tests
     {
         private readonly UnicodeStringStream _stream = new UnicodeStringStream(string.Empty, true);
 
-        [Fact]
+        [Test]
         public void Should_return_a_zero_length()
         {
             _stream.Length.Should().Be(0);
         }
 
-        [Fact]
+        [Test]
         public void Should_support_reading()
         {
             _stream.CanRead.Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void Should_support_seeking()
         {
             _stream.CanSeek.Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void Should_not_support_writing()
         {
             _stream.CanWrite.Should().BeFalse();
@@ -216,13 +216,13 @@ namespace Desalt.CompilerUtilities.Tests
             new Action(() => _stream.Write(null, 0, 0)).Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [Test]
         public void Should_not_support_flusing()
         {
             new Action(() => _stream.Flush()).Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [Test]
         public void Should_not_support_setting_the_length()
         {
             new Action(() => _stream.SetLength(10)).Should().Throw<NotSupportedException>();
@@ -235,13 +235,13 @@ namespace Desalt.CompilerUtilities.Tests
         private readonly UnicodeStringStream _stream = new UnicodeStringStream(string.Empty);
         private readonly byte[] _preamble = Encoding.Unicode.GetPreamble();
 
-        [Fact]
+        [Test]
         public void Should_return_the_same_length_as_the_unicode_preamble()
         {
             _stream.Length.Should().Be(Encoding.Unicode.GetPreamble().Length);
         }
 
-        [Fact]
+        [Test]
         public void Should_only_return_the_unicode_preamble()
         {
             byte[] buffer = new byte[_preamble.Length];
@@ -253,54 +253,58 @@ namespace Desalt.CompilerUtilities.Tests
     // ReSharper disable once InconsistentNaming
     public class A_valid_string_with_no_bom
     {
-        private readonly UnicodeStringStream _stream = new UnicodeStringStream("123456789", true);
-
-        [Fact]
+        [Test]
         public void Should_read_the_entire_string_in_order()
         {
             byte[] buffer = new byte[18];
-            _stream.Read(buffer, 0, buffer.Length);
-            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes(_stream.Source));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Read(buffer, 0, buffer.Length);
+            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes(stream.Source));
         }
 
-        [Fact]
+        [Test]
         public void Should_only_read_the_remaining_bytes_even_if_more_are_requested()
         {
             byte[] buffer = new byte[20];
-            _stream.Read(buffer, 0, buffer.Length);
-            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes(_stream.Source + "\0"));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Read(buffer, 0, buffer.Length);
+            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes(stream.Source + "\0"));
         }
 
-        [Fact]
+        [Test]
         public void Should_write_to_the_correct_place_in_the_buffer()
         {
             byte[] buffer = new byte[22];
-            _stream.Read(buffer, 2, buffer.Length - 4);
-            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes("\0" + _stream.Source + "\0"));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Read(buffer, 2, buffer.Length - 4);
+            buffer.Should().ContainInOrder(Encoding.Unicode.GetBytes("\0" + stream.Source + "\0"));
         }
 
-        [Fact]
+        [Test]
         public void Should_be_able_to_seek_from_a_starting_position()
         {
-            _stream.Seek(2, SeekOrigin.Begin);
-            _stream.Position.Should().Be(2);
-            _stream.ReadByte().Should().Be(Convert.ToByte('2'));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Seek(2, SeekOrigin.Begin);
+            stream.Position.Should().Be(2);
+            stream.ReadByte().Should().Be(Convert.ToByte('2'));
         }
 
-        [Fact]
+        [Test]
         public void Should_be_able_to_seek_from_an_ending_position()
         {
-            _stream.Seek(-2, SeekOrigin.End);
-            _stream.Position.Should().Be(16);
-            _stream.ReadByte().Should().Be(Convert.ToByte('9'));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Seek(-2, SeekOrigin.End);
+            stream.Position.Should().Be(16);
+            stream.ReadByte().Should().Be(Convert.ToByte('9'));
         }
 
-        [Fact]
+        [Test]
         public void Should_be_able_to_seek_from_the_current_position()
         {
-            _stream.Seek(14, SeekOrigin.Current);
-            _stream.Position.Should().Be(14);
-            _stream.ReadByte().Should().Be(Convert.ToByte('8'));
+            var stream = new UnicodeStringStream("123456789", true);
+            stream.Seek(14, SeekOrigin.Current);
+            stream.Position.Should().Be(14);
+            stream.ReadByte().Should().Be(Convert.ToByte('8'));
         }
     }
 }

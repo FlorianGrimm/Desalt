@@ -10,7 +10,7 @@ namespace Desalt.CompilerUtilities.Tests
     using System;
     using System.IO;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
 
     public class IndentedTextWriterTests
     {
@@ -41,7 +41,7 @@ namespace Desalt.CompilerUtilities.Tests
             actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable ObjectCreationAsStatement
@@ -53,7 +53,7 @@ namespace Desalt.CompilerUtilities.Tests
             // ReSharper restore ObjectCreationAsStatement
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_use_the_default_IndentationPrefix_if_not_specified()
         {
             using (var stream = new MemoryStream())
@@ -71,7 +71,7 @@ namespace Desalt.CompilerUtilities.Tests
             }
         }
 
-        [Fact]
+        [Test]
         public void Write_should_not_indent_by_default()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -83,7 +83,7 @@ namespace Desalt.CompilerUtilities.Tests
             RunTest(test, "12345\n");
         }
 
-        [Fact]
+        [Test]
         public void Write_should_correctly_indent_one_level()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -97,7 +97,7 @@ namespace Desalt.CompilerUtilities.Tests
             RunTest(test, "{\n  test\n}\n");
         }
 
-        [Fact]
+        [Test]
         public void Write_should_handle_indents_less_than_zero()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -109,7 +109,7 @@ namespace Desalt.CompilerUtilities.Tests
             RunTest(test, "abc\ndef\n");
         }
 
-        [Fact]
+        [Test]
         public void Write_should_not_indent_the_first_line_even_if_Indent_is_greater_than_zero()
         {
             Action<IndentedTextWriter> test = writer =>
@@ -121,7 +121,7 @@ namespace Desalt.CompilerUtilities.Tests
             RunTest(test, "abc\n    def\n");
         }
 
-        [Fact]
+        [Test]
         public void Write_should_add_the_indentation_when_writing_an_empty_string()
         {
             Action<IndentedTextWriter> test = writer =>

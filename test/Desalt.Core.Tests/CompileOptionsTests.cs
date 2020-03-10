@@ -15,9 +15,8 @@ namespace Desalt.Core.Tests
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class CompileOptionsTests
     {
         private const string JsonContents = @"{
@@ -62,7 +61,7 @@ namespace Desalt.Core.Tests
                     "System.String.ToString()",
                     new SymbolTableOverride(inlineCode: "console.log({this})"))));
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_serialize_to_a_json_stream()
         {
             using (var stream = new MemoryStream())
@@ -78,7 +77,7 @@ namespace Desalt.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_deserialize_from_a_json_stream()
         {
             using (var stream = new UnicodeStringStream(JsonContents))
@@ -89,7 +88,7 @@ namespace Desalt.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_contains_invalid_chars()
         {
             string invalidPath = @"N:\InvalidPath" + Path.GetInvalidFileNameChars()[0];
@@ -98,7 +97,7 @@ namespace Desalt.Core.Tests
                 .BeEquivalentTo(DiagnosticFactory.InvalidOptionsFile(invalidPath, "Illegal characters in path."));
         }
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_cannot_be_read()
         {
             const string invalidPath = @"N:\NotExistingPath";
@@ -110,7 +109,7 @@ namespace Desalt.Core.Tests
                         $"Could not find a part of the path '{invalidPath}'."));
         }
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_json_file_is_invalid()
         {
             using (var stream = new UnicodeStringStream("{ invalidJson {} }"))
@@ -126,7 +125,7 @@ namespace Desalt.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void CompilerOptions_should_use_the_default_options_when_reading_an_empty_JSON_file()
         {
             using (var stream = new UnicodeStringStream("{}"))

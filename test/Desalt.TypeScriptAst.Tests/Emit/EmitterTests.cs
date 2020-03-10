@@ -16,7 +16,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
-    using Xunit;
+    using NUnit.Framework;
 
     public class EmitterTests
     {
@@ -58,23 +58,13 @@ namespace Desalt.TypeScriptAst.Tests.Emit
                 return Name;
             }
 
-            public ITsAstNode WithLeadingTrivia(params ITsAstTriviaNode[] triviaNodes)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ITsAstNode WithTrailingTrivia(params ITsAstTriviaNode[] triviaNodes)
-            {
-                throw new NotImplementedException();
-            }
-
             public bool Equals(ITsAstNode other)
             {
                 throw new NotImplementedException();
             }
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable ObjectCreationAsStatement
@@ -83,14 +73,14 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             // ReSharper restore ObjectCreationAsStatement
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_store_the_encoding_parameter_in_the_property()
         {
             var emitter = new Emitter(new MemoryStream(), Encoding.ASCII);
             emitter.Encoding.Should().BeSameAs(Encoding.ASCII);
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_use_UTF8_no_BOM_encoding_if_not_supplied()
         {
             var emitter = new Emitter(new MemoryStream());
@@ -98,7 +88,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             emitter.Encoding.GetPreamble().Should().BeEmpty();
         }
 
-        [Fact]
+        [Test]
         public void Ctor_should_store_the_options_parameter_in_the_property()
         {
             EmitOptions options = EmitOptions.Default.WithIndentationPrefix("\v");
@@ -106,7 +96,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             emitter.Options.Should().BeSameAs(options);
         }
 
-        [Fact]
+        [Test]
         public void WriteBlock_should_throw_on_null_args()
         {
             using (var stream = new MemoryStream())
@@ -117,7 +107,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteBlock_should_surround_the_body_with_braces_and_indent()
         {
             using (var stream = new MemoryStream())
@@ -128,7 +118,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteBlock_should_add_newlines_between_empty_block_braces_if_the_options_specify_it()
         {
             using (var stream = new MemoryStream())
@@ -139,7 +129,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specifiy_it()
         {
             using (var stream = new MemoryStream())
@@ -150,7 +140,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteBlock_should_write_all_of_the_statements()
         {
             using (var stream = new MemoryStream())
@@ -161,7 +151,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteCommaNewlineSeparatedBlock_should_throw_on_null_args()
         {
             using (var stream = new MemoryStream())
@@ -172,7 +162,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteCommaNewlineSeparatedBlock_should_add_commas_and_newlines_between_elements()
         {
             using (var stream = new MemoryStream())
@@ -183,7 +173,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteParameterList_should_throw_on_null_args()
         {
             using (var stream = new MemoryStream())
@@ -194,7 +184,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteParameterList_should_write_all_of_the_parameters()
         {
             using (var stream = new MemoryStream())
@@ -205,7 +195,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteItems_should_throw_on_null_args()
         {
             using (var stream = new MemoryStream())
@@ -216,7 +206,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteItems_should_add_delimiters_between_elements()
         {
             using (var stream = new MemoryStream())
@@ -227,7 +217,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
             }
         }
 
-        [Fact]
+        [Test]
         public void WriteList_should_not_add_a_delimiter_when_there_is_only_one_element()
         {
             using (var stream = new MemoryStream())

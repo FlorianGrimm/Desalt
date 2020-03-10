@@ -16,12 +16,11 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptFieldSymbolTests
     {
-        [TestMethod]
+        [Test]
         public async Task ScriptFieldSymbol_should_use_the_right_defaults_when_there_are_no_attributes()
         {
             const string code = @"
@@ -51,7 +50,7 @@ class C
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptFieldSymbol_should_read_the_right_values_on_the_attributes()
         {
             const string code = @"

@@ -21,9 +21,8 @@ namespace Desalt.Core.Tests.SymbolTables
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptNamerTests
     {
         private static async Task AssertScriptNamesInDocument(string code, params string[] expectedScriptNames)
@@ -59,7 +58,7 @@ namespace Desalt.Core.Tests.SymbolTables
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNamer_should_preserve_the_case_of_interfaces_classes_structs_and_enums()
         {
             await AssertScriptNamesInDocument(
@@ -69,7 +68,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 "MyStruct");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_make_members_camelCase_by_default()
         {
             await AssertScriptNamesInDocument(
@@ -80,7 +79,7 @@ namespace Desalt.Core.Tests.SymbolTables
                 "myMethod");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_respect_the_ScriptName_attribute()
         {
             const string code = @"
@@ -122,7 +121,7 @@ struct S
                 "ScriptProperty");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_rename_private_fields_if_specified_by_the_options()
         {
             await AssertScriptNamesInDocument(
@@ -132,7 +131,7 @@ struct S
                 "$name");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_only_rename_fields_if_there_is_a_duplicate_name()
         {
             await AssertScriptNamesInDocument(
@@ -144,7 +143,7 @@ struct S
                 "name");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_respect_the_PreserveCase_attribute()
         {
             const string code = @"
@@ -175,7 +174,7 @@ struct S
             await AssertScriptNamesInDocument(code, "C", "Field", "Event", "I", "Method", "S", "Property");
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             ScriptNameSymbolTable_should_respect_the_PreserveMemberCase_attribute_on_the_parent_declaration()
         {
@@ -194,7 +193,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "Field", "Method");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_respect_the_PreserveMemberCase_attribute_on_the_assembly()
         {
             const string code = @"
@@ -212,7 +211,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "Field", "Method");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_use_ScriptName_over_PreserveCase_or_PreserveMemberCase()
         {
             const string code = @"
@@ -234,7 +233,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "trumpedField", "trumpedMethod");
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             ScriptNameSymbolTable_should_use_ScriptAlias_over_ScriptName_or_PreserveCase_or_PreserveMemberCase()
         {
@@ -259,7 +258,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "trumpedField", "aliasedMethod");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_rename_overloaded_method_declarations()
         {
             const string code = @"
@@ -276,7 +275,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "method", "method$1", "method$2");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_use_attributes_first_before_renaming_overloads()
         {
             const string code = @"
@@ -313,7 +312,7 @@ class C
                 "method$1");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_consider_static_vs_non_static_when_renaming_overloads()
         {
             const string code = @"
@@ -332,7 +331,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "method", "method$1", "method", "method$1");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_not_rename_imported_overloads()
         {
             const string code = @"
@@ -353,7 +352,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "method", "method", "method", "method");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_not_rename_alternate_signature_overloads()
         {
             const string code = @"
@@ -371,7 +370,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "method", "method");
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             ScriptNameSymbolTable_should_use_script_name_of_implementation_in_alternate_signature_overloads()
         {
@@ -391,7 +390,7 @@ class C
             await AssertScriptNamesInDocument(code, "C", "overloaded", "overloaded");
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptNameSymbolTable_should_prefix_ss_to_mscorlib_types()
         {
             const string code = @"

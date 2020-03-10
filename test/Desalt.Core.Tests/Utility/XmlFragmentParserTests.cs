@@ -11,12 +11,11 @@ namespace Desalt.Core.Tests.Utility
     using System.Xml;
     using Desalt.Core.Utility;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class XmlFragmentParserTests
     {
-        [TestMethod]
+        [Test]
         public void ParseFragment_should_work_on_simple_text()
         {
             int callCount = 0;
@@ -34,7 +33,7 @@ namespace Desalt.Core.Tests.Utility
             callCount.Should().Be(1);
         }
 
-        [TestMethod]
+        [Test]
         public void ParseFragment_should_work_on_a_single_element_with_no_attributes_and_a_value()
         {
             int callCount = 0;
@@ -52,7 +51,7 @@ namespace Desalt.Core.Tests.Utility
             callCount.Should().Be(1);
         }
 
-        [TestMethod]
+        [Test]
         public void ParseFragment_should_work_on_an_element_with_attributes()
         {
             int callCount = 0;
@@ -71,7 +70,7 @@ namespace Desalt.Core.Tests.Utility
             callCount.Should().Be(1);
         }
 
-        [TestMethod]
+        [Test]
         public void ParseFragment_should_rethrow_any_errors()
         {
             void ParseCallback(XmlReader reader, object arg) => reader.ReadInnerXml();

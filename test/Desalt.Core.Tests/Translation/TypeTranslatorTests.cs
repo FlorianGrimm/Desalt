@@ -21,10 +21,9 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
-    [TestClass]
     public class TypeTranslatorTests
     {
         private static async Task AssertTypeTranslation(
@@ -78,7 +77,7 @@ class Foo
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_basic_CSharp_types()
         {
             await AssertTypeTranslation("bool", Factory.BooleanType);
@@ -87,7 +86,7 @@ class Foo
             await AssertTypeTranslation("object", Factory.AnyType);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_number_CSharp_types()
         {
             await AssertTypeTranslation("byte", Factory.NumberType);
@@ -103,25 +102,25 @@ class Foo
             await AssertTypeTranslation("double", Factory.NumberType);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_native_JavaScript_objects()
         {
             await AssertTypeTranslation("JsDate", Factory.TypeReference(Factory.Identifier("Date")));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_array_types()
         {
             await AssertTypeTranslation("string[]", Factory.ArrayType(Factory.StringType));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_nested_array_types()
         {
             await AssertTypeTranslation("int[][]", Factory.ArrayType(Factory.ArrayType(Factory.NumberType)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_function_types()
         {
             await AssertTypeTranslation("Func<int>", Factory.FunctionType(Factory.NumberType));
@@ -134,7 +133,7 @@ class Foo
                     Factory.NumberType));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_TypeTranslator_should_translate_Action_types()
         {
             await AssertTypeTranslation(
@@ -146,7 +145,7 @@ class Foo
                     Factory.VoidType));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_concrete_generic_types()
         {
             await AssertTypeTranslation(
@@ -155,7 +154,7 @@ class Foo
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_translate_a_symbol_that_gets_translated_to_an_array_to_an_array()
         {
             await AssertTypeTranslation(
@@ -164,13 +163,13 @@ class Foo
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_Nullable_T_types()
         {
             await AssertTypeTranslation("int?", Factory.UnionType(Factory.NumberType, Factory.NullType));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_non_generic_JsDictionary_correctly()
         {
             await AssertTypeTranslation(
@@ -182,7 +181,7 @@ class Foo
                         returnType: Factory.AnyType)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_JsDictionary_with_string_type_keys_correctly()
         {
             await AssertTypeTranslation(
@@ -194,7 +193,7 @@ class Foo
                         returnType: Factory.TypeReference(Factory.Identifier("Date")))));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_JsDictionary_with_number_type_keys_correctly()
         {
             // jQueryApi.EffectEasing is defined as [NamedValues]
@@ -207,7 +206,7 @@ class Foo
                         returnType: Factory.NumberType)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_JsDictionary_with_NamedValues_enum_type_keys_correctly()
         {
             // jQueryApi.EffectEasing is defined as [NamedValues]
@@ -220,7 +219,7 @@ class Foo
                         returnType: Factory.NumberType)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TypeTranslator_should_handle_JsDictionary_with_NumericValues_enum_type_keys_correctly()
         {
             // System.DayOfWeek is implicitly defined as [NumericValues]

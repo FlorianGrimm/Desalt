@@ -16,12 +16,11 @@ namespace Desalt.Core.Tests.SymbolTables
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class ScriptEnumSymbolTests
     {
-        [TestMethod]
+        [Test]
         public async Task ScriptEnumSymbol_should_use_the_right_defaults_when_there_are_no_attributes()
         {
             const string code = @"enum E { }";
@@ -46,7 +45,7 @@ namespace Desalt.Core.Tests.SymbolTables
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptEnumSymbol_should_give_precedence_to_NamedValues()
         {
             const string code = @"
@@ -76,7 +75,7 @@ enum E { }";
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task ScriptEnumSymbol_ctor_should_throw_if_not_an_enum_symbol()
         {
             const string code = @"

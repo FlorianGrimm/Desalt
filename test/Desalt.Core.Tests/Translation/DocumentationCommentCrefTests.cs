@@ -12,7 +12,7 @@ namespace Desalt.Core.Tests.Translation
     using System.ComponentModel;
     using Desalt.Core.Translation;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Cref = Desalt.Core.Translation.DocumentationCommentCref;
 
     /// <summary>
@@ -34,14 +34,14 @@ namespace Desalt.Core.Tests.Translation
     /// Field:      <see cref="_thisField"/>
     ///     => F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField
     /// </summary>
-    [TestClass]
+
     public class DocumentationCommentCrefTests
     {
 #pragma warning disable 169, 414
         private readonly string _thisField = null;
 #pragma warning restore 169, 414
 
-        [TestMethod]
+        [Test]
         public void Parse_should_throw_on_an_unkonwn_cref_type()
         {
             Action action = () => Cref.Parse("!:Unknown");
@@ -51,7 +51,7 @@ namespace Desalt.Core.Tests.Translation
                 .Be("Invalid cref attribute: !:Unknown");
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_a_full_type_reference()
         {
             var cref = Cref.Parse("T:System.Console");
@@ -61,7 +61,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Type);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_a_short_type_reference()
         {
             var cref = Cref.Parse("T:Console");
@@ -71,7 +71,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Type);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_a_method_reference()
         {
             var cref = Cref.Parse("M:System.Console.WriteLine(System.Char[],System.Int32,System.Int32)");
@@ -81,7 +81,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Method);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_a_property_reference()
         {
             var cref = Cref.Parse("P:System.Environment.CurrentDirectory");
@@ -91,7 +91,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Property);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_an_indexer_reference()
         {
             var cref = Cref.Parse("P:System.Collections.ArrayList.Item(System.Int32)");
@@ -101,7 +101,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Property);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_an_event_reference()
         {
             var cref = Cref.Parse("E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged");
@@ -111,7 +111,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Event);
         }
 
-        [TestMethod]
+        [Test]
         public void Parse_should_accept_a_field_reference()
         {
             var cref = Cref.Parse("F:Desalt.Core.Tests.Translation.DocumentationCommentCrefTests._thisField");
@@ -121,7 +121,7 @@ namespace Desalt.Core.Tests.Translation
             cref.Kind.Should().Be(DocumentationCommentCrefKind.Field);
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_should_return_the_short_form_of_the_reference()
         {
             var cref = Cref.Parse("T:System.Console");
@@ -140,7 +140,7 @@ namespace Desalt.Core.Tests.Translation
             cref.ToString().Should().Be("DocumentationCommentCrefTests._thisField");
         }
 
-        [TestMethod]
+        [Test]
         public void ToFullString_should_return_the_long_form_of_the_reference()
         {
             var cref = Cref.Parse("T:System.Console");

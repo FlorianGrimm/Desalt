@@ -19,10 +19,9 @@ namespace Desalt.Core.Tests.Translation
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
-    [TestClass]
     public class AlternateSignatureTranslatorTests
     {
         private static readonly ITsIdentifier s_x = Factory.Identifier("x");
@@ -69,7 +68,7 @@ using System.Runtime.CompilerServices;
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             TryAdjustParameterList_should_return_false_for_a_method_that_does_not_have_an_AlternateSignature()
         {
@@ -84,7 +83,7 @@ using System.Runtime.CompilerServices;
                 expectedParameterList: translatedParameterList);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TryAdjustParameterList_should_leave_the_types_the_same_if_the_overloads_are_compatible()
         {
             const string code = @"
@@ -106,7 +105,7 @@ class C
                 expectedParameterList: Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             TryAdjustParameterList_should_make_all_trailing_parameters_optional_in_the_alternate_signature()
         {
@@ -138,7 +137,7 @@ class C
                     }));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TryAdjustParameterList_should_create_type_unions_for_the_parameters()
         {
             const string code = @"
@@ -164,7 +163,7 @@ class C
                     Factory.BoundRequiredParameter(s_y, Factory.UnionType(Factory.NumberType, Factory.BooleanType))));
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             TryAdjustParameterList_should_add_optional_params_when_the_implementing_method_does_not_have_enough_parameters()
         {

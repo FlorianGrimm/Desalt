@@ -12,12 +12,11 @@ namespace Desalt.Core.Tests.Diagnostics
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
     public class DiagnosticListTests
     {
-        [TestMethod]
+        [Test]
         public void DiagnosticList_Create_and_From_should_throw_on_null_options()
         {
             Action action = () => DiagnosticList.Create(null);
@@ -27,7 +26,7 @@ namespace Desalt.Core.Tests.Diagnostics
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_From_should_throw_on_null_diagnostics()
         {
             var options = new CompilerOptions("out");
@@ -35,7 +34,7 @@ namespace Desalt.Core.Tests.Diagnostics
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostics");
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_From_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
@@ -50,7 +49,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.FilteredDiagnostics.Select(d => d.Id).Should().BeEquivalentTo("id1", "id3");
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_HasErrors_should_return_true_if_there_is_at_least_one_error()
         {
             var list = DiagnosticList.From(
@@ -60,7 +59,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.HasErrors.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_HasErrors_should_return_false_if_there_are_no_errors()
         {
             var list = DiagnosticList.From(
@@ -69,7 +68,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.HasErrors.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_Add_should_do_nothing_if_the_diagnostic_is_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
@@ -79,7 +78,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.Add(warning).Should().BeNull();
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_Add_should_add_the_diagnostic_if_it_passes_the_filter()
         {
             var list = DiagnosticList.Create(new CompilerOptions("out"));
@@ -89,7 +88,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.FilteredDiagnostics.Single().Severity.Should().Be(DiagnosticSeverity.Warning);
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_AddRange_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
             var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
@@ -105,7 +104,7 @@ namespace Desalt.Core.Tests.Diagnostics
             list.FilteredDiagnostics.Select(d => d.Id).Should().BeEquivalentTo("id1", "id3");
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticsList_Clear_should_empty_the_list()
         {
             var list = DiagnosticList.Create(new CompilerOptions("out"));
@@ -116,14 +115,14 @@ namespace Desalt.Core.Tests.Diagnostics
             list.FilteredDiagnostics.Should().BeEmpty();
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_Empty_should_not_store_anyting_on_Add()
         {
             DiagnosticList.Empty.Add(DiagnosticsTestFactories.CreateDiagnostic(id: "id1"));
             DiagnosticList.Empty.FilteredDiagnostics.Should().BeEmpty();
         }
 
-        [TestMethod]
+        [Test]
         public void DiagnosticList_Empty_should_not_store_anyting_on_AddRanage()
         {
             DiagnosticList.Empty.AddRange(

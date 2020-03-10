@@ -8,7 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System.Threading.Tasks;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     public partial class TranslationVisitorTests
     {
@@ -16,25 +16,25 @@ namespace Desalt.Core.Tests.Translation
         //// Interface Declaration Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Bare_interface_declaration_without_accessibility_should_not_be_exported()
         {
             await AssertTranslation("interface ITest {}", "interface ITest {\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Public_interface_declaration_should_be_exported()
         {
             await AssertTranslation("public interface ITest {}", "export interface ITest {\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task A_method_declaration_with_no_parameters_and_a_void_return_type_should_be_translated()
         {
             await AssertTranslation("interface ITest { void Do(); }", "interface ITest {\n  do(): void;\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task A_method_declaration_with_simple_parameters_and_a_void_return_type_should_be_translated()
         {
             await AssertTranslation(
@@ -46,19 +46,19 @@ namespace Desalt.Core.Tests.Translation
         //// Enum Declaration Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Bare_enum_declaration_without_accessibility_should_not_be_exported()
         {
             await AssertTranslation("enum LoggerLevel { All }", "enum LoggerLevel {\n  All,\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Public_enum_declaration_should_be_exported()
         {
             await AssertTranslation("public enum LoggerLevel { All }", "export enum LoggerLevel {\n  All,\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Enum_declarations_with_literal_values_should_be_translated()
         {
             await AssertTranslation(
@@ -66,7 +66,7 @@ namespace Desalt.Core.Tests.Translation
                 "enum LoggerLevel {\n  All = 123,\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Enum_declarations_with_hex_values_should_be_translated_as_hex()
         {
             await AssertTranslation(
@@ -74,7 +74,7 @@ namespace Desalt.Core.Tests.Translation
                 "enum LoggerLevel {\n  Hex = 0x100,\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Enum_declarations_should_respect_EnumRenameRule_LowerCaseFirstChar()
         {
             await AssertTranslation(
@@ -84,7 +84,7 @@ namespace Desalt.Core.Tests.Translation
                     options.WithRenameRules(options.RenameRules.WithEnumRule(EnumRenameRule.LowerCaseFirstChar)));
         }
 
-        [TestMethod]
+        [Test]
         public async Task Enum_declarations_with_NamedValues_should_be_a_const_enum()
         {
             await AssertTranslation(
@@ -92,7 +92,7 @@ namespace Desalt.Core.Tests.Translation
                 "const enum E {\n  One = 'one',\n  Two = 'two',\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Enum_declarations_with_NamedValues_should_be_a_const_enum_even_when_a_value_has_been_defined()
         {
             await AssertTranslation(
@@ -100,7 +100,7 @@ namespace Desalt.Core.Tests.Translation
                 "const enum E {\n  One = 'one',\n  Two = 'two',\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             Enum_declarations_with_NamedValues_should_use_script_name_for_the_value_and_not_the_declaration()
         {
@@ -109,7 +109,7 @@ namespace Desalt.Core.Tests.Translation
                 "const enum E {\n  One = 'uno',\n  Two = 'two',\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task
             Enum_declarations_with_NamedValues_should_use_script_name_and_respect_EnumRenameRule_LowerCaseFirstChar()
         {
@@ -124,19 +124,19 @@ namespace Desalt.Core.Tests.Translation
         //// Class Declaration Tests
         //// ===========================================================================================================
 
-        [TestMethod]
+        [Test]
         public async Task Bare_class_declaration_without_accessibility_should_not_be_exported()
         {
             await AssertTranslation("class C { }", "class C {\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Public_class_declaration_should_be_exported()
         {
             await AssertTranslation("public class C { }", "export class C {\n}\n");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_class_declarations_with_class_heritage()
         {
             await AssertTranslation(
@@ -159,7 +159,7 @@ class C extends B implements IA, IC {
 ");
         }
 
-        [TestMethod]
+        [Test]
         public async Task Translate_should_rename_overloaded_method_declarations()
         {
             await AssertTranslation(

@@ -15,19 +15,16 @@ namespace Desalt.Core.Tests
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using DiagnosticId = Core.Diagnostics.DiagnosticFactory.DiagnosticId;
 
-    [TestClass]
     public class EndToEndTests
     {
-        public TestContext TestContext { get; set; }
-
-        private string RootDirectory
+        private static string RootDirectory
         {
             get
             {
-                string directory = TestContext.TestRunDirectory;
+                string directory = TestContext.CurrentContext.TestDirectory;
                 while (Path.GetFileName(directory) != "Desalt")
                 {
                     directory = Path.GetDirectoryName(directory);
@@ -37,15 +34,15 @@ namespace Desalt.Core.Tests
             }
         }
 
-        private string OutputDirectory => Path.Combine(RootDirectory, "E2ETestResults", "CoreSubset");
+        private static string OutputDirectory => Path.Combine(RootDirectory, "E2ETestResults", "CoreSubset");
 
-        private string ProjectFilePath =>
+        private static string ProjectFilePath =>
             Path.Combine(RootDirectory, "test", "SaltarelleProjectTests", "CoreSubset", "CoreSubset.csproj");
 
-        private string OptionsFilePath => Path.Combine(OutputDirectory, "desaltOptions.json");
+        private static string OptionsFilePath => Path.Combine(OutputDirectory, "desaltOptions.json");
 
-        [TestCategory("SkipWhenLiveUnitTesting")]
-        [TestMethod]
+        [Category("SkipWhenLiveUnitTesting")]
+        [Test]
         public async Task E2E_Compiling_a_Saltarelle_Core_project()
         {
             string outputPath = OutputDirectory;
