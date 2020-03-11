@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\jQuery.dll" Link="TestUtility\jQuery.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\mscorlib.dll" Link="TestUtility\mscorlib.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\NativeJsTypeDefs.dll" Link="TestUtility\NativeJsTypeDefs.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\TypeDefs.dll" Link="TestUtility\TypeDefs.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Underscore.dll" Link="TestUtility\Underscore.dll" />
+    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Web.dll" Link="TestUtility\Web.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.2" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">

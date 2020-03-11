@@ -255,6 +255,7 @@ namespace Desalt.Core
                     {
                         AllowIntegerValues = false
                     },
+                    new SpecificDiagnosticOptionsConverter(),
                     new SymbolTableOverridesConverter(),
                 },
                 DefaultValueHandling = DefaultValueHandling.Populate,
@@ -269,12 +270,84 @@ namespace Desalt.Core
         //// Classes
         //// ===========================================================================================================
 
+        private sealed class SpecificDiagnosticOptionsConverter
+            : JsonConverter<ImmutableDictionary<string, ReportDiagnostic>>
+        {
+            /// <summary>
+            /// Writes the JSON representation of the object.
+            /// </summary>
+            /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+            /// <param name="value">The value.</param>
+            /// <param name="serializer">The calling serializer.</param>
+            public override void WriteJson(
+                JsonWriter writer,
+                ImmutableDictionary<string, ReportDiagnostic> value,
+                JsonSerializer serializer)
+            {
+                writer.WriteStartObject();
+
+                var orderedPairs = value.OrderBy(pair => pair.Key, StringComparer.Ordinal);
+                foreach (var pair in orderedPairs)
+                {
+                    writer.WritePropertyName(pair.Key, escape: true);
+                    serializer.Serialize(writer, pair.Value);
+                }
+
+                writer.WriteEndObject();
+            }
+
+            /// <summary>
+            /// Reads the JSON representation of the object.
+            /// </summary>
+            /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+            /// <param name="objectType">Type of the object.</param>
+            /// <param name="existingValue">
+            /// The existing value of object being read. If there is no existing value then <c>null</c> will be used.
+            /// </param>
+            /// <param name="hasExistingValue">The existing value has a value.</param>
+            /// <param name="serializer">The calling serializer.</param>
+            /// <returns>The object value.</returns>
+            public override ImmutableDictionary<string, ReportDiagnostic> ReadJson(
+                JsonReader reader,
+                Type objectType,
+                ImmutableDictionary<string, ReportDiagnostic> existingValue,
+                bool hasExistingValue,
+                JsonSerializer serializer)
+            {
+                if (reader.TokenType == JsonToken.Null)
+                {
+                    return null;
+                }
+
+                reader.Read(JsonToken.StartObject);
+
+                var dictionary = ImmutableDictionary.CreateBuilder<string, ReportDiagnostic>();
+                while (reader.TokenType != JsonToken.EndObject)
+                {
+                    reader.VerifyToken(JsonToken.PropertyName);
+
+                    string key = reader.Value.ToString();
+                    reader.Read();
+
+                    var value = serializer.Deserialize<ReportDiagnostic>(reader);
+                    reader.Read();
+
+                    dictionary.Add(key, value);
+                }
+
+                // don't read the ending object - the caller will do that
+                // Read(reader, JsonToken.EndObject);
+
+                return dictionary.ToImmutable();
+            }
+        }
+
         private sealed class SymbolTableOverridesConverter : JsonConverter<SymbolTableOverrides>
         {
             /// <summary>
             /// Writes the JSON representation of the object.
             /// </summary>
-            /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter"/> to write to.</param>
+            /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
             /// <param name="value">The value.</param>
             /// <param name="serializer">The calling serializer.</param>
             public override void WriteJson(JsonWriter writer, SymbolTableOverrides value, JsonSerializer serializer)
@@ -300,7 +373,7 @@ namespace Desalt.Core
             /// <summary>
             /// Reads the JSON representation of the object.
             /// </summary>
-            /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader"/> to read from.</param>
+            /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
             /// <param name="objectType">Type of the object.</param>
             /// <param name="existingValue">
             /// The existing value of object being read. If there is no existing value then
@@ -321,43 +394,46 @@ namespace Desalt.Core
                     return null;
                 }
 
-                Read(reader, JsonToken.StartObject);
+                reader.Read(JsonToken.StartObject);
 
-                var pairs = new List<KeyValuePair<string, SymbolTableOverride>>();
+                var dictionary = ImmutableDictionary.CreateBuilder<string, SymbolTableOverride>();
                 while (reader.TokenType != JsonToken.EndObject)
                 {
-                    VerifyToken(reader, JsonToken.PropertyName);
+                    reader.VerifyToken(JsonToken.PropertyName);
 
                     string symbolName = reader.Value.ToString();
                     reader.Read();
 
-                    SymbolTableOverride symbolOverride = serializer.Deserialize<SymbolTableOverride>(reader);
-                    pairs.Add(new KeyValuePair<string, SymbolTableOverride>(symbolName, symbolOverride));
+                    var symbolOverride = serializer.Deserialize<SymbolTableOverride>(reader);
+                    dictionary.Add(symbolName, symbolOverride);
 
                     // it is expected that we read the end object, even though the serializer will read the beginning
-                    Read(reader, JsonToken.EndObject);
+                    reader.Read(JsonToken.EndObject);
                 }
 
                 // don't read the ending object - the caller will do that
                 // Read(reader, JsonToken.EndObject);
 
-                return new SymbolTableOverrides(pairs.ToImmutableDictionary());
+                return new SymbolTableOverrides(dictionary.ToImmutable());
             }
+        }
+    }
 
-            private static void Read(JsonReader reader, JsonToken expectedToken)
-            {
-                VerifyToken(reader, expectedToken);
-                reader.Read();
-            }
+    internal static class JsonReaderExtensions
+    {
+        public static void Read(this JsonReader reader, JsonToken expectedToken)
+        {
+            VerifyToken(reader, expectedToken);
+            reader.Read();
+        }
 
-            private static void VerifyToken(JsonReader reader, JsonToken expectedToken)
+        public static void VerifyToken(this JsonReader reader, JsonToken expectedToken)
+        {
+            if (reader.TokenType != expectedToken)
             {
-                if (reader.TokenType != expectedToken)
-                {
-                    throw new InvalidOperationException(
-                        $"Invalid JSON token. Expecting '{expectedToken}' but found '{reader.TokenType}': " +
-                        $"path = {reader.Path}");
-                }
+                throw new InvalidOperationException(
+                    $"Invalid JSON token. Expecting '{expectedToken}' but found '{reader.TokenType}': " +
+                    $"path = {reader.Path}");
             }
         }
     }
