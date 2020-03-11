@@ -88,7 +88,7 @@ namespace Desalt.Core.Translation
         public static async Task<IExtendedResult<DocumentTranslationContext>> TryCreateAsync(
             Document document,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             // try to get the syntax tree
             SyntaxTree rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);

@@ -71,7 +71,7 @@ namespace Desalt.Core.SymbolTables
         /// <returns>A new <see cref="AlternateSignatureSymbolTable"/>.</returns>
         public static IExtendedResult<AlternateSignatureSymbolTable> Create(
             ImmutableArray<DocumentTranslationContext> contexts,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             // process the types defined in the documents
             var entriesWithErrors = contexts.AsParallel()

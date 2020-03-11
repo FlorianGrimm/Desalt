@@ -59,7 +59,7 @@ namespace Desalt.Core.Translation
         /// </param>
         public TranslationVisitor(
             DocumentTranslationContextWithSymbolTables context,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             ICollection<Diagnostic> diagnostics = null)
         {
             _cancellationToken = cancellationToken;

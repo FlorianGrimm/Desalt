@@ -38,7 +38,7 @@ namespace Desalt.Core.Pipeline
         Task<IExtendedResult> ExecuteAsync(
             object input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -60,6 +60,6 @@ namespace Desalt.Core.Pipeline
         Task<IExtendedResult<TOutput>> ExecuteAsync(
             TInput input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 }

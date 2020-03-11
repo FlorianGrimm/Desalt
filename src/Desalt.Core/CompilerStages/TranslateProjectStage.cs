@@ -39,7 +39,7 @@ namespace Desalt.Core.CompilerStages
         public override async Task<IExtendedResult<ImmutableArray<string>>> ExecuteAsync(
             ImmutableArray<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             await Task.Yield();
 

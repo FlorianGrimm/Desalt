@@ -139,7 +139,7 @@ namespace Desalt.Core.SymbolTables
                 ? attributeData?.ConstructorArguments.FirstOrDefault().Value
                 : attributeData?.NamedArguments.FirstOrDefault(pair => pair.Key == propertyName).Value.Value;
 
-            value = rawValue == null ? default(T) : (T)rawValue;
+            value = rawValue == null ? default : (T)rawValue;
             return rawValue != null;
         }
 
@@ -163,7 +163,7 @@ namespace Desalt.Core.SymbolTables
         public static T GetAttributeValueOrDefault<T>(
             this ISymbol symbol,
             string attributeFullyQualifiedNameMinusSuffix,
-            T defaultValue = default(T),
+            T defaultValue = default,
             string propertyName = null)
         {
             return TryGetAttributeValue(symbol, attributeFullyQualifiedNameMinusSuffix, propertyName, out T value)
@@ -257,7 +257,7 @@ namespace Desalt.Core.SymbolTables
         public static T GetAttributeValueOrDefault<T>(
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
-            T defaultValue = default(T),
+            T defaultValue = default,
             SaltarelleAttributeArgumentName? propertyName = null)
         {
             return GetAttributeValueOrDefault(

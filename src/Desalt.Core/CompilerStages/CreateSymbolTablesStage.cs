@@ -40,7 +40,7 @@ namespace Desalt.Core.CompilerStages
             ExecuteAsync(
                 ImmutableArray<DocumentTranslationContext> input,
                 CompilerOptions options,
-                CancellationToken cancellationToken = default(CancellationToken))
+                CancellationToken cancellationToken = default)
         {
             var diagnostics = new List<Diagnostic>();
 

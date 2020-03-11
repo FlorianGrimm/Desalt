@@ -38,7 +38,7 @@ namespace Desalt.Core.Translation
         public IExtendedResult<IEnumerable<ITsImportDeclaration>> TranslateImports(
             DocumentTranslationContext context,
             IEnumerable<ITypeSymbol> typesToImport,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (context == null)
             {

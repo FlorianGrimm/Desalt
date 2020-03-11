@@ -72,7 +72,7 @@ namespace Desalt.Core.SymbolTables
         public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
             ImmutableArray<DocumentTranslationContext> contexts,
             SymbolDiscoveryKind discoveryKind,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return discoveryKind == SymbolDiscoveryKind.OnlyDocumentTypes
                 ? ImmutableArray<ITypeSymbol>.Empty
@@ -90,7 +90,7 @@ namespace Desalt.Core.SymbolTables
         /// <returns>All of the externally-referenced type symbols.</returns>
         public static ImmutableArray<ITypeSymbol> DiscoverDirectlyReferencedExternalTypes(
             DocumentTranslationContext context,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             // find all of the external type references in the document
             var walker = new ExternalTypeWalker(context.SemanticModel, cancellationToken);
@@ -115,7 +115,7 @@ namespace Desalt.Core.SymbolTables
         public static ImmutableArray<INamedTypeSymbol> DiscoverTypesInReferencedAssemblies(
             IEnumerable<ITypeSymbol> externalSymbols,
             Compilation compilation,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
             if (discoveryKind != SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
