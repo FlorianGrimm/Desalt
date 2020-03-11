@@ -44,27 +44,9 @@ namespace Desalt.Core.CompilerStages
         {
             var diagnostics = new List<Diagnostic>();
 
-            // get the symbol table overrides
-            SymbolTableOverrides overrides = options.SymbolTableOverrides;
-
             // the compilation should be the same in all of the contexts, so just use the first one
             Compilation compilation = input.First().SemanticModel.Compilation;
             Debug.Assert(input.All(context => ReferenceEquals(context.SemanticModel.Compilation, compilation)));
-
-            // since most of the symbol tables will need references to types directly referenced in
-            // the documents and types in referenced assemblies, compute them once and then pass them
-            // into each symbol table
-            ImmutableArray<ITypeSymbol> directlyReferencedExternalTypeSymbols =
-                SymbolDiscoverer.DiscoverDirectlyReferencedExternalTypes(
-                    input,
-                    SymbolDiscoveryKind.DocumentAndAllAssemblyTypes,
-                    cancellationToken);
-
-            ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols =
-                SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
-                    directlyReferencedExternalTypeSymbols,
-                    compilation,
-                    cancellationToken);
 
             // create a script namer
             IAssemblySymbol mscorlibAssemblySymbol = SymbolDiscoverer.GetMscorlibAssemblySymbol(compilation);
