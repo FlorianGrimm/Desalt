@@ -218,9 +218,9 @@ namespace Desalt.TypeScriptAst.Emit
                 throw new ArgumentNullException(nameof(items));
             }
 
-            prefix = prefix ?? string.Empty;
-            suffix = suffix ?? string.Empty;
-            itemDelimiter = itemDelimiter ?? string.Empty;
+            prefix ??= string.Empty;
+            suffix ??= string.Empty;
+            itemDelimiter ??= string.Empty;
 
             // Special case - if the list is empty
             if (items.Count == 0)

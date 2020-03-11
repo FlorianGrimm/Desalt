@@ -177,7 +177,7 @@ namespace Desalt.Core.Diagnostics
             DiagnosticOptions options,
             IEnumerable<Diagnostic> diagnostics = null)
         {
-            diagnostics = diagnostics ?? Enumerable.Empty<Diagnostic>();
+            diagnostics ??= Enumerable.Empty<Diagnostic>();
             return diagnostics.Select(d => Filter(options, d)).Where(d => d != null);
         }
     }

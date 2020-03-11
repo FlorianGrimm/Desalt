@@ -163,8 +163,8 @@ namespace Desalt.Core.Translation
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
-            typesToImport = typesToImport ?? new HashSet<ITypeSymbol>();
-            diagnostics = diagnostics ?? new List<Diagnostic>();
+            typesToImport ??= new HashSet<ITypeSymbol>();
+            diagnostics ??= new List<Diagnostic>();
 
             var namedTypeSymbol = symbol as INamedTypeSymbol;
 

@@ -82,7 +82,7 @@ namespace Desalt.Core.Translation
                     "Ummm... don't be calling this unless you're at an XML start character.");
             }
 
-            diagnostics = diagnostics ?? new List<Diagnostic>();
+            diagnostics ??= new List<Diagnostic>();
 
             // skip the <
             reader.Read();
