@@ -25,7 +25,7 @@ namespace Desalt.CompilerUtilities
         //// Member Variables
         //// ===========================================================================================================
 
-        private StreamReader _internalReader;
+        private StreamReader? _internalReader;
         private Queue<char> _buffer = new Queue<char>();
         private TextReaderLocation _location;
 
@@ -33,13 +33,13 @@ namespace Desalt.CompilerUtilities
         //// Constructors
         //// ===========================================================================================================
 
-        public PeekingTextReader(string contents, string contentsName = null)
+        public PeekingTextReader(string contents, string? contentsName = null)
             : this(new UnicodeStringStream(contents), contentsName)
         {
             Param.VerifyNotNull(contents, "contents");
         }
 
-        public PeekingTextReader(Stream stream, string streamName = null)
+        public PeekingTextReader(Stream stream, string? streamName = null)
         {
             Param.VerifyNotNull(stream, "stream");
             _internalReader = new StreamReader(stream);
@@ -79,7 +79,7 @@ namespace Desalt.CompilerUtilities
                 }
 
                 int readChar;
-                while ((readChar = _internalReader.Read()) != -1)
+                while ((readChar = _internalReader!.Read()) != -1)
                 {
                     char c = (char)readChar;
                     _buffer.Enqueue(c);
@@ -97,13 +97,13 @@ namespace Desalt.CompilerUtilities
                 while (_buffer.Count > 0)
                 {
                     char c = _buffer.Dequeue();
-                    int nextC = _buffer.Count > 0 ? _buffer.Peek() : _internalReader.Peek();
+                    int nextC = _buffer.Count > 0 ? _buffer.Peek() : _internalReader!.Peek();
                     _location = AdvanceLocation(c, nextC, _location);
                     yield return c;
                 }
 
                 int readChar;
-                while ((readChar = _internalReader.Read()) != -1)
+                while ((readChar = _internalReader!.Read()) != -1)
                 {
                     int nextC = _internalReader.Peek();
                     _location = AdvanceLocation(readChar, nextC, _location);
@@ -144,7 +144,7 @@ namespace Desalt.CompilerUtilities
 
         public override int Peek()
         {
-            string peekString = Peek(1);
+            string? peekString = Peek(1);
             if (peekString == null)
             {
                 return -1;
@@ -153,7 +153,7 @@ namespace Desalt.CompilerUtilities
             return peekString[0];
         }
 
-        public string Peek(int count)
+        public string? Peek(int count)
         {
             char[] chars = Peeker.Take(count).ToArray();
             if (chars.Length == 0)
@@ -164,14 +164,14 @@ namespace Desalt.CompilerUtilities
             return new string(chars);
         }
 
-        public string PeekLine()
+        public string? PeekLine()
         {
             return PeekUntil('\n', '\r');
         }
 
         public override int Read()
         {
-            string readStr = Read(1);
+            string? readStr = Read(1);
             if (readStr == null)
             {
                 return -1;
@@ -180,7 +180,7 @@ namespace Desalt.CompilerUtilities
             return readStr[0];
         }
 
-        public string Read(int count)
+        public string? Read(int count)
         {
             char[] chars = Reader.Take(count).ToArray();
             if (chars.Length == 0)
@@ -197,7 +197,7 @@ namespace Desalt.CompilerUtilities
         /// characters '\f', or line feeds (any character with the Unicode class <c>Zl</c>.
         /// </summary>
         /// <returns>Everything read up to, but not including the first whitespace character.</returns>
-        public string ReadUntilWhitespace()
+        public string? ReadUntilWhitespace()
         {
             return ReadUntil(IsWhitespace);
         }
@@ -225,7 +225,7 @@ namespace Desalt.CompilerUtilities
         /// The peeked characters, up to but not including the character that was found. If at the
         /// end of the stream, null is returned.
         /// </returns>
-        public string PeekUntil(char findChar, params char[] findChars)
+        public string? PeekUntil(char findChar, params char[] findChars)
         {
             return PeekChars(until: true, findChar: findChar, findChars: findChars);
         }
@@ -240,7 +240,7 @@ namespace Desalt.CompilerUtilities
         /// The read characters, up to but not including the character that was not found. If at the
         /// end of the stream, null is returned.
         /// </returns>
-        public string PeekWhile(char findChar, params char[] findChars)
+        public string? PeekWhile(char findChar, params char[] findChars)
         {
             return PeekChars(until: false, findChar: findChar, findChars: findChars);
         }
@@ -255,7 +255,7 @@ namespace Desalt.CompilerUtilities
         /// The read characters, up to but not including the character that was found. If at the end
         /// of the stream, null is returned.
         /// </returns>
-        public string ReadUntil(char findChar, params char[] findChars)
+        public string? ReadUntil(char findChar, params char[] findChars)
         {
             return ReadChars(until: true, findChar: findChar, findChars: findChars);
         }
@@ -270,7 +270,7 @@ namespace Desalt.CompilerUtilities
         /// The read characters, up to but not including the character that was not found. If at the
         /// end of the stream, null is returned.
         /// </returns>
-        public string ReadWhile(char findChar, params char[] findChars)
+        public string? ReadWhile(char findChar, params char[] findChars)
         {
             return ReadChars(until: false, findChar: findChar, findChars: findChars);
         }
@@ -287,12 +287,12 @@ namespace Desalt.CompilerUtilities
         /// The peeked characters, up to but not including the first character of the specified find
         /// string. If at the end of the stream, null is returned.
         /// </returns>
-        public string PeekUntil(string find)
+        public string? PeekUntil(string find)
         {
             Param.VerifyNotNull(find, "find");
 
             TextReaderLocation locationBeforeRead = _location;
-            string readStr = ReadUntil(find);
+            string? readStr = ReadUntil(find);
             if (readStr != null)
             {
                 _buffer = new Queue<char>(readStr.ToCharArray().Concat(_buffer));
@@ -310,12 +310,12 @@ namespace Desalt.CompilerUtilities
         /// The peeked characters, up to but not including the first character of the character that
         /// stopped the peeking. If at the end of the stream, null is returned.
         /// </returns>
-        public string PeekWhile(string find)
+        public string? PeekWhile(string find)
         {
             Param.VerifyNotNull(find, "find");
 
             TextReaderLocation locationBeforeRead = _location;
-            string readStr = ReadWhile(find);
+            string? readStr = ReadWhile(find);
             if (readStr != null)
             {
                 _buffer = new Queue<char>(readStr.ToCharArray().Concat(_buffer));
@@ -334,12 +334,12 @@ namespace Desalt.CompilerUtilities
         /// The read characters, up to but not including the first character of the specified find
         /// string. If at the end of the stream, null is returned.
         /// </returns>
-        public string ReadUntil(string find)
+        public string? ReadUntil(string find)
         {
             Param.VerifyNotNull(find, "find");
 
             var builder = new StringBuilder();
-            string nextChunk;
+            string? nextChunk;
 
             // Read until we see the first character of the find string.
             while ((nextChunk = ReadUntil(find[0])) != null)
@@ -347,7 +347,7 @@ namespace Desalt.CompilerUtilities
                 builder.Append(nextChunk);
 
                 // Look ahead to see if our string is next.
-                string peekStr = Peek(find.Length);
+                string? peekStr = Peek(find.Length);
                 if (peekStr == find)
                 {
                     break;
@@ -377,7 +377,7 @@ namespace Desalt.CompilerUtilities
         /// The peeked characters, up to but not including the first character of the character that
         /// stopped the peeking. If at the end of the stream, null is returned.
         /// </returns>
-        public string ReadWhile(string find)
+        public string? ReadWhile(string find)
         {
             Param.VerifyNotNull(find, "find");
 
@@ -408,7 +408,7 @@ namespace Desalt.CompilerUtilities
         /// The characters that were peeked, up to but not including the character that caused the
         /// predicate to return true. If at the end of the stream, null is returned.
         /// </returns>
-        public string PeekUntil(Func<char, bool> predicate)
+        public string? PeekUntil(Func<char, bool> predicate)
         {
             Param.VerifyNotNull(predicate, "predicate");
             return PeekPredicate(c => !predicate(c));
@@ -424,7 +424,7 @@ namespace Desalt.CompilerUtilities
         /// The characters that were read, up to but not including the character that caused the
         /// predicate to return false. If at the end of the stream, null is returned.
         /// </returns>
-        public string PeekWhile(Func<char, bool> predicate)
+        public string? PeekWhile(Func<char, bool> predicate)
         {
             Param.VerifyNotNull(predicate, "predicate");
             return PeekPredicate(predicate);
@@ -440,7 +440,7 @@ namespace Desalt.CompilerUtilities
         /// The characters that were read, up to but not including the character that caused the
         /// predicate to return true. If at the end of the stream, null is returned.
         /// </returns>
-        public string ReadUntil(Func<char, bool> predicate)
+        public string? ReadUntil(Func<char, bool> predicate)
         {
             Param.VerifyNotNull(predicate, "predicate");
             return ReadPredicate(c => !predicate(c));
@@ -456,7 +456,7 @@ namespace Desalt.CompilerUtilities
         /// The characters that were read, up to but not including the character that caused the
         /// predicate to return false. If at the end of the stream, null is returned.
         /// </returns>
-        public string ReadWhile(Func<char, bool> predicate)
+        public string? ReadWhile(Func<char, bool> predicate)
         {
             Param.VerifyNotNull(predicate, "predicate");
             return ReadPredicate(predicate);
@@ -527,7 +527,7 @@ namespace Desalt.CompilerUtilities
             return predicate;
         }
 
-        private string PeekChars(bool until, char findChar, params char[] findChars)
+        private string? PeekChars(bool until, char findChar, params char[] findChars)
         {
             Func<char, bool> predicate = GetCharPredicate(until, findChar, findChars);
             char[] taken = Peeker.TakeWhile(predicate).ToArray();
@@ -539,13 +539,13 @@ namespace Desalt.CompilerUtilities
             return new string(taken);
         }
 
-        private string ReadChars(bool until, char findChar, params char[] findChars)
+        private string? ReadChars(bool until, char findChar, params char[] findChars)
         {
             Func<char, bool> predicate = GetCharPredicate(until, findChar, findChars);
             return ReadPredicate(predicate);
         }
 
-        private string PeekPredicate(Func<char, bool> predicate)
+        private string? PeekPredicate(Func<char, bool> predicate)
         {
             char[] taken = Peeker.TakeWhile(predicate).ToArray();
             if (taken.Length == 0 && IsAtEnd)
@@ -556,7 +556,7 @@ namespace Desalt.CompilerUtilities
             return new string(taken);
         }
 
-        private string ReadPredicate(Func<char, bool> predicate)
+        private string? ReadPredicate(Func<char, bool> predicate)
         {
             var builder = new StringBuilder();
             int c;

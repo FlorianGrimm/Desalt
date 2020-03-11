@@ -30,13 +30,15 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void PeekingTextReader_Ctor_should_throw_on_null_args()
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new PeekingTextReader((Stream)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            // ReSharper disable ObjectCreationAsStatement
+            Action action = () => new PeekingTextReader((Stream?)null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
 
-            // ReSharper disable once ObjectCreationAsStatement
-            action = () => new PeekingTextReader((string)null);
+            action = () => new PeekingTextReader((string?)null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("contents");
+            // ReSharper restore ObjectCreationAsStatement
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]
@@ -349,7 +351,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "Hi",
                 reader =>
                 {
-                    Action action = () => reader.PeekUntil((string)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.PeekUntil((string?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("find");
                 });
         }
@@ -414,7 +418,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "abc",
                 reader =>
                 {
-                    Action action = () => reader.PeekUntil((Func<char, bool>)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.PeekUntil((Func<char, bool>?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("predicate");
                 });
         }
@@ -513,7 +519,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "abc",
                 reader =>
                 {
-                    Action action = () => reader.PeekWhile((string)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.PeekWhile((string?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("find");
                 });
         }
@@ -580,7 +588,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "abc",
                 reader =>
                 {
-                    Action action = () => reader.PeekWhile((Func<char, bool>)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.PeekWhile((Func<char, bool>?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("predicate");
                 });
         }
@@ -791,7 +801,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "Hi",
                 reader =>
                 {
-                    Action action = () => reader.ReadUntil((string)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.ReadUntil((string?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("find");
                 });
         }
@@ -844,7 +856,9 @@ namespace Desalt.CompilerUtilities.Tests
                 "abc",
                 reader =>
                 {
-                    Action action = () => reader.ReadUntil((Func<char, bool>)null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Action action = () => reader.ReadUntil((Func<char, bool>?)null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                     action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("predicate");
                 });
         }

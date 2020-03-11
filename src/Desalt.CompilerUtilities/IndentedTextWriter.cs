@@ -29,7 +29,7 @@ namespace Desalt.CompilerUtilities
         /// <summary>
         /// Specifies the default indentation prefix, which is two spaces.
         /// </summary>
-        public static readonly string DefaultIndentationPrefix = "  ";
+        public const string DefaultIndentationPrefix = "  ";
 
         private int _indentLevel;
         private bool _indentPending;
@@ -40,21 +40,11 @@ namespace Desalt.CompilerUtilities
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndentedTextWriter"/> class using the
-        /// specified text writer and default indentation prefix.
-        /// </summary>
-        /// <param name="writer">The <see cref="TextWriter"/> to use for output.</param>
-        public IndentedTextWriter(TextWriter writer)
-            : this(writer, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndentedTextWriter"/> class using the
         /// specified text writer and indentation prefix.
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/> to use for output.</param>
         /// <param name="indentationPrefix">The indentation prefix to use for indentation.</param>
-        public IndentedTextWriter(TextWriter writer, string indentationPrefix)
+        public IndentedTextWriter(TextWriter writer, string indentationPrefix = DefaultIndentationPrefix)
             : base(CultureInfo.InvariantCulture)
         {
             InnerWriter = writer ?? throw new ArgumentNullException(nameof(writer));

@@ -21,7 +21,7 @@ namespace Desalt.CompilerUtilities.Tests
             using (var stream = new MemoryStream())
             {
                 using var writer = new StreamWriter(stream);
-                using var indentedWriter = new IndentedTextWriter(writer, "  ") { NewLine = "\n" };
+                using var indentedWriter = new IndentedTextWriter(writer) { NewLine = "\n" };
 
                 // Run the test.
                 test(indentedWriter);
@@ -43,6 +43,7 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void Ctor_should_throw_on_null_args()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             // ReSharper disable ObjectCreationAsStatement
             Action action = () => new IndentedTextWriter(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
@@ -50,6 +51,7 @@ namespace Desalt.CompilerUtilities.Tests
             action = () => new IndentedTextWriter(null, " ");
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("writer");
             // ReSharper restore ObjectCreationAsStatement
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]
@@ -57,15 +59,8 @@ namespace Desalt.CompilerUtilities.Tests
         {
             using var stream = new MemoryStream();
             using var writer = new StreamWriter(stream);
-            using (var indentedWriter = new IndentedTextWriter(writer))
-            {
-                indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
-            }
-
-            using (var indentedWriter = new IndentedTextWriter(writer, indentationPrefix: null))
-            {
-                indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
-            }
+            using var indentedWriter = new IndentedTextWriter(writer);
+            indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
         }
 
         [Test]

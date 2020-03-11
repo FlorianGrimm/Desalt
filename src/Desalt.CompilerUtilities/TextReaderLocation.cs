@@ -22,7 +22,7 @@ namespace Desalt.CompilerUtilities
         //// Constructors
         //// ===========================================================================================================
 
-        public TextReaderLocation(int line, int column, string source = null)
+        public TextReaderLocation(int line, int column, string? source = null)
             : this()
         {
             Line = line;

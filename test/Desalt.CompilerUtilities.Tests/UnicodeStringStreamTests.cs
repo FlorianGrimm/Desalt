@@ -21,7 +21,9 @@ namespace Desalt.CompilerUtilities.Tests
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable once ObjectCreationAsStatement
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => new UnicodeStringStream(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("contents");
         }
 
@@ -207,7 +209,9 @@ namespace Desalt.CompilerUtilities.Tests
         {
             _stream.CanWrite.Should().BeFalse();
             // ReSharper disable once AssignNullToNotNullAttribute
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             new Action(() => _stream.Write(null, 0, 0)).Should().Throw<NotSupportedException>();
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]
