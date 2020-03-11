@@ -5,10 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Desalt.Core")]
-[assembly: AssemblyDescription("Core libary for the Desalt toolset.")]
 [assembly: InternalsVisibleTo("Desalt.Core.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

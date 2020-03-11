@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
@@ -93,8 +94,11 @@ namespace Desalt.Core.Tests
         {
             string invalidPath = @"N:\InvalidPath" + Path.GetInvalidFileNameChars()[0];
             IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(invalidPath);
-            result.Diagnostics.Should()
-                .BeEquivalentTo(DiagnosticFactory.InvalidOptionsFile(invalidPath, "Illegal characters in path."));
+            result.Diagnostics.Select(x => x.ToString())
+                .Should()
+                .HaveCount(1)
+                .And.ContainMatch(
+                    DiagnosticFactory.InvalidOptionsFile(invalidPath, "Could not find a part of the path") + "*");
         }
 
         [Test]
