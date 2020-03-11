@@ -1,148 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{03DA60E1-EF57-4220-9F48-8B26E9C8988B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Desalt.Core.Tests</RootNamespace>
-    <AssemblyName>Desalt.Core.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Tests for the Desalt.Core library.</Description>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <PropertyGroup>
-    <!--
-    AD0001: Analyzer 'Microsoft.CodeAnalysis.CSharp.Analyzers.MetaAnalyzers.CSharpDiagnosticAnalyzerApiUsageAnalyzer'
-    threw an exception of type 'System.NullReferenceException' with message 'Object reference not set to an instance of an object.'.
-    -->
-    <NoWarn>$(NoWarn);AD0001</NoWarn>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CompileOptionsTests.cs" />
-    <Compile Include="Diagnostics\DiagnosticExtensionsTests.cs" />
-    <Compile Include="Diagnostics\DiagnosticListTests.cs" />
-    <Compile Include="Diagnostics\DiagnosticsTestFactories.cs" />
-    <Compile Include="EndToEndTests.cs" />
-    <Compile Include="Pipeline\FakePipelineStages.cs" />
-    <Compile Include="Pipeline\SimplePipelineTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SymbolTables\AlternateSignatureSymbolTableTests.cs" />
-    <Compile Include="SymbolTables\ScriptSymbolTableTests.cs" />
-    <Compile Include="SymbolTables\ScriptAssemblySymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptEnumSymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptEventSymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptFieldSymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptMethodSymbolTests.cs" />
-    <Compile Include="SymbolTables\ScriptNamerTests.cs" />
-    <Compile Include="SymbolTables\ScriptSymbolTests.cs" />
-    <Compile Include="SymbolTables\SymbolAttributeExtensionsTests.cs" />
-    <Compile Include="TestUtility\RoslynExtensionsForTesting.cs" />
-    <Compile Include="TestUtility\TempProject.cs" />
-    <Compile Include="Translation\AlternateSignatureTranslatorTests.cs" />
-    <Compile Include="Translation\CSharpToTypeScriptTranslatorTests.cs" />
-    <Compile Include="Translation\DocumentationCommentCrefTests.cs" />
-    <Compile Include="Translation\DocumentationCommentTranslatorTests.cs" />
-    <Compile Include="Translation\DocumentationCommentXmlElementTests.cs" />
-    <Compile Include="Translation\ImportsTranslatorTests.cs" />
-    <Compile Include="Translation\InlineCodeTranslatorTests.cs" />
-    <Compile Include="Translation\TemporaryVariableAllocatorTests.cs" />
-    <Compile Include="Translation\TranslationVisitorTests.cs" />
-    <Compile Include="Translation\TranslationVisitorTests.Declarations.cs" />
-    <Compile Include="Translation\TranslationVisitorTests.Expressions.cs" />
-    <Compile Include="Translation\TranslationVisitorTests.Statements.cs" />
-    <Compile Include="Translation\TypeTranslatorTests.cs" />
-    <Compile Include="Utility\PathUtilTests.cs" />
-    <Compile Include="Utility\XmlFragmentParserTests.cs" />
-    <Compile Include="Validation\NoDefaultParametersInInterfacesValidatorTests.cs" />
-    <Compile Include="Validation\NoDuplicateFieldAndPropertyNamesValidatorTests.cs" />
-    <Compile Include="Validation\NoPartialClassesValidatorTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj">
-      <Project>{9e9be60d-71a7-4b2a-b6d3-edf6bdada7a8}</Project>
-      <Name>Desalt.CompilerUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj">
-      <Project>{987796c8-ee76-4ffd-b2eb-1b3a0767920b}</Project>
-      <Name>Desalt.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Desalt.TypeScriptAst\Desalt.TypeScriptAst.csproj">
-      <Project>{b48c4c55-5cea-4007-94bc-ad5e39e62aef}</Project>
-      <Name>Desalt.TypeScriptAst</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\jQuery.dll">
-      <Link>TestUtility\jQuery.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\mscorlib.dll">
-      <Link>TestUtility\mscorlib.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\NativeJsTypeDefs.dll">
-      <Link>TestUtility\NativeJsTypeDefs.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\TypeDefs.dll">
-      <Link>TestUtility\TypeDefs.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Underscore.dll">
-      <Link>TestUtility\Underscore.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\SaltarelleBinaries\Runtime\Web.dll">
-      <Link>TestUtility\Web.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Buildalyzer.Workspaces">
-      <Version>2.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="FluentAssertions">
-      <Version>5.10.2</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <Version>3.4.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk">
-      <Version>16.5.0</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit">
-      <Version>3.12.0</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter">
-      <Version>3.16.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="FluentAssertions" Version="5.10.2" />
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable">
-      <Version>1.7.0</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Desalt.Core\Desalt.Core.csproj" />
+  </ItemGroup>
 </Project>
