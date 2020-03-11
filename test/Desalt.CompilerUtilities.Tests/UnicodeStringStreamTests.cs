@@ -48,7 +48,7 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public async Task An_asynchronous_write_or_flush_operation_should_throw_NotSupportedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
@@ -105,7 +105,7 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public async Task An_asynchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
@@ -133,7 +133,7 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public async Task An_asynchronous_read_operation_on_a_closed_reader_should_throw_NotSupportedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
