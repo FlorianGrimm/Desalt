@@ -71,63 +71,67 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void Write_should_not_indent_by_default()
         {
-            Action<IndentedTextWriter> test = writer =>
+            static void Test(IndentedTextWriter writer)
             {
                 writer.Write("123");
                 writer.WriteLine("45");
-            };
+            }
 
-            RunTest(test, "12345\n");
+            RunTest(Test, "12345\n");
         }
 
         [Test]
         public void Write_should_correctly_indent_one_level()
         {
-            Action<IndentedTextWriter> test = writer =>
+            static void Test(IndentedTextWriter writer)
             {
                 writer.WriteLine("{");
                 writer.IndentLevel++;
                 writer.WriteLine("test");
                 writer.IndentLevel--;
                 writer.WriteLine("}");
-            };
-            RunTest(test, "{\n  test\n}\n");
+            }
+
+            RunTest(Test, "{\n  test\n}\n");
         }
 
         [Test]
         public void Write_should_handle_indents_less_than_zero()
         {
-            Action<IndentedTextWriter> test = writer =>
+            static void Test(IndentedTextWriter writer)
             {
                 writer.IndentLevel = -2;
                 writer.WriteLine("abc");
                 writer.WriteLine("def");
-            };
-            RunTest(test, "abc\ndef\n");
+            }
+
+            RunTest(Test, "abc\ndef\n");
         }
 
         [Test]
         public void Write_should_not_indent_the_first_line_even_if_Indent_is_greater_than_zero()
         {
-            Action<IndentedTextWriter> test = writer =>
+            static void Test(IndentedTextWriter writer)
             {
                 writer.IndentLevel = 2;
                 writer.WriteLine("abc");
                 writer.WriteLine("def");
-            };
-            RunTest(test, "abc\n    def\n");
+            }
+
+            RunTest(Test, "abc\n    def\n");
         }
 
         [Test]
         public void Write_should_add_the_indentation_when_writing_an_empty_string()
         {
-            Action<IndentedTextWriter> test = writer =>
+            static void Test(IndentedTextWriter writer)
             {
                 writer.IndentLevel++;
                 writer.WriteLine();
                 writer.Write(string.Empty);
-            };
-            RunTest(test, "\n  ");
+            }
+
+            RunTest(Test, "\n  ");
         }
     }
 }
