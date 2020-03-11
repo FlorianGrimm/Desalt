@@ -233,7 +233,7 @@ namespace Desalt.Core.SymbolTables
             string defaultValue = null,
             SaltarelleAttributeArgumentName? propertyName = null)
         {
-            return GetAttributeValueOrDefault<string>(
+            return GetAttributeValueOrDefault(
                 symbol,
                 FullyQualifiedName(attributeName),
                 propertyName: propertyName?.ToString(),

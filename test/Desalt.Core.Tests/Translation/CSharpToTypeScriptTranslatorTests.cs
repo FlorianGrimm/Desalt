@@ -26,7 +26,7 @@ using System.Collections.Generic;
 ";
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
-            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
+            var context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
             var translator = new CSharpToTypeScriptTranslator();
             IExtendedResult<TypeScriptAst.Ast.ITsImplementationModule> result = translator.TranslateDocument(context);
 
