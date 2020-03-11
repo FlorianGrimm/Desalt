@@ -52,7 +52,7 @@ namespace Desalt.Core.Utility
             {
                 _text = text;
 
-                // The first read shall read the <root>, the subsequents reads shall start with
+                // The first read shall read the <root>, the subsequent reads shall start with
                 // <current> element
                 if (_position > 0)
                 {

@@ -11,7 +11,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents an element in an object initializer of the form 'identifer = expression'.
+    /// Represents an element in an object initializer of the form 'identifier = expression'.
     /// </summary>
     internal class TsCoverInitializedName : TsAstNode, ITsCoverInitializedName
     {

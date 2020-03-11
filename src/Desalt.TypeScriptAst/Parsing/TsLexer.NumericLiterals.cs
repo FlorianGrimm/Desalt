@@ -247,7 +247,7 @@ namespace Desalt.TypeScriptAst.Parsing
         }
 
         /// <summary>
-        /// Lexes a hexidecimal integer literal of the form '0x12ab'.
+        /// Lexes a hexadecimal integer literal of the form '0x12ab'.
         /// </summary>
         /// <remarks><code><![CDATA[
         /// HexIntegerLiteral ::

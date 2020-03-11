@@ -661,7 +661,7 @@ namespace Desalt.TypeScriptAst.Ast
      *   BreakStatement
      *   ReturnStatement
      *   WithStatement
-     *   LabelledStatement
+     *   LabeledStatement
      *   ThrowStatement
      *   TryStatement
      *   DebuggerStatement
@@ -1029,17 +1029,17 @@ namespace Desalt.TypeScriptAst.Ast
     {
     }
 
-    /* 13.13 Labelled Statements
+    /* 13.13 Labeled Statements
      * -------------------------
-     * LabelledStatement:
-     *   LabelIdentifier : LabelledItem
+     * LabeledStatement:
+     *   LabelIdentifier : LabeledItem
      *
-     * LabelledItem:
+     * LabeledItem:
      *   Statement
      *   FunctionDeclaration
      */
 
-    public interface ITsLabelledStatement : ITsStatement
+    public interface ITsLabeledStatement : ITsStatement
     {
         ITsIdentifier Label { get; }
         ITsStatement Statement { get; }

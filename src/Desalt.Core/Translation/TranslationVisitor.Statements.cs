@@ -304,7 +304,7 @@ namespace Desalt.Core.Translation
                         _diagnostics,
                         node.Declaration.Type.GetLocation);
 
-                // fixup all of the declarations to add the type
+                // fix up all of the declarations to add the type
                 if (declarationType != null)
                 {
                     declaration = declaration.WithDeclarations(
@@ -369,7 +369,7 @@ namespace Desalt.Core.Translation
             if (usingBlock is ITsBlockStatement tryBlock)
             {
                 // remove any trailing newlines
-                tryBlock = tryBlock.WithTrailingTrivia(new ITsAstTriviaNode[0]);
+                tryBlock = tryBlock.WithTrailingTrivia();
             }
             else
             {

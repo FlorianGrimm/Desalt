@@ -211,7 +211,7 @@ namespace Desalt.CompilerUtilities.Tests
         }
 
         [Test]
-        public void Should_not_support_flusing()
+        public void Should_not_support_flushing()
         {
             new Action(() => _stream.Flush()).Should().Throw<NotSupportedException>();
         }

@@ -59,6 +59,7 @@ class C
         [Test]
         public async Task ScriptMethodSymbol_should_read_the_right_values_on_the_attributes()
         {
+            // ReSharper disable once StringLiteralTypo
             const string code = @"
 using System;
 using System.Runtime.CompilerServices;

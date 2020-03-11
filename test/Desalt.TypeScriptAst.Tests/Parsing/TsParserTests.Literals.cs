@@ -58,7 +58,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         }
 
         [Test]
-        public void TsParser_should_parese_object_literals_with_string_or_number_keys()
+        public void TsParser_should_parse_object_literals_with_string_or_number_keys()
         {
             AssertParseExpression(
                 "{ 'continue': x }",

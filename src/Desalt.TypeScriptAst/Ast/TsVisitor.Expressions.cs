@@ -91,7 +91,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Visits an object literal of the form '{ PropertDefinition, ... }'.
+        /// Visits an object literal of the form '{ PropertyDefinition, ... }'.
         /// </summary>
         public virtual void VisitObjectLiteral(ITsObjectLiteral node)
         {
@@ -99,7 +99,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Visits an element in an object initializer of the form 'identifer = expression'.
+        /// Visits an element in an object initializer of the form 'identifier = expression'.
         /// </summary>
         public virtual void VisitCoverInitializedName(ITsCoverInitializedName node)
         {

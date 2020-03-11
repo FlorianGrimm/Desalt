@@ -125,11 +125,11 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Cretes a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
+        /// Creates a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
         /// </summary>
-        public static ITsJsDocLinkTag JsDocLinkTag(string namepathOrUrl, string text = null)
+        public static ITsJsDocLinkTag JsDocLinkTag(string namespaceOrUrl, string text = null)
         {
-            return new TsJsDocLinkTag(namepathOrUrl, text);
+            return new TsJsDocLinkTag(namespaceOrUrl, text);
         }
     }
 }

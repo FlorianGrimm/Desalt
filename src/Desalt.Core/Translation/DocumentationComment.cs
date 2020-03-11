@@ -109,6 +109,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public ISymbol Symbol { get; private set; }
 
+        // ReSharper disable once CommentTypo
         /// <summary>
         /// The item named in the &lt;completionlist&gt; tag's cref attribute.
         /// Null if the tag or cref attribute didn't exist.

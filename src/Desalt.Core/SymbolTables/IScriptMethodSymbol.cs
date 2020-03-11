@@ -26,6 +26,7 @@ namespace Desalt.Core.SymbolTables
         /// Can be specified on a method or a constructor to indicate that no code should be
         /// generated for the member, but it has no effect on any usage of the member.
         /// </summary>
+        // ReSharper disable once IdentifierTypo
         bool DontGenerate { get; }
 
         /// <summary>

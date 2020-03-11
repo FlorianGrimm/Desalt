@@ -51,7 +51,7 @@ namespace Desalt.Core.Tests.Translation
         }
 
         [Test]
-        public void Parse_should_throw_an_exception_if_the_reader_isnt_positioned_at_a_lt_character()
+        public void Parse_should_throw_an_exception_if_the_reader_is_not_positioned_at_a_lt_character()
         {
             using var reader = new PeekingTextReader("not valid");
 

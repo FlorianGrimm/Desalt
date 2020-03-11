@@ -98,7 +98,7 @@ namespace Desalt.Core.Translation
         /// Translates any embedded XML blocks into the relevant JSDoc equivalent.
         /// </summary>
         /// <param name="text">The XML documentation comment text to translate.</param>
-        /// <param name="diagnostics">The diagnosit lise to use for reporting errors.</param>
+        /// <param name="diagnostics">The diagnostic list to use for reporting errors.</param>
         /// <returns>The translated text in JSDoc format.</returns>
         private static ITsJsDocBlock TranslateElementText(string text, ICollection<Diagnostic> diagnostics)
         {

@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast
         public abstract string CodeDisplay { get; }
 
         /// <summary>
-        /// Gets a consise string representing the current AST node to show in the debugger
+        /// Gets a concise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
         protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";

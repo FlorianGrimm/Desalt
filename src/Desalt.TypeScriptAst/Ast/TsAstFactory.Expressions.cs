@@ -117,7 +117,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Creates an element in an object initializer of the form 'identifer = expression'.
+        /// Creates an element in an object initializer of the form 'identifier = expression'.
         /// </summary>
         public static ITsCoverInitializedName CoverInitializedName(ITsIdentifier identifier, ITsExpression initializer)
         {

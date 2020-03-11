@@ -76,7 +76,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return true;
             }
 
-            // LabelledStatement
+            // LabeledStatement
             if (IsStartOfIdentifier(tokenCode) && _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon)
             {
                 return true;
@@ -115,7 +115,7 @@ namespace Desalt.TypeScriptAst.Parsing
         ///     BreakStatement          (starts with 'break')
         ///     ReturnStatement         (starts with 'return')
         ///     WithStatement           (starts with 'with')
-        ///     LabelledStatement       (starts with Identifier ':')
+        ///     LabeledStatement       (starts with Identifier ':')
         ///     ThrowStatement          (starts with 'throw')
         ///     TryStatement            (starts with 'try')
         ///     DebuggerStatement       (starts with 'debugger')
@@ -169,10 +169,10 @@ namespace Desalt.TypeScriptAst.Parsing
                 case TsTokenCode.With:
                     return ParseWithStatement();
 
-                // LabelledStatement
+                // LabeledStatement
                 // ReSharper disable once PatternAlwaysMatches
                 case TsTokenCode tc when IsStartOfIdentifier(tc) && _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon:
-                    return ParseLabelledStatement();
+                    return ParseLabeledStatement();
 
                 // ThrowStatement
                 case TsTokenCode.Throw:
@@ -561,17 +561,17 @@ namespace Desalt.TypeScriptAst.Parsing
         }
 
         /// <summary>
-        /// Parses a labelled statement.
+        /// Parses a labeled statement.
         /// </summary>
         /// <remarks><code><![CDATA[
-        /// LabelledStatement:
+        /// LabeledStatement:
         ///   LabelIdentifier : LabelledItem
         ///
         /// LabelledItem:
         ///   Statement
         ///   FunctionDeclaration       (starts with 'function')
         /// ]]></code></remarks>
-        private ITsLabelledStatement ParseLabelledStatement()
+        private ITsLabeledStatement ParseLabeledStatement()
         {
             ITsIdentifier label = ParseIdentifier();
             Read(TsTokenCode.Colon);
@@ -579,11 +579,11 @@ namespace Desalt.TypeScriptAst.Parsing
             if (_reader.IsNext(TsTokenCode.Function))
             {
                 ITsFunctionDeclaration functionDeclaration = ParseFunctionDeclaration();
-                return Factory.LabelledStatement(label, functionDeclaration);
+                return Factory.LabeledStatement(label, functionDeclaration);
             }
 
             ITsStatement statement = ParseStatement();
-            return Factory.LabelledStatement(label, statement);
+            return Factory.LabeledStatement(label, statement);
         }
     }
 }

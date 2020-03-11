@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsLabelledStatement.cs" company="Justin Rockwood">
+// <copyright file="TsLabeledStatement.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -11,21 +11,21 @@ namespace Desalt.TypeScriptAst.Ast.Statements
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents a labelled statement.
+    /// Represents a labeled statement.
     /// </summary>
-    internal class TsLabelledStatement : TsAstNode, ITsLabelledStatement
+    internal class TsLabeledStatement : TsAstNode, ITsLabeledStatement
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsLabelledStatement(ITsIdentifier label, ITsStatement statement)
+        public TsLabeledStatement(ITsIdentifier label, ITsStatement statement)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             Statement = statement ?? throw new ArgumentNullException(nameof(statement));
         }
 
-        public TsLabelledStatement(ITsIdentifier label, ITsFunctionDeclaration functionDeclaration)
+        public TsLabeledStatement(ITsIdentifier label, ITsFunctionDeclaration functionDeclaration)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             FunctionDeclaration = functionDeclaration ?? throw new ArgumentNullException(nameof(functionDeclaration));
@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public override void Accept(TsVisitor visitor)
         {
-            visitor.VisitLabelledStatement(this);
+            visitor.VisitLabeledStatement(this);
         }
 
         public override string CodeDisplay => $"{Label}: {Statement?.CodeDisplay}{FunctionDeclaration?.CodeDisplay}";

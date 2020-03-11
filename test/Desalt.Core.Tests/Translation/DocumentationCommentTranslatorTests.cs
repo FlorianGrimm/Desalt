@@ -140,13 +140,13 @@ class Foo
         }
 
         [Test]
-        public void Translate_should_convert_see_langword_to_markdown_backticks()
+        public void Translate_should_convert_see_langword_to_markdown_back_ticks()
         {
             AssertTranslation("///<summary><see langword=\"null\"/></summary>", "`null`");
         }
 
         [Test]
-        public void Translate_should_convert_c_elements_to_markdown_backticks()
+        public void Translate_should_convert_c_elements_to_markdown_back_ticks()
         {
             AssertTranslation("///<summary><c>some code</c></summary>", "`some code`");
         }

@@ -124,7 +124,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         }
 
         [Test]
-        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specifiy_it()
+        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specify_it()
         {
             using var stream = new MemoryStream();
             var emitter = new Emitter(stream, options: s_testOptions);

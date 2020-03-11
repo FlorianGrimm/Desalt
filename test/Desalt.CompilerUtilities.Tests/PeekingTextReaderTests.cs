@@ -268,7 +268,7 @@ namespace Desalt.CompilerUtilities.Tests
 
         [Test]
         public void
-            PeekingTextReader_Peek_should_be_able_to_return_a_partial_result_if_there_arent_enough_characters_in_the_stream()
+            PeekingTextReader_Peek_should_be_able_to_return_a_partial_result_if_there_are_not_enough_characters_in_the_stream()
         {
             DoTest("1234", reader => reader.Peek(10).Should().Be("1234"));
         }
@@ -527,6 +527,7 @@ namespace Desalt.CompilerUtilities.Tests
         public void PeekingTextReader_PeekWhileString_should_peek_but_not_remove_characters_from_the_read_stream()
         {
             DoTest(
+                // ReSharper disable once StringLiteralTypo
                 "ababc",
                 reader =>
                 {
@@ -558,6 +559,7 @@ namespace Desalt.CompilerUtilities.Tests
         public void PeekingTextReader_PeekWhileString_should_not_change_the_location_when_peeking()
         {
             DoTest(
+                // ReSharper disable once StringLiteralTypo
                 "ooohaaah",
                 reader =>
                 {
@@ -730,7 +732,7 @@ namespace Desalt.CompilerUtilities.Tests
 
         [Test]
         public void
-            PeekingTextReader_Read_should_be_able_to_return_a_partial_result_if_there_arent_enough_characters_in_the_stream()
+            PeekingTextReader_Read_should_be_able_to_return_a_partial_result_if_there_are_not_enough_characters_in_the_stream()
         {
             DoTest("1234", reader => reader.Read(10).Should().Be("1234"));
         }
@@ -885,6 +887,7 @@ namespace Desalt.CompilerUtilities.Tests
         public void PeekingTextReader_ReadWhile_should_be_able_to_read_ahead_while_a_single_character_is_seen()
         {
             DoTest(
+                // ReSharper disable once StringLiteralTypo
                 "aaabbb",
                 reader =>
                 {
@@ -947,11 +950,11 @@ namespace Desalt.CompilerUtilities.Tests
             string unicodeSpaces = new string(unicodeSpaceChars);
 
             DoTest(
-                unicodeSpaces + " \t\v\f Nonspace",
+                unicodeSpaces + " \t\v\f Non_space",
                 reader =>
                 {
                     reader.SkipWhitespace();
-                    reader.ReadToEnd().Should().Be("Nonspace");
+                    reader.ReadToEnd().Should().Be("Non_space");
                 });
         }
     }

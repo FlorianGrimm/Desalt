@@ -192,12 +192,12 @@ class C
                 new[]
                 {
                     new TempProjectFile("Foo.cs", "class Foo { B b; A a; C c; }"),
-                    new TempProjectFile("AandB.cs", "class B {} class A {}"),
+                    new TempProjectFile("AAndB.cs", "class B {} class A {}"),
                     new TempProjectFile("C.cs", "class C {}"),
                 },
                 GetSymbols,
                 SymbolDiscoveryKind.OnlyDocumentTypes,
-                "import { A, B } from './AandB';",
+                "import { A, B } from './AAndB';",
                 "import { C } from './C';");
         }
     }

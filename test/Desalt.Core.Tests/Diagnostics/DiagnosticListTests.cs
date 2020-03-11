@@ -116,14 +116,14 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [Test]
-        public void DiagnosticList_Empty_should_not_store_anyting_on_Add()
+        public void DiagnosticList_Empty_should_not_store_anything_on_Add()
         {
             DiagnosticList.Empty.Add(DiagnosticsTestFactories.CreateDiagnostic(id: "id1"));
             DiagnosticList.Empty.FilteredDiagnostics.Should().BeEmpty();
         }
 
         [Test]
-        public void DiagnosticList_Empty_should_not_store_anyting_on_AddRanage()
+        public void DiagnosticList_Empty_should_not_store_anything_on_AddRange()
         {
             DiagnosticList.Empty.AddRange(
                 new[]
