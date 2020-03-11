@@ -202,8 +202,8 @@ namespace Desalt.Core.SymbolTables
             }
 
             // check the overrides to see if there's a defined value
-            if (scriptSymbol != null &&
-                OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride @override) ||
+            if ((scriptSymbol != null &&
+                    OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride @override)) ||
                 (hasGenericVersion &&
                     OverrideSymbols.TryGetValue(symbol.OriginalDefinition.ToHashDisplay(), out @override)))
             {

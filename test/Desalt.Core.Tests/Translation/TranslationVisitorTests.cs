@@ -63,25 +63,23 @@ using System.Runtime.CompilerServices;
             // get rid of \r\n sequences in the expected output
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                CompilerOptions options = populateOptionsFunc?.Invoke(tempProject.Options);
-                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                    discoveryKind: discoveryKind,
-                    options: options);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            CompilerOptions options = populateOptionsFunc?.Invoke(tempProject.Options);
+            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                discoveryKind: discoveryKind,
+                options: options);
 
-                var throwingDiagnosticList = DiagnosticList.Create(tempProject.Options);
-                throwingDiagnosticList.ThrowOnErrors = true;
+            var throwingDiagnosticList = DiagnosticList.Create(tempProject.Options);
+            throwingDiagnosticList.ThrowOnErrors = true;
 
-                var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
-                ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
+            var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
+            ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
 
-                visitor.Diagnostics.Should().BeEmpty();
+            visitor.Diagnostics.Should().BeEmpty();
 
-                // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-                string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
-                translated.Should().Be(expectedTypeScriptCode);
-            }
+            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+            string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+            translated.Should().Be(expectedTypeScriptCode);
         }
     }
 }

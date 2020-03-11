@@ -8,11 +8,9 @@
 namespace Desalt.Core.Tests.SymbolTables
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
@@ -35,27 +33,24 @@ namespace Desalt.Core.Tests.SymbolTables
             RenameRules renameRules,
             params string[] expectedScriptNames)
         {
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+
+            IAssemblySymbol mscorlibAssemblySymbol =
+                SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation);
+
+            var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, renameRules);
+
+            var actualScriptNames = new List<string>();
+            IEnumerable<INamedTypeSymbol> allTypes = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, CancellationToken.None);
+            foreach (INamedTypeSymbol type in allTypes)
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
-
-                IAssemblySymbol mscorlibAssemblySymbol =
-                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation);
-
-                var scriptNamer = new ScriptNamer(mscorlibAssemblySymbol, renameRules);
-
-                var actualScriptNames = new List<string>();
-                IEnumerable<INamedTypeSymbol> allTypes = context.RootSyntax.GetAllDeclaredTypes(context.SemanticModel, CancellationToken.None);
-                foreach (INamedTypeSymbol type in allTypes)
-                {
-                    actualScriptNames.Add(scriptNamer.DetermineScriptNameForSymbol(type));
-                    actualScriptNames.AddRange(
-                        type.GetMembers().Select(member => scriptNamer.DetermineScriptNameForSymbol(member)));
-                }
-
-                actualScriptNames.Should().ContainInOrder(expectedScriptNames);
+                actualScriptNames.Add(scriptNamer.DetermineScriptNameForSymbol(type));
+                actualScriptNames.AddRange(
+                    type.GetMembers().Select(member => scriptNamer.DetermineScriptNameForSymbol(member)));
             }
+
+            actualScriptNames.Should().ContainInOrder(expectedScriptNames);
         }
 
         [Test]
@@ -402,20 +397,18 @@ class C
     private StringBuilder _builder = new StringBuilder();
 }
 ";
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
 
-                // get the StringBuilder symbol
-                ITypeSymbol stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
-                        context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().Single().Declaration.Type)
-                    .Type;
+            // get the StringBuilder symbol
+            ITypeSymbol stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
+                    context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().Single().Declaration.Type)
+                .Type;
 
-                var scriptNamer = new ScriptNamer(
-                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
+            var scriptNamer = new ScriptNamer(
+                SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
 
-                scriptNamer.DetermineScriptNameForSymbol(stringBuilderSymbol).Should().Be("ss.StringBuilder");
-            }
+            scriptNamer.DetermineScriptNameForSymbol(stringBuilderSymbol).Should().Be("ss.StringBuilder");
         }
     }
 }

@@ -318,8 +318,8 @@ namespace Desalt.Core.SymbolTables
 
                 // take out [AlternateSignature] methods since they use the name of the implementation method
                 where !m.GetFlagAttribute(SaltarelleAttributeName.AlternateSignature)
-                let sname = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
-                where sname.Equals(defaultName, StringComparison.Ordinal)
+                let scriptName = DetermineScriptNameFromAttributes(m) ?? ToCamelCase(m.Name)
+                where scriptName.Equals(defaultName, StringComparison.Ordinal)
                 select m;
 
             // find the index of this method (according to the order it was declared)

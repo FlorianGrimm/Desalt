@@ -42,7 +42,7 @@ namespace Desalt.Core.Tests.Translation
 #pragma warning restore 169, 414
 
         [Test]
-        public void Parse_should_throw_on_an_unkonwn_cref_type()
+        public void Parse_should_throw_on_an_unknown_cref_type()
         {
             Action action = () => Cref.Parse("!:Unknown");
             action.Should()

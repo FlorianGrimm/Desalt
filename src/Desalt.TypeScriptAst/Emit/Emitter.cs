@@ -218,9 +218,9 @@ namespace Desalt.TypeScriptAst.Emit
                 throw new ArgumentNullException(nameof(items));
             }
 
-            prefix = prefix ?? string.Empty;
-            suffix = suffix ?? string.Empty;
-            itemDelimiter = itemDelimiter ?? string.Empty;
+            prefix ??= string.Empty;
+            suffix ??= string.Empty;
+            itemDelimiter ??= string.Empty;
 
             // Special case - if the list is empty
             if (items.Count == 0)
@@ -243,7 +243,7 @@ namespace Desalt.TypeScriptAst.Emit
             }
 
             // write a new line before the first item if necessary
-            if (newLineAfterPrefix || newlineAfterItems && newLineBeforeFirstItem)
+            if (newLineAfterPrefix || (newlineAfterItems && newLineBeforeFirstItem))
             {
                 WriteLine(prefix);
             }
@@ -263,13 +263,13 @@ namespace Desalt.TypeScriptAst.Emit
                 item?.Emit(this);
 
                 // write the delimiter
-                if (i < items.Count - 1 || delimiterAfterLastItem && itemDelimiter.Length > 0)
+                if (i < items.Count - 1 || (delimiterAfterLastItem && itemDelimiter.Length > 0))
                 {
                     Write(itemDelimiter);
                 }
 
                 // write a new line after the last item if necessary
-                if (i < items.Count - 1 && newlineAfterItems || i == items.Count - 1 && newLineAfterLastItem)
+                if ((i < items.Count - 1 && newlineAfterItems) || (i == items.Count - 1 && newLineAfterLastItem))
                 {
                     WriteLine();
                 }

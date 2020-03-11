@@ -351,21 +351,21 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Creates a new labelled statement.
+        /// Creates a new labeled statement.
         /// </summary>
-        public static ITsLabelledStatement LabelledStatement(ITsIdentifier label, ITsStatement statement)
+        public static ITsLabeledStatement LabeledStatement(ITsIdentifier label, ITsStatement statement)
         {
-            return new TsLabelledStatement(label, statement);
+            return new TsLabeledStatement(label, statement);
         }
 
         /// <summary>
-        /// Creates a new labelled statement.
+        /// Creates a new labeled statement.
         /// </summary>
-        public static ITsLabelledStatement LabelledStatement(
+        public static ITsLabeledStatement LabeledStatement(
             ITsIdentifier label,
             ITsFunctionDeclaration functionDeclaration)
         {
-            return new TsLabelledStatement(label, functionDeclaration);
+            return new TsLabeledStatement(label, functionDeclaration);
         }
 
         /// <summary>

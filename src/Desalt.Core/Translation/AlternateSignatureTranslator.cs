@@ -205,7 +205,7 @@ namespace Desalt.Core.Translation
         /// <param name="parameterIndex">The index of the parameter to examine.</param>
         /// <param name="diagnostics">The diagnostics to add errors to.</param>
         /// <returns>
-        /// Either the parmeter type or a union type of all of the possible types for the parameter.
+        /// Either the parameter type or a union type of all of the possible types for the parameter.
         /// </returns>
         private ITsType DetermineParameterType(
             AlternateSignatureMethodGroup group,

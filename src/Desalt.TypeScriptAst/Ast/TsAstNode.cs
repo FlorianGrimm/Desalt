@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast
         public ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; private set; }
 
         /// <summary>
-        /// Gets a consise string representing the current AST node to show in the debugger
+        /// Gets a concise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
         protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
@@ -165,18 +165,14 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>The node emitted to a string stream.</returns>
         public virtual string EmitAsString(EmitOptions emitOptions = null)
         {
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter(stream, options: emitOptions))
-            {
-                Emit(emitter);
-                stream.Flush();
-                stream.Position = 0;
+            using var stream = new MemoryStream();
+            using var emitter = new Emitter(stream, options: emitOptions);
+            Emit(emitter);
+            stream.Flush();
+            stream.Position = 0;
 
-                using (var reader = new StreamReader(stream, emitter.Encoding))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
+            using var reader = new StreamReader(stream, emitter.Encoding);
+            return reader.ReadToEnd();
         }
 
         /// <summary>

@@ -111,10 +111,9 @@ namespace Desalt.Core.Translation
 
                 // We may have an expression as a property name, which would have been translated as
                 // an expression instead of a literal string or number.
-                var propertyName = key as ITsPropertyName;
-                if (propertyName == null && key is ITsExpression translatedExpression)
+                if (!(key is ITsPropertyName propertyName))
                 {
-                    propertyName = Factory.ComputedPropertyName(translatedExpression);
+                    propertyName = Factory.ComputedPropertyName(key);
                 }
 
                 ITsPropertyDefinition propertyDefinition = Factory.PropertyAssignment(propertyName, value);

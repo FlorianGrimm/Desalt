@@ -407,7 +407,7 @@ namespace Desalt.TypeScriptAst.Parsing
             var elements = new List<ITsBindingElement>();
             while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.RightBracket))
             {
-                // read all of the elisons (empty elements)
+                // read all of the elisions (empty elements)
                 while (_reader.ReadIf(TsTokenCode.Comma))
                 {
                     elements.Add(null);

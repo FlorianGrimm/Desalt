@@ -24,7 +24,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             AssertParseExpression("0b1101", Factory.Number(13));
             AssertParseExpression("0o10", Factory.Number(8));
             AssertParseExpression("0x10", Factory.Number(16));
-            AssertParseExpression("'str'", Factory.String("str", StringLiteralQuoteKind.SingleQuote));
+            AssertParseExpression("'str'", Factory.String("str"));
             AssertParseExpression("\"str\"", Factory.String("str", StringLiteralQuoteKind.DoubleQuote));
         }
 
@@ -58,7 +58,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         }
 
         [Test]
-        public void TsParser_should_parese_object_literals_with_string_or_number_keys()
+        public void TsParser_should_parse_object_literals_with_string_or_number_keys()
         {
             AssertParseExpression(
                 "{ 'continue': x }",

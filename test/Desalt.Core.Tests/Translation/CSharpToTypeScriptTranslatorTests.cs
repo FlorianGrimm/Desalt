@@ -25,18 +25,16 @@ using System.Collections.Generic;
 {csharpCode}
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync("File.cs");
-                var translator = new CSharpToTypeScriptTranslator();
-                IExtendedResult<TypeScriptAst.Ast.ITsImplementationModule> result = translator.TranslateDocument(context);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            var context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
+            var translator = new CSharpToTypeScriptTranslator();
+            IExtendedResult<TypeScriptAst.Ast.ITsImplementationModule> result = translator.TranslateDocument(context);
 
-                result.Diagnostics.Should().BeEmpty();
+            result.Diagnostics.Should().BeEmpty();
 
-                // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-                string translated = result.Result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
-                translated.Should().Be(expectedTypeScriptCode.TrimStart().Replace("\r\n", "\n"));
-            }
+            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+            string translated = result.Result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+            translated.Should().Be(expectedTypeScriptCode.TrimStart().Replace("\r\n", "\n"));
         }
 
         [Test]

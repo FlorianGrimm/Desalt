@@ -78,11 +78,10 @@ namespace Desalt.Core.Translation
         {
             if (reader.Peek() != '<')
             {
-                throw new InvalidOperationException(
-                    "Ummm... don't be calling this unless you're at an XML start character.");
+                throw new InvalidOperationException("Shouldn't be called unless at an XML start character.");
             }
 
-            diagnostics = diagnostics ?? new List<Diagnostic>();
+            diagnostics ??= new List<Diagnostic>();
 
             // skip the <
             reader.Read();

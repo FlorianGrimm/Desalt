@@ -99,7 +99,7 @@ namespace Desalt.Core.Utility
             this ISymbol symbol,
             CultureInfo preferredCulture = null,
             bool expandIncludes = false,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string xmlText = symbol.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
             return string.IsNullOrEmpty(xmlText)

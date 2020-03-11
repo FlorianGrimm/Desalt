@@ -163,8 +163,8 @@ namespace Desalt.Core.Translation
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
-            typesToImport = typesToImport ?? new HashSet<ITypeSymbol>();
-            diagnostics = diagnostics ?? new List<Diagnostic>();
+            typesToImport ??= new HashSet<ITypeSymbol>();
+            diagnostics ??= new List<Diagnostic>();
 
             var namedTypeSymbol = symbol as INamedTypeSymbol;
 
@@ -347,7 +347,7 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Translates a type of <c>Func{T1, T2, TRsult}</c> to a TypeScript function type of the
+        /// Translates a type of <c>Func{T1, T2, TResult}</c> to a TypeScript function type of the
         /// form <c>(t1: T1, t2: T2) =&gt; TResult</c>.
         /// </summary>
         private ITsFunctionType TranslateFunc(

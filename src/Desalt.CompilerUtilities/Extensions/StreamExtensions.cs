@@ -26,7 +26,7 @@ namespace Desalt.CompilerUtilities.Extensions
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             long cachedPosition = stream.Position;
             stream.Position = 0;
@@ -61,7 +61,7 @@ namespace Desalt.CompilerUtilities.Extensions
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             long cachedPosition = stream.Position;
             string text;

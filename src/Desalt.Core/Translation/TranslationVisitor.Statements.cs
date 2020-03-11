@@ -304,7 +304,7 @@ namespace Desalt.Core.Translation
                         _diagnostics,
                         node.Declaration.Type.GetLocation);
 
-                // fixup all of the declarations to add the type
+                // fix up all of the declarations to add the type
                 if (declarationType != null)
                 {
                     declaration = declaration.WithDeclarations(
@@ -369,7 +369,7 @@ namespace Desalt.Core.Translation
             if (usingBlock is ITsBlockStatement tryBlock)
             {
                 // remove any trailing newlines
-                tryBlock = tryBlock.WithTrailingTrivia(new ITsAstTriviaNode[0]);
+                tryBlock = tryBlock.WithTrailingTrivia();
             }
             else
             {
@@ -530,7 +530,7 @@ namespace Desalt.Core.Translation
             ITsStatementListItem[] statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
 
             // attach the statements to the last label
-            labels[labels.Length - 1] = labels[labels.Length - 1].WithStatements(statements);
+            labels[^1] = labels[^1].WithStatements(statements);
 
             return labels;
         }

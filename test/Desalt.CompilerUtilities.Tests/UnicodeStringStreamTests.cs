@@ -28,29 +28,27 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void Writing_or_Flushing_should_throw_NotSupportedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            using var stream = new UnicodeStringStream("Sample");
+            var actions = new (string MethodName, Action Action)[]
             {
-                var actions = new (string MethodName, Action Action)[]
-                {
-                    // ReSharper disable AccessToDisposedClosure
-                    ("Flush", () => stream.Flush()),
-                    ("SetLength", () => stream.SetLength(0)),
-                    ("Write", () => stream.Write(new byte[1], 0, 1)),
-                    ("WriteByte", () => stream.WriteByte(0)),
-                    // ReSharper restore AccessToDisposedClosure
-                };
+                // ReSharper disable AccessToDisposedClosure
+                ("Flush", () => stream.Flush()),
+                ("SetLength", () => stream.SetLength(0)),
+                ("Write", () => stream.Write(new byte[1], 0, 1)),
+                ("WriteByte", () => stream.WriteByte(0)),
+                // ReSharper restore AccessToDisposedClosure
+            };
 
-                foreach ((string MethodName, Action Action) tuple in actions)
-                {
-                    tuple.Action.Should().Throw<NotSupportedException>(tuple.MethodName);
-                }
+            foreach ((string MethodName, Action Action) tuple in actions)
+            {
+                tuple.Action.Should().Throw<NotSupportedException>(tuple.MethodName);
             }
         }
 
         [Test]
         public async Task An_asynchronous_write_or_flush_operation_should_throw_NotSupportedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
@@ -79,37 +77,35 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void A_synchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            using var stream = new UnicodeStringStream("Sample");
+            stream.Dispose();
+
+            // ReSharper disable once NotAccessedVariable
+            long dummyLong;
+            var actions = new (string MethodName, Action Action)[]
             {
-                stream.Dispose();
+                // ReSharper disable AccessToDisposedClosure
+                ("CopyTo(Stream)", () => stream.CopyTo(new MemoryStream())),
+                ("CopyTo(Stream, int)", () => stream.CopyTo(new MemoryStream(), 10)),
+                ("Length", () => dummyLong = stream.Length),
+                ("Position-Get", () => dummyLong = stream.Position),
+                ("Position-Set", () => stream.Position = 100),
+                ("Read", () => stream.Read(new byte[1], 0, 1)),
+                ("ReadByte", () => stream.ReadByte()),
+                ("Seek", () => stream.Seek(0, SeekOrigin.Begin)),
+                // ReSharper restore AccessToDisposedClosure
+            };
 
-                // ReSharper disable once NotAccessedVariable
-                long dummyLong;
-                var actions = new (string MethodName, Action Action)[]
-                {
-                    // ReSharper disable AccessToDisposedClosure
-                    ("CopyTo(Stream)", () => stream.CopyTo(new MemoryStream())),
-                    ("CopyTo(Stream, int)", () => stream.CopyTo(new MemoryStream(), 10)),
-                    ("Length", () => dummyLong = stream.Length),
-                    ("Position-Get", () => dummyLong = stream.Position),
-                    ("Position-Set", () => stream.Position = 100),
-                    ("Read", () => stream.Read(new byte[1], 0, 1)),
-                    ("ReadByte", () => stream.ReadByte()),
-                    ("Seek", () => stream.Seek(0, SeekOrigin.Begin)),
-                    // ReSharper restore AccessToDisposedClosure
-                };
-
-                foreach ((string MethodName, Action Action) tuple in actions)
-                {
-                    tuple.Action.Should().Throw<ObjectDisposedException>(tuple.MethodName);
-                }
+            foreach ((string MethodName, Action Action) tuple in actions)
+            {
+                tuple.Action.Should().Throw<ObjectDisposedException>(tuple.MethodName);
             }
         }
 
         [Test]
         public async Task An_asynchronous_operation_on_a_closed_reader_should_throw_ObjectDisposedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
@@ -137,7 +133,7 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public async Task An_asynchronous_read_operation_on_a_closed_reader_should_throw_NotSupportedException()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            await using (var stream = new UnicodeStringStream("Sample"))
             {
                 stream.Dispose();
 
@@ -164,23 +160,21 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void CanX_properties_when_closed_should_return_false()
         {
-            using (var stream = new UnicodeStringStream("Sample"))
+            using var stream = new UnicodeStringStream("Sample");
+            stream.Dispose();
+
+            var actions = new (string MethodName, Func<bool> Function)[]
             {
-                stream.Dispose();
+                // ReSharper disable AccessToDisposedClosure
+                ("CanRead", () => stream.CanRead),
+                ("CanSeek", () => stream.CanSeek),
+                ("CanWrite", () => stream.CanWrite),
+                // ReSharper restore AccessToDisposedClosure
+            };
 
-                var actions = new (string MethodName, Func<bool> Function)[]
-                {
-                    // ReSharper disable AccessToDisposedClosure
-                    ("CanRead", () => stream.CanRead),
-                    ("CanSeek", () => stream.CanSeek),
-                    ("CanWrite", () => stream.CanWrite),
-                    // ReSharper restore AccessToDisposedClosure
-                };
-
-                foreach ((string MethodName, Func<bool> Function) tuple in actions)
-                {
-                    tuple.Function().Should().BeFalse(tuple.MethodName);
-                }
+            foreach ((string MethodName, Func<bool> Function) tuple in actions)
+            {
+                tuple.Function().Should().BeFalse(tuple.MethodName);
             }
         }
     }
@@ -217,7 +211,7 @@ namespace Desalt.CompilerUtilities.Tests
         }
 
         [Test]
-        public void Should_not_support_flusing()
+        public void Should_not_support_flushing()
         {
             new Action(() => _stream.Flush()).Should().Throw<NotSupportedException>();
         }

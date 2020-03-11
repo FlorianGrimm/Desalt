@@ -18,7 +18,10 @@ namespace Desalt.Core.SymbolTables
         BindThisToFirstParameter,
         CustomInitialization,
         DefaultMemberReflectability,
+
+        // ReSharper disable once IdentifierTypo
         DontGenerate,
+
         EnumerateAsArray,
         ExpandParams,
         GlobalMethods,

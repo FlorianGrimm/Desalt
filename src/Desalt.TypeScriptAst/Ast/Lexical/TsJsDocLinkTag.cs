@@ -19,10 +19,10 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// Constructors
         //// ===========================================================================================================
 
-        public TsJsDocLinkTag(string namepathOrUrl, string text = null) : base(preserveSpacing: true)
+        public TsJsDocLinkTag(string namespaceOrUrl, string text = null) : base(preserveSpacing: true)
         {
-            NamepathOrUrl = namepathOrUrl?.Replace("{", string.Empty).Replace("}", string.Empty) ??
-                throw new ArgumentNullException(nameof(namepathOrUrl));
+            NamespaceOrUrl = namespaceOrUrl?.Replace("{", string.Empty).Replace("}", string.Empty) ??
+                throw new ArgumentNullException(nameof(namespaceOrUrl));
             Text = text?.Replace("[", string.Empty).Replace("]", string.Empty);
         }
 
@@ -33,9 +33,9 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// <summary>
         /// Returns a value indicating whether this content node is empty.
         /// </summary>
-        public bool IsEmpty => string.IsNullOrEmpty(NamepathOrUrl) && string.IsNullOrEmpty(Text);
+        public bool IsEmpty => string.IsNullOrEmpty(NamespaceOrUrl) && string.IsNullOrEmpty(Text);
 
-        public string NamepathOrUrl { get; }
+        public string NamespaceOrUrl { get; }
         public string Text { get; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// </summary>
         /// <value>A string representation of this AST node.</value>
         public override string CodeDisplay =>
-            string.IsNullOrEmpty(Text) ? $"{{@link {NamepathOrUrl}}}" : $"[{Text}]{{@link {NamepathOrUrl}}}";
+            string.IsNullOrEmpty(Text) ? $"{{@link {NamespaceOrUrl}}}" : $"[{Text}]{{@link {NamespaceOrUrl}}}";
 
         //// ===========================================================================================================
         //// Methods

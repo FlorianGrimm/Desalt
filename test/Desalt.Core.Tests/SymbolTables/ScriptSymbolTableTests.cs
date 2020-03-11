@@ -34,21 +34,19 @@ namespace Desalt.Core.Tests.SymbolTables
             string code,
             params string[] expectedEntries)
         {
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = ScriptSymbolTable.Create(
-                    contexts,
-                    CreateFakeScriptNamer(),
-                    SymbolDiscoveryKind.OnlyDocumentTypes);
+            var symbolTable = ScriptSymbolTable.Create(
+                contexts,
+                CreateFakeScriptNamer(),
+                SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                symbolTable.DocumentSymbols
-                    .Select(pair => pair.Key.ToHashDisplay())
-                    .Should()
-                    .BeEquivalentTo(expectedEntries);
-            }
+            symbolTable.DocumentSymbols
+                .Select(pair => pair.Key.ToHashDisplay())
+                .Should()
+                .BeEquivalentTo(expectedEntries);
         }
 
         [Test]
@@ -118,24 +116,22 @@ class C
 }
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
+            var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
-                // check a directly-reference symbol
-                InvocationExpressionSyntax invocationExpressionSyntax =
-                    context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
-                ISymbol scriptIsValueSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
-                symbolTable.DirectlyReferencedExternalSymbols.Should().ContainKey(scriptIsValueSymbol);
+            // check a directly-reference symbol
+            InvocationExpressionSyntax invocationExpressionSyntax =
+                context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
+            ISymbol scriptIsValueSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
+            symbolTable.DirectlyReferencedExternalSymbols.Should().ContainKey(scriptIsValueSymbol);
 
-                // check an implicitly referenced symbol
-                INamedTypeSymbol stringBuilderSymbol =
-                    scriptIsValueSymbol.ContainingAssembly.GetTypeByMetadataName("System.Text.StringBuilder");
-                symbolTable.IndirectlyReferencedExternalSymbols.Should().ContainKey(stringBuilderSymbol);
-            }
+            // check an implicitly referenced symbol
+            INamedTypeSymbol stringBuilderSymbol =
+                scriptIsValueSymbol.ContainingAssembly.GetTypeByMetadataName("System.Text.StringBuilder");
+            symbolTable.IndirectlyReferencedExternalSymbols.Should().ContainKey(stringBuilderSymbol);
         }
 
         [Test]
@@ -155,38 +151,36 @@ class C
 }
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
+            var symbolTable = ScriptSymbolTable.Create(contexts, CreateFakeScriptNamer());
 
-                // make sure we read the [Imported] from class C
-                ClassDeclarationSyntax classDeclarationSyntax =
-                    context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
-                ISymbol classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+            // make sure we read the [Imported] from class C
+            ClassDeclarationSyntax classDeclarationSyntax =
+                context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
+            ISymbol classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
-                symbolTable.TryGetValue(classSymbol, out IScriptTypeSymbol scriptClassSymbol).Should().BeTrue();
-                scriptClassSymbol.Imported.Should().BeTrue();
+            symbolTable.TryGetValue(classSymbol, out IScriptTypeSymbol scriptClassSymbol).Should().BeTrue();
+            scriptClassSymbol.Imported.Should().BeTrue();
 
-                // make sure we read the [InlineCode] from Script.IsNull
-                InvocationExpressionSyntax invocationExpressionSyntax =
-                    context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
-                ISymbol scriptIsNullSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
+            // make sure we read the [InlineCode] from Script.IsNull
+            InvocationExpressionSyntax invocationExpressionSyntax =
+                context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
+            ISymbol scriptIsNullSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
 
-                symbolTable.TryGetValue(scriptIsNullSymbol, out IScriptMethodSymbol scriptIsNullScriptSymbol)
-                    .Should()
-                    .BeTrue();
+            symbolTable.TryGetValue(scriptIsNullSymbol, out IScriptMethodSymbol scriptIsNullScriptSymbol)
+                .Should()
+                .BeTrue();
 
-                scriptIsNullScriptSymbol.InlineCode.Should().NotBeNullOrWhiteSpace();
+            scriptIsNullScriptSymbol.InlineCode.Should().NotBeNullOrWhiteSpace();
 
-                // make sure we read the [IgnoreNamespace] from System.Boolean
-                ISymbol boolSymbol = scriptIsNullSymbol.ContainingAssembly.GetTypeByMetadataName("System.Boolean");
+            // make sure we read the [IgnoreNamespace] from System.Boolean
+            ISymbol boolSymbol = scriptIsNullSymbol.ContainingAssembly.GetTypeByMetadataName("System.Boolean");
 
-                symbolTable.TryGetValue(boolSymbol, out IScriptTypeSymbol scriptBooleanSymbol).Should().BeTrue();
-                scriptBooleanSymbol.IgnoreNamespace.Should().BeTrue();
-            }
+            symbolTable.TryGetValue(boolSymbol, out IScriptTypeSymbol scriptBooleanSymbol).Should().BeTrue();
+            scriptBooleanSymbol.IgnoreNamespace.Should().BeTrue();
         }
 
         [Test]
@@ -202,43 +196,41 @@ class C
 }
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                var overrides = new SymbolTableOverrides(
-                    new KeyValuePair<string, SymbolTableOverride>(
-                        "C.Method()",
-                        new SymbolTableOverride(inlineCode: "OVERRIDE")));
-                CompilerOptions options = tempProject.Options.WithSymbolTableOverrides(overrides);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            var overrides = new SymbolTableOverrides(
+                new KeyValuePair<string, SymbolTableOverride>(
+                    "C.Method()",
+                    new SymbolTableOverride(inlineCode: "OVERRIDE")));
+            CompilerOptions options = tempProject.Options.WithSymbolTableOverrides(overrides);
 
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync(options: options);
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync(options: options);
+            var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-                var symbolTable = ScriptSymbolTable.Create(
-                    contexts,
-                    CreateFakeScriptNamer(),
-                    SymbolDiscoveryKind.OnlyDocumentTypes);
+            var symbolTable = ScriptSymbolTable.Create(
+                contexts,
+                CreateFakeScriptNamer(),
+                SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                // get the C.Method() symbol
-                ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")
-                    .GetMembers("Method")
-                    .Single();
+            // get the C.Method() symbol
+            ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")
+                .GetMembers("Method")
+                .Single();
 
-                symbolTable.Get<IScriptMethodSymbol>(methodSymbol).InlineCode.Should().Be("OVERRIDE");
-            }
+            symbolTable.Get<IScriptMethodSymbol>(methodSymbol).InlineCode.Should().Be("OVERRIDE");
         }
 
         //// ===========================================================================================================
         //// Classes
         //// ===========================================================================================================
 
-        private class FakeScriptNamer : IScriptNamer
+        private sealed class FakeScriptNamer : IScriptNamer
         {
             public FakeScriptNamer(string scriptNameForAllSymbols)
             {
                 ScriptNameForAllSymbols = scriptNameForAllSymbols;
             }
 
-            public string ScriptNameForAllSymbols { get; }
+            private string ScriptNameForAllSymbols { get; }
 
             /// <summary>
             /// Determines the name a symbol should have in the generated script.

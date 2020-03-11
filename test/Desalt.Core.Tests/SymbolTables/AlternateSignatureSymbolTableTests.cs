@@ -31,25 +31,23 @@ using System.Runtime.CompilerServices;
 {codeSnippet}
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                Core.Translation.DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            Core.Translation.DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
 
-                IExtendedResult<AlternateSignatureSymbolTable> result = AlternateSignatureSymbolTable.Create(context.ToSingleEnumerable().ToImmutableArray());
-                result.Diagnostics.Should().BeEmpty();
-                AlternateSignatureSymbolTable alternateSignatureTable = result.Result;
+            IExtendedResult<AlternateSignatureSymbolTable> result = AlternateSignatureSymbolTable.Create(context.ToSingleEnumerable().ToImmutableArray());
+            result.Diagnostics.Should().BeEmpty();
+            AlternateSignatureSymbolTable alternateSignatureTable = result.Result;
 
-                var actualEntries = alternateSignatureTable.Entries.ToImmutableArray();
-                actualEntries.Length.Should().Be(1);
-                actualEntries[0].Key.Should().Be(expectedKey);
+            var actualEntries = alternateSignatureTable.Entries.ToImmutableArray();
+            actualEntries.Length.Should().Be(1);
+            actualEntries[0].Key.Should().Be(expectedKey);
 
-                AlternateSignatureMethodGroup actualGroup = actualEntries[0].Value;
+            AlternateSignatureMethodGroup actualGroup = actualEntries[0].Value;
 
-                actualGroup.ImplementingMethod.ToHashDisplay().Should().Be(expectedImplementingMethod);
-                actualGroup.AlternateSignatureMethods.Select(RoslynExtensions.ToHashDisplay)
-                    .Should()
-                    .BeEquivalentTo(expectedAlternateSignatures);
-            }
+            actualGroup.ImplementingMethod.ToHashDisplay().Should().Be(expectedImplementingMethod);
+            actualGroup.AlternateSignatureMethods.Select(RoslynExtensions.ToHashDisplay)
+                .Should()
+                .BeEquivalentTo(expectedAlternateSignatures);
         }
 
         [Test]

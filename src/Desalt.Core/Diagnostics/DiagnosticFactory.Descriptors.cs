@@ -243,7 +243,7 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         /// Returns a diagnostic of the form "TypeScript has no equivalent to C#'s {0} accessibility.
         /// Falling back to {1} accessibility".
         /// </summary>
-        /// <param name="unsupportedAccessibility">The accessibilty level that is not supported.</param>
+        /// <param name="unsupportedAccessibility">The accessibility level that is not supported.</param>
         /// <param name="fallbackAccessibility">The accessibility level that will be used instead.</param>
         /// <param name="location">The location of the error.</param>
         public static Diagnostic UnsupportedAccessibility(

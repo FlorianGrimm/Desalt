@@ -38,31 +38,29 @@ public class C
 }
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                        "File.cs",
-                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContextWithSymbolTables context =
+                await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    "File.cs",
+                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                var validator = new NoDuplicateFieldAndPropertyNamesValidator();
-                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
+            var validator = new NoDuplicateFieldAndPropertyNamesValidator();
+            IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
 
-                VariableDeclaratorSyntax fieldDeclaration = context.RootSyntax.DescendantNodes()
-                    .OfType<FieldDeclarationSyntax>()
-                    .Single()
-                    .Declaration.Variables.First();
+            VariableDeclaratorSyntax fieldDeclaration = context.RootSyntax.DescendantNodes()
+                .OfType<FieldDeclarationSyntax>()
+                .Single()
+                .Declaration.Variables.First();
 
-                result.Diagnostics.Select(d => d.ToString())
-                    .Should()
-                    .HaveCount(1)
-                    .And.BeEquivalentTo(
-                        DiagnosticFactory.ClassWithDuplicateFieldAndPropertyName(
-                                "C",
-                                "name",
-                                fieldDeclaration.GetLocation())
-                            .ToString());
-            }
+            result.Diagnostics.Select(d => d.ToString())
+                .Should()
+                .HaveCount(1)
+                .And.BeEquivalentTo(
+                    DiagnosticFactory.ClassWithDuplicateFieldAndPropertyName(
+                            "C",
+                            "name",
+                            fieldDeclaration.GetLocation())
+                        .ToString());
         }
 
         [Test]
@@ -84,18 +82,16 @@ public class C
 }
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                        "File.cs",
-                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContextWithSymbolTables context =
+                await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    "File.cs",
+                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                var validator = new NoDuplicateFieldAndPropertyNamesValidator();
-                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
+            var validator = new NoDuplicateFieldAndPropertyNamesValidator();
+            IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
 
-                result.Diagnostics.Should().BeEmpty();
-            }
+            result.Diagnostics.Should().BeEmpty();
         }
     }
 }

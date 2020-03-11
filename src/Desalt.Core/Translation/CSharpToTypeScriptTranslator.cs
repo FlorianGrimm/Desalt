@@ -25,7 +25,7 @@ namespace Desalt.Core.Translation
 
         public IExtendedResult<ITsImplementationModule> TranslateDocument(
             DocumentTranslationContextWithSymbolTables context,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var visitor = new TranslationVisitor(context, cancellationToken);
             var implementationModule = (ITsImplementationModule)visitor.Visit(context.RootSyntax).Single();

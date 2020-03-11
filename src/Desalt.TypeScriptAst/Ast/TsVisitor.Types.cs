@@ -202,7 +202,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Visits an interection type of the form 'type1 &amp; type2'.
+        /// Visits an intersection type of the form 'type1 &amp; type2'.
         /// </summary>
         public virtual void VisitIntersectionType(ITsIntersectionType node)
         {

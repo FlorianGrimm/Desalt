@@ -150,7 +150,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return arrowFunction;
             }
 
-            // ConditionalExpression starts with a LogigalORExpression while an assignment expression
+            // ConditionalExpression starts with a LogicalORExpression while an assignment expression
             // can only start with LeftHandSideExpression. We have to start by parsing a
             // LogicalORExpression and then seeing what the next tokens are.
             ITsExpression expression = ParseLogicalOrExpression();

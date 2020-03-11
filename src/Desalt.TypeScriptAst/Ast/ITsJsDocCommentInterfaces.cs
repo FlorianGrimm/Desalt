@@ -205,7 +205,7 @@ namespace Desalt.TypeScriptAst.Ast
     /// </summary>
     public interface ITsJsDocLinkTag : ITsJsDocInlineContent
     {
-        string NamepathOrUrl { get; }
+        string NamespaceOrUrl { get; }
         string Text { get; }
     }
 }

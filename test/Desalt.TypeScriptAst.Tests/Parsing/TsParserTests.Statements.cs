@@ -41,7 +41,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         }
 
         [Test]
-        public void TsParser_ParseStatment_should_recognize_variable_statements()
+        public void TsParser_ParseStatement_should_recognize_variable_statements()
         {
             AssertParseStatement(
                 "var x: string = 'str';",
@@ -104,12 +104,12 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         }
 
         [Test]
-        public void TsParser_should_parse_labelled_statements()
+        public void TsParser_should_parse_labeled_statements()
         {
-            AssertParseStatement("x: return x;", Factory.LabelledStatement(s_x, Factory.Return(s_x)));
+            AssertParseStatement("x: return x;", Factory.LabeledStatement(s_x, Factory.Return(s_x)));
             AssertParseStatement(
                 "x: function ();",
-                Factory.LabelledStatement(s_x, Factory.FunctionDeclaration(Factory.CallSignature())));
+                Factory.LabeledStatement(s_x, Factory.FunctionDeclaration(Factory.CallSignature())));
         }
 
         [Test]

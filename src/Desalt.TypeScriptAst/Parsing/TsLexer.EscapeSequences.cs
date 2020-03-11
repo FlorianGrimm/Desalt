@@ -109,7 +109,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 if (!IsHexDigit(c))
                 {
                     throw LexException(
-                        $"'{c}' is not a valid hexidecimal character as part of a hex escape sequence",
+                        $"'{c}' is not a valid hexadecimal character as part of a hex escape sequence",
                         startLocation);
                 }
 
@@ -161,7 +161,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 if (!IsHexDigit(c))
                 {
                     throw LexException(
-                        $"'{c}' is not a valid hexidecimal character as part of a Unicode escape sequence",
+                        $"'{c}' is not a valid hexadecimal character as part of a Unicode escape sequence",
                         startLocation);
                 }
 

@@ -24,7 +24,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// </summary>
         private static bool IsNumericLiteralStartChar(char c)
         {
-            return c >= '0' && c <= '9' || c == '.';
+            return (c >= '0' && c <= '9') || c == '.';
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace Desalt.TypeScriptAst.Parsing
         }
 
         /// <summary>
-        /// Lexes a hexidecimal integer literal of the form '0x12ab'.
+        /// Lexes a hexadecimal integer literal of the form '0x12ab'.
         /// </summary>
         /// <remarks><code><![CDATA[
         /// HexIntegerLiteral ::

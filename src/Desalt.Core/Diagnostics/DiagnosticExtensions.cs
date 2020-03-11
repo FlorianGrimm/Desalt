@@ -98,7 +98,7 @@ namespace Desalt.Core.Diagnostics
 
                         // When doing suppress-all-warnings, don't lower severity for anything other
                         // than warning and info. We shouldn't suppress hidden diagnostics here
-                        // because then features that use hidden diagnostics to display a lightbulb
+                        // because then features that use hidden diagnostics to display a light bulb
                         // would stop working if someone has suppress-all-warnings (/nowarn)
                         // specified in their project.
                         if (diagnostic.Severity == DiagnosticSeverity.Warning ||

@@ -69,7 +69,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     {
         public static ITsSimpleLexicalBinding WithVariableType(this ITsSimpleLexicalBinding source, ITsType value)
         {
-            return source.VariableType == null && value == null || source.VariableType?.Equals(value) == true
+            return (source.VariableType == null && value == null) || source.VariableType?.Equals(value) == true
                 ? source
                 : new TsSimpleLexicalBinding(source.VariableName, value, source.Initializer);
         }

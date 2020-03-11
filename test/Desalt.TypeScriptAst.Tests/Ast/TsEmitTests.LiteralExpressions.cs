@@ -81,6 +81,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         public void Emit_hex_integer_literal()
         {
             VerifyOutput(Factory.HexInteger(415), "0x19f");
+            // ReSharper disable once StringLiteralTypo
             VerifyOutput(Factory.HexInteger(48879), "0xbeef");
         }
 
@@ -109,7 +110,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         }
 
         [Test]
-        public void Emit_array_literals_with_elisons_ie_empty_elements()
+        public void Emit_array_literals_with_elisions_ie_empty_elements()
         {
             VerifyOutput(
                 Factory.Array(null, Factory.ArrayElement(s_x), null, null, Factory.ArrayElement(s_y)),

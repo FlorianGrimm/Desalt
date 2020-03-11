@@ -65,28 +65,22 @@ namespace Desalt.Core.Tests
         [Test]
         public void CompilerOptions_should_serialize_to_a_json_stream()
         {
-            using (var stream = new MemoryStream())
-            {
-                s_overridesObject.Serialize(stream);
-                stream.Flush();
-                stream.Position = 0;
+            using var stream = new MemoryStream();
+            s_overridesObject.Serialize(stream);
+            stream.Flush();
+            stream.Position = 0;
 
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    reader.ReadToEnd().Should().Be(JsonContents);
-                }
-            }
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            reader.ReadToEnd().Should().Be(JsonContents);
         }
 
         [Test]
         public void CompilerOptions_should_deserialize_from_a_json_stream()
         {
-            using (var stream = new UnicodeStringStream(JsonContents))
-            {
-                IExtendedResult<CompilerOptions> deserialized = CompilerOptions.Deserialize(stream);
-                deserialized.Diagnostics.Should().BeEmpty();
-                deserialized.Result.Should().BeEquivalentTo(s_overridesObject);
-            }
+            using var stream = new UnicodeStringStream(JsonContents);
+            IExtendedResult<CompilerOptions> deserialized = CompilerOptions.Deserialize(stream);
+            deserialized.Diagnostics.Should().BeEmpty();
+            deserialized.Result.Should().BeEquivalentTo(s_overridesObject);
         }
 
         [Test]
@@ -116,28 +110,24 @@ namespace Desalt.Core.Tests
         [Test]
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_json_file_is_invalid()
         {
-            using (var stream = new UnicodeStringStream("{ invalidJson {} }"))
-            {
-                string file = Path.GetFullPath("file");
-                IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream, file);
-                result.Diagnostics.Should()
-                    .BeEquivalentTo(
-                        DiagnosticFactory.InvalidOptionsFile(
-                            file,
-                            "Invalid character after parsing property name. Expected ':' but got: {. " +
-                            "Path '', line 1, position 14."));
-            }
+            using var stream = new UnicodeStringStream("{ invalidJson {} }");
+            string file = Path.GetFullPath("file");
+            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream, file);
+            result.Diagnostics.Should()
+                .BeEquivalentTo(
+                    DiagnosticFactory.InvalidOptionsFile(
+                        file,
+                        "Invalid character after parsing property name. Expected ':' but got: {. " +
+                        "Path '', line 1, position 14."));
         }
 
         [Test]
         public void CompilerOptions_should_use_the_default_options_when_reading_an_empty_JSON_file()
         {
-            using (var stream = new UnicodeStringStream("{}"))
-            {
-                IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream);
-                result.Diagnostics.Should().BeEmpty();
-                result.Result.Should().BeEquivalentTo(CompilerOptions.Default);
-            }
+            using var stream = new UnicodeStringStream("{}");
+            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream);
+            result.Diagnostics.Should().BeEmpty();
+            result.Result.Should().BeEquivalentTo(CompilerOptions.Default);
         }
     }
 }

@@ -31,23 +31,21 @@ class C
     public int MyField;
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<FieldDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
-                    .Cast<IFieldSymbol>()
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<FieldDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
+                .Cast<IFieldSymbol>()
+                .Single();
 
-                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
+            var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
 
-                eventScriptSymbol.CustomInitialization.Should().BeNull();
-                eventScriptSymbol.FieldSymbol.Should().Be(fieldSymbol);
-                eventScriptSymbol.InlineConstant.Should().BeFalse();
-                eventScriptSymbol.NoInline.Should().BeFalse();
-            }
+            eventScriptSymbol.CustomInitialization.Should().BeNull();
+            eventScriptSymbol.FieldSymbol.Should().Be(fieldSymbol);
+            eventScriptSymbol.InlineConstant.Should().BeFalse();
+            eventScriptSymbol.NoInline.Should().BeFalse();
         }
 
         [Test]
@@ -65,23 +63,21 @@ class C
     public int MyField;
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<FieldDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
-                    .Cast<IFieldSymbol>()
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IFieldSymbol fieldSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<FieldDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
+                .Cast<IFieldSymbol>()
+                .Single();
 
-                var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
+            var eventScriptSymbol = new ScriptFieldSymbol(fieldSymbol, "ComputedScriptName");
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(fieldSymbol, eventScriptSymbol);
 
-                eventScriptSymbol.CustomInitialization.Should().Be("code");
-                eventScriptSymbol.FieldSymbol.Should().Be(fieldSymbol);
-                eventScriptSymbol.InlineConstant.Should().BeTrue();
-                eventScriptSymbol.NoInline.Should().BeTrue();
-            }
+            eventScriptSymbol.CustomInitialization.Should().Be("code");
+            eventScriptSymbol.FieldSymbol.Should().Be(fieldSymbol);
+            eventScriptSymbol.InlineConstant.Should().BeTrue();
+            eventScriptSymbol.NoInline.Should().BeTrue();
         }
     }
 }

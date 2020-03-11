@@ -32,24 +32,20 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 
         private static void VerifyOutput(ITsAstNode node, string expected, EmitOptions options = null)
         {
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
-            {
-                node.Emit(emitter);
-                string actualOutput = stream.ReadAllText(emitter.Encoding);
-                actualOutput.Should().Be(expected);
-            }
+            using var stream = new MemoryStream();
+            using var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces);
+            node.Emit(emitter);
+            string actualOutput = stream.ReadAllText(emitter.Encoding);
+            actualOutput.Should().Be(expected);
         }
 
         private static void VerifyOutput(ITsAstTriviaNode node, string expected, EmitOptions options = null)
         {
-            using (var stream = new MemoryStream())
-            using (var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces))
-            {
-                node.Emit(emitter);
-                string actualOutput = stream.ReadAllText(emitter.Encoding);
-                actualOutput.Should().Be(expected);
-            }
+            using var stream = new MemoryStream();
+            using var emitter = new Emitter(stream, options: options ?? EmitOptions.UnixSpaces);
+            node.Emit(emitter);
+            string actualOutput = stream.ReadAllText(emitter.Encoding);
+            actualOutput.Should().Be(expected);
         }
 
         [Test]

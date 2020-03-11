@@ -82,23 +82,21 @@ class C
             SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
-            using (TempProject tempProject = await TempProject.CreateAsync(codeFiles))
-            {
-                DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                        codeFiles[0].FileName,
-                        discoveryKind: discoveryKind);
+            using TempProject tempProject = await TempProject.CreateAsync(codeFiles);
+            DocumentTranslationContextWithSymbolTables context =
+                await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    codeFiles[0].FileName,
+                    discoveryKind: discoveryKind);
 
-                IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
+            IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
-                var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
-                IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
+            var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
+            IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
 
-                results.Diagnostics.Should().BeEmpty();
+            results.Diagnostics.Should().BeEmpty();
 
-                IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
-                actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
-            }
+            IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
+            actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
         }
 
         [Test]
@@ -194,12 +192,12 @@ class C
                 new[]
                 {
                     new TempProjectFile("Foo.cs", "class Foo { B b; A a; C c; }"),
-                    new TempProjectFile("AandB.cs", "class B {} class A {}"),
+                    new TempProjectFile("AAndB.cs", "class B {} class A {}"),
                     new TempProjectFile("C.cs", "class C {}"),
                 },
                 GetSymbols,
                 SymbolDiscoveryKind.OnlyDocumentTypes,
-                "import { A, B } from './AandB';",
+                "import { A, B } from './AAndB';",
                 "import { C } from './C';");
         }
     }

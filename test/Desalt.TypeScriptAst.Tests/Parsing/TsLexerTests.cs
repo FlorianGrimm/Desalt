@@ -44,7 +44,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,1): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
+                .Be("(1,1): error: 'N' is not a valid hexadecimal character as part of a Unicode escape sequence");
 
             action = () => TsLexer.Lex("\\u{12345}");
             action.Should()
@@ -260,17 +260,21 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         public void Lex_should_recognize_hex_integer_literals()
         {
             AssertLex(
+                // ReSharper disable once StringLiteralTypo
                 "0x0123456789abcdef",
                 TsToken.NumericLiteral(
                     TsTokenCode.HexIntegerLiteral,
+                    // ReSharper disable once StringLiteralTypo
                     "0x0123456789abcdef",
                     0x0123456789abcdef,
                     new TextReaderLocation(1, 1)));
 
             AssertLex(
+                // ReSharper disable once StringLiteralTypo
                 "0X0123456789ABCDEF",
                 TsToken.NumericLiteral(
                     TsTokenCode.HexIntegerLiteral,
+                    // ReSharper disable once StringLiteralTypo
                     "0X0123456789ABCDEF",
                     0x0123456789abcdef,
                     new TextReaderLocation(1, 1)));
@@ -299,7 +303,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         }
 
         [Test]
-        public void Lex_should_throw_an_eerror_if_the_string_is_not_terminated()
+        public void Lex_should_throw_an_error_if_the_string_is_not_terminated()
         {
             Action action = () => TsLexer.Lex("'ab");
             action.Should()
@@ -308,6 +312,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                 .Be("(1,1): error: Unterminated string literal: 'ab");
         }
 
+        // ReSharper disable StringLiteralTypo
         [TestCase("'ab\\'c'", "ab'c")]
         [TestCase("'ab\\\"c'", "ab\"c")]
         [TestCase("'ab\\\\c'", "ab\\c")]
@@ -317,6 +322,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         [TestCase("'ab\\rc'", "ab\rc")]
         [TestCase("'ab\\tc'", "ab\tc")]
         [TestCase("'ab\\vc'", "ab\vc")]
+        // ReSharper restore StringLiteralTypo
         public void Lex_should_recognize_string_literals_with_single_character_escape_sequences(string text, string value)
         {
             AssertLex(text, TsToken.StringLiteral(text, value, new TextReaderLocation(1, 1)));
@@ -348,7 +354,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a hex escape sequence");
+                .Be("(1,2): error: 'N' is not a valid hexadecimal character as part of a hex escape sequence");
         }
 
         [Test]
@@ -356,6 +362,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         {
             AssertLex(
                 "'a\\u0062\\u0063d'",
+                // ReSharper disable once StringLiteralTypo
                 TsToken.StringLiteral("'a\\u0062\\u0063d'", "abcd", new TextReaderLocation(1, 1)));
         }
 
@@ -372,7 +379,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             action.Should()
                 .ThrowExactly<Exception>()
                 .And.Message.Should()
-                .Be("(1,2): error: 'N' is not a valid hexidecimal character as part of a Unicode escape sequence");
+                .Be("(1,2): error: 'N' is not a valid hexadecimal character as part of a Unicode escape sequence");
 
             action = () => TsLexer.Lex("'\\u{12345}'");
             action.Should()

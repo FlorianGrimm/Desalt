@@ -144,7 +144,7 @@ namespace Desalt.Core.Tests.TestUtility
             CompilerOptions options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
-            options = options ?? Options;
+            options ??= Options;
             Document document = project.Documents.Single(doc => doc.Name == fileName);
 
             IExtendedResult<DocumentTranslationContext> result =
@@ -159,7 +159,7 @@ namespace Desalt.Core.Tests.TestUtility
                 CompilerOptions options = null,
                 SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
-            options = options ?? Options;
+            options ??= Options;
 
             // add all of the symbols from all of the documents in the project
             var contexts = (await Task.WhenAll(

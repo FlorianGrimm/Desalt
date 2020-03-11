@@ -39,7 +39,7 @@ namespace Desalt.Core.CompilerStages
         public override async Task<IExtendedResult<ImmutableArray<string>>> ExecuteAsync(
             ImmutableArray<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             await Task.Yield();
 
@@ -114,8 +114,8 @@ namespace Desalt.Core.CompilerStages
                 FileMode.Create,
                 FileAccess.ReadWrite,
                 FileShare.Read))
-            using (var emitter = new Emitter(stream, options: EmitOptions.UnixSpaces))
             {
+                using var emitter = new Emitter(stream, options: EmitOptions.UnixSpaces);
                 ITsImplementationSourceFile typeScriptImplementationFile = translation.Result;
                 typeScriptImplementationFile?.Emit(emitter);
             }

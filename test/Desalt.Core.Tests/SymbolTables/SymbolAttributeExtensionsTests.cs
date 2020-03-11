@@ -25,17 +25,15 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single(m => m.Name == "C");
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single(m => m.Name == "C");
 
-                classSymbol.FindAttribute(SaltarelleAttributeName.Imported).Should().BeNull();
-                classSymbol.HasAttribute(SaltarelleAttributeName.Imported).Should().BeFalse();
-            }
+            classSymbol.FindAttribute(SaltarelleAttributeName.Imported).Should().BeNull();
+            classSymbol.HasAttribute(SaltarelleAttributeName.Imported).Should().BeFalse();
         }
 
         [Test]
@@ -47,17 +45,15 @@ using System.Runtime.CompilerServices;
 [Imported]
 class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single(m => m.Name == "C");
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single(m => m.Name == "C");
 
-                classSymbol.FindAttribute(SaltarelleAttributeName.Imported).Should().NotBeNull();
-                classSymbol.HasAttribute(SaltarelleAttributeName.Imported).Should().BeTrue();
-            }
+            classSymbol.FindAttribute(SaltarelleAttributeName.Imported).Should().NotBeNull();
+            classSymbol.HasAttribute(SaltarelleAttributeName.Imported).Should().BeTrue();
         }
 
         [Test]
@@ -65,23 +61,21 @@ class C {}";
         {
             const string code = @"class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single(m => m.Name == "C");
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single(m => m.Name == "C");
 
-                classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
-                    .Should()
-                    .BeFalse();
-                value.Should().BeNull();
+            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
+                .Should()
+                .BeFalse();
+            value.Should().BeNull();
 
-                classSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName, "NotThere")
-                    .Should()
-                    .Be("NotThere");
-            }
+            classSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName, "NotThere")
+                .Should()
+                .Be("NotThere");
         }
 
         [Test]
@@ -93,23 +87,21 @@ using System.Runtime.CompilerServices;
 [ScriptName(""Success"")]
 class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single(m => m.Name == "C");
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single(m => m.Name == "C");
 
-                classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
-                    .Should()
-                    .BeTrue();
-                value.Should().Be("Success");
+            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
+                .Should()
+                .BeTrue();
+            value.Should().Be("Success");
 
-                classSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName, "Default")
-                    .Should()
-                    .Be("Success");
-            }
+            classSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName, "Default")
+                .Should()
+                .Be("Success");
         }
 
         [Test]
@@ -121,29 +113,27 @@ using System.Runtime.CompilerServices;
 [Imported(ObeysTypeSystem=true)]
 class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single(m => m.Name == "C");
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single(m => m.Name == "C");
 
-                classSymbol.TryGetAttributeValue(
-                        SaltarelleAttributeName.Imported,
-                        SaltarelleAttributeArgumentName.ObeysTypeSystem,
-                        out bool value)
-                    .Should()
-                    .BeTrue();
-                value.Should().BeTrue();
+            classSymbol.TryGetAttributeValue(
+                    SaltarelleAttributeName.Imported,
+                    SaltarelleAttributeArgumentName.ObeysTypeSystem,
+                    out bool value)
+                .Should()
+                .BeTrue();
+            value.Should().BeTrue();
 
-                classSymbol.GetAttributeValueOrDefault(
-                        SaltarelleAttributeName.Imported,
-                        propertyName: SaltarelleAttributeArgumentName.ObeysTypeSystem,
-                        defaultValue: false)
-                    .Should()
-                    .BeTrue();
-            }
+            classSymbol.GetAttributeValueOrDefault(
+                    SaltarelleAttributeName.Imported,
+                    propertyName: SaltarelleAttributeArgumentName.ObeysTypeSystem,
+                    defaultValue: false)
+                .Should()
+                .BeTrue();
         }
 
         [Test]
@@ -158,26 +148,24 @@ class NoAttribute {}
 [PreserveMemberCase(false)] class WithUnnamedFalseArg {}
 [PreserveMemberCase(true)] class WithUnnamedTrueArg {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Select(
-                        symbol =>
-                        {
-                            bool value = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase);
-                            return (ClassName: symbol.ToHashDisplay(), AttributeValue: value);
-                        })
-                    .Should()
-                    .BeEquivalentTo(
-                        ("NoAttribute", false),
-                        ("NoCtorArgs", true),
-                        ("NoCtorArgs2", true),
-                        ("WithUnnamedFalseArg", false),
-                        ("WithUnnamedTrueArg", true));
-            }
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Select(
+                    symbol =>
+                    {
+                        bool value = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase);
+                        return (ClassName: symbol.ToHashDisplay(), AttributeValue: value);
+                    })
+                .Should()
+                .BeEquivalentTo(
+                    ("NoAttribute", false),
+                    ("NoCtorArgs", true),
+                    ("NoCtorArgs2", true),
+                    ("WithUnnamedFalseArg", false),
+                    ("WithUnnamedTrueArg", true));
         }
 
         [Test]
@@ -192,26 +180,24 @@ class NoAttribute {}
 [PreserveMemberCase(false)] class WithUnnamedFalseArg {}
 [PreserveMemberCase(true)] class WithUnnamedTrueArg {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Select(
-                        symbol =>
-                        {
-                            bool value = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase);
-                            return (ClassName: symbol.ToHashDisplay(), AttributeValue: value);
-                        })
-                    .Should()
-                    .BeEquivalentTo(
-                        ("NoAttribute", false),
-                        ("NoCtorArgs", true),
-                        ("NoCtorArgs2", true),
-                        ("WithUnnamedFalseArg", false),
-                        ("WithUnnamedTrueArg", true));
-            }
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Select(
+                    symbol =>
+                    {
+                        bool value = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveMemberCase);
+                        return (ClassName: symbol.ToHashDisplay(), AttributeValue: value);
+                    })
+                .Should()
+                .BeEquivalentTo(
+                    ("NoAttribute", false),
+                    ("NoCtorArgs", true),
+                    ("NoCtorArgs2", true),
+                    ("WithUnnamedFalseArg", false),
+                    ("WithUnnamedTrueArg", true));
         }
     }
 }

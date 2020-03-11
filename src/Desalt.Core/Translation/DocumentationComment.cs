@@ -109,6 +109,7 @@ namespace Desalt.Core.Translation
         /// </summary>
         public ISymbol Symbol { get; private set; }
 
+        // ReSharper disable once CommentTypo
         /// <summary>
         /// The item named in the &lt;completionlist&gt; tag's cref attribute.
         /// Null if the tag or cref attribute didn't exist.
@@ -117,6 +118,7 @@ namespace Desalt.Core.Translation
 
         private string DebuggerDisplay
         {
+            // ReSharper disable once UnusedMember.Local
             get
             {
                 if (SummaryText != null)
@@ -296,8 +298,7 @@ namespace Desalt.Core.Translation
 
                         if (!string.IsNullOrWhiteSpace(name) && !_comment._parameterTexts.ContainsKey(name))
                         {
-                            (_parameterNamesBuilder ??
-                                (_parameterNamesBuilder = ImmutableArray.CreateBuilder<string>())).Add(name);
+                            (_parameterNamesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(name);
                             _comment._parameterTexts.Add(name, TrimEachLine(paramText));
                         }
                     }
@@ -308,8 +309,7 @@ namespace Desalt.Core.Translation
 
                         if (!string.IsNullOrWhiteSpace(name) && !_comment._typeParameterTexts.ContainsKey(name))
                         {
-                            (_typeParameterNamesBuilder ??
-                                (_typeParameterNamesBuilder = ImmutableArray.CreateBuilder<string>())).Add(name);
+                            (_typeParameterNamesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(name);
                             _comment._typeParameterTexts.Add(name, TrimEachLine(typeParamText));
                         }
                     }
@@ -322,11 +322,8 @@ namespace Desalt.Core.Translation
                         {
                             if (_exceptionTextBuilders == null || !_exceptionTextBuilders.ContainsKey(type))
                             {
-                                (_exceptionTypesBuilder ??
-                                    (_exceptionTypesBuilder = ImmutableArray.CreateBuilder<string>())).Add(type);
-                                (_exceptionTextBuilders ??
-                                        (_exceptionTextBuilders =
-                                            new Dictionary<string, ImmutableArray<string>.Builder>()))
+                                (_exceptionTypesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(type);
+                                (_exceptionTextBuilders ??= new Dictionary<string, ImmutableArray<string>.Builder>())
                                     .Add(type, ImmutableArray.CreateBuilder<string>());
                             }
 

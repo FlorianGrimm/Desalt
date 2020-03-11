@@ -11,7 +11,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents a call epression of the form 'expression(arguments)'.
+    /// Represents a call expression of the form 'expression(arguments)'.
     /// </summary>
     internal class TsCallExpression : TsAstNode, ITsCallExpression, ITsNewCallExpression, ITsSuperCallExpression
     {

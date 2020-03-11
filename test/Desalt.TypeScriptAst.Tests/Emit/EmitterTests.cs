@@ -99,133 +99,109 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         [Test]
         public void WriteBlock_should_throw_on_null_args()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                Action action = () => emitter.WriteBlock(items: null);
-                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            Action action = () => emitter.WriteBlock(items: null);
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
         [Test]
         public void WriteBlock_should_surround_the_body_with_braces_and_indent()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(new[] { new Identifier("body") });
-                stream.ReadAllText().Should().Be("{\n\tbody\n}");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteBlock(new[] { new Identifier("body") });
+            stream.ReadAllText().Should().Be("{\n\tbody\n}");
         }
 
         [Test]
         public void WriteBlock_should_add_newlines_between_empty_block_braces_if_the_options_specify_it()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
-                stream.ReadAllText().Should().Be("{ }");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
+            stream.ReadAllText().Should().Be("{ }");
         }
 
         [Test]
-        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specifiy_it()
+        public void WriteBlock_should_add_a_space_between_empty_block_braces_if_the_options_specify_it()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
-                stream.ReadAllText().Should().Be("{ }");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteBlock(ImmutableArray<ITsAstNode>.Empty);
+            stream.ReadAllText().Should().Be("{ }");
         }
 
         [Test]
         public void WriteBlock_should_write_all_of_the_statements()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteBlock(s_statements);
-                stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteBlock(s_statements);
+            stream.ReadAllText().Should().Be("{\n\tOne\n\tTwo\n\tThree\n}");
         }
 
         [Test]
         public void WriteCommaNewlineSeparatedBlock_should_throw_on_null_args()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                Action action = () => emitter.WriteCommaNewlineSeparatedBlock(null);
-                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            Action action = () => emitter.WriteCommaNewlineSeparatedBlock(null);
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
         [Test]
         public void WriteCommaNewlineSeparatedBlock_should_add_commas_and_newlines_between_elements()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteCommaNewlineSeparatedBlock(s_statements);
-                stream.ReadAllText().Should().Be("{\n\tOne,\n\tTwo,\n\tThree\n}");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteCommaNewlineSeparatedBlock(s_statements);
+            stream.ReadAllText().Should().Be("{\n\tOne,\n\tTwo,\n\tThree\n}");
         }
 
         [Test]
         public void WriteParameterList_should_throw_on_null_args()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                Action action = () => emitter.WriteParameterList(null);
-                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            Action action = () => emitter.WriteParameterList(null);
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
         [Test]
         public void WriteParameterList_should_write_all_of_the_parameters()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream, options: s_testOptions);
-                emitter.WriteParameterList(s_statements);
-                stream.ReadAllText().Should().Be("(One, Two, Three)");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream, options: s_testOptions);
+            emitter.WriteParameterList(s_statements);
+            stream.ReadAllText().Should().Be("(One, Two, Three)");
         }
 
         [Test]
         public void WriteItems_should_throw_on_null_args()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                Action action = () => emitter.WriteList(null, true);
-                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            Action action = () => emitter.WriteList(null, true);
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
         [Test]
         public void WriteItems_should_add_delimiters_between_elements()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                emitter.WriteList(s_statements, indent: false, itemDelimiter: "-");
-                stream.ReadAllText().Should().Be("One-Two-Three");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            emitter.WriteList(s_statements, indent: false, itemDelimiter: "-");
+            stream.ReadAllText().Should().Be("One-Two-Three");
         }
 
         [Test]
         public void WriteList_should_not_add_a_delimiter_when_there_is_only_one_element()
         {
-            using (var stream = new MemoryStream())
-            {
-                var emitter = new Emitter(stream);
-                emitter.WriteList(s_statements.Take(1).ToImmutableArray(), indent: false, itemDelimiter: "-");
-                stream.ReadAllText().Should().Be("One");
-            }
+            using var stream = new MemoryStream();
+            var emitter = new Emitter(stream);
+            emitter.WriteList(s_statements.Take(1).ToImmutableArray(), indent: false, itemDelimiter: "-");
+            stream.ReadAllText().Should().Be("One");
         }
     }
 }

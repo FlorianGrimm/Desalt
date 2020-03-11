@@ -35,7 +35,7 @@ namespace Desalt.Core.CompilerStages
         public override async Task<IExtendedResult<bool>> ExecuteAsync(
             ImmutableArray<DocumentTranslationContextWithSymbolTables> input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             IValidator[] validators =
             {

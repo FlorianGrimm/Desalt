@@ -33,7 +33,7 @@ namespace Desalt.Core.CompilerStages
         public override async Task<IExtendedResult<ImmutableArray<DocumentTranslationContext>>> ExecuteAsync(
             Project input,
             CompilerOptions options,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var tasks = input.Documents.Select(
                 document => DocumentTranslationContext.TryCreateAsync(document, options, cancellationToken));

@@ -306,6 +306,7 @@ TsTokenCode.HexIntegerLiteral);
         /// <summary>
         /// Parses a regular expression literal.
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private ITsRegularExpressionLiteral ParseRegularExpressionLiteral()
         {
             throw NotYetImplementedException("Regular expression literals are not yet supported");

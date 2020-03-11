@@ -33,7 +33,7 @@ namespace Desalt.Core.Tests.Utility
         }
 
         [Test]
-        public void ReplaceExtension_should_add_the_extension_if_there_isnt_one_already()
+        public void ReplaceExtension_should_add_the_extension_if_there_is_not_one_already()
         {
             PathUtil.ReplaceExtension("File", ".cs").Should().Be("File.cs");
         }

@@ -127,7 +127,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         public static ITsParameterList ParameterList(
-            IEnumerable<ITsRequiredParameter> requiredParameters = null,
+            IEnumerable<ITsRequiredParameter> requiredParameters,
             IEnumerable<ITsOptionalParameter> optionalParameters = null,
             ITsRestParameter restParameter = null)
         {

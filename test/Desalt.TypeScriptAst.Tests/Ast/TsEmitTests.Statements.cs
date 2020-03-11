@@ -527,22 +527,22 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         }
 
         [Test]
-        public void Emit_labelled_statement_with_label_at_same_indentation_level()
+        public void Emit_labeled_statement_with_label_at_same_indentation_level()
         {
             VerifyOutput(
-                Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()),
+                Factory.LabeledStatement(Factory.Identifier("Label"), Factory.Return()),
                 "Label:\nreturn;\n");
         }
 
         [Test]
-        public void Emit_labelled_statement_with_label_on_one_less_indentation_level()
+        public void Emit_labeled_statement_with_label_on_one_less_indentation_level()
         {
             VerifyOutput(
                 Factory.Switch(
                     s_x,
                     Factory.CaseClause(
                         Factory.Number(1),
-                        Factory.LabelledStatement(Factory.Identifier("Label"), Factory.Return()))),
+                        Factory.LabeledStatement(Factory.Identifier("Label"), Factory.Return()))),
                 "switch (x) {\n  case 1:\n  Label:\n    return;\n}\n");
         }
 

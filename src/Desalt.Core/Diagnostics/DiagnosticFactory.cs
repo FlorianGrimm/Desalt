@@ -115,7 +115,7 @@ namespace Desalt.Core.Diagnostics
             public int WarningLevel { get; }
         }
 
-        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedType.Local
         private sealed class ErrorAttribute : DiagnosticInfoAttribute
         {
             public ErrorAttribute(
@@ -136,7 +136,7 @@ namespace Desalt.Core.Diagnostics
             }
         }
 
-        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedType.Local
         private sealed class WarningAttribute : DiagnosticInfoAttribute
         {
             public WarningAttribute(

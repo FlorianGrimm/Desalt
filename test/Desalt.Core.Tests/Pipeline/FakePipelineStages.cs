@@ -14,7 +14,7 @@ namespace Desalt.Core.Tests.Pipeline
 
     internal delegate Task<IExtendedResult<TOutput>> ExecuteFunc<in TInput, TOutput>(
         TInput input,
-        CancellationToken cancellationToken = default(CancellationToken));
+        CancellationToken cancellationToken = default);
 
     internal delegate TOutput SimpleExecuteFunc<in TInput, out TOutput>(TInput input);
 

@@ -121,7 +121,7 @@ namespace Desalt.CompilerUtilities
                     break;
 
                 case SeekOrigin.Current:
-                    Position = Position + offset;
+                    Position += offset;
                     break;
 
                 default:

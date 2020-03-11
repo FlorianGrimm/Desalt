@@ -81,9 +81,8 @@ namespace Desalt.Core.SymbolTables
                 // if there's not exactly one implementing method
                 diagnostics.Add(
                     DiagnosticFactory.InternalError(
-                        $"The Saltarelle compiler should enforce that there is exactly one implementing methods of the " +
-                        $"[AlternateSignature] method group " +
-                        $"for '{methodSymbolsArr[0].Name}'",
+                        "The Saltarelle compiler should enforce that there is exactly one implementing methods of the " +
+                        $"[AlternateSignature] method group for '{methodSymbolsArr[0].Name}'",
                         methodSymbolsArr[0].DeclaringSyntaxReferences[0].GetSyntax().GetLocation()));
             }
 

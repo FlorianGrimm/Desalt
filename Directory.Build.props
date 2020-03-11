@@ -36,6 +36,12 @@ LICENSE.txt in the project root for license information.
     <FileVersion>0.1.0.0</FileVersion>
   </PropertyGroup>
 
+  <!-- Use new C# 8 features -->
+  <PropertyGroup>
+    <Nullable>disable</Nullable>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+
   <!-- Default C# properties -->
   <PropertyGroup>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>

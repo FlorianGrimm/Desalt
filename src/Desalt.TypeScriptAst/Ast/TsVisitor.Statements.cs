@@ -220,9 +220,9 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Visits a labelled statement.
+        /// Visits a labeled statement.
         /// </summary>
-        public virtual void VisitLabelledStatement(ITsLabelledStatement node)
+        public virtual void VisitLabeledStatement(ITsLabeledStatement node)
         {
             Visit(node);
         }
