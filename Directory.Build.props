@@ -45,12 +45,10 @@ LICENSE.txt in the project root for license information.
     <FileAlignment>512</FileAlignment>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
     <WarningLevel>4</WarningLevel>
-    <AssemblyOriginatorKeyFile>$(SrcRoot)Desalt.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
-    <SignAssembly>true</SignAssembly>
     <UseDocumentationFile>true</UseDocumentationFile>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <DocumentationFile>$(OutputPath)$(MSBuildProjectName).xml</DocumentationFile>
     <!-- CS1591: Warning as Error: Missing XML comment for publicly visible type or member 'X' -->
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
