@@ -82,23 +82,21 @@ class C
             SymbolDiscoveryKind discoveryKind,
             params string[] expectedImportLinesForFirstFile)
         {
-            using (TempProject tempProject = await TempProject.CreateAsync(codeFiles))
-            {
-                DocumentTranslationContextWithSymbolTables context =
-                    await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                        codeFiles[0].FileName,
-                        discoveryKind: discoveryKind);
+            using TempProject tempProject = await TempProject.CreateAsync(codeFiles);
+            DocumentTranslationContextWithSymbolTables context =
+                await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                    codeFiles[0].FileName,
+                    discoveryKind: discoveryKind);
 
-                IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
+            IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
-                var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
-                IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
+            var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
+            IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
 
-                results.Diagnostics.Should().BeEmpty();
+            results.Diagnostics.Should().BeEmpty();
 
-                IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
-                actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
-            }
+            IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
+            actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
         }
 
         [Test]

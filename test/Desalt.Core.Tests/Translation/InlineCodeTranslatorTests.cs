@@ -49,32 +49,30 @@ class C
     private object eval = Script.Eval(""[]"");
 }}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                    "File.cs",
-                    discoveryKind: discoveryKind);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                "File.cs",
+                discoveryKind: discoveryKind);
 
-                ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
+            ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
 
-                var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
+            var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
-                var diagnostics = new List<Diagnostic>();
-                bool success = translator.TryTranslate(
-                        methodSyntax,
-                        translatedLeftSide,
-                        translatedArgumentList,
-                        diagnostics,
-                        out ITsAstNode result);
+            var diagnostics = new List<Diagnostic>();
+            bool success = translator.TryTranslate(
+                methodSyntax,
+                translatedLeftSide,
+                translatedArgumentList,
+                diagnostics,
+                out ITsAstNode result);
 
-                diagnostics.Should().BeEmpty();
-                success.Should().BeTrue(because: "there should be an [InlineCode] translation");
+            diagnostics.Should().BeEmpty();
+            success.Should().BeTrue(because: "there should be an [InlineCode] translation");
 
-                // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-                string translated = result.EmitAsString(EmitOptions.UnixSpaces);
-                string expectedTypeScriptCode = expectedResult.EmitAsString(EmitOptions.UnixSpaces);
-                translated.Should().Be(expectedTypeScriptCode);
-            }
+            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+            string translated = result.EmitAsString(EmitOptions.UnixSpaces);
+            string expectedTypeScriptCode = expectedResult.EmitAsString(EmitOptions.UnixSpaces);
+            translated.Should().Be(expectedTypeScriptCode);
         }
 
         private static ExpressionSyntax GetMethodOfObjectCreationSyntax(CompilationUnitSyntax syntax)

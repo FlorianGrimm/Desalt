@@ -114,8 +114,8 @@ namespace Desalt.Core.CompilerStages
                 FileMode.Create,
                 FileAccess.ReadWrite,
                 FileShare.Read))
-            using (var emitter = new Emitter(stream, options: EmitOptions.UnixSpaces))
             {
+                using var emitter = new Emitter(stream, options: EmitOptions.UnixSpaces);
                 ITsImplementationSourceFile typeScriptImplementationFile = translation.Result;
                 typeScriptImplementationFile?.Emit(emitter);
             }

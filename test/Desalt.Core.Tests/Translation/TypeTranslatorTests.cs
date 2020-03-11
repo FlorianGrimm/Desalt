@@ -43,38 +43,36 @@ class Foo
 }}
 ";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            var contexts = context.ToSingleEnumerable().ToImmutableArray();
+
+            // find the type symbol for the class member
+            VariableDeclarationSyntax variableDeclaration =
+                context.RootSyntax.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
+
+            ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(variableDeclaration.Type).Type;
+            if (typeSymbol == null)
             {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                var contexts = context.ToSingleEnumerable().ToImmutableArray();
-
-                // find the type symbol for the class member
-                VariableDeclarationSyntax variableDeclaration =
-                    context.RootSyntax.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
-
-                ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(variableDeclaration.Type).Type;
-                if (typeSymbol == null)
-                {
-                    throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
-                }
-
-                // create the script name symbol table
-                var scriptNamer = new ScriptNamer(
-                    SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
-                var scriptNameTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
-
-                var translator = new TypeTranslator(scriptNameTable);
-                var diagnostics = new List<Diagnostic>();
-
-                ITsType actualTranslation = translator.TranslateSymbol(
-                        typeSymbol,
-                        typesToImport: null,
-                        diagnostics: diagnostics,
-                        getLocationFunc: variableDeclaration.Type.GetLocation);
-
-                diagnostics.Should().BeEmpty();
-                actualTranslation.Should().BeEquivalentTo(expectedType);
+                throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
             }
+
+            // create the script name symbol table
+            var scriptNamer = new ScriptNamer(
+                SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
+            var scriptNameTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
+
+            var translator = new TypeTranslator(scriptNameTable);
+            var diagnostics = new List<Diagnostic>();
+
+            ITsType actualTranslation = translator.TranslateSymbol(
+                typeSymbol,
+                typesToImport: null,
+                diagnostics: diagnostics,
+                getLocationFunc: variableDeclaration.Type.GetLocation);
+
+            diagnostics.Should().BeEmpty();
+            actualTranslation.Should().BeEquivalentTo(expectedType);
         }
 
         [Test]

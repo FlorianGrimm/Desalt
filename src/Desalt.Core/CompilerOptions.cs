@@ -167,10 +167,8 @@ namespace Desalt.Core
         {
             try
             {
-                using (var stream = new FileStream(path, FileMode.Open))
-                {
-                    return Deserialize(stream, path);
-                }
+                using var stream = new FileStream(path, FileMode.Open);
+                return Deserialize(stream, path);
             }
             catch (Exception e) when (e is IOException || e is JsonException || e is ArgumentException)
             {
@@ -191,18 +189,16 @@ namespace Desalt.Core
         {
             try
             {
-                using (var reader = new StreamReader(
+                using var reader = new StreamReader(
                     stream,
                     Encoding.UTF8,
                     detectEncodingFromByteOrderMarks: true,
                     bufferSize: 4096,
-                    leaveOpen: true))
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    JsonSerializer serializer = CreateSerializer();
-                    CompilerOptions deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
-                    return new ExtendedResult<CompilerOptions>(deserialized);
-                }
+                    leaveOpen: true);
+                using var jsonReader = new JsonTextReader(reader);
+                JsonSerializer serializer = CreateSerializer();
+                CompilerOptions deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
+                return new ExtendedResult<CompilerOptions>(deserialized);
             }
             catch (JsonException e)
             {
@@ -214,20 +210,16 @@ namespace Desalt.Core
 
         public void Serialize(string path)
         {
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                Serialize(stream);
-            }
+            using var stream = new FileStream(path, FileMode.Create);
+            Serialize(stream);
         }
 
         public void Serialize(Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 4096, leaveOpen: true))
-            using (var jsonWriter = new JsonTextWriter(writer))
-            {
-                JsonSerializer serializer = CreateSerializer();
-                serializer.Serialize(jsonWriter, this);
-            }
+            using var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
+            using var jsonWriter = new JsonTextWriter(writer);
+            JsonSerializer serializer = CreateSerializer();
+            serializer.Serialize(jsonWriter, this);
         }
 
         internal CSharpCompilationOptions ToCSharpCompilationOptions()

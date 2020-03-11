@@ -40,32 +40,30 @@ using System.Runtime.CompilerServices;
 
 {codeSnippet}
 ";
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
 
-                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<BaseMethodDeclarationSyntax>()
-                    .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
-                    .First(symbol => symbol.ToHashDisplay() == methodKey);
+            IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<BaseMethodDeclarationSyntax>()
+                .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
+                .First(symbol => symbol.ToHashDisplay() == methodKey);
 
-                var typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
+            var typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
 
-                var translator = new AlternateSignatureTranslator(
-                    context.AlternateSignatureSymbolTable,
-                    typeTranslator);
+            var translator = new AlternateSignatureTranslator(
+                context.AlternateSignatureSymbolTable,
+                typeTranslator);
 
-                bool result = translator.TryAdjustParameterListTypes(
-                    methodSymbol,
-                    translatedParameterList,
-                    out ITsParameterList actualParameterList,
-                    out IEnumerable<Diagnostic> diagnostics);
+            bool result = translator.TryAdjustParameterListTypes(
+                methodSymbol,
+                translatedParameterList,
+                out ITsParameterList actualParameterList,
+                out IEnumerable<Diagnostic> diagnostics);
 
-                diagnostics.Should().BeEmpty();
+            diagnostics.Should().BeEmpty();
 
-                result.Should().Be(expectedResult, because: "the parameter list should not have changed");
-                actualParameterList.Should().BeEquivalentTo(expectedParameterList);
-            }
+            result.Should().Be(expectedResult, because: "the parameter list should not have changed");
+            actualParameterList.Should().BeEquivalentTo(expectedParameterList);
         }
 
         [Test]

@@ -27,25 +27,23 @@ namespace Desalt.Core.Tests.Validation
         {
             const string code = "public partial class C {}";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
-                    "File.cs",
-                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                "File.cs",
+                discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                ClassDeclarationSyntax classDeclarationSyntax =
-                    context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+            ClassDeclarationSyntax classDeclarationSyntax =
+                context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
 
-                var validator = new NoPartialClassesValidator();
-                IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
-                result.Success.Should().BeFalse();
+            var validator = new NoPartialClassesValidator();
+            IExtendedResult<bool> result = validator.Validate(context.ToSingleEnumerable().ToImmutableArray());
+            result.Success.Should().BeFalse();
 
-                result.Diagnostics.Select(d => d.ToString())
-                    .Should()
-                    .HaveCount(1)
-                    .And.BeEquivalentTo(
-                        DiagnosticFactory.PartialClassesNotSupported(classDeclarationSyntax).ToString());
-            }
+            result.Diagnostics.Select(d => d.ToString())
+                .Should()
+                .HaveCount(1)
+                .And.BeEquivalentTo(
+                    DiagnosticFactory.PartialClassesNotSupported(classDeclarationSyntax).ToString());
         }
     }
 }

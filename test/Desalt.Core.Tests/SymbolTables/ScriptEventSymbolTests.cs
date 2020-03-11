@@ -31,22 +31,20 @@ class C
     public event EventHandler MyEvent;
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<EventFieldDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
-                    .Cast<IEventSymbol>()
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<EventFieldDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
+                .Cast<IEventSymbol>()
+                .Single();
 
-                var eventScriptSymbol = new ScriptEventSymbol(eventSymbol, "ComputedScriptName");
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(eventSymbol, eventScriptSymbol);
+            var eventScriptSymbol = new ScriptEventSymbol(eventSymbol, "ComputedScriptName");
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(eventSymbol, eventScriptSymbol);
 
-                eventScriptSymbol.BackingFieldName.Should().BeNull();
-                eventScriptSymbol.CustomInitialization.Should().BeNull();
-                eventScriptSymbol.EventSymbol.Should().Be(eventSymbol);
-            }
+            eventScriptSymbol.BackingFieldName.Should().BeNull();
+            eventScriptSymbol.CustomInitialization.Should().BeNull();
+            eventScriptSymbol.EventSymbol.Should().Be(eventSymbol);
         }
 
         [Test]
@@ -63,22 +61,20 @@ class C
     public event EventHandler MyEvent;
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<EventFieldDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
-                    .Cast<IEventSymbol>()
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IEventSymbol eventSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<EventFieldDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node.Declaration.Variables[0]))
+                .Cast<IEventSymbol>()
+                .Single();
 
-                var eventScriptSymbol = new ScriptEventSymbol(eventSymbol, "ComputedScriptName");
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(eventSymbol, eventScriptSymbol);
+            var eventScriptSymbol = new ScriptEventSymbol(eventSymbol, "ComputedScriptName");
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(eventSymbol, eventScriptSymbol);
 
-                eventScriptSymbol.BackingFieldName.Should().Be("field");
-                eventScriptSymbol.CustomInitialization.Should().Be("code");
-                eventScriptSymbol.EventSymbol.Should().Be(eventSymbol);
-            }
+            eventScriptSymbol.BackingFieldName.Should().Be("field");
+            eventScriptSymbol.CustomInitialization.Should().Be("code");
+            eventScriptSymbol.EventSymbol.Should().Be(eventSymbol);
         }
     }
 }

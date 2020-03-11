@@ -25,24 +25,22 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"enum E { }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<EnumDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<EnumDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single();
 
-                var enumScriptSymbol = new ScriptEnumSymbol(
-                    enumSymbol,
-                    "ComputedScriptName",
-                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+            var enumScriptSymbol = new ScriptEnumSymbol(
+                enumSymbol,
+                "ComputedScriptName",
+                ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
 
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
 
-                enumScriptSymbol.NamedValues.Should().BeFalse();
-                enumScriptSymbol.NumericValues.Should().BeFalse();
-            }
+            enumScriptSymbol.NamedValues.Should().BeFalse();
+            enumScriptSymbol.NumericValues.Should().BeFalse();
         }
 
         [Test]
@@ -55,24 +53,22 @@ using System.Runtime.CompilerServices;
 [NumericValues]
 enum E { }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<EnumDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol enumSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<EnumDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single();
 
-                var enumScriptSymbol = new ScriptEnumSymbol(
-                    enumSymbol,
-                    "ComputedScriptName",
-                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+            var enumScriptSymbol = new ScriptEnumSymbol(
+                enumSymbol,
+                "ComputedScriptName",
+                ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
 
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(enumSymbol, enumScriptSymbol);
 
-                enumScriptSymbol.NamedValues.Should().BeTrue();
-                enumScriptSymbol.NumericValues.Should().BeTrue();
-            }
+            enumScriptSymbol.NamedValues.Should().BeTrue();
+            enumScriptSymbol.NumericValues.Should().BeTrue();
         }
 
         [Test]
@@ -83,22 +79,20 @@ using System.Runtime.CompilerServices;
 
 class E { }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.INamedTypeSymbol classSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
+                .Single();
 
-                // ReSharper disable once ObjectCreationAsStatement
-                Action action = () => new ScriptEnumSymbol(
-                    classSymbol,
-                    "ComputedScriptName",
-                    ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ScriptEnumSymbol(
+                classSymbol,
+                "ComputedScriptName",
+                ImportSymbolInfo.CreateInternalReference(context.TypeScriptFilePath));
 
-                action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("symbol");
-            }
+            action.Should().ThrowExactly<ArgumentException>().And.ParamName.Should().Be("symbol");
         }
     }
 }

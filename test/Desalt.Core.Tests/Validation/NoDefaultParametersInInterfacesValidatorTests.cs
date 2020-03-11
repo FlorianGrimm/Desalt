@@ -30,25 +30,23 @@ public interface TestInterface
     void InvalidMethod(int defaultValue = 0);
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts =
-                    await tempProject.CreateContextsWithSymbolTablesAsync(
-                        discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            ImmutableArray<DocumentTranslationContextWithSymbolTables> contexts =
+                await tempProject.CreateContextsWithSymbolTablesAsync(
+                    discoveryKind: SymbolDiscoveryKind.OnlyDocumentTypes);
 
-                var validator = new NoDefaultParametersInInterfacesValidator();
-                IExtendedResult<bool> result = validator.Validate(contexts);
+            var validator = new NoDefaultParametersInInterfacesValidator();
+            IExtendedResult<bool> result = validator.Validate(contexts);
 
-                ParameterSyntax parameterSyntax =
-                    contexts.First().RootSyntax.DescendantNodes().OfType<ParameterSyntax>().Single();
+            ParameterSyntax parameterSyntax =
+                contexts.First().RootSyntax.DescendantNodes().OfType<ParameterSyntax>().Single();
 
-                result.Diagnostics.Select(d => d.ToString())
-                    .Should()
-                    .HaveCount(1)
-                    .And.BeEquivalentTo(
-                        DiagnosticFactory.InterfaceWithDefaultParam("TestInterface", "InvalidMethod", parameterSyntax)
-                            .ToString());
-            }
+            result.Diagnostics.Select(d => d.ToString())
+                .Should()
+                .HaveCount(1)
+                .And.BeEquivalentTo(
+                    DiagnosticFactory.InterfaceWithDefaultParam("TestInterface", "InvalidMethod", parameterSyntax)
+                        .ToString());
         }
     }
 }

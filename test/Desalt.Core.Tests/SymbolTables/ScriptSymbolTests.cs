@@ -36,19 +36,17 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C { public void Method() {} }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IMethodSymbol methodSymbol = context.RootSyntax
-                    .DescendantNodes()
-                    .OfType<MethodDeclarationSyntax>()
-                    .Where(node => node.Identifier.ValueText == "Method")
-                    .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IMethodSymbol methodSymbol = context.RootSyntax
+                .DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .Where(node => node.Identifier.ValueText == "Method")
+                .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
+                .Single();
 
-                var scriptSymbol = new TestScriptSymbol(methodSymbol);
-                AssertScriptSymbolDefaultValues(methodSymbol, scriptSymbol);
-            }
+            var scriptSymbol = new TestScriptSymbol(methodSymbol);
+            AssertScriptSymbolDefaultValues(methodSymbol, scriptSymbol);
         }
 
         [Test]
@@ -67,21 +65,19 @@ class C
     public void Method() {}
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<MethodDeclarationSyntax>()
-                    .Where(node => node.Identifier.ValueText == "Method")
-                    .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .Where(node => node.Identifier.ValueText == "Method")
+                .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
+                .Single();
 
-                var scriptSymbol = new TestScriptSymbol(methodSymbol);
-                scriptSymbol.PreserveCase.Should().BeTrue();
-                scriptSymbol.PreserveName.Should().BeTrue();
-                scriptSymbol.Reflectable.Should().BeTrue();
-                scriptSymbol.ScriptName.Should().Be("x");
-            }
+            var scriptSymbol = new TestScriptSymbol(methodSymbol);
+            scriptSymbol.PreserveCase.Should().BeTrue();
+            scriptSymbol.PreserveName.Should().BeTrue();
+            scriptSymbol.Reflectable.Should().BeTrue();
+            scriptSymbol.ScriptName.Should().Be("x");
         }
 
         [Test]
@@ -99,20 +95,18 @@ class C
     public void Method() {}
 }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
-                    .OfType<MethodDeclarationSyntax>()
-                    .Where(node => node.Identifier.ValueText == "Method")
-                    .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
-                    .Single();
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            IMethodSymbol methodSymbol = context.RootSyntax.DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .Where(node => node.Identifier.ValueText == "Method")
+                .Select(methodNode => context.SemanticModel.GetDeclaredSymbol(methodNode))
+                .Single();
 
-                var scriptSymbol = new TestScriptSymbol(methodSymbol);
-                scriptSymbol.Imported.Should().BeTrue();
-                scriptSymbol.PreserveName.Should().BeFalse();
-                scriptSymbol.Reflectable.Should().BeFalse();
-            }
+            var scriptSymbol = new TestScriptSymbol(methodSymbol);
+            scriptSymbol.Imported.Should().BeTrue();
+            scriptSymbol.PreserveName.Should().BeFalse();
+            scriptSymbol.Reflectable.Should().BeFalse();
         }
     }
 

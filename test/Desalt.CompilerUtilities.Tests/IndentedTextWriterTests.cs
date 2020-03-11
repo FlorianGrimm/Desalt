@@ -19,9 +19,10 @@ namespace Desalt.CompilerUtilities.Tests
             string actual;
 
             using (var stream = new MemoryStream())
-            using (var writer = new StreamWriter(stream))
-            using (var indentedWriter = new IndentedTextWriter(writer, "  ") { NewLine = "\n" })
             {
+                using var writer = new StreamWriter(stream);
+                using var indentedWriter = new IndentedTextWriter(writer, "  ") { NewLine = "\n" };
+
                 // Run the test.
                 test(indentedWriter);
 
@@ -31,10 +32,8 @@ namespace Desalt.CompilerUtilities.Tests
                 // Reset the memory stream so that we can read in the contents.
                 stream.Position = 0;
 
-                using (var reader = new StreamReader(stream))
-                {
-                    actual = reader.ReadToEnd();
-                }
+                using var reader = new StreamReader(stream);
+                actual = reader.ReadToEnd();
             }
 
             // Do the comparison.
@@ -56,18 +55,16 @@ namespace Desalt.CompilerUtilities.Tests
         [Test]
         public void Ctor_should_use_the_default_IndentationPrefix_if_not_specified()
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new StreamWriter(stream))
+            using var stream = new MemoryStream();
+            using var writer = new StreamWriter(stream);
+            using (var indentedWriter = new IndentedTextWriter(writer))
             {
-                using (var indentedWriter = new IndentedTextWriter(writer))
-                {
-                    indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
-                }
+                indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
+            }
 
-                using (var indentedWriter = new IndentedTextWriter(writer, indentationPrefix: null))
-                {
-                    indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
-                }
+            using (var indentedWriter = new IndentedTextWriter(writer, indentationPrefix: null))
+            {
+                indentedWriter.IndentationPrefix.Should().Be(IndentedTextWriter.DefaultIndentationPrefix);
             }
         }
 

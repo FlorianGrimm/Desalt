@@ -19,10 +19,8 @@ namespace Desalt.CompilerUtilities.Tests
     {
         private static void DoTest(string contents, Action<PeekingTextReader> action)
         {
-            using (var reader = new PeekingTextReader(contents))
-            {
-                action(reader);
-            }
+            using var reader = new PeekingTextReader(contents);
+            action(reader);
         }
 
         //// ===========================================================================================================
@@ -77,41 +75,39 @@ namespace Desalt.CompilerUtilities.Tests
         [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
         public void PeekingTextReader_Close_should_throw_ObjectDisposedException_when_doing_a_synchronous_operation_on_a_closed_reader()
         {
-            using (var stream = new MemoryStream())
-            using (var reader = new PeekingTextReader(stream))
+            using var stream = new MemoryStream();
+            using var reader = new PeekingTextReader(stream);
+            reader.Close();
+
+            var actions = new Dictionary<string, Action>
             {
-                reader.Close();
+                { "Location", () => { TextReaderLocation x = reader.Location; } },
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+                { "Peek", () => reader.Peek() },
+                { "PeekN", () => reader.Peek(2) },
+                { "PeekLine", () => reader.PeekLine() },
+                { "PeekUntilChar", () => reader.PeekUntil('c') },
+                { "PeekUntilString", () => reader.PeekUntil("str") },
+                { "PeekUntilPredicate", () => reader.PeekUntil(c => true) },
+                { "PeekWhileChar", () => reader.PeekWhile('c') },
+                { "PeekWhileString", () => reader.PeekWhile("str") },
+                { "PeekWhilePredicate", () => reader.PeekWhile(c => true) },
+                { "Read", () => reader.Read() },
+                { "ReadN", () => reader.Read(2) },
+                { "ReadBlock", () => reader.ReadBlock(new char[1], 0, 1) },
+                { "ReadLine", () => reader.ReadLine() },
+                { "ReadToEnd", () => reader.ReadToEnd() },
+                { "ReadUntilChar", () => reader.ReadUntil('c') },
+                { "ReadUntilString", () => reader.ReadUntil("str") },
+                { "ReadUntilPredicate", () => reader.ReadUntil(c => true) },
+                { "ReadWhileChar", () => reader.ReadWhile('c') },
+                { "ReadWhileString", () => reader.ReadWhile("str") },
+                { "ReadWhilePredicate", () => reader.ReadWhile(c => true) }
+            };
 
-                var actions = new Dictionary<string, Action>
-                {
-                    { "Location", () => { TextReaderLocation x = reader.Location; } },
-                    // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                    { "Peek", () => reader.Peek() },
-                    { "PeekN", () => reader.Peek(2) },
-                    { "PeekLine", () => reader.PeekLine() },
-                    { "PeekUntilChar", () => reader.PeekUntil('c') },
-                    { "PeekUntilString", () => reader.PeekUntil("str") },
-                    { "PeekUntilPredicate", () => reader.PeekUntil(c => true) },
-                    { "PeekWhileChar", () => reader.PeekWhile('c') },
-                    { "PeekWhileString", () => reader.PeekWhile("str") },
-                    { "PeekWhilePredicate", () => reader.PeekWhile(c => true) },
-                    { "Read", () => reader.Read() },
-                    { "ReadN", () => reader.Read(2) },
-                    { "ReadBlock", () => reader.ReadBlock(new char[1], 0, 1) },
-                    { "ReadLine", () => reader.ReadLine() },
-                    { "ReadToEnd", () => reader.ReadToEnd() },
-                    { "ReadUntilChar", () => reader.ReadUntil('c') },
-                    { "ReadUntilString", () => reader.ReadUntil("str") },
-                    { "ReadUntilPredicate", () => reader.ReadUntil(c => true) },
-                    { "ReadWhileChar", () => reader.ReadWhile('c') },
-                    { "ReadWhileString", () => reader.ReadWhile("str") },
-                    { "ReadWhilePredicate", () => reader.ReadWhile(c => true) }
-                };
-
-                foreach (KeyValuePair<string, Action> pair in actions)
-                {
-                    pair.Value.Should().ThrowExactly<ObjectDisposedException>(pair.Key);
-                }
+            foreach (KeyValuePair<string, Action> pair in actions)
+            {
+                pair.Value.Should().ThrowExactly<ObjectDisposedException>(pair.Key);
             }
         }
 
@@ -120,23 +116,21 @@ namespace Desalt.CompilerUtilities.Tests
         public void
             PeekingTextReader_Close_should_throw_ObjectDisposedException_when_doing_an_asynchronous_operation_on_a_closed_reader()
         {
-            using (var stream = new MemoryStream())
-            using (var reader = new PeekingTextReader(stream))
-            {
-                reader.Close();
+            using var stream = new MemoryStream();
+            using var reader = new PeekingTextReader(stream);
+            reader.Close();
 
-                Func<Task> action = async () => await reader.ReadAsync(new char[10], 0, 10);
-                action.Should().ThrowExactly<ObjectDisposedException>();
+            Func<Task> action = async () => await reader.ReadAsync(new char[10], 0, 10);
+            action.Should().ThrowExactly<ObjectDisposedException>();
 
-                action = async () => await reader.ReadBlockAsync(new char[1], 0, 1);
-                action.Should().ThrowExactly<ObjectDisposedException>();
+            action = async () => await reader.ReadBlockAsync(new char[1], 0, 1);
+            action.Should().ThrowExactly<ObjectDisposedException>();
 
-                action = async () => await reader.ReadLineAsync();
-                action.Should().ThrowExactly<ObjectDisposedException>();
+            action = async () => await reader.ReadLineAsync();
+            action.Should().ThrowExactly<ObjectDisposedException>();
 
-                action = async () => await reader.ReadToEndAsync();
-                action.Should().ThrowExactly<ObjectDisposedException>();
-            }
+            action = async () => await reader.ReadToEndAsync();
+            action.Should().ThrowExactly<ObjectDisposedException>();
         }
 
         //// ===========================================================================================================

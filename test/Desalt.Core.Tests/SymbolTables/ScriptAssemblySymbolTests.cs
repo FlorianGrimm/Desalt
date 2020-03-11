@@ -21,28 +21,26 @@ namespace Desalt.Core.Tests.SymbolTables
         {
             const string code = @"class C { public void Method() {} }";
 
-            using (TempProject tempProject = await TempProject.CreateAsync(code))
-            {
-                DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-                Microsoft.CodeAnalysis.IAssemblySymbol assemblySymbol = context.SemanticModel.Compilation.Assembly;
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
+            Microsoft.CodeAnalysis.IAssemblySymbol assemblySymbol = context.SemanticModel.Compilation.Assembly;
 
-                var assemblyScriptSymbol = new ScriptAssemblySymbol(assemblySymbol, "AssemblyName");
-                ScriptSymbolTests.AssertScriptSymbolDefaultValues(assemblySymbol, assemblyScriptSymbol);
+            var assemblyScriptSymbol = new ScriptAssemblySymbol(assemblySymbol, "AssemblyName");
+            ScriptSymbolTests.AssertScriptSymbolDefaultValues(assemblySymbol, assemblyScriptSymbol);
 
-                assemblyScriptSymbol.AssemblySymbol.Should().Be(assemblySymbol);
-                assemblyScriptSymbol.DefaultReflectability.Should().Be(MemberReflectability.All);
-                assemblyScriptSymbol.IncludeGenericArgumentsMethodDefault.Should()
-                    .Be(GenericArgumentsBehaviorType.Ignore);
-                assemblyScriptSymbol.IncludeGenericArgumentsTypeDefault.Should()
-                    .Be(GenericArgumentsBehaviorType.Ignore);
-                assemblyScriptSymbol.MinimizePublicNames.Should().BeFalse();
-                assemblyScriptSymbol.ModuleName.Should().BeNull();
-                assemblyScriptSymbol.OmitDowncasts.Should().BeFalse();
-                assemblyScriptSymbol.OmitNullableChecks.Should().BeFalse();
-                assemblyScriptSymbol.ScriptAssemblyName.Should().BeNull();
-                assemblyScriptSymbol.ScriptNamespace.Should().BeNull();
-                assemblyScriptSymbol.ScriptQualifier.Should().BeNull();
-            }
+            assemblyScriptSymbol.AssemblySymbol.Should().Be(assemblySymbol);
+            assemblyScriptSymbol.DefaultReflectability.Should().Be(MemberReflectability.All);
+            assemblyScriptSymbol.IncludeGenericArgumentsMethodDefault.Should()
+                .Be(GenericArgumentsBehaviorType.Ignore);
+            assemblyScriptSymbol.IncludeGenericArgumentsTypeDefault.Should()
+                .Be(GenericArgumentsBehaviorType.Ignore);
+            assemblyScriptSymbol.MinimizePublicNames.Should().BeFalse();
+            assemblyScriptSymbol.ModuleName.Should().BeNull();
+            assemblyScriptSymbol.OmitDowncasts.Should().BeFalse();
+            assemblyScriptSymbol.OmitNullableChecks.Should().BeFalse();
+            assemblyScriptSymbol.ScriptAssemblyName.Should().BeNull();
+            assemblyScriptSymbol.ScriptNamespace.Should().BeNull();
+            assemblyScriptSymbol.ScriptQualifier.Should().BeNull();
         }
     }
 }

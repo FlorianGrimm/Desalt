@@ -26,40 +26,34 @@ namespace Desalt.CompilerUtilities.Tests.Extensions
         [Test]
         public void ReadAllText_should_get_all_of_the_text()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
 
-                stream.ReadAllText().Should().Be("Hello");
-            }
+            stream.ReadAllText().Should().Be("Hello");
         }
 
         [Test]
         public void ReadAllText_should_not_preserve_the_position_by_default()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
 
-                stream.ReadAllText();
-                stream.Position.Should().Be("Hello".Length);
-            }
+            stream.ReadAllText();
+            stream.Position.Should().Be("Hello".Length);
         }
 
         [Test]
         public void ReadAllText_should_preserve_the_position_if_requested()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
 
-                stream.Position = 1;
-                stream.ReadAllText(preservePosition: true);
-                stream.Position.Should().Be(1);
-            }
+            stream.Position = 1;
+            stream.ReadAllText(preservePosition: true);
+            stream.Position.Should().Be(1);
         }
 
         [Test]
@@ -108,63 +102,53 @@ namespace Desalt.CompilerUtilities.Tests.Extensions
         [Test]
         public void ReadToEnd_should_get_all_of_the_text_when_the_stream_is_at_the_beginning()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Position = 0;
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Position = 0;
 
-                stream.ReadToEnd().Should().Be("Hello");
-            }
+            stream.ReadToEnd().Should().Be("Hello");
         }
 
         [Test]
         public void ReadToEnd_should_get_the_remaining_text_when_the_stream_is_not_at_the_beginning()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("First Second");
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Position = "First ".Length;
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("First Second");
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Position = "First ".Length;
 
-                stream.ReadToEnd().Should().Be("Second");
-            }
+            stream.ReadToEnd().Should().Be("Second");
         }
 
         [Test]
         public void ReadToEnd_should_return_an_empty_string_if_already_at_the_end()
         {
-            using (var stream = new MemoryStream())
-            {
-                stream.ReadToEnd().Should().BeEmpty();
-            }
+            using var stream = new MemoryStream();
+            stream.ReadToEnd().Should().BeEmpty();
         }
 
         [Test]
         public void ReadToEnd_should_not_preserve_the_position_by_default()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
 
-                stream.ReadToEnd();
-                stream.Position.Should().Be("Hello".Length);
-            }
+            stream.ReadToEnd();
+            stream.Position.Should().Be("Hello".Length);
         }
 
         [Test]
         public void ReadToEnd_should_preserve_the_position_if_requested()
         {
-            using (var stream = new MemoryStream())
-            {
-                byte[] bytes = Encoding.ASCII.GetBytes("Hello");
-                stream.Write(bytes, 0, bytes.Length);
+            using var stream = new MemoryStream();
+            byte[] bytes = Encoding.ASCII.GetBytes("Hello");
+            stream.Write(bytes, 0, bytes.Length);
 
-                stream.Position = 1;
-                stream.ReadAllText(preservePosition: true);
-                stream.Position.Should().Be(1);
-            }
+            stream.Position = 1;
+            stream.ReadAllText(preservePosition: true);
+            stream.Position.Should().Be(1);
         }
 
         [Test]

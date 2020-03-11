@@ -157,12 +157,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 // Normally a lexical declaration ends in a newline, but we don't want that in our
                 // for loop. This is kind of kludgy, but we'll create a temporary emitter for it
                 // to use with spaces instead of newlines.
-                using (var memoryStream = new MemoryStream())
-                using (var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options.WithNewline(" ")))
-                {
-                    InitializerWithLexicalDeclaration.Emit(tempEmitter);
-                    emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
-                }
+                using var memoryStream = new MemoryStream();
+                using var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options.WithNewline(" "));
+                InitializerWithLexicalDeclaration.Emit(tempEmitter);
+                emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
             }
 
             Condition.Emit(emitter);

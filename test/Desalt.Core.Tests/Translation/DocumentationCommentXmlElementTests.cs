@@ -23,14 +23,12 @@ namespace Desalt.Core.Tests.Translation
             string expectedContent = "",
             params (string name, string value)[] expectedAttributes)
         {
-            using (var reader = new PeekingTextReader(text))
-            {
-                var actual = XmlElem.Parse(reader);
-                actual.ElementName.Should().Be(expectedElementName);
-                actual.Content.Should().Be(expectedContent);
+            using var reader = new PeekingTextReader(text);
+            var actual = XmlElem.Parse(reader);
+            actual.ElementName.Should().Be(expectedElementName);
+            actual.Content.Should().Be(expectedContent);
 
-                actual.Attributes.Select(pair => (pair.Key, pair.Value)).Should().BeEquivalentTo(expectedAttributes);
-            }
+            actual.Attributes.Select(pair => (pair.Key, pair.Value)).Should().BeEquivalentTo(expectedAttributes);
         }
 
         [Test]
@@ -55,12 +53,11 @@ namespace Desalt.Core.Tests.Translation
         [Test]
         public void Parse_should_throw_an_exception_if_the_reader_isnt_positioned_at_a_lt_character()
         {
-            using (var reader = new PeekingTextReader("not valid"))
-            {
-                // ReSharper disable once AccessToDisposedClosure
-                Action action = () => XmlElem.Parse(reader);
-                action.Should().ThrowExactly<InvalidOperationException>();
-            }
+            using var reader = new PeekingTextReader("not valid");
+
+            // ReSharper disable once AccessToDisposedClosure
+            Action action = () => XmlElem.Parse(reader);
+            action.Should().ThrowExactly<InvalidOperationException>();
         }
 
         [Test]
