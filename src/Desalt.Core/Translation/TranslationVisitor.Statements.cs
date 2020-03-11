@@ -530,7 +530,7 @@ namespace Desalt.Core.Translation
             ITsStatementListItem[] statements = node.Statements.SelectMany(Visit).Cast<ITsStatementListItem>().ToArray();
 
             // attach the statements to the last label
-            labels[labels.Length - 1] = labels[labels.Length - 1].WithStatements(statements);
+            labels[^1] = labels[^1].WithStatements(statements);
 
             return labels;
         }
