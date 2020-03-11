@@ -70,7 +70,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             TypeParameters.Emit(emitter);
             Heritage.Emit(emitter);
 
-            if (ClassName != null && Heritage.IsEmpty || !Heritage.IsEmpty)
+            if ((ClassName != null && Heritage.IsEmpty) || !Heritage.IsEmpty)
             {
                 emitter.Write(" ");
             }

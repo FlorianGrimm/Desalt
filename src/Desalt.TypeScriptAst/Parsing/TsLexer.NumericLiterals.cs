@@ -24,7 +24,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// </summary>
         private static bool IsNumericLiteralStartChar(char c)
         {
-            return c >= '0' && c <= '9' || c == '.';
+            return (c >= '0' && c <= '9') || c == '.';
         }
 
         /// <summary>
