@@ -264,6 +264,7 @@ class Monkey implements Animal {
                                 Factory.ConstructorDeclaration(
                                     TsAccessibilityModifier.Public,
                                     Factory.ParameterList(
+                                        requiredParameters: null,
                                         optionalParameters: Factory.BoundOptionalParameter(
                                             fileMapping,
                                             parameterType: MockFileSystemTreeRef,
