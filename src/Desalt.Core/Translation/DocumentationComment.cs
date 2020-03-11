@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DocumentationComment.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -298,8 +298,7 @@ namespace Desalt.Core.Translation
 
                         if (!string.IsNullOrWhiteSpace(name) && !_comment._parameterTexts.ContainsKey(name))
                         {
-                            (_parameterNamesBuilder ??
-                                (_parameterNamesBuilder = ImmutableArray.CreateBuilder<string>())).Add(name);
+                            (_parameterNamesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(name);
                             _comment._parameterTexts.Add(name, TrimEachLine(paramText));
                         }
                     }
@@ -310,8 +309,7 @@ namespace Desalt.Core.Translation
 
                         if (!string.IsNullOrWhiteSpace(name) && !_comment._typeParameterTexts.ContainsKey(name))
                         {
-                            (_typeParameterNamesBuilder ??
-                                (_typeParameterNamesBuilder = ImmutableArray.CreateBuilder<string>())).Add(name);
+                            (_typeParameterNamesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(name);
                             _comment._typeParameterTexts.Add(name, TrimEachLine(typeParamText));
                         }
                     }
@@ -324,11 +322,8 @@ namespace Desalt.Core.Translation
                         {
                             if (_exceptionTextBuilders == null || !_exceptionTextBuilders.ContainsKey(type))
                             {
-                                (_exceptionTypesBuilder ??
-                                    (_exceptionTypesBuilder = ImmutableArray.CreateBuilder<string>())).Add(type);
-                                (_exceptionTextBuilders ??
-                                        (_exceptionTextBuilders =
-                                            new Dictionary<string, ImmutableArray<string>.Builder>()))
+                                (_exceptionTypesBuilder ??= ImmutableArray.CreateBuilder<string>()).Add(type);
+                                (_exceptionTextBuilders ??= new Dictionary<string, ImmutableArray<string>.Builder>())
                                     .Add(type, ImmutableArray.CreateBuilder<string>());
                             }
 

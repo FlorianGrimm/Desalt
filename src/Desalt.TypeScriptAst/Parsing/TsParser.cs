@@ -204,7 +204,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return identifier;
             }
 
-            throw NewParseException($"Expected an identifier as the next token");
+            throw NewParseException("Expected an identifier as the next token");
         }
 
         /// <summary>

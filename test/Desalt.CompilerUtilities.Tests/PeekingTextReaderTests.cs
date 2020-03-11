@@ -81,7 +81,8 @@ namespace Desalt.CompilerUtilities.Tests
 
             var actions = new Dictionary<string, Action>
             {
-                { "Location", () => { TextReaderLocation x = reader.Location; } },
+                // ReSharper disable once AssignmentIsFullyDiscarded
+                { "Location", () => _ = reader.Location },
                 // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 { "Peek", () => reader.Peek() },
                 { "PeekN", () => reader.Peek(2) },
