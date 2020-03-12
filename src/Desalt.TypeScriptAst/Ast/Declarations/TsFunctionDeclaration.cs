@@ -88,7 +88,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
             CallSignature.Emit(emitter);
 
-            if (FunctionBody.IsDefault)
+            if (FunctionBody.IsEmpty)
             {
                 emitter.WriteLine(";");
             }

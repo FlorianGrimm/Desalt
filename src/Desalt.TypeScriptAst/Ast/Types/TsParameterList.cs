@@ -25,8 +25,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
             IEnumerable<ITsOptionalParameter>? optionalParameters = null,
             ITsRestParameter? restParameter = null)
         {
-            RequiredParameters = requiredParameters?.ToImmutableArray();
-            OptionalParameters = optionalParameters?.ToImmutableArray();
+            RequiredParameters = requiredParameters?.ToImmutableArray() ?? ImmutableArray<ITsRequiredParameter>.Empty;
+            OptionalParameters = optionalParameters?.ToImmutableArray() ?? ImmutableArray<ITsOptionalParameter>.Empty;
             RestParameter = restParameter;
         }
 
@@ -34,8 +34,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsRequiredParameter>? RequiredParameters { get; }
-        public ImmutableArray<ITsOptionalParameter>? OptionalParameters { get; }
+        public ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
+        public ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
         public ITsRestParameter? RestParameter { get; }
 
         //// ===========================================================================================================
@@ -48,30 +48,30 @@ namespace Desalt.TypeScriptAst.Ast.Types
         }
 
         public override string CodeDisplay =>
-            RequiredParameters?.ToElidedList() +
-            (RequiredParameters?.Length > 0 && (OptionalParameters?.Length > 0 || RestParameter != null) ? ", " : "") +
-            OptionalParameters?.ToElidedList() +
-            (OptionalParameters?.Length > 0 && RestParameter != null ? ", " : "") +
+            RequiredParameters.ToElidedList() +
+            (RequiredParameters.Length > 0 && (OptionalParameters.Length > 0 || RestParameter != null) ? ", " : "") +
+            OptionalParameters.ToElidedList() +
+            (OptionalParameters.Length > 0 && RestParameter != null ? ", " : "") +
             RestParameter?.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {
-            if (RequiredParameters != null)
+            if (RequiredParameters.Length > 0)
             {
                 emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
             }
 
-            if ((RequiredParameters?.Length > 0 && OptionalParameters?.Length > 0) || RestParameter != null)
+            if ((RequiredParameters.Length > 0 && OptionalParameters.Length > 0) || RestParameter != null)
             {
                 emitter.Write(", ");
             }
 
-            if (OptionalParameters != null)
+            if (OptionalParameters.Length > 0)
             {
                 emitter.WriteList(OptionalParameters, indent: false, itemDelimiter: ", ");
             }
 
-            if (OptionalParameters?.Length > 0 && RestParameter != null)
+            if (OptionalParameters.Length > 0 && RestParameter != null)
             {
                 emitter.Write(", ");
             }

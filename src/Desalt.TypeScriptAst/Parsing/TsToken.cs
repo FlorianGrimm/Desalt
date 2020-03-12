@@ -229,13 +229,19 @@ namespace Desalt.TypeScriptAst.Parsing
         public TsTokenWithValue(TsTokenCode tokenCode, string text, T value, TextReaderLocation location)
             : base(tokenCode, text, location)
         {
-            Value = value;
+            ValueField = value;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public new T Value { get; }
+        /// <summary>
+        /// Gets the value of the token. For example, if the token represents an integer literal,
+        /// then this property would return the actual integer.
+        /// </summary>
+        public override object Value => ValueField!;
+
+        public T ValueField { get; }
     }
 }

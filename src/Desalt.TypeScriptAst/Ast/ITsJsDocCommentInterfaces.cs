@@ -122,21 +122,21 @@ namespace Desalt.TypeScriptAst.Ast
 
         ITsJsDocCommentBuilder AppendDescription(ITsJsDocBlock block, bool separateWithBlankLine);
 
-        ITsJsDocCommentBuilder SetDescription(string text);
+        ITsJsDocCommentBuilder SetDescription(string? text);
 
-        ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder SetSummaryTag(string text);
+        ITsJsDocCommentBuilder SetSummaryTag(string? text);
 
-        ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder SetFileTag(string text);
+        ITsJsDocCommentBuilder SetFileTag(string? text);
 
-        ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder SetCopyrightTag(string text);
+        ITsJsDocCommentBuilder SetCopyrightTag(string? text);
 
-        ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock? text);
 
         ITsJsDocCommentBuilder SetIsPackagePrivate(bool value);
 
@@ -148,9 +148,9 @@ namespace Desalt.TypeScriptAst.Ast
 
         ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text);
 
-        ITsJsDocCommentBuilder SetReturnsTag(string text);
+        ITsJsDocCommentBuilder SetReturnsTag(string? text);
 
-        ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock? text);
 
         ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text);
 

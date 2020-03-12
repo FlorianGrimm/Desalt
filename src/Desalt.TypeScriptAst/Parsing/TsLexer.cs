@@ -57,7 +57,8 @@ namespace Desalt.TypeScriptAst.Parsing
             while (!_reader.IsAtEnd)
             {
                 _reader.SkipWhitespace();
-                builder.Add(LexCommonToken());
+                TsToken token = LexCommonToken();
+                builder.Add(token);
             }
 
             return builder.ToImmutable();

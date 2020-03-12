@@ -72,14 +72,14 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsArrayLiteral();
         }
 
-        public static ITsArrayLiteral Array(params ITsArrayElement[] elements)
+        public static ITsArrayLiteral Array(params ITsArrayElement[]? elements)
         {
             return new TsArrayLiteral(elements);
         }
 
-        public static ITsArrayLiteral Array(params ITsExpression[] elements)
+        public static ITsArrayLiteral Array(params ITsExpression[]? elements)
         {
-            return new TsArrayLiteral(elements.Select(e => ArrayElement(e)));
+            return new TsArrayLiteral(elements?.Select(e => ArrayElement(e)));
         }
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false)

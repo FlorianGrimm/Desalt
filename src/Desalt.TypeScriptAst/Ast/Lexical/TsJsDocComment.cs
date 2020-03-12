@@ -209,22 +209,22 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
 
         public ITsJsDocComment WithDescription(ITsJsDocBlock? value)
         {
-            return Description == value ? this : new TsJsDocComment(this, description: value);
+            return Description?.Equals(value) == true ? this : new TsJsDocComment(this, description: value);
         }
 
         public ITsJsDocComment WithSummaryTag(ITsJsDocBlock? value)
         {
-            return SummaryTag == value ? this : new TsJsDocComment(this, summaryTag: value);
+            return SummaryTag?.Equals(value) == true ? this : new TsJsDocComment(this, summaryTag: value);
         }
 
         public ITsJsDocComment WithFileTag(ITsJsDocBlock? value)
         {
-            return FileTag == value ? this : new TsJsDocComment(this, fileTag: value);
+            return FileTag?.Equals(value) == true ? this : new TsJsDocComment(this, fileTag: value);
         }
 
         public ITsJsDocComment WithCopyrightTag(ITsJsDocBlock? value)
         {
-            return CopyrightTag == value ? this : new TsJsDocComment(this, copyrightTag: value);
+            return CopyrightTag?.Equals(value) == true ? this : new TsJsDocComment(this, copyrightTag: value);
         }
 
         public ITsJsDocComment WithIsPackagePrivate(bool value)
@@ -248,7 +248,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
 
         public ITsJsDocComment WithReturnsTag(ITsJsDocBlock? value)
         {
-            return ReturnsTag == value ? this : new TsJsDocComment(this, returnsTag: value);
+            return ReturnsTag?.Equals(value) == true ? this : new TsJsDocComment(this, returnsTag: value);
         }
 
         public ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value)

@@ -301,8 +301,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsParameterList : ITsAstNode
     {
-        ImmutableArray<ITsRequiredParameter>? RequiredParameters { get; }
-        ImmutableArray<ITsOptionalParameter>? OptionalParameters { get; }
+        ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
+        ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
         ITsRestParameter? RestParameter { get; }
     }
 
@@ -588,7 +588,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsIdentifier InterfaceName { get; }
         ITsTypeParameters? TypeParameters { get; }
-        ImmutableArray<ITsTypeReference>? ExtendsClause { get; }
+        ImmutableArray<ITsTypeReference> ExtendsClause { get; }
         ITsObjectType Body { get; }
     }
 
@@ -626,7 +626,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsIdentifier? ClassName { get; }
         ITsTypeParameters? TypeParameters { get; }
-        ITsClassHeritage Heritage { get; }
+        ITsClassHeritage? Heritage { get; }
         bool IsAbstract { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
@@ -634,8 +634,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsClassHeritage : ITsAstNode
     {
         ITsTypeReference? ExtendsClause { get; }
-        ImmutableArray<ITsTypeReference>? ImplementsClause { get; }
-        bool IsEmpty { get; }
+        ImmutableArray<ITsTypeReference> ImplementsClause { get; }
     }
 
     public interface ITsClassElement : ITsAstNode { }
@@ -1080,7 +1079,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsIdentifier ClassName { get; }
         ITsTypeParameters? TypeParameters { get; }
-        ITsClassHeritage Heritage { get; }
+        ITsClassHeritage? Heritage { get; }
         ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
     }
 

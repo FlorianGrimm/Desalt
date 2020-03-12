@@ -25,7 +25,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             IEnumerable<ITsTypeReference>? implementsClause = null)
         {
             ExtendsClause = extendsClause;
-            ImplementsClause = implementsClause?.ToImmutableArray();
+            ImplementsClause = implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
         //// ===========================================================================================================
@@ -33,9 +33,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsTypeReference? ExtendsClause { get; }
-        public ImmutableArray<ITsTypeReference>? ImplementsClause { get; }
-
-        public bool IsEmpty => ExtendsClause == null && ImplementsClause?.IsEmpty == true;
+        public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -48,7 +46,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay =>
             (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
-            (ImplementsClause?.IsEmpty == true ? "" : $" implements {ImplementsClause?.ToElidedList()}");
+            (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -58,7 +56,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
                 ExtendsClause.Emit(emitter);
             }
 
-            if (ImplementsClause?.IsEmpty == false)
+            if (!ImplementsClause.IsEmpty)
             {
                 emitter.Write(" implements ");
                 emitter.WriteList(ImplementsClause, indent: false, itemDelimiter: ", ");

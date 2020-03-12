@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             InterfaceName = interfaceName ?? throw new ArgumentNullException(nameof(interfaceName));
             Body = body ?? throw new ArgumentNullException(nameof(body));
             TypeParameters = typeParameters;
-            ExtendsClause = extendsClause?.ToImmutableArray();
+            ExtendsClause = extendsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
         //// ===========================================================================================================
@@ -39,7 +39,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public ITsIdentifier InterfaceName { get; }
         public ITsTypeParameters? TypeParameters { get; }
-        public ImmutableArray<ITsTypeReference>? ExtendsClause { get; }
+        public ImmutableArray<ITsTypeReference> ExtendsClause { get; }
         public ITsObjectType Body { get; }
 
         //// ===========================================================================================================
@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay =>
             $"interface {InterfaceName}{TypeParameters}" +
-            (ExtendsClause?.IsEmpty == true ? "" : $" extends {ExtendsClause?.ToElidedList()}") + Body;
+            (ExtendsClause.IsEmpty ? "" : $" extends {ExtendsClause.ToElidedList()}") + Body;
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             InterfaceName.Emit(emitter);
             TypeParameters?.Emit(emitter);
 
-            if (ExtendsClause?.IsEmpty == false)
+            if (!ExtendsClause.IsEmpty)
             {
                 emitter.Write(" extends ");
                 emitter.WriteList(ExtendsClause, indent: false, itemDelimiter: ", ");

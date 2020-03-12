@@ -249,7 +249,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             try
             {
-                static bool WasSuccessful(T r) => !(r is null);
+                static bool WasSuccessful(T? r) => r != null;
                 result = _reader.ReadWithSavedState(func, shouldCommitReadFunc: WasSuccessful);
                 return WasSuccessful(result);
             }
