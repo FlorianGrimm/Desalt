@@ -54,7 +54,7 @@ namespace Desalt.CompilerUtilities
         {
             Source = contents ?? throw new ArgumentNullException(nameof(contents));
             SuppressByteOrderMark = suppressByteOrderMark;
-            _byteOrderMark = suppressByteOrderMark ? new byte[0] : Encoding.Unicode.GetPreamble();
+            _byteOrderMark = suppressByteOrderMark ? Array.Empty<byte>() : Encoding.Unicode.GetPreamble();
             _byteLength = _byteOrderMark.Length + (Source.Length * 2); // Unicode is 2 bytes per character
             _position = 0;
         }
