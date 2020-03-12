@@ -18,7 +18,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsContinueOrBreakStatement(bool isContinue, ITsIdentifier label = null)
+        public TsContinueOrBreakStatement(bool isContinue, ITsIdentifier? label = null)
         {
             IsContinue = isContinue;
             Label = label;
@@ -28,7 +28,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier Label { get; }
+        public ITsIdentifier? Label { get; }
         public bool IsContinue { get; }
 
         //// ===========================================================================================================

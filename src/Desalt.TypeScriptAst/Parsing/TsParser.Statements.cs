@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Parsing
 {
+    using System;
     using System.Collections.Generic;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
@@ -281,10 +282,10 @@ namespace Desalt.TypeScriptAst.Parsing
             ITsVariableDeclaration declaration;
 
             // SimpleVariableDeclaration
-            if (TryParseIdentifier(out ITsIdentifier variableName))
+            if (TryParseIdentifier(out ITsIdentifier? variableName))
             {
-                ITsType variableType = ParseOptionalTypeAnnotation();
-                ITsExpression initializer = ParseOptionalInitializer();
+                ITsType? variableType = ParseOptionalTypeAnnotation();
+                ITsExpression? initializer = ParseOptionalInitializer();
 
                 declaration = Factory.SimpleVariableDeclaration(variableName, variableType, initializer);
             }
@@ -293,7 +294,7 @@ namespace Desalt.TypeScriptAst.Parsing
             else
             {
                 ITsBindingPattern bindingPattern = ParseBindingPattern();
-                ITsType variableType = ParseOptionalTypeAnnotation();
+                ITsType? variableType = ParseOptionalTypeAnnotation();
                 ITsExpression initializer = ParseInitializer();
 
                 declaration = Factory.DestructuringVariableDeclaration(bindingPattern, variableType, initializer);
@@ -320,7 +321,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             ITsStatement ifStatement = ParseStatement();
 
-            ITsStatement elseStatement = null;
+            ITsStatement? elseStatement = null;
             if (_reader.ReadIf(TsTokenCode.Else))
             {
                 elseStatement = ParseStatement();
@@ -389,7 +390,8 @@ namespace Desalt.TypeScriptAst.Parsing
                 if (_reader.ReadIf(TsTokenCode.Default))
                 {
                     Read(TsTokenCode.Colon);
-                    ITsStatementListItem[] statements = HasStatements() ? ParseStatementList() : null;
+                    ITsStatementListItem[] statements =
+                        HasStatements() ? ParseStatementList() : Array.Empty<ITsStatementListItem>();
 
                     ITsDefaultClause defaultClause = Factory.DefaultClause(statements);
                     clauses.Add(defaultClause);
@@ -400,7 +402,8 @@ namespace Desalt.TypeScriptAst.Parsing
 
                     ITsExpression expression = ParseExpression();
                     Read(TsTokenCode.Colon);
-                    ITsStatementListItem[] statements = HasStatements() ? ParseStatementList() : null;
+                    ITsStatementListItem[] statements =
+                        HasStatements() ? ParseStatementList() : Array.Empty<ITsStatementListItem>();
 
                     ITsCaseClause caseClause = Factory.CaseClause(expression, statements);
                     clauses.Add(caseClause);
@@ -423,7 +426,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsContinueStatement ParseContinueStatement()
         {
             Read(TsTokenCode.Continue);
-            TryParseIdentifier(out ITsIdentifier label);
+            TryParseIdentifier(out ITsIdentifier? label);
             Read(TsTokenCode.Semicolon);
 
             return Factory.Continue(label);
@@ -440,7 +443,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsBreakStatement ParseBreakStatement()
         {
             Read(TsTokenCode.Break);
-            TryParseIdentifier(out ITsIdentifier label);
+            TryParseIdentifier(out ITsIdentifier? label);
             Read(TsTokenCode.Semicolon);
 
             return Factory.Break(label);
@@ -458,7 +461,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             Read(TsTokenCode.Return);
 
-            ITsExpression expression = null;
+            ITsExpression? expression = null;
             if (!_reader.IsNext(TsTokenCode.Semicolon))
             {
                 expression = ParseExpression();
@@ -531,7 +534,7 @@ namespace Desalt.TypeScriptAst.Parsing
             // try/catch
             if (_reader.ReadIf(TsTokenCode.Catch))
             {
-                ITsBindingIdentifierOrPattern catchParameter = null;
+                ITsBindingIdentifierOrPattern? catchParameter = null;
                 if (_reader.ReadIf(TsTokenCode.LeftParen))
                 {
                     catchParameter = ParseBindingIdentifierOrPattern();

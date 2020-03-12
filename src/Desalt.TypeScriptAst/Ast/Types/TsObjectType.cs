@@ -20,7 +20,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectType(IEnumerable<ITsTypeMember> typeMembers = null, bool forceSingleLine = false)
+        public TsObjectType(IEnumerable<ITsTypeMember>? typeMembers = null, bool forceSingleLine = false)
         {
             TypeMembers = typeMembers?.ToImmutableArray() ?? ImmutableArray<ITsTypeMember>.Empty;
             ForceSingleLine = forceSingleLine;

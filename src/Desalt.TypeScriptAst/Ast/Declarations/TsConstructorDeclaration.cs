@@ -25,8 +25,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         private TsConstructorDeclaration(
             bool isAmbient,
             TsAccessibilityModifier? accessibilityModifier = null,
-            ITsParameterList parameterList = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsParameterList? parameterList = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             IsAmbient = isAmbient;
             AccessibilityModifier = accessibilityModifier;
@@ -42,7 +42,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsAccessibilityModifier? AccessibilityModifier { get; }
-        public ITsParameterList ParameterList { get; }
+        public ITsParameterList? ParameterList { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
         private bool IsAmbient { get; }
@@ -53,13 +53,13 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public static ITsConstructorDeclaration Create(
             TsAccessibilityModifier? accessibilityModifier = null,
-            ITsParameterList parameterList = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsParameterList? parameterList = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return new TsConstructorDeclaration(false, accessibilityModifier, parameterList, functionBody);
         }
 
-        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList parameterList = null)
+        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList? parameterList = null)
         {
             return new TsConstructorDeclaration(true, parameterList: parameterList);
         }

@@ -24,9 +24,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public TsAmbientClassDeclaration(
             ITsIdentifier className,
-            ITsTypeParameters typeParameters = null,
-            ITsClassHeritage heritage = null,
-            IEnumerable<ITsAmbientClassBodyElement> classBody = null)
+            ITsTypeParameters? typeParameters = null,
+            ITsClassHeritage? heritage = null,
+            IEnumerable<ITsAmbientClassBodyElement>? classBody = null)
         {
             ClassName = className ?? throw new ArgumentNullException(nameof(className));
             TypeParameters = typeParameters ?? new TsTypeParameters();

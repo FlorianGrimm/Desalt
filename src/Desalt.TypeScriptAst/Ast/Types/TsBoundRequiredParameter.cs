@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsBoundRequiredParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
+            ITsType? parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
@@ -35,7 +35,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType ParameterType { get; }
+        public ITsType? ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -56,7 +56,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
                     display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
                 }
 
-                display += $"{ParameterName}{ParameterType.OptionalTypeAnnotation()}";
+                display += $"{ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
                 return display;
             }
         }
@@ -69,7 +69,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             }
 
             ParameterName.Emit(emitter);
-            ParameterType.EmitOptionalTypeAnnotation(emitter);
+            ParameterType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 
@@ -79,7 +79,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             this ITsBoundRequiredParameter boundParameter,
             ITsType value)
         {
-            return boundParameter.ParameterType.Equals(value)
+            return boundParameter.ParameterType == value
                 ? boundParameter
                 : new TsBoundRequiredParameter(boundParameter.ParameterName, value, boundParameter.Modifier);
         }

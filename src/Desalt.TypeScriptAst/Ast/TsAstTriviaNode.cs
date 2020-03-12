@@ -132,7 +132,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        public virtual string EmitAsString(EmitOptions emitOptions = null)
+        public virtual string EmitAsString(EmitOptions? emitOptions = null)
         {
             using var stream = new MemoryStream();
             using var emitter = new Emitter(stream, options: emitOptions);
@@ -178,7 +178,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
-        public virtual bool Equals(TsAstTriviaNode other)
+        public virtual bool Equals(TsAstTriviaNode? other)
         {
             if (other is null)
             {

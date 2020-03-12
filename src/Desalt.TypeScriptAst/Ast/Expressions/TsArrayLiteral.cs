@@ -20,7 +20,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(IEnumerable<ITsArrayElement> elements)
+        internal TsArrayLiteral(IEnumerable<ITsArrayElement>? elements = null)
         {
             Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
         }

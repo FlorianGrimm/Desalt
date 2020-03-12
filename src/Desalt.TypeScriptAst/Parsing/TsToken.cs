@@ -29,6 +29,8 @@ namespace Desalt.TypeScriptAst.Parsing
             "EndOfTokens",
             TextReaderLocation.Empty);
 
+        public static readonly object NullValue = new object();
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -71,7 +73,7 @@ namespace Desalt.TypeScriptAst.Parsing
                         return false;
 
                     case TsTokenCode.Null:
-                        return null;
+                        return NullValue;
 
                     default:
                         return Text;
@@ -182,7 +184,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <see langword="true"/> if the specified object is equal to the current object; otherwise,
         /// <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
             {
@@ -194,8 +196,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return true;
             }
 
-            var other = obj as TsToken;
-            return other != null && Equals(other);
+            return obj is TsToken other && Equals(other);
         }
 
         /// <summary>
@@ -228,15 +229,13 @@ namespace Desalt.TypeScriptAst.Parsing
         public TsTokenWithValue(TsTokenCode tokenCode, string text, T value, TextReaderLocation location)
             : base(tokenCode, text, location)
         {
-            ValueField = value;
+            Value = value;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public override object Value => ValueField;
-
-        public T ValueField { get; }
+        public new T Value { get; }
     }
 }

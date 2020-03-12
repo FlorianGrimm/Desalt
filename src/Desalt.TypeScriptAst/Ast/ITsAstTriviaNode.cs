@@ -47,6 +47,6 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        string EmitAsString(EmitOptions emitOptions = null);
+        string EmitAsString(EmitOptions? emitOptions = null);
     }
 }

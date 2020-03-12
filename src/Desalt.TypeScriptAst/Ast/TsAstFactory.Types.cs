@@ -17,7 +17,7 @@ namespace Desalt.TypeScriptAst.Ast
         //// Types
         //// ===========================================================================================================
 
-        public static ITsTypeReference TypeReference(ITsTypeName typeName, params ITsType[] typeArguments)
+        public static ITsTypeReference TypeReference(ITsTypeName typeName, params ITsType[]? typeArguments)
         {
             return new TsTypeReference(typeName, typeArguments);
         }
@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         public static ITsFunctionType FunctionType(
-            ITsTypeParameters typeParameters,
+            ITsTypeParameters? typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         public static ITsConstructorType ConstructorType(
-            ITsTypeParameters typeParameters,
+            ITsTypeParameters? typeParameters,
             ITsParameterList parameters,
             ITsType returnType)
         {
@@ -85,7 +85,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsPropertySignature PropertySignature(
             ITsPropertyName propertyName,
-            ITsType propertyType = null,
+            ITsType? propertyType = null,
             bool isOptional = false)
         {
             return new TsPropertySignature(propertyName, isOptional, propertyType);
@@ -98,15 +98,15 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsCallSignature CallSignature(
             ITsParameterList parameters,
-            ITsType returnType = null)
+            ITsType? returnType = null)
         {
             return new TsCallSignature(typeParameters: null, parameters: parameters, returnType: returnType);
         }
 
         public static ITsCallSignature CallSignature(
-            ITsTypeParameters typeParameters,
-            ITsParameterList parameters = null,
-            ITsType returnType = null)
+            ITsTypeParameters? typeParameters,
+            ITsParameterList? parameters = null,
+            ITsType? returnType = null)
         {
             return new TsCallSignature(typeParameters, parameters, returnType);
         }
@@ -127,9 +127,9 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         public static ITsParameterList ParameterList(
-            IEnumerable<ITsRequiredParameter> requiredParameters,
-            IEnumerable<ITsOptionalParameter> optionalParameters = null,
-            ITsRestParameter restParameter = null)
+            IEnumerable<ITsRequiredParameter>? requiredParameters,
+            IEnumerable<ITsOptionalParameter>? optionalParameters = null,
+            ITsRestParameter? restParameter = null)
         {
             return new TsParameterList(requiredParameters, optionalParameters, restParameter);
         }
@@ -150,14 +150,14 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsTypeParameters(typeParameters);
         }
 
-        public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType constraint = null)
+        public static ITsTypeParameter TypeParameter(ITsIdentifier typeName, ITsType? constraint = null)
         {
             return new TsTypeParameter(typeName, constraint);
         }
 
         public static ITsBoundRequiredParameter BoundRequiredParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
+            ITsType? parameterType = null,
             TsAccessibilityModifier? modifier = null)
         {
             return new TsBoundRequiredParameter(parameterName, parameterType, modifier);
@@ -172,8 +172,8 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsBoundOptionalParameter BoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
-            ITsExpression initializer = null,
+            ITsType? parameterType = null,
+            ITsExpression? initializer = null,
             TsAccessibilityModifier? modifier = null)
         {
             return new TsBoundOptionalParameter(parameterName, parameterType, initializer, modifier);
@@ -186,22 +186,22 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsStringParameter(parameterName, stringLiteral, isOptional: true);
         }
 
-        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType parameterType = null)
+        public static ITsRestParameter RestParameter(ITsIdentifier parameterName, ITsType? parameterType = null)
         {
             return new TsRestParameter(parameterName, parameterType);
         }
 
         public static ITsConstructSignature ConstructSignature(
-            ITsParameterList parameterList = null,
-            ITsType returnType = null)
+            ITsParameterList? parameterList = null,
+            ITsType? returnType = null)
         {
             return new TsConstructSignature(typeParameters: null, parameterList: parameterList, returnType: returnType);
         }
 
         public static ITsConstructSignature ConstructSignature(
-            ITsTypeParameters typeParameters = null,
-            ITsParameterList parameterList = null,
-            ITsType returnType = null)
+            ITsTypeParameters? typeParameters = null,
+            ITsParameterList? parameterList = null,
+            ITsType? returnType = null)
         {
             return new TsConstructSignature(typeParameters, parameterList, returnType);
         }

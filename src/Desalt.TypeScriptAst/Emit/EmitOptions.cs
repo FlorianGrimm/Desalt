@@ -57,7 +57,7 @@ namespace Desalt.TypeScriptAst.Emit
         /// ('/** text */') or multiple lines ('/**\n * text\n*/').
         /// </param>
         public EmitOptions(
-            string newline = null,
+            string? newline = null,
             string indentationPrefix = "  ",
             bool singleLineJsDocCommentsOnOneLine = false) : this(
             null,
@@ -75,9 +75,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// * Otherwise, the default value of the parameter's type
         /// </summary>
         private EmitOptions(
-            EmitOptions instanceToCopy = null,
-            string newline = null,
-            string indentationPrefix = null,
+            EmitOptions? instanceToCopy = null,
+            string? newline = null,
+            string? indentationPrefix = null,
             bool? singleLineJsDocCommentsOnOneLine = null)
         {
             Newline = newline ?? instanceToCopy?.Newline ?? Environment.NewLine;

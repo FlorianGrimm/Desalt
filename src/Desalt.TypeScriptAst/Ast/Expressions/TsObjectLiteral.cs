@@ -21,10 +21,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsObjectLiteral(IEnumerable<ITsPropertyDefinition> propertyDefinitions)
+        public TsObjectLiteral(IEnumerable<ITsPropertyDefinition>? propertyDefinitions = null)
         {
-            PropertyDefinitions = propertyDefinitions?.ToImmutableArray() ??
-                ImmutableArray<ITsPropertyDefinition>.Empty;
+            PropertyDefinitions =
+                propertyDefinitions?.ToImmutableArray() ?? ImmutableArray<ITsPropertyDefinition>.Empty;
         }
 
         //// ===========================================================================================================

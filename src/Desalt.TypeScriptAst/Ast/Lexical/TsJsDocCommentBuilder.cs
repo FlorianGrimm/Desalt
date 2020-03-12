@@ -20,18 +20,18 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// Member Variables
         //// ===========================================================================================================
 
-        private ITsJsDocBlock _description;
-        private ITsJsDocBlock _summaryTag;
-        private ITsJsDocBlock _fileTag;
-        private ITsJsDocBlock _copyrightTag;
-        private ITsJsDocBlock _returnsTag;
+        private ITsJsDocBlock? _description;
+        private ITsJsDocBlock? _summaryTag;
+        private ITsJsDocBlock? _fileTag;
+        private ITsJsDocBlock? _copyrightTag;
+        private ITsJsDocBlock? _returnsTag;
         private bool _isPackagePrivate;
 
-        private List<(string paramName, ITsJsDocBlock paramTag)> _paramTags;
-        private List<(string paramName, ITsJsDocBlock paramTag)> _typeparamTags;
-        private List<(string typeName, ITsJsDocBlock throwsTag)> _throwsTags;
-        private List<ITsJsDocBlock> _exampleTags;
-        private List<ITsJsDocBlock> _seeTags;
+        private List<(string paramName, ITsJsDocBlock paramTag)>? _paramTags;
+        private List<(string paramName, ITsJsDocBlock paramTag)>? _typeparamTags;
+        private List<(string typeName, ITsJsDocBlock throwsTag)>? _throwsTags;
+        private List<ITsJsDocBlock>? _exampleTags;
+        private List<ITsJsDocBlock>? _seeTags;
 
         //// ===========================================================================================================
         //// Constructors
@@ -73,46 +73,46 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetDescription(string text)
+        public ITsJsDocCommentBuilder SetDescription(string? text)
         {
             _description = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder SetDescription(ITsJsDocBlock? text)
         {
             return Set(ref _description, text);
         }
 
-        public ITsJsDocCommentBuilder SetSummaryTag(string text)
+        public ITsJsDocCommentBuilder SetSummaryTag(string? text)
         {
             _summaryTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder SetSummaryTag(ITsJsDocBlock? text)
         {
             return Set(ref _summaryTag, text);
         }
 
-        public ITsJsDocCommentBuilder SetFileTag(string text)
+        public ITsJsDocCommentBuilder SetFileTag(string? text)
         {
             _fileTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder SetFileTag(ITsJsDocBlock? text)
         {
             return Set(ref _fileTag, text);
         }
 
-        public ITsJsDocCommentBuilder SetCopyrightTag(string text)
+        public ITsJsDocCommentBuilder SetCopyrightTag(string? text)
         {
             _copyrightTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder SetCopyrightTag(ITsJsDocBlock? text)
         {
             return Set(ref _copyrightTag, text);
         }
@@ -123,12 +123,12 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddParamTag(string name, string text)
+        public ITsJsDocCommentBuilder AddParamTag(string name, string? text)
         {
             return AddParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
         }
 
-        public ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock? text)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -144,12 +144,12 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddTypeParamTag(string name, string text)
+        public ITsJsDocCommentBuilder AddTypeParamTag(string name, string? text)
         {
             return AddTypeParamTag(name, Factory.JsDocBlock(text ?? string.Empty));
         }
 
-        public ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock? text)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -165,23 +165,23 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetReturnsTag(string text)
+        public ITsJsDocCommentBuilder SetReturnsTag(string? text)
         {
             _returnsTag = string.IsNullOrEmpty(text) ? null : Factory.JsDocBlock(text);
             return this;
         }
 
-        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock? text)
         {
             return Set(ref _returnsTag, text);
         }
 
-        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text)
+        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, string? text)
         {
             return AddThrowsTag(typeName, Factory.JsDocBlock(text ?? string.Empty));
         }
 
-        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock? text)
         {
             if (string.IsNullOrEmpty(typeName))
             {
@@ -197,12 +197,12 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddExampleTag(string text)
+        public ITsJsDocCommentBuilder AddExampleTag(string? text)
         {
             return AddExampleTag(Factory.JsDocBlock(text ?? string.Empty));
         }
 
-        public ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock? text)
         {
             Set(ref text, text);
             if (text == null)
@@ -219,12 +219,12 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
             return this;
         }
 
-        public ITsJsDocCommentBuilder AddSeeTag(string text)
+        public ITsJsDocCommentBuilder AddSeeTag(string? text)
         {
             return AddSeeTag(Factory.JsDocBlock(text ?? string.Empty));
         }
 
-        public ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock text)
+        public ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock? text)
         {
             Set(ref text, text);
             if (text == null)
@@ -258,7 +258,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         }
 
         // ReSharper disable once RedundantAssignment
-        private ITsJsDocCommentBuilder Set(ref ITsJsDocBlock tag, ITsJsDocBlock value)
+        private ITsJsDocCommentBuilder Set(ref ITsJsDocBlock? tag, ITsJsDocBlock? value)
         {
             if (value == null)
             {

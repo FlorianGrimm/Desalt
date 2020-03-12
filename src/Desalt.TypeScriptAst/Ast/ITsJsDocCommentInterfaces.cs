@@ -32,22 +32,22 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Gets the main description.
         /// </summary>
-        ITsJsDocBlock Description { get; }
+        ITsJsDocBlock? Description { get; }
 
         /// <summary>
         /// Gets the @summary tag, which is a shorter version of the full description.
         /// </summary>
-        ITsJsDocBlock SummaryTag { get; }
+        ITsJsDocBlock? SummaryTag { get; }
 
         /// <summary>
         /// Gets the @file tag.
         /// </summary>
-        ITsJsDocBlock FileTag { get; }
+        ITsJsDocBlock? FileTag { get; }
 
         /// <summary>
         /// Gets the @copyright tag.
         /// </summary>
-        ITsJsDocBlock CopyrightTag { get; }
+        ITsJsDocBlock? CopyrightTag { get; }
 
         /// <summary>
         /// Gets a value indicating whether the symbol to which this JSDoc is attached is meant to be
@@ -71,7 +71,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Gets the @returns tag text.
         /// </summary>
-        ITsJsDocBlock ReturnsTag { get; }
+        ITsJsDocBlock? ReturnsTag { get; }
 
         /// <summary>
         /// Gets an array of @throws tags. Each @throws is emitted in the form '@throws {type} text'.
@@ -88,13 +88,13 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         ImmutableArray<ITsJsDocBlock> SeeTags { get; }
 
-        ITsJsDocComment WithDescription(ITsJsDocBlock value);
+        ITsJsDocComment WithDescription(ITsJsDocBlock? value);
 
-        ITsJsDocComment WithSummaryTag(ITsJsDocBlock value);
+        ITsJsDocComment WithSummaryTag(ITsJsDocBlock? value);
 
-        ITsJsDocComment WithFileTag(ITsJsDocBlock value);
+        ITsJsDocComment WithFileTag(ITsJsDocBlock? value);
 
-        ITsJsDocComment WithCopyrightTag(ITsJsDocBlock value);
+        ITsJsDocComment WithCopyrightTag(ITsJsDocBlock? value);
 
         ITsJsDocComment WithIsPackagePrivate(bool value);
 
@@ -102,7 +102,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         ITsJsDocComment WithTypeParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value);
 
-        ITsJsDocComment WithReturnsTag(ITsJsDocBlock value);
+        ITsJsDocComment WithReturnsTag(ITsJsDocBlock? value);
 
         ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value);
 
@@ -206,6 +206,6 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsJsDocLinkTag : ITsJsDocInlineContent
     {
         string NamespaceOrUrl { get; }
-        string Text { get; }
+        string? Text { get; }
     }
 }

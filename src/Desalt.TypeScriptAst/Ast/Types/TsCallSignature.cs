@@ -19,9 +19,9 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public TsCallSignature(
-            ITsTypeParameters typeParameters = null,
-            ITsParameterList parameters = null,
-            ITsType returnType = null)
+            ITsTypeParameters? typeParameters = null,
+            ITsParameterList? parameters = null,
+            ITsType? returnType = null)
         {
             TypeParameters = typeParameters ?? TsTypeParameters.Empty;
             Parameters = parameters;
@@ -32,9 +32,9 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeParameters TypeParameters { get; }
-        public ITsParameterList Parameters { get; }
-        public ITsType ReturnType { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ITsParameterList? Parameters { get; }
+        public ITsType? ReturnType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -45,16 +45,16 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitCallSignature(this);
         }
 
-        public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType.OptionalTypeAnnotation()}";
+        public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType?.OptionalTypeAnnotation()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
-            TypeParameters.Emit(emitter);
+            TypeParameters?.Emit(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");
 
-            ReturnType.EmitOptionalTypeAnnotation(emitter);
+            ReturnType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 
@@ -63,7 +63,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         public static ITsCallSignature
             WithParameters(this ITsCallSignature callSignature, ITsParameterList parameters)
         {
-            return callSignature.Parameters.Equals(parameters)
+            return callSignature.Parameters == parameters
                 ? callSignature
                 : new TsCallSignature(callSignature.TypeParameters, parameters, callSignature.ReturnType);
         }

@@ -33,15 +33,15 @@ namespace Desalt.TypeScriptAst.Ast
         /// string length.
         /// </returns>
         public static string ToElidedList<T>(
-            this IEnumerable<T> list,
+            this IEnumerable<T?> list,
             string delimiter = ", ",
             int maxStringLength = 32)
-            where T : ITsAstNode
+            where T : class, ITsAstNode
         {
             Param.VerifyGreaterThanOrEqualTo(maxStringLength, nameof(maxStringLength), 0);
 
             var builder = new StringBuilder();
-            foreach (T item in list)
+            foreach (T? item in list)
             {
                 if (builder.Length + delimiter.Length >= maxStringLength)
                 {

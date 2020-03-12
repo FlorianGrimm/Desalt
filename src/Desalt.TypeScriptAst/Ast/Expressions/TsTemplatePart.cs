@@ -18,7 +18,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTemplatePart(string template = null, ITsExpression expression = null)
+        public TsTemplatePart(string template, ITsExpression? expression = null)
         {
             Template = template;
             Expression = expression;
@@ -29,7 +29,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// ===========================================================================================================
 
         public string Template { get; }
-        public ITsExpression Expression { get; }
+        public ITsExpression? Expression { get; }
 
         //// ===========================================================================================================
         //// Methods

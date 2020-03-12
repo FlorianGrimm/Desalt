@@ -19,7 +19,8 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// Constructors
         //// ===========================================================================================================
 
-        public TsJsDocLinkTag(string namespaceOrUrl, string text = null) : base(preserveSpacing: true)
+        public TsJsDocLinkTag(string namespaceOrUrl, string? text = null)
+            : base(preserveSpacing: true)
         {
             NamespaceOrUrl = namespaceOrUrl?.Replace("{", string.Empty).Replace("}", string.Empty) ??
                 throw new ArgumentNullException(nameof(namespaceOrUrl));
@@ -36,7 +37,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         public bool IsEmpty => string.IsNullOrEmpty(NamespaceOrUrl) && string.IsNullOrEmpty(Text);
 
         public string NamespaceOrUrl { get; }
-        public string Text { get; }
+        public string? Text { get; }
 
         /// <summary>
         /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
@@ -63,7 +64,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        public override string EmitAsString(EmitOptions emitOptions = null)
+        public override string EmitAsString(EmitOptions? emitOptions = null)
         {
             return CodeDisplay;
         }

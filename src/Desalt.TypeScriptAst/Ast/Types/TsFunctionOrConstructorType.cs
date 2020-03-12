@@ -20,8 +20,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public TsFunctionOrConstructorType(
-            ITsTypeParameters typeParameters,
-            ITsParameterList parameters,
+            ITsTypeParameters? typeParameters,
+            ITsParameterList? parameters,
             ITsType returnType,
             bool isConstructorType)
         {
@@ -31,7 +31,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             IsConstructorType = isConstructorType;
         }
 
-        public TsFunctionOrConstructorType(ITsParameterList parameters, ITsType returnType, bool isConstructorType)
+        public TsFunctionOrConstructorType(ITsParameterList? parameters, ITsType returnType, bool isConstructorType)
             : this(null, parameters, returnType, isConstructorType)
         {
         }
@@ -45,8 +45,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeParameters TypeParameters { get; }
-        public ITsParameterList Parameters { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ITsParameterList? Parameters { get; }
         public ITsType ReturnType { get; }
         public bool IsConstructorType { get; }
 
@@ -76,7 +76,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
                 emitter.Write("new ");
             }
 
-            TypeParameters.Emit(emitter);
+            TypeParameters?.Emit(emitter);
             emitter.Write("(");
             Parameters?.Emit(emitter);
             emitter.Write(")");

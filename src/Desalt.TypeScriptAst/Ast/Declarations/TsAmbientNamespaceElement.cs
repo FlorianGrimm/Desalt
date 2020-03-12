@@ -45,9 +45,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public bool HasExportKeyword { get; }
-        public ITsAmbientDeclarationElement Declaration { get; }
-        public ITsInterfaceDeclaration InterfaceDeclaration { get; }
-        public ITsImportAliasDeclaration ImportAliasDeclaration { get; }
+        public ITsAmbientDeclarationElement? Declaration { get; }
+        public ITsInterfaceDeclaration? InterfaceDeclaration { get; }
+        public ITsImportAliasDeclaration? ImportAliasDeclaration { get; }
 
         //// ===========================================================================================================
         //// Methods

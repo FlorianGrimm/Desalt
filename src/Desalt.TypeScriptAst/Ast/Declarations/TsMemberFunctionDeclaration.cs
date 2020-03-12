@@ -29,7 +29,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             IsAmbient = isAmbient;
             FunctionName = functionName ?? throw new ArgumentNullException(nameof(functionName));
@@ -63,7 +63,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return new TsFunctionMemberDeclaration(
                 isAmbient: false,

@@ -21,21 +21,21 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsClassHeritage(
-            ITsTypeReference extendsClause = null,
-            IEnumerable<ITsTypeReference> implementsClause = null)
+            ITsTypeReference? extendsClause = null,
+            IEnumerable<ITsTypeReference>? implementsClause = null)
         {
             ExtendsClause = extendsClause;
-            ImplementsClause = implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
+            ImplementsClause = implementsClause?.ToImmutableArray();
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeReference ExtendsClause { get; }
-        public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+        public ITsTypeReference? ExtendsClause { get; }
+        public ImmutableArray<ITsTypeReference>? ImplementsClause { get; }
 
-        public bool IsEmpty => ExtendsClause == null && ImplementsClause.IsEmpty;
+        public bool IsEmpty => ExtendsClause == null && ImplementsClause?.IsEmpty == true;
 
         //// ===========================================================================================================
         //// Methods
@@ -48,7 +48,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay =>
             (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
-            (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
+            (ImplementsClause?.IsEmpty == true ? "" : $" implements {ImplementsClause?.ToElidedList()}");
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -58,7 +58,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
                 ExtendsClause.Emit(emitter);
             }
 
-            if (!ImplementsClause.IsEmpty)
+            if (ImplementsClause?.IsEmpty == false)
             {
                 emitter.Write(" implements ");
                 emitter.WriteList(ImplementsClause, indent: false, itemDelimiter: ", ");

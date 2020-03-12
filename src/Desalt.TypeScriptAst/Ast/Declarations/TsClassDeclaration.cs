@@ -22,11 +22,11 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsClassDeclaration(
-            ITsIdentifier className = null,
-            ITsTypeParameters typeParameters = null,
-            ITsClassHeritage heritage = null,
+            ITsIdentifier? className = null,
+            ITsTypeParameters? typeParameters = null,
+            ITsClassHeritage? heritage = null,
             bool isAbstract = false,
-            IEnumerable<ITsClassElement> classBody = null)
+            IEnumerable<ITsClassElement>? classBody = null)
         {
             ClassName = className;
             TypeParameters = typeParameters ?? new TsTypeParameters();
@@ -39,7 +39,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ClassName { get; }
+        public ITsIdentifier? ClassName { get; }
         public ITsTypeParameters TypeParameters { get; }
         public ITsClassHeritage Heritage { get; }
         public bool IsAbstract { get; }

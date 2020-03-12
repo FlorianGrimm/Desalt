@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Parsing
 {
+    using System;
     using System.Collections.Generic;
     using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -23,7 +24,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsFunctionExpression ParseFunctionExpression()
         {
             Read(TsTokenCode.Function);
-            TryParseIdentifier(out ITsIdentifier functionName);
+            TryParseIdentifier(out ITsIdentifier? functionName);
             ITsCallSignature callSignature = ParseCallSignature();
             ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
 
@@ -60,7 +61,7 @@ namespace Desalt.TypeScriptAst.Parsing
             ITsExpression bodyExpression;
 
             // try to parse 'param =>' arrow functions
-            if (TryParseIdentifier(out ITsIdentifier singleParameterName))
+            if (TryParseIdentifier(out ITsIdentifier? singleParameterName))
             {
                 Read(TsTokenCode.EqualsGreaterThan);
                 if (_reader.IsNext(TsTokenCode.LeftBrace))
@@ -105,7 +106,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 Read(TsTokenCode.LeftBrace);
                 if (_reader.ReadIf(TsTokenCode.RightBrace))
                 {
-                    return new ITsStatementListItem[0];
+                    return Array.Empty<ITsStatementListItem>();
                 }
             }
 
@@ -171,7 +172,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             var optionalParameters = new List<ITsOptionalParameter>();
-            ITsRestParameter restParameter = null;
+            ITsRestParameter? restParameter = null;
 
             // RequiredParameterList or OptionalParameterList
             do
@@ -184,8 +185,8 @@ namespace Desalt.TypeScriptAst.Parsing
                 }
 
                 bool parsingOptionalParameter = false;
-                ITsStringLiteral stringLiteral = null;
-                ITsType parameterType = null;
+                ITsStringLiteral? stringLiteral = null;
+                ITsType? parameterType = null;
 
                 // RequiredParameter: AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt
                 // OptionalParameter: AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
@@ -210,7 +211,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 }
 
                 // OptionalParameter: AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
-                ITsExpression initializer = null;
+                ITsExpression? initializer = null;
                 if (_reader.IsNext(TsTokenCode.Equals))
                 {
                     initializer = ParseInitializer();
@@ -234,7 +235,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
                     if (stringLiteral != null)
                     {
-                        optionalParameter = Factory.StringOptionalParameter(parameterIdentifier, stringLiteral);
+                        optionalParameter = Factory.StringOptionalParameter(parameterIdentifier!, stringLiteral);
                     }
                     else
                     {
@@ -253,7 +254,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
                     if (stringLiteral != null)
                     {
-                        requiredParameter = Factory.StringRequiredParameter(parameterIdentifier, stringLiteral);
+                        requiredParameter = Factory.StringRequiredParameter(parameterIdentifier!, stringLiteral);
                     }
                     else
                     {
@@ -310,7 +311,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             Read(TsTokenCode.DotDotDot);
             ITsIdentifier parameterName = ParseIdentifier();
-            ITsType parameterType = ParseOptionalTypeAnnotation();
+            ITsType? parameterType = ParseOptionalTypeAnnotation();
 
             return Factory.RestParameter(parameterName, parameterType);
         }
@@ -325,7 +326,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsBindingIdentifierOrPattern ParseBindingIdentifierOrPattern()
         {
-            if (TryParseIdentifier(out ITsIdentifier identifier))
+            if (TryParseIdentifier(out ITsIdentifier? identifier))
             {
                 return identifier;
             }
@@ -404,7 +405,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             Read(TsTokenCode.LeftBracket);
 
-            var elements = new List<ITsBindingElement>();
+            var elements = new List<ITsBindingElement?>();
             while (!_reader.IsAtEnd && !_reader.IsNext(TsTokenCode.RightBracket))
             {
                 // read all of the elisions (empty elements)
@@ -431,7 +432,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 _reader.ReadIf(TsTokenCode.Comma);
             }
 
-            ITsIdentifier restElement = null;
+            ITsIdentifier? restElement = null;
             if (_reader.ReadIf(TsTokenCode.DotDotDot))
             {
                 restElement = ParseIdentifier();
@@ -462,7 +463,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             if (propertyName is ITsIdentifier name && !_reader.IsNext(TsTokenCode.Colon))
             {
-                ITsExpression defaultValue = ParseOptionalInitializer();
+                ITsExpression? defaultValue = ParseOptionalInitializer();
                 return Factory.SingleNameBinding(name, defaultValue);
             }
 
@@ -487,12 +488,12 @@ namespace Desalt.TypeScriptAst.Parsing
             if (_reader.IsNext(TsTokenCode.LeftBrace) || _reader.IsNext(TsTokenCode.LeftBracket))
             {
                 ITsBindingPattern bindingPattern = ParseBindingPattern();
-                ITsExpression initializer = ParseOptionalInitializer();
+                ITsExpression? initializer = ParseOptionalInitializer();
                 return Factory.PatternBinding(bindingPattern, initializer);
             }
 
             ITsIdentifier name = ParseIdentifier();
-            ITsExpression defaultValue = ParseOptionalInitializer();
+            ITsExpression? defaultValue = ParseOptionalInitializer();
             return Factory.SingleNameBinding(name, defaultValue);
         }
     }

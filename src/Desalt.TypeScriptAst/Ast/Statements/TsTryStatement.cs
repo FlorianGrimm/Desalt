@@ -22,9 +22,9 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         private TsTryStatement(
             ITsBlockStatement tryBlock,
-            ITsBindingIdentifierOrPattern catchParameter = null,
-            ITsBlockStatement catchBlock = null,
-            ITsBlockStatement finallyBlock = null)
+            ITsBindingIdentifierOrPattern? catchParameter = null,
+            ITsBlockStatement? catchBlock = null,
+            ITsBlockStatement? finallyBlock = null)
         {
             TryBlock = tryBlock ?? throw new ArgumentNullException(nameof(tryBlock));
             CatchParameter = catchParameter;
@@ -37,9 +37,9 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// ===========================================================================================================
 
         public ITsBlockStatement TryBlock { get; }
-        public ITsBindingIdentifierOrPattern CatchParameter { get; }
-        public ITsBlockStatement CatchBlock { get; }
-        public ITsBlockStatement FinallyBlock { get; }
+        public ITsBindingIdentifierOrPattern? CatchParameter { get; }
+        public ITsBlockStatement? CatchBlock { get; }
+        public ITsBlockStatement? FinallyBlock { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -52,7 +52,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public static TsTryStatement CreateTryCatch(
             ITsBlockStatement tryBlock,
-            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBindingIdentifierOrPattern? catchParameter,
             ITsBlockStatement catchBlock)
         {
             return new TsTryStatement(
@@ -80,7 +80,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public static TsTryStatement CreateTryCatchFinally(
             ITsBlockStatement tryBlock,
-            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBindingIdentifierOrPattern? catchParameter,
             ITsBlockStatement catchBlock,
             ITsBlockStatement finallyBlock)
         {

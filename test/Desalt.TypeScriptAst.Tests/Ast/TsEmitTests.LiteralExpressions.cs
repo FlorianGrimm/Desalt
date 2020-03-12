@@ -130,7 +130,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             VerifyOutput(
                 Factory.TemplateString(
                     Factory.TemplatePart("xy=", s_x),
-                    Factory.TemplatePart(expression: s_y)),
+                    Factory.TemplatePart("", expression: s_y)),
                 "`xy=${x}${y}`");
         }
 

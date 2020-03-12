@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsIfStatement(ITsExpression ifCondition, ITsStatement ifStatement, ITsStatement elseStatement = null)
+        public TsIfStatement(ITsExpression ifCondition, ITsStatement ifStatement, ITsStatement? elseStatement = null)
         {
             IfCondition = ifCondition ?? throw new ArgumentNullException(nameof(ifCondition));
             IfStatement = ifStatement ?? throw new ArgumentNullException(nameof(ifStatement));
@@ -32,7 +32,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public ITsExpression IfCondition { get; }
         public ITsStatement IfStatement { get; }
-        public ITsStatement ElseStatement { get; }
+        public ITsStatement? ElseStatement { get; }
 
         //// ===========================================================================================================
         //// Methods

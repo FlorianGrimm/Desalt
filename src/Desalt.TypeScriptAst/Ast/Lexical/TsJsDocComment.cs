@@ -46,17 +46,17 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// ===========================================================================================================
 
         public TsJsDocComment(
-            ITsJsDocBlock fileTag = null,
-            ITsJsDocBlock copyrightTag = null,
+            ITsJsDocBlock? fileTag = null,
+            ITsJsDocBlock? copyrightTag = null,
             bool isPackagePrivate = false,
-            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
-            IEnumerable<(string paramName, ITsJsDocBlock text)> typeParamTags = null,
-            ITsJsDocBlock returnsTag = null,
-            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
-            IEnumerable<ITsJsDocBlock> exampleTags = null,
-            ITsJsDocBlock description = null,
-            ITsJsDocBlock summaryTag = null,
-            IEnumerable<ITsJsDocBlock> seeTags = null)
+            IEnumerable<(string paramName, ITsJsDocBlock text)>? paramsTags = null,
+            IEnumerable<(string paramName, ITsJsDocBlock text)>? typeParamTags = null,
+            ITsJsDocBlock? returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)>? throwsTags = null,
+            IEnumerable<ITsJsDocBlock>? exampleTags = null,
+            ITsJsDocBlock? description = null,
+            ITsJsDocBlock? summaryTag = null,
+            IEnumerable<ITsJsDocBlock>? seeTags = null)
             : this(
                 instanceToCopy: null,
                 fileTag: fileTag,
@@ -82,18 +82,18 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// </summary>
         // ReSharper disable once FunctionComplexityOverflow
         private TsJsDocComment(
-            ITsJsDocComment instanceToCopy = null,
-            ITsJsDocBlock fileTag = null,
-            ITsJsDocBlock copyrightTag = null,
+            ITsJsDocComment? instanceToCopy = null,
+            ITsJsDocBlock? fileTag = null,
+            ITsJsDocBlock? copyrightTag = null,
             bool? isPackagePrivate = null,
-            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
-            IEnumerable<(string paramName, ITsJsDocBlock text)> typeParamTags = null,
-            ITsJsDocBlock returnsTag = null,
-            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
-            IEnumerable<ITsJsDocBlock> exampleTags = null,
-            ITsJsDocBlock description = null,
-            ITsJsDocBlock summaryTag = null,
-            IEnumerable<ITsJsDocBlock> seeTags = null)
+            IEnumerable<(string paramName, ITsJsDocBlock text)>? paramsTags = null,
+            IEnumerable<(string paramName, ITsJsDocBlock text)>? typeParamTags = null,
+            ITsJsDocBlock? returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)>? throwsTags = null,
+            IEnumerable<ITsJsDocBlock>? exampleTags = null,
+            ITsJsDocBlock? description = null,
+            ITsJsDocBlock? summaryTag = null,
+            IEnumerable<ITsJsDocBlock>? seeTags = null)
             : base(preserveSpacing: true)
         {
             FileTag = fileTag ?? instanceToCopy?.FileTag;
@@ -120,22 +120,22 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// <summary>
         /// Gets the main description.
         /// </summary>
-        public ITsJsDocBlock Description { get; }
+        public ITsJsDocBlock? Description { get; }
 
         /// <summary>
         /// Gets the @summary tag, which is a shorter version of the full description.
         /// </summary>
-        public ITsJsDocBlock SummaryTag { get; }
+        public ITsJsDocBlock? SummaryTag { get; }
 
         /// <summary>
         /// Gets the @file tag.
         /// </summary>
-        public ITsJsDocBlock FileTag { get; }
+        public ITsJsDocBlock? FileTag { get; }
 
         /// <summary>
         /// Gets the @copyright tag.
         /// </summary>
-        public ITsJsDocBlock CopyrightTag { get; }
+        public ITsJsDocBlock? CopyrightTag { get; }
 
         /// <summary>
         /// Gets a value indicating whether the symbol to which this JSDoc is attached is meant to be
@@ -159,7 +159,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// <summary>
         /// Gets the @returns tag text.
         /// </summary>
-        public ITsJsDocBlock ReturnsTag { get; }
+        public ITsJsDocBlock? ReturnsTag { get; }
 
         /// <summary>
         /// Gets an array of @throws tags. Each @throws is emitted in the form '@throws {type} text'.
@@ -207,29 +207,29 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         //// Methods
         //// ===========================================================================================================
 
-        public ITsJsDocComment WithDescription(ITsJsDocBlock value)
+        public ITsJsDocComment WithDescription(ITsJsDocBlock? value)
         {
-            return Description.Equals(value) ? this : new TsJsDocComment(this, description: value);
+            return Description == value ? this : new TsJsDocComment(this, description: value);
         }
 
-        public ITsJsDocComment WithSummaryTag(ITsJsDocBlock value)
+        public ITsJsDocComment WithSummaryTag(ITsJsDocBlock? value)
         {
-            return SummaryTag.Equals(value) ? this : new TsJsDocComment(this, summaryTag: value);
+            return SummaryTag == value ? this : new TsJsDocComment(this, summaryTag: value);
         }
 
-        public ITsJsDocComment WithFileTag(ITsJsDocBlock value)
+        public ITsJsDocComment WithFileTag(ITsJsDocBlock? value)
         {
-            return FileTag.Equals(value) ? this : new TsJsDocComment(this, fileTag: value);
+            return FileTag == value ? this : new TsJsDocComment(this, fileTag: value);
         }
 
-        public ITsJsDocComment WithCopyrightTag(ITsJsDocBlock value)
+        public ITsJsDocComment WithCopyrightTag(ITsJsDocBlock? value)
         {
-            return CopyrightTag.Equals(value) ? this : new TsJsDocComment(this, copyrightTag: value);
+            return CopyrightTag == value ? this : new TsJsDocComment(this, copyrightTag: value);
         }
 
         public ITsJsDocComment WithIsPackagePrivate(bool value)
         {
-            return IsPackagePrivate.Equals(value) ? this : new TsJsDocComment(this, isPackagePrivate: value);
+            return IsPackagePrivate == value ? this : new TsJsDocComment(this, isPackagePrivate: value);
         }
 
         public ITsJsDocComment WithParamTags(ImmutableArray<(string paramName, ITsJsDocBlock text)> value)
@@ -246,9 +246,9 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
                 : new TsJsDocComment(this, typeParamTags: value);
         }
 
-        public ITsJsDocComment WithReturnsTag(ITsJsDocBlock value)
+        public ITsJsDocComment WithReturnsTag(ITsJsDocBlock? value)
         {
-            return ReturnsTag.Equals(value) ? this : new TsJsDocComment(this, returnsTag: value);
+            return ReturnsTag == value ? this : new TsJsDocComment(this, returnsTag: value);
         }
 
         public ITsJsDocComment WithThrowsTags(ImmutableArray<(string typeName, ITsJsDocBlock text)> value)
@@ -354,7 +354,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         }
 
         private static void AddLines(
-            ITsJsDocBlock tagBlock,
+            ITsJsDocBlock? tagBlock,
             string tagName,
             ICollection<string> list,
             EmitOptions options)

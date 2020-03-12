@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScriptAst.Ast.Statements
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Emit;
@@ -21,7 +20,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        private TsSwitchClause(ITsExpression expression, IEnumerable<ITsStatementListItem> statements)
+        private TsSwitchClause(ITsExpression? expression, IEnumerable<ITsStatementListItem> statements)
         {
             Expression = expression;
             Statements = statements?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
@@ -31,16 +30,16 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Expression { get; }
+        public ITsExpression? Expression { get; }
         public ImmutableArray<ITsStatementListItem> Statements { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static TsSwitchClause Case(ITsExpression expression, IEnumerable<ITsStatementListItem> statements)
+        public static TsSwitchClause Case(ITsExpression? expression, IEnumerable<ITsStatementListItem> statements)
         {
-            return new TsSwitchClause(expression ?? throw new ArgumentNullException(nameof(expression)), statements);
+            return new TsSwitchClause(expression, statements);
         }
 
         public static TsSwitchClause Default(IEnumerable<ITsStatementListItem> statements)

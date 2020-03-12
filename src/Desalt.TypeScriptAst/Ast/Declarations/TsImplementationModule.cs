@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Constructors
         //// ===========================================================================================================
 
-        public TsImplementationModule(IEnumerable<ITsImplementationModuleElement> elements = null)
+        public TsImplementationModule(IEnumerable<ITsImplementationModuleElement>? elements = null)
         {
             Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsImplementationModuleElement>.Empty;
         }

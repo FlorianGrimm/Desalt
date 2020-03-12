@@ -10,6 +10,7 @@ namespace Desalt.TypeScriptAst.Parsing
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using Desalt.CompilerUtilities;
     using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -104,17 +105,17 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsPropertyName ParsePropertyName()
         {
-            if (_reader.ReadIf(TsTokenCode.Identifier, out TsToken identifierToken))
+            if (_reader.ReadIf(TsTokenCode.Identifier, out TsToken? identifierToken))
             {
                 return Factory.Identifier(identifierToken.Value.ToString());
             }
 
-            if (_reader.ReadIf(TsTokenCode.StringLiteral, out TsToken stringLiteralToken))
+            if (_reader.ReadIf(TsTokenCode.StringLiteral, out TsToken? stringLiteralToken))
             {
                 return ToStringLiteral(stringLiteralToken);
             }
 
-            if (_reader.ReadIf(IsNumericLiteral, out TsToken numericLiteralToken))
+            if (_reader.ReadIf(IsNumericLiteral, out TsToken? numericLiteralToken))
             {
                 return Factory.Number((double)numericLiteralToken.Value);
             }
@@ -170,7 +171,7 @@ namespace Desalt.TypeScriptAst.Parsing
             return tokenCode == TsTokenCode.Identifier || tokenCode > TsTokenCode.LastReservedWord;
         }
 
-        private bool TryParseIdentifier(out ITsIdentifier identifier)
+        private bool TryParseIdentifier([NotNullWhen(true)] out ITsIdentifier? identifier)
         {
             TsToken identifierToken;
 
@@ -199,7 +200,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
         private ITsIdentifier ParseIdentifier()
         {
-            if (TryParseIdentifier(out ITsIdentifier identifier))
+            if (TryParseIdentifier(out ITsIdentifier? identifier))
             {
                 return identifier;
             }
@@ -244,11 +245,11 @@ namespace Desalt.TypeScriptAst.Parsing
         /// If the parse is successful, the result of the tried parse; otherwise, <c>default(T)</c>.
         /// </param>
         /// <returns>True if the parse succeeded; false otherwise.</returns>
-        public bool TryParse<T>(Func<T> func, out T result) where T : class, ITsAstNode
+        public bool TryParse<T>(Func<T> func, [NotNullWhen(true)] out T? result) where T : class, ITsAstNode
         {
             try
             {
-                bool WasSuccessful(T r) => !(r is null);
+                static bool WasSuccessful(T r) => !(r is null);
                 result = _reader.ReadWithSavedState(func, shouldCommitReadFunc: WasSuccessful);
                 return WasSuccessful(result);
             }

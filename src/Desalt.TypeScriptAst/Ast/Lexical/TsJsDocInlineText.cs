@@ -59,7 +59,7 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        public override string EmitAsString(EmitOptions emitOptions = null)
+        public override string EmitAsString(EmitOptions? emitOptions = null)
         {
             return Text;
         }

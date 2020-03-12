@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsRestParameter(ITsIdentifier parameterName, ITsType parameterType = null)
+        public TsRestParameter(ITsIdentifier parameterName, ITsType? parameterType = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
             ParameterType = parameterType;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public ITsIdentifier ParameterName { get; }
-        public ITsType ParameterType { get; }
+        public ITsType? ParameterType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,13 +41,13 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitRestParameter(this);
         }
 
-        public override string CodeDisplay => $"... {ParameterName}{ParameterType.OptionalTypeAnnotation()}";
+        public override string CodeDisplay => $"... {ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("... ");
             ParameterName.Emit(emitter);
-            ParameterType.EmitOptionalTypeAnnotation(emitter);
+            ParameterType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

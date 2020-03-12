@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsSingleNameBinding(ITsIdentifier name, ITsExpression defaultValue = null)
+        public TsSingleNameBinding(ITsIdentifier name, ITsExpression? defaultValue = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             DefaultValue = defaultValue;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// ===========================================================================================================
 
         public ITsIdentifier Name { get; }
-        public ITsExpression DefaultValue { get; }
+        public ITsExpression? DefaultValue { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,12 +41,12 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitSingleNameBinding(this);
         }
 
-        public override string CodeDisplay => $"{Name}{DefaultValue.OptionalAssignment()}";
+        public override string CodeDisplay => $"{Name}{DefaultValue?.OptionalAssignment()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             Name.Emit(emitter);
-            DefaultValue.EmitOptionalAssignment(emitter);
+            DefaultValue?.EmitOptionalAssignment(emitter);
         }
     }
 }

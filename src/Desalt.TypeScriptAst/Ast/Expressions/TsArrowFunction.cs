@@ -50,11 +50,11 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier SingleParameterName { get; }
-        public ITsCallSignature CallSignature { get; }
+        public ITsIdentifier? SingleParameterName { get; }
+        public ITsCallSignature? CallSignature { get; }
 
-        public ITsExpression BodyExpression { get; }
-        public ImmutableArray<ITsStatementListItem> Body { get; }
+        public ITsExpression? BodyExpression { get; }
+        public ImmutableArray<ITsStatementListItem>? Body { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -87,7 +87,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
                 }
                 else
                 {
-                    builder.Append("{ ").Append(Body.ToElidedList()).Append("}");
+                    builder.Append("{ ").Append(Body?.ToElidedList()).Append("}");
                 }
 
                 return builder.ToString();
@@ -102,7 +102,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             }
             else
             {
-                CallSignature.Emit(emitter);
+                CallSignature?.Emit(emitter);
             }
 
             emitter.Write(" => ");
@@ -113,7 +113,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             }
             else
             {
-                emitter.WriteBlock(Body, skipNewlines: true);
+                emitter.WriteBlock(Body!, skipNewlines: true);
             }
         }
     }

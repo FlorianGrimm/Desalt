@@ -36,8 +36,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// ===========================================================================================================
 
         public ITsIdentifier Label { get; }
-        public ITsStatement Statement { get; }
-        public ITsFunctionDeclaration FunctionDeclaration { get; }
+        public ITsStatement? Statement { get; }
+        public ITsFunctionDeclaration? FunctionDeclaration { get; }
 
         //// ===========================================================================================================
         //// Methods

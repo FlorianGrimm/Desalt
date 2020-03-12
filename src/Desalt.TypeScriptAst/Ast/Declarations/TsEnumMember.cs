@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Constructors
         //// ===========================================================================================================
 
-        public TsEnumMember(ITsPropertyName name, ITsExpression value = null)
+        public TsEnumMember(ITsPropertyName name, ITsExpression? value = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Value = value;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsPropertyName Name { get; }
-        public ITsExpression Value { get; }
+        public ITsExpression? Value { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,12 +41,12 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitEnumMember(this);
         }
 
-        public override string CodeDisplay => $"{Name}{Value.OptionalAssignment()}";
+        public override string CodeDisplay => $"{Name}{Value?.OptionalAssignment()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             Name.Emit(emitter);
-            Value.EmitOptionalAssignment(emitter);
+            Value?.EmitOptionalAssignment(emitter);
         }
     }
 }

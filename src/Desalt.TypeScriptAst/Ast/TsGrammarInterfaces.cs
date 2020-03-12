@@ -48,7 +48,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsTypeParameter : ITsAstNode
     {
         ITsIdentifier TypeName { get; }
-        ITsType Constraint { get; }
+        ITsType? Constraint { get; }
     }
 
     /* TypeArguments:
@@ -215,8 +215,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsFunctionType : ITsType
     {
-        ITsTypeParameters TypeParameters { get; }
-        ITsParameterList Parameters { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsParameterList? Parameters { get; }
         ITsType ReturnType { get; }
     }
 
@@ -226,8 +226,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsConstructorType : ITsType
     {
-        ITsTypeParameters TypeParameters { get; }
-        ITsParameterList Parameters { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsParameterList? Parameters { get; }
         ITsType ReturnType { get; }
     }
 
@@ -275,7 +275,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsPropertyName PropertyName { get; }
         bool IsOptional { get; }
-        ITsType PropertyType { get; }
+        ITsType? PropertyType { get; }
     }
 
     /* CallSignature:
@@ -284,9 +284,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsCallSignature : ITsTypeMember
     {
-        ITsTypeParameters TypeParameters { get; }
-        ITsParameterList Parameters { get; }
-        ITsType ReturnType { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsParameterList? Parameters { get; }
+        ITsType? ReturnType { get; }
     }
 
     /* ParameterList:
@@ -301,9 +301,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsParameterList : ITsAstNode
     {
-        ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
-        ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
-        ITsRestParameter RestParameter { get; }
+        ImmutableArray<ITsRequiredParameter>? RequiredParameters { get; }
+        ImmutableArray<ITsOptionalParameter>? OptionalParameters { get; }
+        ITsRestParameter? RestParameter { get; }
     }
 
     /* RequiredParameterList:
@@ -326,7 +326,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         TsAccessibilityModifier? Modifier { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
-        ITsType ParameterType { get; }
+        ITsType? ParameterType { get; }
     }
 
     public interface ITsStringRequiredParameter : ITsRequiredParameter
@@ -365,8 +365,8 @@ namespace Desalt.TypeScriptAst.Ast
     {
         TsAccessibilityModifier? Modifier { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
-        ITsType ParameterType { get; }
-        ITsExpression Initializer { get; }
+        ITsType? ParameterType { get; }
+        ITsExpression? Initializer { get; }
     }
 
     public interface ITsStringOptionalParameter : ITsOptionalParameter
@@ -382,7 +382,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsRestParameter : ITsAstNode
     {
         ITsIdentifier ParameterName { get; }
-        ITsType ParameterType { get; }
+        ITsType? ParameterType { get; }
     }
 
     /* ConstructSignature:
@@ -391,9 +391,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsConstructSignature : ITsTypeMember
     {
-        ITsTypeParameters TypeParameters { get; }
-        ITsParameterList ParameterList { get; }
-        ITsType ReturnType { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsParameterList? ParameterList { get; }
+        ITsType? ReturnType { get; }
     }
 
     /* IndexSignature:
@@ -426,7 +426,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsTypeAliasDeclaration : ITsDeclaration
     {
         ITsIdentifier AliasName { get; }
-        ITsTypeParameters TypeParameters { get; }
+        ITsTypeParameters? TypeParameters { get; }
         ITsType Type { get; }
     }
 
@@ -457,7 +457,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsGetAccessor : ITsPropertyDefinition
     {
         ITsPropertyName PropertyName { get; }
-        ITsType PropertyType { get; }
+        ITsType? PropertyType { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
@@ -465,7 +465,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsPropertyName PropertyName { get; }
         ITsBindingIdentifierOrPattern ParameterName { get; }
-        ITsType ParameterType { get; }
+        ITsType? ParameterType { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
@@ -475,7 +475,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsFunctionExpression : ITsExpression
     {
-        ITsIdentifier FunctionName { get; }
+        ITsIdentifier? FunctionName { get; }
         ITsCallSignature CallSignature { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
@@ -516,14 +516,14 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsSimpleVariableDeclaration : ITsVariableDeclaration
     {
         ITsIdentifier VariableName { get; }
-        ITsType VariableType { get; }
-        ITsExpression Initializer { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
     }
 
     public interface ITsDestructuringVariableDeclaration : ITsVariableDeclaration
     {
         ITsBindingPattern BindingPattern { get; }
-        ITsType VariableType { get; }
+        ITsType? VariableType { get; }
         ITsExpression Initializer { get; }
     }
 
@@ -543,15 +543,15 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsSimpleLexicalBinding : ITsLexicalBinding
     {
         ITsIdentifier VariableName { get; }
-        ITsType VariableType { get; }
-        ITsExpression Initializer { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
     }
 
     public interface ITsDestructuringLexicalBinding : ITsLexicalBinding
     {
         ITsBindingPattern BindingPattern { get; }
-        ITsType VariableType { get; }
-        ITsExpression Initializer { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
     }
 
     /* A.4 Functions
@@ -563,7 +563,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsFunctionDeclaration : ITsDeclaration
     {
-        ITsIdentifier FunctionName { get; }
+        ITsIdentifier? FunctionName { get; }
         ITsCallSignature CallSignature { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
@@ -587,8 +587,8 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsInterfaceDeclaration : ITsDeclaration
     {
         ITsIdentifier InterfaceName { get; }
-        ITsTypeParameters TypeParameters { get; }
-        ImmutableArray<ITsTypeReference> ExtendsClause { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ImmutableArray<ITsTypeReference>? ExtendsClause { get; }
         ITsObjectType Body { get; }
     }
 
@@ -624,8 +624,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsClassDeclaration : ITsDeclaration
     {
-        ITsIdentifier ClassName { get; }
-        ITsTypeParameters TypeParameters { get; }
+        ITsIdentifier? ClassName { get; }
+        ITsTypeParameters? TypeParameters { get; }
         ITsClassHeritage Heritage { get; }
         bool IsAbstract { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
@@ -633,8 +633,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsClassHeritage : ITsAstNode
     {
-        ITsTypeReference ExtendsClause { get; }
-        ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+        ITsTypeReference? ExtendsClause { get; }
+        ImmutableArray<ITsTypeReference>? ImplementsClause { get; }
         bool IsEmpty { get; }
     }
 
@@ -648,7 +648,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsConstructorDeclaration : ITsClassElement
     {
         TsAccessibilityModifier? AccessibilityModifier { get; }
-        ITsParameterList ParameterList { get; }
+        ITsParameterList? ParameterList { get; }
         ImmutableArray<ITsStatementListItem> FunctionBody { get; }
     }
 
@@ -675,8 +675,8 @@ namespace Desalt.TypeScriptAst.Ast
         bool IsStatic { get; }
         bool IsReadOnly { get; }
         ITsPropertyName VariableName { get; }
-        ITsType TypeAnnotation { get; }
-        ITsExpression Initializer { get; }
+        ITsType? TypeAnnotation { get; }
+        ITsExpression? Initializer { get; }
     }
 
     public interface ITsFunctionMemberDeclaration : ITsClassElement
@@ -745,7 +745,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsEnumMember : ITsAstNode
     {
         ITsPropertyName Name { get; }
-        ITsExpression Value { get; }
+        ITsExpression? Value { get; }
     }
 
     /* A.8 Namespaces
@@ -1040,7 +1040,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsAmbientBinding : ITsAstNode
     {
         ITsIdentifier VariableName { get; }
-        ITsType VariableType { get; }
+        ITsType? VariableType { get; }
     }
 
     /* AmbientFunctionDeclaration:
@@ -1079,7 +1079,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsAmbientClassDeclaration : ITsAmbientDeclarationElement
     {
         ITsIdentifier ClassName { get; }
-        ITsTypeParameters TypeParameters { get; }
+        ITsTypeParameters? TypeParameters { get; }
         ITsClassHeritage Heritage { get; }
         ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
     }
@@ -1088,7 +1088,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement
     {
-        ITsParameterList ParameterList { get; }
+        ITsParameterList? ParameterList { get; }
     }
 
     public interface ITsAmbientVariableMemberDeclaration : ITsAmbientClassBodyElement
@@ -1097,7 +1097,7 @@ namespace Desalt.TypeScriptAst.Ast
         bool IsStatic { get; }
         bool IsReadOnly { get; }
         ITsPropertyName VariableName { get; }
-        ITsType TypeAnnotation { get; }
+        ITsType? TypeAnnotation { get; }
     }
 
     public interface ITsAmbientFunctionMemberDeclaration : ITsAmbientClassBodyElement
@@ -1144,9 +1144,9 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsAmbientNamespaceElement : ITsAstNode
     {
         bool HasExportKeyword { get; }
-        ITsAmbientDeclarationElement Declaration { get; }
-        ITsInterfaceDeclaration InterfaceDeclaration { get; }
-        ITsImportAliasDeclaration ImportAliasDeclaration { get; }
+        ITsAmbientDeclarationElement? Declaration { get; }
+        ITsInterfaceDeclaration? InterfaceDeclaration { get; }
+        ITsImportAliasDeclaration? ImportAliasDeclaration { get; }
     }
 
     /* AmbientModuleDeclaration:

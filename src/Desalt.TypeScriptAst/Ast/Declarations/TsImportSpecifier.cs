@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Constructors
         //// ===========================================================================================================
 
-        public TsImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null)
+        public TsImportSpecifier(ITsIdentifier name, ITsIdentifier? asName = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             AsName = asName;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier Name { get; }
-        public ITsIdentifier AsName { get; }
+        public ITsIdentifier? AsName { get; }
 
         //// ===========================================================================================================
         //// Methods

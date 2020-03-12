@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsPatternBinding(ITsBindingPattern bindingPattern, ITsExpression initializer = null)
+        public TsPatternBinding(ITsBindingPattern bindingPattern, ITsExpression? initializer = null)
         {
             BindingPattern = bindingPattern ?? throw new ArgumentNullException(nameof(bindingPattern));
             Initializer = initializer;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// ===========================================================================================================
 
         public ITsBindingPattern BindingPattern { get; }
-        public ITsExpression Initializer { get; }
+        public ITsExpression? Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,12 +41,12 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitPatternBinding(this);
         }
 
-        public override string CodeDisplay => $"{BindingPattern}{Initializer.OptionalAssignment()}";
+        public override string CodeDisplay => $"{BindingPattern}{Initializer?.OptionalAssignment()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
-            Initializer.EmitOptionalAssignment(emitter);
+            Initializer?.EmitOptionalAssignment(emitter);
         }
     }
 }

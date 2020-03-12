@@ -25,8 +25,8 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         protected TsAstNode(
-            IEnumerable<ITsAstTriviaNode> leadingTrivia = null,
-            IEnumerable<ITsAstTriviaNode> trailingTrivia = null)
+            IEnumerable<ITsAstTriviaNode>? leadingTrivia = null,
+            IEnumerable<ITsAstTriviaNode>? trailingTrivia = null)
         {
             LeadingTrivia = leadingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
             TrailingTrivia = trailingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
@@ -163,7 +163,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        public virtual string EmitAsString(EmitOptions emitOptions = null)
+        public virtual string EmitAsString(EmitOptions? emitOptions = null)
         {
             using var stream = new MemoryStream();
             using var emitter = new Emitter(stream, options: emitOptions);
@@ -244,7 +244,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public virtual bool Equals(TsAstNode other)
+        public virtual bool Equals(TsAstNode? other)
         {
             if (other is null)
             {

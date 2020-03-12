@@ -21,9 +21,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// ===========================================================================================================
 
         public TsClassExpression(
-            ITsIdentifier className = null,
-            ITsClassHeritage heritage = null,
-            IEnumerable<ITsClassElement> classBody = null)
+            ITsIdentifier? className = null,
+            ITsClassHeritage? heritage = null,
+            IEnumerable<ITsClassElement>? classBody = null)
         {
             ClassName = className;
             Heritage = heritage;
@@ -34,8 +34,8 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ClassName { get; }
-        public ITsClassHeritage Heritage { get; }
+        public ITsIdentifier? ClassName { get; }
+        public ITsClassHeritage? Heritage { get; }
         public ImmutableArray<ITsClassElement> ClassBody { get; }
 
         //// ===========================================================================================================
