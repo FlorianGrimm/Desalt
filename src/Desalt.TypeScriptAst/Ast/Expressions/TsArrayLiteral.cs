@@ -20,16 +20,16 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        internal TsArrayLiteral(IEnumerable<ITsArrayElement>? elements = null)
+        internal TsArrayLiteral(IEnumerable<ITsArrayElement?>? elements = null)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement>.Empty;
+            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsArrayElement?>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsArrayElement> Elements { get; }
+        public ImmutableArray<ITsArrayElement?> Elements { get; }
 
         //// ===========================================================================================================
         //// Methods

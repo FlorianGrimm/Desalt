@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsRegularExpressionLiteral(string body, string flags)
+        public TsRegularExpressionLiteral(string body, string? flags)
         {
             Param.VerifyString(body, nameof(body));
 

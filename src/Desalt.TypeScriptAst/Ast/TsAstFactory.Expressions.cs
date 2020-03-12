@@ -62,7 +62,7 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
         }
 
-        public static ITsRegularExpressionLiteral RegularExpression(string body, string flags)
+        public static ITsRegularExpressionLiteral RegularExpression(string body, string? flags)
         {
             return new TsRegularExpressionLiteral(body, flags);
         }
@@ -72,14 +72,14 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsArrayLiteral();
         }
 
-        public static ITsArrayLiteral Array(params ITsArrayElement[]? elements)
+        public static ITsArrayLiteral Array(params ITsArrayElement?[] elements)
         {
             return new TsArrayLiteral(elements);
         }
 
-        public static ITsArrayLiteral Array(params ITsExpression[]? elements)
+        public static ITsArrayLiteral Array(params ITsExpression?[] elements)
         {
-            return new TsArrayLiteral(elements?.Select(e => ArrayElement(e)));
+            return new TsArrayLiteral(elements?.Select(e => e == null ? null : ArrayElement(e)));
         }
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false)

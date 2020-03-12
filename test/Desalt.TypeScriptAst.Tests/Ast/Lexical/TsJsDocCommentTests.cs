@@ -144,27 +144,27 @@ namespace Desalt.TypeScriptAst.Tests.Ast.Lexical
         [Test]
         public void With_methods_should_change_the_value()
         {
-            s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).FileTag.EmitAsString().Should().Be("FileX");
+            s_fullComment.WithFileTag(Factory.JsDocBlock("FileX")).FileTag?.EmitAsString().Should().Be("FileX");
 
             s_fullComment.WithCopyrightTag(Factory.JsDocBlock("CopyrightX"))
-                .CopyrightTag.EmitAsString()
+                .CopyrightTag?.EmitAsString()
                 .Should()
                 .Be("CopyrightX");
 
             s_fullComment.WithIsPackagePrivate(false).IsPackagePrivate.Should().BeFalse();
 
             s_fullComment.WithReturnsTag(Factory.JsDocBlock("ReturnsX"))
-                .ReturnsTag.EmitAsString()
+                .ReturnsTag?.EmitAsString()
                 .Should()
                 .Be("ReturnsX");
 
             s_fullComment.WithDescription(Factory.JsDocBlock("DescriptionX"))
-                .Description.EmitAsString()
+                .Description?.EmitAsString()
                 .Should()
                 .Be("DescriptionX");
 
             s_fullComment.WithSummaryTag(Factory.JsDocBlock("SummaryX"))
-                .SummaryTag.EmitAsString()
+                .SummaryTag?.EmitAsString()
                 .Should()
                 .Be("SummaryX");
 

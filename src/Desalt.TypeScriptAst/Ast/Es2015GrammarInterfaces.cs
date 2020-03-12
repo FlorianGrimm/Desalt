@@ -240,7 +240,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsArrayLiteral : ITsExpression
     {
-        ImmutableArray<ITsArrayElement> Elements { get; }
+        ImmutableArray<ITsArrayElement?> Elements { get; }
     }
 
     public interface ITsArrayElement : ITsAstNode
