@@ -10,6 +10,7 @@ namespace Desalt.Core.SymbolTables
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
@@ -43,7 +44,7 @@ namespace Desalt.Core.SymbolTables
             ImmutableDictionary<string, SymbolTableOverride> overrideSymbols,
             ImmutableDictionary<ISymbol, IScriptSymbol> documentSymbols,
             ImmutableDictionary<ISymbol, IScriptSymbol> directlyReferencedExternalSymbols,
-            ImmutableDictionary<ISymbol, Lazy<IScriptSymbol>> indirectlyReferencedExternalSymbols)
+            ImmutableDictionary<ISymbol, Lazy<IScriptSymbol?>> indirectlyReferencedExternalSymbols)
         {
             OverrideSymbols = overrideSymbols;
             DocumentSymbols = documentSymbols;
@@ -59,7 +60,7 @@ namespace Desalt.Core.SymbolTables
         {
             get
             {
-                if (!TryGetValue(symbol, out IScriptSymbol value))
+                if (!TryGetValue(symbol, out IScriptSymbol? value))
                 {
                     throw new KeyNotFoundException($"There is no symbol '{symbol}' defined in the symbol table");
                 }
@@ -93,7 +94,7 @@ namespace Desalt.Core.SymbolTables
         /// Gets the symbols defined in externally-referenced assemblies, where their values are
         /// created on demand and then cached.
         /// </summary>
-        public ImmutableDictionary<ISymbol, Lazy<IScriptSymbol>> IndirectlyReferencedExternalSymbols { get; }
+        public ImmutableDictionary<ISymbol, Lazy<IScriptSymbol?>> IndirectlyReferencedExternalSymbols { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -118,7 +119,7 @@ namespace Desalt.Core.SymbolTables
         /// <returns>Either the symbol's computed script name or the default value.</returns>
         public string GetComputedScriptNameOrDefault(ISymbol symbol, string defaultValue)
         {
-            return TryGetValue(symbol, out IScriptSymbol scriptSymbol) ? scriptSymbol.ComputedScriptName : defaultValue;
+            return TryGetValue(symbol, out IScriptSymbol? scriptSymbol) ? scriptSymbol.ComputedScriptName : defaultValue;
         }
 
         /// <summary>
@@ -132,7 +133,7 @@ namespace Desalt.Core.SymbolTables
         public TScriptSymbol Get<TScriptSymbol>(ISymbol symbol)
             where TScriptSymbol : class, IScriptSymbol
         {
-            if (!TryGetValue(symbol, out TScriptSymbol scriptSymbol))
+            if (!TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
             {
                 throw new KeyNotFoundException();
             }
@@ -151,7 +152,7 @@ namespace Desalt.Core.SymbolTables
         /// The value associated with the symbol if found; otherwise null.
         /// </param>
         /// <returns>true if the symbol was found; otherwise, false.</returns>
-        public bool TryGetValue<TScriptSymbol>(ISymbol symbol, out TScriptSymbol value)
+        public bool TryGetValue<TScriptSymbol>(ISymbol symbol, [NotNullWhen(true)] out TScriptSymbol? value)
             where TScriptSymbol : class, IScriptSymbol
         {
             if (symbol == null)
@@ -186,7 +187,7 @@ namespace Desalt.Core.SymbolTables
             }
 
             // look in the document symbols first
-            if (!TryFindSymbolOrGenericVersion(DocumentSymbols, out IScriptSymbol scriptSymbol))
+            if (!TryFindSymbolOrGenericVersion(DocumentSymbols, out IScriptSymbol? scriptSymbol))
             {
                 // then in the directly-referenced symbols
                 if (!TryFindSymbolOrGenericVersion(DirectlyReferencedExternalSymbols, out scriptSymbol))
@@ -194,7 +195,7 @@ namespace Desalt.Core.SymbolTables
                     // then in the indirectly-referenced symbols
                     if (TryFindSymbolOrGenericVersion(
                         IndirectlyReferencedExternalSymbols,
-                        out Lazy<IScriptSymbol> lazyValue))
+                        out Lazy<IScriptSymbol?> lazyValue))
                     {
                         scriptSymbol = lazyValue.Value;
                     }
@@ -203,9 +204,9 @@ namespace Desalt.Core.SymbolTables
 
             // check the overrides to see if there's a defined value
             if ((scriptSymbol != null &&
-                    OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride @override)) ||
+                    OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride? @override)) ||
                 (hasGenericVersion &&
-                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition.ToHashDisplay(), out @override)))
+                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition!.ToHashDisplay(), out @override)))
             {
                 if (@override.InlineCode != null && scriptSymbol is IScriptMethodSymbol scriptMethodSymbol)
                 {

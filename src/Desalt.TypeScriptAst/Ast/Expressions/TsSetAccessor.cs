@@ -24,8 +24,8 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public TsSetAccessor(
             ITsPropertyName propertyName,
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsType? parameterType = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
@@ -39,7 +39,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public ITsPropertyName PropertyName { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType ParameterType { get; }
+        public ITsType? ParameterType { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 
         //// ===========================================================================================================
@@ -52,7 +52,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         }
 
         public override string CodeDisplay =>
-            $"set {PropertyName}({ParameterName}{ParameterType.OptionalTypeAnnotation()}) " +
+            $"set {PropertyName}({ParameterName}{ParameterType?.OptionalTypeAnnotation()}) " +
             $"{{ {FunctionBody.ToElidedList()} }}";
 
         protected override void EmitInternal(Emitter emitter)
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             PropertyName.Emit(emitter);
             emitter.Write("(");
             ParameterName.Emit(emitter);
-            ParameterType.EmitOptionalTypeAnnotation(emitter);
+            ParameterType?.EmitOptionalTypeAnnotation(emitter);
             emitter.Write(") ");
             emitter.WriteBlock(FunctionBody, skipNewlines: true);
         }

@@ -25,11 +25,13 @@ namespace Desalt.Core.Tests.Diagnostics
         [Test]
         public void CalculateReportAction_should_throw_on_null_parameters()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => DiagnosticExtensions.CalculateReportAction(null, DiagnosticOptions.Default);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostic");
 
             action = () => DiagnosticExtensions.CalculateReportAction(DiagnosticsTestFactories.CreateDiagnostic(), null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]
@@ -173,12 +175,6 @@ namespace Desalt.Core.Tests.Diagnostics
         }
 
         [Test]
-        public void WithSeverity_should_return_null_on_a_null_diagnostic()
-        {
-            DiagnosticExtensions.WithSeverity(null, DiagnosticSeverity.Error).Should().BeNull();
-        }
-
-        [Test]
         public void WithSeverity_should_create_a_copy_of_the_Diagnostic_with_the_severity_changed()
         {
             var location = Location.Create("file.cs", TextSpan.FromBounds(1, 10), new LinePositionSpan());
@@ -201,7 +197,7 @@ namespace Desalt.Core.Tests.Diagnostics
                 additionalLocations: additionalLocations,
                 customTags: customTags);
 
-            Diagnostic copy = DiagnosticExtensions.WithSeverity(diagnostic, DiagnosticSeverity.Hidden);
+            Diagnostic? copy = DiagnosticExtensions.WithSeverity(diagnostic, DiagnosticSeverity.Hidden);
             copy.Should().NotBeSameAs(diagnostic);
 
             copy.Id.Should().Be("id");

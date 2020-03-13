@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Constructors
         //// ===========================================================================================================
 
-        public TsAmbientBinding(ITsIdentifier variableName, ITsType variableType = null)
+        public TsAmbientBinding(ITsIdentifier variableName, ITsType? variableType = null)
         {
             VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
             VariableType = variableType;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier VariableName { get; }
-        public ITsType VariableType { get; }
+        public ITsType? VariableType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -41,12 +41,12 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientBinding(this);
         }
 
-        public override string CodeDisplay => $"{VariableName}{VariableType.OptionalTypeAnnotation()}";
+        public override string CodeDisplay => $"{VariableName}{VariableType?.OptionalTypeAnnotation()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             VariableName.Emit(emitter);
-            VariableType.EmitOptionalTypeAnnotation(emitter);
+            VariableType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

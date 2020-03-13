@@ -22,8 +22,8 @@ namespace Desalt.TypeScriptAst.Ast
 
         public TsGenericTypeName(
             ITsIdentifier right,
-            IEnumerable<ITsIdentifier> left = null,
-            IEnumerable<ITsType> typeArguments = null)
+            IEnumerable<ITsIdentifier>? left = null,
+            IEnumerable<ITsType>? typeArguments = null)
             : base(right, left)
         {
             TypeArguments = typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty;

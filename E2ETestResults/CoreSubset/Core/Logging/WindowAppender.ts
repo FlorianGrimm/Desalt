@@ -17,14 +17,12 @@ export class WindowAppender extends BaseLogAppender {
 
   private logDiv: Object;
 
-  /**
-   */
+  // Converted from the C# static constructor - it would be good to convert this
+  // block to inline initializations.
   public static __ctor() {
     WindowAppender.globalAppender.enableLogging((logger, _) => logger.name === 'WindowAppender');
   }
 
-  /**
-   */
   private constructor() { }
 
   protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void {

@@ -41,7 +41,7 @@ namespace Desalt.Core.Translation
 
             // if there is <summary> and <remarks>, then append the remarks after the summary,
             // otherwise just use one or the other as the description
-            string description = comment.SummaryText;
+            string? description = comment.SummaryText;
             if (!string.IsNullOrEmpty(comment.RemarksText))
             {
                 if (description == null)
@@ -62,14 +62,14 @@ namespace Desalt.Core.Translation
             // translate each <param> tag
             foreach (string parameterName in comment.ParameterNames)
             {
-                string parameterText = comment.GetParameterText(parameterName);
+                string? parameterText = comment.GetParameterText(parameterName);
                 builder.AddParamTag(parameterName, TranslateElementText(parameterText, diagnostics));
             }
 
             // translate each <typeparam> tags, even though there is no JSDoc equivalent
             foreach (string typeParameterName in comment.TypeParameterNames)
             {
-                string parameterText = comment.GetTypeParameterText(typeParameterName);
+                string? parameterText = comment.GetTypeParameterText(typeParameterName);
                 builder.AddTypeParamTag(typeParameterName, TranslateElementText(parameterText, diagnostics));
             }
 
@@ -100,7 +100,7 @@ namespace Desalt.Core.Translation
         /// <param name="text">The XML documentation comment text to translate.</param>
         /// <param name="diagnostics">The diagnostic list to use for reporting errors.</param>
         /// <returns>The translated text in JSDoc format.</returns>
-        private static ITsJsDocBlock TranslateElementText(string text, ICollection<Diagnostic> diagnostics)
+        private static ITsJsDocBlock? TranslateElementText(string? text, ICollection<Diagnostic> diagnostics)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -130,7 +130,12 @@ namespace Desalt.Core.Translation
             void AddNextTextItem(PeekingTextReader reader)
             {
                 var element = DocumentationCommentXmlElement.Parse(reader, diagnostics);
-                string elementName = element.ElementName;
+                string? elementName = element?.ElementName;
+
+                if (element == null || elementName == null)
+                {
+                    return;
+                }
 
                 // <c>x</c> and <code>x</code> translates to `x`
                 if (XmlNames.ElementIsOneOf(elementName, XmlNames.CElementName, XmlNames.CodeElementName))

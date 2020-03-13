@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        private TsCallExpression(ITsExpression leftSide, CallKind kind, ITsArgumentList arguments = null)
+        private TsCallExpression(ITsExpression leftSide, CallKind kind, ITsArgumentList? arguments = null)
         {
             LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
             Arguments = arguments ?? new TsArgumentList();
@@ -50,17 +50,17 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Methods
         //// ===========================================================================================================
 
-        public static TsCallExpression Create(ITsExpression leftSide, ITsArgumentList arguments = null)
+        public static TsCallExpression Create(ITsExpression leftSide, ITsArgumentList? arguments = null)
         {
             return new TsCallExpression(leftSide, CallKind.Call, arguments);
         }
 
-        public static TsCallExpression CreateNew(ITsExpression leftSide, ITsArgumentList arguments = null)
+        public static TsCallExpression CreateNew(ITsExpression leftSide, ITsArgumentList? arguments = null)
         {
             return new TsCallExpression(leftSide, CallKind.New, arguments);
         }
 
-        public static TsCallExpression CreateSuper(ITsArgumentList arguments = null)
+        public static TsCallExpression CreateSuper(ITsArgumentList? arguments = null)
         {
             return new TsCallExpression(TsIdentifier.Get("super"), CallKind.Super, arguments);
         }

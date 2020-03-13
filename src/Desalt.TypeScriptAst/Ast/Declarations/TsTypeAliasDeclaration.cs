@@ -23,7 +23,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public TsTypeAliasDeclaration(
             ITsIdentifier aliasName,
             ITsType type,
-            ITsTypeParameters typeParameters = null)
+            ITsTypeParameters? typeParameters = null)
         {
             AliasName = aliasName ?? throw new ArgumentNullException(nameof(aliasName));
             Type = type ?? throw new ArgumentNullException(nameof(type));
@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             emitter.Write("type ");
             AliasName.Emit(emitter);
-            TypeParameters.Emit(emitter);
+            TypeParameters?.Emit(emitter);
             emitter.Write(" = ");
             Type.Emit(emitter);
             emitter.WriteLine(";");

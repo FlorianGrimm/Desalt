@@ -44,42 +44,23 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private (string text, char value) LexEscapeSequence()
         {
-            string next2 = _reader.Peek(2);
+            string? next2 = _reader.Peek(2);
             char c = (char)_reader.Peek();
-            char nextC = next2.Length > 1 ? next2[1] : '\0';
+            char nextC = next2?.Length > 1 ? next2[1] : '\0';
 
-            switch (c)
+            return c switch
             {
-                case 'b':
-                    return (_reader.Read(1), '\b');
-
-                case 'f':
-                    return (_reader.Read(1), '\f');
-
-                case 'n':
-                    return (_reader.Read(1), '\n');
-
-                case 'r':
-                    return (_reader.Read(1), '\r');
-
-                case 't':
-                    return (_reader.Read(1), '\t');
-
-                case 'v':
-                    return (_reader.Read(1), '\v');
-
-                case '0' when !IsDecimalDigit(nextC):
-                    return (_reader.Read(1), '\0');
-
-                case 'x':
-                    return LexHexEscapeSequence();
-
-                case 'u':
-                    return LexUnicodeEscapeSequence();
-
-                default:
-                    return (_reader.Read(1), c);
-            }
+                'b' => (_reader.Read(1)!, '\b'),
+                'f' => (_reader.Read(1)!, '\f'),
+                'n' => (_reader.Read(1)!, '\n'),
+                'r' => (_reader.Read(1)!, '\r'),
+                't' => (_reader.Read(1)!, '\t'),
+                'v' => (_reader.Read(1)!, '\v'),
+                '0' when !IsDecimalDigit(nextC) => (_reader.Read(1)!, '\0'),
+                'x' => LexHexEscapeSequence(),
+                'u' => LexUnicodeEscapeSequence(),
+                _ => (_reader.Read(1)!, c)
+            };
         }
 
         /// <summary>

@@ -88,7 +88,7 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// Specifies that a type is defined in a module, which should be imported by a require() call.
         /// </summary>
-        public string ModuleName { get; }
+        public string? ModuleName { get; }
 
         /// <summary>
         /// If true, code will not be generated for casts of type '(MyClass)someValue'. Code will
@@ -108,7 +108,7 @@ namespace Desalt.Core.SymbolTables
         /// used to generate unique names for internal types defined within the assembly. The
         /// ScriptQualifier attribute can be used to provide a shorter name if needed.
         /// </summary>
-        public string ScriptAssemblyName { get; }
+        public string? ScriptAssemblyName { get; }
 
         /// <summary>
         /// Specifies the namespace that should be used in generated script. The script namespace is
@@ -117,13 +117,13 @@ namespace Desalt.Core.SymbolTables
         /// namespace are unique. For internal types, the [ScriptQualifier] attribute can be used to
         /// provide a short prefix to generate unique names.
         /// </summary>
-        public string ScriptNamespace { get; }
+        public string? ScriptNamespace { get; }
 
         /// <summary>
         /// Provides a prefix to use when generating types internal to this assembly so that they can
         /// be unique within a given a script namespace. The specified prefix overrides the script
         /// name provided in <see cref="ScriptAssemblyName"/>.
         /// </summary>
-        public string ScriptQualifier { get; }
+        public string? ScriptQualifier { get; }
     }
 }

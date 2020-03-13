@@ -30,7 +30,7 @@ namespace Desalt.Core.SymbolTables
             ScriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
             PreserveCase = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveCase);
             PreserveName = symbol.GetFlagAttribute(SaltarelleAttributeName.PreserveName);
-            Imported = ((symbol is INamedTypeSymbol) ? symbol : symbol.ContainingType).GetFlagAttribute(
+            Imported = (symbol is INamedTypeSymbol ? symbol : symbol.ContainingType).GetFlagAttribute(
                 SaltarelleAttributeName.Imported);
             Reflectable = symbol.GetFlagAttribute(SaltarelleAttributeName.Reflectable);
         }
@@ -75,7 +75,7 @@ namespace Desalt.Core.SymbolTables
         /// The name to use for a type or member in the generated script. Property and event
         /// accessors can use the placeholder {owner} to denote the name of their owning entity.
         /// </summary>
-        public string ScriptName { get; }
+        public string? ScriptName { get; }
 
         /// <summary>
         /// Gets the associated C# <see cref="ISymbol"/>.

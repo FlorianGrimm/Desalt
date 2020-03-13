@@ -37,7 +37,7 @@ namespace Desalt.Core
         }
 
         private RenameRules(
-            RenameRules instanceToCopy = null,
+            RenameRules? instanceToCopy = null,
             EnumRenameRule? enumRule = null,
             FieldRenameRule? fieldRule = null)
         {

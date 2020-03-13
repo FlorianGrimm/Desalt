@@ -22,7 +22,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         public TsPropertySignature(
             ITsPropertyName propertyName,
             bool isOptional = false,
-            ITsType propertyType = null)
+            ITsType? propertyType = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
             IsOptional = isOptional;
@@ -35,7 +35,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public ITsPropertyName PropertyName { get; }
         public bool IsOptional { get; }
-        public ITsType PropertyType { get; }
+        public ITsType? PropertyType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -47,7 +47,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         }
 
         public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
-            PropertyType.OptionalTypeAnnotation();
+            PropertyType?.OptionalTypeAnnotation();
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -57,7 +57,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
                 emitter.Write("?");
             }
 
-            PropertyType.EmitOptionalTypeAnnotation(emitter);
+            PropertyType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Constructors
         //// ===========================================================================================================
 
-        public TsNamespaceDeclaration(ITsQualifiedName namespaceName, IEnumerable<ITsNamespaceElement> body = null)
+        public TsNamespaceDeclaration(ITsQualifiedName namespaceName, IEnumerable<ITsNamespaceElement>? body = null)
         {
             NamespaceName = namespaceName ?? throw new ArgumentNullException(nameof(namespaceName));
             Body = body?.ToImmutableArray() ?? ImmutableArray<ITsNamespaceElement>.Empty;

@@ -23,8 +23,8 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public TsFunctionExpression(
             ITsCallSignature callSignature,
-            ITsIdentifier functionName = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsIdentifier? functionName = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             FunctionName = functionName;
@@ -35,7 +35,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier FunctionName { get; }
+        public ITsIdentifier? FunctionName { get; }
         public ITsCallSignature CallSignature { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
 

@@ -46,12 +46,12 @@ namespace Desalt.Core
         /// Default constructor contains the default values of all of the options.
         /// </summary>
         public CompilerOptions(
-            string outputPath = null,
+            string? outputPath = null,
             WarningLevel warningLevel = DefaultWarningLevel,
             ReportDiagnostic generalDiagnosticOption = DefaultGeneralDiagnosticOption,
-            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
-            RenameRules renameRules = null,
-            SymbolTableOverrides symbolTableOverrides = null)
+            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            RenameRules? renameRules = null,
+            SymbolTableOverrides? symbolTableOverrides = null)
             : this(
                 instanceToCopy: null,
                 outputPath: outputPath,
@@ -71,13 +71,13 @@ namespace Desalt.Core
         /// * Otherwise, the default value of the parameter's type
         /// </summary>
         private CompilerOptions(
-            CompilerOptions instanceToCopy = null,
-            string outputPath = null,
+            CompilerOptions? instanceToCopy = null,
+            string? outputPath = null,
             WarningLevel? warningLevel = null,
             ReportDiagnostic? generalDiagnosticOption = null,
-            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null,
-            RenameRules renameRules = null,
-            SymbolTableOverrides symbolTableOverrides = null)
+            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            RenameRules? renameRules = null,
+            SymbolTableOverrides? symbolTableOverrides = null)
         {
             OutputPath = outputPath ?? instanceToCopy?.OutputPath ?? string.Empty;
             RenameRules = renameRules ?? instanceToCopy?.RenameRules ?? RenameRules.Default;
@@ -163,7 +163,7 @@ namespace Desalt.Core
         /// </summary>
         /// <param name="path">The file containing the serialized <see cref="CompilerOptions"/>.</param>
         /// <returns>The deserialized <see cref="CompilerOptions"/>.</returns>
-        public static IExtendedResult<CompilerOptions> Deserialize(string path)
+        public static IExtendedResult<CompilerOptions?> Deserialize(string path)
         {
             try
             {
@@ -172,8 +172,8 @@ namespace Desalt.Core
             }
             catch (Exception e) when (e is IOException || e is JsonException || e is ArgumentException)
             {
-                Diagnostic[] diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(path, e.Message) };
-                return new ExtendedResult<CompilerOptions>(null, diagnostics);
+                Diagnostic[] diagnostics = { DiagnosticFactory.InvalidOptionsFile(path, e.Message) };
+                return new ExtendedResult<CompilerOptions?>(null, diagnostics);
             }
         }
 
@@ -185,8 +185,11 @@ namespace Desalt.Core
         /// An optional file path if the stream was read from disk. This is used when reporting errors.
         /// </param>
         /// <returns>The deserialized <see cref="CompilerOptions"/>.</returns>
-        public static IExtendedResult<CompilerOptions> Deserialize(Stream stream, string filePath = null)
+        public static IExtendedResult<CompilerOptions?> Deserialize(Stream stream, string? filePath = null)
         {
+            CompilerOptions? deserialized = null;
+            JsonException? exception = null;
+
             try
             {
                 using var reader = new StreamReader(
@@ -197,15 +200,24 @@ namespace Desalt.Core
                     leaveOpen: true);
                 using var jsonReader = new JsonTextReader(reader);
                 JsonSerializer serializer = CreateSerializer();
-                CompilerOptions deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
-                return new ExtendedResult<CompilerOptions>(deserialized);
+                deserialized = serializer.Deserialize<CompilerOptions>(jsonReader);
             }
             catch (JsonException e)
             {
-                filePath = string.IsNullOrWhiteSpace(filePath) ? string.Empty : Path.GetFullPath(filePath);
-                Diagnostic[] diagnostics = new[] { DiagnosticFactory.InvalidOptionsFile(filePath, e.Message) };
-                return new ExtendedResult<CompilerOptions>(null, diagnostics);
+                exception = e;
             }
+
+            if (deserialized == null || exception != null)
+            {
+                filePath = string.IsNullOrWhiteSpace(filePath) ? string.Empty : Path.GetFullPath(filePath);
+                Diagnostic[] diagnostics =
+                {
+                    DiagnosticFactory.InvalidOptionsFile(filePath, exception?.Message ?? string.Empty)
+                };
+                return new ExtendedResult<CompilerOptions?>(null, diagnostics);
+            }
+
+            return new ExtendedResult<CompilerOptions?>(deserialized);
         }
 
         public void Serialize(string path)
@@ -308,7 +320,7 @@ namespace Desalt.Core
             {
                 if (reader.TokenType == JsonToken.Null)
                 {
-                    return null;
+                    return ImmutableDictionary<string, ReportDiagnostic>.Empty;
                 }
 
                 reader.Read(JsonToken.StartObject);
@@ -318,7 +330,7 @@ namespace Desalt.Core
                 {
                     reader.VerifyToken(JsonToken.PropertyName);
 
-                    string key = reader.Value.ToString();
+                    string key = reader.Value!.ToString();
                     reader.Read();
 
                     var value = serializer.Deserialize<ReportDiagnostic>(reader);
@@ -383,7 +395,7 @@ namespace Desalt.Core
             {
                 if (reader.TokenType == JsonToken.Null)
                 {
-                    return null;
+                    return new SymbolTableOverrides();
                 }
 
                 reader.Read(JsonToken.StartObject);
@@ -393,11 +405,14 @@ namespace Desalt.Core
                 {
                     reader.VerifyToken(JsonToken.PropertyName);
 
-                    string symbolName = reader.Value.ToString();
+                    string symbolName = reader.Value!.ToString();
                     reader.Read();
 
                     var symbolOverride = serializer.Deserialize<SymbolTableOverride>(reader);
-                    dictionary.Add(symbolName, symbolOverride);
+                    if (symbolOverride != null)
+                    {
+                        dictionary.Add(symbolName, symbolOverride);
+                    }
 
                     // it is expected that we read the end object, even though the serializer will read the beginning
                     reader.Read(JsonToken.EndObject);

@@ -28,7 +28,7 @@ namespace Desalt.Core.Utility
             DtdProcessing = DtdProcessing.Prohibit,
         };
 
-        private XmlReader _xmlReader;
+        private XmlReader? _xmlReader;
         private readonly Reader _textReader = new Reader();
 
         //// ===========================================================================================================
@@ -90,10 +90,10 @@ namespace Desalt.Core.Utility
         // Depth 0 = Document root
         // Depth 1 = Synthetic wrapper, "CurrentElement"
         // Depth 2 = Start of user's fragment.
-        private bool BeforeStart => _xmlReader.Depth < 2;
+        private bool BeforeStart => _xmlReader?.Depth < 2;
 
         private bool ReachedEnd =>
-            _xmlReader.Depth == 1 &&
+            _xmlReader?.Depth == 1 &&
             _xmlReader.NodeType == XmlNodeType.EndElement &&
             _xmlReader.LocalName == Reader.CurrentElementName;
     }

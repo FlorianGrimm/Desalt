@@ -240,7 +240,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsArrayLiteral : ITsExpression
     {
-        ImmutableArray<ITsArrayElement> Elements { get; }
+        ImmutableArray<ITsArrayElement?> Elements { get; }
     }
 
     public interface ITsArrayElement : ITsAstNode
@@ -358,7 +358,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsTemplatePart : ITsAstNode
     {
         string Template { get; }
-        ITsExpression Expression { get; }
+        ITsExpression? Expression { get; }
     }
 
     public interface ITsTemplateLiteral : ITsExpression
@@ -805,8 +805,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsArrayBindingPattern : ITsBindingPattern
     {
-        ImmutableArray<ITsBindingElement> Elements { get; }
-        ITsIdentifier RestElement { get; }
+        ImmutableArray<ITsBindingElement?> Elements { get; }
+        ITsIdentifier? RestElement { get; }
     }
 
     public interface ITsBindingProperty : ITsAstNode { }
@@ -814,7 +814,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
     {
         ITsIdentifier Name { get; }
-        ITsExpression DefaultValue { get; }
+        ITsExpression? DefaultValue { get; }
     }
 
     public interface ITsPropertyNameBinding : ITsBindingProperty
@@ -828,7 +828,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsPatternBinding : ITsBindingElement
     {
         ITsBindingPattern BindingPattern { get; }
-        ITsExpression Initializer { get; }
+        ITsExpression? Initializer { get; }
     }
 
     /* 13.4 Empty Statement
@@ -861,7 +861,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsExpression IfCondition { get; }
         ITsStatement IfStatement { get; }
-        ITsStatement ElseStatement { get; }
+        ITsStatement? ElseStatement { get; }
     }
 
     /* 13.7 Iteration Statements
@@ -892,12 +892,12 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsForStatement : ITsStatement
     {
-        ITsExpression Initializer { get; }
-        ImmutableArray<ITsVariableDeclaration> InitializerWithVariableDeclarations { get; }
-        ITsLexicalDeclaration InitializerWithLexicalDeclaration { get; }
+        ITsExpression? Initializer { get; }
+        ImmutableArray<ITsVariableDeclaration>? InitializerWithVariableDeclarations { get; }
+        ITsLexicalDeclaration? InitializerWithLexicalDeclaration { get; }
 
-        ITsExpression Condition { get; }
-        ITsExpression Incrementor { get; }
+        ITsExpression? Condition { get; }
+        ITsExpression? Incrementor { get; }
         ITsStatement Statement { get; }
     }
 
@@ -908,9 +908,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsForInStatement : ITsStatement
     {
-        ITsExpression Initializer { get; }
+        ITsExpression? Initializer { get; }
         VariableDeclarationKind? DeclarationKind { get; }
-        ITsBindingIdentifierOrPattern Declaration { get; }
+        ITsBindingIdentifierOrPattern? Declaration { get; }
 
         ITsExpression RightSide { get; }
         ITsStatement Statement { get; }
@@ -923,9 +923,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsForOfStatement : ITsStatement
     {
-        ITsExpression Initializer { get; }
+        ITsExpression? Initializer { get; }
         VariableDeclarationKind? DeclarationKind { get; }
-        ITsBindingIdentifierOrPattern Declaration { get; }
+        ITsBindingIdentifierOrPattern? Declaration { get; }
 
         ITsExpression RightSide { get; }
         ITsStatement Statement { get; }
@@ -950,7 +950,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsContinueStatement : ITsStatement
     {
-        ITsIdentifier Label { get; }
+        ITsIdentifier? Label { get; }
     }
 
     /* 13.9 The break Statement
@@ -962,7 +962,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsBreakStatement : ITsStatement
     {
-        ITsIdentifier Label { get; }
+        ITsIdentifier? Label { get; }
     }
 
     /* 13.10 The return Statement
@@ -974,7 +974,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsReturnStatement : ITsStatement
     {
-        ITsExpression Expression { get; }
+        ITsExpression? Expression { get; }
     }
 
     /* 13.11 The with Statement
@@ -1022,7 +1022,7 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsCaseClause : ITsCaseOrDefaultClause
     {
-        ITsExpression Expression { get; }
+        ITsExpression? Expression { get; }
     }
 
     public interface ITsDefaultClause : ITsCaseOrDefaultClause
@@ -1042,8 +1042,8 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsLabeledStatement : ITsStatement
     {
         ITsIdentifier Label { get; }
-        ITsStatement Statement { get; }
-        ITsFunctionDeclaration FunctionDeclaration { get; }
+        ITsStatement? Statement { get; }
+        ITsFunctionDeclaration? FunctionDeclaration { get; }
     }
 
     /* 13.14 The throw Statement
@@ -1079,9 +1079,9 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsTryStatement : ITsStatement
     {
         ITsBlockStatement TryBlock { get; }
-        ITsBindingIdentifierOrPattern CatchParameter { get; }
-        ITsBlockStatement CatchBlock { get; }
-        ITsBlockStatement FinallyBlock { get; }
+        ITsBindingIdentifierOrPattern? CatchParameter { get; }
+        ITsBlockStatement? CatchBlock { get; }
+        ITsBlockStatement? FinallyBlock { get; }
     }
 
     /* 13.16 The debugger Statement
@@ -1160,11 +1160,11 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsArrowFunction : ITsExpression
     {
-        ITsIdentifier SingleParameterName { get; }
-        ITsCallSignature CallSignature { get; }
+        ITsIdentifier? SingleParameterName { get; }
+        ITsCallSignature? CallSignature { get; }
 
-        ITsExpression BodyExpression { get; }
-        ImmutableArray<ITsStatementListItem> Body { get; }
+        ITsExpression? BodyExpression { get; }
+        ImmutableArray<ITsStatementListItem>? Body { get; }
     }
 
     /* 14.3 Method Definitions
@@ -1230,8 +1230,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsClassExpression : ITsExpression
     {
-        ITsIdentifier ClassName { get; }
-        ITsClassHeritage Heritage { get; }
+        ITsIdentifier? ClassName { get; }
+        ITsClassHeritage? Heritage { get; }
         ImmutableArray<ITsClassElement> ClassBody { get; }
     }
 
@@ -1272,9 +1272,9 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsImportDeclaration : ITsImplementationModuleElement
     {
-        ITsImportClause ImportClause { get; }
-        ITsFromClause FromClause { get; }
-        ITsStringLiteral Module { get; }
+        ITsImportClause? ImportClause { get; }
+        ITsFromClause? FromClause { get; }
+        ITsStringLiteral? Module { get; }
     }
 
     /* ImportClause:
@@ -1298,8 +1298,8 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsImportClause : ITsAstNode
     {
-        ITsIdentifier DefaultBinding { get; }
-        ITsIdentifier NamespaceBinding { get; }
+        ITsIdentifier? DefaultBinding { get; }
+        ITsIdentifier? NamespaceBinding { get; }
         ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
     }
 
@@ -1324,7 +1324,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsImportSpecifier : ITsAstNode
     {
         ITsIdentifier Name { get; }
-        ITsIdentifier AsName { get; }
+        ITsIdentifier? AsName { get; }
     }
 
     /* ModuleSpecifier:

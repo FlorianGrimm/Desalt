@@ -36,7 +36,7 @@ namespace Desalt.Core.SymbolTables
         /// the backing field. The presence of this attribute will also cause the backing field to be
         /// initialized even if no code is generated for the accessors (eg. if they are [InlineCode]).
         /// </summary>
-        public string BackingFieldName { get; }
+        public string? BackingFieldName { get; }
 
         /// <summary>
         /// Can be applied to a (non-const) field or an automatically implemented property to specify
@@ -47,7 +47,7 @@ namespace Desalt.Core.SymbolTables
         /// with which the member is being initialized (as well as all other placeholders from <see
         /// cref="IScriptMethodSymbol.InlineCode"/>). If null, the member will not be initialized.
         /// </summary>
-        public string CustomInitialization { get; }
+        public string? CustomInitialization { get; }
 
         /// <summary>
         /// The associated C# symbol.

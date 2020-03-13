@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
                 emitter.Write(Name);
             }
 
-            public string EmitAsString(EmitOptions options = null)
+            public string EmitAsString(EmitOptions? options = null)
             {
                 return Name;
             }
@@ -68,7 +68,9 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         public void Ctor_should_throw_on_null_args()
         {
             // ReSharper disable ObjectCreationAsStatement
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => new Emitter(outputStream: null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("outputStream");
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -101,7 +103,9 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         {
             using var stream = new MemoryStream();
             var emitter = new Emitter(stream);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => emitter.WriteBlock(items: null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
@@ -146,7 +150,9 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         {
             using var stream = new MemoryStream();
             var emitter = new Emitter(stream);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => emitter.WriteCommaNewlineSeparatedBlock(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
@@ -164,7 +170,9 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         {
             using var stream = new MemoryStream();
             var emitter = new Emitter(stream);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => emitter.WriteParameterList(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 
@@ -182,7 +190,9 @@ namespace Desalt.TypeScriptAst.Tests.Emit
         {
             using var stream = new MemoryStream();
             var emitter = new Emitter(stream);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => emitter.WriteList(null, true);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("items");
         }
 

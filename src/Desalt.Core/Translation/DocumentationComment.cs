@@ -29,11 +29,6 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
-        /// An empty comment.
-        /// </summary>
-        public static readonly DocumentationComment Empty = new DocumentationComment();
-
-        /// <summary>
         /// Used for <see cref="CommentBuilder.TrimEachLine"/> method, to prevent new allocation of string
         /// </summary>
         private static readonly string[] s_newLineAsStringArray = { "\n" };
@@ -48,8 +43,11 @@ namespace Desalt.Core.Translation
         //// Constructors
         //// ===========================================================================================================
 
-        private DocumentationComment()
+        private DocumentationComment(string fullXmlFragment, ISymbol symbol)
         {
+            FullXmlFragment = fullXmlFragment ?? throw new ArgumentNullException(nameof(fullXmlFragment));
+            Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
+
             ParameterNames = ImmutableArray<string>.Empty;
             TypeParameterNames = ImmutableArray<string>.Empty;
             ExceptionTypes = ImmutableArray<string>.Empty;
@@ -67,27 +65,27 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// The full XML text of this tag.
         /// </summary>
-        public string FullXmlFragment { get; private set; }
+        public string FullXmlFragment { get; }
 
         /// <summary>
         /// The text in the &lt;example&gt; tag. Null if no tag existed.
         /// </summary>
-        public string ExampleText { get; private set; }
+        public string? ExampleText { get; private set; }
 
         /// <summary>
         /// The text in the &lt;summary&gt; tag. Null if no tag existed.
         /// </summary>
-        public string SummaryText { get; private set; }
+        public string? SummaryText { get; private set; }
 
         /// <summary>
         /// The text in the &lt;returns&gt; tag. Null if no tag existed.
         /// </summary>
-        public string ReturnsText { get; private set; }
+        public string? ReturnsText { get; private set; }
 
         /// <summary>
         /// The text in the &lt;remarks&gt; tag. Null if no tag existed.
         /// </summary>
-        public string RemarksText { get; private set; }
+        public string? RemarksText { get; private set; }
 
         /// <summary>
         /// The names of items in &lt;param&gt; tags.
@@ -107,14 +105,14 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// The C# symbol associated with this documentation comment.
         /// </summary>
-        public ISymbol Symbol { get; private set; }
+        public ISymbol Symbol { get; }
 
         // ReSharper disable once CommentTypo
         /// <summary>
         /// The item named in the &lt;completionlist&gt; tag's cref attribute.
         /// Null if the tag or cref attribute didn't exist.
         /// </summary>
-        public string CompletionListCref { get; private set; }
+        public string? CompletionListCref { get; private set; }
 
         private string DebuggerDisplay
         {
@@ -147,26 +145,25 @@ namespace Desalt.Core.Translation
         /// <returns>A DocumentationComment instance.</returns>
         public static DocumentationComment FromXmlFragment(string xml, ISymbol symbol)
         {
-            DocumentationComment result = CommentBuilder.Parse(xml);
-            result.Symbol = symbol;
+            DocumentationComment result = CommentBuilder.Parse(xml, symbol);
             return result;
         }
 
         /// <summary>
         /// Returns the text for a given parameter, or null if no documentation was given for the parameter.
         /// </summary>
-        public string GetParameterText(string parameterName)
+        public string? GetParameterText(string parameterName)
         {
-            _parameterTexts.TryGetValue(parameterName, out string text);
+            _parameterTexts.TryGetValue(parameterName, out string? text);
             return text;
         }
 
         /// <summary>
         /// Returns the text for a given type parameter, or null if no documentation was given for the type parameter.
         /// </summary>
-        public string GetTypeParameterText(string typeParameterName)
+        public string? GetTypeParameterText(string typeParameterName)
         {
-            _typeParameterTexts.TryGetValue(typeParameterName, out string text);
+            _typeParameterTexts.TryGetValue(typeParameterName, out string? text);
             return text;
         }
 
@@ -198,41 +195,38 @@ namespace Desalt.Core.Translation
         private sealed class CommentBuilder
         {
             private readonly DocumentationComment _comment;
-            private ImmutableArray<string>.Builder _parameterNamesBuilder;
-            private ImmutableArray<string>.Builder _typeParameterNamesBuilder;
-            private ImmutableArray<string>.Builder _exceptionTypesBuilder;
-            private Dictionary<string, ImmutableArray<string>.Builder> _exceptionTextBuilders;
+            private ImmutableArray<string>.Builder? _parameterNamesBuilder;
+            private ImmutableArray<string>.Builder? _typeParameterNamesBuilder;
+            private ImmutableArray<string>.Builder? _exceptionTypesBuilder;
+            private Dictionary<string, ImmutableArray<string>.Builder>? _exceptionTextBuilders;
 
             /// <summary>
             /// Parse and construct a <see cref="DocumentationComment" /> from the given fragment of XML.
             /// </summary>
             /// <param name="xml">The fragment of XML to parse.</param>
+            /// <param name="symbol">The symbol associated with the fragment.</param>
             /// <returns>A DocumentationComment instance.</returns>
-            public static DocumentationComment Parse(string xml)
+            public static DocumentationComment Parse(string xml, ISymbol symbol)
             {
                 try
                 {
-                    return new CommentBuilder(xml).ParseInternal(xml);
+                    return new CommentBuilder(xml, symbol).ParseInternal(xml);
                 }
                 catch (Exception)
                 {
                     // It would be nice if we only had to catch XmlException to handle invalid XML
                     // while parsing doc comments. Unfortunately, other exceptions can also occur,
                     // so we just catch them all. See Dev12 Bug 612456 for an example.
-                    return new DocumentationComment
+                    return new DocumentationComment(xml, symbol)
                     {
-                        FullXmlFragment = xml,
                         HadXmlParseError = true
                     };
                 }
             }
 
-            private CommentBuilder(string xml)
+            private CommentBuilder(string xml, ISymbol symbol)
             {
-                _comment = new DocumentationComment
-                {
-                    FullXmlFragment = xml
-                };
+                _comment = new DocumentationComment(xml, symbol);
             }
 
             private DocumentationComment ParseInternal(string xml)

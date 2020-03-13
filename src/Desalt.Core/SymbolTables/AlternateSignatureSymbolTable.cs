@@ -9,6 +9,7 @@ namespace Desalt.Core.SymbolTables
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
@@ -91,15 +92,22 @@ namespace Desalt.Core.SymbolTables
             return new ExtendedResult<AlternateSignatureSymbolTable>(table, allDiagnostics);
         }
 
-        public bool TryGetValue(IMethodSymbol symbol, out AlternateSignatureMethodGroup value)
+        public bool TryGetValue(IMethodSymbol symbol, [NotNullWhen(true)] out AlternateSignatureMethodGroup? value)
         {
-            return Entries.TryGetValue(GetMethodName(symbol), out value);
+            string? methodName = GetMethodName(symbol);
+            if (methodName == null)
+            {
+                value = null;
+                return false;
+            }
+
+            return Entries.TryGetValue(methodName, out value);
         }
 
         /// <summary>
         /// Gets the key given a symbol. Only exposed for unit tests.
         /// </summary>
-        private static string GetMethodName(ISymbol symbol)
+        private static string? GetMethodName(ISymbol symbol)
         {
             return symbol?.ToDisplayString(s_symbolDisplayFormat);
         }

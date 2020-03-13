@@ -19,7 +19,9 @@ namespace Desalt.CompilerUtilities.Tests.Extensions
         [Test]
         public void ReadAllText_should_throw_on_null_args()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => StreamExtensions.ReadAllText(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 
@@ -95,7 +97,9 @@ namespace Desalt.CompilerUtilities.Tests.Extensions
         [Test]
         public void ReadToEnd_should_throw_on_null_args()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => StreamExtensions.ReadToEnd(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stream");
         }
 

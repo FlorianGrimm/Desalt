@@ -60,7 +60,7 @@ namespace Desalt.Core.Translation
         public TranslationVisitor(
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default,
-            ICollection<Diagnostic> diagnostics = null)
+            ICollection<Diagnostic>? diagnostics = null)
         {
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
@@ -138,7 +138,7 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier("Error");
             }
 
-            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
                 ReportUnsupportedTranslation(
                     DiagnosticFactory.InternalError(
@@ -165,7 +165,7 @@ namespace Desalt.Core.Translation
         /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
         /// comments prepended. If there are no documentation comments, the same node is returned.
         /// </returns>
-        private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode symbolNode = null)
+        private T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode? symbolNode = null)
             where T : ITsAstNode
         {
             if (!node.HasStructuredTrivia)
@@ -179,7 +179,12 @@ namespace Desalt.Core.Translation
                 return translatedNode;
             }
 
-            DocumentationComment documentationComment = symbol.GetDocumentationComment();
+            DocumentationComment? documentationComment = symbol.GetDocumentationComment();
+            if (documentationComment == null)
+            {
+                return translatedNode;
+            }
+
             var result = DocumentationCommentTranslator.Translate(documentationComment);
             _diagnostics.AddRange(result.Diagnostics);
 
@@ -231,9 +236,9 @@ namespace Desalt.Core.Translation
         }
 
         private ITsCallSignature TranslateCallSignature(
-            ParameterListSyntax parameterListNode,
-            TypeParameterListSyntax typeParameterListNode = null,
-            TypeSyntax returnTypeNode = null)
+            ParameterListSyntax? parameterListNode,
+            TypeParameterListSyntax? typeParameterListNode = null,
+            TypeSyntax? returnTypeNode = null)
         {
             ITsTypeParameters typeParameters = typeParameterListNode == null
                 ? Factory.TypeParameters()
@@ -243,11 +248,12 @@ namespace Desalt.Core.Translation
                 ? Factory.ParameterList()
                 : (ITsParameterList)Visit(parameterListNode).Single();
 
-            ITsType returnType = null;
-            if (returnTypeNode != null)
+            ITsType? returnType = null;
+            ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(_semanticModel);
+            if (returnTypeNode != null && returnTypeSymbol != null)
             {
                 returnType = _typeTranslator.TranslateSymbol(
-                    returnTypeNode.GetTypeSymbol(_semanticModel),
+                    returnTypeSymbol,
                     _typesToImport,
                     _diagnostics,
                     returnTypeNode.GetLocation);

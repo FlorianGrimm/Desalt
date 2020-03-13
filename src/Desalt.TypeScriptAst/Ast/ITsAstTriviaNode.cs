@@ -14,7 +14,7 @@ namespace Desalt.TypeScriptAst.Ast
     /// Root interface for all abstract syntax tree (AST) trivia node types. A trivia node is a
     /// comment or whitespace.
     /// </summary>
-    public interface ITsAstTriviaNode : IEquatable<ITsAstTriviaNode>
+    public interface ITsAstTriviaNode : IEquatable<ITsAstTriviaNode?>
     {
         //// ===========================================================================================================
         //// Properties
@@ -47,6 +47,6 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
-        string EmitAsString(EmitOptions emitOptions = null);
+        string EmitAsString(EmitOptions? emitOptions = null);
     }
 }

@@ -57,7 +57,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             while (!_reader.IsAtEnd && _reader.Peek() != quoteChar)
             {
-                string nextTextPart = _reader.ReadUntil(c => c == quoteChar || c == '\\');
+                string? nextTextPart = _reader.ReadUntil(c => c == quoteChar || c == '\\');
                 textBuilder.Append(nextTextPart);
                 valueBuilder.Append(nextTextPart);
 

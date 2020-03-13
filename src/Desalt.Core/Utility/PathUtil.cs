@@ -21,7 +21,7 @@ namespace Desalt.Core.Utility
         /// <param name="filePath">The path to the file.</param>
         /// <param name="extension">The new extension, with or without the leading period.</param>
         /// <returns>The same path, but with the extension replaced.</returns>
-        public static string ReplaceExtension(string filePath, string extension)
+        public static string ReplaceExtension(string? filePath, string? extension)
         {
             // add the leading period if necessary
             extension = extension?.Trim() ?? string.Empty;

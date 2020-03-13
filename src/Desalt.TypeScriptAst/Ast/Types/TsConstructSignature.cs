@@ -19,12 +19,12 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public TsConstructSignature(
-            ITsTypeParameters typeParameters = null,
-            ITsParameterList parameterList = null,
-            ITsType returnType = null)
+            ITsTypeParameters? typeParameters = null,
+            ITsParameterList? parameterList = null,
+            ITsType? returnType = null)
         {
             TypeParameters = typeParameters ?? TsTypeParameters.Empty;
-            ParameterList = parameterList;
+            ParameterList = parameterList ?? TsParameterList.Empty;
             ReturnType = returnType;
         }
 
@@ -34,7 +34,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public ITsTypeParameters TypeParameters { get; }
         public ITsParameterList ParameterList { get; }
-        public ITsType ReturnType { get; }
+        public ITsType? ReturnType { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -46,17 +46,17 @@ namespace Desalt.TypeScriptAst.Ast.Types
         }
 
         public override string CodeDisplay =>
-            $"new {TypeParameters}(${ParameterList}){ReturnType.OptionalTypeAnnotation()}";
+            $"new {TypeParameters}(${ParameterList}){ReturnType?.OptionalTypeAnnotation()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             emitter.Write("new ");
-            TypeParameters.Emit(emitter);
+            TypeParameters?.Emit(emitter);
             emitter.Write("(");
-            ParameterList.Emit(emitter);
+            ParameterList?.Emit(emitter);
             emitter.Write(")");
 
-            ReturnType.EmitOptionalTypeAnnotation(emitter);
+            ReturnType?.EmitOptionalTypeAnnotation(emitter);
         }
     }
 }

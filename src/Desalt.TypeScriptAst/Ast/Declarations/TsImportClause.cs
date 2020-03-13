@@ -24,8 +24,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         private TsImportClause(
-            ITsIdentifier defaultBinding,
-            ITsIdentifier namespaceBinding,
+            ITsIdentifier? defaultBinding,
+            ITsIdentifier? namespaceBinding,
             ImmutableArray<ITsImportSpecifier>? namedImports)
         {
             DefaultBinding = defaultBinding;
@@ -37,8 +37,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier DefaultBinding { get; }
-        public ITsIdentifier NamespaceBinding { get; }
+        public ITsIdentifier? DefaultBinding { get; }
+        public ITsIdentifier? NamespaceBinding { get; }
         public ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
 
         //// ===========================================================================================================
@@ -50,7 +50,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         /// </summary>
         public static TsImportClause CreateDefaultBinding(
             ITsIdentifier defaultBinding,
-            ITsIdentifier namespaceBinding = null)
+            ITsIdentifier? namespaceBinding = null)
         {
             return new TsImportClause(
                 defaultBinding ?? throw new ArgumentNullException(nameof(defaultBinding)),
@@ -63,7 +63,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         /// </summary>
         public static TsImportClause CreateDefaultBinding(
             ITsIdentifier defaultBinding,
-            IEnumerable<ITsImportSpecifier> namedImports = null)
+            IEnumerable<ITsImportSpecifier>? namedImports = null)
         {
             var array = namedImports?.ToImmutableArray();
 

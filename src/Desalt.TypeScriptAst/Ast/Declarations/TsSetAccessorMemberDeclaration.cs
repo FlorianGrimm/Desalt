@@ -1,43 +1,44 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsGetAccessor.cs" company="Justin Rockwood">
+// <copyright file="TsSetAccessorMemberDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// Represents a 'set' member accessor declaration in a class.
     /// </summary>
-    internal class TsGetAccessor : TsAstNode, ITsGetAccessor
+    internal class TsSetAccessorMemberDeclaration : TsAstNode, ITsSetAccessorMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsGetAccessor(
-            ITsPropertyName propertyName,
-            ITsType? propertyType = null,
-            IEnumerable<ITsStatementListItem>? functionBody = null)
+        public TsSetAccessorMemberDeclaration(
+            ITsSetAccessor setAccessor,
+            TsAccessibilityModifier? accessibilityModifier = null,
+            bool isStatic = false,
+            bool isAbstract = false)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            PropertyType = propertyType;
-            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            SetAccessor = setAccessor ?? throw new ArgumentNullException(nameof(setAccessor));
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsAbstract = isAbstract;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPropertyName PropertyName { get; }
-        public ITsType? PropertyType { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsAbstract { get; }
+        public ITsSetAccessor SetAccessor { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -45,21 +46,22 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public override void Accept(TsVisitor visitor)
         {
-            visitor.VisitGetAccessor(this);
+            visitor.VisitSetAccessorMemberDeclaration(this);
         }
 
         public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType?.OptionalTypeAnnotation()} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
+            AccessibilityModifier.OptionalCodeDisplay() +
+            (IsStatic ? "static " : "") +
+            (IsAbstract ? "abstract " : "") +
+            SetAccessor.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {
-            emitter.Write("get ");
-            PropertyName.Emit(emitter);
-            emitter.Write("()");
-            PropertyType?.EmitOptionalTypeAnnotation(emitter);
-            emitter.Write(" ");
-            emitter.WriteBlock(FunctionBody, skipNewlines: true);
+            AccessibilityModifier.EmitOptional(emitter);
+            emitter.Write(IsStatic ? "static " : "");
+            emitter.Write(IsAbstract ? "abstract " : "");
+            SetAccessor?.Emit(emitter);
+            emitter.WriteLine();
         }
     }
 }

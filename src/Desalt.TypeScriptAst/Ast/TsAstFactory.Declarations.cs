@@ -19,8 +19,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsSimpleLexicalBinding SimpleLexicalBinding(
             ITsIdentifier variableName,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
+            ITsType? variableType = null,
+            ITsExpression? initializer = null)
         {
             return new TsSimpleLexicalBinding(variableName, variableType, initializer);
         }
@@ -30,8 +30,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsDestructuringLexicalBinding DestructuringLexicalBinding(
             ITsBindingPattern bindingPattern,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
+            ITsType? variableType = null,
+            ITsExpression? initializer = null)
         {
             return new TsDestructuringLexicalBinding(bindingPattern, variableType, initializer);
         }
@@ -51,7 +51,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature)
         {
-            return TsFunctionDeclaration.Create(callSignature);
+            return new TsFunctionDeclaration(callSignature);
         }
 
         /// <summary>
@@ -61,18 +61,18 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier functionName,
             ITsCallSignature callSignature)
         {
-            return TsFunctionDeclaration.Create(callSignature, functionName);
+            return new TsFunctionDeclaration(callSignature, functionName);
         }
 
         /// <summary>
         /// Creates a function declaration of the form 'function [name] signature { body }'.
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(
-            ITsIdentifier functionName,
+            ITsIdentifier? functionName,
             ITsCallSignature callSignature,
             params ITsStatementListItem[] functionBody)
         {
-            return TsFunctionDeclaration.Create(callSignature, functionName, functionBody);
+            return new TsFunctionDeclaration(callSignature, functionName, functionBody);
         }
 
         /// <summary>
@@ -110,8 +110,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsConstructorDeclaration ConstructorDeclaration(
             TsAccessibilityModifier? accessibilityModifier = null,
-            ITsParameterList parameterList = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsParameterList? parameterList = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return TsConstructorDeclaration.Create(accessibilityModifier, parameterList, functionBody);
         }
@@ -124,8 +124,8 @@ namespace Desalt.TypeScriptAst.Ast
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isReadOnly = false,
-            ITsType typeAnnotation = null,
-            ITsExpression initializer = null)
+            ITsType? typeAnnotation = null,
+            ITsExpression? initializer = null)
         {
             return TsVariableMemberDeclaration.Create(
                 variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation, initializer);
@@ -140,7 +140,7 @@ namespace Desalt.TypeScriptAst.Ast
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return TsFunctionMemberDeclaration.Create(
                 functionName, callSignature, accessibilityModifier, isStatic, isAbstract, functionBody);
@@ -155,7 +155,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool isStatic = false,
             bool isAbstract = false)
         {
-            return new TsGetSetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic, isAbstract);
+            return new TsGetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic, isAbstract);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool isStatic = false,
             bool isAbstract = false)
         {
-            return new TsGetSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic, isAbstract);
+            return new TsSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic, isAbstract);
         }
 
         /// <summary>
@@ -182,8 +182,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates a class heritage of the form 'extends type implements type, type'.
         /// </summary>
         public static ITsClassHeritage ClassHeritage(
-            ITsTypeReference extendsClause,
-            IEnumerable<ITsTypeReference> implementsClause = null)
+            ITsTypeReference? extendsClause,
+            IEnumerable<ITsTypeReference>? implementsClause = null)
         {
             return new TsClassHeritage(extendsClause, implementsClause);
         }
@@ -200,11 +200,11 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates a class declaration.
         /// </summary>
         public static ITsClassDeclaration ClassDeclaration(
-            ITsIdentifier className = null,
-            ITsTypeParameters typeParameters = null,
-            ITsClassHeritage heritage = null,
+            ITsIdentifier? className = null,
+            ITsTypeParameters? typeParameters = null,
+            ITsClassHeritage? heritage = null,
             bool isAbstract = false,
-            IEnumerable<ITsClassElement> classBody = null)
+            IEnumerable<ITsClassElement>? classBody = null)
         {
             return new TsClassDeclaration(className, typeParameters, heritage, isAbstract, classBody);
         }
@@ -215,8 +215,8 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsInterfaceDeclaration InterfaceDeclaration(
             ITsIdentifier interfaceName,
             ITsObjectType body,
-            ITsTypeParameters typeParameters = null,
-            IEnumerable<ITsTypeReference> extendsClause = null)
+            ITsTypeParameters? typeParameters = null,
+            IEnumerable<ITsTypeReference>? extendsClause = null)
         {
             return new TsInterfaceDeclaration(interfaceName, body, typeParameters, extendsClause);
         }
@@ -224,7 +224,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an enum member of the form, 'name = value'.
         /// </summary>
-        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression value = null)
+        public static ITsEnumMember EnumMember(ITsPropertyName name, ITsExpression? value = null)
         {
             return new TsEnumMember(name, value);
         }
@@ -234,7 +234,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsEnumDeclaration EnumDeclaration(
             ITsIdentifier enumName,
-            IEnumerable<ITsEnumMember> enumBody = null,
+            IEnumerable<ITsEnumMember>? enumBody = null,
             bool isConst = false)
         {
             return new TsEnumDeclaration(enumName, enumBody, isConst);
@@ -298,7 +298,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an ambient variable binding of the form 'name: type'.
         /// </summary>
-        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType variableType = null)
+        public static ITsAmbientBinding AmbientBinding(ITsIdentifier variableName, ITsType? variableType = null)
         {
             return new TsAmbientBinding(variableName, variableType);
         }
@@ -320,14 +320,14 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier functionName,
             ITsCallSignature callSignature)
         {
-            return TsFunctionDeclaration.CreateAmbient(functionName, callSignature);
+            return new TsAmbientFunctionDeclaration(functionName, callSignature);
         }
 
         /// <summary>
         /// Creates a constructor declaration within an ambient class declaration.
         /// </summary>
         public static ITsAmbientConstructorDeclaration AmbientConstructorDeclaration(
-            ITsParameterList parameterList = null)
+            ITsParameterList? parameterList = null)
         {
             return TsConstructorDeclaration.CreateAmbient(parameterList);
         }
@@ -340,7 +340,7 @@ namespace Desalt.TypeScriptAst.Ast
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isReadOnly = false,
-            ITsType typeAnnotation = null)
+            ITsType? typeAnnotation = null)
         {
             return TsVariableMemberDeclaration.CreateAmbient(
                 variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation);
@@ -372,9 +372,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsAmbientClassDeclaration AmbientClassDeclaration(
             ITsIdentifier className,
-            ITsTypeParameters typeParameters = null,
-            ITsClassHeritage heritage = null,
-            IEnumerable<ITsAmbientClassBodyElement> classBody = null)
+            ITsTypeParameters? typeParameters = null,
+            ITsClassHeritage? heritage = null,
+            IEnumerable<ITsAmbientClassBodyElement>? classBody = null)
         {
             return new TsAmbientClassDeclaration(className, typeParameters, heritage, classBody);
         }
@@ -384,7 +384,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsAmbientEnumDeclaration AmbientEnumDeclaration(
             ITsIdentifier enumName,
-            IEnumerable<ITsEnumMember> enumBody = null,
+            IEnumerable<ITsEnumMember>? enumBody = null,
             bool isConst = false)
         {
             return new TsEnumDeclaration(enumName, enumBody, isConst);
@@ -454,7 +454,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Create an import specifier, which is either an identifier or 'identifier as identifier'.
         /// </summary>
-        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier asName = null)
+        public static ITsImportSpecifier ImportSpecifier(ITsIdentifier name, ITsIdentifier? asName = null)
         {
             return new TsImportSpecifier(name, asName);
         }

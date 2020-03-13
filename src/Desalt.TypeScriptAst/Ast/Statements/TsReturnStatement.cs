@@ -18,7 +18,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsReturnStatement(ITsExpression expression = null)
+        public TsReturnStatement(ITsExpression? expression = null)
         {
             Expression = expression;
         }
@@ -27,7 +27,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Expression { get; }
+        public ITsExpression? Expression { get; }
 
         //// ===========================================================================================================
         //// Methods

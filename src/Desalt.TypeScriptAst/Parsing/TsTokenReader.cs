@@ -11,6 +11,7 @@ namespace Desalt.TypeScriptAst.Parsing
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     internal sealed class TsTokenReader
@@ -157,7 +158,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <param name="tokenCode">The token code to match.</param>
         /// <param name="token">The read token, or null if the next token does not match the token code.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
-        public bool ReadIf(TsTokenCode tokenCode, out TsToken token)
+        public bool ReadIf(TsTokenCode tokenCode, [NotNullWhen(true)] out TsToken? token)
         {
             if (Peek().TokenCode == tokenCode)
             {
@@ -175,7 +176,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <param name="expectedTokenFunc">The function to match a token code.</param>
         /// <param name="token">The read token, or null if the next token does not match the token code.</param>
         /// <returns>true if the next token was read because it matched the token code; otherwise, false.</returns>
-        public bool ReadIf(Func<TsTokenCode, bool> expectedTokenFunc, out TsToken token)
+        public bool ReadIf(Func<TsTokenCode, bool> expectedTokenFunc, [NotNullWhen(true)] out TsToken? token)
         {
             if (expectedTokenFunc(Peek().TokenCode))
             {
@@ -238,12 +239,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// succeeds we don't need to parse again.
         /// </param>
         /// <returns>Whatever <paramref name="func"/> returns.</returns>
-        public T ReadWithSavedState<T>(Func<T> func, Func<T, bool> shouldCommitReadFunc = null)
+        public T? ReadWithSavedState<T>(Func<T?> func, Func<T?, bool>? shouldCommitReadFunc = null) where T : class
         {
             int savedIndex = _index;
             _withinSavedStateBlockCount++;
 
-            var returnValue = default(T);
+            T? returnValue = null;
             try
             {
                 returnValue = func();
@@ -252,6 +253,44 @@ namespace Desalt.TypeScriptAst.Parsing
             {
                 if (shouldCommitReadFunc?.Invoke(returnValue) != true)
                 {
+                    // rollback
+                    _index = savedIndex;
+                    _withinSavedStateBlockCount--;
+                    Debug.Assert(_withinSavedStateBlockCount >= 0);
+                }
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Preserves the state of the reader while <paramref name="func"/> is called and restores
+        /// the state after it returns. This is useful for parsing potential productions, but rolling
+        /// back state if a production does not match.
+        /// </summary>
+        /// <param name="func">The function to run inside of saved state.</param>
+        /// <param name="shouldCommitReadFunc">
+        /// An optional function that will be called with the result of <paramref name="func"/>,
+        /// which returns a value indicating whether to commit the read or to rollback to the saved
+        /// state. This is really useful in scenarios where a parse needs to be tried, but if it
+        /// succeeds we don't need to parse again.
+        /// </param>
+        /// <returns>Whatever <paramref name="func"/> returns.</returns>
+        public bool ReadWithSavedState(Func<bool> func, Func<bool, bool>? shouldCommitReadFunc = null)
+        {
+            int savedIndex = _index;
+            _withinSavedStateBlockCount++;
+
+            bool returnValue = false;
+            try
+            {
+                returnValue = func();
+            }
+            finally
+            {
+                if (shouldCommitReadFunc?.Invoke(returnValue) != true)
+                {
+                    // rollback
                     _index = savedIndex;
                     _withinSavedStateBlockCount--;
                     Debug.Assert(_withinSavedStateBlockCount >= 0);

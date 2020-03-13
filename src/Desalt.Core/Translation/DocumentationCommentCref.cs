@@ -46,7 +46,7 @@ namespace Desalt.Core.Translation
             CrefKind kind,
             string fullTypeName,
             string typeName,
-            string memberName)
+            string? memberName)
         {
             Kind = kind;
             FullTypeName = fullTypeName;
@@ -60,7 +60,7 @@ namespace Desalt.Core.Translation
 
         public string FullTypeName { get; }
         public string TypeName { get; }
-        public string MemberName { get; }
+        public string? MemberName { get; }
         public CrefKind Kind { get; }
 
         //// ===========================================================================================================
@@ -70,8 +70,10 @@ namespace Desalt.Core.Translation
         public static DocumentationCommentCref Parse(string cref)
         {
             string fullTypeName;
-            string memberName = null;
+            string? memberName = null;
             CrefKind kind;
+
+            InvalidOperationException CreateInvalidException() => new InvalidOperationException($"Invalid cref attribute: {cref}");
 
             using (var reader = new PeekingTextReader(cref))
             {
@@ -89,17 +91,16 @@ namespace Desalt.Core.Translation
                     case 'E':
                     case 'F':
                         kind = s_charToKindMap[prefix];
-                        string qualifiedName = reader.ReadUntil('(');
-                        (fullTypeName, memberName) = SplitQualifiedName(qualifiedName);
+                        string? qualifiedName = reader.ReadUntil('(');
+                        (fullTypeName, memberName) = SplitQualifiedName(qualifiedName ?? throw CreateInvalidException());
                         break;
 
                     default:
-                        throw new InvalidOperationException("Invalid cref attribute: " + cref);
+                        throw CreateInvalidException();
                 }
             }
 
             string typeName = fullTypeName.Split('.').Last();
-
             return new DocumentationCommentCref(kind, fullTypeName, typeName, memberName);
         }
 

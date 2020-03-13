@@ -21,8 +21,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsBoundOptionalParameter(
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
-            ITsExpression initializer = null,
+            ITsType? parameterType = null,
+            ITsExpression? initializer = null,
             TsAccessibilityModifier? modifier = null)
         {
             ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
@@ -37,8 +37,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsAccessibilityModifier? Modifier { get; }
         public ITsBindingIdentifierOrPattern ParameterName { get; }
-        public ITsType ParameterType { get; }
-        public ITsExpression Initializer { get; }
+        public ITsType? ParameterType { get; }
+        public ITsExpression? Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             $"{Modifier.OptionalCodeDisplay()}" +
             ParameterName +
             (Initializer == null ? "?" : "") +
-            ParameterType.OptionalTypeAnnotation() +
+            ParameterType?.OptionalTypeAnnotation() +
             (Initializer != null ? $" = {Initializer}" : "");
 
         protected override void EmitInternal(Emitter emitter)
@@ -66,9 +66,9 @@ namespace Desalt.TypeScriptAst.Ast.Types
                 emitter.Write("?");
             }
 
-            ParameterType.EmitOptionalTypeAnnotation(emitter);
+            ParameterType?.EmitOptionalTypeAnnotation(emitter);
 
-            Initializer.EmitOptionalAssignment(emitter);
+            Initializer?.EmitOptionalAssignment(emitter);
         }
     }
 
@@ -78,7 +78,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             this ITsBoundOptionalParameter boundParameter,
             ITsType value)
         {
-            return boundParameter.ParameterType.Equals(value)
+            return boundParameter.ParameterType == value
                 ? boundParameter
                 : new TsBoundOptionalParameter(
                     boundParameter.ParameterName,

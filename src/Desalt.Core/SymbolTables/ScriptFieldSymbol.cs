@@ -41,7 +41,7 @@ namespace Desalt.Core.SymbolTables
         /// with which the member is being initialized (as well as all other placeholders from <see
         /// cref="IScriptMethodSymbol.InlineCode"/>). If null, the member will not be initialized.
         /// </summary>
-        public string CustomInitialization { get; }
+        public string? CustomInitialization { get; }
 
         /// <summary>
         /// The associated C# symbol.

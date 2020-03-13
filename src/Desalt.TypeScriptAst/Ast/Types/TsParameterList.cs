@@ -17,13 +17,19 @@ namespace Desalt.TypeScriptAst.Ast.Types
     internal class TsParameterList : TsAstNode, ITsParameterList
     {
         //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        public static readonly TsParameterList Empty = new TsParameterList();
+
+        //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
         public TsParameterList(
-            IEnumerable<ITsRequiredParameter> requiredParameters = null,
-            IEnumerable<ITsOptionalParameter> optionalParameters = null,
-            ITsRestParameter restParameter = null)
+            IEnumerable<ITsRequiredParameter>? requiredParameters = null,
+            IEnumerable<ITsOptionalParameter>? optionalParameters = null,
+            ITsRestParameter? restParameter = null)
         {
             RequiredParameters = requiredParameters?.ToImmutableArray() ?? ImmutableArray<ITsRequiredParameter>.Empty;
             OptionalParameters = optionalParameters?.ToImmutableArray() ?? ImmutableArray<ITsOptionalParameter>.Empty;
@@ -36,7 +42,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
         public ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
-        public ITsRestParameter RestParameter { get; }
+        public ITsRestParameter? RestParameter { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -56,13 +62,21 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         protected override void EmitInternal(Emitter emitter)
         {
-            emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
+            if (RequiredParameters.Length > 0)
+            {
+                emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
+            }
+
             if ((RequiredParameters.Length > 0 && OptionalParameters.Length > 0) || RestParameter != null)
             {
                 emitter.Write(", ");
             }
 
-            emitter.WriteList(OptionalParameters, indent: false, itemDelimiter: ", ");
+            if (OptionalParameters.Length > 0)
+            {
+                emitter.WriteList(OptionalParameters, indent: false, itemDelimiter: ", ");
+            }
+
             if (OptionalParameters.Length > 0 && RestParameter != null)
             {
                 emitter.Write(", ");

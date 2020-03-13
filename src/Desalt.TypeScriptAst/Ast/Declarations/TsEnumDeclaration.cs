@@ -23,7 +23,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public TsEnumDeclaration(
             ITsIdentifier enumName,
-            IEnumerable<ITsEnumMember> enumBody = null,
+            IEnumerable<ITsEnumMember>? enumBody = null,
             bool isConst = false)
         {
             EnumName = enumName ?? throw new ArgumentNullException(nameof(enumName));

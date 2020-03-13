@@ -21,8 +21,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public TsSimpleLexicalBinding(
             ITsIdentifier variableName,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
+            ITsType? variableType = null,
+            ITsExpression? initializer = null)
         {
             VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
             VariableType = variableType;
@@ -34,8 +34,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier VariableName { get; }
-        public ITsType VariableType { get; }
-        public ITsExpression Initializer { get; }
+        public ITsType? VariableType { get; }
+        public ITsExpression? Initializer { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -52,7 +52,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             {
                 string display = VariableName.CodeDisplay;
                 display += VariableType?.OptionalTypeAnnotation();
-                display += Initializer.OptionalAssignment();
+                display += Initializer?.OptionalAssignment();
                 return display;
             }
         }
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             VariableName.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);
-            Initializer.EmitOptionalAssignment(emitter);
+            Initializer?.EmitOptionalAssignment(emitter);
         }
     }
 

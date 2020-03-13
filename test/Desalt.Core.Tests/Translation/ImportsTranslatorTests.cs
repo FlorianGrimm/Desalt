@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -29,7 +30,9 @@ namespace Desalt.Core.Tests.Translation
             FieldDeclarationSyntax fieldDeclaration =
                 context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().First();
 
-            yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+            yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type ??
+                throw new InvalidOperationException(
+                    "There's an error in the test code since a valid Type could not be found for the field declaration.");
         }
 
         private static async Task AssertNoImports(
@@ -42,7 +45,7 @@ namespace Desalt.Core.Tests.Translation
         private static async Task AssertImports(
             string codeSnippet,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
-            string[] expectedImportLines = null)
+            string[]? expectedImportLines = null)
         {
             string code = $@"
 using System;
@@ -60,7 +63,7 @@ class C
                 code,
                 GetFirstFieldDeclarationSymbol,
                 discoveryKind,
-                expectedImportLines ?? new string[0]);
+                expectedImportLines ?? Array.Empty<string>());
         }
 
         private static async Task AssertImports(
@@ -91,7 +94,8 @@ class C
             IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
 
             var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
-            IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results = importsTranslator.TranslateImports(context, typesToImport);
+            IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results =
+                importsTranslator.TranslateImports(context, typesToImport);
 
             results.Diagnostics.Should().BeEmpty();
 
@@ -152,14 +156,16 @@ class C
         [Test]
         public async Task ImportsTranslator_should_alphabetize_symbol_names_within_a_group()
         {
-            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            static IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
 
                 foreach (FieldDeclarationSyntax fieldDeclaration in fieldDeclarations)
                 {
-                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type ??
+                        throw new InvalidOperationException(
+                            "There's an error in the test code since a valid Type could not be found for the field declaration.");
                 }
             }
 
@@ -177,14 +183,16 @@ class C
         [Test]
         public async Task ImportsTranslator_should_get_all_of_the_referenced_files()
         {
-            IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
+            static IEnumerable<ITypeSymbol> GetSymbols(DocumentTranslationContextWithSymbolTables context)
             {
                 IEnumerable<FieldDeclarationSyntax> fieldDeclarations =
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>();
 
                 foreach (FieldDeclarationSyntax fieldDeclaration in fieldDeclarations)
                 {
-                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+                    yield return context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type ??
+                        throw new InvalidOperationException(
+                            "There's an error in the test code since a valid Type could not be found for the field declaration.");
                 }
             }
 

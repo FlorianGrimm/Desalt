@@ -11,6 +11,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Collections;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
@@ -23,7 +24,9 @@ namespace Desalt.Core.Tests.Pipeline
         public void AddStage_should_throw_on_null_arguments()
         {
             var pipeline = new SimplePipeline<object, object>();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => pipeline.AddStage(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stage");
         }
 
@@ -57,26 +60,26 @@ namespace Desalt.Core.Tests.Pipeline
         [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_a_superclass_of_a_previous_output()
         {
-            var pipeline = new SimplePipeline<int, bool>();
+            var pipeline = new SimplePipeline<int, object>();
             pipeline.AddStage(new FakePipelineStage<int, StringWriter>(input => new StringWriter()));
-            pipeline.AddStage(new FakePipelineStage<TextWriter, bool>(input => true));
+            pipeline.AddStage(new FakePipelineStage<TextWriter, object>(input => new object()));
             pipeline.Stages.Count().Should().Be(2);
         }
 
         [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_an_interface_of_a_previous_output()
         {
-            var pipeline = new SimplePipeline<int, bool>();
+            var pipeline = new SimplePipeline<int, object>();
             pipeline.AddStage(
                 new FakePipelineStage<int, CaseInsensitiveComparer>(input => new CaseInsensitiveComparer()));
-            pipeline.AddStage(new FakePipelineStage<IComparer, bool>(input => true));
+            pipeline.AddStage(new FakePipelineStage<IComparer, object>(input => new object()));
             pipeline.Stages.Count().Should().Be(2);
         }
 
         [Test]
         public async Task Execute_should_throw_if_the_last_stage_does_not_output_a_compatible_type()
         {
-            var pipeline = new SimplePipeline<int, DateTime>();
+            var pipeline = new SimplePipeline<int, StringBuilder>();
             pipeline.AddStage(new IntToStringStage());
             try
             {
@@ -84,7 +87,8 @@ namespace Desalt.Core.Tests.Pipeline
             }
             catch (InvalidOperationException e)
             {
-                e.Message.Should().Be("The last stage outputs type 'String' but it should output type 'DateTime'.");
+                e.Message.Should()
+                    .Be("The last stage outputs type 'String' but it should output type 'StringBuilder'.");
             }
             catch (Exception e)
             {
@@ -99,7 +103,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new IntToStringStage());
             pipeline.AddStage(new StringToCharArrayStage());
 
-            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
+            IExtendedResult<char[]?> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Result.Should().Equal('1', '2', '3');
         }
 
@@ -112,7 +116,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
 
             const string inputString = "Input";
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString, CompilerOptions.Default);
+            IExtendedResult<string?> result = await pipeline.ExecuteAsync(inputString, CompilerOptions.Default);
             result.Result.Should().BeSameAs(inputString);
         }
 
@@ -170,7 +174,7 @@ namespace Desalt.Core.Tests.Pipeline
                                     warningLevel: 1)
                             }))));
 
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
+            IExtendedResult<string?> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Success.Should().BeFalse();
             result.Diagnostics.Select(m => m.ToString())
                 .Should()

@@ -145,7 +145,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             // arrow expressions can start the same way as a left hand side expression, so we need to
             // try parsing one and see what happens
-            if (TryParse(ParseArrowFunction, out ITsArrowFunction arrowFunction))
+            if (TryParse(ParseArrowFunction, out ITsArrowFunction? arrowFunction))
             {
                 return arrowFunction;
             }
@@ -655,7 +655,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsArgumentList ParseArguments()
         {
-            ITsType[] typeArguments = ParseOptionalTypeArguments();
+            ITsType[]? typeArguments = ParseOptionalTypeArguments();
 
             Read(TsTokenCode.LeftParen);
 

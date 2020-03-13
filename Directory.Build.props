@@ -38,7 +38,7 @@ LICENSE.txt in the project root for license information.
 
   <!-- Use new C# 8 features -->
   <PropertyGroup>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 

@@ -61,7 +61,9 @@ namespace Desalt.CompilerUtilities.Tests
         public void TextReaderLocation_Equality_should_not_equal_null()
         {
             var location = new TextReaderLocation(100, 1);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             location.Equals(null).Should().BeFalse();
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]

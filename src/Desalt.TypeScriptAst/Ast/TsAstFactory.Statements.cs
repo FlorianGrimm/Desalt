@@ -35,8 +35,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsSimpleVariableDeclaration SimpleVariableDeclaration(
             ITsIdentifier variableName,
-            ITsType variableType = null,
-            ITsExpression initializer = null)
+            ITsType? variableType = null,
+            ITsExpression? initializer = null)
         {
             return new TsSimpleVariableDeclaration(variableName, variableType, initializer);
         }
@@ -56,7 +56,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsDestructuringVariableDeclaration DestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
-            ITsType variableType,
+            ITsType? variableType,
             ITsExpression initializer)
         {
             return new TsDestructuringVariableDeclaration(bindingPattern, initializer, variableType);
@@ -74,8 +74,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates an array binding pattern of the form '[x = y, z, ...p]'.
         /// </summary>
         public static ITsArrayBindingPattern ArrayBindingPattern(
-            IEnumerable<ITsBindingElement> elements,
-            ITsIdentifier restElement = null)
+            IEnumerable<ITsBindingElement?> elements,
+            ITsIdentifier? restElement = null)
         {
             return new TsArrayBindingPattern(elements, restElement);
         }
@@ -83,7 +83,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates an array binding pattern of the form '[x = y, z]'.
         /// </summary>
-        public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement[] elements)
+        public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement?[] elements)
         {
             return new TsArrayBindingPattern(elements);
         }
@@ -100,7 +100,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>An <see cref="ITsSingleNameBinding"/> instance.</returns>
         public static ITsSingleNameBinding SingleNameBinding(
             ITsIdentifier name,
-            ITsExpression defaultValue = null)
+            ITsExpression? defaultValue = null)
         {
             return new TsSingleNameBinding(name, defaultValue);
         }
@@ -118,7 +118,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsPatternBinding PatternBinding(
             ITsBindingPattern bindingPattern,
-            ITsExpression initializer = null)
+            ITsExpression? initializer = null)
         {
             return new TsPatternBinding(bindingPattern, initializer);
         }
@@ -137,7 +137,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsIfStatement IfStatement(
             ITsExpression ifCondition,
             ITsStatement ifStatement,
-            ITsStatement elseStatement = null)
+            ITsStatement? elseStatement = null)
         {
             return new TsIfStatement(ifCondition, ifStatement, elseStatement);
         }
@@ -149,7 +149,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsTryStatement TryCatch(
             ITsBlockStatement tryBlock,
-            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBindingIdentifierOrPattern? catchParameter,
             ITsBlockStatement catchBlock)
         {
             return TsTryStatement.CreateTryCatch(tryBlock, catchParameter, catchBlock);
@@ -171,7 +171,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsTryStatement TryCatchFinally(
             ITsBlockStatement tryBlock,
-            ITsBindingIdentifierOrPattern catchParameter,
+            ITsBindingIdentifierOrPattern? catchParameter,
             ITsBlockStatement catchBlock,
             ITsBlockStatement finallyBlock)
         {
@@ -321,7 +321,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a continue statement with an optional label to continue to.
         /// </summary>
-        public static ITsContinueStatement Continue(ITsIdentifier label = null)
+        public static ITsContinueStatement Continue(ITsIdentifier? label = null)
         {
             return new TsContinueOrBreakStatement(isContinue: true, label: label);
         }
@@ -329,7 +329,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a break statement with an optional label to break to.
         /// </summary>
-        public static ITsBreakStatement Break(ITsIdentifier label = null)
+        public static ITsBreakStatement Break(ITsIdentifier? label = null)
         {
             return new TsContinueOrBreakStatement(isContinue: false, label: label);
         }
@@ -337,7 +337,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Create a 'return' statement.
         /// </summary>
-        public static ITsReturnStatement Return(ITsExpression expression = null)
+        public static ITsReturnStatement Return(ITsExpression? expression = null)
         {
             return new TsReturnStatement(expression);
         }

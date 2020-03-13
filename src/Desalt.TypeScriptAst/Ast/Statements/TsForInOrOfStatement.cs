@@ -56,9 +56,9 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Initializer { get; }
+        public ITsExpression? Initializer { get; }
         public VariableDeclarationKind? DeclarationKind { get; }
-        public ITsBindingIdentifierOrPattern Declaration { get; }
+        public ITsBindingIdentifierOrPattern? Declaration { get; }
 
         public ITsExpression RightSide { get; }
         public ITsStatement Statement { get; }
@@ -95,7 +95,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 else
                 {
                     builder.Append(DeclarationKind?.CodeDisplay());
-                    builder.Append(Declaration.CodeDisplay);
+                    builder.Append(Declaration?.CodeDisplay);
                 }
 
                 builder.Append(OfLoop ? " of " : " in ");
@@ -118,7 +118,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             else
             {
                 DeclarationKind?.Emit(emitter);
-                Declaration.Emit(emitter);
+                Declaration?.Emit(emitter);
             }
 
             emitter.Write(OfLoop ? " of " : " in ");

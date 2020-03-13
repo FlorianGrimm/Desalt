@@ -22,15 +22,15 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsClassDeclaration(
-            ITsIdentifier className = null,
-            ITsTypeParameters typeParameters = null,
-            ITsClassHeritage heritage = null,
+            ITsIdentifier? className = null,
+            ITsTypeParameters? typeParameters = null,
+            ITsClassHeritage? heritage = null,
             bool isAbstract = false,
-            IEnumerable<ITsClassElement> classBody = null)
+            IEnumerable<ITsClassElement>? classBody = null)
         {
             ClassName = className;
             TypeParameters = typeParameters ?? new TsTypeParameters();
-            Heritage = heritage ?? new TsClassHeritage();
+            Heritage = heritage;
             IsAbstract = isAbstract;
             ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;
         }
@@ -39,9 +39,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier ClassName { get; }
+        public ITsIdentifier? ClassName { get; }
         public ITsTypeParameters TypeParameters { get; }
-        public ITsClassHeritage Heritage { get; }
+        public ITsClassHeritage? Heritage { get; }
         public bool IsAbstract { get; }
         public ImmutableArray<ITsClassElement> ClassBody { get; }
 
@@ -68,9 +68,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             emitter.Write("class ");
             ClassName?.Emit(emitter);
             TypeParameters.Emit(emitter);
-            Heritage.Emit(emitter);
+            Heritage?.Emit(emitter);
 
-            if ((ClassName != null && Heritage.IsEmpty) || !Heritage.IsEmpty)
+            if ((ClassName != null && Heritage == null) || Heritage != null)
             {
                 emitter.Write(" ");
             }

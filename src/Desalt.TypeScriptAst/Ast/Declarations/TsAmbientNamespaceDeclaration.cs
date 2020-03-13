@@ -23,7 +23,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public TsAmbientNamespaceDeclaration(
             ITsQualifiedName namespaceName,
-            IEnumerable<ITsAmbientNamespaceElement> body = null)
+            IEnumerable<ITsAmbientNamespaceElement>? body = null)
         {
             NamespaceName = namespaceName ?? throw new ArgumentNullException(nameof(namespaceName));
             Body = body?.ToImmutableArray() ?? ImmutableArray<ITsAmbientNamespaceElement>.Empty;

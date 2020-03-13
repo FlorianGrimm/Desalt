@@ -20,9 +20,9 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayBindingPattern(IEnumerable<ITsBindingElement> elements, ITsIdentifier restElement = null)
+        public TsArrayBindingPattern(IEnumerable<ITsBindingElement?> elements, ITsIdentifier? restElement = null)
         {
-            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsBindingElement>.Empty;
+            Elements = elements?.ToImmutableArray() ?? ImmutableArray<ITsBindingElement?>.Empty;
             RestElement = restElement;
         }
 
@@ -30,8 +30,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ImmutableArray<ITsBindingElement> Elements { get; }
-        public ITsIdentifier RestElement { get; }
+        public ImmutableArray<ITsBindingElement?> Elements { get; }
+        public ITsIdentifier? RestElement { get; }
 
         //// ===========================================================================================================
         //// Methods

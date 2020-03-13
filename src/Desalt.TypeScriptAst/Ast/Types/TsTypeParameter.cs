@@ -19,7 +19,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTypeParameter(ITsIdentifier typeName, ITsType constraint = null)
+        public TsTypeParameter(ITsIdentifier typeName, ITsType? constraint = null)
         {
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             Constraint = constraint;
@@ -30,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public ITsIdentifier TypeName { get; }
-        public ITsType Constraint { get; }
+        public ITsType? Constraint { get; }
 
         //// ===========================================================================================================
         //// Methods

@@ -89,7 +89,7 @@ namespace Desalt.Core.SymbolTables
             base.VisitIdentifierName(node);
         }
 
-        private void AddTypeIfNecessary(TypeSyntax node)
+        private void AddTypeIfNecessary(TypeSyntax? node)
         {
             // sometimes the node won't have a type, for example in anonymous delegates
             if (node == null)
@@ -101,7 +101,7 @@ namespace Desalt.Core.SymbolTables
             AddTypeIfNecessary(typeSymbol);
         }
 
-        private void AddTypeIfNecessary(ITypeSymbol typeSymbol)
+        private void AddTypeIfNecessary(ITypeSymbol? typeSymbol)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 

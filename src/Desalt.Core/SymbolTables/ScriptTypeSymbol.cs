@@ -81,14 +81,14 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// TODO - support MixinAttribute.Expression
         /// </summary>
-        public string MixinExpression { get; }
+        public string? MixinExpression { get; }
 
         /// <summary>
         /// Specifies that a type is defined in a module, which should be imported by a require() call.
         ///
         /// TODO - [ModuleName]
         /// </summary>
-        public string ModuleName { get; }
+        public string? ModuleName { get; }
 
         /// <summary>
         /// Indicates that the type obeys the Saltarelle type system. If false, the type is ignored
@@ -112,7 +112,7 @@ namespace Desalt.Core.SymbolTables
         /// namespace are unique. For internal types, the [ScriptQualifier] attribute can be used to
         /// provide a short prefix to generate unique names.
         /// </summary>
-        public string ScriptNamespace { get; }
+        public string? ScriptNamespace { get; }
 
         /// <summary>
         /// Indicates whether methods on a static class should be treated as global methods in the
@@ -125,7 +125,7 @@ namespace Desalt.Core.SymbolTables
         /// reference the object being checked, as well as all type parameter for the type.
         /// TODO - Support ImportedAttribute.TypeCheckCode
         /// </summary>
-        public string TypeCheckCode { get; }
+        public string? TypeCheckCode { get; }
 
         /// <summary>
         /// The associated C# symbol.

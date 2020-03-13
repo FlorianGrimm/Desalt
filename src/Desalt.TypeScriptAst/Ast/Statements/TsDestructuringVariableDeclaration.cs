@@ -22,7 +22,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public TsDestructuringVariableDeclaration(
             ITsBindingPattern bindingPattern,
             ITsExpression initializer,
-            ITsType variableType = null)
+            ITsType? variableType = null)
         {
             BindingPattern = bindingPattern ?? throw new ArgumentNullException(nameof(bindingPattern));
             Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
@@ -34,7 +34,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// ===========================================================================================================
 
         public ITsBindingPattern BindingPattern { get; }
-        public ITsType VariableType { get; }
+        public ITsType? VariableType { get; }
         public ITsExpression Initializer { get; }
 
         //// ===========================================================================================================
@@ -47,13 +47,13 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         }
 
         public override string CodeDisplay =>
-            $"{BindingPattern}{VariableType.OptionalTypeAnnotation()}{Initializer.OptionalAssignment()}";
+            $"{BindingPattern}{VariableType?.OptionalTypeAnnotation()}{Initializer?.OptionalAssignment()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
-            VariableType.EmitOptionalTypeAnnotation(emitter);
-            Initializer.EmitOptionalAssignment(emitter);
+            VariableType?.EmitOptionalTypeAnnotation(emitter);
+            Initializer?.EmitOptionalAssignment(emitter);
         }
     }
 }

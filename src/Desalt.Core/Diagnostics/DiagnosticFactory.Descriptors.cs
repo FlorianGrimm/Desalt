@@ -122,6 +122,9 @@ namespace Desalt.Core.Diagnostics
                 "Invalid options file",
                 "Error in reading the options file in '{0}': {1}")]
             InvalidOptionsFile,
+
+            [Error(1018, "Cannot open project", "Cannot open project file '{0}'.")]
+            CannotOpenProject
         }
 
         //// ===========================================================================================================
@@ -133,7 +136,7 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="e">The <see cref="Exception"/> that represents the error.</param>
         /// <param name="location">An optional associated location in the source code.</param>
-        public static Diagnostic InternalError(Exception e, Location location = null)
+        public static Diagnostic InternalError(Exception e, Location? location = null)
         {
             return Create(DiagnosticId.InternalError, location ?? Location.None, e.Message);
         }
@@ -143,7 +146,7 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="error">An error message.</param>
         /// <param name="location">An optional associated location in the source code.</param>
-        public static Diagnostic InternalError(string error, Location location = null)
+        public static Diagnostic InternalError(string error, Location? location = null)
         {
             return Create(DiagnosticId.InternalError, location ?? Location.None, error);
         }
@@ -234,7 +237,7 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         /// </summary>
         /// <param name="typeName">The name of the unknown type.</param>
         /// <param name="location">The location of the error.</param>
-        public static Diagnostic UnknownType(string typeName, Location location = null)
+        public static Diagnostic UnknownType(string typeName, Location? location = null)
         {
             return Create(DiagnosticId.UnknownType, location ?? Location.None, typeName);
         }
@@ -314,7 +317,7 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         /// <summary>
         /// Returns a diagnostic of the form "Type '{0}' is not a known type reference".
         /// </summary>
-        public static Diagnostic UnknownTypeReference(string typeName, Location location = null)
+        public static Diagnostic UnknownTypeReference(string typeName, Location? location = null)
         {
             return Create(DiagnosticId.UnknownTypeReference, location ?? Location.None, typeName);
         }
@@ -344,6 +347,15 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic InvalidOptionsFile(string filePath, string errorMessage)
         {
             return Create(DiagnosticId.InvalidOptionsFile, Location.None, filePath, errorMessage);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Cannot open project file '{0}'.".
+        /// </summary>
+        /// <param name="projectFilePath">The file path to the .csproj file that was being opened.</param>
+        public static Diagnostic CannotOpenProject(string projectFilePath)
+        {
+            return Create(DiagnosticId.CannotOpenProject, Location.None, projectFilePath);
         }
     }
 }

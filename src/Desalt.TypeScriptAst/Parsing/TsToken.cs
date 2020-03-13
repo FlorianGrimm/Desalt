@@ -29,6 +29,8 @@ namespace Desalt.TypeScriptAst.Parsing
             "EndOfTokens",
             TextReaderLocation.Empty);
 
+        public static readonly object NullValue = new object();
+
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -71,7 +73,7 @@ namespace Desalt.TypeScriptAst.Parsing
                         return false;
 
                     case TsTokenCode.Null:
-                        return null;
+                        return NullValue;
 
                     default:
                         return Text;
@@ -182,7 +184,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// <see langword="true"/> if the specified object is equal to the current object; otherwise,
         /// <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
             {
@@ -194,8 +196,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return true;
             }
 
-            var other = obj as TsToken;
-            return other != null && Equals(other);
+            return obj is TsToken other && Equals(other);
         }
 
         /// <summary>
@@ -235,7 +236,11 @@ namespace Desalt.TypeScriptAst.Parsing
         //// Properties
         //// ===========================================================================================================
 
-        public override object Value => ValueField;
+        /// <summary>
+        /// Gets the value of the token. For example, if the token represents an integer literal,
+        /// then this property would return the actual integer.
+        /// </summary>
+        public override object Value => ValueField!;
 
         public T ValueField { get; }
     }

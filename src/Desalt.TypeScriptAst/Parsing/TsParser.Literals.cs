@@ -211,7 +211,7 @@ TsTokenCode.HexIntegerLiteral);
                     }
 
                     // PropertyName CallSignature { FunctionBody }
-                    else if (TryParse(ParseCallSignature, out ITsCallSignature callSignature))
+                    else if (TryParse(ParseCallSignature, out ITsCallSignature? callSignature))
                     {
                         ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
                         propertyDefinition = Factory.PropertyFunction(propertyName, callSignature, functionBody);
@@ -250,7 +250,7 @@ TsTokenCode.HexIntegerLiteral);
             return ParseAssignmentExpression();
         }
 
-        private ITsExpression ParseOptionalInitializer()
+        private ITsExpression? ParseOptionalInitializer()
         {
             if (_reader.IsNext(TsTokenCode.Equals))
             {
@@ -275,7 +275,7 @@ TsTokenCode.HexIntegerLiteral);
             Read(TsTokenCode.LeftParen);
             Read(TsTokenCode.RightParen);
 
-            ITsType propertyType = ParseOptionalTypeAnnotation();
+            ITsType? propertyType = ParseOptionalTypeAnnotation();
             ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
 
             return Factory.GetAccessor(propertyName, propertyType, functionBody);
@@ -295,7 +295,7 @@ TsTokenCode.HexIntegerLiteral);
 
             Read(TsTokenCode.LeftParen);
             ITsBindingIdentifierOrPattern parameterName = ParseBindingIdentifierOrPattern();
-            ITsType parameterType = ParseOptionalTypeAnnotation();
+            ITsType? parameterType = ParseOptionalTypeAnnotation();
             Read(TsTokenCode.RightParen);
 
             ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);

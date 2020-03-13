@@ -27,7 +27,7 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         public static ITsThis This => TsThis.Instance;
-        public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral(null);
+        public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral();
 
         public static ITsNullLiteral Null => TsNullLiteral.Instance;
         public static ITsBooleanLiteral True => TsBooleanLiteral.True;
@@ -62,24 +62,24 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
         }
 
-        public static ITsRegularExpressionLiteral RegularExpression(string body, string flags)
+        public static ITsRegularExpressionLiteral RegularExpression(string body, string? flags)
         {
             return new TsRegularExpressionLiteral(body, flags);
         }
 
         public static ITsArrayLiteral Array()
         {
-            return new TsArrayLiteral(null);
+            return new TsArrayLiteral();
         }
 
-        public static ITsArrayLiteral Array(params ITsArrayElement[] elements)
+        public static ITsArrayLiteral Array(params ITsArrayElement?[] elements)
         {
             return new TsArrayLiteral(elements);
         }
 
-        public static ITsArrayLiteral Array(params ITsExpression[] elements)
+        public static ITsArrayLiteral Array(params ITsExpression?[] elements)
         {
-            return new TsArrayLiteral(elements?.Select(e => ArrayElement(e)));
+            return new TsArrayLiteral(elements?.Select(e => e == null ? null : ArrayElement(e)));
         }
 
         public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false)
@@ -92,7 +92,7 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsTemplateLiteral(parts);
         }
 
-        public static ITsTemplatePart TemplatePart(string template = null, ITsExpression expression = null)
+        public static ITsTemplatePart TemplatePart(string template, ITsExpression? expression = null)
         {
             return new TsTemplatePart(template, expression);
         }
@@ -150,15 +150,15 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsGetAccessor GetAccessor(
             ITsPropertyName propertyName,
-            ITsType propertyType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsType? propertyType = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return new TsGetAccessor(propertyName, propertyType, functionBody);
         }
 
         public static ITsGetAccessor GetAccessor(
             ITsPropertyName propertyName,
-            ITsType propertyType,
+            ITsType? propertyType,
             params ITsStatementListItem[] functionBody)
         {
             return new TsGetAccessor(propertyName, propertyType, functionBody);
@@ -167,8 +167,8 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsSetAccessor SetAccessor(
             ITsPropertyName propertyName,
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsType? parameterType = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
         }
@@ -176,7 +176,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsSetAccessor SetAccessor(
             ITsPropertyName propertyName,
             ITsBindingIdentifierOrPattern parameterName,
-            ITsType parameterType,
+            ITsType? parameterType,
             params ITsStatementListItem[] functionBody)
         {
             return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
@@ -247,12 +247,12 @@ namespace Desalt.TypeScriptAst.Ast
             return TsMemberDotExpression.CreateSuper(dotName);
         }
 
-        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList arguments = null)
+        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList? arguments = null)
         {
             return TsCallExpression.Create(leftSide, arguments);
         }
 
-        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList arguments = null)
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList? arguments = null)
         {
             return TsCallExpression.CreateNew(leftSide, arguments);
         }
@@ -275,7 +275,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
         /// </summary>
-        public static ITsArgumentList ArgumentList(IEnumerable<ITsType> typeArguments, params ITsArgument[] arguments)
+        public static ITsArgumentList ArgumentList(IEnumerable<ITsType>? typeArguments, params ITsArgument[] arguments)
         {
             return new TsArgumentList(typeArguments, arguments);
         }
@@ -331,15 +331,15 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsFunctionExpression FunctionExpression(
             ITsCallSignature callSignature,
-            ITsIdentifier functionName = null,
+            ITsIdentifier? functionName = null,
             params ITsStatementListItem[] functionBody)
         {
             return new TsFunctionExpression(callSignature, functionName, functionBody);
         }
 
         public static ITsClassExpression ClassExpression(
-            ITsIdentifier className = null,
-            ITsClassHeritage heritage = null,
+            ITsIdentifier? className = null,
+            ITsClassHeritage? heritage = null,
             params ITsClassElement[] classBody)
         {
             return new TsClassExpression(className, heritage, classBody);

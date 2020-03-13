@@ -28,8 +28,6 @@ export class PerformanceReporting {
     }
   }
 
-  /**
-   */
   public static measure(measureName: string, startMarkName: string, endMarkName: string): void {
     if (PerformanceReporting.supportsPerfApi) {
       try {

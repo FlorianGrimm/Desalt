@@ -47,7 +47,7 @@ namespace Desalt.Core.SymbolTables
 
             ImmutableArray<INamedTypeSymbol> indirectlyReferencedExternalTypeSymbols = SymbolDiscoverer.DiscoverTypesInReferencedAssemblies(
                 directlyReferencedExternalTypeSymbols,
-                contexts.FirstOrDefault()?.SemanticModel.Compilation,
+                contexts.First().SemanticModel.Compilation,
                 cancellationToken,
                 discoveryKind);
 
@@ -73,10 +73,10 @@ namespace Desalt.Core.SymbolTables
                 .SelectMany(DiscoverTypeAndMembers)
                 .Distinct()
                 .Select(
-                    typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol>(
+                    typeSymbol => new KeyValuePair<ISymbol, IScriptSymbol?>(
                         typeSymbol,
-                        CreateScriptSymbol(typeSymbol, scriptNamer, importSymbols)))
-                .Where(pair => pair.Value != null)
+                        CreateScriptSymbol(typeSymbol, scriptNamer, importSymbols)!))
+                .WhereValueNotNull()
                 .ToImmutableDictionary();
 
             // process all of the rest of the symbols in all of the referenced assemblies, but
@@ -86,9 +86,9 @@ namespace Desalt.Core.SymbolTables
                 .SelectMany(DiscoverTypeAndMembers)
                 .Distinct()
                 .Select(
-                    typeSymbol => new KeyValuePair<ISymbol, Lazy<IScriptSymbol>>(
+                    typeSymbol => new KeyValuePair<ISymbol, Lazy<IScriptSymbol?>>(
                         typeSymbol,
-                        new Lazy<IScriptSymbol>(
+                        new Lazy<IScriptSymbol?>(
                             () => CreateScriptSymbol(typeSymbol, scriptNamer, importSymbols),
                             isThreadSafe: true)))
                 .ToImmutableDictionary();
@@ -203,7 +203,7 @@ namespace Desalt.Core.SymbolTables
         /// Factory method for creating an instance if a <see cref="IScriptSymbol"/> from the
         /// specified Roslyn <see cref="ISymbol"/>.
         /// </summary>
-        private static IScriptSymbol CreateScriptSymbol(
+        private static IScriptSymbol? CreateScriptSymbol(
             ISymbol symbol,
             IScriptNamer scriptNamer,
             IReadOnlyDictionary<ITypeSymbol, ImportSymbolInfo> importSymbols)

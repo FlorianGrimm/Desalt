@@ -98,8 +98,8 @@ namespace Desalt.TypeScriptAst.Parsing
 
             string ReadDecimalIntegerLiteral()
             {
-                string decimalInteger = ReadIf('0') ? "0" : _reader.ReadWhile(IsDecimalDigit);
-                if (decimalInteger.Length == 0)
+                string? decimalInteger = ReadIf('0') ? "0" : _reader.ReadWhile(IsDecimalDigit);
+                if (string.IsNullOrEmpty(decimalInteger))
                 {
                     throw LexException("Expected a decimal literal");
                 }
@@ -108,8 +108,8 @@ namespace Desalt.TypeScriptAst.Parsing
             }
 
             string integerPart;
-            string decimalPart = null;
-            string exponentPart = null;
+            string? decimalPart = null;
+            string? exponentPart = null;
             var textBuilder = new StringBuilder();
 
             // read the decimal part if there's no integer part
@@ -187,7 +187,7 @@ namespace Desalt.TypeScriptAst.Parsing
             Read('0');
             textBuilder.Append(Read(c => c == 'b' || c == 'B'));
 
-            bool IsBinaryDigit(char c) => c == '0' || c == '1';
+            static bool IsBinaryDigit(char c) => c == '0' || c == '1';
 
             string valueText = Read(IsBinaryDigit) + _reader.ReadWhile(IsBinaryDigit);
             textBuilder.Append(valueText);
@@ -230,7 +230,7 @@ namespace Desalt.TypeScriptAst.Parsing
             Read('0');
             textBuilder.Append(Read(c => c == 'o' || c == 'O'));
 
-            bool IsOctalDigit(char c) => c >= '0' && c <= '7';
+            static bool IsOctalDigit(char c) => c >= '0' && c <= '7';
 
             string valueText = Read(IsOctalDigit) + _reader.ReadWhile(IsOctalDigit);
             textBuilder.Append(valueText);

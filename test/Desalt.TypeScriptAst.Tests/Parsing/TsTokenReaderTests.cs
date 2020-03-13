@@ -70,7 +70,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         public void TsTokenReader_ReadIf_should_return_false_and_not_advance_if_the_next_token_does_not_match()
         {
             var reader = new TsTokenReader(s_tokens);
-            reader.ReadIf(TsTokenCode.Abstract, out TsToken token).Should().BeFalse();
+            reader.ReadIf(TsTokenCode.Abstract, out TsToken? token).Should().BeFalse();
             token.Should().BeNull();
             reader.Peek().Should().Be(s_token1);
         }
@@ -79,7 +79,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         public void TsTokenReader_ReadIf_should_return_true_and_advance_if_the_next_token_matches()
         {
             var reader = new TsTokenReader(s_tokens);
-            reader.ReadIf(s_token1.TokenCode, out TsToken token).Should().BeTrue();
+            reader.ReadIf(s_token1.TokenCode, out TsToken? token).Should().BeTrue();
             token.Should().Be(s_token1);
             reader.Read().Should().Be(s_token2);
         }

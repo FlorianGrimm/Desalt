@@ -1,43 +1,37 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsGetAccessor.cs" company="Justin Rockwood">
+// <copyright file="TsAmbientFunctionDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// Represents an ambient function declaration of the form 'function name signature;'.
     /// </summary>
-    internal class TsGetAccessor : TsAstNode, ITsGetAccessor
+    internal class TsAmbientFunctionDeclaration : TsAstNode, ITsAmbientFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsGetAccessor(
-            ITsPropertyName propertyName,
-            ITsType? propertyType = null,
-            IEnumerable<ITsStatementListItem>? functionBody = null)
+        public TsAmbientFunctionDeclaration(ITsIdentifier functionName, ITsCallSignature callSignature)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            PropertyType = propertyType;
-            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
+            FunctionName = functionName ?? throw new ArgumentNullException(nameof(functionName));
+            CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsPropertyName PropertyName { get; }
-        public ITsType? PropertyType { get; }
-        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+        public ITsIdentifier FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -45,21 +39,27 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public override void Accept(TsVisitor visitor)
         {
-            visitor.VisitGetAccessor(this);
+            visitor.VisitAmbientFunctionDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType?.OptionalTypeAnnotation()} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
+        public override string CodeDisplay
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                builder.Append("function ").Append(FunctionName).Append(" ");
+                builder.Append(CallSignature.CodeDisplay);
+                builder.Append(";");
+                return builder.ToString();
+            }
+        }
 
         protected override void EmitInternal(Emitter emitter)
         {
-            emitter.Write("get ");
-            PropertyName.Emit(emitter);
-            emitter.Write("()");
-            PropertyType?.EmitOptionalTypeAnnotation(emitter);
-            emitter.Write(" ");
-            emitter.WriteBlock(FunctionBody, skipNewlines: true);
+            emitter.Write("function ");
+            FunctionName.Emit(emitter);
+            CallSignature.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

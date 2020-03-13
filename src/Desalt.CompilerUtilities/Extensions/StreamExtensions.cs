@@ -18,7 +18,7 @@ namespace Desalt.CompilerUtilities.Extensions
     {
         public static string ReadAllText(
             this MemoryStream stream,
-            Encoding encoding = null,
+            Encoding? encoding = null,
             bool preservePosition = false)
         {
             if (stream == null)
@@ -53,7 +53,7 @@ namespace Desalt.CompilerUtilities.Extensions
 
         public static string ReadToEnd(
             this MemoryStream stream,
-            Encoding encoding = null,
+            Encoding? encoding = null,
             bool preservePosition = false)
         {
             if (stream == null)

@@ -14,14 +14,13 @@ namespace Desalt.TypeScriptAst.Parsing
     /// <summary>
     /// Parses TypeScript code into tokens.
     /// </summary>
-    public sealed partial class TsLexer
+    public sealed partial class TsLexer : IDisposable
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly string _code;
-        private PeekingTextReader _reader;
+        private readonly PeekingTextReader _reader;
 
         //// ===========================================================================================================
         //// Constructors
@@ -29,7 +28,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
         private TsLexer(string code)
         {
-            _code = code;
+            _reader = new PeekingTextReader(code);
         }
 
         //// ===========================================================================================================
@@ -42,6 +41,11 @@ namespace Desalt.TypeScriptAst.Parsing
             return lexer.Lex();
         }
 
+        public void Dispose()
+        {
+            _reader.Dispose();
+        }
+
         private static bool IsHexDigit(char c)
         {
             return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
@@ -50,14 +54,11 @@ namespace Desalt.TypeScriptAst.Parsing
         private ImmutableArray<TsToken> Lex()
         {
             ImmutableArray<TsToken>.Builder builder = ImmutableArray.CreateBuilder<TsToken>();
-
-            using (_reader = new PeekingTextReader(_code))
+            while (!_reader.IsAtEnd)
             {
-                while (!_reader.IsAtEnd)
-                {
-                    _reader.SkipWhitespace();
-                    builder.Add(LexCommonToken());
-                }
+                _reader.SkipWhitespace();
+                TsToken token = LexCommonToken();
+                builder.Add(token);
             }
 
             return builder.ToImmutable();
@@ -73,7 +74,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>>
         private TsToken LexCommonToken()
         {
-            string next2 = _reader.Peek(2);
+            string? next2 = _reader.Peek(2);
 
             // ReSharper disable PatternAlwaysMatches (ReSharper doesn't understand the new case syntax yet)
             switch ((char)_reader.Peek())
@@ -82,8 +83,8 @@ namespace Desalt.TypeScriptAst.Parsing
                     return LexIdentifierNameOrReservedWord();
 
                 // special case: '.' can either be a punctuator or the start of a numeric literal with no integer part
-                case '.' when next2.Length == 1:
-                case '.' when !IsDecimalDigit(next2[1]):
+                case '.' when next2?.Length == 1:
+                case '.' when next2?.Length > 0 && !IsDecimalDigit(next2[1]):
                     return LexPunctuator();
 
                 case char c when IsNumericLiteralStartChar(c):

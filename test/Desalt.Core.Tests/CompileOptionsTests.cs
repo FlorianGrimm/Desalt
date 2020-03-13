@@ -78,7 +78,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_deserialize_from_a_json_stream()
         {
             using var stream = new UnicodeStringStream(JsonContents);
-            IExtendedResult<CompilerOptions> deserialized = CompilerOptions.Deserialize(stream);
+            IExtendedResult<CompilerOptions?> deserialized = CompilerOptions.Deserialize(stream);
             deserialized.Diagnostics.Should().BeEmpty();
             deserialized.Result.Should().BeEquivalentTo(s_overridesObject);
         }
@@ -87,7 +87,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_contains_invalid_chars()
         {
             string invalidPath = @"N:\InvalidPath" + Path.GetInvalidFileNameChars()[0];
-            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(invalidPath);
+            IExtendedResult<CompilerOptions?> result = CompilerOptions.Deserialize(invalidPath);
             result.Diagnostics.Select(x => x.ToString())
                 .Should()
                 .HaveCount(1)
@@ -99,7 +99,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_add_a_diagnostic_message_if_the_file_path_cannot_be_read()
         {
             const string invalidPath = @"N:\NotExistingPath";
-            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(invalidPath);
+            IExtendedResult<CompilerOptions?> result = CompilerOptions.Deserialize(invalidPath);
             result.Diagnostics.Should()
                 .BeEquivalentTo(
                     DiagnosticFactory.InvalidOptionsFile(
@@ -112,7 +112,7 @@ namespace Desalt.Core.Tests
         {
             using var stream = new UnicodeStringStream("{ invalidJson {} }");
             string file = Path.GetFullPath("file");
-            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream, file);
+            IExtendedResult<CompilerOptions?> result = CompilerOptions.Deserialize(stream, file);
             result.Diagnostics.Should()
                 .BeEquivalentTo(
                     DiagnosticFactory.InvalidOptionsFile(
@@ -125,7 +125,7 @@ namespace Desalt.Core.Tests
         public void CompilerOptions_should_use_the_default_options_when_reading_an_empty_JSON_file()
         {
             using var stream = new UnicodeStringStream("{}");
-            IExtendedResult<CompilerOptions> result = CompilerOptions.Deserialize(stream);
+            IExtendedResult<CompilerOptions?> result = CompilerOptions.Deserialize(stream);
             result.Diagnostics.Should().BeEmpty();
             result.Result.Should().BeEquivalentTo(CompilerOptions.Default);
         }

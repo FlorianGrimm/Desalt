@@ -9,6 +9,7 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text;
     using Desalt.CompilerUtilities;
@@ -82,12 +83,12 @@ namespace Desalt.Core.Translation
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             ICollection<Diagnostic> diagnostics,
-            out ITsAstNode translatedNode)
+            [NotNullWhen(true)] out ITsAstNode? translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
             // ReSharper disable once UsePatternMatching
             if (_semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol is IMethodSymbol methodSymbol &&
-                _scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol methodScriptSymbol) &&
+                _scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? methodScriptSymbol) &&
                 methodScriptSymbol.InlineCode != null)
             {
                 var context = new Context(
@@ -154,7 +155,7 @@ namespace Desalt.Core.Translation
                     else if (!reader.IsAtEnd)
                     {
                         Read('{');
-                        string parameterName = reader.ReadUntil('}');
+                        string? parameterName = reader.ReadUntil('}');
 
                         // check for an escaped brace
                         while (reader.Peek(2) == "}}")
@@ -163,6 +164,12 @@ namespace Desalt.Core.Translation
                         }
 
                         Read('}');
+
+                        if (parameterName == null)
+                        {
+                            throw new InvalidOperationException(
+                                "The Saltarelle compiler should have caught the invalid parameter syntax.");
+                        }
 
                         string replacedValue = ReplaceParameter(parameterName, context);
                         builder.Append(replacedValue);
@@ -201,7 +208,7 @@ namespace Desalt.Core.Translation
             }
 
             // find the translated parameter and use it for substitution
-            int index = TryFindIndexOfParameter(parameterName, context, out Diagnostic diagnostic);
+            int index = TryFindIndexOfParameter(parameterName, context, out Diagnostic? diagnostic);
             if (diagnostic != null)
             {
                 context.Diagnostics.Add(diagnostic);
@@ -227,7 +234,7 @@ namespace Desalt.Core.Translation
                 return fullTypeName;
             }
 
-            ITypeSymbol typeSymbol = _semanticModel.GetSpeculativeTypeInfo(
+            ITypeSymbol? typeSymbol = _semanticModel.GetSpeculativeTypeInfo(
                     context.MethodExpressionSyntax.SpanStart,
                     typeSyntax,
                     SpeculativeBindingOption.BindAsTypeOrNamespace)
@@ -239,7 +246,7 @@ namespace Desalt.Core.Translation
                 return fullTypeName;
             }
 
-            if (_scriptSymbolTable.TryGetValue(typeSymbol, out IScriptSymbol scriptSymbol))
+            if (_scriptSymbolTable.TryGetValue(typeSymbol, out IScriptSymbol? scriptSymbol))
             {
                 return scriptSymbol.ComputedScriptName;
             }
@@ -280,7 +287,10 @@ namespace Desalt.Core.Translation
             return builder.ToString();
         }
 
-        private static int TryFindIndexOfParameter(string parameterName, Context context, out Diagnostic diagnostic)
+        private static int TryFindIndexOfParameter(
+            string parameterName,
+            Context context,
+            [NotNullWhen(true)] out Diagnostic? diagnostic)
         {
             // find the position of the parameter in the parameter list
             IParameterSymbol foundParameter =

@@ -211,7 +211,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
             while (!_reader.IsAtEnd && IsIdentifierPartChar((char)_reader.Peek()))
             {
-                string rest = _reader.ReadWhile(c => IsIdentifierPartChar(c) && c != '\\');
+                string? rest = _reader.ReadWhile(c => IsIdentifierPartChar(c) && c != '\\');
                 textBuilder.Append(rest);
                 valueBuilder.Append(rest);
 

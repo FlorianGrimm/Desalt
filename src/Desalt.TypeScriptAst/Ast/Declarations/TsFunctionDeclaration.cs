@@ -16,69 +16,37 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     /// <summary>
     /// Represents a function declaration of the form 'function [name] signature { body }'.
     /// </summary>
-    internal class TsFunctionDeclaration : TsAstNode, ITsFunctionDeclaration, ITsAmbientFunctionDeclaration
+    internal class TsFunctionDeclaration : TsAstNode, ITsFunctionDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TsFunctionDeclaration(
-            bool isAmbient,
+        public TsFunctionDeclaration(
             ITsCallSignature callSignature,
-            ITsIdentifier functionName = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsIdentifier? functionName = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
-            IsAmbient = isAmbient;
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));
             FunctionName = functionName;
-            if (functionBody != null)
-            {
-                FunctionBody = functionBody.ToImmutableArray();
-            }
+            FunctionBody = functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public ITsIdentifier FunctionName { get; }
+        public ITsIdentifier? FunctionName { get; }
         public ITsCallSignature CallSignature { get; }
         public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
-
-        private bool IsAmbient { get; }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static ITsFunctionDeclaration Create(
-            ITsCallSignature callSignature,
-            ITsIdentifier functionName = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
-        {
-            return new TsFunctionDeclaration(false, callSignature, functionName, functionBody);
-        }
-
-        public static ITsAmbientFunctionDeclaration CreateAmbient(
-            ITsIdentifier functionName,
-            ITsCallSignature callSignature)
-        {
-            return new TsFunctionDeclaration(
-                true,
-                callSignature,
-                functionName ?? throw new ArgumentNullException(nameof(functionName)));
-        }
-
         public override void Accept(TsVisitor visitor)
         {
-            if (IsAmbient)
-            {
-                visitor.VisitAmbientFunctionDeclaration(this);
-            }
-            else
-            {
-                visitor.VisitFunctionDeclaration(this);
-            }
+            visitor.VisitFunctionDeclaration(this);
         }
 
         public override string CodeDisplay
@@ -95,7 +63,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
                 builder.Append(CallSignature.CodeDisplay);
 
-                if (FunctionBody.IsDefault)
+                if (FunctionBody.IsEmpty)
                 {
                     builder.Append(";");
                 }
@@ -120,7 +88,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
             CallSignature.Emit(emitter);
 
-            if (FunctionBody.IsDefault)
+            if (FunctionBody.IsEmpty)
             {
                 emitter.WriteLine(";");
             }

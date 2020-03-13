@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Parsing
 {
+    using System;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -88,10 +89,10 @@ namespace Desalt.TypeScriptAst.Parsing
         public ITsFunctionDeclaration ParseFunctionDeclaration()
         {
             Read(TsTokenCode.Function);
-            TryParseIdentifier(out ITsIdentifier functionName);
+            TryParseIdentifier(out ITsIdentifier? functionName);
             ITsCallSignature callSignature = ParseCallSignature();
 
-            ITsStatementListItem[] functionBody = null;
+            ITsStatementListItem[] functionBody = Array.Empty<ITsStatementListItem>();
             if (_reader.IsNext(TsTokenCode.LeftBrace))
             {
                 functionBody = ParseFunctionBody(withBraces: true);

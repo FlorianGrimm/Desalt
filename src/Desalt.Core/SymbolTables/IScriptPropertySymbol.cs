@@ -19,7 +19,7 @@ namespace Desalt.Core.SymbolTables
         /// the backing field. The presence of this attribute will also cause the backing field to be
         /// initialized even if no code is generated for the accessors (eg. if they are [InlineCode]).
         /// </summary>
-        string BackingFieldName { get; }
+        string? BackingFieldName { get; }
 
         /// <summary>
         /// Can be applied to a (non-const) field or an automatically implemented property to specify
@@ -30,7 +30,7 @@ namespace Desalt.Core.SymbolTables
         /// with which the member is being initialized (as well as all other placeholders from <see
         /// cref="IScriptMethodSymbol.InlineCode"/>). If null, the member will not be initialized.
         /// </summary>
-        string CustomInitializationCode { get; }
+        string? CustomInitializationCode { get; }
 
         /// <summary>
         /// Indicates whether a C# property manifests like a field in the generated JavaScript (i.e.
@@ -48,6 +48,6 @@ namespace Desalt.Core.SymbolTables
         /// Specifies a script name for an imported method. The method is interpreted as a global
         /// method. As a result it this attribute only applies to static methods.
         /// </summary>
-        string ScriptAlias { get; }
+        string? ScriptAlias { get; }
     }
 }

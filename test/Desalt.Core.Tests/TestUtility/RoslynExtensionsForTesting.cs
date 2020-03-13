@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.TestUtility
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -63,7 +64,9 @@ namespace Desalt.Core.Tests.TestUtility
         private static Stream GetSaltarelleAssemblyStream(string assemblyName)
         {
             var thisAssembly = Assembly.GetExecutingAssembly();
-            return thisAssembly.GetManifestResourceStream(typeof(RoslynExtensionsForTesting), assemblyName);
+            return thisAssembly.GetManifestResourceStream(typeof(RoslynExtensionsForTesting), assemblyName) ??
+                throw new InvalidOperationException(
+                    "Could not get the Saltarelle assembly stream from this assembly's resources.");
         }
     }
 }

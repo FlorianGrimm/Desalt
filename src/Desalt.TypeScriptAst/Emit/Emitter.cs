@@ -37,7 +37,7 @@ namespace Desalt.TypeScriptAst.Emit
         //// Constructors
         //// ===========================================================================================================
 
-        public Emitter(Stream outputStream, Encoding encoding = null, EmitOptions options = null)
+        public Emitter(Stream outputStream, Encoding? encoding = null, EmitOptions? options = null)
         {
             if (outputStream == null)
             {
@@ -204,14 +204,14 @@ namespace Desalt.TypeScriptAst.Emit
         public void WriteList(
             IReadOnlyList<ITsAstNode> items,
             bool indent,
-            string prefix = null,
-            string suffix = null,
-            string itemDelimiter = null,
+            string? prefix = null,
+            string? suffix = null,
+            string? itemDelimiter = null,
             bool newLineAfterPrefix = false,
             bool delimiterAfterLastItem = false,
             bool newLineBeforeFirstItem = false,
             bool newLineAfterLastItem = false,
-            string emptyContents = null)
+            string? emptyContents = null)
         {
             if (items == null)
             {
@@ -303,8 +303,8 @@ namespace Desalt.TypeScriptAst.Emit
         public void WriteStatementIndentedOrInBlock(
             ITsAstNode statement,
             bool isBlockStatement,
-            string prefixForIndentedStatement = null,
-            string prefixForBlock = null,
+            string? prefixForIndentedStatement = null,
+            string? prefixForBlock = null,
             bool newlineAfterBlock = false)
         {
             if (isBlockStatement)

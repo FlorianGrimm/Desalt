@@ -10,6 +10,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Text;
+    using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -25,12 +26,12 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         private TsConstructorDeclaration(
             bool isAmbient,
             TsAccessibilityModifier? accessibilityModifier = null,
-            ITsParameterList parameterList = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsParameterList? parameterList = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             IsAmbient = isAmbient;
             AccessibilityModifier = accessibilityModifier;
-            ParameterList = parameterList;
+            ParameterList = parameterList ?? TsParameterList.Empty;
             if (functionBody != null)
             {
                 FunctionBody = functionBody.ToImmutableArray();
@@ -53,13 +54,13 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public static ITsConstructorDeclaration Create(
             TsAccessibilityModifier? accessibilityModifier = null,
-            ITsParameterList parameterList = null,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            ITsParameterList? parameterList = null,
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             return new TsConstructorDeclaration(false, accessibilityModifier, parameterList, functionBody);
         }
 
-        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList parameterList = null)
+        public static ITsAmbientConstructorDeclaration CreateAmbient(ITsParameterList? parameterList = null)
         {
             return new TsConstructorDeclaration(true, parameterList: parameterList);
         }

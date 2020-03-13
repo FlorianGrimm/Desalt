@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsGetSetAccessorMemberDeclaration.cs" company="Justin Rockwood">
+// <copyright file="TsGetAccessorMemberDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -11,34 +11,21 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
-    /// Represents either a 'get' or a 'set' member accessor declaration in a class.
+    /// Represents a 'get' member accessor declaration in a class.
     /// </summary>
-    internal class TsGetSetAccessorMemberDeclaration : TsAstNode,
-        ITsGetAccessorMemberDeclaration, ITsSetAccessorMemberDeclaration
+    internal class TsGetAccessorMemberDeclaration : TsAstNode, ITsGetAccessorMemberDeclaration
     {
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        public TsGetSetAccessorMemberDeclaration(
+        public TsGetAccessorMemberDeclaration(
             ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false)
         {
             GetAccessor = getAccessor ?? throw new ArgumentNullException(nameof(getAccessor));
-            AccessibilityModifier = accessibilityModifier;
-            IsStatic = isStatic;
-            IsAbstract = isAbstract;
-        }
-
-        public TsGetSetAccessorMemberDeclaration(
-            ITsSetAccessor setAccessor,
-            TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false,
-            bool isAbstract = false)
-        {
-            SetAccessor = setAccessor ?? throw new ArgumentNullException(nameof(setAccessor));
             AccessibilityModifier = accessibilityModifier;
             IsStatic = isStatic;
             IsAbstract = isAbstract;
@@ -52,7 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public bool IsStatic { get; }
         public bool IsAbstract { get; }
         public ITsGetAccessor GetAccessor { get; }
-        public ITsSetAccessor SetAccessor { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -60,21 +46,14 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override void Accept(TsVisitor visitor)
         {
-            if (GetAccessor != null)
-            {
-                visitor.VisitGetAccessorMemberDeclaration(this);
-            }
-            else
-            {
-                visitor.VisitSetAccessorMemberDeclaration(this);
-            }
+            visitor.VisitGetAccessorMemberDeclaration(this);
         }
 
         public override string CodeDisplay =>
             AccessibilityModifier.OptionalCodeDisplay() +
             (IsStatic ? "static " : "") +
             (IsAbstract ? "abstract " : "") +
-            (GetAccessor != null ? GetAccessor.CodeDisplay : SetAccessor.CodeDisplay);
+            GetAccessor.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -82,7 +61,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             emitter.Write(IsStatic ? "static " : "");
             emitter.Write(IsAbstract ? "abstract " : "");
             GetAccessor?.Emit(emitter);
-            SetAccessor?.Emit(emitter);
             emitter.WriteLine();
         }
     }

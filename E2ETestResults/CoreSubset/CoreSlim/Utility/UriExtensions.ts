@@ -1,7 +1,5 @@
 import 'mscorlib';
 
-/**
- */
 export class UriExtensions {
   /**
    * Parses the URI's query parameters and returns a map containing each key/value pair.  Each

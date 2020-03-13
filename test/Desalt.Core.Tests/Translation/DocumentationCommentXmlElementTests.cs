@@ -24,7 +24,7 @@ namespace Desalt.Core.Tests.Translation
             params (string name, string value)[] expectedAttributes)
         {
             using var reader = new PeekingTextReader(text);
-            var actual = XmlElem.Parse(reader);
+            var actual = XmlElem.Parse(reader) ?? throw new InvalidOperationException("Parse failed");
             actual.ElementName.Should().Be(expectedElementName);
             actual.Content.Should().Be(expectedContent);
 
@@ -34,7 +34,9 @@ namespace Desalt.Core.Tests.Translation
         [Test]
         public void Create_should_throw_on_blank_element_name()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => XmlElem.Create(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("elementName");
         }
 

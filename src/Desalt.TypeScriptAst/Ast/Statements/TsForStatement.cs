@@ -55,10 +55,11 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             InitializerWithLexicalDeclaration = null;
             InitializerWithVariableDeclarations = initializer?.ToImmutableArray() ??
                 throw new ArgumentNullException(nameof(initializer));
-            if (InitializerWithVariableDeclarations.IsEmpty)
+            if (InitializerWithVariableDeclarations?.IsEmpty == true)
             {
                 throw new ArgumentException(
-                    "There must be at least one variable declaration in the initializer.", nameof(initializer));
+                    "There must be at least one variable declaration in the initializer.",
+                    nameof(initializer));
             }
 
             Condition = condition ?? throw new ArgumentNullException(nameof(condition));
@@ -88,9 +89,9 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Initializer { get; }
-        public ImmutableArray<ITsVariableDeclaration> InitializerWithVariableDeclarations { get; }
-        public ITsLexicalDeclaration InitializerWithLexicalDeclaration { get; }
+        public ITsExpression? Initializer { get; }
+        public ImmutableArray<ITsVariableDeclaration>? InitializerWithVariableDeclarations { get; }
+        public ITsLexicalDeclaration? InitializerWithLexicalDeclaration { get; }
 
         public ITsExpression Condition { get; }
         public ITsExpression Incrementor { get; }
@@ -117,15 +118,15 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                     builder.Append(Initializer.CodeDisplay);
                     builder.Append("; ");
                 }
-                else if (InitializerWithVariableDeclarations.Length > 0)
+                else if (InitializerWithVariableDeclarations?.Length > 0)
                 {
                     builder.Append("var ");
-                    builder.Append(InitializerWithVariableDeclarations.ToElidedList());
+                    builder.Append(InitializerWithVariableDeclarations?.ToElidedList());
                     builder.Append("; ");
                 }
                 else
                 {
-                    builder.Append(InitializerWithLexicalDeclaration.CodeDisplay);
+                    builder.Append(InitializerWithLexicalDeclaration?.CodeDisplay);
                     builder.Append(" ");
                 }
 
@@ -146,7 +147,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 Initializer.Emit(emitter);
                 emitter.Write("; ");
             }
-            else if (InitializerWithVariableDeclarations.Length > 0)
+            else if (InitializerWithVariableDeclarations?.Length > 0)
             {
                 emitter.Write("var ");
                 emitter.WriteList(InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
@@ -159,7 +160,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 // to use with spaces instead of newlines.
                 using var memoryStream = new MemoryStream();
                 using var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options.WithNewline(" "));
-                InitializerWithLexicalDeclaration.Emit(tempEmitter);
+                InitializerWithLexicalDeclaration?.Emit(tempEmitter);
                 emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
             }
 

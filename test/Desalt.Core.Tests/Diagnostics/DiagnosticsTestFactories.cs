@@ -20,7 +20,7 @@ namespace Desalt.Core.Tests.Diagnostics
             DiagnosticSeverity? severity = null,
             bool isEnabledByDefault = true,
             int warningLevel = 0,
-            IEnumerable<string> customTags = null)
+            IEnumerable<string>? customTags = null)
         {
             return Diagnostic.Create(
                 id,
@@ -39,7 +39,7 @@ namespace Desalt.Core.Tests.Diagnostics
             string message = "message",
             bool isEnabledByDefault = true,
             int warningLevel = 1,
-            IEnumerable<string> customTags = null)
+            IEnumerable<string>? customTags = null)
         {
             return CreateDiagnostic(
                 id,

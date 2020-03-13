@@ -20,7 +20,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArgumentList(IEnumerable<ITsType> typeArguments = null, IEnumerable<ITsArgument> arguments = null)
+        public TsArgumentList(IEnumerable<ITsType>? typeArguments = null, IEnumerable<ITsArgument>? arguments = null)
         {
             TypeArguments = typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty;
             Arguments = arguments?.ToImmutableArray() ?? ImmutableArray<ITsArgument>.Empty;

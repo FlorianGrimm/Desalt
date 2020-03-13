@@ -62,7 +62,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                             Factory.SimpleLexicalBinding(
                                 Factory.Identifier("animals"),
                                 Factory.ArrayType(AnimalRef),
-                                Factory.Array((ITsExpression[])null))),
+                                Factory.Array((ITsExpression?)null))),
                         Factory.FunctionDeclaration(
                             Factory.Identifier("addAnimal"),
                             Factory.CallSignature(

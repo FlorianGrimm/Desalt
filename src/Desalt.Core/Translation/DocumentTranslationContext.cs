@@ -72,8 +72,15 @@ namespace Desalt.Core.Translation
         {
             get
             {
-                string docPath = Document.FilePath;
-                string relativeDir = PathUtil.MakeRelativePath(Document.Project.FilePath, docPath);
+                string? docPath = Document.FilePath;
+                string? projectFilePath = Document.Project.FilePath;
+
+                if (docPath == null || projectFilePath == null)
+                {
+                    return Document.Name + ".ts";
+                }
+
+                string relativeDir = PathUtil.MakeRelativePath(projectFilePath, docPath);
                 relativeDir = Path.GetDirectoryName(relativeDir) ?? ".";
                 string tsFileName = Path.GetFileNameWithoutExtension(docPath) + ".ts";
 
@@ -85,16 +92,16 @@ namespace Desalt.Core.Translation
         //// Methods
         //// ===========================================================================================================
 
-        public static async Task<IExtendedResult<DocumentTranslationContext>> TryCreateAsync(
+        public static async Task<IExtendedResult<DocumentTranslationContext?>> TryCreateAsync(
             Document document,
             CompilerOptions options,
             CancellationToken cancellationToken = default)
         {
             // try to get the syntax tree
-            SyntaxTree rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
+            SyntaxTree? rawSyntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
             if (rawSyntaxTree == null || !(rawSyntaxTree is CSharpSyntaxTree syntaxTree))
             {
-                return new ExtendedResult<DocumentTranslationContext>(
+                return new ExtendedResult<DocumentTranslationContext?>(
                     null,
                     DiagnosticFactory.DocumentContainsNoSyntaxTree(document).ToSingleEnumerable());
             }
@@ -102,14 +109,14 @@ namespace Desalt.Core.Translation
             CompilationUnitSyntax rootSyntax = syntaxTree.GetCompilationUnitRoot(cancellationToken);
 
             // try to get the semantic model
-            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel? semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (semanticModel == null)
             {
                 var syntaxDiagnostics = new List<Diagnostic>(syntaxTree.GetDiagnostics())
                 {
                     DiagnosticFactory.DocumentContainsNoSemanticModel(document)
                 };
-                return new ExtendedResult<DocumentTranslationContext>(null, syntaxDiagnostics);
+                return new ExtendedResult<DocumentTranslationContext?>(null, syntaxDiagnostics);
             }
 
             // add any diagnostic messages that may have happened when getting the syntax tree or the semantic model

@@ -34,9 +34,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Properties
         //// ===========================================================================================================
 
-        public ITsImportClause ImportClause { get; }
-        public ITsFromClause FromClause { get; }
-        public ITsStringLiteral Module { get; }
+        public ITsImportClause? ImportClause { get; }
+        public ITsFromClause? FromClause { get; }
+        public ITsStringLiteral? Module { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -60,9 +60,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             }
             else
             {
-                ImportClause.Emit(emitter);
+                ImportClause?.Emit(emitter);
                 emitter.Write(" ");
-                FromClause.Emit(emitter);
+                FromClause?.Emit(emitter);
             }
 
             emitter.WriteLine(";");

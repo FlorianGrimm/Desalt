@@ -30,6 +30,7 @@ namespace Desalt.CompilerUtilities
         private readonly long _byteLength;
         private readonly byte[] _byteOrderMark;
         private int _position;
+        private bool _isClosed;
 
         //// ===========================================================================================================
         //// Constructors
@@ -53,7 +54,7 @@ namespace Desalt.CompilerUtilities
         {
             Source = contents ?? throw new ArgumentNullException(nameof(contents));
             SuppressByteOrderMark = suppressByteOrderMark;
-            _byteOrderMark = suppressByteOrderMark ? new byte[0] : Encoding.Unicode.GetPreamble();
+            _byteOrderMark = suppressByteOrderMark ? Array.Empty<byte>() : Encoding.Unicode.GetPreamble();
             _byteLength = _byteOrderMark.Length + (Source.Length * 2); // Unicode is 2 bytes per character
             _position = 0;
         }
@@ -62,9 +63,9 @@ namespace Desalt.CompilerUtilities
         //// Properties
         //// ===========================================================================================================
 
-        public override bool CanRead => !IsClosed;
+        public override bool CanRead => !_isClosed;
 
-        public override bool CanSeek => !IsClosed;
+        public override bool CanSeek => !_isClosed;
 
         public override bool CanWrite => false;
 
@@ -99,8 +100,6 @@ namespace Desalt.CompilerUtilities
         public string Source { get; private set; }
 
         public bool SuppressByteOrderMark { get; }
-
-        private bool IsClosed => Source == null;
 
         //// ===========================================================================================================
         //// Methods
@@ -151,7 +150,7 @@ namespace Desalt.CompilerUtilities
                 {
                     int sourcePosition = _position - _byteOrderMark.Length;
                     char c = Source[sourcePosition / 2];
-                    buffer[offset + bytesRead] = (byte)((sourcePosition % 2 == 0) ? c & 0xff : (c >> 8) & 0xff);
+                    buffer[offset + bytesRead] = (byte)(sourcePosition % 2 == 0 ? c & 0xff : (c >> 8) & 0xff);
                 }
 
                 Position++;
@@ -179,12 +178,12 @@ namespace Desalt.CompilerUtilities
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Source = null;
+            _isClosed = true;
         }
 
         private void ThrowIfClosed()
         {
-            if (IsClosed)
+            if (_isClosed)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }

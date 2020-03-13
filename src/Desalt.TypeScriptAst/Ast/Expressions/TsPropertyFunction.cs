@@ -24,7 +24,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public TsPropertyFunction(
             ITsPropertyName propertyName,
             ITsCallSignature callSignature,
-            IEnumerable<ITsStatementListItem> functionBody = null)
+            IEnumerable<ITsStatementListItem>? functionBody = null)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
             CallSignature = callSignature ?? throw new ArgumentNullException(nameof(callSignature));

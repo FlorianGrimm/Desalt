@@ -26,8 +26,6 @@ export abstract class BaseLogAppender implements ILogAppender {
     ss.remove(this.filters, f);
   }
 
-  /**
-   */
   public log(source: Logger, level: LoggerLevel, message: string, args: any[]): void {
     for (const filter of this.filters) {
       if (!filter(source, level)) {

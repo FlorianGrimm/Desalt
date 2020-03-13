@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Constructors
         //// ===========================================================================================================
 
-        public TsTypeReference(ITsTypeName typeName, IEnumerable<ITsType> typeArguments = null)
+        public TsTypeReference(ITsTypeName typeName, IEnumerable<ITsType>? typeArguments = null)
         {
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             TypeArguments = typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty;

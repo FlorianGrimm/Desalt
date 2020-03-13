@@ -25,12 +25,12 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public TsInterfaceDeclaration(
             ITsIdentifier interfaceName,
             ITsObjectType body,
-            ITsTypeParameters typeParameters = null,
-            IEnumerable<ITsTypeReference> extendsClause = null)
+            ITsTypeParameters? typeParameters = null,
+            IEnumerable<ITsTypeReference>? extendsClause = null)
         {
             InterfaceName = interfaceName ?? throw new ArgumentNullException(nameof(interfaceName));
             Body = body ?? throw new ArgumentNullException(nameof(body));
-            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             ExtendsClause = extendsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
@@ -60,7 +60,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             emitter.Write("interface ");
             InterfaceName.Emit(emitter);
-            TypeParameters.Emit(emitter);
+            TypeParameters?.Emit(emitter);
 
             if (!ExtendsClause.IsEmpty)
             {

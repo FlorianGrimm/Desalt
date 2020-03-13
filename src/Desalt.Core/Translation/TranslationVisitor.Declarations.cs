@@ -97,7 +97,7 @@ namespace Desalt.Core.Translation
             ITsIdentifier scriptName = TranslateDeclarationIdentifier(node);
 
             // get the explicitly defined value if present
-            ITsExpression value = null;
+            ITsExpression? value = null;
             if (node.EqualsValue != null)
             {
                 value = Visit(node.EqualsValue.Value).Cast<ITsExpression>().Single();
@@ -132,12 +132,12 @@ namespace Desalt.Core.Translation
             bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
 
             // translate the type parameters if there are any
-            ITsTypeParameters typeParameters = node.TypeParameterList == null
+            ITsTypeParameters? typeParameters = node.TypeParameterList == null
                 ? null
                 : (ITsTypeParameters)Visit(node.TypeParameterList).Single();
 
             // translate the class heritage (extends and implements)
-            ITsTypeReference extendsClause = null;
+            ITsTypeReference? extendsClause = null;
             var implementsTypes = new List<ITsTypeReference>();
             if (node.BaseList != null)
             {
@@ -244,7 +244,7 @@ namespace Desalt.Core.Translation
                     _diagnostics,
                     node.Declaration.Type.GetLocation);
 
-                ITsExpression initializer = null;
+                ITsExpression? initializer = null;
                 if (variableDeclaration.Initializer != null)
                 {
                     initializer = (ITsExpression)Visit(variableDeclaration.Initializer).First();
@@ -311,7 +311,7 @@ namespace Desalt.Core.Translation
             }
 
             // a function body can be null in the case of an 'extern' declaration.
-            ITsBlockStatement functionBody = null;
+            ITsBlockStatement? functionBody = null;
             if (node.Body != null)
             {
                 functionBody = (ITsBlockStatement)Visit(node.Body).Single();
@@ -390,6 +390,11 @@ namespace Desalt.Core.Translation
 
             bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
             bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
+
+            if (node.AccessorList == null)
+            {
+                throw new NotImplementedException();
+            }
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {

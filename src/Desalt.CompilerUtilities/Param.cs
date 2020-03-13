@@ -31,7 +31,7 @@ namespace Desalt.CompilerUtilities
         /// </summary>
         /// <param name="parameterValue">The parameter to test.</param>
         [Conditional("DEBUG")]
-        public static void Ignore(params object[] parameterValue)
+        public static void Ignore(params object?[] parameterValue)
         {
         }
 
@@ -219,27 +219,18 @@ namespace Desalt.CompilerUtilities
         /// </summary>
         /// <param name="condition">The condition to assert.</param>
         /// <param name="parameterName">The name of the parameter.</param>
-        public static void VerifyValid(bool condition, string parameterName)
-        {
-            VerifyValid(condition, parameterName, null);
-        }
-
-        /// <summary>
-        /// Verifies that the condition is true for the specified parameter, throwing an <see cref="ArgumentException"/>
-        /// if it is not.
-        /// Meant to be used in public methods, since it is defined in both Debug and Release builds.
-        /// </summary>
-        /// <param name="condition">The condition to assert.</param>
-        /// <param name="parameterName">The name of the parameter.</param>
         /// <param name="exceptionMessageGetter">The function to call to get the exception message. Can be null for a
         /// default message.</param>
-        public static void VerifyValid(bool condition, string parameterName, Func<string> exceptionMessageGetter)
+        public static void VerifyValid(
+            bool condition,
+            string parameterName,
+            Func<string>? exceptionMessageGetter = null)
         {
             Ignore(condition, parameterName, exceptionMessageGetter);
 
             if (!condition)
             {
-                string message = exceptionMessageGetter?.Invoke();
+                string? message = exceptionMessageGetter?.Invoke();
                 message = string.IsNullOrEmpty(message) ? ParameterNotValid : message;
                 throw new ArgumentException(message, parameterName);
             }

@@ -153,7 +153,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsFunctionType ParseFunctionType()
         {
-            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
+            ITsTypeParameters? typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameters = ParseOptionalParameterListWithParens();
             Read(TsTokenCode.EqualsGreaterThan);
             ITsType returnType = ParseType();
@@ -171,7 +171,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsConstructorType ParseConstructorType()
         {
             Read(TsTokenCode.New);
-            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
+            ITsTypeParameters? typeParameters = ParseOptionalTypeParameters();
             ITsParameterList parameters = ParseOptionalParameterListWithParens();
             Read(TsTokenCode.EqualsGreaterThan);
             ITsType returnType = ParseType();
@@ -204,7 +204,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsType ParsePrimaryType()
         {
-            ITsType type = null;
+            ITsType? type = null;
             switch (_reader.Peek().TokenCode)
             {
                 // PredefinedType
@@ -321,7 +321,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsTypeReference ParseTypeReference()
         {
             ITsQualifiedName typeName = ParseQualifiedName();
-            ITsType[] typeArguments = ParseOptionalTypeArguments();
+            ITsType[]? typeArguments = ParseOptionalTypeArguments();
             return Factory.TypeReference(typeName, typeArguments);
         }
 
@@ -393,7 +393,7 @@ namespace Desalt.TypeScriptAst.Parsing
                         }
                         else
                         {
-                            ITsType propertyType = ParseOptionalTypeAnnotation();
+                            ITsType? propertyType = ParseOptionalTypeAnnotation();
                             member = Factory.PropertySignature(propertyName, propertyType, isOptional);
                         }
 
@@ -420,9 +420,9 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsConstructSignature ParseConstructSignature()
         {
             Read(TsTokenCode.New);
-            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
-            ITsParameterList parameterList = ParseOptionalParameterListWithParens();
-            ITsType returnType = ParseOptionalTypeAnnotation();
+            ITsTypeParameters? typeParameters = ParseOptionalTypeParameters();
+            ITsParameterList? parameterList = ParseOptionalParameterListWithParens();
+            ITsType? returnType = ParseOptionalTypeAnnotation();
 
             return Factory.ConstructSignature(typeParameters, parameterList, returnType);
         }
@@ -520,9 +520,9 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsCallSignature ParseCallSignature()
         {
-            ITsTypeParameters typeParameters = ParseOptionalTypeParameters();
-            ITsParameterList parameterList = ParseOptionalParameterListWithParens();
-            ITsType returnType = ParseOptionalTypeAnnotation();
+            ITsTypeParameters? typeParameters = ParseOptionalTypeParameters();
+            ITsParameterList? parameterList = ParseOptionalParameterListWithParens();
+            ITsType? returnType = ParseOptionalTypeAnnotation();
 
             return Factory.CallSignature(typeParameters, parameterList, returnType);
         }
@@ -544,7 +544,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// Constraint:
         ///     extends Type
         /// ]]></code></remarks>
-        private ITsTypeParameters ParseOptionalTypeParameters()
+        private ITsTypeParameters? ParseOptionalTypeParameters()
         {
             if (!_reader.ReadIf(TsTokenCode.LessThan))
             {
@@ -555,7 +555,7 @@ namespace Desalt.TypeScriptAst.Parsing
             do
             {
                 ITsIdentifier typeName = ParseIdentifier();
-                ITsType constraint = null;
+                ITsType? constraint = null;
                 if (_reader.ReadIf(TsTokenCode.Extends))
                 {
                     constraint = ParseType();
@@ -584,7 +584,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// TypeArgument:
         ///     Type
         /// ]]></code></remarks>
-        private ITsType[] ParseOptionalTypeArguments()
+        private ITsType[]? ParseOptionalTypeArguments()
         {
             if (!_reader.ReadIf(TsTokenCode.LessThan))
             {
@@ -610,7 +610,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// TypeAnnotation:
         ///     : Type
         /// ]]></code></remarks>
-        private ITsType ParseOptionalTypeAnnotation()
+        private ITsType? ParseOptionalTypeAnnotation()
         {
             return _reader.ReadIf(TsTokenCode.Colon) ? ParseType() : null;
         }

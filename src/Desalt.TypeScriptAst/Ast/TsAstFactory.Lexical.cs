@@ -76,16 +76,16 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates a structured JSDoc comment before a declaration.
         /// </summary>
         public static ITsJsDocComment JsDocComment(
-            ITsJsDocBlock fileTag = null,
-            ITsJsDocBlock copyrightTag = null,
+            ITsJsDocBlock? fileTag = null,
+            ITsJsDocBlock? copyrightTag = null,
             bool isPackagePrivate = false,
-            IEnumerable<(string paramName, ITsJsDocBlock text)> paramsTags = null,
-            ITsJsDocBlock returnsTag = null,
-            IEnumerable<(string typeName, ITsJsDocBlock text)> throwsTags = null,
-            IEnumerable<ITsJsDocBlock> exampleTags = null,
-            ITsJsDocBlock description = null,
-            ITsJsDocBlock summaryTag = null,
-            IEnumerable<ITsJsDocBlock> seeTags = null)
+            IEnumerable<(string paramName, ITsJsDocBlock text)>? paramsTags = null,
+            ITsJsDocBlock? returnsTag = null,
+            IEnumerable<(string typeName, ITsJsDocBlock text)>? throwsTags = null,
+            IEnumerable<ITsJsDocBlock>? exampleTags = null,
+            ITsJsDocBlock? description = null,
+            ITsJsDocBlock? summaryTag = null,
+            IEnumerable<ITsJsDocBlock>? seeTags = null)
         {
             return new TsJsDocComment(
                 fileTag: fileTag,
@@ -127,7 +127,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a JSDoc inline @link tag of the format '{@link NamespaceOrUrl}' or '[Text]{@link NamespaceOrUrl}'.
         /// </summary>
-        public static ITsJsDocLinkTag JsDocLinkTag(string namespaceOrUrl, string text = null)
+        public static ITsJsDocLinkTag JsDocLinkTag(string namespaceOrUrl, string? text = null)
         {
             return new TsJsDocLinkTag(namespaceOrUrl, text);
         }

@@ -145,11 +145,11 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
         {
             // try to get the script name of the expression
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
             string scriptName = node.Keyword.ValueText;
-            if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
                 scriptName = scriptSymbol.ComputedScriptName;
             }
@@ -164,10 +164,10 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
             // try to get the script name of the expression
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
-            if (symbol == null || !_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol))
+            if (symbol == null || !_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
                 yield return Factory.Identifier(node.Identifier.Text);
                 yield break;
@@ -243,7 +243,7 @@ namespace Desalt.Core.Translation
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
 
-            ISymbol symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // get the script name - the symbol can be null if we're inside a dynamic scope since all
             // bets are off with the type checking
@@ -327,7 +327,7 @@ namespace Desalt.Core.Translation
                 leftSide,
                 arguments,
                 _diagnostics,
-                out ITsAstNode translatedNode))
+                out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
             }
@@ -336,7 +336,7 @@ namespace Desalt.Core.Translation
                 arguments,
                 _semanticModel,
                 _diagnostics,
-                out ITsObjectLiteral translatedObjectLiteral))
+                out ITsObjectLiteral? translatedObjectLiteral))
             {
                 yield return translatedObjectLiteral;
             }

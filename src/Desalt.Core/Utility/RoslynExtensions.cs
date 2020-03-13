@@ -58,7 +58,7 @@ namespace Desalt.Core.Utility
         /// <param name="symbol">The symbol to display.</param>
         public static string ToHashDisplay(this ISymbol symbol)
         {
-            return symbol?.ToDisplayString(s_symbolDisplayFormat);
+            return symbol.ToDisplayString(s_symbolDisplayFormat);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Desalt.Core.Utility
         /// </summary>
         public static ITypeSymbol GetTypeSymbol(this TypeSyntax typeSyntax, SemanticModel semanticModel)
         {
-            return semanticModel.GetTypeInfo(typeSyntax).Type;
+            return semanticModel.GetTypeInfo(typeSyntax).Type!;
         }
 
         public static bool IsInterfaceType(this ITypeSymbol symbol)
@@ -92,18 +92,18 @@ namespace Desalt.Core.Utility
         /// </param>
         /// <param name="cancellationToken">Token allowing cancellation of request.</param>
         /// <returns>
-        /// The parsed <see cref="DocumentationComment"/> or <see cref="DocumentationComment.Empty"/>
-        /// if there is no XML documentation comment for the specified symbol.
+        /// The parsed <see cref="DocumentationComment"/> or null if there is no XML documentation comment for the
+        /// specified symbol.
         /// </returns>
-        public static DocumentationComment GetDocumentationComment(
+        public static DocumentationComment? GetDocumentationComment(
             this ISymbol symbol,
-            CultureInfo preferredCulture = null,
+            CultureInfo? preferredCulture = null,
             bool expandIncludes = false,
             CancellationToken cancellationToken = default)
         {
-            string xmlText = symbol.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
+            string? xmlText = symbol.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
             return string.IsNullOrEmpty(xmlText)
-                ? DocumentationComment.Empty
+                ? null
                 : DocumentationComment.FromXmlFragment(xmlText, symbol);
         }
 
@@ -124,7 +124,7 @@ namespace Desalt.Core.Utility
             SemanticModel semanticModel,
             CancellationToken cancellationToken)
         {
-            INamedTypeSymbol GetDeclaredSymbol(SyntaxNode node)
+            INamedTypeSymbol? GetDeclaredSymbol(SyntaxNode node)
             {
                 switch (node)
                 {
@@ -139,7 +139,11 @@ namespace Desalt.Core.Utility
                 }
             }
 
-            var query = rootSyntax.DescendantNodes().Select(GetDeclaredSymbol).Where(symbol => symbol != null);
+            var query = rootSyntax.DescendantNodes()
+                .Select(GetDeclaredSymbol)
+                .Where(symbol => symbol != null)
+                .Select(x => x!);
+
             return query;
         }
     }

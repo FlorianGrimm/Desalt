@@ -27,7 +27,7 @@ namespace Desalt.Core.Tests
                 string directory = TestContext.CurrentContext.TestDirectory;
                 while (Path.GetFileName(directory) != "Desalt")
                 {
-                    directory = Path.GetDirectoryName(directory);
+                    directory = Path.GetDirectoryName(directory)!;
                 }
 
                 return directory;

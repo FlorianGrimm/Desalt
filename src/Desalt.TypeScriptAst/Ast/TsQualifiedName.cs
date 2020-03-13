@@ -22,7 +22,7 @@ namespace Desalt.TypeScriptAst.Ast
         //// Constructors
         //// ===========================================================================================================
 
-        public TsQualifiedName(ITsIdentifier right, IEnumerable<ITsIdentifier> left = null)
+        public TsQualifiedName(ITsIdentifier right, IEnumerable<ITsIdentifier>? left = null)
         {
             Left = left?.ToImmutableArray() ?? ImmutableArray<ITsIdentifier>.Empty;
             Right = right ?? throw new ArgumentNullException(nameof(right));

@@ -21,8 +21,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsClassHeritage(
-            ITsTypeReference extendsClause = null,
-            IEnumerable<ITsTypeReference> implementsClause = null)
+            ITsTypeReference? extendsClause = null,
+            IEnumerable<ITsTypeReference>? implementsClause = null)
         {
             ExtendsClause = extendsClause;
             ImplementsClause = implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
@@ -32,10 +32,8 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeReference ExtendsClause { get; }
+        public ITsTypeReference? ExtendsClause { get; }
         public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
-
-        public bool IsEmpty => ExtendsClause == null && ImplementsClause.IsEmpty;
 
         //// ===========================================================================================================
         //// Methods
