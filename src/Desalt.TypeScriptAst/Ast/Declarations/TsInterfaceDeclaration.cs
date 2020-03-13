@@ -10,6 +10,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             InterfaceName = interfaceName ?? throw new ArgumentNullException(nameof(interfaceName));
             Body = body ?? throw new ArgumentNullException(nameof(body));
-            TypeParameters = typeParameters;
+            TypeParameters = typeParameters ?? new TsTypeParameters();
             ExtendsClause = extendsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty;
         }
 
@@ -38,7 +39,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier InterfaceName { get; }
-        public ITsTypeParameters? TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ImmutableArray<ITsTypeReference> ExtendsClause { get; }
         public ITsObjectType Body { get; }
 

@@ -91,7 +91,7 @@ namespace Desalt.Core.Diagnostics
                 string[] customTags,
                 bool isEnabledByDefault = true,
                 int warningLevel = 0,
-                string description = null)
+                string? description = null)
             {
                 Id = $"{IdPrefix}{id.ToString("0000", CultureInfo.InvariantCulture)}";
                 Title = title;
@@ -108,7 +108,7 @@ namespace Desalt.Core.Diagnostics
             public string Category { get; }
             public string[] CustomTags { get; }
             public DiagnosticSeverity DefaultSeverity { get; }
-            public string Description { get; }
+            public string? Description { get; }
             public bool IsEnabledByDefault { get; }
             public string MessageFormat { get; }
             public string Title { get; }
@@ -123,8 +123,8 @@ namespace Desalt.Core.Diagnostics
                 string title,
                 string messageFormat,
                 string category = TranslationCategory,
-                string[] customTags = null,
-                string description = null) : base(
+                string[]? customTags = null,
+                string? description = null) : base(
                 id: id,
                 title: title,
                 messageFormat: messageFormat,
@@ -142,10 +142,11 @@ namespace Desalt.Core.Diagnostics
             public WarningAttribute(
                 int id,
                 string title,
-                string messageFormat = null,
+                string? messageFormat = null,
                 WarningLevel warningLevel = Core.WarningLevel.Severe,
                 string category = TranslationCategory,
-                string[] customTags = null, string description = null) : base(
+                string[]? customTags = null,
+                string? description = null) : base(
                 id: id,
                 title: title,
                 messageFormat: messageFormat ?? title,

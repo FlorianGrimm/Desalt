@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
@@ -28,39 +29,39 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<string, (string nativeTypeName, ITsType translatedType)> s_nativeTypeMap = new Dictionary<string,
-            (string nativeTypeName, ITsType translatedType)>
-        {
-            // Number Types
-            ["System.Char"] = ("number", Factory.NumberType),
-            ["System.Byte"] = ("number", Factory.NumberType),
-            ["System.SByte"] = ("number", Factory.NumberType),
-            ["System.UInt16"] = ("number", Factory.NumberType),
-            ["System.Int16"] = ("number", Factory.NumberType),
-            ["System.UInt32"] = ("number", Factory.NumberType),
-            ["System.Int32"] = ("number", Factory.NumberType),
-            ["System.UInt64"] = ("number", Factory.NumberType),
-            ["System.Int64"] = ("number", Factory.NumberType),
-            ["System.Decimal"] = ("number", Factory.NumberType),
-            ["System.Single"] = ("number", Factory.NumberType),
-            ["System.Double"] = ("number", Factory.NumberType),
+        private static readonly ImmutableDictionary<string, (string nativeTypeName, ITsType? translatedType)>
+            s_nativeTypeMap = new Dictionary<string, (string nativeTypeName, ITsType? translatedType)>
+            {
+                // Number Types
+                ["System.Char"] = ("number", Factory.NumberType),
+                ["System.Byte"] = ("number", Factory.NumberType),
+                ["System.SByte"] = ("number", Factory.NumberType),
+                ["System.UInt16"] = ("number", Factory.NumberType),
+                ["System.Int16"] = ("number", Factory.NumberType),
+                ["System.UInt32"] = ("number", Factory.NumberType),
+                ["System.Int32"] = ("number", Factory.NumberType),
+                ["System.UInt64"] = ("number", Factory.NumberType),
+                ["System.Int64"] = ("number", Factory.NumberType),
+                ["System.Decimal"] = ("number", Factory.NumberType),
+                ["System.Single"] = ("number", Factory.NumberType),
+                ["System.Double"] = ("number", Factory.NumberType),
 
-            // Object Types
-            ["System.Object"] = ("any", Factory.AnyType),
-            ["dynamic"] = ("any", Factory.AnyType),
+                // Object Types
+                ["System.Object"] = ("any", Factory.AnyType),
+                ["dynamic"] = ("any", Factory.AnyType),
 
-            // Function Types
-            ["System.Action"] = ("Function", null),
-            ["System.Func"] = ("Function", null),
+                // Function Types
+                ["System.Action"] = ("Function", null),
+                ["System.Func"] = ("Function", null),
 
-            // Other Types
-            ["System.Array"] = ("Array", null),
-            ["System.Boolean"] = ("boolean", Factory.BooleanType),
-            ["System.JsDate"] = ("Date", Factory.TypeReference(Factory.Identifier("Date"))),
-            ["System.String"] = ("string", Factory.StringType),
-            ["System.Void"] = ("void", Factory.VoidType),
-            ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
-        }.ToImmutableDictionary();
+                // Other Types
+                ["System.Array"] = ("Array", null),
+                ["System.Boolean"] = ("boolean", Factory.BooleanType),
+                ["System.JsDate"] = ("Date", Factory.TypeReference(Factory.Identifier("Date"))),
+                ["System.String"] = ("string", Factory.StringType),
+                ["System.Void"] = ("void", Factory.VoidType),
+                ["System.Text.RegularExpressions.Regex"] = ("RegExp", null),
+            }.ToImmutableDictionary();
 
         private static readonly SymbolDisplayFormat s_displayFormat = new SymbolDisplayFormat(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
@@ -159,7 +160,7 @@ namespace Desalt.Core.Translation
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
         public ITsType TranslateSymbol(
             ITypeSymbol symbol,
-            ISet<ITypeSymbol> typesToImport,
+            ISet<ITypeSymbol>? typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc)
         {
@@ -169,23 +170,25 @@ namespace Desalt.Core.Translation
             var namedTypeSymbol = symbol as INamedTypeSymbol;
 
             // special case: Nullable<T> should be translated as 'T | null'
-            if (TryTranslateNullableT(
-                namedTypeSymbol,
-                typesToImport,
-                diagnostics,
-                getLocationFunc,
-                out ITsType unionType))
+            if (namedTypeSymbol != null &&
+                TryTranslateNullableT(
+                    namedTypeSymbol,
+                    typesToImport,
+                    diagnostics,
+                    getLocationFunc,
+                    out ITsType? unionType))
             {
                 return unionType;
             }
 
             // special case: JsDictionary<TKey, TValue> should be translated as `{ [key: string]: TValue }`
-            if (TryTranslateJsDictionary(
-                namedTypeSymbol,
-                typesToImport,
-                diagnostics,
-                getLocationFunc,
-                out ITsType objectType))
+            if (namedTypeSymbol != null &&
+                TryTranslateJsDictionary(
+                    namedTypeSymbol,
+                    typesToImport,
+                    diagnostics,
+                    getLocationFunc,
+                    out ITsType? objectType))
             {
                 return objectType;
             }
@@ -203,14 +206,14 @@ namespace Desalt.Core.Translation
 
             // raw native types are easy to translate
             string fullTypeName = symbol.ToDisplayString(s_displayFormat);
-            if (s_nativeTypeMap.TryGetValue(fullTypeName, out (string nativeTypeName, ITsType translatedType) value) &&
+            if (s_nativeTypeMap.TryGetValue(fullTypeName, out (string nativeTypeName, ITsType? translatedType) value) &&
                 value.translatedType != null)
             {
                 return value.translatedType;
             }
 
             // Action<T1, ...> and Func<T1, ...> are special cases
-            if (fullTypeName.IsOneOf("System.Action", "System.Func"))
+            if (namedTypeSymbol != null && fullTypeName.IsOneOf("System.Action", "System.Func"))
             {
                 return TranslateFunc(namedTypeSymbol, typesToImport, diagnostics, getLocationFunc);
             }
@@ -221,8 +224,8 @@ namespace Desalt.Core.Translation
                 return Factory.TypeReference(Factory.Identifier(typeParameterSymbol.Name));
             }
 
-            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, null);
-            if (scriptName == null)
+            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, string.Empty);
+            if (string.IsNullOrEmpty(scriptName))
             {
                 Diagnostic error = DiagnosticFactory.UnknownTypeReference(
                     symbol.ToHashDisplay(),
@@ -252,7 +255,7 @@ namespace Desalt.Core.Translation
             typesToImport.Add(symbol);
 
             // check for generic type arguments
-            ITsType[] translatedTypeMembers = null;
+            ITsType[]? translatedTypeMembers = null;
             if (namedTypeSymbol != null)
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
@@ -272,7 +275,7 @@ namespace Desalt.Core.Translation
             ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
-            out ITsType unionType)
+            [NotNullWhen(true)] out ITsType? unionType)
         {
             // special case: Nullable<T> should be translated as 'T | null'
             if (namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() != "System.Nullable<T>")
@@ -299,7 +302,7 @@ namespace Desalt.Core.Translation
             ISet<ITypeSymbol> typesToImport,
             ICollection<Diagnostic> diagnostics,
             Func<Location> getLocationFunc,
-            out ITsType objectType)
+            [NotNullWhen(true)] out ITsType? objectType)
         {
             // special case: JsDictionary<TKey, TValue> should be translated as `{ [key: string]: TValue }`
             if (!JsDictionaryTranslator.IsJsDictionary(namedTypeSymbol))
@@ -318,7 +321,7 @@ namespace Desalt.Core.Translation
                 ITypeSymbol keySymbol = namedTypeSymbol.TypeArguments[0];
                 isParameterNumberType = s_nativeTypeMap.TryGetValue(
                         keySymbol.ToDisplayString(s_displayFormat),
-                        out (string nativeTypeName, ITsType translatedType) value) &&
+                        out (string nativeTypeName, ITsType? translatedType) value) &&
                     value.nativeTypeName == "number";
 
                 // we also need to check enums

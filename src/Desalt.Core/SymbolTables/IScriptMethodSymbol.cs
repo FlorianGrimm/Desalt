@@ -58,24 +58,24 @@ namespace Desalt.Core.SymbolTables
         /// identifiers starting with a dollar {$Namespace.Name} to construct type references. The
         /// name must be the fully qualified type name in this case.
         /// </summary>
-        string InlineCode { get; }
+        string? InlineCode { get; }
 
         /// <summary>
         /// If set, a method with this name will be generated from the method source.
         /// </summary>
-        string InlineCodeGeneratedMethodName { get; }
+        string? InlineCodeGeneratedMethodName { get; }
 
         /// <summary>
         /// This code is used when the method, which should be a method with a param array parameter,
         /// is invoked in non-expanded form. Optional, but can be used to support non-expanded
         /// invocation of a method that has a {*param} placeholder in its code.
         /// </summary>
-        string InlineCodeNonExpandedFormCode { get; }
+        string? InlineCodeNonExpandedFormCode { get; }
 
         /// <summary>
         /// This code is used when the method is invoked non-virtually (eg. in a base.Method() call).
         /// </summary>
-        string InlineCodeNonVirtualCode { get; }
+        string? InlineCodeNonVirtualCode { get; }
 
         /// <summary>
         /// This attribute specifies that a static method should be treated as an instance method on
@@ -110,7 +110,7 @@ namespace Desalt.Core.SymbolTables
         /// Specifies a script name for an imported method. The method is interpreted as a global
         /// method. As a result it this attribute only applies to static methods.
         /// </summary>
-        string ScriptAlias { get; }
+        string? ScriptAlias { get; }
 
         /// <summary>
         /// Indicates whether a method should not be invoked. The method must either be a static

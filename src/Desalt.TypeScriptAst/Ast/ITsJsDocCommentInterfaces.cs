@@ -140,29 +140,29 @@ namespace Desalt.TypeScriptAst.Ast
 
         ITsJsDocCommentBuilder SetIsPackagePrivate(bool value);
 
-        ITsJsDocCommentBuilder AddParamTag(string name, string text);
+        ITsJsDocCommentBuilder AddParamTag(string name, string? text);
 
-        ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock text);
+        ITsJsDocCommentBuilder AddParamTag(string name, ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder AddTypeParamTag(string name, string text);
+        ITsJsDocCommentBuilder AddTypeParamTag(string name, string? text);
 
-        ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock text);
+        ITsJsDocCommentBuilder AddTypeParamTag(string name, ITsJsDocBlock? text);
 
         ITsJsDocCommentBuilder SetReturnsTag(string? text);
 
         ITsJsDocCommentBuilder SetReturnsTag(ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder AddThrowsTag(string typeName, string text);
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, string? text);
 
-        ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock text);
+        ITsJsDocCommentBuilder AddThrowsTag(string typeName, ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder AddExampleTag(string text);
+        ITsJsDocCommentBuilder AddExampleTag(string? text);
 
-        ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder AddExampleTag(ITsJsDocBlock? text);
 
-        ITsJsDocCommentBuilder AddSeeTag(string text);
+        ITsJsDocCommentBuilder AddSeeTag(string? text);
 
-        ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock text);
+        ITsJsDocCommentBuilder AddSeeTag(ITsJsDocBlock? text);
 
         ITsJsDocComment Build();
     }

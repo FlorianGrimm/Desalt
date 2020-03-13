@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.SymbolTables
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.CodeAnalysis;
 
@@ -27,13 +28,13 @@ namespace Desalt.Core.SymbolTables
         /// The found attribute or null if the symbol does not have an attached attribute of the
         /// given name.
         /// </returns>
-        public static AttributeData FindAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
+        public static AttributeData? FindAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
         {
             var format = new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
             string fullAttributeName = $"{attributeFullyQualifiedNameMinusSuffix}Attribute";
-            AttributeData attributeData = symbol?.GetAttributes()
+            AttributeData? attributeData = symbol?.GetAttributes()
                 .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
 
             return attributeData;
@@ -48,7 +49,7 @@ namespace Desalt.Core.SymbolTables
         /// The found attribute or null if the symbol does not have an attached attribute of the
         /// given name.
         /// </returns>
-        public static AttributeData FindAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
+        public static AttributeData? FindAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
         {
             string fullAttributeName = FullyQualifiedName(attributeName);
             return FindAttribute(symbol, fullAttributeName);
@@ -101,7 +102,7 @@ namespace Desalt.Core.SymbolTables
         public static bool TryGetAttributeValue<T>(
             this ISymbol symbol,
             string attributeFullyQualifiedNameMinusSuffix,
-            out T value)
+            [NotNullWhen(true)]  out T value)
         {
             return TryGetAttributeValue(
                 symbol,
@@ -131,11 +132,11 @@ namespace Desalt.Core.SymbolTables
         public static bool TryGetAttributeValue<T>(
             this ISymbol symbol,
             string attributeFullyQualifiedNameMinusSuffix,
-            string propertyName,
-            out T value)
+            string? propertyName,
+            [NotNullWhen(true)] out T value)
         {
-            AttributeData attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
-            object rawValue = propertyName == null
+            AttributeData? attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
+            object? rawValue = propertyName == null
                 ? attributeData?.ConstructorArguments.FirstOrDefault().Value
                 : attributeData?.NamedArguments.FirstOrDefault(pair => pair.Key == propertyName).Value.Value;
 
@@ -164,7 +165,7 @@ namespace Desalt.Core.SymbolTables
             this ISymbol symbol,
             string attributeFullyQualifiedNameMinusSuffix,
             T defaultValue = default,
-            string propertyName = null)
+            string? propertyName = null)
         {
             return TryGetAttributeValue(symbol, attributeFullyQualifiedNameMinusSuffix, propertyName, out T value)
                 ? value
@@ -184,7 +185,7 @@ namespace Desalt.Core.SymbolTables
         public static bool TryGetAttributeValue<T>(
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
-            out T value)
+            [NotNullWhen(true)] out T value)
         {
             return TryGetAttributeValue(symbol, FullyQualifiedName(attributeName), out value);
         }
@@ -208,7 +209,7 @@ namespace Desalt.Core.SymbolTables
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
             SaltarelleAttributeArgumentName propertyName,
-            out T value)
+            [NotNullWhen(true)] out T value)
         {
             return TryGetAttributeValue(symbol, FullyQualifiedName(attributeName), propertyName.ToString(), out value);
         }
@@ -227,10 +228,10 @@ namespace Desalt.Core.SymbolTables
         /// <returns>
         /// Either the value or the default value, depending on whether the attribute was found.
         /// </returns>
-        public static string GetAttributeValueOrDefault(
+        public static string? GetAttributeValueOrDefault(
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
-            string defaultValue = null,
+            string? defaultValue = null,
             SaltarelleAttributeArgumentName? propertyName = null)
         {
             return GetAttributeValueOrDefault(
@@ -268,10 +269,11 @@ namespace Desalt.Core.SymbolTables
         }
 
         /// <summary>
-        /// Gets the value of a flag-type attribute according to the following table:
-        /// * No attribute =&gt; false
-        /// * [Attr] =&gt; true
-        /// * [Attr(value)] =&gt; value
+        /// Gets the value of a flag-type attribute according to the following table:<![CDATA[
+        /// * No attribute => false
+        /// * [Attr] => true
+        /// * [Attr(value)] => value
+        /// ]]>
         /// </summary>
         /// <param name="symbol">The symbol to query.</param>
         /// <param name="attributeFullyQualifiedNameMinusSuffix">
@@ -281,19 +283,23 @@ namespace Desalt.Core.SymbolTables
         /// <returns>The value of the flag attribute.</returns>
         public static bool GetFlagAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
         {
-            AttributeData attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
+            AttributeData? attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
 
             if (attributeData == null)
             {
                 return false;
             }
 
-            if (attributeData.ConstructorArguments.IsEmpty)
+            // return true if the attribute value is missing
+            object? value = attributeData.ConstructorArguments.IsEmpty
+                ? null
+                : attributeData.ConstructorArguments[0].Value;
+            if (value == null)
             {
                 return true;
             }
 
-            return (bool)attributeData.ConstructorArguments[0].Value;
+            return (bool)value;
         }
 
         /// <summary>

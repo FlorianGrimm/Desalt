@@ -26,7 +26,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             bool isConstructorType)
         {
             TypeParameters = typeParameters ?? TsTypeParameters.Empty;
-            Parameters = parameters;
+            Parameters = parameters ?? TsParameterList.Empty;
             ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
             IsConstructorType = isConstructorType;
         }
@@ -45,8 +45,8 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// Properties
         //// ===========================================================================================================
 
-        public ITsTypeParameters? TypeParameters { get; }
-        public ITsParameterList? Parameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
+        public ITsParameterList Parameters { get; }
         public ITsType ReturnType { get; }
         public bool IsConstructorType { get; }
 

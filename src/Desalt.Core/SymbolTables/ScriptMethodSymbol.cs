@@ -34,20 +34,20 @@ namespace Desalt.Core.SymbolTables
         private ScriptMethodSymbol(
             IMethodSymbol methodSymbol,
             string computedScriptName,
-            IScriptMethodSymbol instanceToCopy = null,
+            IScriptMethodSymbol? instanceToCopy = null,
             bool? alternateSignature = null,
             // ReSharper disable once IdentifierTypo
             bool? dontGenerate = null,
             bool? enumerateAsArray = null,
             bool? expandParams = null,
-            string inlineCode = null,
-            string inlineCodeGeneratedMethodName = null,
-            string inlineCodeNonExpendedFormCode = null,
-            string inlineCodeNonVirtualCode = null,
+            string? inlineCode = null,
+            string? inlineCodeGeneratedMethodName = null,
+            string? inlineCodeNonExpendedFormCode = null,
+            string? inlineCodeNonVirtualCode = null,
             bool? instanceMethodOnFirstArgument = null,
             bool? intrinsicOperator = null,
             bool? objectLiteral = null,
-            string scriptAlias = null,
+            string? scriptAlias = null,
             bool? scriptSkip = null)
             : base(methodSymbol, computedScriptName)
         {
@@ -155,9 +155,9 @@ namespace Desalt.Core.SymbolTables
         /// identifiers starting with a dollar {$Namespace.Name} to construct type references. The
         /// name must be the fully qualified type name in this case.
         /// </summary>
-        public string InlineCode { get; }
+        public string? InlineCode { get; }
 
-        public ScriptMethodSymbol WithInlineCode(string value)
+        public ScriptMethodSymbol WithInlineCode(string? value)
         {
             return new ScriptMethodSymbol(MethodSymbol, ComputedScriptName, this, inlineCode: value);
         }
@@ -165,19 +165,19 @@ namespace Desalt.Core.SymbolTables
         /// <summary>
         /// If set, a method with this name will be generated from the method source.
         /// </summary>
-        public string InlineCodeGeneratedMethodName { get; }
+        public string? InlineCodeGeneratedMethodName { get; }
 
         /// <summary>
         /// This code is used when the method, which should be a method with a param array parameter,
         /// is invoked in non-expanded form. Optional, but can be used to support non-expanded
         /// invocation of a method that has a {*param} placeholder in its code.
         /// </summary>
-        public string InlineCodeNonExpandedFormCode { get; }
+        public string? InlineCodeNonExpandedFormCode { get; }
 
         /// <summary>
         /// This code is used when the method is invoked non-virtually (eg. in a base.Method() call).
         /// </summary>
-        public string InlineCodeNonVirtualCode { get; }
+        public string? InlineCodeNonVirtualCode { get; }
 
         /// <summary>
         /// This attribute specifies that a static method should be treated as an instance method on
@@ -212,7 +212,7 @@ namespace Desalt.Core.SymbolTables
         /// Specifies a script name for an imported method. The method is interpreted as a global
         /// method. As a result it this attribute only applies to static methods.
         /// </summary>
-        public string ScriptAlias { get; }
+        public string? ScriptAlias { get; }
 
         /// <summary>
         /// Indicates whether a method should not be invoked. The method must either be a static

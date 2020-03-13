@@ -182,7 +182,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates a class heritage of the form 'extends type implements type, type'.
         /// </summary>
         public static ITsClassHeritage ClassHeritage(
-            ITsTypeReference extendsClause,
+            ITsTypeReference? extendsClause,
             IEnumerable<ITsTypeReference>? implementsClause = null)
         {
             return new TsClassHeritage(extendsClause, implementsClause);

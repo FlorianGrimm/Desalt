@@ -34,7 +34,7 @@ namespace Desalt.Core.Diagnostics
         public DiagnosticOptions(
             WarningLevel warningLevel = DefaultWarningLevel,
             ReportDiagnostic generalDiagnosticOption = DefaultGeneralDiagnosticOption,
-            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = null)
+            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null)
         {
             WarningLevel = warningLevel;
             GeneralDiagnosticOption = generalDiagnosticOption;

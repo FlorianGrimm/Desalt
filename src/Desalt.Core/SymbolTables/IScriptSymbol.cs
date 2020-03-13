@@ -54,7 +54,7 @@ namespace Desalt.Core.SymbolTables
         /// The name to use for a type or member in the generated script. Property and event
         /// accessors can use the placeholder {owner} to denote the name of their owning entity.
         /// </summary>
-        string ScriptName { get; }
+        string? ScriptName { get; }
 
         /// <summary>
         /// Gets the associated C# <see cref="ISymbol"/>.

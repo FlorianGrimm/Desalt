@@ -18,7 +18,7 @@ namespace Desalt.Core
         /// <summary>
         /// Gets the result of the operation.
         /// </summary>
-        object Result { get; }
+        object? Result { get; }
 
         /// <summary>
         /// Gets all of the diagnostics in the order in which they were generated.

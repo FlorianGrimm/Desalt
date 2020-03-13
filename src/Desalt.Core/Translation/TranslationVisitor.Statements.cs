@@ -65,7 +65,7 @@ namespace Desalt.Core.Translation
             }
 
             return node.Arguments.Count == 0
-                ? null
+                ? Enumerable.Empty<ITsExpression>()
                 : ((ITsArgument)Visit(node.Arguments[0]).Single()).Argument.ToSingleEnumerable();
         }
 
@@ -79,9 +79,8 @@ namespace Desalt.Core.Translation
             bool isConst = node.IsConst;
 
             // get the type of all of the declarations
-            ITypeSymbol typeSymbol = node.Declaration.Type.GetTypeSymbol(_semanticModel);
             ITsType type = _typeTranslator.TranslateSymbol(
-                typeSymbol,
+                node.Declaration.Type.GetTypeSymbol(_semanticModel),
                 _typesToImport,
                 _diagnostics,
                 node.Declaration.Type.GetLocation);
@@ -104,7 +103,7 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier variableName = Factory.Identifier(node.Identifier.Text);
 
-            ITsExpression initializer = null;
+            ITsExpression? initializer = null;
             if (node.Initializer != null)
             {
                 initializer = (ITsExpression)Visit(node.Initializer).First();
@@ -145,7 +144,7 @@ namespace Desalt.Core.Translation
         {
             var ifCondition = (ITsExpression)Visit(node.Condition).Single();
             var ifStatement = (ITsStatement)Visit(node.Statement).Single();
-            ITsStatement elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
+            ITsStatement? elseStatement = node.Else == null ? null : (ITsStatement)Visit(node.Else.Statement).Single();
 
             ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
             yield return translated;
@@ -155,7 +154,7 @@ namespace Desalt.Core.Translation
         //// Throw, Try/Catch, and Using Statements
         //// ===========================================================================================================
 
-        private ITsIdentifier _lastCatchIdentifier;
+        private ITsIdentifier? _lastCatchIdentifier;
 
         /// <summary>
         /// Called when the visitor visits a ThrowStatementSyntax node.
@@ -203,12 +202,11 @@ namespace Desalt.Core.Translation
                 _diagnostics.Add(DiagnosticFactory.CatchClausesWithMoreThanOneParameterNotYetSupported(node));
             }
 
-            bool hasCatch = node.Catches.Count > 0;
-            CatchClauseSyntax catchClause = hasCatch ? node.Catches[0] : null;
-            ITsIdentifier catchParameter = null;
-            if (hasCatch)
+            CatchClauseSyntax? catchClause = node.Catches.Count > 0 ? node.Catches[0] : null;
+            ITsIdentifier? catchParameter = null;
+            if (catchClause != null)
             {
-                CatchDeclarationSyntax declaration = catchClause.Declaration;
+                CatchDeclarationSyntax? declaration = catchClause.Declaration;
 
                 // C# can have `catch (Exception)` without an identifier, but we need one in
                 // TypeScript, so generate a placeholder if necessary
@@ -232,23 +230,22 @@ namespace Desalt.Core.Translation
                 _lastCatchIdentifier = catchParameter;
             }
 
-            ITsBlockStatement catchBlock = hasCatch ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
+            ITsBlockStatement? catchBlock = catchClause != null ? (ITsBlockStatement)Visit(catchClause.Block).Single() : null;
 
             // translate the finally block if present
-            bool hasFinally = node.Finally != null;
-            ITsBlockStatement finallyBlock = hasFinally ? (ITsBlockStatement)Visit(node.Finally.Block).Single() : null;
+            ITsBlockStatement? finallyBlock = node.Finally != null ? (ITsBlockStatement)Visit(node.Finally.Block).Single() : null;
 
             // translate the try/catch/finally statement
             ITsTryStatement translated;
-            if (hasCatch && hasFinally)
+            if (catchBlock != null && finallyBlock != null)
             {
                 translated = Factory.TryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
             }
-            else if (hasCatch)
+            else if (catchBlock != null)
             {
                 translated = Factory.TryCatch(tryBlock, catchParameter, catchBlock);
             }
-            else if (hasFinally)
+            else if (finallyBlock != null)
             {
                 translated = Factory.TryFinally(tryBlock, finallyBlock);
             }
@@ -270,7 +267,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitUsingStatement(UsingStatementSyntax node)
         {
             var statements = new List<ITsStatementListItem>();
-            string reservedTemporaryVariable = null;
+            string? reservedTemporaryVariable = null;
             ITsIdentifier variableNameIdentifier;
 
             // Case 1: when there's a declaration
@@ -295,8 +292,8 @@ namespace Desalt.Core.Translation
                 declaration = declaration.WithIsConst(true);
 
                 // get the type of the declaration
-                ITypeSymbol typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
-                ITsType declarationType = typeSymbol == null
+                ITypeSymbol? typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
+                ITsType? declarationType = typeSymbol == null
                     ? null
                     : _typeTranslator.TranslateSymbol(
                         typeSymbol,
@@ -338,16 +335,16 @@ namespace Desalt.Core.Translation
                 var expression = (ITsExpression)Visit(node.Expression).Single();
 
                 // try to find the type of the expression
-                ITypeSymbol expressionTypeSymbol =
+                ITypeSymbol? expressionTypeSymbol =
                     _semanticModel.GetTypeInfo(node.Expression, _cancellationToken).ConvertedType;
 
-                ITsType variableType = expressionTypeSymbol == null
+                ITsType? variableType = expressionTypeSymbol == null
                     ? null
                     : _typeTranslator.TranslateSymbol(
                         expressionTypeSymbol,
                         _typesToImport,
                         _diagnostics,
-                        node.Expression.GetLocation);
+                        node.Expression!.GetLocation);
 
                 // create a temporary variable name to hold the expression
                 reservedTemporaryVariable = _temporaryVariableAllocator.Reserve("$using");
@@ -449,8 +446,8 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsForStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitForStatement(ForStatementSyntax node)
         {
-            ITsLexicalDeclaration initializerWithLexicalDeclaration = null;
-            ITsExpression initializer = null;
+            ITsLexicalDeclaration? initializerWithLexicalDeclaration = null;
+            ITsExpression? initializer = null;
             if (node.Declaration != null)
             {
                 initializerWithLexicalDeclaration = (ITsLexicalDeclaration)Visit(node.Declaration).Single();
@@ -472,7 +469,7 @@ namespace Desalt.Core.Translation
 
             ITsForStatement translated = initializerWithLexicalDeclaration != null
                 ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
-                : Factory.For(initializer, condition, incrementor, statement);
+                : Factory.For(initializer!, condition, incrementor, statement);
 
             yield return translated;
         }

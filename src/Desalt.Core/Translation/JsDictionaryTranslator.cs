@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -30,7 +31,7 @@ namespace Desalt.Core.Translation
         /// True if the specified type symbol is an instance of <c>JsDictionary</c> or
         /// <c>JsDictionary{TKey, TValue}</c>; otherwise, false.
         /// </returns>
-        public static bool IsJsDictionary(ITypeSymbol typeSymbol)
+        public static bool IsJsDictionary(ITypeSymbol? typeSymbol)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
             return namedTypeSymbol?.ToHashDisplay() == "System.Collections.JsDictionary" ||
@@ -63,7 +64,7 @@ namespace Desalt.Core.Translation
             ITsArgumentList translatedArgumentList,
             SemanticModel semanticModel,
             ICollection<Diagnostic> diagnostics,
-            out ITsObjectLiteral translation)
+            [NotNullWhen(true)] out ITsObjectLiteral? translation)
         {
             // Nothing to translate if we don't have a JsDictionary.
             if (!IsJsDictionary(semanticModel.GetTypeInfo(node).Type))
@@ -74,7 +75,7 @@ namespace Desalt.Core.Translation
 
             // Arguments must be in pairs, so if there are less than 2 this initializer is just going
             // to be a normal ctor call, which is handled elsewhere.
-            int argCount = node.ArgumentList.Arguments.Count;
+            int argCount = node.ArgumentList?.Arguments.Count ?? 0;
             if (argCount < 2)
             {
                 translation = null;
@@ -87,7 +88,7 @@ namespace Desalt.Core.Translation
                 diagnostics.Add(
                     DiagnosticFactory.InternalError(
                         "Saltarelle should have ensured that there are an even number of parameters to a JsDictionary ctor",
-                        node.ArgumentList.GetLocation()));
+                        node.ArgumentList?.GetLocation() ?? node.GetLocation()));
                 translation = null;
                 return false;
             }
@@ -97,7 +98,7 @@ namespace Desalt.Core.Translation
                 diagnostics.Add(
                     DiagnosticFactory.InternalError(
                         "The translated argument list count should have been equal to the node's argument list count",
-                        node.ArgumentList.GetLocation()));
+                        node.ArgumentList?.GetLocation() ?? node.GetLocation()));
                 translation = null;
                 return false;
             }

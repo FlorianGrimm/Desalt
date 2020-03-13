@@ -35,7 +35,7 @@ namespace Desalt.Core.Utility
             private static readonly string s_currentStart = "<" + CurrentElementName + ">";
             private static readonly string s_currentEnd = "</" + CurrentElementName + ">";
 
-            private string _text;
+            private string? _text;
             private int _position;
 
             //// =======================================================================================================
@@ -119,7 +119,7 @@ namespace Desalt.Core.Utility
                 // </current>
                 _position += EncodeAndAdvance(
                     s_currentEnd,
-                    _position - s_rootStart.Length - s_currentStart.Length - _text.Length,
+                    _position - s_rootStart.Length - s_currentStart.Length - _text?.Length ?? 0,
                     buffer,
                     ref index,
                     ref count);
@@ -144,13 +144,13 @@ namespace Desalt.Core.Utility
             /// <param name="destCount">The count of characters to copy.</param>
             /// <returns>The number of characters written.</returns>
             private static int EncodeAndAdvance(
-                string src,
+                string? src,
                 int srcIndex,
                 char[] dest,
                 ref int destIndex,
                 ref int destCount)
             {
-                if (destCount == 0 || srcIndex < 0 || srcIndex >= src.Length)
+                if (src == null || destCount == 0 || srcIndex < 0 || srcIndex >= src.Length)
                 {
                     return 0;
                 }

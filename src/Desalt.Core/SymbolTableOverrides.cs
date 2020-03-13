@@ -51,26 +51,26 @@ namespace Desalt.Core
 
             InlineCodeOverrides = Overrides
                 .Where(pair => pair.Value.InlineCode != null)
-                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.InlineCode))
+                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.InlineCode!))
                 .ToImmutableDictionary();
 
             ScriptNameOverrides = Overrides
                 .Where(pair => pair.Value.ScriptName != null)
-                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ScriptName))
+                .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ScriptName!))
                 .ToImmutableDictionary();
         }
     }
 
     public sealed class SymbolTableOverride
     {
-        public SymbolTableOverride(string inlineCode = null, string scriptName = null)
+        public SymbolTableOverride(string? inlineCode = null, string? scriptName = null)
         {
             InlineCode = inlineCode;
             ScriptName = scriptName;
         }
 
-        public string InlineCode { get; }
+        public string? InlineCode { get; }
 
-        public string ScriptName { get; }
+        public string? ScriptName { get; }
     }
 }

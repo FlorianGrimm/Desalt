@@ -12,6 +12,7 @@ namespace Desalt.Core.Diagnostics
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.CompilerUtilities.Extensions;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -25,16 +26,14 @@ namespace Desalt.Core.Diagnostics
         //// Member Variables
         //// ===========================================================================================================
 
-        public static readonly DiagnosticList Empty = new DiagnosticList(null);
-
-        private readonly List<Diagnostic> _diagnostics;
+        private readonly IList<Diagnostic> _diagnostics;
         private readonly DiagnosticOptions _options;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private DiagnosticList(DiagnosticOptions options, IEnumerable<Diagnostic> diagnostics = null)
+        private DiagnosticList(DiagnosticOptions options, IEnumerable<Diagnostic> diagnostics)
         {
             _options = options;
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
@@ -42,7 +41,9 @@ namespace Desalt.Core.Diagnostics
 
         public static DiagnosticList Create(CompilerOptions options, params Diagnostic[] diagnostics)
         {
-            return new DiagnosticList(options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)), diagnostics);
+            return new DiagnosticList(
+                options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)),
+                diagnostics);
         }
 
         public static DiagnosticList From(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
@@ -115,7 +116,7 @@ namespace Desalt.Core.Diagnostics
         /// treated as errors then a warning diagnostic will be converted to an error diagnostic. If
         /// the diagnostic was suppressed or hidden, null is returned.
         /// </returns>
-        public Diagnostic Add(Diagnostic diagnostic)
+        public Diagnostic? Add(Diagnostic diagnostic)
         {
             // don't add anything if we're Empty
             if (_options == null)
@@ -123,17 +124,17 @@ namespace Desalt.Core.Diagnostics
                 return diagnostic;
             }
 
-            diagnostic = Filter(_options, diagnostic);
-            if (diagnostic != null)
+            var filteredDiagnostic = Filter(_options, diagnostic);
+            if (filteredDiagnostic != null)
             {
-                _diagnostics.Add(diagnostic);
+                _diagnostics.Add(filteredDiagnostic);
                 if (ThrowOnErrors)
                 {
-                    throw new InvalidOperationException(diagnostic.ToString());
+                    throw new InvalidOperationException(filteredDiagnostic.ToString());
                 }
             }
 
-            return diagnostic;
+            return filteredDiagnostic;
         }
 
         /// <summary>
@@ -159,10 +160,10 @@ namespace Desalt.Core.Diagnostics
             _diagnostics.Clear();
         }
 
-        private static Diagnostic Filter(DiagnosticOptions options, Diagnostic diagnostic)
+        private static Diagnostic? Filter(DiagnosticOptions options, Diagnostic diagnostic)
         {
             ReportDiagnostic reportAction = diagnostic.CalculateReportAction(options);
-            Diagnostic filteredDiagnostic = diagnostic.WithReportDiagnostic(reportAction);
+            Diagnostic? filteredDiagnostic = diagnostic.WithReportDiagnostic(reportAction);
 
             // don't add hidden diagnostics
             if (filteredDiagnostic?.Severity == DiagnosticSeverity.Hidden)
@@ -175,10 +176,10 @@ namespace Desalt.Core.Diagnostics
 
         private static IEnumerable<Diagnostic> Filter(
             DiagnosticOptions options,
-            IEnumerable<Diagnostic> diagnostics = null)
+            IEnumerable<Diagnostic>? diagnostics = null)
         {
             diagnostics ??= Enumerable.Empty<Diagnostic>();
-            return diagnostics.Select(d => Filter(options, d)).Where(d => d != null);
+            return diagnostics.Select(d => Filter(options, d)).Where(d => d != null).Select(x => x!);
         }
     }
 }

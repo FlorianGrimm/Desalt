@@ -24,7 +24,7 @@ namespace Desalt.Core
             pipeline.AddStage(new ValidateProjectStage());
             pipeline.AddStage(new TranslateProjectStage());
 
-            IExtendedResult<IEnumerable<string>> result = await pipeline.ExecuteAsync(
+            IExtendedResult<IEnumerable<string>?> result = await pipeline.ExecuteAsync(
                 compilationRequest,
                 compilationRequest.Options);
 

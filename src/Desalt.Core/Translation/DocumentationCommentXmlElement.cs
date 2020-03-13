@@ -30,8 +30,8 @@ namespace Desalt.Core.Translation
 
         private DocumentationCommentXmlElement(
             string elementName,
-            IEnumerable<KeyValuePair<string, string>> attributes = null,
-            string content = null)
+            IEnumerable<KeyValuePair<string, string>>? attributes = null,
+            string? content = null)
         {
             ElementName = !string.IsNullOrWhiteSpace(elementName)
                 ? elementName
@@ -60,8 +60,8 @@ namespace Desalt.Core.Translation
 
         public static DocumentationCommentXmlElement Create(
             string elementName,
-            IEnumerable<KeyValuePair<string, string>> attributes = null,
-            string content = null)
+            IEnumerable<KeyValuePair<string, string>>? attributes = null,
+            string? content = null)
         {
             return new DocumentationCommentXmlElement(elementName, attributes, content);
         }
@@ -72,9 +72,9 @@ namespace Desalt.Core.Translation
         /// <param name="reader">The reader to use for parsing.</param>
         /// <param name="diagnostics">An optional diagnostic list to use for reporting errors.</param>
         /// <returns>The parsed XML element or null if there were errors.</returns>
-        public static DocumentationCommentXmlElement Parse(
+        public static DocumentationCommentXmlElement? Parse(
             PeekingTextReader reader,
-            ICollection<Diagnostic> diagnostics = null)
+            ICollection<Diagnostic>? diagnostics = null)
         {
             if (reader.Peek() != '<')
             {
@@ -87,7 +87,7 @@ namespace Desalt.Core.Translation
             reader.Read();
 
             // get the element name
-            string elementName = reader.ReadUntil(c => char.IsWhiteSpace(c) || c.IsOneOf('/', '>'));
+            string? elementName = reader.ReadUntil(c => char.IsWhiteSpace(c) || c.IsOneOf('/', '>'));
             reader.SkipWhitespace();
 
             if (string.IsNullOrWhiteSpace(elementName))
@@ -102,11 +102,11 @@ namespace Desalt.Core.Translation
             var attributes = new Dictionary<string, string>(DocumentationCommentXmlNames.AttributeComparer);
             while (reader.Peek() != '>' && reader.Peek(2) != "/>")
             {
-                string attributeName = reader.ReadUntil('=').Trim();
+                string? attributeName = reader.ReadUntil('=')?.Trim();
                 reader.ReadUntil('"');
                 reader.Read();
 
-                string attributeValue = reader.ReadUntil('"');
+                string? attributeValue = reader.ReadUntil('"');
                 reader.Read();
                 reader.SkipWhitespace();
 
@@ -129,7 +129,7 @@ namespace Desalt.Core.Translation
             }
 
             // get the content - embedded XML is not supported
-            string content = string.Empty;
+            string? content = string.Empty;
             if (reader.Peek() == '>')
             {
                 reader.Read();

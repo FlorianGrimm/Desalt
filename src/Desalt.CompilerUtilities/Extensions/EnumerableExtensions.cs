@@ -7,6 +7,7 @@
 
 namespace Desalt.CompilerUtilities.Extensions
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -17,7 +18,7 @@ namespace Desalt.CompilerUtilities.Extensions
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// Converts an item into an enumerable of one item.
+        /// Converts an item into an sequence of one item.
         /// </summary>
         /// <typeparam name="T">The type of the element.</typeparam>
         /// <param name="item"></param>
@@ -49,10 +50,9 @@ namespace Desalt.CompilerUtilities.Extensions
         /// </returns>
         public static T[] ToSafeArray<T>(this T item)
         {
-            // ReSharper disable once CompareNonConstrainedGenericWithNull
-            if (item == null)
+            if (item is null)
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
 
             var enumerable = item as IEnumerable<T>;
@@ -71,7 +71,7 @@ namespace Desalt.CompilerUtilities.Extensions
         /// </returns>
         public static T[] ToSafeArray<T>(this IEnumerable<T> item)
         {
-            return item as T[] ?? item?.ToArray() ?? new T[0];
+            return item as T[] ?? item?.ToArray() ?? Array.Empty<T>();
         }
 
         /// <summary>
@@ -108,6 +108,32 @@ namespace Desalt.CompilerUtilities.Extensions
                     collection.Add(item);
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the specified sequence with nulls filtered out.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="sequence">The sequence to filter.</param>
+        /// <returns>The same sequence as the original with only non-null values.</returns>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> sequence)
+        {
+            return sequence.Where(x => !(x is null));
+        }
+
+        /// <summary>
+        /// Returns the specified sequence of <see cref="KeyValuePair{TKey, TPair}"/> pairs with null values filtered out.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the keys in the sequence.</typeparam>
+        /// <typeparam name="TValue">The type of the values in the sequence.</typeparam>
+        /// <param name="sequence">The sequence to filter.</param>
+        /// <returns>The same sequence as the original with only non-null values.</returns>
+        public static IEnumerable<KeyValuePair<TKey, TValue>> WhereValueNotNull<TKey, TValue>(
+            this IEnumerable<KeyValuePair<TKey, TValue?>> sequence)
+            where TValue : class
+        {
+            return sequence.Where(pair => pair.Value != null)
+                .Select(pair => new KeyValuePair<TKey, TValue>(pair.Key, pair.Value!));
         }
     }
 }

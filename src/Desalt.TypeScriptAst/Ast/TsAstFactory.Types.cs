@@ -113,7 +113,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsParameterList ParameterList()
         {
-            return new TsParameterList();
+            return TsParameterList.Empty;
         }
 
         public static ITsParameterList ParameterList(params ITsIdentifier[] requiredParameters)

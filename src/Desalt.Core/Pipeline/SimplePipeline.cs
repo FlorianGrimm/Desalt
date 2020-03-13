@@ -18,7 +18,7 @@ namespace Desalt.Core.Pipeline
     /// </summary>
     /// <typeparam name="TInput">The type that the starting stage requires.</typeparam>
     /// <typeparam name="TOutput">The type that the last stage outputs.</typeparam>
-    internal class SimplePipeline<TInput, TOutput>
+    internal class SimplePipeline<TInput, TOutput> where TOutput : class
     {
         //// ===========================================================================================================
         //// Member Variables
@@ -84,17 +84,17 @@ namespace Desalt.Core.Pipeline
         /// The result of running all of the stages of the pipeline in order. If there is a failure
         /// in one of the stages, the pipeline ends early.
         /// </returns>
-        public async Task<IExtendedResult<TOutput>> ExecuteAsync(TInput input, CompilerOptions options)
+        public async Task<IExtendedResult<TOutput?>> ExecuteAsync(TInput input, CompilerOptions options)
         {
             ValidateStages();
 
-            var previousOutputs = new List<object> { input };
+            var previousOutputs = new List<object?> { input };
 
             var diagnostics = DiagnosticList.Create(options);
             foreach (IPipelineStage stage in StagesInner)
             {
                 // find the next input, which is the latest previous output of a compatible type
-                object nextInput = previousOutputs.FindLast(item => stage.InputType.IsInstanceOfType(item));
+                object? nextInput = previousOutputs.FindLast(item => stage.InputType.IsInstanceOfType(item));
                 if (nextInput == null)
                 {
                     throw new InvalidOperationException(
@@ -108,12 +108,12 @@ namespace Desalt.Core.Pipeline
                 // don't continue the pipeline if there are errors
                 if (diagnostics.HasErrors)
                 {
-                    previousOutputs.Add(default(TOutput));
+                    previousOutputs.Add(null);
                     break;
                 }
             }
 
-            return new ExtendedResult<TOutput>((TOutput)previousOutputs.Last(), diagnostics);
+            return new ExtendedResult<TOutput?>((TOutput?)previousOutputs.Last(), diagnostics);
         }
 
         /// <summary>

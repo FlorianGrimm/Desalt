@@ -11,19 +11,20 @@ namespace Desalt.Core.CompilerStages
     using System.Threading.Tasks;
     using Buildalyzer;
     using Buildalyzer.Workspaces;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Pipeline stage that opens a .csproj file using Roslyn.
     /// </summary>
-    internal class OpenProjectStage : PipelineStage<CompilationRequest, Project>
+    internal class OpenProjectStage : PipelineStage<CompilationRequest, Project?>
     {
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public override async Task<IExtendedResult<Project>> ExecuteAsync(
+        public override async Task<IExtendedResult<Project?>> ExecuteAsync(
             CompilationRequest input,
             CompilerOptions options,
             CancellationToken cancellationToken = new CancellationToken())
@@ -31,7 +32,7 @@ namespace Desalt.Core.CompilerStages
             return await Task.Run(() => OpenProject(input.ProjectFilePath), cancellationToken);
         }
 
-        private static IExtendedResult<Project> OpenProject(string projectFilePath)
+        private static IExtendedResult<Project?> OpenProject(string projectFilePath)
         {
             // try to open the project
             var manager = new AnalyzerManager();
@@ -39,7 +40,13 @@ namespace Desalt.Core.CompilerStages
             AdhocWorkspace workspace = projectAnalyzer.GetWorkspace();
 
             var projectId = ProjectId.CreateFromSerialized(projectAnalyzer.ProjectGuid);
-            Project project = workspace.CurrentSolution.GetProject(projectId);
+            Project? project = workspace.CurrentSolution.GetProject(projectId);
+            if (project == null)
+            {
+                return new ExtendedResult<Project?>(
+                    null,
+                    new[] { DiagnosticFactory.CannotOpenProject(projectFilePath) });
+            }
 
             return new ExtendedResult<Project>(project);
         }

@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
+    using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             AliasName = aliasName ?? throw new ArgumentNullException(nameof(aliasName));
             Type = type ?? throw new ArgumentNullException(nameof(type));
-            TypeParameters = typeParameters;
+            TypeParameters = typeParameters ?? TsTypeParameters.Empty;
         }
 
         //// ===========================================================================================================
@@ -34,7 +35,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public ITsIdentifier AliasName { get; }
-        public ITsTypeParameters? TypeParameters { get; }
+        public ITsTypeParameters TypeParameters { get; }
         public ITsType Type { get; }
 
         //// ===========================================================================================================

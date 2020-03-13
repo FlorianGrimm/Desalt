@@ -46,7 +46,7 @@ namespace Desalt.Core.Translation
                     leftSide,
                     arguments,
                     _diagnostics,
-                    out ITsAstNode translatedNode))
+                    out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
             }
@@ -120,7 +120,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsReturnStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitReturnStatement(ReturnStatementSyntax node)
         {
-            ITsExpression expression = null;
+            ITsExpression? expression = null;
             if (node.Expression != null)
             {
                 expression = (ITsExpression)Visit(node.Expression).Single();
@@ -142,7 +142,7 @@ namespace Desalt.Core.Translation
         {
             var requiredParameters = new List<ITsRequiredParameter>();
             var optionalParameters = new List<ITsOptionalParameter>();
-            ITsRestParameter restParameter = null;
+            ITsRestParameter? restParameter = null;
 
             foreach (ParameterSyntax parameterNode in node.Parameters)
             {
@@ -172,7 +172,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitParameter(ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
-            ITsType parameterType;
+            ITsType? parameterType;
 
             // anonymous delegates don't always have a TypeSyntax, for example `(x, y) => ...`
             if (node.Type == null)

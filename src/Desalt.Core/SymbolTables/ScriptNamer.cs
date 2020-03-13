@@ -26,7 +26,7 @@ namespace Desalt.Core.SymbolTables
         /// <param name="mscorlibAssemblySymbol">The mscorlib assembly.</param>
         /// <param name="renameRules">Options controlling the way certain symbols are renamed.</param>
         /// <returns>The name the specified symbol should have in the generated script.</returns>
-        public ScriptNamer(IAssemblySymbol mscorlibAssemblySymbol, RenameRules renameRules = null)
+        public ScriptNamer(IAssemblySymbol mscorlibAssemblySymbol, RenameRules? renameRules = null)
         {
             _mscorlibAssemblySymbol =
                 mscorlibAssemblySymbol ?? throw new ArgumentNullException(nameof(mscorlibAssemblySymbol));
@@ -84,7 +84,7 @@ namespace Desalt.Core.SymbolTables
         /// The name to use in the generated script for the symbol, or null if there are no
         /// attributes that control the naming.
         /// </returns>
-        private static string DetermineScriptNameFromAttributes(ISymbol symbol)
+        private static string? DetermineScriptNameFromAttributes(ISymbol symbol)
         {
             // Use the following precedence if there are multiple attributes:
             // [ScriptAlias]
@@ -93,14 +93,14 @@ namespace Desalt.Core.SymbolTables
             // [PreserveMemberCase]
 
             // use [ScriptAlias] if available
-            string scriptAlias = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptAlias);
+            string? scriptAlias = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptAlias);
             if (scriptAlias != null)
             {
                 return scriptAlias;
             }
 
             // use [ScriptName] if available (even if there's also a [PreserveCase])
-            string scriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
+            string? scriptName = symbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptName);
             if (scriptName != null)
             {
                 return scriptName;
@@ -147,7 +147,7 @@ namespace Desalt.Core.SymbolTables
             if (SymbolEqualityComparer.Default.Equals(typeSymbol.ContainingAssembly, _mscorlibAssemblySymbol))
             {
                 // find the script namespace by searching on the type first, then the assembly
-                string scriptNamespace =
+                string? scriptNamespace =
                     typeSymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace) ??
                     _mscorlibAssemblySymbol.GetAttributeValueOrDefault(SaltarelleAttributeName.ScriptNamespace);
                 if (scriptNamespace != null)
@@ -263,7 +263,7 @@ namespace Desalt.Core.SymbolTables
             string defaultName = ToCamelCase(methodName);
 
             // if the symbol has any attributes that control naming, use those
-            string attributedName = DetermineScriptNameFromAttributes(methodSymbol);
+            string? attributedName = DetermineScriptNameFromAttributes(methodSymbol);
             if (attributedName != null)
             {
                 return attributedName;

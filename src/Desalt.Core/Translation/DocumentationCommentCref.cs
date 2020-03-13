@@ -70,8 +70,10 @@ namespace Desalt.Core.Translation
         public static DocumentationCommentCref Parse(string cref)
         {
             string fullTypeName;
-            string memberName = null;
+            string? memberName = null;
             CrefKind kind;
+
+            InvalidOperationException CreateInvalidException() => new InvalidOperationException($"Invalid cref attribute: {cref}");
 
             using (var reader = new PeekingTextReader(cref))
             {
@@ -89,16 +91,21 @@ namespace Desalt.Core.Translation
                     case 'E':
                     case 'F':
                         kind = s_charToKindMap[prefix];
-                        string qualifiedName = reader.ReadUntil('(');
-                        (fullTypeName, memberName) = SplitQualifiedName(qualifiedName);
+                        string? qualifiedName = reader.ReadUntil('(');
+                        (fullTypeName, memberName) =
+                            SplitQualifiedName(qualifiedName ?? throw CreateInvalidException());
                         break;
 
                     default:
-                        throw new InvalidOperationException("Invalid cref attribute: " + cref);
+                        throw CreateInvalidException();
                 }
             }
 
             string typeName = fullTypeName.Split('.').Last();
+            if (memberName == null)
+            {
+                throw CreateInvalidException();
+            }
 
             return new DocumentationCommentCref(kind, fullTypeName, typeName, memberName);
         }

@@ -23,7 +23,7 @@ namespace Desalt.Core.Pipeline
         //// Constructors
         //// ===========================================================================================================
 
-        public ExtendedResult(T result, IEnumerable<Diagnostic> diagnostics = null)
+        public ExtendedResult(T result, IEnumerable<Diagnostic>? diagnostics = null)
         {
             Result = result;
             Diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
@@ -36,7 +36,7 @@ namespace Desalt.Core.Pipeline
         /// <summary>
         /// Gets the result of the operation.
         /// </summary>
-        object IExtendedResult.Result => Result;
+        object? IExtendedResult.Result => Result;
 
         /// <summary>
         /// Gets the result of the operation.

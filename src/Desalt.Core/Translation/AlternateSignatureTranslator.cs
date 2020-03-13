@@ -81,7 +81,7 @@ namespace Desalt.Core.Translation
             // we don't need to adjust anything if the method doesn't belong to an [AlternateSignature] group
             if (!_alternateSignatureSymbolTable.TryGetValue(
                 methodSymbol,
-                out AlternateSignatureMethodGroup methodGroup))
+                out AlternateSignatureMethodGroup? methodGroup))
             {
                 return false;
             }
@@ -116,7 +116,7 @@ namespace Desalt.Core.Translation
                 translatedOptionalParameters,
                 diagnosticsList);
 
-            ITsRestParameter restParameter = translatedParameterList.RestParameter;
+            ITsRestParameter? restParameter = translatedParameterList.RestParameter;
 
             // create the new parameter list and compare against the old one
             adjustedParameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);

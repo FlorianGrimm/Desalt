@@ -93,8 +93,8 @@ namespace Desalt.Core.CompilerStages
             // TEMP - copy the original .cs file for easy comparing
             // get the relative path of the file
             string relativePath = PathUtil.MakeRelativePath(
-                context.Document.Project.FilePath,
-                context.Document.FilePath);
+                context.Document.Project.FilePath!,
+                context.Document.FilePath!);
 
             string destinationPath = Path.Combine(context.Options.OutputPath, relativePath);
 

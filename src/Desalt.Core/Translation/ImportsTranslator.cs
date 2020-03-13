@@ -103,6 +103,8 @@ namespace Desalt.Core.Translation
             var importDeclarations = new List<ITsImportDeclaration>();
             foreach (var grouping in groupedByFileName)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // special case: mscorlib - needs to be imported like this: `import 'mscorlib';`
                 if (grouping.Key == "mscorlib")
                 {
@@ -144,7 +146,7 @@ namespace Desalt.Core.Translation
             }
 
             // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
-            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol scriptSymbol) &&
+            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol) &&
                 TypeTranslator.IsNativeTypeScriptTypeName(scriptSymbol.ComputedScriptName))
             {
                 return false;

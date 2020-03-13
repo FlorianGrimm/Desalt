@@ -125,7 +125,7 @@ namespace Desalt.Core.Diagnostics
         /// Either a copy or the original <see cref="Diagnostic"/>, or null if the diagnostic should
         /// be suppressed.
         /// </returns>
-        public static Diagnostic WithReportDiagnostic(this Diagnostic diagnostic, ReportDiagnostic reportAction)
+        public static Diagnostic? WithReportDiagnostic(this Diagnostic? diagnostic, ReportDiagnostic reportAction)
         {
             if (diagnostic == null)
             {
@@ -164,7 +164,7 @@ namespace Desalt.Core.Diagnostics
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to copy.</param>
         /// <param name="severity">The new severity level.</param>
         /// <returns></returns>
-        public static Diagnostic WithSeverity(this Diagnostic diagnostic, DiagnosticSeverity severity)
+        public static Diagnostic? WithSeverity(this Diagnostic? diagnostic, DiagnosticSeverity severity)
         {
             if (diagnostic == null)
             {
