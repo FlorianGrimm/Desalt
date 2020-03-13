@@ -55,7 +55,7 @@ class Foo
 
             // get the documentation comment
             DocumentationComment docComment = methodSymbol.GetDocumentationComment();
-            docComment.Should().NotBeSameAs(DocumentationComment.Empty);
+            docComment.Should().NotBeNull();
 
             // translate the documentation comment
             IExtendedResult<ITsJsDocComment> result = DocumentationCommentTranslator.Translate(docComment);

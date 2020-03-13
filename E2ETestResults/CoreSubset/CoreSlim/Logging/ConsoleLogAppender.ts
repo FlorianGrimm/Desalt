@@ -16,14 +16,12 @@ export class ConsoleLogAppender extends BaseLogAppender {
 
   private levelMethods: { [key: string]: any };
 
-  /**
-   */
+  // Converted from the C# static constructor - it would be good to convert this
+  // block to inline initializations.
   public static __ctor() {
     ConsoleLogAppender.globalAppender.enableLogging((_, loggerLevel) => loggerLevel >= LoggerLevel.Info);
   }
 
-  /**
-   */
   private constructor() { }
 
   protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void {

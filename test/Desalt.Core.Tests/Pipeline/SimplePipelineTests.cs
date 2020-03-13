@@ -11,6 +11,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Collections;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
@@ -57,26 +58,26 @@ namespace Desalt.Core.Tests.Pipeline
         [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_a_superclass_of_a_previous_output()
         {
-            var pipeline = new SimplePipeline<int, bool>();
+            var pipeline = new SimplePipeline<int, object>();
             pipeline.AddStage(new FakePipelineStage<int, StringWriter>(input => new StringWriter()));
-            pipeline.AddStage(new FakePipelineStage<TextWriter, bool>(input => true));
+            pipeline.AddStage(new FakePipelineStage<TextWriter, object>(input => new object()));
             pipeline.Stages.Count().Should().Be(2);
         }
 
         [Test]
         public void AddStage_should_allow_a_stage_to_accept_an_input_that_is_an_interface_of_a_previous_output()
         {
-            var pipeline = new SimplePipeline<int, bool>();
+            var pipeline = new SimplePipeline<int, object>();
             pipeline.AddStage(
                 new FakePipelineStage<int, CaseInsensitiveComparer>(input => new CaseInsensitiveComparer()));
-            pipeline.AddStage(new FakePipelineStage<IComparer, bool>(input => true));
+            pipeline.AddStage(new FakePipelineStage<IComparer, object>(input => new object()));
             pipeline.Stages.Count().Should().Be(2);
         }
 
         [Test]
         public async Task Execute_should_throw_if_the_last_stage_does_not_output_a_compatible_type()
         {
-            var pipeline = new SimplePipeline<int, DateTime>();
+            var pipeline = new SimplePipeline<int, StringBuilder>();
             pipeline.AddStage(new IntToStringStage());
             try
             {
@@ -84,7 +85,8 @@ namespace Desalt.Core.Tests.Pipeline
             }
             catch (InvalidOperationException e)
             {
-                e.Message.Should().Be("The last stage outputs type 'String' but it should output type 'DateTime'.");
+                e.Message.Should()
+                    .Be("The last stage outputs type 'String' but it should output type 'StringBuilder'.");
             }
             catch (Exception e)
             {

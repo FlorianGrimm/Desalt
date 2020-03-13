@@ -190,8 +190,6 @@ export class ErrorTrace {
   }
 }
 
-/**
- */
 export class StackLocation {
   public readonly url: Object;
 
@@ -249,14 +247,12 @@ export class StackTrace {
 export class StackTraceAppender extends BaseLogAppender {
   public static readonly globalAppender: LogAppenderInstance<StackTraceAppender> = new LogAppenderInstance<StackTraceAppender>(() => new StackTraceAppender());
 
-  /**
-   */
+  // Converted from the C# static constructor - it would be good to convert this
+  // block to inline initializations.
   public static __ctor() {
     StackTraceAppender.globalAppender.enableLogging((_, loggerLevel) => loggerLevel > LoggerLevel.Info);
   }
 
-  /**
-   */
   private constructor() { }
 
   protected logInternal(source: Logger, level: LoggerLevel, message: string, args: any[]): void {
@@ -274,8 +270,6 @@ export class StackTraceAppender extends BaseLogAppender {
 // Call the static constructor
 StackTraceAppender.__ctor();
 
-/**
- */
 export class SourceCacheForErrorStacks {
   private static readonly unknownFunctionName: string = '?';
 
@@ -327,8 +321,6 @@ export class SourceCacheForErrorStacks {
     return SourceCacheForErrorStacks.unknownFunctionName;
   }
 
-  /**
-   */
   public static gatherContext(url: Object, lineNo: number, colPos: number): string[] {
     let source: string[] = SourceCacheForErrorStacks.getSource(url);
     if (ss.isNullOrUndefined(source) || source.length === 0) {
@@ -368,8 +360,6 @@ export class SourceCacheForErrorStacks {
   }
 }
 
-/**
- */
 class StackTraceParser {
   private static readonly safariNativeCodeRegexp: RegExp = new RegExp('^(eval@)?(\\[native code\\])?$');
 
