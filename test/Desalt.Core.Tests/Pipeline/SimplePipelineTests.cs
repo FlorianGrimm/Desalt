@@ -24,7 +24,9 @@ namespace Desalt.Core.Tests.Pipeline
         public void AddStage_should_throw_on_null_arguments()
         {
             var pipeline = new SimplePipeline<object, object>();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => pipeline.AddStage(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("stage");
         }
 
@@ -101,7 +103,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new IntToStringStage());
             pipeline.AddStage(new StringToCharArrayStage());
 
-            IExtendedResult<char[]> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
+            IExtendedResult<char[]?> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Result.Should().Equal('1', '2', '3');
         }
 
@@ -114,7 +116,7 @@ namespace Desalt.Core.Tests.Pipeline
             pipeline.AddStage(new FakePipelineStage<string, string>(input => input));
 
             const string inputString = "Input";
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(inputString, CompilerOptions.Default);
+            IExtendedResult<string?> result = await pipeline.ExecuteAsync(inputString, CompilerOptions.Default);
             result.Result.Should().BeSameAs(inputString);
         }
 
@@ -172,7 +174,7 @@ namespace Desalt.Core.Tests.Pipeline
                                     warningLevel: 1)
                             }))));
 
-            IExtendedResult<string> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
+            IExtendedResult<string?> result = await pipeline.ExecuteAsync(123, CompilerOptions.Default);
             result.Success.Should().BeFalse();
             result.Diagnostics.Select(m => m.ToString())
                 .Should()

@@ -33,7 +33,7 @@ namespace Desalt.Core.Tests.TestUtility
 
         private const string ProjectName = "TempProject";
 
-        private AdhocWorkspace _workspace;
+        private readonly AdhocWorkspace _workspace;
 
         //// ===========================================================================================================
         //// Constructors
@@ -51,8 +51,7 @@ namespace Desalt.Core.Tests.TestUtility
         public static string ProjectDir => Path.Combine("C:\\", ProjectName);
 
         public string OutputPath =>
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Path.Combine(Path.GetDirectoryName(_workspace.CurrentSolution.Projects.Single().FilePath), "outputPath");
+            Path.Combine(Path.GetDirectoryName(_workspace.CurrentSolution.Projects.Single().FilePath)!, "outputPath");
 
         public CompilerOptions Options => new CompilerOptions(OutputPath);
 
@@ -124,8 +123,8 @@ namespace Desalt.Core.Tests.TestUtility
                 }
 
                 // try to compile the project and report any diagnostics
-                Compilation compilation = await project.GetCompilationAsync();
-                compilation.GetDiagnostics().Should().BeEmpty();
+                Compilation? compilation = await project.GetCompilationAsync();
+                (compilation?.GetDiagnostics()).Should().BeEmpty();
 
                 return new TempProject(workspace);
             }
@@ -133,7 +132,7 @@ namespace Desalt.Core.Tests.TestUtility
             {
                 string subMessages = e.LoaderExceptions.Aggregate(
                     new StringBuilder().AppendLine().AppendLine("LoaderExceptions:"),
-                    (builder, ex) => builder.AppendLine(ex.Message),
+                    (builder, ex) => builder.AppendLine(ex?.Message),
                     builder => builder.ToString());
                 throw new Exception($"{e.Message}{subMessages}");
             }
@@ -141,22 +140,23 @@ namespace Desalt.Core.Tests.TestUtility
 
         public async Task<DocumentTranslationContext> CreateContextForFileAsync(
             string fileName = "File.cs",
-            CompilerOptions options = null)
+            CompilerOptions? options = null)
         {
             Project project = _workspace.CurrentSolution.Projects.Single();
             options ??= Options;
             Document document = project.Documents.Single(doc => doc.Name == fileName);
 
-            IExtendedResult<DocumentTranslationContext> result =
+            IExtendedResult<DocumentTranslationContext?> result =
                 await DocumentTranslationContext.TryCreateAsync(document, options);
             result.Diagnostics.Should().BeEmpty();
+            result.Result.Should().NotBeNull();
 
-            return result.Result;
+            return result.Result!;
         }
 
         public async Task<ImmutableArray<DocumentTranslationContextWithSymbolTables>>
             CreateContextsWithSymbolTablesAsync(
-                CompilerOptions options = null,
+                CompilerOptions? options = null,
                 SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndAllAssemblyTypes)
         {
             options ??= Options;
@@ -188,7 +188,7 @@ namespace Desalt.Core.Tests.TestUtility
 
         public async Task<DocumentTranslationContextWithSymbolTables> CreateContextWithSymbolTablesForFileAsync(
             string fileName = "File.cs",
-            CompilerOptions options = null,
+            CompilerOptions? options = null,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
             ImmutableArray<DocumentTranslationContextWithSymbolTables> allContexts = await CreateContextsWithSymbolTablesAsync(options, discoveryKind);
@@ -205,7 +205,6 @@ namespace Desalt.Core.Tests.TestUtility
         public void Dispose()
         {
             _workspace?.Dispose();
-            _workspace = null;
         }
     }
 

@@ -64,13 +64,13 @@ class C
                 translatedLeftSide,
                 translatedArgumentList,
                 diagnostics,
-                out ITsAstNode result);
+                out ITsAstNode? result);
 
             diagnostics.Should().BeEmpty();
             success.Should().BeTrue(because: "there should be an [InlineCode] translation");
 
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-            string translated = result.EmitAsString(EmitOptions.UnixSpaces);
+            string translated = result!.EmitAsString(EmitOptions.UnixSpaces);
             string expectedTypeScriptCode = expectedResult.EmitAsString(EmitOptions.UnixSpaces);
             translated.Should().Be(expectedTypeScriptCode);
         }

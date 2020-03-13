@@ -164,13 +164,8 @@ namespace Desalt.Core.Diagnostics
         /// <param name="diagnostic">The <see cref="Diagnostic"/> to copy.</param>
         /// <param name="severity">The new severity level.</param>
         /// <returns></returns>
-        public static Diagnostic? WithSeverity(this Diagnostic? diagnostic, DiagnosticSeverity severity)
+        public static Diagnostic WithSeverity(this Diagnostic diagnostic, DiagnosticSeverity severity)
         {
-            if (diagnostic == null)
-            {
-                return null;
-            }
-
             if (diagnostic.Severity == severity)
             {
                 return diagnostic;

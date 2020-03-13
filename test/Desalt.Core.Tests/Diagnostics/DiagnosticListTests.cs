@@ -23,18 +23,22 @@ namespace Desalt.Core.Tests.Diagnostics
         [Test]
         public void Create_and_From_should_throw_on_null_options()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => DiagnosticList.Create(null);
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
 
             action = () => DiagnosticList.From(null, Enumerable.Empty<Diagnostic>());
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("options");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Test]
         public void From_should_throw_on_null_diagnostics()
         {
             var options = new CompilerOptions("out");
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action action = () => DiagnosticList.From(options, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("diagnostics");
         }
 

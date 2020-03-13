@@ -48,7 +48,7 @@ class C {{
             string codeSnippet,
             string expectedTypeScriptCode,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
-            Func<CompilerOptions, CompilerOptions> populateOptionsFunc = null)
+            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null)
         {
             string code = $@"
 using System;
@@ -64,7 +64,7 @@ using System.Runtime.CompilerServices;
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
-            CompilerOptions options = populateOptionsFunc?.Invoke(tempProject.Options);
+            CompilerOptions? options = populateOptionsFunc?.Invoke(tempProject.Options);
             DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                 discoveryKind: discoveryKind,
                 options: options);

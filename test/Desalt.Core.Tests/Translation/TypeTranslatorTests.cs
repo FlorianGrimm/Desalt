@@ -51,7 +51,7 @@ class Foo
             VariableDeclarationSyntax variableDeclaration =
                 context.RootSyntax.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
 
-            ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(variableDeclaration.Type).Type;
+            ITypeSymbol? typeSymbol = context.SemanticModel.GetTypeInfo(variableDeclaration.Type).Type;
             if (typeSymbol == null)
             {
                 throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");

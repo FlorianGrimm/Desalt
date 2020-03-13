@@ -401,14 +401,14 @@ class C
             DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
 
             // get the StringBuilder symbol
-            ITypeSymbol stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
+            ITypeSymbol? stringBuilderSymbol = context.SemanticModel.GetTypeInfo(
                     context.RootSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().Single().Declaration.Type)
                 .Type;
 
             var scriptNamer = new ScriptNamer(
                 SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
 
-            scriptNamer.DetermineScriptNameForSymbol(stringBuilderSymbol).Should().Be("ss.StringBuilder");
+            scriptNamer.DetermineScriptNameForSymbol(stringBuilderSymbol!).Should().Be("ss.StringBuilder");
         }
     }
 }

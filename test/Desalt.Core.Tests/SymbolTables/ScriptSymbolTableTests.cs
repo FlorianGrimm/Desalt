@@ -125,12 +125,12 @@ class C
             // check a directly-reference symbol
             InvocationExpressionSyntax invocationExpressionSyntax =
                 context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
-            ISymbol scriptIsValueSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
+            ISymbol scriptIsValueSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol!;
             symbolTable.DirectlyReferencedExternalSymbols.Should().ContainKey(scriptIsValueSymbol);
 
             // check an implicitly referenced symbol
             INamedTypeSymbol stringBuilderSymbol =
-                scriptIsValueSymbol.ContainingAssembly.GetTypeByMetadataName("System.Text.StringBuilder");
+                scriptIsValueSymbol.ContainingAssembly.GetTypeByMetadataName("System.Text.StringBuilder")!;
             symbolTable.IndirectlyReferencedExternalSymbols.Should().ContainKey(stringBuilderSymbol);
         }
 
@@ -162,25 +162,25 @@ class C
                 context.RootSyntax.DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
             ISymbol classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
-            symbolTable.TryGetValue(classSymbol, out IScriptTypeSymbol scriptClassSymbol).Should().BeTrue();
-            scriptClassSymbol.Imported.Should().BeTrue();
+            symbolTable.TryGetValue(classSymbol, out IScriptTypeSymbol? scriptClassSymbol).Should().BeTrue();
+            scriptClassSymbol!.Imported.Should().BeTrue();
 
             // make sure we read the [InlineCode] from Script.IsNull
             InvocationExpressionSyntax invocationExpressionSyntax =
                 context.RootSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
-            ISymbol scriptIsNullSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol;
+            ISymbol scriptIsNullSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol!;
 
-            symbolTable.TryGetValue(scriptIsNullSymbol, out IScriptMethodSymbol scriptIsNullScriptSymbol)
+            symbolTable.TryGetValue(scriptIsNullSymbol, out IScriptMethodSymbol? scriptIsNullScriptSymbol)
                 .Should()
                 .BeTrue();
 
-            scriptIsNullScriptSymbol.InlineCode.Should().NotBeNullOrWhiteSpace();
+            scriptIsNullScriptSymbol!.InlineCode.Should().NotBeNullOrWhiteSpace();
 
             // make sure we read the [IgnoreNamespace] from System.Boolean
-            ISymbol boolSymbol = scriptIsNullSymbol.ContainingAssembly.GetTypeByMetadataName("System.Boolean");
+            ISymbol boolSymbol = scriptIsNullSymbol.ContainingAssembly.GetTypeByMetadataName("System.Boolean")!;
 
-            symbolTable.TryGetValue(boolSymbol, out IScriptTypeSymbol scriptBooleanSymbol).Should().BeTrue();
-            scriptBooleanSymbol.IgnoreNamespace.Should().BeTrue();
+            symbolTable.TryGetValue(boolSymbol, out IScriptTypeSymbol? scriptBooleanSymbol).Should().BeTrue();
+            scriptBooleanSymbol!.IgnoreNamespace.Should().BeTrue();
         }
 
         [Test]
@@ -212,7 +212,7 @@ class C
                 SymbolDiscoveryKind.OnlyDocumentTypes);
 
             // get the C.Method() symbol
-            ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")
+            ISymbol methodSymbol = context.SemanticModel.Compilation.Assembly.GetTypeByMetadataName("C")!
                 .GetMembers("Method")
                 .Single();
 

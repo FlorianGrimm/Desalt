@@ -54,11 +54,11 @@ class Foo
             IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclaration);
 
             // get the documentation comment
-            DocumentationComment docComment = methodSymbol.GetDocumentationComment();
+            DocumentationComment? docComment = methodSymbol.GetDocumentationComment();
             docComment.Should().NotBeNull();
 
             // translate the documentation comment
-            IExtendedResult<ITsJsDocComment> result = DocumentationCommentTranslator.Translate(docComment);
+            IExtendedResult<ITsJsDocComment> result = DocumentationCommentTranslator.Translate(docComment!);
             result.Diagnostics.Should().BeEmpty();
 
             ITsJsDocComment jsdocComment = result.Result;
