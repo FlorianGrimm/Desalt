@@ -13,7 +13,7 @@ namespace Desalt.Core.Diagnostics
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
-    internal partial class DiagnosticFactory
+    public partial class DiagnosticFactory
     {
         //// ===========================================================================================================
         //// Enums
@@ -124,7 +124,13 @@ namespace Desalt.Core.Diagnostics
             InvalidOptionsFile,
 
             [Error(1018, "Cannot open project", "Cannot open project file '{0}'.")]
-            CannotOpenProject
+            CannotOpenProject,
+
+            [Error(1019, "Unrecognized option", "Unrecognized option: '{0}'.")]
+            UnrecognizedOption,
+
+            [Error(1020, "Missing file specification", "Missing file specification for '{0}' option.")]
+            MissingFileSpecification,
         }
 
         //// ===========================================================================================================
@@ -356,6 +362,24 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic CannotOpenProject(string projectFilePath)
         {
             return Create(DiagnosticId.CannotOpenProject, Location.None, projectFilePath);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Unrecognized option: '{0}'."
+        /// </summary>
+        /// <param name="optionName">The name of the unrecognized command-line option.</param>
+        public static Diagnostic UnrecognizedOption(string optionName)
+        {
+            return Create(DiagnosticId.UnrecognizedOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing file specification for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that expects a file name.</param>
+        public static Diagnostic MissingFileSpecification(string optionName)
+        {
+            return Create(DiagnosticId.MissingFileSpecification, Location.None, optionName);
         }
     }
 }

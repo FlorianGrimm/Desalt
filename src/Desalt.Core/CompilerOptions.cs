@@ -29,10 +29,8 @@ namespace Desalt.Core
 
         public static readonly CompilerOptions Default = new CompilerOptions(instanceToCopy: null);
 
-        private const WarningLevel DefaultWarningLevel = DiagnosticOptions.DefaultWarningLevel;
-
-        private const ReportDiagnostic DefaultGeneralDiagnosticOption =
-            DiagnosticOptions.DefaultGeneralDiagnosticOption;
+        public const WarningLevel DefaultWarningLevel = DiagnosticOptions.DefaultWarningLevel;
+        public const ReportDiagnostic DefaultGeneralDiagnosticOption = DiagnosticOptions.DefaultGeneralDiagnosticOption;
 
         //// ===========================================================================================================
         //// Constructors
