@@ -425,23 +425,4 @@ namespace Desalt.Core
             }
         }
     }
-
-    internal static class JsonReaderExtensions
-    {
-        public static void Read(this JsonReader reader, JsonToken expectedToken)
-        {
-            VerifyToken(reader, expectedToken);
-            reader.Read();
-        }
-
-        public static void VerifyToken(this JsonReader reader, JsonToken expectedToken)
-        {
-            if (reader.TokenType != expectedToken)
-            {
-                throw new InvalidOperationException(
-                    $"Invalid JSON token. Expecting '{expectedToken}' but found '{reader.TokenType}': " +
-                    $"path = {reader.Path}");
-            }
-        }
-    }
 }
