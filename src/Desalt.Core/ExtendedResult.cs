@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Pipeline
+namespace Desalt.Core
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -17,7 +17,7 @@ namespace Desalt.Core.Pipeline
     /// Represents the results from executing a process that can produce diagnostic messages.
     /// </summary>
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    internal class ExtendedResult<T> : IExtendedResult<T>
+    public class ExtendedResult<T> : IExtendedResult<T>
     {
         //// ===========================================================================================================
         //// Constructors
