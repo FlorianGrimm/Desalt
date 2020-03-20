@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParser.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -9,6 +9,7 @@ namespace Desalt.ConsoleApp
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Globalization;
     using System.Linq;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
@@ -79,23 +80,52 @@ namespace Desalt.ConsoleApp
                     options.ShouldShowVersion = true;
                     break;
 
+                case "--warn":
+                case "-w":
+                    options.WarningLevel = ParseIntValueArg(arg, argPeeker, diagnostics);
+                    break;
+
                 default:
                     diagnostics.Add(DiagnosticFactory.UnrecognizedOption(arg));
                     break;
             };
         }
 
+        private static bool IsOption(string? arg)
+        {
+            return !string.IsNullOrWhiteSpace(arg) && arg[0] == '-';
+        }
+
         private static string ParseFileArg(string name, ArgPeeker argPeeker, ICollection<Diagnostic> diagnostics)
         {
             string? value = argPeeker.Peek();
 
-            if (string.IsNullOrWhiteSpace(value) || value[0] == '-')
+            if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
                 diagnostics.Add(DiagnosticFactory.MissingFileSpecification(name));
                 return string.Empty;
             }
 
             return argPeeker.Read();
+        }
+
+        private static int ParseIntValueArg(string name, ArgPeeker argPeeker, ICollection<Diagnostic> diagnostics)
+        {
+            string? value = argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(value) || IsOption(value))
+            {
+                diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+                return -1;
+            }
+
+            if (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out int result))
+            {
+                diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+            }
+
+            argPeeker.Read();
+            return result;
         }
 
         //// ===========================================================================================================

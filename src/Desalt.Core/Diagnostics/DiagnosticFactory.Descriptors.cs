@@ -131,6 +131,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1020, "Missing file specification", "Missing file specification for '{0}' option.")]
             MissingFileSpecification,
+
+            [Error(1021, "Missing number for option", "Missing number for '{0}' option.")]
+            MissingNumberForOption,
         }
 
         //// ===========================================================================================================
@@ -380,6 +383,15 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic MissingFileSpecification(string optionName)
         {
             return Create(DiagnosticId.MissingFileSpecification, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing number for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that expects a number value.</param>
+        public static Diagnostic MissingNumberForOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingNumberForOption, Location.None, optionName);
         }
     }
 }

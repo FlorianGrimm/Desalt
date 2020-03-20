@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -129,6 +129,44 @@ namespace Desalt.ConsoleApp.Tests
             var result = CliOptionParser.Parse(new[] { "--nologo" });
             result.Success.Should().BeTrue();
             result.Result.NoLogo.Should().BeTrue();
+        }
+
+        //// ===========================================================================================================
+        //// Warnings and Errors Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public void Parse_should_recognize_warn()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warn", "2" });
+            result.Success.Should().BeTrue();
+            result.Result.WarningLevel.Should().Be(2);
+
+            result = CliOptionParser.Parse(new[] { "-w", "2" });
+            result.Success.Should().BeTrue();
+            result.Result.WarningLevel.Should().Be(2);
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_warn_has_no_value_or_an_invalid_value()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warn" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
+
+            result = CliOptionParser.Parse(new[] { "--warn", "--project", "Project.csproj" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
+
+            result = CliOptionParser.Parse(new[] { "--warn", "not-a-number" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
         }
     }
 }

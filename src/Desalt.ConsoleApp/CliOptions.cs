@@ -7,6 +7,8 @@
 
 namespace Desalt.ConsoleApp
 {
+    using Desalt.Core;
+
     /// <summary>
     /// Contains all of the command line interface options.
     /// </summary>
@@ -27,12 +29,12 @@ Desalt Compiler Options
 
                        - ERRORS AND WARNINGS -
 --warnaserror[+|-]             Report all warnings as errors
---warnaserror[+|-]:<warn list> Report specific warnings as errors
---warn:<n>                     Set warning level (0-4) (Short form: -w)
---nowarn:<warn list>           Disable specific warning messages
+--warnaserror[+|-] <warn list> Report specific warnings as errors
+--warn <n>                     Set warning level (0-4) (Short form: -w)
+--nowarn <warn list>           Disable specific warning messages
 
                        - LANGUAGE -
---define:<symbol list>         Define conditional compilation symbol(s) (Short form: -d)
+--define <symbol list>         Define conditional compilation symbol(s) (Short form: -d)
 
                        - MISCELLANEOUS -
 @<file>                        Read response file for more options
@@ -47,6 +49,8 @@ Desalt Compiler Options
 
         public string? OutDirectory { get; set; }
         public string? ProjectFile { get; set; }
+
+        public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
 
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }
