@@ -30,7 +30,8 @@ Desalt Compiler Options
 
                        - ERRORS AND WARNINGS -
 --warnaserror[+|-]             Report all warnings as errors
---warnaserror[+|-] <warn list> Report specific warnings as errors
+--warnaserror[+|-] <warn list> Report specific warnings as errors. Can be an error code like CS2008,
+                               or just a number.
 --warn <n>                     Set warning level (0-4) (Short form: -w)
 --nowarn <warn list>           Disable specific warning messages. Can be an error code like CS2008,
                                or just a number.
@@ -52,6 +53,9 @@ Desalt Compiler Options
         public string? OutDirectory { get; set; }
         public string? ProjectFile { get; set; }
 
+        public bool AllWarningsAsErrors { get; set; }
+        public ImmutableArray<string> WarningsAsErrors { get; set; } = ImmutableArray<string>.Empty;
+        public ImmutableArray<string> WarningsNotAsErrors { get; set; } = ImmutableArray<string>.Empty;
         public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
         public ImmutableArray<string> NoWarn { get; set; } = ImmutableArray<string>.Empty;
 

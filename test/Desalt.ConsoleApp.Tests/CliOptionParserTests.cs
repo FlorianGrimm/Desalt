@@ -196,5 +196,49 @@ namespace Desalt.ConsoleApp.Tests
                 .ContainSingle()
                 .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--nowarn"));
         }
+
+        [Test]
+        public void Parse_should_recognize_warnaserror_as_a_flag()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeTrue();
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror+" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeTrue();
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror-" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeFalse();
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror+", "--project", "Project.csproj" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeTrue();
+        }
+
+        [Test]
+        public void Parse_should_recognize_warnaserror_as_a_list()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror", "CS2008" });
+            result.Success.Should().BeTrue();
+            result.Result.WarningsAsErrors.Should().ContainSingle().And.Equal("CS2008");
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009;CS2010," });
+            result.Success.Should().BeTrue();
+            result.Result.WarningsAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror+", ";CS2008,CS2009;CS2010," });
+            result.Success.Should().BeTrue();
+            result.Result.WarningsAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror-", "CS2008" });
+            result.Success.Should().BeTrue();
+            result.Result.WarningsNotAsErrors.Should().ContainSingle().And.Equal("CS2008");
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
+            result.Success.Should().BeTrue();
+            result.Result.WarningsNotAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+        }
     }
 }

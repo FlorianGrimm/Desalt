@@ -90,10 +90,35 @@ namespace Desalt.ConsoleApp
                     options.WarningLevel = ParseIntValueArg(arg, argPeeker, diagnostics);
                     break;
 
+                case "--warnaserror":
+                case "--warnaserror+":
+                    if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsAsErrors))
+                    {
+                        options.WarningsAsErrors = warningsAsErrors;
+                    }
+                    else
+                    {
+                        options.AllWarningsAsErrors = true;
+                    }
+
+                    break;
+
+                case "--warnaserror-":
+                    if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsNotAsErrors))
+                    {
+                        options.WarningsNotAsErrors = warningsNotAsErrors;
+                    }
+                    else
+                    {
+                        options.AllWarningsAsErrors = false;
+                    }
+
+                    break;
+
                 default:
                     diagnostics.Add(DiagnosticFactory.UnrecognizedOption(arg));
                     break;
-            };
+            }
         }
 
         private static bool IsOption(string? arg)
@@ -149,6 +174,22 @@ namespace Desalt.ConsoleApp
             rawValue = argPeeker.Read();
             string[] values = rawValue.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
             return values.ToImmutableArray();
+        }
+
+        private static bool TryParseOptionalStringList(
+            ArgPeeker argPeeker,
+            out ImmutableArray<string> list)
+        {
+            string? rawValue = argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            {
+                list = ImmutableArray<string>.Empty;
+                return false;
+            }
+
+            list = ParseStringListArg(string.Empty, argPeeker, ImmutableArray<Diagnostic>.Empty);
+            return true;
         }
 
         //// ===========================================================================================================
