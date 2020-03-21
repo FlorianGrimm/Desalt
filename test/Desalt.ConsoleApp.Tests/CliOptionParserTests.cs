@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -178,7 +178,7 @@ namespace Desalt.ConsoleApp.Tests
 
             result = CliOptionParser.Parse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.NoWarn.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+            result.Result.NoWarn.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
         }
 
         [Test]
@@ -226,11 +226,11 @@ namespace Desalt.ConsoleApp.Tests
 
             result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+            result.Result.WarningsAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
 
             result = CliOptionParser.Parse(new[] { "--warnaserror+", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+            result.Result.WarningsAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-", "CS2008" });
             result.Success.Should().BeTrue();
@@ -238,7 +238,7 @@ namespace Desalt.ConsoleApp.Tests
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsNotAsErrors.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+            result.Result.WarningsNotAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
         }
     }
 }

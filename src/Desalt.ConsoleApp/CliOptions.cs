@@ -54,10 +54,10 @@ Desalt Compiler Options
         public string? ProjectFile { get; set; }
 
         public bool AllWarningsAsErrors { get; set; }
-        public ImmutableArray<string> WarningsAsErrors { get; set; } = ImmutableArray<string>.Empty;
-        public ImmutableArray<string> WarningsNotAsErrors { get; set; } = ImmutableArray<string>.Empty;
+        public IImmutableSet<string> WarningsAsErrors { get; set; } = ImmutableHashSet<string>.Empty;
+        public IImmutableSet<string> WarningsNotAsErrors { get; set; } = ImmutableHashSet<string>.Empty;
         public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
-        public ImmutableArray<string> NoWarn { get; set; } = ImmutableArray<string>.Empty;
+        public IImmutableSet<string> NoWarn { get; set; } = ImmutableHashSet<string>.Empty;
 
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }
