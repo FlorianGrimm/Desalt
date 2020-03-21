@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -80,6 +80,14 @@ namespace Desalt.ConsoleApp.Tests
         }
 
         [Test]
+        public void Parse_should_use_the_last_argument_for_project()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "Proj.csproj", "--project", "ProjB.csproj" });
+            result.Success.Should().BeTrue();
+            result.Result.Should().BeEquivalentTo(new CliOptions { ProjectFile = "ProjB.csproj" });
+        }
+
+        [Test]
         public void Parse_should_return_an_error_when_project_is_missing_the_value()
         {
             var result = CliOptionParser.Parse(new[] { "--project" });
@@ -101,6 +109,14 @@ namespace Desalt.ConsoleApp.Tests
             var result = CliOptionParser.Parse(new[] { "--out", "Directory" });
             result.Success.Should().BeTrue();
             result.Result.Should().BeEquivalentTo(new CliOptions { OutDirectory = "Directory" });
+        }
+
+        [Test]
+        public void Parse_should_use_the_last_argument_for_out()
+        {
+            var result = CliOptionParser.Parse(new[] { "--out", "A", "--out", "B" });
+            result.Success.Should().BeTrue();
+            result.Result.Should().BeEquivalentTo(new CliOptions { OutDirectory = "B" });
         }
 
         [Test]
@@ -148,6 +164,14 @@ namespace Desalt.ConsoleApp.Tests
         }
 
         [Test]
+        public void Parse_should_use_the_last_value_for_warn()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warn", "2", "-w", "1" });
+            result.Success.Should().BeTrue();
+            result.Result.WarningLevel.Should().Be(1);
+        }
+
+        [Test]
         public void Parse_should_return_an_error_when_warn_has_no_value_or_an_invalid_value()
         {
             var result = CliOptionParser.Parse(new[] { "--warn" });
@@ -177,6 +201,14 @@ namespace Desalt.ConsoleApp.Tests
             result.Result.NoWarn.Should().ContainSingle().And.Equal("CS2008");
 
             result = CliOptionParser.Parse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
+            result.Success.Should().BeTrue();
+            result.Result.NoWarn.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+        }
+
+        [Test]
+        public void Parse_should_add_to_nowarn_for_each_instance_of_the_option()
+        {
+            var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008,CS2009", "--nowarn", "CS2010" });
             result.Success.Should().BeTrue();
             result.Result.NoWarn.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
         }
@@ -239,6 +271,37 @@ namespace Desalt.ConsoleApp.Tests
             result = CliOptionParser.Parse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
             result.Result.WarningsNotAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+        }
+
+        [Test]
+        public void Parse_should_give_precedence_to_later_arguments_with_warnaserror()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeFalse();
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror-", "--warnaserror+" });
+            result.Success.Should().BeTrue();
+            result.Result.AllWarningsAsErrors.Should().BeTrue();
+        }
+
+        [Test]
+        public void Parse_should_remove_previously_added_items_when_warnaserror_is_specified_multiple_times()
+        {
+            var result = CliOptionParser.Parse(
+                new[]
+                {
+                    "--warnaserror",
+                    "CS2008;CS2009",
+                    "--warnaserror-",
+                    "CS2008;CS2010;CS2011",
+                    "--warnaserror+",
+                    "CS2011"
+                });
+
+            result.Success.Should().BeTrue();
+            result.Result.WarningsAsErrors.Should().HaveCount(2).And.Contain("CS2009", "CS2011");
+            result.Result.WarningsNotAsErrors.Should().HaveCount(2).And.Contain("CS2008", "CS2010");
         }
     }
 }

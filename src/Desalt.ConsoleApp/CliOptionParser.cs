@@ -69,7 +69,7 @@ namespace Desalt.ConsoleApp
                     break;
 
                 case "--nowarn":
-                    options.NoWarn = ParseStringListArg(arg, argPeeker, diagnostics);
+                    options.NoWarn = options.NoWarn.Union(ParseStringListArg(arg, argPeeker, diagnostics));
                     break;
 
                 case "--out":
@@ -94,7 +94,8 @@ namespace Desalt.ConsoleApp
                 case "--warnaserror+":
                     if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsAsErrors))
                     {
-                        options.WarningsAsErrors = warningsAsErrors;
+                        options.WarningsAsErrors = options.WarningsAsErrors.Union(warningsAsErrors);
+                        options.WarningsNotAsErrors = options.WarningsNotAsErrors.Except(warningsAsErrors);
                     }
                     else
                     {
@@ -106,7 +107,8 @@ namespace Desalt.ConsoleApp
                 case "--warnaserror-":
                     if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsNotAsErrors))
                     {
-                        options.WarningsNotAsErrors = warningsNotAsErrors;
+                        options.WarningsNotAsErrors = options.WarningsNotAsErrors.Union(warningsNotAsErrors);
+                        options.WarningsAsErrors = options.WarningsAsErrors.Except(warningsNotAsErrors);
                     }
                     else
                     {

@@ -13,7 +13,7 @@ namespace Desalt.ConsoleApp
     /// <summary>
     /// Contains all of the command line interface options.
     /// </summary>
-    internal class CliOptions
+    internal sealed class CliOptions
     {
         //// ===========================================================================================================
         //// Member Variables
