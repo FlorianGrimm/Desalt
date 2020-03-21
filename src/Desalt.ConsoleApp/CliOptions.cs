@@ -7,6 +7,7 @@
 
 namespace Desalt.ConsoleApp
 {
+    using System.Collections.Immutable;
     using Desalt.Core;
 
     /// <summary>
@@ -31,7 +32,8 @@ Desalt Compiler Options
 --warnaserror[+|-]             Report all warnings as errors
 --warnaserror[+|-] <warn list> Report specific warnings as errors
 --warn <n>                     Set warning level (0-4) (Short form: -w)
---nowarn <warn list>           Disable specific warning messages
+--nowarn <warn list>           Disable specific warning messages. Can be an error code like CS2008,
+                               or just a number.
 
                        - LANGUAGE -
 --define <symbol list>         Define conditional compilation symbol(s) (Short form: -d)
@@ -51,6 +53,7 @@ Desalt Compiler Options
         public string? ProjectFile { get; set; }
 
         public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
+        public ImmutableArray<string> NoWarn { get; set; } = ImmutableArray<string>.Empty;
 
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }

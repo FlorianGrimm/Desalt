@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -167,6 +167,34 @@ namespace Desalt.ConsoleApp.Tests
             result.Diagnostics.Should()
                 .ContainSingle()
                 .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
+        }
+
+        [Test]
+        public void Parse_should_recognize_nowarn()
+        {
+            var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008" });
+            result.Success.Should().BeTrue();
+            result.Result.NoWarn.Should().ContainSingle().And.Equal("CS2008");
+
+            result = CliOptionParser.Parse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
+            result.Success.Should().BeTrue();
+            result.Result.NoWarn.Should().HaveCount(3).And.ContainInOrder("CS2008", "CS2009", "CS2010");
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_nowarn_has_no_value_or_an_invalid_value()
+        {
+            var result = CliOptionParser.Parse(new[] { "--nowarn" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--nowarn"));
+
+            result = CliOptionParser.Parse(new[] { "--nowarn", "--project", "Project.csproj" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--nowarn"));
         }
     }
 }

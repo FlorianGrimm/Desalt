@@ -7,6 +7,7 @@
 
 namespace Desalt.ConsoleApp
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Globalization;
@@ -65,6 +66,10 @@ namespace Desalt.ConsoleApp
 
                 case "--nologo":
                     options.NoLogo = true;
+                    break;
+
+                case "--nowarn":
+                    options.NoWarn = ParseStringListArg(arg, argPeeker, diagnostics);
                     break;
 
                 case "--out":
@@ -126,6 +131,24 @@ namespace Desalt.ConsoleApp
 
             argPeeker.Read();
             return result;
+        }
+
+        private static ImmutableArray<string> ParseStringListArg(
+            string name,
+            ArgPeeker argPeeker,
+            ICollection<Diagnostic> diagnostics)
+        {
+            string? rawValue = argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            {
+                diagnostics.Add(DiagnosticFactory.MissingValueForOption(name));
+                return ImmutableArray<string>.Empty;
+            }
+
+            rawValue = argPeeker.Read();
+            string[] values = rawValue.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return values.ToImmutableArray();
         }
 
         //// ===========================================================================================================
