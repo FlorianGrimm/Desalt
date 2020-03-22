@@ -11,6 +11,7 @@ namespace Desalt.ConsoleApp.Tests
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using NUnit.Framework;
@@ -18,37 +19,51 @@ namespace Desalt.ConsoleApp.Tests
 
     public class CliAppTests
     {
+        private static readonly string[] s_logo =
+        {
+            "Desalt C# to TypeScript Compiler version 1.0.0-alpha",
+            "Copyright (C) Justin Rockwood. All rights reserved."
+        };
+
         private static async Task VerifyOutput(
             IEnumerable<string> args,
             string expectedOutput,
-            int expectedReturnValue = 0)
+            int expectedReturnValue = 0,
+            bool skipLogo = false)
         {
-            await VerifyOutput(args, expectedOutput.Replace("\r\n", "\n").Split('\n'), expectedReturnValue);
+            await VerifyOutput(args, expectedOutput.Replace("\r\n", "\n").Split('\n'), expectedReturnValue, skipLogo);
         }
 
         private static async Task VerifyOutput(
             IEnumerable<string> args,
             IEnumerable<string> expectedOutputLines,
-            int expectedReturnValue = 0)
+            int expectedReturnValue = 0,
+            bool skipLogo = false)
         {
             await using var writer = new StringWriter { NewLine = "\n" };
-            int returnValue = await CliApp.RunAsync(args, writer);
+            var app = new CliApp(writer);
+            int returnValue = await app.RunAsync(args);
             returnValue.Should().Be(expectedReturnValue);
 
             string actualOutput = writer.ToString();
-            actualOutput.Should().Be(string.Join('\n', expectedOutputLines) + '\n');
+            string expectedOutput = string.Join(
+                '\n',
+                skipLogo ? expectedOutputLines : s_logo.Concat(expectedOutputLines));
+            expectedOutput += '\n';
+
+            actualOutput.Should().Be(expectedOutput);
         }
 
         [Test]
         public async Task RunAsync_should_print_the_version_if_requested()
         {
-            await VerifyOutput(
-                new[] { "--version" },
-                new[]
-                {
-                    "Desalt C# to TypeScript Compiler version 1.0.0-alpha",
-                    "Copyright (C) Justin Rockwood. All rights reserved."
-                });
+            await VerifyOutput(new[] { "--version" }, "1.0.0-alpha", skipLogo: true);
+        }
+
+        [Test]
+        public async Task RunAsync_should_suppress_the_logo_if_requested()
+        {
+            await VerifyOutput(new[] { "--help", "--nologo" }, CliOptions.HelpText, skipLogo: true);
         }
 
         [Test]

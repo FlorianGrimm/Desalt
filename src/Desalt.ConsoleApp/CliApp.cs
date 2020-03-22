@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliApp.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -18,17 +18,31 @@ namespace Desalt.ConsoleApp
     using Microsoft.CodeAnalysis;
     using Pastel;
 
-    internal static class CliApp
+    internal sealed class CliApp
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private readonly TextWriter _writer;
+        private bool _printedLogo;
+
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        public CliApp(TextWriter writer)
+        {
+            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
+        }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static async Task<int> RunAsync(IEnumerable<string> args, TextWriter? outWriter = null)
+        public async Task<int> RunAsync(IEnumerable<string> args)
         {
-            outWriter ??= Console.Out;
-
-            CliOptions? cliOptions = ParseAndValidateArguments(args, outWriter);
+            CliOptions? cliOptions = ParseAndValidateArguments(args);
             if (cliOptions == null)
             {
                 return 1;
@@ -36,35 +50,40 @@ namespace Desalt.ConsoleApp
 
             if (cliOptions.ShouldShowHelp)
             {
-                DisplayHelp(outWriter);
+                PrintHelp();
                 return 0;
             }
 
             if (cliOptions.ShouldShowVersion)
             {
-                DisplayLogoAndVersion(outWriter);
+                PrintVersion();
                 return 0;
             }
 
             IExtendedResult<bool> compileResult = await CompileAsync(cliOptions);
-            WriteDiagnostics(compileResult.Diagnostics, outWriter);
+            WriteDiagnostics(compileResult.Diagnostics);
 
             return compileResult.Success ? 0 : 1;
         }
 
-        private static CliOptions? ParseAndValidateArguments(IEnumerable<string> args, TextWriter outWriter)
+        private CliOptions? ParseAndValidateArguments(IEnumerable<string> args)
         {
             IExtendedResult<CliOptions> parseResult = CliOptionParser.Parse(args);
+            if (parseResult.Result.NoLogo)
+            {
+                _printedLogo = true;
+            }
+
             if (parseResult.HasErrors)
             {
-                WriteDiagnostics(parseResult.Diagnostics, outWriter);
+                WriteDiagnostics(parseResult.Diagnostics);
                 return null;
             }
 
             IExtendedResult<bool> validateResult = CliOptionsValidator.Validate(parseResult.Result);
             if (validateResult.HasErrors)
             {
-                WriteDiagnostics(validateResult.Diagnostics, outWriter);
+                WriteDiagnostics(validateResult.Diagnostics);
                 return null;
             }
 
@@ -74,25 +93,18 @@ namespace Desalt.ConsoleApp
 
             WriteDiagnostics(
                 parseResult.Diagnostics.Where(IsWarningOrInfo)
-                    .Concat(validateResult.Diagnostics.Where(IsWarningOrInfo)),
-                outWriter);
+                    .Concat(validateResult.Diagnostics.Where(IsWarningOrInfo)));
 
             return parseResult.Result;
         }
 
-        private static void DisplayHelp(TextWriter outWriter)
+        private void PrintLogoIfNeeded()
         {
-            string helpText = CliOptions.HelpText.Replace("\r\n", "\n");
-            string[] lines = helpText.Split('\n');
-
-            foreach (string line in lines)
+            if (_printedLogo)
             {
-                outWriter.WriteLine(line);
+                return;
             }
-        }
 
-        private static void DisplayLogoAndVersion(TextWriter outWriter)
-        {
             var thisAssembly = Assembly.GetExecutingAssembly();
             string? productName = thisAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
             string? version = thisAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
@@ -100,13 +112,44 @@ namespace Desalt.ConsoleApp
             string? copyright = thisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()
                 ?.Copyright.Replace("©", "(C)");
 
-            outWriter.WriteLine($"{productName} version {version}");
-            outWriter.WriteLine(copyright);
+            _writer.WriteLine($"{productName} version {version}");
+            _writer.WriteLine(copyright);
+
+            _printedLogo = true;
         }
 
-        private static void WriteDiagnostics(IEnumerable<Diagnostic> diagnostics, TextWriter outWriter)
+        private void PrintVersion()
         {
-            foreach (Diagnostic diagnostic in diagnostics)
+            string? version = Assembly.GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
+
+            _writer.WriteLine(version);
+        }
+
+        private void PrintHelp()
+        {
+            string helpText = CliOptions.HelpText.Replace("\r\n", "\n");
+            string[] lines = helpText.Split('\n');
+
+            PrintLogoIfNeeded();
+
+            foreach (string line in lines)
+            {
+                _writer.WriteLine(line);
+            }
+        }
+
+        private void WriteDiagnostics(IEnumerable<Diagnostic> diagnostics)
+        {
+            var diagnosticsAsArray = diagnostics.ToArray();
+
+            if (diagnosticsAsArray.Length > 0)
+            {
+                PrintLogoIfNeeded();
+            }
+
+            foreach (Diagnostic diagnostic in diagnosticsAsArray)
             {
                 string message = diagnostic.Severity switch
                 {
@@ -115,13 +158,13 @@ namespace Desalt.ConsoleApp
                     _ => diagnostic.ToString(),
                 };
 
-                outWriter.WriteLine(message);
+                _writer.WriteLine(message);
             }
         }
 
         private static async Task<IExtendedResult<bool>> CompileAsync(CliOptions cliOptions)
         {
-            CompilerOptions compilerOptions = CreateCompilerOptions(cliOptions);
+            var compilerOptions = cliOptions.ToCompilerOptions();
             string projectFile = cliOptions.ProjectFile ??
                 throw new InvalidOperationException("Project file should have been validated earlier.");
 
@@ -129,18 +172,6 @@ namespace Desalt.ConsoleApp
             var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
             return result;
-        }
-
-        private static CompilerOptions CreateCompilerOptions(CliOptions cliOptions)
-        {
-            var builder = CompilerOptions.Default.ToBuilder();
-
-            if (cliOptions.OutDirectory != null)
-            {
-                builder.OutputPath = cliOptions.OutDirectory;
-            }
-
-            return builder.ToImmutable();
         }
     }
 }

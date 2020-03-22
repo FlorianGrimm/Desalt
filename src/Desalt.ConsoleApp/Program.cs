@@ -15,13 +15,14 @@ namespace Desalt.ConsoleApp
     {
         private static async Task<int> Main(string[] args)
         {
-            // by default, .NET Core doesn't have all code pages needed for Console apps.
-            // see the .NET Core Notes in https://msdn.microsoft.com/en-us/library/system.diagnostics.process(v=vs.110).aspx
+            // By default, .NET Core doesn't have all code pages needed for Console apps.
+            // See the .NET Core Notes in https://msdn.microsoft.com/en-us/library/system.diagnostics.process(v=vs.110).aspx
             // https://github.com/dotnet/roslyn/issues/10785
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.Unicode;
 
-            return await CliApp.RunAsync(args);
+            var app = new CliApp(Console.Out);
+            return await app.RunAsync(args);
         }
     }
 }
