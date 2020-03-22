@@ -44,7 +44,11 @@ namespace Desalt.ConsoleApp.Tests
         {
             await VerifyOutput(
                 new[] { "--version" },
-                new[] { "desalt 1.0.0-alpha", "Copyright (C) Justin Rockwood. All rights reserved." });
+                new[]
+                {
+                    "Desalt C# to TypeScript Compiler version 1.0.0-alpha",
+                    "Copyright (C) Justin Rockwood. All rights reserved."
+                });
         }
 
         [Test]

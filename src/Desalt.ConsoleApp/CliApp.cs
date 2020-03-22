@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliApp.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -42,7 +42,7 @@ namespace Desalt.ConsoleApp
 
             if (cliOptions.ShouldShowVersion)
             {
-                DisplayVersion(outWriter);
+                DisplayLogoAndVersion(outWriter);
                 return 0;
             }
 
@@ -91,16 +91,16 @@ namespace Desalt.ConsoleApp
             }
         }
 
-        private static void DisplayVersion(TextWriter outWriter)
+        private static void DisplayLogoAndVersion(TextWriter outWriter)
         {
             var thisAssembly = Assembly.GetExecutingAssembly();
-            string? exeName = thisAssembly.GetName().Name;
+            string? productName = thisAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
             string? version = thisAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                 ?.InformationalVersion;
             string? copyright = thisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()
                 ?.Copyright.Replace("©", "(C)");
 
-            outWriter.WriteLine($"{exeName} {version}");
+            outWriter.WriteLine($"{productName} version {version}");
             outWriter.WriteLine(copyright);
         }
 

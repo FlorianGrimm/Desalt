@@ -25,7 +25,7 @@ LICENSE.txt in the project root for license information.
   <PropertyGroup>
     <Authors>Justin Rockwood</Authors>
     <Company>Justin Rockwood</Company>
-    <Product>Desalt Toolset</Product>
+    <Product>Desalt C# to TypeScript Compiler</Product>
     <Copyright>Copyright © Justin Rockwood. All rights reserved.</Copyright>
   </PropertyGroup>
 
