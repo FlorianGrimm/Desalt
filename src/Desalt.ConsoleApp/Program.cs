@@ -8,94 +8,20 @@
 namespace Desalt.ConsoleApp
 {
     using System;
-    using System.Drawing;
+    using System.Text;
     using System.Threading.Tasks;
-    using Desalt.Core;
-    using Microsoft.CodeAnalysis;
-    using Pastel;
 
     internal class Program
     {
         private static async Task<int> Main(string[] args)
         {
-            IExtendedResult<CliOptions> parseResult = CliOptionParser.Parse(args);
-            if (parseResult.Success)
-            {
-                CliOptions options = parseResult.Result;
-                if (options.ShouldShowHelp)
-                {
-                    PrintHelp();
-                    return 0;
-                }
-                else if (options.ShouldShowVersion)
-                {
-                    PrintVersion();
-                    return 0;
-                }
+            // by default, .NET Core doesn't have all code pages needed for Console apps.
+            // see the .NET Core Notes in https://msdn.microsoft.com/en-us/library/system.diagnostics.process(v=vs.110).aspx
+            // https://github.com/dotnet/roslyn/issues/10785
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Console.OutputEncoding = Encoding.Unicode;
 
-                return await RunAsync(parseResult.Result);
-            }
-
-            Console.WriteLine("Failed".Pastel(Color.Red));
-            return -1;
-        }
-
-        private static void PrintHelp()
-        {
-            Console.WriteLine(CliOptions.HelpText);
-        }
-
-        private static void PrintVersion()
-        {
-            Console.WriteLine("TODO: Version");
-        }
-
-        private static int ReportResult(IExtendedResult<bool> result)
-        {
-            if (result.Success)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Success".Pastel(Color.Green));
-                return 0;
-            }
-
-            foreach (Diagnostic diagnostic in result.Diagnostics)
-            {
-                string message = diagnostic.Severity switch
-                {
-                    DiagnosticSeverity.Warning => diagnostic.ToString().Pastel(Color.Yellow),
-                    DiagnosticSeverity.Error => diagnostic.ToString().Pastel(Color.Red),
-                    _ => diagnostic.ToString(),
-                };
-
-                Console.WriteLine(message);
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("Failed".Pastel(Color.Red));
-            return -1;
-        }
-
-        private static async Task<int> RunAsync(CliOptions cliOptions)
-        {
-            CompilerOptions compilerOptions = CreateCompilerOptions(cliOptions);
-
-            var request = new CompilationRequest(cliOptions.ProjectFile!, compilerOptions);
-            var compiler = new Compiler();
-            IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
-            return ReportResult(result);
-        }
-
-        private static CompilerOptions CreateCompilerOptions(CliOptions cliOptions)
-        {
-            var builder = CompilerOptions.Default.ToBuilder();
-
-            if (cliOptions.OutDirectory != null)
-            {
-                builder.OutputPath = cliOptions.OutDirectory;
-            }
-
-            return builder.ToImmutable();
+            return await CliApp.RunAsync(args);
         }
     }
 }
