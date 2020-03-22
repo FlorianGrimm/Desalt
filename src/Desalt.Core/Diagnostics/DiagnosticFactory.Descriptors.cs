@@ -137,6 +137,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1022, "Missing value for option", "Missing value for '{0}' option.")]
             MissingValueForOption,
+
+            [Error(1023, "Missing required option", "Missing required option '{0}'.")]
+            MissingRequiredOption,
         }
 
         //// ===========================================================================================================
@@ -404,6 +407,15 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic MissingValueForOption(string optionName)
         {
             return Create(DiagnosticId.MissingValueForOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing required option '{0}'."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic MissingRequiredOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingRequiredOption, Location.None, optionName);
         }
     }
 }
