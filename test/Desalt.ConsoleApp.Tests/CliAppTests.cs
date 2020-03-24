@@ -22,7 +22,8 @@ namespace Desalt.ConsoleApp.Tests
         private static readonly string[] s_logo =
         {
             "Desalt C# to TypeScript Compiler version 1.0.0-alpha",
-            "Copyright (C) Justin Rockwood. All rights reserved."
+            "Copyright (C) Justin Rockwood. All rights reserved.",
+            ""
         };
 
         private static async Task VerifyOutput(

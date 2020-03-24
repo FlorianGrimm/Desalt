@@ -114,6 +114,7 @@ namespace Desalt.ConsoleApp
 
             _writer.WriteLine($"{productName} version {version}");
             _writer.WriteLine(copyright);
+            _writer.WriteLine();
 
             _printedLogo = true;
         }
