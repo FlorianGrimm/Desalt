@@ -12,12 +12,36 @@ namespace Desalt.ConsoleApp
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
     using Microsoft.CodeAnalysis;
 
-    internal static class CliOptionParser
+    internal sealed class CliOptionParser
     {
+        //// ===========================================================================================================
+        //// Member Variables
+        //// ===========================================================================================================
+
+        private static readonly StringComparer s_warningComparer = StringComparer.Ordinal;
+
+        private readonly ArgPeeker _argPeeker;
+        private readonly IList<Diagnostic> _diagnostics = new List<Diagnostic>();
+
+        private readonly ISet<string> _warnAsErrors = new HashSet<string>(s_warningComparer);
+        private readonly ISet<string> _noWarns = new HashSet<string>(s_warningComparer);
+
+        private readonly CliOptions _options = new CliOptions();
+
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
+        private CliOptionParser(ArgPeeker argPeeker)
+        {
+            _argPeeker = argPeeker ?? throw new ArgumentNullException(nameof(argPeeker));
+        }
+
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -25,22 +49,38 @@ namespace Desalt.ConsoleApp
         public static IExtendedResult<CliOptions> Parse(IEnumerable<string> rawArguments)
         {
             var flattenedArgs = FlattenArgs(rawArguments).ToImmutableArray();
-            var options = new CliOptions();
-            var diagnostics = new List<Diagnostic>();
             var argPeeker = new ArgPeeker(flattenedArgs);
+            var parser = new CliOptionParser(argPeeker);
+            var parseResult = parser.Parse();
+            return parseResult;
+        }
 
-            while (!argPeeker.IsAtEnd)
+        private IExtendedResult<CliOptions> Parse()
+        {
+            while (!_argPeeker.IsAtEnd)
             {
-                ParseArg(argPeeker, options, diagnostics);
+                ParseArg();
             }
 
             // If --version or --help are specified, ignore any other errors and just succeed.
-            if (options.ShouldShowVersion || options.ShouldShowHelp)
+            if (_options.ShouldShowVersion || _options.ShouldShowHelp)
             {
-                return new ExtendedResult<CliOptions>(options);
+                return new ExtendedResult<CliOptions>(_options);
             }
 
-            return new ExtendedResult<CliOptions>(options, diagnostics);
+            // Create the specific diagnostic options by first using the warnAsErrors then applying the noWarns on top
+            // of them so that the noWarns have precedence.
+            var specificDiagnostics = new Dictionary<string, ReportDiagnostic>(s_warningComparer);
+            specificDiagnostics.AddRange(
+                _warnAsErrors.Select(x => new KeyValuePair<string, ReportDiagnostic>(x, ReportDiagnostic.Error)));
+            foreach (string noWarn in _noWarns)
+            {
+                specificDiagnostics[noWarn] = ReportDiagnostic.Suppress;
+            }
+
+            _options.SpecificDiagnosticOptions = specificDiagnostics.ToImmutableDictionary(s_warningComparer);
+
+            return new ExtendedResult<CliOptions>(_options, _diagnostics);
         }
 
         /// <summary>
@@ -54,71 +94,73 @@ namespace Desalt.ConsoleApp
             return rawArguments;
         }
 
-        private static void ParseArg(ArgPeeker argPeeker, CliOptions options, ICollection<Diagnostic> diagnostics)
+        private void ParseArg()
         {
-            string arg = argPeeker.Read();
+            string arg = _argPeeker.Read();
             switch (arg)
             {
                 case "--help":
                 case "-?":
-                    options.ShouldShowHelp = true;
+                    _options.ShouldShowHelp = true;
                     break;
 
                 case "--nologo":
-                    options.NoLogo = true;
+                    _options.NoLogo = true;
                     break;
 
                 case "--nowarn":
-                    options.NoWarn = options.NoWarn.Union(ParseStringListArg(arg, argPeeker, diagnostics));
+                    _noWarns.UnionWith(ParseStringListArg(arg));
                     break;
 
                 case "--out":
-                    options.OutDirectory = ParseFileArg(arg, argPeeker, diagnostics);
+                    _options.OutDirectory = ParseFileArg(arg);
                     break;
 
                 case "--project":
-                    options.ProjectFile = ParseFileArg(arg, argPeeker, diagnostics);
+                    _options.ProjectFile = ParseFileArg(arg);
                     break;
 
                 case "--version":
                 case "-v":
-                    options.ShouldShowVersion = true;
+                    _options.ShouldShowVersion = true;
                     break;
 
                 case "--warn":
                 case "-w":
-                    options.WarningLevel = ParseIntValueArg(arg, argPeeker, diagnostics);
+                    _options.WarningLevel = ParseIntValueArg(arg);
                     break;
 
                 case "--warnaserror":
                 case "--warnaserror+":
-                    if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsAsErrors))
+                    if (TryParseOptionalStringList(out ImmutableArray<string> warningsAsErrors))
                     {
-                        options.WarningsAsErrors = options.WarningsAsErrors.Union(warningsAsErrors);
-                        options.WarningsNotAsErrors = options.WarningsNotAsErrors.Except(warningsAsErrors);
+                        _warnAsErrors.UnionWith(warningsAsErrors);
                     }
                     else
                     {
-                        options.AllWarningsAsErrors = true;
+                        // If --warnaserror is used as a flag, clear the previous specific errors.
+                        _warnAsErrors.Clear();
+                        _options.GeneralDiagnosticOption = ReportDiagnostic.Error;
                     }
 
                     break;
 
                 case "--warnaserror-":
-                    if (TryParseOptionalStringList(argPeeker, out ImmutableArray<string> warningsNotAsErrors))
+                    if (TryParseOptionalStringList(out ImmutableArray<string> warningsNotAsErrors))
                     {
-                        options.WarningsNotAsErrors = options.WarningsNotAsErrors.Union(warningsNotAsErrors);
-                        options.WarningsAsErrors = options.WarningsAsErrors.Except(warningsNotAsErrors);
+                        _warnAsErrors.ExceptWith(warningsNotAsErrors);
                     }
                     else
                     {
-                        options.AllWarningsAsErrors = false;
+                        // Clear the previous warnaserror state since the last one takes precedence.
+                        _warnAsErrors.Clear();
+                        _options.GeneralDiagnosticOption = ReportDiagnostic.Default;
                     }
 
                     break;
 
                 default:
-                    diagnostics.Add(DiagnosticFactory.UnrecognizedOption(arg));
+                    _diagnostics.Add(DiagnosticFactory.UnrecognizedOption(arg));
                     break;
             }
         }
@@ -128,61 +170,56 @@ namespace Desalt.ConsoleApp
             return !string.IsNullOrWhiteSpace(arg) && arg[0] == '-';
         }
 
-        private static string ParseFileArg(string name, ArgPeeker argPeeker, ICollection<Diagnostic> diagnostics)
+        private string ParseFileArg(string name)
         {
-            string? value = argPeeker.Peek();
+            string? value = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
-                diagnostics.Add(DiagnosticFactory.MissingFileSpecification(name));
+                _diagnostics.Add(DiagnosticFactory.MissingFileSpecification(name));
                 return string.Empty;
             }
 
-            return argPeeker.Read();
+            return _argPeeker.Read();
         }
 
-        private static int ParseIntValueArg(string name, ArgPeeker argPeeker, ICollection<Diagnostic> diagnostics)
+        private int ParseIntValueArg(string name)
         {
-            string? value = argPeeker.Peek();
+            string? value = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
-                diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
                 return -1;
             }
 
-            if (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out int result))
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
             {
-                diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
             }
 
-            argPeeker.Read();
+            _argPeeker.Read();
             return result;
         }
 
-        private static ImmutableArray<string> ParseStringListArg(
-            string name,
-            ArgPeeker argPeeker,
-            ICollection<Diagnostic> diagnostics)
+        private ImmutableArray<string> ParseStringListArg(string name)
         {
-            string? rawValue = argPeeker.Peek();
+            string? rawValue = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
             {
-                diagnostics.Add(DiagnosticFactory.MissingValueForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingValueForOption(name));
                 return ImmutableArray<string>.Empty;
             }
 
-            rawValue = argPeeker.Read();
-            string[] values = rawValue.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            rawValue = _argPeeker.Read();
+            string[] values = rawValue.Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             return values.ToImmutableArray();
         }
 
-        private static bool TryParseOptionalStringList(
-            ArgPeeker argPeeker,
-            out ImmutableArray<string> list)
+        private bool TryParseOptionalStringList(out ImmutableArray<string> list)
         {
-            string? rawValue = argPeeker.Peek();
+            string? rawValue = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
             {
@@ -190,7 +227,7 @@ namespace Desalt.ConsoleApp
                 return false;
             }
 
-            list = ParseStringListArg(string.Empty, argPeeker, ImmutableArray<Diagnostic>.Empty);
+            list = ParseStringListArg(string.Empty);
             return true;
         }
 

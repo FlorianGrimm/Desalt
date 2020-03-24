@@ -7,8 +7,10 @@
 
 namespace Desalt.ConsoleApp.Tests
 {
+    using System.Collections.Generic;
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using NUnit.Framework;
 
     public class CliOptionParserTests
@@ -198,19 +200,25 @@ namespace Desalt.ConsoleApp.Tests
         {
             var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008" });
             result.Success.Should().BeTrue();
-            result.Result.NoWarn.Should().ContainSingle().And.Equal("CS2008");
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(1)
+                .And.Contain("CS2008", ReportDiagnostic.Suppress);
 
             result = CliOptionParser.Parse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.NoWarn.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(3)
+                .And.ContainKeys("CS2008", "CS2009", "CS2010")
+                .And.Subject.Values.Should()
+                .AllBeEquivalentTo(ReportDiagnostic.Suppress);
         }
 
         [Test]
-        public void Parse_should_add_to_nowarn_for_each_instance_of_the_option()
+        public void Parse_should_combine_the_values_for_nowarn()
         {
             var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008,CS2009", "--nowarn", "CS2010" });
             result.Success.Should().BeTrue();
-            result.Result.NoWarn.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should().HaveCount(3).And.ContainKeys("CS2008", "CS2009", "CS2010");
         }
 
         [Test]
@@ -234,19 +242,19 @@ namespace Desalt.ConsoleApp.Tests
         {
             var result = CliOptionParser.Parse(new[] { "--warnaserror" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
 
             result = CliOptionParser.Parse(new[] { "--warnaserror+" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeFalse();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
 
             result = CliOptionParser.Parse(new[] { "--warnaserror+", "--project", "Project.csproj" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
 
         [Test]
@@ -254,23 +262,31 @@ namespace Desalt.ConsoleApp.Tests
         {
             var result = CliOptionParser.Parse(new[] { "--warnaserror", "CS2008" });
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().ContainSingle().And.Equal("CS2008");
+            result.Result.SpecificDiagnosticOptions.Should().HaveCount(1).And.Contain("CS2008", ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009;CS2010," });
+            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(3)
+                .And.ContainKeys("CS2008", "CS2009", "CS2010")
+                .And.Subject.Values.Should()
+                .AllBeEquivalentTo(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror+", ";CS2008,CS2009;CS2010," });
+            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(3)
+                .And.ContainKeys("CS2008", "CS2009", "CS2010")
+                .And.Subject.Values.Should()
+                .AllBeEquivalentTo(ReportDiagnostic.Error);
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-", "CS2008" });
             result.Success.Should().BeTrue();
-            result.Result.WarningsNotAsErrors.Should().ContainSingle().And.Equal("CS2008");
+            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
             result.Success.Should().BeTrue();
-            result.Result.WarningsNotAsErrors.Should().HaveCount(3).And.Contain("CS2008", "CS2009", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
         }
 
         [Test]
@@ -278,30 +294,68 @@ namespace Desalt.ConsoleApp.Tests
         {
             var result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeFalse();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
 
             result = CliOptionParser.Parse(new[] { "--warnaserror-", "--warnaserror+" });
             result.Success.Should().BeTrue();
-            result.Result.AllWarningsAsErrors.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
 
         [Test]
-        public void Parse_should_remove_previously_added_items_when_warnaserror_is_specified_multiple_times()
+        public void Parse_should_aggregate_warnaserror_values()
         {
             var result = CliOptionParser.Parse(
                 new[]
                 {
-                    "--warnaserror",
-                    "CS2008;CS2009",
-                    "--warnaserror-",
-                    "CS2008;CS2010;CS2011",
-                    "--warnaserror+",
-                    "CS2011"
+                    "--warnaserror", "CS2008;CS2009",
+                    "--warnaserror-", "CS123",
+                    "--warnaserror-", "CS2008;CS2010;CS2011",
+                    "--warnaserror+", "CS2011"
                 });
 
             result.Success.Should().BeTrue();
-            result.Result.WarningsAsErrors.Should().HaveCount(2).And.Contain("CS2009", "CS2011");
-            result.Result.WarningsNotAsErrors.Should().HaveCount(2).And.Contain("CS2008", "CS2010");
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(2)
+                .And.ContainKeys("CS2009", "CS2011")
+                .And.Subject.Values.Should()
+                .AllBeEquivalentTo(ReportDiagnostic.Error);
+        }
+
+        [Test]
+        public void Parse_should_give_nowarn_precedence_over_warnaserror()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--nowarn", "3", "--warnaserror", "3" });
+            result.Success.Should().BeTrue();
+            result.Result.SpecificDiagnosticOptions.Should()
+                .HaveCount(3)
+                .And.Contain(
+                    new KeyValuePair<string, ReportDiagnostic>("1", ReportDiagnostic.Error),
+                    new KeyValuePair<string, ReportDiagnostic>("2", ReportDiagnostic.Error),
+                    new KeyValuePair<string, ReportDiagnostic>("3", ReportDiagnostic.Suppress));
+        }
+
+        [Test]
+        public void Parse_should_clear_warnaserror_lists_when_used_as_a_flag()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--warnaserror" });
+            result.Success.Should().BeTrue();
+            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--warnaserror-" });
+            result.Success.Should().BeTrue();
+            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void Parse_should_not_set_the_general_diagnostic_option_to_default_when_a_list_is_encountered()
+        {
+            var result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror", "1,2" });
+            result.Success.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+
+            result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-", "1,2" });
+            result.Success.Should().BeTrue();
+            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
     }
 }

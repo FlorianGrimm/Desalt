@@ -9,6 +9,7 @@ namespace Desalt.ConsoleApp
 {
     using System.Collections.Immutable;
     using Desalt.Core;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Contains all of the command line interface options.
@@ -33,6 +34,7 @@ Desalt Compiler Options
 --warnaserror[+|-] <warn list> Report specific warnings as errors. Can be an error code like CS2008,
                                or just a number.
 --warn <n>                     Set warning level (0-4) (Short form: -w)
+                               0=Off, 1=Severe, 2=Important, 3=Minor, 4=Informational
 --nowarn <warn list>           Disable specific warning messages. Can be an error code like CS2008,
                                or just a number.
 
@@ -53,11 +55,12 @@ Desalt Compiler Options
         public string? OutDirectory { get; set; }
         public string? ProjectFile { get; set; }
 
-        public bool AllWarningsAsErrors { get; set; }
-        public IImmutableSet<string> WarningsAsErrors { get; set; } = ImmutableHashSet<string>.Empty;
-        public IImmutableSet<string> WarningsNotAsErrors { get; set; } = ImmutableHashSet<string>.Empty;
+        public ReportDiagnostic GeneralDiagnosticOption { get; set; } = ReportDiagnostic.Default;
+
+        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; set; } =
+            ImmutableDictionary<string, ReportDiagnostic>.Empty;
+
         public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
-        public IImmutableSet<string> NoWarn { get; set; } = ImmutableHashSet<string>.Empty;
 
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }

@@ -56,7 +56,7 @@ namespace Desalt.Core
             /// <summary>
             /// Warning report option for each warning.
             /// </summary>
-            public IDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
+            public IDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; set; }
 
             /// <summary>
             /// Gets the renaming rules to apply during TypeScript translation.
