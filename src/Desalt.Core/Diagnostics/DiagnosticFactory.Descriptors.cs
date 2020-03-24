@@ -140,6 +140,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1023, "Missing required option", "Missing required option '{0}'.")]
             MissingRequiredOption,
+
+            [Error(1024, "Warning level not in range", "Warning level must be in the range 0-4.")]
+            WarningLevelMustBeInRange,
         }
 
         //// ===========================================================================================================
@@ -416,6 +419,14 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic MissingRequiredOption(string optionName)
         {
             return Create(DiagnosticId.MissingRequiredOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Warning level must be in the range 0-4."
+        /// </summary>
+        public static Diagnostic WarningLevelMustBeInRange()
+        {
+            return Create(DiagnosticId.WarningLevelMustBeInRange, Location.None);
         }
     }
 }

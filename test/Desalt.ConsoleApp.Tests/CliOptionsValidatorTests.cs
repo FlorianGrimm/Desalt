@@ -40,5 +40,17 @@ namespace Desalt.ConsoleApp.Tests
             result = CliOptionsValidator.Validate(new CliOptions { ShouldShowHelp = true });
             result.Result.Should().BeTrue();
         }
+
+        [Test]
+        public void Validate_should_return_an_error_for_warning_level_out_of_range()
+        {
+            var result = CliOptionsValidator.Validate(new CliOptions { ProjectFile = "project", WarningLevel = -1 });
+            result.Result.Should().BeFalse();
+            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.WarningLevelMustBeInRange());
+
+            result = CliOptionsValidator.Validate(new CliOptions { ProjectFile = "project", WarningLevel = 5 });
+            result.Result.Should().BeFalse();
+            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.WarningLevelMustBeInRange());
+        }
     }
 }

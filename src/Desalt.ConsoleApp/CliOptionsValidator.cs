@@ -29,6 +29,11 @@ namespace Desalt.ConsoleApp
                 diagnostics.Add(DiagnosticFactory.MissingRequiredOption("--project"));
             }
 
+            if (options.WarningLevel < 0 || options.WarningLevel > 4)
+            {
+                diagnostics.Add(DiagnosticFactory.WarningLevelMustBeInRange());
+            }
+
             return new ExtendedResult<bool>(diagnostics.Count == 0, diagnostics);
         }
     }
