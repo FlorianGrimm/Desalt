@@ -152,6 +152,14 @@ namespace Desalt.ConsoleApp.Tests
             result.Result.NoLogo.Should().BeTrue();
         }
 
+        [Test]
+        public void Parse_should_allow_escaped_strings_as_args()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "\"embedded \\\"quote and \\\\ backslash\"" });
+            result.Success.Should().BeTrue();
+            result.Result.ProjectFile.Should().Be("embedded \"quote and \\ backslash");
+        }
+
         //// ===========================================================================================================
         //// Warnings and Errors Tests
         //// ===========================================================================================================

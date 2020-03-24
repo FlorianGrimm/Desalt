@@ -110,6 +110,16 @@ namespace Desalt.ConsoleApp
                     var responseFileArgs = ParseResponseFile(arg.Substring(1));
                     flattenedArgs.AddRange(responseFileArgs);
                 }
+                else if (arg.StartsWith('"'))
+                {
+                    using var reader = new PeekingTextReader(arg);
+                    string? processedArg = RemoveQuotesAndSlashes(reader);
+
+                    if (!string.IsNullOrWhiteSpace(processedArg))
+                    {
+                        flattenedArgs.Add(processedArg);
+                    }
+                }
                 else
                 {
                     flattenedArgs.Add(arg);
