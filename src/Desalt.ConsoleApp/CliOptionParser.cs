@@ -10,6 +10,7 @@ namespace Desalt.ConsoleApp
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
@@ -28,10 +29,13 @@ namespace Desalt.ConsoleApp
         private readonly ArgPeeker _argPeeker;
         private readonly IList<Diagnostic> _diagnostics = new List<Diagnostic>();
 
+        private readonly CliOptions _options = new CliOptions();
+
         private readonly ISet<string> _warnAsErrors = new HashSet<string>(s_warningComparer);
         private readonly ISet<string> _noWarns = new HashSet<string>(s_warningComparer);
 
-        private readonly CliOptions _options = new CliOptions();
+        private readonly IDictionary<string, SymbolTableOverride> _symbolTableOverrides =
+            new Dictionary<string, SymbolTableOverride>();
 
         //// ===========================================================================================================
         //// Constructors
@@ -79,6 +83,9 @@ namespace Desalt.ConsoleApp
             }
 
             _options.SpecificDiagnosticOptions = specificDiagnostics.ToImmutableDictionary(s_warningComparer);
+
+            // Set the symbol table overrides.
+            _options.SymbolTableOverrides = new SymbolTableOverrides(_symbolTableOverrides.ToArray());
 
             return new ExtendedResult<CliOptions>(_options, _diagnostics);
         }
@@ -159,6 +166,37 @@ namespace Desalt.ConsoleApp
 
                     break;
 
+                case "--inlinecode":
+                    if (TryParseSymbolTableOverrideValues(arg, out string? inlineCodeSymbol, out string? code))
+                    {
+                        if (_symbolTableOverrides.TryGetValue(inlineCodeSymbol, out SymbolTableOverride? symbolOverride))
+                        {
+                            _symbolTableOverrides[inlineCodeSymbol] = symbolOverride.WithInlineCode(code);
+                        }
+                        else
+                        {
+                            _symbolTableOverrides.Add(inlineCodeSymbol, new SymbolTableOverride(inlineCode: code));
+                        }
+                    }
+                    break;
+
+                case "--scriptname":
+                    if (TryParseSymbolTableOverrideValues(arg, out string? scriptNameSymbol, out string? scriptName))
+                    {
+                        if (_symbolTableOverrides.TryGetValue(scriptNameSymbol, out SymbolTableOverride? symbolOverride))
+                        {
+                            _symbolTableOverrides[scriptNameSymbol] = symbolOverride.WithScriptName(scriptName);
+                        }
+                        else
+                        {
+                            _symbolTableOverrides.Add(
+                                scriptNameSymbol,
+                                new SymbolTableOverride(scriptName: scriptName));
+                        }
+                    }
+
+                    break;
+
                 default:
                     _diagnostics.Add(DiagnosticFactory.UnrecognizedOption(arg));
                     break;
@@ -170,45 +208,72 @@ namespace Desalt.ConsoleApp
             return !string.IsNullOrWhiteSpace(arg) && arg[0] == '-';
         }
 
-        private string ParseFileArg(string name)
+        private string? ParseFileArg(string optionName)
         {
             string? value = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
-                _diagnostics.Add(DiagnosticFactory.MissingFileSpecification(name));
-                return string.Empty;
+                _diagnostics.Add(DiagnosticFactory.MissingFileSpecification(optionName));
+                return null;
             }
 
             return _argPeeker.Read();
         }
 
-        private int ParseIntValueArg(string name)
+        private int ParseIntValueArg(string optionName)
         {
             string? value = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
-                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(optionName));
                 return -1;
             }
 
             if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
             {
-                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(optionName));
             }
 
             _argPeeker.Read();
             return result;
         }
 
-        private ImmutableArray<string> ParseStringListArg(string name)
+        private bool TryParseSymbolTableOverrideValues(
+            string optionName,
+            [NotNullWhen(true)] out string? symbol,
+            [NotNullWhen(true)] out string? value)
+        {
+            symbol = _argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(symbol) || IsOption(symbol))
+            {
+                _diagnostics.Add(DiagnosticFactory.MissingSymbolForOption(optionName));
+                value = null;
+                return false;
+            }
+
+            symbol = _argPeeker.Read();
+            value = _argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(value) || IsOption(value))
+            {
+                _diagnostics.Add(DiagnosticFactory.MissingValueForOption($"{optionName} {symbol}"));
+                return false;
+            }
+
+            value = _argPeeker.Read();
+            return true;
+        }
+
+        private ImmutableArray<string> ParseStringListArg(string optionName)
         {
             string? rawValue = _argPeeker.Peek();
 
             if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
             {
-                _diagnostics.Add(DiagnosticFactory.MissingValueForOption(name));
+                _diagnostics.Add(DiagnosticFactory.MissingValueForOption(optionName));
                 return ImmutableArray<string>.Empty;
             }
 

@@ -40,6 +40,11 @@ Desalt Compiler Options
 
                        - LANGUAGE -
 --define <symbol list>         Define conditional compilation symbol(s) (Short form: -d)
+--inlinecode <symbol> <code>   Define an inline code symbol table override to use when compiling the
+                               symbol to TypeScript. For example, --inlinecode Tableau.JavaScript.
+                               Vql.Core.ScriptEx.Value<T>(T a, T b) ""({a}) || ({b})"".
+--scriptname <symbol> <code>   Define an override in the symbol table for the symbol's script name.
+                               For example, --scriptname System.Text.StringBuilder ""sb"".
 
                        - MISCELLANEOUS -
 @<file>                        Read response file for more options
@@ -65,5 +70,7 @@ Desalt Compiler Options
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }
         public bool ShouldShowVersion { get; set; }
+
+        public SymbolTableOverrides SymbolTableOverrides { get; set; } = SymbolTableOverrides.Empty;
     }
 }

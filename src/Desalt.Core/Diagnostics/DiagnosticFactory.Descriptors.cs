@@ -143,6 +143,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1024, "Warning level not in range", "Warning level must be in the range 0-4.")]
             WarningLevelMustBeInRange,
+
+            [Error(1025, "Missing symbol", "Missing symbol for '{0}' option.")]
+            MissingSymbolForOption,
         }
 
         //// ===========================================================================================================
@@ -427,6 +430,15 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic WarningLevelMustBeInRange()
         {
             return Create(DiagnosticId.WarningLevelMustBeInRange, Location.None);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing symbol for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic MissingSymbolForOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingSymbolForOption, Location.None, optionName);
         }
     }
 }

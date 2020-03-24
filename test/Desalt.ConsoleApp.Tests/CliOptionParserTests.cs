@@ -8,6 +8,7 @@
 namespace Desalt.ConsoleApp.Tests
 {
     using System.Collections.Generic;
+    using Desalt.Core;
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -356,6 +357,111 @@ namespace Desalt.ConsoleApp.Tests
             result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-", "1,2" });
             result.Success.Should().BeTrue();
             result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+        }
+
+        //// ===========================================================================================================
+        //// Symbol Table Overrides Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public void Parse_should_recognize_inlinecode()
+        {
+            var result = CliOptionParser.Parse(
+                new[]
+                {
+                    "--project",
+                    "p",
+                    "--inlinecode",
+                    "Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)",
+                    "({a}) || ({b})"
+                });
+
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.InlineCodeOverrides.Should()
+                .HaveCount(1)
+                .And.Contain("Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)", "({a}) || ({b})");
+        }
+
+        [Test]
+        public void Parse_should_use_the_last_value_of_inlinecode_for_the_same_symbol()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--inlinecode", "A", "a", "--inlinecode", "A", "b" });
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.InlineCodeOverrides.Should().HaveCount(1).And.Contain("A", "b");
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_inlinecode_is_missing_arguments()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--inlinecode" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingSymbolForOption("--inlinecode"));
+
+            result = CliOptionParser.Parse(new[] { "--project", "p", "--inlinecode", "A" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--inlinecode A"));
+        }
+
+        [Test]
+        public void Parse_should_recognize_scriptname()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--scriptname", "System.Text.StringBuilder", "sb" });
+
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.ScriptNameOverrides.Should()
+                .HaveCount(1)
+                .And.Contain("System.Text.StringBuilder", "sb");
+        }
+
+        [Test]
+        public void Parse_should_use_the_last_value_of_scriptname_for_the_same_symbol()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--scriptname", "A", "a", "--scriptname", "A", "b" });
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.ScriptNameOverrides.Should().HaveCount(1).And.Contain("A", "b");
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_scriptname_is_missing_arguments()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--scriptname" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingSymbolForOption("--scriptname"));
+
+            result = CliOptionParser.Parse(new[] { "--project", "p", "--scriptname", "A" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--scriptname A"));
+        }
+
+        [Test]
+        public void Parse_should_allow_both_an_inlinecode_and_scriptname_for_the_same_symbol()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--inlinecode", "A", "code", "--scriptname", "A", "name" });
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.Overrides.Should()
+                .HaveCount(1)
+                .And.Contain("A", new SymbolTableOverride("code", "name"));
+        }
+
+        [Test]
+        public void Parse_should_use_ordinal_comparisons_for_inlinecode_and_scriptname()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--inlinecode", "A", "code", "--scriptname", "a", "name" });
+            result.Success.Should().BeTrue();
+            result.Result.SymbolTableOverrides.Overrides.Should()
+                .HaveCount(2)
+                .And.Contain(
+                    new KeyValuePair<string, SymbolTableOverride>("A", new SymbolTableOverride("code")),
+                    new KeyValuePair<string, SymbolTableOverride>("a", new SymbolTableOverride(scriptName: "name")));
         }
     }
 }

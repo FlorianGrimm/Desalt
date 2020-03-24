@@ -7,6 +7,7 @@
 
 namespace Desalt.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -61,16 +62,80 @@ namespace Desalt.Core
         }
     }
 
-    public sealed class SymbolTableOverride
+    /// <summary>
+    /// Contains information about a symbol table override, which will be used when translating a symbol.
+    /// </summary>
+    public sealed class SymbolTableOverride : IEquatable<SymbolTableOverride>
     {
+        //// ===========================================================================================================
+        //// Constructors
+        //// ===========================================================================================================
+
         public SymbolTableOverride(string? inlineCode = null, string? scriptName = null)
         {
             InlineCode = inlineCode;
             ScriptName = scriptName;
         }
 
+        //// ===========================================================================================================
+        //// Operators
+        //// ===========================================================================================================
+
+        public static bool operator ==(SymbolTableOverride? left, SymbolTableOverride? right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(SymbolTableOverride? left, SymbolTableOverride? right)
+        {
+            return !Equals(left, right);
+        }
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
         public string? InlineCode { get; }
 
         public string? ScriptName { get; }
+
+        public SymbolTableOverride WithInlineCode(string? value)
+        {
+            return InlineCode == value ? this : new SymbolTableOverride(value, ScriptName);
+        }
+
+        public SymbolTableOverride WithScriptName(string? value)
+        {
+            return ScriptName == value ? this : new SymbolTableOverride(InlineCode, value);
+        }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public bool Equals(SymbolTableOverride? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return InlineCode == other.InlineCode && ScriptName == other.ScriptName;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return ReferenceEquals(this, obj) || (obj is SymbolTableOverride other && Equals(other));
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(InlineCode, ScriptName);
+        }
     }
 }

@@ -66,5 +66,30 @@ namespace Desalt.ConsoleApp.Tests
                         ["DSC123"] = ReportDiagnostic.Suppress,
                     });
         }
+
+        [Test]
+        public void ToCompilationRequest_should_correctly_set_the_symbol_table_overrides()
+        {
+            var cliOptions = new CliOptions
+            {
+                ProjectFile = "project",
+                SymbolTableOverrides = new SymbolTableOverrides(
+                    new KeyValuePair<string, SymbolTableOverride>(
+                        "SymbolA",
+                        new SymbolTableOverride("code", "scriptName")),
+                    new KeyValuePair<string, SymbolTableOverride>(
+                        "SymbolB",
+                        new SymbolTableOverride(scriptName: "b")))
+            };
+
+            cliOptions.ToCompilationRequest()
+                .Options.SymbolTableOverrides.Overrides.Should()
+                .HaveCount(2)
+                .And.Contain(
+                    new KeyValuePair<string, SymbolTableOverride>(
+                        "SymbolA",
+                        new SymbolTableOverride("code", "scriptName")),
+                    new KeyValuePair<string, SymbolTableOverride>("SymbolB", new SymbolTableOverride(scriptName: "b")));
+        }
     }
 }

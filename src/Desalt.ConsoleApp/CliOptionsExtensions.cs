@@ -35,6 +35,8 @@ namespace Desalt.ConsoleApp
             builder.SpecificDiagnosticOptions = cliOptions.SpecificDiagnosticOptions;
             builder.WarningLevel = (WarningLevel)cliOptions.WarningLevel;
 
+            builder.SymbolTableOverrides = cliOptions.SymbolTableOverrides;
+
             return builder.ToImmutable();
         }
     }
