@@ -13,7 +13,6 @@ namespace Desalt.Core
     using System.ComponentModel;
     using Desalt.Core.Diagnostics;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Serialization;
@@ -73,7 +72,7 @@ namespace Desalt.Core
             RenameRules? renameRules = null,
             SymbolTableOverrides? symbolTableOverrides = null)
         {
-            OutputPath = outputPath ?? instanceToCopy?.OutputPath ?? string.Empty;
+            OutputPath = outputPath ?? instanceToCopy?.OutputPath;
             RenameRules = renameRules ?? instanceToCopy?.RenameRules ?? RenameRules.Default;
             SymbolTableOverrides = symbolTableOverrides ??
                 instanceToCopy?.SymbolTableOverrides ?? SymbolTableOverrides.Empty;
@@ -98,7 +97,7 @@ namespace Desalt.Core
         /// <summary>
         /// Gets the directory where the compiled TypeScript files will be generated.
         /// </summary>
-        public string OutputPath { get; }
+        public string? OutputPath { get; }
 
         /// <summary>
         /// Gets the global warning level.
@@ -140,7 +139,7 @@ namespace Desalt.Core
             return RenameRules.Equals(value) ? this : new CompilerOptions(this, renameRules: value);
         }
 
-        public CompilerOptions WithOutputPath(string value)
+        public CompilerOptions WithOutputPath(string? value)
         {
             return string.Equals(OutputPath, value, StringComparison.Ordinal)
                 ? this
@@ -150,15 +149,6 @@ namespace Desalt.Core
         public CompilerOptions WithSymbolTableOverrides(SymbolTableOverrides value)
         {
             return SymbolTableOverrides.Equals(value) ? this : new CompilerOptions(this, symbolTableOverrides: value);
-        }
-
-        internal CSharpCompilationOptions ToCSharpCompilationOptions()
-        {
-            return new CSharpCompilationOptions(
-                OutputKind.DynamicallyLinkedLibrary,
-                warningLevel: (int)WarningLevel,
-                generalDiagnosticOption: GeneralDiagnosticOption,
-                specificDiagnosticOptions: SpecificDiagnosticOptions);
         }
 
         private static JsonSerializer CreateSerializer()

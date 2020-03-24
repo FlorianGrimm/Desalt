@@ -41,7 +41,7 @@ namespace Desalt.Core
             /// <summary>
             /// Gets the directory where the compiled TypeScript files will be generated.
             /// </summary>
-            public string OutputPath { get; set; }
+            public string? OutputPath { get; set; }
 
             /// <summary>
             /// Gets the global warning level.
