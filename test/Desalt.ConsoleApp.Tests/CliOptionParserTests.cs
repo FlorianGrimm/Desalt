@@ -8,6 +8,8 @@
 namespace Desalt.ConsoleApp.Tests
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.IO;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
@@ -560,6 +562,63 @@ namespace Desalt.ConsoleApp.Tests
             result.Diagnostics.Should()
                 .ContainSingle()
                 .And.BeEquivalentTo(DiagnosticFactory.InvalidValueForOption("--field-rename-rule", "not-valid"));
+        }
+
+        //// ===========================================================================================================
+        //// Response File Tests
+        //// ===========================================================================================================
+
+        [Test]
+        [Category("SkipWhenLiveUnitTesting")]
+        public void Parse_should_accept_a_response_file()
+        {
+            string[] lines =
+            {
+                "--warn 3",
+                "--warnaserror 1,2,3",
+                "--inlinecode \"System.Console.WriteLine(char[] buffer, int index)\" \"console.log(\\\"hi\\n\\\")\"",
+                "--scriptname \"System.Console\" \"console\"",
+                "--enum-rename-rule match-csharp",
+                "--field-rename-rule dollar-prefix-for-duplicates"
+            };
+
+            File.WriteAllLines("response.rsp", lines);
+
+            try
+            {
+                var result = CliOptionParser.Parse(new[] { "--project", "p", "@response.rsp" });
+                result.Success.Should().BeTrue();
+
+                result.Result.Should()
+                    .BeEquivalentTo(
+                        new CliOptions
+                        {
+                            ProjectFile = "p",
+                            WarningLevel = 3,
+                            SpecificDiagnosticOptions =
+                                ImmutableDictionary.CreateRange(
+                                    new[]
+                                    {
+                                        new KeyValuePair<string, ReportDiagnostic>("1", ReportDiagnostic.Error),
+                                        new KeyValuePair<string, ReportDiagnostic>("2", ReportDiagnostic.Error),
+                                        new KeyValuePair<string, ReportDiagnostic>("3", ReportDiagnostic.Error),
+                                    }),
+                            SymbolTableOverrides = new SymbolTableOverrides(
+                                new KeyValuePair<string, SymbolTableOverride>(
+                                    "System.Console.WriteLine(char[] buffer, int index)",
+                                    new SymbolTableOverride(inlineCode: @"console.log(""hi\n"")")),
+                                new KeyValuePair<string, SymbolTableOverride>(
+                                    "System.Console",
+                                    new SymbolTableOverride(scriptName: "console"))),
+                            RenameRules = new RenameRules(
+                                EnumRenameRule.MatchCSharpName,
+                                FieldRenameRule.DollarPrefixOnlyForDuplicateName),
+                        });
+            }
+            finally
+            {
+                File.Delete("response.rsp");
+            }
         }
     }
 }

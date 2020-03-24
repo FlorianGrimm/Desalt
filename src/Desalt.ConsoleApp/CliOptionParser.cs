@@ -12,7 +12,10 @@ namespace Desalt.ConsoleApp
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
+    using System.Text;
+    using Desalt.CompilerUtilities;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
@@ -94,11 +97,110 @@ namespace Desalt.ConsoleApp
         /// Flattens the arguments by reading in any response files and enumerating the options as if they were
         /// specified on the command line.
         /// </summary>
-        /// <param name="rawArguments"></param>
+        /// <param name="rawArguments">The raw command-line arguments.</param>
         /// <returns></returns>
-        private static IEnumerable<string> FlattenArgs(IEnumerable<string> rawArguments)
+        private static ImmutableArray<string> FlattenArgs(IEnumerable<string> rawArguments)
         {
-            return rawArguments;
+            var flattenedArgs = new List<string>();
+
+            foreach (string arg in rawArguments)
+            {
+                if (arg.StartsWith('@'))
+                {
+                    var responseFileArgs = ParseResponseFile(arg.Substring(1));
+                    flattenedArgs.AddRange(responseFileArgs);
+                }
+                else
+                {
+                    flattenedArgs.Add(arg);
+                }
+            }
+
+            return flattenedArgs.ToImmutableArray();
+        }
+
+        private static IEnumerable<string> ParseResponseFile(string fileName)
+        {
+            string contents = string.Empty;
+            try
+            {
+                contents = File.ReadAllText(fileName);
+            }
+            catch
+            {
+                // Add error
+            }
+
+            var flattenedArgs = new List<string>();
+            using var reader = new PeekingTextReader(contents);
+            reader.SkipWhitespace();
+
+            while (!reader.IsAtEnd)
+            {
+                string? arg = RemoveQuotesAndSlashes(reader);
+                if (!string.IsNullOrWhiteSpace(arg))
+                {
+                    flattenedArgs.Add(arg);
+                }
+
+                reader.SkipWhitespace();
+            }
+
+            return flattenedArgs;
+        }
+
+        private static string? RemoveQuotesAndSlashes(PeekingTextReader reader)
+        {
+            reader.SkipWhitespace();
+            bool withinQuote = reader.Peek() == '"';
+
+            if (!withinQuote)
+            {
+                return reader.ReadUntilWhitespace();
+            }
+
+            var builder = new StringBuilder();
+            reader.Read(); // quote
+
+            do
+            {
+                string? nextChunk = reader.ReadUntil(c => c.IsOneOf('"', '\\'));
+                builder.Append(nextChunk);
+
+                switch (reader.Peek())
+                {
+                    case '"':
+                        withinQuote = false;
+                        reader.Read();
+                        break;
+
+                    case '\\':
+                        // Check for escaped quotes or backslashes
+                        if (reader.Peek(2) == "\\\"")
+                        {
+                            reader.Read(2);
+                            builder.Append('"');
+                        }
+                        else if (reader.Peek(2) == "\\\\")
+                        {
+                            reader.Read(2);
+                            builder.Append('\\');
+                        }
+                        else
+                        {
+                            reader.Read();
+                            builder.Append('\\');
+                        }
+                        break;
+
+                    default:
+                        withinQuote = false;
+                        break;
+                }
+            }
+            while (withinQuote);
+
+            return builder.ToString();
         }
 
         private void ParseArg()
@@ -356,9 +458,9 @@ namespace Desalt.ConsoleApp
             private ImmutableArray<string> _args;
             private int _currentIndex;
 
-            public ArgPeeker(IEnumerable<string> args)
+            public ArgPeeker(ImmutableArray<string> args)
             {
-                _args = args.Select(x => x.Trim()).ToImmutableArray();
+                _args = args;
             }
 
             public bool IsAtEnd => _currentIndex >= _args.Length;
