@@ -164,11 +164,7 @@ namespace Desalt.ConsoleApp
 
         private static async Task<IExtendedResult<bool>> CompileAsync(CliOptions cliOptions)
         {
-            var compilerOptions = cliOptions.ToCompilerOptions();
-            string projectFile = cliOptions.ProjectFile ??
-                throw new InvalidOperationException("Project file should have been validated earlier.");
-
-            var request = new CompilationRequest(projectFile, compilerOptions);
+            var request = cliOptions.ToCompilationRequest();
             var compiler = new Compiler();
             IExtendedResult<bool> result = await compiler.ExecuteAsync(request);
             return result;
