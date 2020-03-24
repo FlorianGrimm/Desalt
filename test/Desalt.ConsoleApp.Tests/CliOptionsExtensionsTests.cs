@@ -91,5 +91,22 @@ namespace Desalt.ConsoleApp.Tests
                         new SymbolTableOverride("code", "scriptName")),
                     new KeyValuePair<string, SymbolTableOverride>("SymbolB", new SymbolTableOverride(scriptName: "b")));
         }
+
+        [Test]
+        public void ToCompilationRequest_should_correctly_set_the_rename_rules()
+        {
+            var cliOptions = new CliOptions
+            {
+                ProjectFile = "project",
+                RenameRules = new RenameRules(
+                    EnumRenameRule.LowerCaseFirstChar,
+                    FieldRenameRule.PrivateDollarPrefix),
+            };
+
+            cliOptions.ToCompilationRequest()
+                .Options.RenameRules.Should()
+                .BeEquivalentTo(
+                    new RenameRules(EnumRenameRule.LowerCaseFirstChar, FieldRenameRule.PrivateDollarPrefix));
+        }
     }
 }

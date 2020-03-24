@@ -146,6 +146,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1025, "Missing symbol", "Missing symbol for '{0}' option.")]
             MissingSymbolForOption,
+
+            [Error(1026, "Invalid value for option", "Invalid value for '{0}' option: '{1}'.")]
+            InvalidValueForOption,
         }
 
         //// ===========================================================================================================
@@ -439,6 +442,16 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic MissingSymbolForOption(string optionName)
         {
             return Create(DiagnosticId.MissingSymbolForOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Invalid value for '{0}' option: '{1}'."
+        /// </summary>
+        /// <param name="invalidValue">The invalid value.</param>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic InvalidValueForOption(string optionName, string invalidValue)
+        {
+            return Create(DiagnosticId.InvalidValueForOption, Location.None, optionName, invalidValue);
         }
     }
 }

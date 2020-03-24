@@ -36,6 +36,7 @@ namespace Desalt.ConsoleApp
             builder.WarningLevel = (WarningLevel)cliOptions.WarningLevel;
 
             builder.SymbolTableOverrides = cliOptions.SymbolTableOverrides;
+            builder.RenameRules = cliOptions.RenameRules;
 
             return builder.ToImmutable();
         }

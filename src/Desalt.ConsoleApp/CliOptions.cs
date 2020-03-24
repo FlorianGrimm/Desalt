@@ -34,7 +34,7 @@ Desalt Compiler Options
 --warnaserror[+|-] <warn list> Report specific warnings as errors. Can be an error code like CS2008,
                                or just a number.
 --warn <n>                     Set warning level (0-4) (Short form: -w)
-                               0=Off, 1=Severe, 2=Important, 3=Minor, 4=Informational
+                                   0=Off, 1=Severe, 2=Important, 3=Minor, 4=Informational
 --nowarn <warn list>           Disable specific warning messages. Can be an error code like CS2008,
                                or just a number.
 
@@ -45,6 +45,20 @@ Desalt Compiler Options
                                Vql.Core.ScriptEx.Value<T>(T a, T b) ""({a}) || ({b})"".
 --scriptname <symbol> <code>   Define an override in the symbol table for the symbol's script name.
                                For example, --scriptname System.Text.StringBuilder ""sb"".
+--enum-rename-rule <value>     Controls how enum members are translated from C# to TypeScript. This
+                               rule only controls the name of the enum field; values always use
+                               [ScriptName] if present, or the default naming rule (camelCase).
+                               <value> can be one of the following:
+                                   lower-first - first letter as lower case 'One' -> 'one'
+                                   match-csharp (default) - original name is used 'One' -> 'One'
+--field-rename-rule <value>    Controls how private fields are translated from C# to TypeScript.
+                               <value> can be one of the following:
+                                   lower-first (default) - first letter as lower case 'Field' -> 'field'
+                                   private-dollar-prefix - private fields prefixed with '$'
+                                   dollar-prefix-for-duplicates - fields prefixed with a '$' sign,
+                                       but only when there is a duplicate name in the compiled code.
+                                       For example, if there is a field named 'name' and a property
+                                       'Name', 'name' will become '$name'.
 
                        - MISCELLANEOUS -
 @<file>                        Read response file for more options
@@ -72,5 +86,6 @@ Desalt Compiler Options
         public bool ShouldShowVersion { get; set; }
 
         public SymbolTableOverrides SymbolTableOverrides { get; set; } = SymbolTableOverrides.Empty;
+        public RenameRules RenameRules { get; set; } = RenameRules.Default;
     }
 }

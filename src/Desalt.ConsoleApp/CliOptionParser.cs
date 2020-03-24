@@ -194,7 +194,35 @@ namespace Desalt.ConsoleApp
                                 new SymbolTableOverride(scriptName: scriptName));
                         }
                     }
+                    break;
 
+                case "--enum-rename-rule":
+                    if (TryParseMappedValue(
+                        arg,
+                        new Dictionary<string, EnumRenameRule>
+                        {
+                            ["lower-first"] = EnumRenameRule.LowerCaseFirstChar,
+                            ["match-csharp"] = EnumRenameRule.MatchCSharpName
+                        },
+                        out EnumRenameRule enumRenameRule))
+                    {
+                        _options.RenameRules = _options.RenameRules.WithEnumRule(enumRenameRule);
+                    }
+                    break;
+
+                case "--field-rename-rule":
+                    if (TryParseMappedValue(
+                        arg,
+                        new Dictionary<string, FieldRenameRule>
+                        {
+                            ["lower-first"] = FieldRenameRule.LowerCaseFirstChar,
+                            ["private-dollar-prefix"] = FieldRenameRule.PrivateDollarPrefix,
+                            ["dollar-prefix-for-duplicates"] = FieldRenameRule.DollarPrefixOnlyForDuplicateName,
+                        },
+                        out FieldRenameRule fieldRenameRule))
+                    {
+                        _options.RenameRules = _options.RenameRules.WithFieldRule(fieldRenameRule);
+                    }
                     break;
 
                 default:
@@ -240,6 +268,35 @@ namespace Desalt.ConsoleApp
             return result;
         }
 
+        private ImmutableArray<string> ParseStringListArg(string optionName)
+        {
+            string? rawValue = _argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            {
+                _diagnostics.Add(DiagnosticFactory.MissingValueForOption(optionName));
+                return ImmutableArray<string>.Empty;
+            }
+
+            rawValue = _argPeeker.Read();
+            string[] values = rawValue.Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return values.ToImmutableArray();
+        }
+
+        private bool TryParseOptionalStringList(out ImmutableArray<string> list)
+        {
+            string? rawValue = _argPeeker.Peek();
+
+            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            {
+                list = ImmutableArray<string>.Empty;
+                return false;
+            }
+
+            list = ParseStringListArg(string.Empty);
+            return true;
+        }
+
         private bool TryParseSymbolTableOverrideValues(
             string optionName,
             [NotNullWhen(true)] out string? symbol,
@@ -267,32 +324,26 @@ namespace Desalt.ConsoleApp
             return true;
         }
 
-        private ImmutableArray<string> ParseStringListArg(string optionName)
+        private bool TryParseMappedValue<T>(string optionName, IReadOnlyDictionary<string, T> mappings, out T enumValue)
+            where T : struct
         {
-            string? rawValue = _argPeeker.Peek();
-
-            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            string? value = _argPeeker.Peek();
+            if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
                 _diagnostics.Add(DiagnosticFactory.MissingValueForOption(optionName));
-                return ImmutableArray<string>.Empty;
+                enumValue = default;
+                return false;
             }
+            value = _argPeeker.Read();
 
-            rawValue = _argPeeker.Read();
-            string[] values = rawValue.Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            return values.ToImmutableArray();
-        }
-
-        private bool TryParseOptionalStringList(out ImmutableArray<string> list)
-        {
-            string? rawValue = _argPeeker.Peek();
-
-            if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
+            if (!mappings.ContainsKey(value))
             {
-                list = ImmutableArray<string>.Empty;
+                _diagnostics.Add(DiagnosticFactory.InvalidValueForOption(optionName, value));
+                enumValue = default;
                 return false;
             }
 
-            list = ParseStringListArg(string.Empty);
+            enumValue = mappings[value];
             return true;
         }
 

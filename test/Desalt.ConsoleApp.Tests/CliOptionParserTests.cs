@@ -463,5 +463,103 @@ namespace Desalt.ConsoleApp.Tests
                     new KeyValuePair<string, SymbolTableOverride>("A", new SymbolTableOverride("code")),
                     new KeyValuePair<string, SymbolTableOverride>("a", new SymbolTableOverride(scriptName: "name")));
         }
+
+        //// ===========================================================================================================
+        //// Rename Rules Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public void Parse_should_recognize_enum_rename_rule()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "lower-first" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
+
+            result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "match-csharp" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.MatchCSharpName);
+        }
+
+        [Test]
+        public void Parse_should_use_the_last_value_for_enum_rename_rule()
+        {
+            var result = CliOptionParser.Parse(
+                new[] { "--project", "p", "--enum-rename-rule", "match-csharp", "--enum-rename-rule", "lower-first" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_missing_a_value_for_enum_rename_rule()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--enum-rename-rule"));
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_for_an_invalid_enum_rename_rule_value()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "not-valid" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.InvalidValueForOption("--enum-rename-rule", "not-valid"));
+        }
+
+        [Test]
+        public void Parse_should_recognize_field_rename_rules()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "lower-first" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.LowerCaseFirstChar);
+
+            result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "private-dollar-prefix" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
+
+            result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "dollar-prefix-for-duplicates" });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.DollarPrefixOnlyForDuplicateName);
+        }
+
+        [Test]
+        public void Parse_should_use_the_last_value_for_field_rename_rules()
+        {
+            var result = CliOptionParser.Parse(
+                new[]
+                {
+                    "--project",
+                    "p",
+                    "--field-rename-rule",
+                    "lower-first",
+                    "--field-rename-rule",
+                    "private-dollar-prefix"
+                });
+            result.Success.Should().BeTrue();
+            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_when_missing_a_value_for_field_rename_rules()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--field-rename-rule"));
+        }
+
+        [Test]
+        public void Parse_should_return_an_error_for_an_invalid_field_rename_rules_value()
+        {
+            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "not-valid" });
+            result.Success.Should().BeFalse();
+            result.Diagnostics.Should()
+                .ContainSingle()
+                .And.BeEquivalentTo(DiagnosticFactory.InvalidValueForOption("--field-rename-rule", "not-valid"));
+        }
     }
 }
