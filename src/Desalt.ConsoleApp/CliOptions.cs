@@ -20,8 +20,7 @@ namespace Desalt.ConsoleApp
         //// Member Variables
         //// ===========================================================================================================
 
-        public const string HelpText = @"
-Desalt Compiler Options
+        public const string HelpText = @"Desalt Compiler Options
 
                        - OUTPUT FILES -
 --out <dir>                    Specify directory of compiled TypeScript files
@@ -62,6 +61,7 @@ Desalt Compiler Options
 
                        - MISCELLANEOUS -
 @<file>                        Read response file for more options
+--options <file>               Read JSON file for more options
 --help                         Display this usage message (Short form: -?)
 --nologo                       Suppress compiler copyright message
 --version                      Display the compiler version number and exit

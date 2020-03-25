@@ -8,6 +8,7 @@
 namespace Desalt.Core
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -20,22 +21,13 @@ namespace Desalt.Core
     /// change the source code. Serializing and deserializing to a JSON file is supported to allow
     /// specifying a file name on the command line.
     /// </remarks>
-    public sealed class SymbolTableOverrides
+    public sealed class SymbolTableOverrides : IReadOnlyDictionary<string, SymbolTableOverride>
     {
         //// ===========================================================================================================
         //// Member Variables
         //// ===========================================================================================================
 
         public static readonly SymbolTableOverrides Empty = new SymbolTableOverrides();
-
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        public ImmutableDictionary<string, SymbolTableOverride> Overrides { get; }
-
-        public ImmutableDictionary<string, string> InlineCodeOverrides { get; }
-        public ImmutableDictionary<string, string> ScriptNameOverrides { get; }
 
         //// ===========================================================================================================
         //// Constructors
@@ -59,6 +51,50 @@ namespace Desalt.Core
                 .Where(pair => pair.Value.ScriptName != null)
                 .Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ScriptName!))
                 .ToImmutableDictionary();
+        }
+
+        //// ===========================================================================================================
+        //// Indexers
+        //// ===========================================================================================================
+
+        public SymbolTableOverride this[string key] => Overrides[key];
+
+        //// ===========================================================================================================
+        //// Properties
+        //// ===========================================================================================================
+
+        public ImmutableDictionary<string, SymbolTableOverride> Overrides { get; }
+
+        public ImmutableDictionary<string, string> InlineCodeOverrides { get; }
+        public ImmutableDictionary<string, string> ScriptNameOverrides { get; }
+
+        public int Count => Overrides.Count;
+
+        public IEnumerable<string> Keys => Overrides.Keys;
+        public IEnumerable<SymbolTableOverride> Values => Overrides.Values;
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        public IEnumerator<KeyValuePair<string, SymbolTableOverride>> GetEnumerator()
+        {
+            return Overrides.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return Overrides.ContainsKey(key);
+        }
+
+        public bool TryGetValue(string key, out SymbolTableOverride value)
+        {
+            return Overrides.TryGetValue(key, out value);
         }
     }
 

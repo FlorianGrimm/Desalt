@@ -149,6 +149,9 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1026, "Invalid value for option", "Invalid value for '{0}' option: '{1}'.")]
             InvalidValueForOption,
+
+            [Error(1027, "Error opening response file", "Error opening response file '{0}'.")]
+            ErrorOpeningResponseFile,
         }
 
         //// ===========================================================================================================
@@ -452,6 +455,15 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic InvalidValueForOption(string optionName, string invalidValue)
         {
             return Create(DiagnosticId.InvalidValueForOption, Location.None, optionName, invalidValue);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Error opening response file '{0}'."
+        /// </summary>
+        /// <param name="responseFile">The path to the response file.</param>
+        public static Diagnostic ErrorOpeningResponseFile(string responseFile)
+        {
+            return Create(DiagnosticId.ErrorOpeningResponseFile, Location.None, responseFile);
         }
     }
 }

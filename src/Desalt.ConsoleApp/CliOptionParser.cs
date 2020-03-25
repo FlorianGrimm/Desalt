@@ -107,6 +107,14 @@ namespace Desalt.ConsoleApp
                     _options.NoLogo = true;
                     break;
 
+                case "--options":
+                    string? optionsFileArg = ParseFileArg(arg);
+                    if (!string.IsNullOrEmpty(optionsFileArg))
+                    {
+                        ParseOptionsFile(optionsFileArg);
+                    }
+                    break;
+
                 case "--nowarn":
                     _noWarns.UnionWith(ParseStringListArg(arg));
                     break;
@@ -339,33 +347,45 @@ namespace Desalt.ConsoleApp
             return true;
         }
 
-        //// ===========================================================================================================
-        //// Classes
-        //// ===========================================================================================================
-
-        private sealed class ArgPeeker
+        private void ParseOptionsFile(string optionsFile)
         {
-            private ImmutableArray<string> _args;
-            private int _currentIndex;
-
-            public ArgPeeker(ImmutableArray<string> args)
+            using Stream optionsFileStream = _fileContentFetcher.OpenRead(optionsFile);
+            IExtendedResult<CompilerOptions?> result = CompilerOptions.Deserialize(optionsFileStream);
+            _diagnostics.AddRange(result.Diagnostics);
+            if (result.HasErrors)
             {
-                _args = args;
+                return;
             }
 
-            public bool IsAtEnd => _currentIndex >= _args.Length;
+            CompilerOptions loadedOptions = result.Result ?? throw new InvalidOperationException();
 
-            public string Read()
+            // Merge the parsed options file with the current options, overriding any conflicts.
+            _options.WarningLevel = (int)loadedOptions.WarningLevel;
+            _options.GeneralDiagnosticOption = loadedOptions.GeneralDiagnosticOption;
+
+            _warnAsErrors.UnionWith(
+                loadedOptions.SpecificDiagnosticOptions.Where(x => x.Value == ReportDiagnostic.Error)
+                    .Select(x => x.Key));
+
+            _noWarns.UnionWith(
+                loadedOptions.SpecificDiagnosticOptions.Where(x => x.Value == ReportDiagnostic.Suppress)
+                    .Select(x => x.Key));
+
+            foreach ((string key, SymbolTableOverride overrideValue) in loadedOptions.SymbolTableOverrides)
             {
-                string current = _args[_currentIndex];
-                _currentIndex++;
-                return current;
+                if (_symbolTableOverrides.TryGetValue(key, out SymbolTableOverride? existingOverride))
+                {
+                    string? inlineCode = overrideValue.InlineCode ?? existingOverride.InlineCode;
+                    string? scriptName = overrideValue.ScriptName ?? existingOverride.ScriptName;
+                    _symbolTableOverrides[key] = new SymbolTableOverride(inlineCode, scriptName);
+                }
+                else
+                {
+                    _symbolTableOverrides.Add(key, overrideValue);
+                }
             }
 
-            public string? Peek()
-            {
-                return _currentIndex < _args.Length ? _args[_currentIndex] : null;
-            }
+            _options.RenameRules = loadedOptions.RenameRules;
         }
     }
 }

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -555,6 +555,74 @@ namespace Desalt.ConsoleApp.Tests
             AssertParseError(
                 new[] { "--project", "p", "@nothing.txt" },
                 DiagnosticFactory.ErrorOpeningResponseFile("nothing.txt"));
+        }
+
+        //// ===========================================================================================================
+        //// Options File Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public void Parse_should_accept_an_options_file()
+        {
+            var builder = new CompilerOptions().ToBuilder();
+            builder.GeneralDiagnosticOption = ReportDiagnostic.Error;
+            builder.SpecificDiagnosticOptions.Add("DSC001", ReportDiagnostic.Suppress);
+            builder.SymbolTableOverrides.Add("A", new SymbolTableOverride(scriptName: "name"));
+            builder.SymbolTableOverrides.Add("B", new SymbolTableOverride(scriptName: "b_override"));
+            builder.RenameRules = new RenameRules(
+                EnumRenameRule.LowerCaseFirstChar,
+                FieldRenameRule.PrivateDollarPrefix);
+
+            CompilerOptions options = builder.ToImmutable();
+            using var stream = new MemoryStream();
+            options.Serialize(stream);
+
+            var fakeFileFetcher = new FakeFileContentFetcher("options.json", stream.ReadAllText());
+            var cliOptions = AssertParse(
+                new[]
+                {
+                    "--project",
+                    "p",
+                    "--inlinecode",
+                    "A",
+                    "a",
+                    "--scriptname",
+                    "B",
+                    "b",
+                    "--enum-rename-rule",
+                    "match-csharp",
+                    "--options",
+                    "options.json",
+                    "--field-rename-rule",
+                    "dollar-prefix-for-duplicates",
+                },
+                fakeFileFetcher);
+
+            cliOptions.Should()
+                .BeEquivalentTo(
+                    new CliOptions
+                    {
+                        ProjectFile = "p",
+                        GeneralDiagnosticOption = ReportDiagnostic.Error,
+                        SpecificDiagnosticOptions =
+                            ImmutableDictionary.CreateRange(
+                                new[]
+                                {
+                                    new KeyValuePair<string, ReportDiagnostic>(
+                                        "DSC001",
+                                        ReportDiagnostic.Suppress),
+                                }),
+                        SymbolTableOverrides = new SymbolTableOverrides(
+                            new KeyValuePair<string, SymbolTableOverride>(
+                                "A",
+                                new SymbolTableOverride(inlineCode: "a", scriptName: "name")),
+                            new KeyValuePair<string, SymbolTableOverride>(
+                                "B",
+                                new SymbolTableOverride(scriptName: "b_override"))),
+                        RenameRules = new RenameRules(
+                            EnumRenameRule.LowerCaseFirstChar,
+                            FieldRenameRule.DollarPrefixOnlyForDuplicateName)
+                    });
         }
     }
 }

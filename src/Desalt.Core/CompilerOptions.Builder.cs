@@ -31,7 +31,7 @@ namespace Desalt.Core
                 GeneralDiagnosticOption = copy.GeneralDiagnosticOption;
                 SpecificDiagnosticOptions = new Dictionary<string, ReportDiagnostic>(copy.SpecificDiagnosticOptions);
                 RenameRules = copy.RenameRules;
-                SymbolTableOverrides = copy.SymbolTableOverrides;
+                SymbolTableOverrides = new Dictionary<string, SymbolTableOverride>(copy.SymbolTableOverrides);
             }
 
             //// =======================================================================================================
@@ -67,7 +67,7 @@ namespace Desalt.Core
             /// Gets an object containing overrides for various symbols, such as [InlineCode] or
             /// [ScriptName].
             /// </summary>
-            public SymbolTableOverrides SymbolTableOverrides { get; set; }
+            public IDictionary<string, SymbolTableOverride> SymbolTableOverrides { get; set; }
 
             //// =======================================================================================================
             //// Methods
@@ -81,7 +81,7 @@ namespace Desalt.Core
                     generalDiagnosticOption: GeneralDiagnosticOption,
                     specificDiagnosticOptions: SpecificDiagnosticOptions.ToImmutableDictionary(),
                     renameRules: RenameRules,
-                    symbolTableOverrides: SymbolTableOverrides);
+                    symbolTableOverrides: new SymbolTableOverrides(SymbolTableOverrides.ToImmutableDictionary()));
             }
         }
     }

@@ -18,7 +18,10 @@ namespace Desalt.ConsoleApp
     using Microsoft.CodeAnalysis;
     using Pastel;
 
-    internal sealed class CliApp
+    /// <summary>
+    /// Represents the command-line interface application.
+    /// </summary>
+    public sealed class CliApp
     {
         //// ===========================================================================================================
         //// Member Variables

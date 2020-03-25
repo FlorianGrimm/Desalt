@@ -8,6 +8,7 @@
 namespace Desalt.ConsoleApp
 {
     using System;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
 
     /// <summary>
@@ -35,7 +36,7 @@ namespace Desalt.ConsoleApp
             builder.SpecificDiagnosticOptions = cliOptions.SpecificDiagnosticOptions;
             builder.WarningLevel = (WarningLevel)cliOptions.WarningLevel;
 
-            builder.SymbolTableOverrides = cliOptions.SymbolTableOverrides;
+            builder.SymbolTableOverrides.AddRange(cliOptions.SymbolTableOverrides);
             builder.RenameRules = cliOptions.RenameRules;
 
             return builder.ToImmutable();
