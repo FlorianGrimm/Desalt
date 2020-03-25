@@ -14,8 +14,6 @@ namespace Desalt.ConsoleApp
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Text;
-    using Desalt.CompilerUtilities;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
@@ -29,7 +27,8 @@ namespace Desalt.ConsoleApp
 
         private static readonly StringComparer s_warningComparer = StringComparer.Ordinal;
 
-        private readonly ArgPeeker _argPeeker;
+        private readonly ArgReader _argReader;
+        private readonly IFileContentFetcher _fileContentFetcher;
         private readonly IList<Diagnostic> _diagnostics = new List<Diagnostic>();
 
         private readonly CliOptions _options = new CliOptions();
@@ -44,27 +43,28 @@ namespace Desalt.ConsoleApp
         //// Constructors
         //// ===========================================================================================================
 
-        private CliOptionParser(ArgPeeker argPeeker)
+        private CliOptionParser(IEnumerable<string> rawArguments, IFileContentFetcher? fileContentFetcher)
         {
-            _argPeeker = argPeeker ?? throw new ArgumentNullException(nameof(argPeeker));
+            _fileContentFetcher = fileContentFetcher ?? new OsFileContentFetcher();
+            _argReader = new ArgReader(rawArguments, _fileContentFetcher, _diagnostics);
         }
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static IExtendedResult<CliOptions> Parse(IEnumerable<string> rawArguments)
+        public static IExtendedResult<CliOptions> Parse(
+            IEnumerable<string> rawArguments,
+            IFileContentFetcher? fileContentFetcher = null)
         {
-            var flattenedArgs = FlattenArgs(rawArguments).ToImmutableArray();
-            var argPeeker = new ArgPeeker(flattenedArgs);
-            var parser = new CliOptionParser(argPeeker);
-            var parseResult = parser.Parse();
+            var parser = new CliOptionParser(rawArguments, fileContentFetcher);
+            var parseResult = parser.ParseImpl();
             return parseResult;
         }
 
-        private IExtendedResult<CliOptions> Parse()
+        private IExtendedResult<CliOptions> ParseImpl()
         {
-            while (!_argPeeker.IsAtEnd)
+            while (!_argReader.IsAtEnd)
             {
                 ParseArg();
             }
@@ -93,129 +93,9 @@ namespace Desalt.ConsoleApp
             return new ExtendedResult<CliOptions>(_options, _diagnostics);
         }
 
-        /// <summary>
-        /// Flattens the arguments by reading in any response files and enumerating the options as if they were
-        /// specified on the command line.
-        /// </summary>
-        /// <param name="rawArguments">The raw command-line arguments.</param>
-        /// <returns></returns>
-        private static ImmutableArray<string> FlattenArgs(IEnumerable<string> rawArguments)
-        {
-            var flattenedArgs = new List<string>();
-
-            foreach (string arg in rawArguments)
-            {
-                if (arg.StartsWith('@'))
-                {
-                    var responseFileArgs = ParseResponseFile(arg.Substring(1));
-                    flattenedArgs.AddRange(responseFileArgs);
-                }
-                else if (arg.StartsWith('"'))
-                {
-                    using var reader = new PeekingTextReader(arg);
-                    string? processedArg = RemoveQuotesAndSlashes(reader);
-
-                    if (!string.IsNullOrWhiteSpace(processedArg))
-                    {
-                        flattenedArgs.Add(processedArg);
-                    }
-                }
-                else
-                {
-                    flattenedArgs.Add(arg);
-                }
-            }
-
-            return flattenedArgs.ToImmutableArray();
-        }
-
-        private static IEnumerable<string> ParseResponseFile(string fileName)
-        {
-            string contents = string.Empty;
-            try
-            {
-                contents = File.ReadAllText(fileName);
-            }
-            catch
-            {
-                // Add error
-            }
-
-            var flattenedArgs = new List<string>();
-            using var reader = new PeekingTextReader(contents);
-            reader.SkipWhitespace();
-
-            while (!reader.IsAtEnd)
-            {
-                string? arg = RemoveQuotesAndSlashes(reader);
-                if (!string.IsNullOrWhiteSpace(arg))
-                {
-                    flattenedArgs.Add(arg);
-                }
-
-                reader.SkipWhitespace();
-            }
-
-            return flattenedArgs;
-        }
-
-        private static string? RemoveQuotesAndSlashes(PeekingTextReader reader)
-        {
-            reader.SkipWhitespace();
-            bool withinQuote = reader.Peek() == '"';
-
-            if (!withinQuote)
-            {
-                return reader.ReadUntilWhitespace();
-            }
-
-            var builder = new StringBuilder();
-            reader.Read(); // quote
-
-            do
-            {
-                string? nextChunk = reader.ReadUntil(c => c.IsOneOf('"', '\\'));
-                builder.Append(nextChunk);
-
-                switch (reader.Peek())
-                {
-                    case '"':
-                        withinQuote = false;
-                        reader.Read();
-                        break;
-
-                    case '\\':
-                        // Check for escaped quotes or backslashes
-                        if (reader.Peek(2) == "\\\"")
-                        {
-                            reader.Read(2);
-                            builder.Append('"');
-                        }
-                        else if (reader.Peek(2) == "\\\\")
-                        {
-                            reader.Read(2);
-                            builder.Append('\\');
-                        }
-                        else
-                        {
-                            reader.Read();
-                            builder.Append('\\');
-                        }
-                        break;
-
-                    default:
-                        withinQuote = false;
-                        break;
-                }
-            }
-            while (withinQuote);
-
-            return builder.ToString();
-        }
-
         private void ParseArg()
         {
-            string arg = _argPeeker.Read();
+            string arg = _argReader.Read() ?? throw new InvalidOperationException();
             switch (arg)
             {
                 case "--help":
@@ -350,7 +230,7 @@ namespace Desalt.ConsoleApp
 
         private string? ParseFileArg(string optionName)
         {
-            string? value = _argPeeker.Peek();
+            string? value = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
@@ -358,12 +238,12 @@ namespace Desalt.ConsoleApp
                 return null;
             }
 
-            return _argPeeker.Read();
+            return _argReader.Read();
         }
 
         private int ParseIntValueArg(string optionName)
         {
-            string? value = _argPeeker.Peek();
+            string? value = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
@@ -376,13 +256,13 @@ namespace Desalt.ConsoleApp
                 _diagnostics.Add(DiagnosticFactory.MissingNumberForOption(optionName));
             }
 
-            _argPeeker.Read();
+            _argReader.Read();
             return result;
         }
 
         private ImmutableArray<string> ParseStringListArg(string optionName)
         {
-            string? rawValue = _argPeeker.Peek();
+            string? rawValue = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
             {
@@ -390,14 +270,14 @@ namespace Desalt.ConsoleApp
                 return ImmutableArray<string>.Empty;
             }
 
-            rawValue = _argPeeker.Read();
+            _argReader.Read();
             string[] values = rawValue.Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             return values.ToImmutableArray();
         }
 
         private bool TryParseOptionalStringList(out ImmutableArray<string> list)
         {
-            string? rawValue = _argPeeker.Peek();
+            string? rawValue = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(rawValue) || IsOption(rawValue))
             {
@@ -414,7 +294,7 @@ namespace Desalt.ConsoleApp
             [NotNullWhen(true)] out string? symbol,
             [NotNullWhen(true)] out string? value)
         {
-            symbol = _argPeeker.Peek();
+            symbol = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(symbol) || IsOption(symbol))
             {
@@ -423,8 +303,8 @@ namespace Desalt.ConsoleApp
                 return false;
             }
 
-            symbol = _argPeeker.Read();
-            value = _argPeeker.Peek();
+            symbol = _argReader.Read();
+            value = _argReader.Peek();
 
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
@@ -432,21 +312,21 @@ namespace Desalt.ConsoleApp
                 return false;
             }
 
-            value = _argPeeker.Read();
+            value = _argReader.Read();
             return true;
         }
 
         private bool TryParseMappedValue<T>(string optionName, IReadOnlyDictionary<string, T> mappings, out T enumValue)
             where T : struct
         {
-            string? value = _argPeeker.Peek();
+            string? value = _argReader.Peek();
             if (string.IsNullOrWhiteSpace(value) || IsOption(value))
             {
                 _diagnostics.Add(DiagnosticFactory.MissingValueForOption(optionName));
                 enumValue = default;
                 return false;
             }
-            value = _argPeeker.Read();
+            _argReader.Read();
 
             if (!mappings.ContainsKey(value))
             {

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="CliOptionParserTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -10,6 +10,8 @@ namespace Desalt.ConsoleApp.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
+    using System.Linq;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
     using FluentAssertions;
@@ -18,6 +20,34 @@ namespace Desalt.ConsoleApp.Tests
 
     public class CliOptionParserTests
     {
+        private static CliOptions AssertParse(string[] args, FakeFileContentFetcher? fileFetcher = null)
+        {
+            fileFetcher ??= new FakeFileContentFetcher();
+            var result = CliOptionParser.Parse(args, fileFetcher);
+            result.Diagnostics.Should().BeEmpty();
+            result.Success.Should().BeTrue();
+
+            return result.Result;
+        }
+
+        private static void AssertParseError(
+            string[] args,
+            Diagnostic expectedDiagnostic,
+            FakeFileContentFetcher? fileFetcher = null)
+        {
+            AssertParseError(args, new[] { expectedDiagnostic }, fileFetcher);
+        }
+
+        private static void AssertParseError(
+            string[] args,
+            Diagnostic[] expectedDiagnostics,
+            FakeFileContentFetcher? fileFetcher = null)
+        {
+            fileFetcher ??= new FakeFileContentFetcher();
+            var result = CliOptionParser.Parse(args, fileFetcher);
+            result.Diagnostics.Should().BeEquivalentTo(expectedDiagnostics.Cast<object>());
+        }
+
         //// ===========================================================================================================
         //// --help and --version Tests
         //// ===========================================================================================================
@@ -25,37 +55,31 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_version()
         {
-            var result = CliOptionParser.Parse(new[] { "--version" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowVersion.Should().BeTrue();
+            var options = AssertParse(new[] { "--version" });
+            options.ShouldShowVersion.Should().BeTrue();
 
-            result = CliOptionParser.Parse(new[] { "-v" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowVersion.Should().BeTrue();
+            options = AssertParse(new[] { "-v" });
+            options.ShouldShowVersion.Should().BeTrue();
         }
 
         [Test]
         public void Parse_should_recognize_help()
         {
-            var result = CliOptionParser.Parse(new[] { "--help" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowHelp.Should().BeTrue();
+            var options = AssertParse(new[] { "--help" });
+            options.ShouldShowHelp.Should().BeTrue();
 
-            result = CliOptionParser.Parse(new[] { "-?" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowHelp.Should().BeTrue();
+            options = AssertParse(new[] { "-?" });
+            options.ShouldShowHelp.Should().BeTrue();
         }
 
         [Test]
         public void Parse_should_use_version_or_help_and_succeed_even_if_there_are_other_errors()
         {
-            var result = CliOptionParser.Parse(new[] { "--unknown", "--version" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowVersion.Should().BeTrue();
+            var options = AssertParse(new[] { "--unknown", "--version" });
+            options.ShouldShowVersion.Should().BeTrue();
 
-            result = CliOptionParser.Parse(new[] { "--unknown", "-?" });
-            result.Success.Should().BeTrue();
-            result.Result.ShouldShowHelp.Should().BeTrue();
+            options = AssertParse(new[] { "--unknown", "-?" });
+            options.ShouldShowHelp.Should().BeTrue();
         }
 
         //// ===========================================================================================================
@@ -65,11 +89,7 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_return_an_error_on_an_unrecognized_option()
         {
-            var result = CliOptionParser.Parse(new[] { "--unknown" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.UnrecognizedOption("--unknown"));
+            AssertParseError(new[] { "--unknown" }, DiagnosticFactory.UnrecognizedOption("--unknown"));
         }
 
         //// ===========================================================================================================
@@ -79,65 +99,45 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_project()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "Proj.csproj" });
-            result.Success.Should().BeTrue();
-            result.Result.Should().BeEquivalentTo(new CliOptions { ProjectFile = "Proj.csproj" });
+            var options = AssertParse(new[] { "--project", "Proj.csproj" });
+            options.Should().BeEquivalentTo(new CliOptions { ProjectFile = "Proj.csproj" });
         }
 
         [Test]
         public void Parse_should_use_the_last_argument_for_project()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "Proj.csproj", "--project", "ProjB.csproj" });
-            result.Success.Should().BeTrue();
-            result.Result.Should().BeEquivalentTo(new CliOptions { ProjectFile = "ProjB.csproj" });
+            var options = AssertParse(new[] { "--project", "Proj.csproj", "--project", "ProjB.csproj" });
+            options.Should().BeEquivalentTo(new CliOptions { ProjectFile = "ProjB.csproj" });
         }
 
         [Test]
         public void Parse_should_return_an_error_when_project_is_missing_the_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--project" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingFileSpecification("--project"));
-
-            result = CliOptionParser.Parse(new[] { "--project", "--nologo" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingFileSpecification("--project"));
+            AssertParseError(new[] { "--project" }, DiagnosticFactory.MissingFileSpecification("--project"));
+            AssertParseError(
+                new[] { "--project", "--nologo" },
+                DiagnosticFactory.MissingFileSpecification("--project"));
         }
 
         [Test]
         public void Parse_should_recognize_out()
         {
-            var result = CliOptionParser.Parse(new[] { "--out", "Directory" });
-            result.Success.Should().BeTrue();
-            result.Result.Should().BeEquivalentTo(new CliOptions { OutDirectory = "Directory" });
+            var options = AssertParse(new[] { "--out", "Directory" });
+            options.Should().BeEquivalentTo(new CliOptions { OutDirectory = "Directory" });
         }
 
         [Test]
         public void Parse_should_use_the_last_argument_for_out()
         {
-            var result = CliOptionParser.Parse(new[] { "--out", "A", "--out", "B" });
-            result.Success.Should().BeTrue();
-            result.Result.Should().BeEquivalentTo(new CliOptions { OutDirectory = "B" });
+            var options = AssertParse(new[] { "--out", "A", "--out", "B" });
+            options.Should().BeEquivalentTo(new CliOptions { OutDirectory = "B" });
         }
 
         [Test]
         public void Parse_should_return_an_error_when_out_is_missing_the_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--out" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingFileSpecification("--out"));
-
-            result = CliOptionParser.Parse(new[] { "--out", "--nologo" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingFileSpecification("--out"));
+            AssertParseError(new[] { "--out" }, DiagnosticFactory.MissingFileSpecification("--out"));
+            AssertParseError(new[] { "--out", "--nologo" }, DiagnosticFactory.MissingFileSpecification("--out"));
         }
 
         //// ===========================================================================================================
@@ -147,17 +147,15 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_nologo()
         {
-            var result = CliOptionParser.Parse(new[] { "--nologo" });
-            result.Success.Should().BeTrue();
-            result.Result.NoLogo.Should().BeTrue();
+            var options = AssertParse(new[] { "--nologo" });
+            options.NoLogo.Should().BeTrue();
         }
 
         [Test]
         public void Parse_should_allow_escaped_strings_as_args()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "\"embedded \\\"quote and \\\\ backslash\"" });
-            result.Success.Should().BeTrue();
-            result.Result.ProjectFile.Should().Be("embedded \"quote and \\ backslash");
+            var options = AssertParse(new[] { "--project", "\"embedded \\\"quote and \\\\ backslash\"" });
+            options.ProjectFile.Should().Be("embedded \"quote and \\ backslash");
         }
 
         //// ===========================================================================================================
@@ -167,57 +165,40 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_warn()
         {
-            var result = CliOptionParser.Parse(new[] { "--warn", "2" });
-            result.Success.Should().BeTrue();
-            result.Result.WarningLevel.Should().Be(2);
+            var options = AssertParse(new[] { "--warn", "2" });
+            options.WarningLevel.Should().Be(2);
 
-            result = CliOptionParser.Parse(new[] { "-w", "2" });
-            result.Success.Should().BeTrue();
-            result.Result.WarningLevel.Should().Be(2);
+            options = AssertParse(new[] { "-w", "2" });
+            options.WarningLevel.Should().Be(2);
         }
 
         [Test]
         public void Parse_should_use_the_last_value_for_warn()
         {
-            var result = CliOptionParser.Parse(new[] { "--warn", "2", "-w", "1" });
-            result.Success.Should().BeTrue();
-            result.Result.WarningLevel.Should().Be(1);
+            var options = AssertParse(new[] { "--warn", "2", "-w", "1" });
+            options.WarningLevel.Should().Be(1);
         }
 
         [Test]
         public void Parse_should_return_an_error_when_warn_has_no_value_or_an_invalid_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--warn" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
-
-            result = CliOptionParser.Parse(new[] { "--warn", "--project", "Project.csproj" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
-
-            result = CliOptionParser.Parse(new[] { "--warn", "not-a-number" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingNumberForOption("--warn"));
+            AssertParseError(new[] { "--warn" }, DiagnosticFactory.MissingNumberForOption("--warn"));
+            AssertParseError(
+                new[] { "--warn", "--project", "Project.csproj" },
+                DiagnosticFactory.MissingNumberForOption("--warn"));
+            AssertParseError(new[] { "--warn", "not-a-number" }, DiagnosticFactory.MissingNumberForOption("--warn"));
         }
 
         [Test]
         public void Parse_should_recognize_nowarn()
         {
-            var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            var options = AssertParse(new[] { "--nowarn", "CS2008" });
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(1)
                 .And.Contain("CS2008", ReportDiagnostic.Suppress);
 
-            result = CliOptionParser.Parse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            options = AssertParse(new[] { "--nowarn", ";CS2008,CS2009;CS2010," });
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(3)
                 .And.ContainKeys("CS2008", "CS2009", "CS2010")
                 .And.Subject.Values.Should()
@@ -227,95 +208,76 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_combine_the_values_for_nowarn()
         {
-            var result = CliOptionParser.Parse(new[] { "--nowarn", "CS2008,CS2009", "--nowarn", "CS2010" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().HaveCount(3).And.ContainKeys("CS2008", "CS2009", "CS2010");
+            var options = AssertParse(new[] { "--nowarn", "CS2008,CS2009", "--nowarn", "CS2010" });
+            options.SpecificDiagnosticOptions.Should().HaveCount(3).And.ContainKeys("CS2008", "CS2009", "CS2010");
         }
 
         [Test]
         public void Parse_should_return_an_error_when_nowarn_has_no_value_or_an_invalid_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--nowarn" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--nowarn"));
-
-            result = CliOptionParser.Parse(new[] { "--nowarn", "--project", "Project.csproj" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--nowarn"));
+            AssertParseError(new[] { "--nowarn" }, DiagnosticFactory.MissingValueForOption("--nowarn"));
+            AssertParseError(
+                new[] { "--nowarn", "--project", "Project.csproj" },
+                DiagnosticFactory.MissingValueForOption("--nowarn"));
         }
 
         [Test]
         public void Parse_should_recognize_warnaserror_as_a_flag()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            var options = AssertParse(new[] { "--warnaserror" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror+" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            options = AssertParse(new[] { "--warnaserror+" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror-" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
+            options = AssertParse(new[] { "--warnaserror-" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror+", "--project", "Project.csproj" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            options = AssertParse(new[] { "--warnaserror+", "--project", "Project.csproj" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
 
         [Test]
         public void Parse_should_recognize_warnaserror_as_a_list()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror", "CS2008" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().HaveCount(1).And.Contain("CS2008", ReportDiagnostic.Error);
+            var options = AssertParse(new[] { "--warnaserror", "CS2008" });
+            options.SpecificDiagnosticOptions.Should().HaveCount(1).And.Contain("CS2008", ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            options = AssertParse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(3)
                 .And.ContainKeys("CS2008", "CS2009", "CS2010")
                 .And.Subject.Values.Should()
                 .AllBeEquivalentTo(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            options = AssertParse(new[] { "--warnaserror", ";CS2008,CS2009 CS2010," });
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(3)
                 .And.ContainKeys("CS2008", "CS2009", "CS2010")
                 .And.Subject.Values.Should()
                 .AllBeEquivalentTo(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror-", "CS2008" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+            options = AssertParse(new[] { "--warnaserror-", "CS2008" });
+            options.SpecificDiagnosticOptions.Should().BeEmpty();
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+            options = AssertParse(new[] { "--warnaserror-", ";CS2008,CS2009;CS2010," });
+            options.SpecificDiagnosticOptions.Should().BeEmpty();
         }
 
         [Test]
         public void Parse_should_give_precedence_to_later_arguments_with_warnaserror()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
+            var options = AssertParse(new[] { "--warnaserror", "--warnaserror-" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Default);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror-", "--warnaserror+" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            options = AssertParse(new[] { "--warnaserror-", "--warnaserror+" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
 
         [Test]
         public void Parse_should_aggregate_warnaserror_values()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[]
                 {
                     "--warnaserror", "CS2008;CS2009",
@@ -324,8 +286,7 @@ namespace Desalt.ConsoleApp.Tests
                     "--warnaserror+", "CS2011"
                 });
 
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(2)
                 .And.ContainKeys("CS2009", "CS2011")
                 .And.Subject.Values.Should()
@@ -335,9 +296,8 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_give_nowarn_precedence_over_warnaserror()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--nowarn", "3", "--warnaserror", "3" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should()
+            var options = AssertParse(new[] { "--warnaserror", "1,2", "--nowarn", "3", "--warnaserror", "3" });
+            options.SpecificDiagnosticOptions.Should()
                 .HaveCount(3)
                 .And.Contain(
                     new KeyValuePair<string, ReportDiagnostic>("1", ReportDiagnostic.Error),
@@ -348,25 +308,21 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_clear_warnaserror_lists_when_used_as_a_flag()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--warnaserror" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+            var options = AssertParse(new[] { "--warnaserror", "1,2", "--warnaserror" });
+            options.SpecificDiagnosticOptions.Should().BeEmpty();
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror", "1,2", "--warnaserror-" });
-            result.Success.Should().BeTrue();
-            result.Result.SpecificDiagnosticOptions.Should().BeEmpty();
+            options = AssertParse(new[] { "--warnaserror", "1,2", "--warnaserror-" });
+            options.SpecificDiagnosticOptions.Should().BeEmpty();
         }
 
         [Test]
         public void Parse_should_not_set_the_general_diagnostic_option_to_default_when_a_list_is_encountered()
         {
-            var result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror", "1,2" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            var options = AssertParse(new[] { "--warnaserror", "--warnaserror", "1,2" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
 
-            result = CliOptionParser.Parse(new[] { "--warnaserror", "--warnaserror-", "1,2" });
-            result.Success.Should().BeTrue();
-            result.Result.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            options = AssertParse(new[] { "--warnaserror", "--warnaserror-", "1,2" });
+            options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
         }
 
         //// ===========================================================================================================
@@ -376,7 +332,7 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_inlinecode()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[]
                 {
                     "--project",
@@ -386,8 +342,7 @@ namespace Desalt.ConsoleApp.Tests
                     "({a}) || ({b})"
                 });
 
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.InlineCodeOverrides.Should()
+            options.SymbolTableOverrides.InlineCodeOverrides.Should()
                 .HaveCount(1)
                 .And.Contain("Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)", "({a}) || ({b})");
         }
@@ -395,34 +350,29 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_use_the_last_value_of_inlinecode_for_the_same_symbol()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--inlinecode", "A", "a", "--inlinecode", "A", "b" });
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.InlineCodeOverrides.Should().HaveCount(1).And.Contain("A", "b");
+            options.SymbolTableOverrides.InlineCodeOverrides.Should().HaveCount(1).And.Contain("A", "b");
         }
 
         [Test]
         public void Parse_should_return_an_error_when_inlinecode_is_missing_arguments()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--inlinecode" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingSymbolForOption("--inlinecode"));
-
-            result = CliOptionParser.Parse(new[] { "--project", "p", "--inlinecode", "A" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--inlinecode A"));
+            AssertParseError(
+                new[] { "--project", "p", "--inlinecode" },
+                DiagnosticFactory.MissingSymbolForOption("--inlinecode"));
+            AssertParseError(
+                new[] { "--project", "p", "--inlinecode", "A" },
+                DiagnosticFactory.MissingValueForOption("--inlinecode A"));
         }
 
         [Test]
         public void Parse_should_recognize_scriptname()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--scriptname", "System.Text.StringBuilder", "sb" });
 
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.ScriptNameOverrides.Should()
+            options.SymbolTableOverrides.ScriptNameOverrides.Should()
                 .HaveCount(1)
                 .And.Contain("System.Text.StringBuilder", "sb");
         }
@@ -430,33 +380,28 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_use_the_last_value_of_scriptname_for_the_same_symbol()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--scriptname", "A", "a", "--scriptname", "A", "b" });
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.ScriptNameOverrides.Should().HaveCount(1).And.Contain("A", "b");
+            options.SymbolTableOverrides.ScriptNameOverrides.Should().HaveCount(1).And.Contain("A", "b");
         }
 
         [Test]
         public void Parse_should_return_an_error_when_scriptname_is_missing_arguments()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--scriptname" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingSymbolForOption("--scriptname"));
-
-            result = CliOptionParser.Parse(new[] { "--project", "p", "--scriptname", "A" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should().ContainSingle().And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--scriptname A"));
+            AssertParseError(
+                new[] { "--project", "p", "--scriptname" },
+                DiagnosticFactory.MissingSymbolForOption("--scriptname"));
+            AssertParseError(
+                new[] { "--project", "p", "--scriptname", "A" },
+                DiagnosticFactory.MissingValueForOption("--scriptname A"));
         }
 
         [Test]
         public void Parse_should_allow_both_an_inlinecode_and_scriptname_for_the_same_symbol()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--inlinecode", "A", "code", "--scriptname", "A", "name" });
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.Overrides.Should()
+            options.SymbolTableOverrides.Overrides.Should()
                 .HaveCount(1)
                 .And.Contain("A", new SymbolTableOverride("code", "name"));
         }
@@ -464,10 +409,9 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_use_ordinal_comparisons_for_inlinecode_and_scriptname()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--inlinecode", "A", "code", "--scriptname", "a", "name" });
-            result.Success.Should().BeTrue();
-            result.Result.SymbolTableOverrides.Overrides.Should()
+            options.SymbolTableOverrides.Overrides.Should()
                 .HaveCount(2)
                 .And.Contain(
                     new KeyValuePair<string, SymbolTableOverride>("A", new SymbolTableOverride("code")),
@@ -481,64 +425,54 @@ namespace Desalt.ConsoleApp.Tests
         [Test]
         public void Parse_should_recognize_enum_rename_rule()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "lower-first" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
+            var options = AssertParse(new[] { "--project", "p", "--enum-rename-rule", "lower-first" });
+            options.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
 
-            result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "match-csharp" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.MatchCSharpName);
+            options = AssertParse(new[] { "--project", "p", "--enum-rename-rule", "match-csharp" });
+            options.RenameRules.EnumRule.Should().Be(EnumRenameRule.MatchCSharpName);
         }
 
         [Test]
         public void Parse_should_use_the_last_value_for_enum_rename_rule()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[] { "--project", "p", "--enum-rename-rule", "match-csharp", "--enum-rename-rule", "lower-first" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
+            options.RenameRules.EnumRule.Should().Be(EnumRenameRule.LowerCaseFirstChar);
         }
 
         [Test]
         public void Parse_should_return_an_error_when_missing_a_value_for_enum_rename_rule()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--enum-rename-rule"));
+            AssertParseError(
+                new[] { "--project", "p", "--enum-rename-rule" },
+                DiagnosticFactory.MissingValueForOption("--enum-rename-rule"));
         }
 
         [Test]
         public void Parse_should_return_an_error_for_an_invalid_enum_rename_rule_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--enum-rename-rule", "not-valid" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.InvalidValueForOption("--enum-rename-rule", "not-valid"));
+            AssertParseError(
+                new[] { "--project", "p", "--enum-rename-rule", "not-valid" },
+                DiagnosticFactory.InvalidValueForOption("--enum-rename-rule", "not-valid"));
         }
 
         [Test]
         public void Parse_should_recognize_field_rename_rules()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "lower-first" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.LowerCaseFirstChar);
+            var options = AssertParse(new[] { "--project", "p", "--field-rename-rule", "lower-first" });
+            options.RenameRules.FieldRule.Should().Be(FieldRenameRule.LowerCaseFirstChar);
 
-            result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "private-dollar-prefix" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
+            options = AssertParse(new[] { "--project", "p", "--field-rename-rule", "private-dollar-prefix" });
+            options.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
 
-            result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "dollar-prefix-for-duplicates" });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.DollarPrefixOnlyForDuplicateName);
+            options = AssertParse(new[] { "--project", "p", "--field-rename-rule", "dollar-prefix-for-duplicates" });
+            options.RenameRules.FieldRule.Should().Be(FieldRenameRule.DollarPrefixOnlyForDuplicateName);
         }
 
         [Test]
         public void Parse_should_use_the_last_value_for_field_rename_rules()
         {
-            var result = CliOptionParser.Parse(
+            var options = AssertParse(
                 new[]
                 {
                     "--project",
@@ -548,28 +482,23 @@ namespace Desalt.ConsoleApp.Tests
                     "--field-rename-rule",
                     "private-dollar-prefix"
                 });
-            result.Success.Should().BeTrue();
-            result.Result.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
+            options.RenameRules.FieldRule.Should().Be(FieldRenameRule.PrivateDollarPrefix);
         }
 
         [Test]
         public void Parse_should_return_an_error_when_missing_a_value_for_field_rename_rules()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.MissingValueForOption("--field-rename-rule"));
+            AssertParseError(
+                new[] { "--project", "p", "--field-rename-rule" },
+                DiagnosticFactory.MissingValueForOption("--field-rename-rule"));
         }
 
         [Test]
         public void Parse_should_return_an_error_for_an_invalid_field_rename_rules_value()
         {
-            var result = CliOptionParser.Parse(new[] { "--project", "p", "--field-rename-rule", "not-valid" });
-            result.Success.Should().BeFalse();
-            result.Diagnostics.Should()
-                .ContainSingle()
-                .And.BeEquivalentTo(DiagnosticFactory.InvalidValueForOption("--field-rename-rule", "not-valid"));
+            AssertParseError(
+                new[] { "--project", "p", "--field-rename-rule", "not-valid" },
+                DiagnosticFactory.InvalidValueForOption("--field-rename-rule", "not-valid"));
         }
 
         //// ===========================================================================================================
@@ -577,7 +506,6 @@ namespace Desalt.ConsoleApp.Tests
         //// ===========================================================================================================
 
         [Test]
-        [Category("SkipWhenLiveUnitTesting")]
         public void Parse_should_accept_a_response_file()
         {
             string[] lines =
@@ -590,43 +518,43 @@ namespace Desalt.ConsoleApp.Tests
                 "--field-rename-rule dollar-prefix-for-duplicates"
             };
 
-            File.WriteAllLines("response.rsp", lines);
+            var options = AssertParse(
+                new[] { "--project", "p", "@response.rsp" },
+                new FakeFileContentFetcher("response.rsp", lines));
 
-            try
-            {
-                var result = CliOptionParser.Parse(new[] { "--project", "p", "@response.rsp" });
-                result.Success.Should().BeTrue();
+            options.Should()
+                .BeEquivalentTo(
+                    new CliOptions
+                    {
+                        ProjectFile = "p",
+                        WarningLevel = 3,
+                        SpecificDiagnosticOptions =
+                            ImmutableDictionary.CreateRange(
+                                new[]
+                                {
+                                    new KeyValuePair<string, ReportDiagnostic>("1", ReportDiagnostic.Error),
+                                    new KeyValuePair<string, ReportDiagnostic>("2", ReportDiagnostic.Error),
+                                    new KeyValuePair<string, ReportDiagnostic>("3", ReportDiagnostic.Error),
+                                }),
+                        SymbolTableOverrides = new SymbolTableOverrides(
+                            new KeyValuePair<string, SymbolTableOverride>(
+                                "System.Console.WriteLine(char[] buffer, int index)",
+                                new SymbolTableOverride(inlineCode: @"console.log(""hi\n"")")),
+                            new KeyValuePair<string, SymbolTableOverride>(
+                                "System.Console",
+                                new SymbolTableOverride(scriptName: "console"))),
+                        RenameRules = new RenameRules(
+                            EnumRenameRule.MatchCSharpName,
+                            FieldRenameRule.DollarPrefixOnlyForDuplicateName),
+                    });
+        }
 
-                result.Result.Should()
-                    .BeEquivalentTo(
-                        new CliOptions
-                        {
-                            ProjectFile = "p",
-                            WarningLevel = 3,
-                            SpecificDiagnosticOptions =
-                                ImmutableDictionary.CreateRange(
-                                    new[]
-                                    {
-                                        new KeyValuePair<string, ReportDiagnostic>("1", ReportDiagnostic.Error),
-                                        new KeyValuePair<string, ReportDiagnostic>("2", ReportDiagnostic.Error),
-                                        new KeyValuePair<string, ReportDiagnostic>("3", ReportDiagnostic.Error),
-                                    }),
-                            SymbolTableOverrides = new SymbolTableOverrides(
-                                new KeyValuePair<string, SymbolTableOverride>(
-                                    "System.Console.WriteLine(char[] buffer, int index)",
-                                    new SymbolTableOverride(inlineCode: @"console.log(""hi\n"")")),
-                                new KeyValuePair<string, SymbolTableOverride>(
-                                    "System.Console",
-                                    new SymbolTableOverride(scriptName: "console"))),
-                            RenameRules = new RenameRules(
-                                EnumRenameRule.MatchCSharpName,
-                                FieldRenameRule.DollarPrefixOnlyForDuplicateName),
-                        });
-            }
-            finally
-            {
-                File.Delete("response.rsp");
-            }
+        [Test]
+        public void Parse_should_return_an_error_if_the_response_file_cannot_be_loaded()
+        {
+            AssertParseError(
+                new[] { "--project", "p", "@nothing.txt" },
+                DiagnosticFactory.ErrorOpeningResponseFile("nothing.txt"));
         }
     }
 }
