@@ -13,7 +13,7 @@ namespace Desalt.Core.Diagnostics
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
-    internal partial class DiagnosticFactory
+    public partial class DiagnosticFactory
     {
         //// ===========================================================================================================
         //// Enums
@@ -124,7 +124,34 @@ namespace Desalt.Core.Diagnostics
             InvalidOptionsFile,
 
             [Error(1018, "Cannot open project", "Cannot open project file '{0}'.")]
-            CannotOpenProject
+            CannotOpenProject,
+
+            [Error(1019, "Unrecognized option", "Unrecognized option: '{0}'.")]
+            UnrecognizedOption,
+
+            [Error(1020, "Missing file specification", "Missing file specification for '{0}' option.")]
+            MissingFileSpecification,
+
+            [Error(1021, "Missing number for option", "Missing number for '{0}' option.")]
+            MissingNumberForOption,
+
+            [Error(1022, "Missing value for option", "Missing value for '{0}' option.")]
+            MissingValueForOption,
+
+            [Error(1023, "Missing required option", "Missing required option '{0}'.")]
+            MissingRequiredOption,
+
+            [Error(1024, "Warning level not in range", "Warning level must be in the range 0-4.")]
+            WarningLevelMustBeInRange,
+
+            [Error(1025, "Missing symbol", "Missing symbol for '{0}' option.")]
+            MissingSymbolForOption,
+
+            [Error(1026, "Invalid value for option", "Invalid value for '{0}' option: '{1}'.")]
+            InvalidValueForOption,
+
+            [Error(1027, "Error opening response file", "Error opening response file '{0}'.")]
+            ErrorOpeningResponseFile,
         }
 
         //// ===========================================================================================================
@@ -356,6 +383,87 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic CannotOpenProject(string projectFilePath)
         {
             return Create(DiagnosticId.CannotOpenProject, Location.None, projectFilePath);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Unrecognized option: '{0}'."
+        /// </summary>
+        /// <param name="optionName">The name of the unrecognized command-line option.</param>
+        public static Diagnostic UnrecognizedOption(string optionName)
+        {
+            return Create(DiagnosticId.UnrecognizedOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing file specification for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that expects a file name.</param>
+        public static Diagnostic MissingFileSpecification(string optionName)
+        {
+            return Create(DiagnosticId.MissingFileSpecification, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing number for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that expects a number value.</param>
+        public static Diagnostic MissingNumberForOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingNumberForOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing value for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that expects a value.</param>
+        public static Diagnostic MissingValueForOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingValueForOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing required option '{0}'."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic MissingRequiredOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingRequiredOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Warning level must be in the range 0-4."
+        /// </summary>
+        public static Diagnostic WarningLevelMustBeInRange()
+        {
+            return Create(DiagnosticId.WarningLevelMustBeInRange, Location.None);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Missing symbol for '{0}' option."
+        /// </summary>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic MissingSymbolForOption(string optionName)
+        {
+            return Create(DiagnosticId.MissingSymbolForOption, Location.None, optionName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Invalid value for '{0}' option: '{1}'."
+        /// </summary>
+        /// <param name="invalidValue">The invalid value.</param>
+        /// <param name="optionName">The name of the command-line option that is missing.</param>
+        public static Diagnostic InvalidValueForOption(string optionName, string invalidValue)
+        {
+            return Create(DiagnosticId.InvalidValueForOption, Location.None, optionName, invalidValue);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Error opening response file '{0}'."
+        /// </summary>
+        /// <param name="responseFile">The path to the response file.</param>
+        public static Diagnostic ErrorOpeningResponseFile(string responseFile)
+        {
+            return Create(DiagnosticId.ErrorOpeningResponseFile, Location.None, responseFile);
         }
     }
 }

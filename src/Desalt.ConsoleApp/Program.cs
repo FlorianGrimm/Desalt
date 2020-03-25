@@ -8,12 +8,21 @@
 namespace Desalt.ConsoleApp
 {
     using System;
+    using System.Text;
+    using System.Threading.Tasks;
 
     internal class Program
     {
-        private static void Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // By default, .NET Core doesn't have all code pages needed for Console apps.
+            // See the .NET Core Notes in https://msdn.microsoft.com/en-us/library/system.diagnostics.process(v=vs.110).aspx
+            // https://github.com/dotnet/roslyn/issues/10785
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Console.OutputEncoding = Encoding.Unicode;
+
+            var app = new CliApp(Console.Out);
+            return await app.RunAsync(args);
         }
     }
 }

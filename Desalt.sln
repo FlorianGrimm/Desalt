@@ -26,11 +26,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desalt.CompilerUtilities.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desalt.TypeScriptAst.Tests", "test\Desalt.TypeScriptAst.Tests\Desalt.TypeScriptAst.Tests.csproj", "{9DFBD838-982C-4AE4-A9E1-00BF197EA4A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.Core", "src\Desalt.Core\Desalt.Core.csproj", "{69A7A25A-9834-4469-A55A-80ACACD06AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desalt.Core", "src\Desalt.Core\Desalt.Core.csproj", "{69A7A25A-9834-4469-A55A-80ACACD06AD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.Core.Tests", "test\Desalt.Core.Tests\Desalt.Core.Tests.csproj", "{0CF4CAE9-F386-45B1-8CE6-FEE5694673CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desalt.Core.Tests", "test\Desalt.Core.Tests\Desalt.Core.Tests.csproj", "{0CF4CAE9-F386-45B1-8CE6-FEE5694673CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.ConsoleApp", "src\Desalt.ConsoleApp\Desalt.ConsoleApp.csproj", "{00F8CBC4-6709-4A0C-B9AB-85DBD470631B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desalt.ConsoleApp", "src\Desalt.ConsoleApp\Desalt.ConsoleApp.csproj", "{00F8CBC4-6709-4A0C-B9AB-85DBD470631B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desalt.ConsoleApp.Tests", "test\Desalt.ConsoleApp.Tests\Desalt.ConsoleApp.Tests.csproj", "{6E4ADDB8-472D-43D8-B716-1E536DC514EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,10 @@ Global
 		{00F8CBC4-6709-4A0C-B9AB-85DBD470631B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00F8CBC4-6709-4A0C-B9AB-85DBD470631B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00F8CBC4-6709-4A0C-B9AB-85DBD470631B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E4ADDB8-472D-43D8-B716-1E536DC514EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E4ADDB8-472D-43D8-B716-1E536DC514EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E4ADDB8-472D-43D8-B716-1E536DC514EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E4ADDB8-472D-43D8-B716-1E536DC514EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +84,7 @@ Global
 		{69A7A25A-9834-4469-A55A-80ACACD06AD9} = {9928D2C9-38FC-4C38-99FD-36F33F1EA481}
 		{0CF4CAE9-F386-45B1-8CE6-FEE5694673CC} = {7EA7B6C1-208D-4757-A053-5904E414A951}
 		{00F8CBC4-6709-4A0C-B9AB-85DBD470631B} = {9928D2C9-38FC-4C38-99FD-36F33F1EA481}
+		{6E4ADDB8-472D-43D8-B716-1E536DC514EA} = {7EA7B6C1-208D-4757-A053-5904E414A951}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E7631EC-FBFB-441A-BC08-6F5EE287E2B4}

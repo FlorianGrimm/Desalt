@@ -16,7 +16,7 @@ namespace Desalt.Core.Diagnostics
     /// <summary>
     /// Factory to create <see cref="Diagnostic"/> messages, based on the compiler options and source suppressions.
     /// </summary>
-    internal static partial class DiagnosticFactory
+    public static partial class DiagnosticFactory
     {
         //// ===========================================================================================================
         //// Member Variables
