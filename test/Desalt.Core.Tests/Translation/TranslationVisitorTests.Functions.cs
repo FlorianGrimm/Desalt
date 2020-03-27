@@ -14,6 +14,82 @@ namespace Desalt.Core.Tests.Translation
     public partial class TranslationVisitorTests
     {
         //// ===========================================================================================================
+        //// Invocation Expression Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task InvocationExpression_should_use_InlineCode_for_ListT_creation()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"
+    List<int> list = new List<int>();
+    list.AddRange(new [] { 1, 2, 3 });
+",
+                @"
+    let list: number[] = [];
+    ss.arrayAddRange(list, [1, 2, 3]);
+",
+                SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
+        }
+
+        /// <remarks>
+        /// This was giving the following error before fixing it:
+        /// <![CDATA[
+        /// error DSC1016: Error parsing inline code '{instance}[{fieldName}]' for
+        ///    'System.TypeUtil.GetField<System.Func<System.Action, int>>(object instance, string fieldName)':
+        ///     Cannot find parameter 'fieldName' in the translated argument list '(callback)'
+        /// ]]>
+        /// </remarks>
+        [Test]
+        public async Task InvocationExpression_should_handle_nested_invocations_with_InlineCode()
+        {
+            await AssertTranslationWithClassCAndMethod(@"
+    const string requestFuncName = ""requestAnimationFrame"";
+    Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
+    {
+        return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
+    };
+", @"
+    const requestFuncName: string = 'requestAnimationFrame';
+    let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
+      return window[requestFuncName](callback);
+    };
+", SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
+        }
+
+        [Test]
+        public async Task InvocationExpression_should_use_the_correct_overloaded_name_for_locally_defined_methods()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    void Method() {}
+    void Method(string x) {}
+
+    void Test()
+    {
+        var a = new A();
+        a.Method();
+        a.Method(""str"");
+    }
+}",
+                @"
+class A {
+  private method(): void { }
+
+  private method$1(x: string): void { }
+
+  private test(): void {
+    let a: A = new A();
+    a.method();
+    a.method$1('str');
+  }
+}
+");
+        }
+
+        //// ===========================================================================================================
         //// Extension Methods Tests
         //// ===========================================================================================================
 
@@ -193,9 +269,6 @@ class A
 }",
                 @"
 export class ArrayExtensions {
-  public static clone<T>(array: T[]): T[] {
-    return <T[]>null;
-  }
 }
 
 class A {

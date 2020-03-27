@@ -276,6 +276,14 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+
+            // If the method is decorated with [InlineCode] then we shouldn't output the declaration.
+            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+                scriptMethodSymbol.InlineCode != null)
+            {
+                yield break;
+            }
+
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
             // create the call signature
