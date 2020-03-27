@@ -1,5 +1,7 @@
 import { ILogAppender } from './ILogAppender';
 
+import { JsNativeExtensionMethods } from 'NativeJsTypeDefs';
+
 import 'mscorlib';
 
 import { ScriptEx } from '../Utility/ScriptEx';
@@ -163,7 +165,7 @@ export class Logger {
    */
   public static lazyGetLogger(t: Function): Logger {
     const FieldName: string = '_logger';
-    let logger: Logger = Object.getDictionary(t)[FieldName].ReinterpretAs();
+    let logger: Logger = JsNativeExtensionMethods.reinterpretAs(Object.getDictionary(t)[FieldName]);
     if (ss.isNullOrUndefined(logger)) {
       logger = Logger.getLogger(t);
       Object.getDictionary(t)[FieldName] = logger;

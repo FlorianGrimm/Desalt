@@ -55,12 +55,15 @@ class C
                 discoveryKind: discoveryKind);
 
             ExpressionSyntax methodSyntax = getMethodSyntaxFunc(context.RootSyntax);
+            IMethodSymbol methodSymbol = context.SemanticModel.GetSymbolInfo(methodSyntax).Symbol as IMethodSymbol ??
+                throw new InvalidOperationException();
 
             var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
             var diagnostics = new List<Diagnostic>();
             bool success = translator.TryTranslate(
-                methodSyntax,
+                methodSymbol,
+                methodSyntax.GetLocation(),
                 translatedLeftSide,
                 translatedArgumentList,
                 diagnostics,

@@ -4,11 +4,11 @@ import 'mscorlib';
 
 import { IWebClientMetricsLogger } from './IWebClientMetricsLogger';
 
+import { JsNativeExtensionMethods, TypeUtil } from 'NativeJsTypeDefs';
+
 import { MetricsEvent, MetricsEventParameters } from './MetricsEvent';
 
 import { PerformanceReporting } from './PerformanceReporting';
-
-import { TypeUtil } from 'NativeJsTypeDefs';
 
 export enum MetricsSuites {
   None = 0x0,
@@ -317,7 +317,7 @@ export class MetricsController {
   }
 
   public static getFriendlyEventDescription(desc: string): string {
-    return MetricsController.fullMetricNameLookup.ReinterpretAs()[desc] || desc;
+    return JsNativeExtensionMethods.reinterpretAs(MetricsController.fullMetricNameLookup)[desc] || desc;
   }
 
   /**
