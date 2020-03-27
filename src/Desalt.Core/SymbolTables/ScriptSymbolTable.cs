@@ -160,12 +160,15 @@ namespace Desalt.Core.SymbolTables
                 throw new ArgumentNullException(nameof(symbol));
             }
 
-            // initialize the result to null so we can detect if we found the symbol
-
-            // detect if there is a generic version of a symbol (for example, if the symbol is a
-            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`
+            // Detect if there is a generic version of a symbol (for example, if the symbol is a
+            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`.
             bool hasGenericVersion =
                 symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol);
+
+            // Extension methods can be reduced during translation. For example, `ExtensionMethod(this object x)`
+            // invoked as `x.ExtensionMethod()` will have the reduced symbol `System.Object.ExtensionMethod()`. We need
+            // to detect this case and look for the non-reduced form in the symbol table.
+            IMethodSymbol? nonReducedMethodSymbol = (symbol as IMethodSymbol)?.ReducedFrom;
 
             // local function to search the specified dictionary for the symbol first, then the
             // generic version if there is one
@@ -179,6 +182,11 @@ namespace Desalt.Core.SymbolTables
                 }
 
                 if (hasGenericVersion && dictionary.TryGetValue(symbol.OriginalDefinition, out foundValue))
+                {
+                    return true;
+                }
+
+                if (nonReducedMethodSymbol != null && dictionary.TryGetValue(nonReducedMethodSymbol, out foundValue))
                 {
                     return true;
                 }
@@ -206,7 +214,9 @@ namespace Desalt.Core.SymbolTables
             if ((scriptSymbol != null &&
                     OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride? @override)) ||
                 (hasGenericVersion &&
-                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition!.ToHashDisplay(), out @override)))
+                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition!.ToHashDisplay(), out @override)) ||
+                (nonReducedMethodSymbol != null &&
+                    OverrideSymbols.TryGetValue(nonReducedMethodSymbol.ToHashDisplay(), out @override)))
             {
                 if (@override.InlineCode != null && scriptSymbol is IScriptMethodSymbol scriptMethodSymbol)
                 {

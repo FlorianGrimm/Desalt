@@ -167,13 +167,13 @@ namespace Desalt.Core.Translation
             ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
             // if there's no symbol then just return an identifier
-            if (symbol == null || !_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+            if (symbol == null)
             {
                 yield return Factory.Identifier(node.Identifier.Text);
                 yield break;
             }
 
-            ITsExpression translated = TranslateIdentifierName(symbol, scriptSymbol.ComputedScriptName, node.SpanStart);
+            ITsExpression translated = TranslateIdentifierName(symbol, node.GetLocation());
             yield return translated;
         }
 
@@ -181,18 +181,24 @@ namespace Desalt.Core.Translation
         /// Translates an identifier name represented by the symbol, taking into account static vs. instance references.
         /// </summary>
         /// <param name="symbol">The symbol to translate.</param>
-        /// <param name="scriptName">The script name of the symbol.</param>
-        /// <param name="nodeSpanStart">The start of the syntax node where this symbol was located.</param>
+        /// <param name="nodeLocation">The start of the syntax node where this symbol was located.</param>
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
-        private ITsExpression TranslateIdentifierName(ISymbol symbol, string scriptName, int nodeSpanStart)
+        private ITsExpression TranslateIdentifierName(ISymbol symbol, Location nodeLocation)
         {
-            // get the containing type
-            INamedTypeSymbol containingType = symbol.ContainingType;
+            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name);
+
+            // get the containing type of the symbol
+            INamedTypeSymbol? containingType = symbol.ContainingType;
+
+            // get the containing type of the syntax node (usually an identifier)
+            INamedTypeSymbol? containingTypeOfSyntaxNode = _semanticModel
+                .GetEnclosingSymbol(nodeLocation.SourceSpan.Start, _cancellationToken)
+                ?.ContainingType;
 
             // see if the identifier is declared within this type
-            bool belongsToThisType = SymbolEqualityComparer.Default.Equals(
-                containingType,
-                _semanticModel.GetEnclosingSymbol(nodeSpanStart, _cancellationToken)?.ContainingType);
+            bool belongsToThisType = containingType != null &&
+                containingTypeOfSyntaxNode != null &&
+                SymbolEqualityComparer.Default.Equals(containingType, containingTypeOfSyntaxNode);
 
             ITsExpression expression;
 
@@ -206,7 +212,9 @@ namespace Desalt.Core.Translation
             }
 
             // add a "this." prefix if it's an instance symbol within our same type
-            else if (!symbol.IsStatic && belongsToThisType)
+            else if (!symbol.IsStatic &&
+                belongsToThisType &&
+                !symbol.Kind.IsOneOf(SymbolKind.Parameter, SymbolKind.Local, SymbolKind.Label))
             {
                 expression = Factory.MemberDot(Factory.This, scriptName);
             }
@@ -218,7 +226,18 @@ namespace Desalt.Core.Translation
             // add this type to the import list if it doesn't belong to us
             if (!belongsToThisType)
             {
-                _typesToImport.Add((ITypeSymbol)symbol);
+                ITypeSymbol? typeToImport = symbol as ITypeSymbol ?? containingType;
+                if (typeToImport == null)
+                {
+                    ReportUnsupportedTranslation(
+                        DiagnosticFactory.InternalError(
+                            $"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'",
+                            nodeLocation));
+                }
+                else
+                {
+                    _typesToImport.Add(typeToImport);
+                }
             }
 
             return expression;
@@ -322,12 +341,14 @@ namespace Desalt.Core.Translation
             }
 
             // see if there's an [InlineCode] entry for the ctor invocation
-            if (_inlineCodeTranslator.TryTranslate(
-                node,
-                leftSide,
-                arguments,
-                _diagnostics,
-                out ITsAstNode? translatedNode))
+            if (_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
+                _inlineCodeTranslator.TryTranslate(
+                    ctorAsMethodSymbol,
+                    node.GetLocation(),
+                    leftSide,
+                    arguments,
+                    _diagnostics,
+                    out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
             }

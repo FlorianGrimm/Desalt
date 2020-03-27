@@ -182,5 +182,25 @@ class A {
 }
 ");
         }
+
+        [Test]
+        public async Task Translate_should_skip_methods_with_InlineCode()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [InlineCode(""ss.contains()"")]
+    public static bool Contains()
+    {
+        return true;
+    }
+}
+",
+                @"
+class A {
+}
+");
+        }
     }
 }

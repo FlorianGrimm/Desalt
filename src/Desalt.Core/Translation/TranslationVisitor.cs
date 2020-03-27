@@ -131,7 +131,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsIdentifier"/>.</returns>
         private ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            ISymbol? symbol = _semanticModel.GetDeclaredSymbol(node);
             if (symbol == null)
             {
                 ReportUnsupportedTranslation(DiagnosticFactory.IdentifierNotSupported(node));

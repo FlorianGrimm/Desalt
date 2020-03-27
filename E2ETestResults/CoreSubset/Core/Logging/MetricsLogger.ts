@@ -2,6 +2,8 @@ import { IWebClientMetricsLogger } from '../../Bootstrap/Performance/IWebClientM
 
 import { $ } from 'jQuery';
 
+import { JsNativeExtensionMethods } from 'NativeJsTypeDefs';
+
 import { Logger } from '../../CoreSlim/Logging/Logger';
 
 import 'mscorlib';
@@ -206,14 +208,14 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     let strBuilder: ss.StringBuilder = new ss.StringBuilder();
     strBuilder.append(verbose ? MetricsLogger.debugEventNames[evt.eventType] : evt.eventType.toString());
     let parameters: MetricsEventParameters = evt.parameters;
-    let eventDict: { [key: string]: any } = parameters.ReinterpretAs();
+    let eventDict: { [key: string]: any } = JsNativeExtensionMethods.reinterpretAs(parameters);
     if (parameters.ei !== null) {
       eventDict = <{ [key: string]: any }>MiscUtil.cloneObject(eventDict);
       let extraInfoParts: string[] = parameters.ei.split(': ');
       if (extraInfoParts.length > 1) {
         let fakeProps: { [key: string]: string } = new JsDictionary<string, string>(extraInfoParts);
         eventDict[MetricsParameterName.properties] = fakeProps;
-        delete eventDict['ei'.ReinterpretAs()];
+        delete eventDict[JsNativeExtensionMethods.reinterpretAs('ei')];
       }
     }
     let count: number = eventDict.count;

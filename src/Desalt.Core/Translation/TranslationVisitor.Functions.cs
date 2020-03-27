@@ -25,7 +25,7 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
-        /// Called when the visitor visits a InvocationExpressionSyntax node.
+        /// Called when the visitor visits a InvocationExpressionSyntax node of the form `expression.method(args)`.
         /// </summary>
         /// <returns>An <see cref="ITsCallExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -33,16 +33,64 @@ namespace Desalt.Core.Translation
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
+            if (!(_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol methodSymbol))
+            {
+                // For dynamic invocations, there isn't a symbol since the compiler can't tell what it is.
+                if (_semanticModel.GetTypeInfo(node).Type?.TypeKind != TypeKind.Dynamic)
+                {
+                    ReportUnsupportedTranslation(
+                        DiagnosticFactory.InternalError(
+                            "Isn't an invocation always a method symbol?",
+                            node.GetLocation()));
+                }
+
+                yield return Factory.Call(leftSide, arguments);
+                yield break;
+            }
+
+            // See if this is an extension method invoked as `receiver.Extension()` and change the call signature so
+            // that the left side is the first argument to the static method.
+            if (methodSymbol.IsExtensionMethod && methodSymbol.ReducedFrom != null)
+            {
+                if (leftSide is ITsMemberDotExpression memberDotExpression)
+                {
+                    // Get the non-reduced form of the method symbol. For example, if `static void Extension(this string s)`
+                    // is the original method, an invocation of the form `s.Extension()` would have the symbol
+                    // `System.String.Extension()`
+                    methodSymbol = methodSymbol.ReducedFrom;
+
+                    // Translate the name of the reduced type, which is the new left side of the invocation:
+                    // `x.Extension()` -> `ExtensionClass.Extension(x)`.
+                    leftSide = TranslateIdentifierName(
+                        methodSymbol,
+                        node.GetLocation());
+
+                    // Take the left side of the expression and instead make it the first argument to the static
+                    // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.
+                    arguments = Factory.ArgumentList(
+                        arguments.TypeArguments,
+                        arguments.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)).ToArray());
+                }
+                else
+                {
+                    ReportUnsupportedTranslation(
+                        DiagnosticFactory.InternalError(
+                            "Translating an extension method that doesn't start with a member dot expression is " +
+                            "currently not supported, since I couldn't think of a way this could be.",
+                            node.GetLocation()));
+                }
+            }
+
             // If the node's left side expression is a method or a constructor, then it will have
             // already been translated and the [InlineCode] would have already been applied - we
             // shouldn't do it twice because it will be wrong the second time.
             bool hasLeftSideAlreadyBeenTranslatedWithInlineCode = node.Expression.Kind()
-                .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
+            .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
 
             // see if there's an [InlineCode] entry for the method invocation
-            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode &&
-                _inlineCodeTranslator.TryTranslate(
-                    node.Expression,
+            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode && _inlineCodeTranslator.TryTranslate(
+                    methodSymbol,
+                    node.Expression.GetLocation(),
                     leftSide,
                     arguments,
                     _diagnostics,
@@ -52,8 +100,7 @@ namespace Desalt.Core.Translation
             }
             else
             {
-                ITsCallExpression translated = Factory.Call(leftSide, arguments);
-                yield return translated;
+                yield return Factory.Call(leftSide, arguments);
             }
         }
 
@@ -103,7 +150,7 @@ namespace Desalt.Core.Translation
                     break;
 
                 default:
-                    _diagnostics.Add(
+                    ReportUnsupportedTranslation(
                         DiagnosticFactory.InternalError(
                             $"Unknown lambda expression body type: {node.Body}",
                             node.Body.GetLocation()));

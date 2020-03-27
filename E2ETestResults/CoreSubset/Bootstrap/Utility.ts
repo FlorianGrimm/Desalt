@@ -2,6 +2,8 @@ import { BootstrapResponse, SecondaryBootstrapResponse } from './BootstrapRespon
 
 import 'mscorlib';
 
+import { JsNativeExtensionMethods } from 'NativeJsTypeDefs';
+
 import { MetricsContext, MetricsController, MetricsSuites } from './Performance/MetricsController';
 
 import { tsConfig } from 'TypeDefs';
@@ -42,7 +44,7 @@ export class Utility {
           return;
         }
         let chunkStart: number = match[0].length;
-        let chunkLength: number = ss.parseInt(match[1]).ReinterpretAs();
+        let chunkLength: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(match[1]));
         if (chunkStart + chunkLength > newData.length) {
           return;
         }
@@ -64,9 +66,9 @@ export class Utility {
           invokeError(new ss.Exception('Invalid JSON'));
         }
         if (byteOffset === 0) {
-          firstChunkCallback(json.ReinterpretAs());
+          firstChunkCallback(JsNativeExtensionMethods.reinterpretAs(json));
         } else {
-          secondaryChunkCallback(json.ReinterpretAs());
+          secondaryChunkCallback(JsNativeExtensionMethods.reinterpretAs(json));
         }
         byteOffset += chunkStart + chunkLength;
       }

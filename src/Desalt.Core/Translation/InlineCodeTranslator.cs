@@ -64,7 +64,8 @@ namespace Desalt.Core.Translation
         /// can be either a constructor, regular method, or a property get/set method. If the inline
         /// code cannot be parsed, <see langword="null"/> is returned.
         /// </summary>
-        /// <param name="methodExpressionSyntax">The method expression to translate.</param>
+        /// <param name="methodSymbol">The symbol of the method to translate.</param>
+        /// <param name="methodExpressionLocation">The location of the method expression to translate.</param>
         /// <param name="translatedLeftSide">
         /// The translated left side of the method call. Used for {this} parameter substitution.
         /// </param>
@@ -79,21 +80,20 @@ namespace Desalt.Core.Translation
         /// True if the translation happened or false if no translation is possible (an error condition).
         /// </returns>
         public bool TryTranslate(
-            ExpressionSyntax methodExpressionSyntax,
+            IMethodSymbol methodSymbol,
+            Location methodExpressionLocation,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
             ICollection<Diagnostic> diagnostics,
             [NotNullWhen(true)] out ITsAstNode? translatedNode)
         {
             // see if there's an [InlineCode] entry for the method invocation
-            // ReSharper disable once UsePatternMatching
-            if (_semanticModel.GetSymbolInfo(methodExpressionSyntax).Symbol is IMethodSymbol methodSymbol &&
-                _scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? methodScriptSymbol) &&
+            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? methodScriptSymbol) &&
                 methodScriptSymbol.InlineCode != null)
             {
                 var context = new Context(
                     methodScriptSymbol.InlineCode,
-                    methodExpressionSyntax,
+                    methodExpressionLocation,
                     methodSymbol,
                     translatedLeftSide,
                     translatedArgumentList,
@@ -235,7 +235,7 @@ namespace Desalt.Core.Translation
             }
 
             ITypeSymbol? typeSymbol = _semanticModel.GetSpeculativeTypeInfo(
-                    context.MethodExpressionSyntax.SpanStart,
+                    context.MethodExpressionLocation.SourceSpan.Start,
                     typeSyntax,
                     SpeculativeBindingOption.BindAsTypeOrNamespace)
                 .Type;
@@ -323,15 +323,15 @@ namespace Desalt.Core.Translation
         {
             public Context(
                 string inlineCode,
-                ExpressionSyntax methodExpressionSyntax,
+                Location methodExpressionLocation,
                 IMethodSymbol methodSymbol,
                 ITsExpression translatedLeftSide,
                 ITsArgumentList translatedArgumentList,
                 ICollection<Diagnostic> diagnostics)
             {
                 InlineCode = inlineCode ?? throw new ArgumentNullException(nameof(inlineCode));
-                MethodExpressionSyntax = methodExpressionSyntax ??
-                    throw new ArgumentNullException(nameof(methodExpressionSyntax));
+                MethodExpressionLocation = methodExpressionLocation ??
+                    throw new ArgumentNullException(nameof(methodExpressionLocation));
 
                 MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
                 TranslatedLeftSide = translatedLeftSide ?? throw new ArgumentNullException(nameof(translatedLeftSide));
@@ -342,7 +342,7 @@ namespace Desalt.Core.Translation
             }
 
             public string InlineCode { get; }
-            public ExpressionSyntax MethodExpressionSyntax { get; }
+            public Location MethodExpressionLocation { get; }
             public IMethodSymbol MethodSymbol { get; }
             public ITsExpression TranslatedLeftSide { get; }
             public ITsArgumentList TranslatedArgumentList { get; }
@@ -359,7 +359,7 @@ namespace Desalt.Core.Translation
                     InlineCode,
                     MethodSymbol.ToHashDisplay(),
                     message,
-                    MethodExpressionSyntax.GetLocation());
+                    MethodExpressionLocation);
             }
         }
     }

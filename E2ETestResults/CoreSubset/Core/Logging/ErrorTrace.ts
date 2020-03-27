@@ -2,6 +2,8 @@ import 'mscorlib';
 
 import { BaseLogAppender } from '../../CoreSlim/Logging/BaseLogAppender';
 
+import { JsNativeExtensionMethods } from 'NativeJsTypeDefs';
+
 import { LogAppenderInstance } from '../../CoreSlim/Logging/LogAppenderInstance';
 
 import { Logger, LoggerLevel } from '../../CoreSlim/Logging/Logger';
@@ -63,7 +65,7 @@ export class ErrorTrace {
   public static wrap(func: () => void): () => any {
     return () => {
       try {
-        return func.ReinterpretAs().apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
+        return JsNativeExtensionMethods.reinterpretAs(func).apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
       } catch (e) {
         ErrorTrace.report(e);
         throw e;
@@ -79,9 +81,9 @@ export class ErrorTrace {
    * @param functionName 
    */
   private static extendToAsynchronousCallback(functionName: string): void {
-    let originalFunction: (object: any, object: any) => any = Object.getDictionary(window)[functionName].ReinterpretAs();
+    let originalFunction: (object: any, object: any) => any = JsNativeExtensionMethods.reinterpretAs(Object.getDictionary(window)[functionName]);
     let callback: () => any = () => {
-      let args: any[] = (<any[]>Array.prototype.slice.call(arguments)).Clone();
+      let args: any[] = ss.arrayClone((<any[]>Array.prototype.slice.call(arguments)));
       let originalCallback: any = args[0];
       return ss.reinterpret(originalFunction).apply(ss.this, args);
     };
@@ -411,26 +413,26 @@ class StackTraceParser {
   }
 
   private static parseChromeOrIE(error: Error): StackLocation[] {
-    let filtered: string[] = error.stack.split(string.fromCharCode('
-')).Filter((line: string) => line.match(StackTraceParser.chromeIEStackRegexp) !== null);
-    return filtered.Map((line: string) => {
+    let filtered: string[] = ArrayExtensions.filter$1(error.stack.split(string.fromCharCode('
+')), (line: string) => line.match(StackTraceParser.chromeIEStackRegexp) !== null);
+    return ArrayExtensions.map$1(filtered, (line: string) => {
       if (line.indexOf('(eval ') > -1) {
         line = ss.replaceAllString(line, 'eval code', 'eval').replace(StackTraceParser.throwAwayEvalRegexp, '');
       }
-      let tokens: string[] = line.replace(new RegExp('^\\s+'), '').replace(new RegExp('\\(eval code'), '(').split(new RegExp('\\s+')).Slice(1);
+      let tokens: string[] = ArrayExtensions.slice(line.replace(new RegExp('^\\s+'), '').replace(new RegExp('\\(eval code'), '(').split(new RegExp('\\s+')), 1);
       let locationParts: string[] = StackTraceParser.extractLocation(tokens.pop());
       let functionName: string = tokens.join(' ') || 'undefined';
-      let fileName: string = ['eval', '<anonymous>'].IndexOf(locationParts[0]) > -1 ? 'undefined' : locationParts[0];
-      let lineNum: number = ss.parseInt(locationParts[1]).ReinterpretAs();
-      let colNum: number = ss.parseInt(locationParts[2]).ReinterpretAs();
+      let fileName: string = ss.indexOf(['eval', '<anonymous>'], locationParts[0]) > -1 ? 'undefined' : locationParts[0];
+      let lineNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[1]));
+      let colNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[2]));
       return new StackLocation(fileName, lineNum, colNum, line, functionName);
     });
   }
 
   private static parseFirefoxOrSafari(error: Error): StackLocation[] {
-    let filtered: string[] = error.stack.split(string.fromCharCode('
-')).Filter((line: string) => line.match(StackTraceParser.safariNativeCodeRegexp) === null);
-    return filtered.Map((line: string) => {
+    let filtered: string[] = ArrayExtensions.filter$1(error.stack.split(string.fromCharCode('
+')), (line: string) => line.match(StackTraceParser.safariNativeCodeRegexp) === null);
+    return ArrayExtensions.map$1(filtered, (line: string) => {
       if (line.indexOf(' > eval') > -1) {
         line = line.replace(new RegExp(' line (\\d+)(?: > eval line \\d+)* > eval\\:\\d+\\:\\d+', 'g'), ':$1');
       }
@@ -441,8 +443,8 @@ class StackTraceParser {
         let locationParts: string[] = StackTraceParser.extractLocation(tokens.pop());
         let functionName: string = tokens.join('@') || 'undefined';
         let fileName: string = locationParts[0];
-        let lineNum: number = ss.parseInt(locationParts[1]).ReinterpretAs();
-        let colNum: number = ss.parseInt(locationParts[2]).ReinterpretAs();
+        let lineNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[1]));
+        let colNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[2]));
         let stackFrame: StackLocation = new StackLocation(fileName, lineNum, colNum, line, functionName);
         return stackFrame;
       }
