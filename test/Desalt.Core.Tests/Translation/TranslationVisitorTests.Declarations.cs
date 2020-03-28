@@ -225,5 +225,48 @@ class A {
 }
 ");
         }
+
+        //// ===========================================================================================================
+        //// Property Declaration Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Translate_should_accept_property_accessors_with_an_explicit_body()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    private int _x;
+
+    public int GetOnly
+    {
+        get { return _x; }
+    }
+
+    public int GetAndSet
+    {
+        get { return _x; }
+        set { _x = value; }
+    }
+}",
+                @"
+class A {
+  private _x: number;
+
+  public get getOnly(): number {
+    return this._x;
+  }
+
+  public get getAndSet(): number {
+    return this._x;
+  }
+
+  public set getAndSet(value: number) {
+    this._x = value;
+  }
+}
+");
+        }
     }
 }
