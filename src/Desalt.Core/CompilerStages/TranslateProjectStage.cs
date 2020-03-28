@@ -44,21 +44,28 @@ namespace Desalt.Core.CompilerStages
             await Task.Yield();
 
             var results = input
+                // TODO: Remove this Where clause once enough language features are supported that we don't crash
                 .Where(
                     context => context.Document.Name.IsOneOf(
                         "BaseLogAppender.cs",
                         "BootstrapResponse.cs",
                         "ConsoleLogAppender.cs",
                         "ErrorTrace.cs",
+                        "FeatureFlags.cs",
                         "ILogAppender.cs",
                         "IWebClientMetricsLogger.cs",
+                        "LogAppenderInstance.cs",
                         "Logger.cs",
                         "MetricsController.cs",
                         "MetricsEvent.cs",
                         "MetricsLogger.cs",
+                        "MiscUtil.cs",
                         "NavigationMetricsCollector.cs",
                         "PerformanceReporting.cs",
+                        "Point.cs",
+                        "RecordCast.cs",
                         "ScriptEx.cs",
+                        "Size.cs",
                         "UriExtensions.cs",
                         "Utility.cs",
                         "WindowAppender.cs",

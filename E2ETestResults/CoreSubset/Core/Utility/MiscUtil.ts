@@ -2,9 +2,9 @@ import { FeatureFlagIds, tsConfig } from 'TypeDefs';
 
 import { FeatureFlags } from './FeatureFlags';
 
-import 'mscorlib';
+import { JsNativeExtensionMethods, TypeUtil } from 'NativeJsTypeDefs';
 
-import { TypeUtil } from 'NativeJsTypeDefs';
+import 'mscorlib';
 
 import { _ } from 'Underscore';
 
@@ -153,7 +153,7 @@ export class MiscUtil {
     if (ss.isNullOrUndefined(args)) {
       return true;
     }
-    let dict: { [key: string]: number } = JsDictionary<string, number>.getDictionary(args);
+    let dict: { [key: string]: number } = args;
     if (ss.isValue(dict['length']) && dict['length'] === 0) {
       return true;
     }
@@ -193,19 +193,6 @@ export class MiscUtil {
    */
   public static isValidIndex(index: number, arr: any[]): boolean {
     return index >= 0 && index < arr.length;
-  }
-
-  /**
-   * Checks if the given value is a non-null object.  Implementation cribbed from Underscore.
-   * @param o 
-   * @returns True if an object value
-   */
-  public static isObject(o: any): boolean {
-    return false;
-  }
-
-  public static hasOwnProperty(owner: any, field: string): boolean {
-    return false;
   }
 
   /**
@@ -262,7 +249,7 @@ export class MiscUtil {
     }
     let hash: string = '';
     let baseUri: string = '';
-    if (uri.ReinterpretAs().length > 0) {
+    if (uri.length > 0) {
       let indexOfQuery: number = (<string>uri).indexOf('?');
       let indexOfHash: number = (<string>uri).indexOf('#');
       let indexOfEnd: number = Math.min(indexOfQuery < 0 ? (<string>uri).length : indexOfQuery, indexOfHash < 0 ? (<string>uri).length : indexOfHash);
