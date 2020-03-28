@@ -268,5 +268,51 @@ class A {
 }
 ");
         }
+
+        [Test]
+        public async Task Translate_should_accept_auto_generated_property_accessor_declarations()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    public static int StaticProp { get; set; }
+    public string GetOnly { get; private set; }
+    public string GetAndSet { get; set; }
+}",
+                @"
+class A {
+  private static _$staticPropField: number;
+
+  private _$getOnlyField: string;
+
+  private _$getAndSetField: string;
+
+  public static get staticProp(): number {
+    return A._$staticPropField;
+  }
+
+  public static set staticProp(value: number) {
+    A._$staticPropField = value;
+  }
+
+  public get getOnly(): string {
+    return this._$getOnlyField;
+  }
+
+  private set getOnly(value: string) {
+    this._$getOnlyField = value;
+  }
+
+  public get getAndSet(): string {
+    return this._$getAndSetField;
+  }
+
+  public set getAndSet(value: string) {
+    this._$getAndSetField = value;
+  }
+}
+");
+        }
     }
 }
