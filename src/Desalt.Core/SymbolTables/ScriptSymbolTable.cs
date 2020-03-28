@@ -142,6 +142,16 @@ namespace Desalt.Core.SymbolTables
         }
 
         /// <summary>
+        /// Gets the <see cref="IScriptMethodSymbol"/> corresponding to the specified <see cref="IMethodSymbol"/>.
+        /// </summary>
+        /// <param name="symbol">The C# symbol to lookup.</param>
+        /// <returns>A <see cref="IScriptMethodSymbol"/> corresponding to the specified symbol.</returns>
+        public IScriptMethodSymbol Get(IMethodSymbol symbol)
+        {
+            return Get<IScriptMethodSymbol>(symbol);
+        }
+
+        /// <summary>
         /// Attempts to get the value associated with the specified symbol.
         /// </summary>
         /// <typeparam name="TScriptSymbol">

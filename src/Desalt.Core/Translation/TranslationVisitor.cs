@@ -36,7 +36,9 @@ namespace Desalt.Core.Translation
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptSymbolTable _scriptSymbolTable;
+        private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
+        private readonly ScriptSkipTranslator _scriptSkipTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly ISet<ITypeSymbol> _typesToImport = new HashSet<ITypeSymbol>();
@@ -65,9 +67,12 @@ namespace Desalt.Core.Translation
             _cancellationToken = cancellationToken;
             _semanticModel = context.SemanticModel;
             _scriptSymbolTable = context.ScriptSymbolTable;
-            _inlineCodeTranslator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
+            _extensionMethodTranslator =
+                new ExtensionMethodTranslator(_semanticModel, _scriptSymbolTable);
+            _inlineCodeTranslator = new InlineCodeTranslator(_semanticModel, _scriptSymbolTable);
+            _scriptSkipTranslator = new ScriptSkipTranslator(_semanticModel, _scriptSymbolTable);
 
-            _typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
+            _typeTranslator = new TypeTranslator(_scriptSymbolTable);
 
             _alternateSignatureTranslator = new AlternateSignatureTranslator(
                 context.AlternateSignatureSymbolTable,

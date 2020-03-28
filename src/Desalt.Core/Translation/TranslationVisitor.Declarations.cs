@@ -277,9 +277,9 @@ namespace Desalt.Core.Translation
         {
             IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
 
-            // If the method is decorated with [InlineCode] then we shouldn't output the declaration.
+            // If the method is decorated with [InlineCode] or [ScriptSkip] then we shouldn't output the declaration.
             if (_scriptSymbolTable.TryGetValue(symbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
-                scriptMethodSymbol.InlineCode != null)
+                (scriptMethodSymbol.InlineCode != null || scriptMethodSymbol.ScriptSkip))
             {
                 yield break;
             }
@@ -348,6 +348,16 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
+            IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+
+            // If the method is decorated with [InlineCode] then we shouldn't output the declaration (for [ScriptSkip]
+            // we still output the declaration, but won't output any invocations).
+            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+                scriptMethodSymbol.InlineCode != null)
+            {
+                yield break;
+            }
+
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
             var functionBody = (ITsBlockStatement)Visit(node.Body).Single();

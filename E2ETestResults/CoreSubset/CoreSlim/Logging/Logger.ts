@@ -165,10 +165,10 @@ export class Logger {
    */
   public static lazyGetLogger(t: Function): Logger {
     const FieldName: string = '_logger';
-    let logger: Logger = JsNativeExtensionMethods.reinterpretAs(Object.getDictionary(t)[FieldName]);
+    let logger: Logger = t[FieldName];
     if (ss.isNullOrUndefined(logger)) {
       logger = Logger.getLogger(t);
-      Object.getDictionary(t)[FieldName] = logger;
+      t[FieldName] = logger;
     }
     return logger;
   }

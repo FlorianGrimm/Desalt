@@ -123,6 +123,12 @@ namespace Desalt.Core.Diagnostics
                 "Error in reading the options file in '{0}': {1}")]
             InvalidOptionsFile,
 
+            [Error(
+                1028,
+                "Incorrect [ScriptSkip] usage",
+                "A [ScriptSkip] attribute must be placed on a static method or constructor with a single argument or an instance method/ctor with no arguments. Method: '{0}'")]
+            IncorrectScriptSkipUsage,
+
             [Error(1018, "Cannot open project", "Cannot open project file '{0}'.")]
             CannotOpenProject,
 
@@ -355,8 +361,8 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         /// <param name="inlineCode">The [InlineCode] that has an error.</param>
         /// <param name="symbolName">The symbol containing the [InlineCode] attribute.</param>
         /// <param name="errorMessage">Details about the parsing error.</param>
-        /// <param name="location">An optional associated location in the source code.</param>
-        /// <returns></returns>
+        /// <param name="location">The associated location in the source code.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic InlineCodeParsingError(
             string inlineCode,
             string symbolName,
@@ -464,6 +470,19 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic ErrorOpeningResponseFile(string responseFile)
         {
             return Create(DiagnosticId.ErrorOpeningResponseFile, Location.None, responseFile);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "A [ScriptSkip] attribute must be placed on a static
+        /// method or constructor with a single argument or an instance method/ctor with no
+        /// arguments. Method: '{0}'".
+        /// </summary>
+        /// <param name="methodName">The method that is incorrect.</param>
+        /// <param name="location">The associated location in the source code.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic IncorrectScriptSkipUsage(string methodName, Location location)
+        {
+            return Create(DiagnosticId.IncorrectScriptSkipUsage, location, methodName);
         }
     }
 }

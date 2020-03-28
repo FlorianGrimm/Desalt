@@ -137,8 +137,6 @@ namespace Desalt.Core.Translation
                     {
                         context.AddParseError($"Expected to read '{expected}'.");
                     }
-
-                    reader.SkipWhitespace();
                 }
 
                 while (!reader.IsAtEnd)

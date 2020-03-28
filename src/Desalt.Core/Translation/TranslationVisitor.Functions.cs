@@ -27,12 +27,16 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a InvocationExpressionSyntax node of the form `expression.method(args)`.
         /// </summary>
-        /// <returns>An <see cref="ITsCallExpression"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsCallExpression"/> or a <see cref="ITsExpression"/> if there is a
+        /// [ScriptSkip] attribute.
+        /// </returns>
         public override IEnumerable<ITsAstNode> VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             var leftSide = (ITsExpression)Visit(node.Expression).Single();
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
+            // Get the method symbol, which is either a constructor or "normal" method.
             if (!(_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol methodSymbol))
             {
                 // For dynamic invocations, there isn't a symbol since the compiler can't tell what it is.
@@ -48,37 +52,32 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
-            // See if this is an extension method invoked as `receiver.Extension()` and change the call signature so
-            // that the left side is the first argument to the static method.
-            if (methodSymbol.IsExtensionMethod && methodSymbol.ReducedFrom != null)
+            // Try to adapt the method if it's an extension method (convert it from `x.Extension()` to
+            // `ExtensionClass.Extension(x)`. This must be done first before translating [InlineCode] or [ScriptSkip] methods.
+            _extensionMethodTranslator.TryAdaptMethodInvocation(
+                node,
+                ref methodSymbol,
+                ref leftSide,
+                ref arguments,
+                TranslateIdentifierName,
+                out Diagnostic? error);
+            if (error != null)
             {
-                if (leftSide is ITsMemberDotExpression memberDotExpression)
-                {
-                    // Get the non-reduced form of the method symbol. For example, if `static void Extension(this string s)`
-                    // is the original method, an invocation of the form `s.Extension()` would have the symbol
-                    // `System.String.Extension()`
-                    methodSymbol = methodSymbol.ReducedFrom;
+                ReportUnsupportedTranslation(error);
+            }
 
-                    // Translate the name of the reduced type, which is the new left side of the invocation:
-                    // `x.Extension()` -> `ExtensionClass.Extension(x)`.
-                    leftSide = TranslateIdentifierName(
-                        methodSymbol,
-                        node.GetLocation());
-
-                    // Take the left side of the expression and instead make it the first argument to the static
-                    // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.
-                    arguments = Factory.ArgumentList(
-                        arguments.TypeArguments,
-                        arguments.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)).ToArray());
-                }
-                else
-                {
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.InternalError(
-                            "Translating an extension method that doesn't start with a member dot expression is " +
-                            "currently not supported, since I couldn't think of a way this could be.",
-                            node.GetLocation()));
-                }
+            // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
+            // and there's no need to use [InlineCode].
+            if (_scriptSkipTranslator.TryTranslateInvocationExpression(
+                node,
+                methodSymbol,
+                leftSide,
+                arguments,
+                _diagnostics,
+                out ITsExpression? translatedExpression))
+            {
+                yield return translatedExpression;
+                yield break;
             }
 
             // If the node's left side expression is a method or a constructor, then it will have
@@ -97,11 +96,11 @@ namespace Desalt.Core.Translation
                     out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
+                yield break;
             }
-            else
-            {
-                yield return Factory.Call(leftSide, arguments);
-            }
+
+            ITsCallExpression translatedCallExpression = Factory.Call(leftSide, arguments);
+            yield return translatedCallExpression;
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ export class WindowHelper {
       };
     } else {
       WindowHelper.innerWidthFunc = (w: Object) => {
-        return ss.reinterpret(w.document.documentElement).offsetWidth;
+        return w.document.documentElement.offsetWidth;
       };
     }
     if ('outerWidth' in window) {
@@ -57,7 +57,7 @@ export class WindowHelper {
       };
     } else {
       WindowHelper.innerHeightFunc = (w: Object) => {
-        return ss.reinterpret(w.document.documentElement).offsetHeight;
+        return w.document.documentElement.offsetHeight;
       };
     }
     if ('outerHeight' in window) {
@@ -127,25 +127,25 @@ export class WindowHelper {
       let vendors: string[] = ['ms', 'moz', 'webkit', 'o'];
       let requestFuncName: string = null;
       let cancelFuncName: string = null;
-      if (DefaultRequestNamein) {
+      if (DefaultRequestName in window) {
         requestFuncName = DefaultRequestName;
       }
-      if (DefaultCancelNamein) {
+      if (DefaultCancelName in window) {
         cancelFuncName = DefaultCancelName;
       }
       for (let ii = 0; ii < vendors.length && (requestFuncName === null || cancelFuncName === null); ++ii) {
         let vendor: string = vendors[ii];
         let funcName: string = vendor + 'RequestAnimationFrame';
-        if (requestFuncName === null && funcNamein) {
+        if (requestFuncName === null && funcName in window) {
           requestFuncName = funcName;
         }
         if (cancelFuncName === null) {
           funcName = vendor + 'CancelAnimationFrame';
-          if (funcNamein) {
+          if (funcName in window) {
             cancelFuncName = funcName;
           }
           funcName = vendor + 'CancelRequestAnimationFrame';
-          if (funcNamein) {
+          if (funcName in window) {
             cancelFuncName = funcName;
           }
         }

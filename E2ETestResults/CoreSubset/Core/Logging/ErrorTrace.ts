@@ -65,7 +65,7 @@ export class ErrorTrace {
   public static wrap(func: () => void): () => any {
     return () => {
       try {
-        return JsNativeExtensionMethods.reinterpretAs(func).apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
+        return func.apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
       } catch (e) {
         ErrorTrace.report(e);
         throw e;
@@ -81,13 +81,13 @@ export class ErrorTrace {
    * @param functionName 
    */
   private static extendToAsynchronousCallback(functionName: string): void {
-    let originalFunction: (object: any, object: any) => any = JsNativeExtensionMethods.reinterpretAs(Object.getDictionary(window)[functionName]);
+    let originalFunction: (object: any, object: any) => any = window[functionName];
     let callback: () => any = () => {
       let args: any[] = ss.arrayClone((<any[]>Array.prototype.slice.call(arguments)));
       let originalCallback: any = args[0];
-      return ss.reinterpret(originalFunction).apply(ss.this, args);
+      return originalFunction.apply(ss.this, args);
     };
-    Object.getDictionary(window)[functionName] = callback;
+    window[functionName] = callback;
   }
 
   /**
@@ -423,8 +423,8 @@ class StackTraceParser {
       let locationParts: string[] = StackTraceParser.extractLocation(tokens.pop());
       let functionName: string = tokens.join(' ') || 'undefined';
       let fileName: string = ss.indexOf(['eval', '<anonymous>'], locationParts[0]) > -1 ? 'undefined' : locationParts[0];
-      let lineNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[1]));
-      let colNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[2]));
+      let lineNum: number = ss.parseInt(locationParts[1]);
+      let colNum: number = ss.parseInt(locationParts[2]);
       return new StackLocation(fileName, lineNum, colNum, line, functionName);
     });
   }
@@ -443,8 +443,8 @@ class StackTraceParser {
         let locationParts: string[] = StackTraceParser.extractLocation(tokens.pop());
         let functionName: string = tokens.join('@') || 'undefined';
         let fileName: string = locationParts[0];
-        let lineNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[1]));
-        let colNum: number = JsNativeExtensionMethods.reinterpretAs(ss.parseInt(locationParts[2]));
+        let lineNum: number = ss.parseInt(locationParts[1]);
+        let colNum: number = ss.parseInt(locationParts[2]);
         let stackFrame: StackLocation = new StackLocation(fileName, lineNum, colNum, line, functionName);
         return stackFrame;
       }
