@@ -254,15 +254,15 @@ class A
 class A {
   private _x: number;
 
-  public get getOnly(): number {
+  public get_getOnly(): number {
     return this._x;
   }
 
-  public get getAndSet(): number {
+  public get_getAndSet(): number {
     return this._x;
   }
 
-  public set getAndSet(value: number) {
+  public set_getAndSet(value: number): void {
     this._x = value;
   }
 }
@@ -288,29 +288,51 @@ class A {
 
   private _$getAndSetField: string;
 
-  public static get staticProp(): number {
+  public static get_staticProp(): number {
     return A._$staticPropField;
   }
 
-  public static set staticProp(value: number) {
+  public static set_staticProp(value: number): void {
     A._$staticPropField = value;
   }
 
-  public get getOnly(): string {
+  public get_getOnly(): string {
     return this._$getOnlyField;
   }
 
-  private set getOnly(value: string) {
+  private set_getOnly(value: string): void {
     this._$getOnlyField = value;
   }
 
-  public get getAndSet(): string {
+  public get_getAndSet(): string {
     return this._$getAndSetField;
   }
 
-  public set getAndSet(value: string) {
+  public set_getAndSet(value: string): void {
     this._$getAndSetField = value;
   }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_should_accept_property_declarations_in_interfaces()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    int GetOnly { get; }
+    int SetOnly { set; }
+    int GetAndSet { get; set; }
+}
+",
+                @"
+interface I {
+  get_getOnly(): number;
+  set_setOnly(value: number): void;
+  get_getAndSet(): number;
+  set_getAndSet(value: number): void;
 }
 ");
         }

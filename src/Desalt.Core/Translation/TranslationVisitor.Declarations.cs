@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Translation
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -398,8 +397,8 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a PropertyDeclarationSyntax node.
         /// </summary>
         /// <returns>
-        /// An <see cref="IEnumerable{T}"/> of one or both of <see
-        /// cref="ITsGetAccessorMemberDeclaration"/> or <see cref="ITsSetAccessorMemberDeclaration"/>.
+        /// An <see cref="IEnumerable{T}"/> of one or both of <see cref="ITsFunctionMemberDeclaration"/> for the get and
+        /// set methods (for classes) or a <see cref="ITsMethodSignature"/> for the get and set methods (for interfaces).
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
@@ -410,9 +409,11 @@ namespace Desalt.Core.Translation
                 _typesToImport,
                 _diagnostics,
                 node.Type.GetLocation);
+            IPropertySymbol propertySymbol = _semanticModel.GetDeclaredSymbol(node);
 
-            bool isStatic = node.Modifiers.Any(SyntaxKind.StaticKeyword);
-            bool isAbstract = node.Modifiers.Any(SyntaxKind.AbstractKeyword);
+            bool isStatic = propertySymbol.IsStatic;
+            bool isAbstract = propertySymbol.IsAbstract;
+            bool isWithinInterface = propertySymbol.ContainingType.IsInterfaceType();
 
             if (node.AccessorList == null)
             {
@@ -423,16 +424,38 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
+            // This is used as the parameter name for setter functions.
+            ITsIdentifier valueIdentifier = Factory.Identifier("value");
+
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
                 TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(accessor);
+                bool isGetter = accessor.Kind() == SyntaxKind.GetAccessorDeclaration;
+
+                ITsIdentifier methodName = Factory.Identifier(isGetter ? $"get_{propertyName}" : $"set_{propertyName}");
+
+                ITsCallSignature callSignature = isGetter
+                    ? Factory.CallSignature(parameters: null, returnType: propertyType)
+                    : Factory.CallSignature(
+                        Factory.ParameterList(Factory.BoundRequiredParameter(valueIdentifier, propertyType)),
+                        Factory.VoidType);
+
+                // Property declarations within interfaces don't have a body and are a different translation type (ITsMethodSignature).
+                if (isWithinInterface)
+                {
+                    ITsMethodSignature methodSignature = Factory.MethodSignature(
+                        methodName,
+                        isOptional: false,
+                        callSignature);
+                    yield return methodSignature;
+                    continue;
+                }
+
+                // If there's no body, it can mean one of two things:
+                // 1) It's a property declaration in an interface (which cannot have a body)
+                // 2) It's an auto-generated property, so the compiler needs to generate a backing field.
+
                 ITsBlockStatement functionBody;
-
-                // This is used as the parameter name for setter functions.
-                ITsIdentifier valueIdentifier = Factory.Identifier("value");
-
-                // If this is an auto-generated property (no body), we need to create a backing field and then create an
-                // accessor that gets or sets that field.
 
                 if (accessor.Body != null)
                 {
@@ -440,7 +463,8 @@ namespace Desalt.Core.Translation
                 }
                 else
                 {
-                    IPropertySymbol propertySymbol = _semanticModel.GetDeclaredSymbol(node);
+                    // If this is an auto-generated property (no body), we need to create a backing field and then create an
+                    // accessor that gets or sets that field.
 
                     // We only need to create the backing field declaration once, so check to see if we already created
                     // it in a previous iteration (processing the get or set earlier).
@@ -485,43 +509,22 @@ namespace Desalt.Core.Translation
                     // Create the accessor body, which is just a return statement for get and an assignment for set.
                     ITsStatement accessorStatement = accessor.Kind() == SyntaxKind.GetAccessorDeclaration
                         ? (ITsStatement)Factory.Return(fieldReference)
-                        : Factory.Assignment(fieldReference, TsAssignmentOperator.SimpleAssign, valueIdentifier).ToStatement();
+                        : Factory.Assignment(fieldReference, TsAssignmentOperator.SimpleAssign, valueIdentifier)
+                            .ToStatement();
                     functionBody = Factory.Block(accessorStatement);
                 }
 
                 // Create the get/set accessor declaration.
-                switch (accessor.Kind())
-                {
-                    case SyntaxKind.GetAccessorDeclaration:
-                        ITsGetAccessor getAccessor = Factory.GetAccessor(
-                            propertyName,
-                            propertyType,
-                            functionBody.Statements);
-                        ITsGetAccessorMemberDeclaration getAccessorDeclaration = Factory.GetAccessorMemberDeclaration(
-                            getAccessor,
-                            accessibilityModifier,
-                            isStatic,
-                            isAbstract);
-                        yield return AddDocumentationComment(getAccessorDeclaration, node);
-                        break;
+                ITsFunctionMemberDeclaration accessorDeclaration = Factory.FunctionMemberDeclaration(
+                    methodName,
+                    callSignature,
+                    accessibilityModifier,
+                    isStatic,
+                    isAbstract,
+                    functionBody.Statements);
 
-                    case SyntaxKind.SetAccessorDeclaration:
-                        ITsSetAccessor setAccessor = Factory.SetAccessor(
-                            propertyName,
-                            valueIdentifier,
-                            propertyType,
-                            functionBody.Statements);
-                        ITsSetAccessorMemberDeclaration setAccessorDeclaration = Factory.SetAccessorMemberDeclaration(
-                            setAccessor,
-                            accessibilityModifier,
-                            isStatic,
-                            isAbstract);
-                        yield return AddDocumentationComment(setAccessorDeclaration, node);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException($"Unknown accessor kind '{accessor.Kind()}'");
-                }
+                accessorDeclaration = AddDocumentationComment(accessorDeclaration, node);
+                yield return accessorDeclaration;
             }
         }
     }

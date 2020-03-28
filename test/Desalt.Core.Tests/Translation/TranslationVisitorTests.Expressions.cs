@@ -391,7 +391,7 @@ class C
 }",
                 @"
 class C {
-  private static get filters(): Array<(string: string) => boolean> {
+  private static get_filters(): Array<(string: string) => boolean> {
     return <Array<(string: string) => boolean>>[];
   }
 }

@@ -175,70 +175,70 @@ export class WindowHelper {
   /**
    * Gets the window pageXOffset, or equivalent.
    */
-  public get pageXOffset(): number {
+  public get_pageXOffset(): number {
     return WindowHelper.pageXOffsetFunc(this.window);
   }
 
   /**
    * Gets the window pageYOffset, or equivalent.
    */
-  public get pageYOffset(): number {
+  public get_pageYOffset(): number {
     return WindowHelper.pageYOffsetFunc(this.window);
   }
 
   /**
    * Gets the window pageXOffset, or equivalent.
    */
-  public get clientWidth(): number {
+  public get_clientWidth(): number {
     return WindowHelper.clientWidthFunc(this.window);
   }
 
   /**
    * Gets the window pageYOffset, or equivalent.
    */
-  public get clientHeight(): number {
+  public get_clientHeight(): number {
     return WindowHelper.clientHeightFunc(this.window);
   }
 
   /**
    * Gets the window innerWidth, or equivalent.
    */
-  public get innerWidth(): number {
+  public get_innerWidth(): number {
     return WindowHelper.innerWidthFunc(this.window);
   }
 
   /**
    * Gets the window outerWidth, or innerWidth if unavailable
    */
-  public get outerWidth(): number {
+  public get_outerWidth(): number {
     return WindowHelper.outerWidthFunc(this.window);
   }
 
   /**
    * Gets the window innerHeight, or equivalent.
    */
-  public get innerHeight(): number {
+  public get_innerHeight(): number {
     return WindowHelper.innerHeightFunc(this.window);
   }
 
   /**
    * Gets the window outerHeight, or innerHeight if unavailable.
    */
-  public get outerHeight(): number {
+  public get_outerHeight(): number {
     return WindowHelper.outerHeightFunc(this.window);
   }
 
   /**
    * Gets the window screenLeft, or equivalent.
    */
-  public get screenLeft(): number {
+  public get_screenLeft(): number {
     return WindowHelper.screenLeftFunc(this.window);
   }
 
   /**
    * Gets the window screenTop, or equivalent
    */
-  public get screenTop(): number {
+  public get_screenTop(): number {
     return WindowHelper.screenTopFunc(this.window);
   }
 
@@ -246,7 +246,7 @@ export class WindowHelper {
    * Gets the window's self.
    * This method only exists to support testing.
    */
-  public static get windowSelf(): Object {
+  public static get_windowSelf(): Object {
     return window.self;
   }
 
@@ -254,7 +254,7 @@ export class WindowHelper {
    * Get the current window or document Selection object
    * @returns The selection object, or null if none
    */
-  public static get selection(): Selection {
+  public static get_selection(): Selection {
     if ((typeof (window['getSelection']) === 'function')) {
       return window.getSelection();
     } else

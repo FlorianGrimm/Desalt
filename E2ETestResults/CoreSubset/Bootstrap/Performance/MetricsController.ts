@@ -201,7 +201,7 @@ export class MetricsController {
   /**
    * Gets reference to instance of MetricsController class. Creates instance if it doesn't exist.
    */
-  public static get instance(): MetricsController {
+  public static get_instance(): MetricsController {
     if (MetricsController.$instance === null) {
       MetricsController.$instance = new MetricsController();
     }
@@ -419,7 +419,7 @@ export class MetricsContext implements ss.IDisposable {
   /**
    * Gets the End date/time of this context (if it's been closed)
    */
-  public get endTime(): number {
+  public get_endTime(): number {
     return this.end;
   }
 
@@ -496,7 +496,7 @@ class NullMetricsContext extends MetricsContext {
     this.end = 0;
   }
 
-  public static get instance(): NullMetricsContext {
+  public static get_instance(): NullMetricsContext {
     if (ss.isNullOrUndefined(NullMetricsContext.$instance)) {
       NullMetricsContext.$instance = new NullMetricsContext();
     }
