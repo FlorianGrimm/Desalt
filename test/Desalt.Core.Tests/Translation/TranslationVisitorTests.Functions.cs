@@ -410,5 +410,48 @@ class A {
 }
 ");
         }
+
+        [Test]
+        public async Task Translate_should_be_able_to_combine_ScriptSkip_and_InlineCode_correctly()
+        {
+            // Found this as a translation error - putting it into a unit test.
+            await AssertTranslation(
+                @"
+[Imported, NamedValues]
+enum NavigationMetricsName
+{
+    [ScriptName(""navigationStart"")]
+    navigationStart,
+}
+
+class NavigationMetricsCollector
+{
+    private static JsDictionary<NavigationMetricsName, int> navMetrics = null;
+
+    public static void CollectMetrics()
+    {
+        navMetrics = Script.Reinterpret<JsDictionary<NavigationMetricsName, int>>(Window.Performance.Timing);
+        if (Script.In(navMetrics, Script.Reinterpret<string>(NavigationMetricsName.navigationStart)))
+        {
+        }
+    }
+}
+",
+                @"
+const enum NavigationMetricsName {
+  navigationStart = 'navigationStart',
+}
+
+class NavigationMetricsCollector {
+  private static navMetrics: { [key: string]: number } = null;
+
+  public static collectMetrics(): void {
+    NavigationMetricsCollector.navMetrics = window.performance.timing;
+    if (NavigationMetricsName.navigationStart in NavigationMetricsCollector.navMetrics) { }
+  }
+}
+",
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
+        }
     }
 }

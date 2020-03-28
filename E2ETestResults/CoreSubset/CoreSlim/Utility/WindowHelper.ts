@@ -127,25 +127,25 @@ export class WindowHelper {
       let vendors: string[] = ['ms', 'moz', 'webkit', 'o'];
       let requestFuncName: string = null;
       let cancelFuncName: string = null;
-      if (DefaultRequestNamein) {
+      if (DefaultRequestName in window) {
         requestFuncName = DefaultRequestName;
       }
-      if (DefaultCancelNamein) {
+      if (DefaultCancelName in window) {
         cancelFuncName = DefaultCancelName;
       }
       for (let ii = 0; ii < vendors.length && (requestFuncName === null || cancelFuncName === null); ++ii) {
         let vendor: string = vendors[ii];
         let funcName: string = vendor + 'RequestAnimationFrame';
-        if (requestFuncName === null && funcNamein) {
+        if (requestFuncName === null && funcName in window) {
           requestFuncName = funcName;
         }
         if (cancelFuncName === null) {
           funcName = vendor + 'CancelAnimationFrame';
-          if (funcNamein) {
+          if (funcName in window) {
             cancelFuncName = funcName;
           }
           funcName = vendor + 'CancelRequestAnimationFrame';
-          if (funcNamein) {
+          if (funcName in window) {
             cancelFuncName = funcName;
           }
         }

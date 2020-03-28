@@ -60,7 +60,7 @@ export class NavigationMetricsCollector {
   public static collectMetrics(): void {
     if (typeof window !== 'undefined' && typeof window.performance !== 'undefined' && typeof window.performance.timing !== 'undefined' && typeof MetricsEvent !== 'undefined') {
       NavigationMetricsCollector.navMetrics = window.performance.timing;
-      if (NavigationMetricsName.navigationStartin) {
+      if (NavigationMetricsName.navigationStart in NavigationMetricsCollector.navMetrics) {
         let start: number = NavigationMetricsCollector.navMetrics[NavigationMetricsCollector.navigationMetricsOrder[0]];
         let metricArray: number[] = [];
         for (const name of NavigationMetricsCollector.navigationMetricsOrder) {
