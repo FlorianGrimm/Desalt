@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsParser.Types.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -349,7 +349,7 @@ namespace Desalt.TypeScriptAst.Parsing
         ///     MethodSignature     (starts with PropertyName)
         ///
         /// PropertySignature:
-        ///     PropertyName ?Opt TypeAnnotationOpt
+        ///     readonlyOpt PropertyName ?Opt TypeAnnotationOpt
         ///
         /// MethodSignature:
         ///     PropertyName ?Opt CallSignature
@@ -382,6 +382,11 @@ namespace Desalt.TypeScriptAst.Parsing
                         member = ParseCallSignature();
                         break;
 
+                    // PropertySignature
+                    case TsTokenCode.Readonly:
+                        member = ParsePropertySignature();
+                        break;
+
                     // PropertySignature and MethodSignature start the same way
                     default:
                         ITsPropertyName propertyName = ParsePropertyName();
@@ -394,7 +399,11 @@ namespace Desalt.TypeScriptAst.Parsing
                         else
                         {
                             ITsType? propertyType = ParseOptionalTypeAnnotation();
-                            member = Factory.PropertySignature(propertyName, propertyType, isOptional);
+                            member = Factory.PropertySignature(
+                                propertyName,
+                                propertyType,
+                                isReadOnly: false,
+                                isOptional);
                         }
 
                         break;
@@ -509,6 +518,22 @@ namespace Desalt.TypeScriptAst.Parsing
             Read(TsTokenCode.Typeof);
             ITsQualifiedName qualifiedName = ParseQualifiedName();
             return Factory.TypeQuery(qualifiedName);
+        }
+
+        /// <summary>
+        /// Parses a property signature.
+        /// </summary>
+        /// <remarks><code><![CDATA[
+        /// PropertySignature:
+        ///     readonlyOpt PropertyName ?Opt TypeAnnotationOpt
+        /// ]]></code></remarks>
+        private ITsPropertySignature ParsePropertySignature()
+        {
+            bool isReadOnly = _reader.ReadIf(TsTokenCode.Readonly);
+            ITsPropertyName propertyName = ParsePropertyName();
+            bool isOptional = _reader.ReadIf(TsTokenCode.Question);
+            ITsType? propertyType = ParseOptionalTypeAnnotation();
+            return Factory.PropertySignature(propertyName, propertyType, isReadOnly, isOptional);
         }
 
         /// <summary>

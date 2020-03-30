@@ -143,12 +143,13 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         public void TsParser_ParseType_should_recognize_object_types_with_property_signatures()
         {
             AssertParseType(
-                "{ basic, opt?, typed: boolean, optTyped?: any }",
+                "{ basic, opt?, typed: boolean, optTyped?: any, readonly getOnly }",
                 Factory.ObjectType(
                     Factory.PropertySignature(Factory.Identifier("basic")),
                     Factory.PropertySignature(Factory.Identifier("opt"), isOptional: true),
                     Factory.PropertySignature(Factory.Identifier("typed"), Factory.BooleanType),
-                    Factory.PropertySignature(Factory.Identifier("optTyped"), Factory.AnyType, isOptional: true)));
+                    Factory.PropertySignature(Factory.Identifier("optTyped"), Factory.AnyType, isOptional: true),
+                    Factory.PropertySignature(Factory.Identifier("getOnly"), isReadOnly: true)));
         }
 
         [Test]
