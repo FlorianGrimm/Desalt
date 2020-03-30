@@ -16,7 +16,7 @@ export class Utility {
    * Gets the WindowInstance that corresponds to the viz location. If in WG then it's the WG parent frame.
    * Otherwise it's the viz's frame.
    */
-  public static get_locationWindow(): Object {
+  public static get locationWindow(): Object {
     return window.self;
   }
 

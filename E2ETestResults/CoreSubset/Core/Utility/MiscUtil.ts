@@ -22,12 +22,12 @@ export enum PathnameKey {
  * Contains utility methods for etc.
  */
 export class MiscUtil {
-  public static get_pathName(): string {
+  public static get pathName(): string {
     let window: Object = Utility.locationWindow;
     return WindowHelper.getLocation(window).pathname;
   }
 
-  public static get_urlPathnameParts(): { [key: number]: string } {
+  public static get urlPathnameParts(): { [key: number]: string } {
     let pathname: string = MiscUtil.pathName;
     let siteRoot: string = tsConfig.site_root;
     let index: number = pathname.indexOf(siteRoot, 0);

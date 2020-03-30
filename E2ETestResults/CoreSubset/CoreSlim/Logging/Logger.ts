@@ -64,14 +64,14 @@ export class Logger {
     this.$name = name;
   }
 
-  public static get_globalLog(): Logger {
+  public static get globalLog(): Logger {
     return Logger.global;
   }
 
   /**
    * Gets the name of this log.
    */
-  public get_name(): string {
+  public get name(): string {
     return this.$name;
   }
 

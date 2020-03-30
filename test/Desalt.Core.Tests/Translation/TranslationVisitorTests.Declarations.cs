@@ -254,15 +254,15 @@ class A
 class A {
   private _x: number;
 
-  public get_getOnly(): number {
+  public get getOnly(): number {
     return this._x;
   }
 
-  public get_getAndSet(): number {
+  public get getAndSet(): number {
     return this._x;
   }
 
-  public set_getAndSet(value: number): void {
+  public set getAndSet(value: number) {
     this._x = value;
   }
 }
@@ -288,27 +288,27 @@ class A {
 
   private _$getAndSetField: string;
 
-  public static get_staticProp(): number {
+  public static get staticProp(): number {
     return A._$staticPropField;
   }
 
-  public static set_staticProp(value: number): void {
+  public static set staticProp(value: number) {
     A._$staticPropField = value;
   }
 
-  public get_getOnly(): string {
+  public get getOnly(): string {
     return this._$getOnlyField;
   }
 
-  private set_getOnly(value: string): void {
+  private set getOnly(value: string) {
     this._$getOnlyField = value;
   }
 
-  public get_getAndSet(): string {
+  public get getAndSet(): string {
     return this._$getAndSetField;
   }
 
-  public set_getAndSet(value: string): void {
+  public set getAndSet(value: string) {
     this._$getAndSetField = value;
   }
 }
@@ -329,10 +329,9 @@ interface I
 ",
                 @"
 interface I {
-  get_getOnly(): number;
-  set_setOnly(value: number): void;
-  get_getAndSet(): number;
-  set_getAndSet(value: number): void;
+  readonly getOnly: number;
+  setOnly: number;
+  getAndSet: number;
 }
 ");
         }

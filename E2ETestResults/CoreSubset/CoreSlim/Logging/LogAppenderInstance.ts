@@ -20,11 +20,11 @@ export class LogAppenderInstance<T> {
     this.appenderFactoryFunc = appenderFactoryFunc;
   }
 
-  public get_instance(): T {
+  public get instance(): T {
     return this._$instanceField;
   }
 
-  private set_instance(value: T): void {
+  private set instance(value: T) {
     this._$instanceField = value;
   }
 

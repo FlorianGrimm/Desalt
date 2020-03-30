@@ -397,8 +397,9 @@ namespace Desalt.Core.Translation
         /// Called when the visitor visits a PropertyDeclarationSyntax node.
         /// </summary>
         /// <returns>
-        /// An <see cref="IEnumerable{T}"/> of one or both of <see cref="ITsFunctionMemberDeclaration"/> for the get and
-        /// set methods (for classes) or a <see cref="ITsMethodSignature"/> for the get and set methods (for interfaces).
+        /// An <see cref="IEnumerable{T}"/> of one or both of <see cref="ITsGetAccessorMemberDeclaration"/> for the get
+        /// and <see cref="ITsSetAccessorMemberDeclaration"/> set methods (for classes) or a <see
+        /// cref="ITsPropertySignature"/> for the get and set methods (for interfaces).
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
@@ -424,32 +425,23 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
-            // This is used as the parameter name for setter functions.
-            ITsIdentifier valueIdentifier = Factory.Identifier("value");
+            // Property declarations within interfaces don't have a body and are a different translation type
+            // (ITsPropertySignature). We only need to create a single property signature for both the getter and setter.
+            if (isWithinInterface)
+            {
+                bool hasSetter = node.AccessorList.Accessors.Any(x => x.Kind() == SyntaxKind.SetAccessorDeclaration);
+                ITsPropertySignature propertySignature = Factory.PropertySignature(
+                    propertyName,
+                    propertyType,
+                    isReadOnly: !hasSetter);
+                yield return propertySignature;
+                yield break;
+            }
 
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
                 TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(accessor);
                 bool isGetter = accessor.Kind() == SyntaxKind.GetAccessorDeclaration;
-
-                ITsIdentifier methodName = Factory.Identifier(isGetter ? $"get_{propertyName}" : $"set_{propertyName}");
-
-                ITsCallSignature callSignature = isGetter
-                    ? Factory.CallSignature(parameters: null, returnType: propertyType)
-                    : Factory.CallSignature(
-                        Factory.ParameterList(Factory.BoundRequiredParameter(valueIdentifier, propertyType)),
-                        Factory.VoidType);
-
-                // Property declarations within interfaces don't have a body and are a different translation type (ITsMethodSignature).
-                if (isWithinInterface)
-                {
-                    ITsMethodSignature methodSignature = Factory.MethodSignature(
-                        methodName,
-                        isOptional: false,
-                        callSignature);
-                    yield return methodSignature;
-                    continue;
-                }
 
                 // If there's no body, it can mean one of two things:
                 // 1) It's a property declaration in an interface (which cannot have a body)
@@ -509,19 +501,23 @@ namespace Desalt.Core.Translation
                     // Create the accessor body, which is just a return statement for get and an assignment for set.
                     ITsStatement accessorStatement = accessor.Kind() == SyntaxKind.GetAccessorDeclaration
                         ? (ITsStatement)Factory.Return(fieldReference)
-                        : Factory.Assignment(fieldReference, TsAssignmentOperator.SimpleAssign, valueIdentifier)
+                        : Factory.Assignment(fieldReference, TsAssignmentOperator.SimpleAssign, Factory.Identifier("value"))
                             .ToStatement();
                     functionBody = Factory.Block(accessorStatement);
                 }
 
                 // Create the get/set accessor declaration.
-                ITsFunctionMemberDeclaration accessorDeclaration = Factory.FunctionMemberDeclaration(
-                    methodName,
-                    callSignature,
-                    accessibilityModifier,
-                    isStatic,
-                    isAbstract,
-                    functionBody.Statements);
+                ITsClassElement accessorDeclaration = isGetter
+                    ? (ITsClassElement)Factory.GetAccessorMemberDeclaration(
+                        Factory.GetAccessor(propertyName, propertyType, functionBody.Statements),
+                        accessibilityModifier,
+                        isStatic,
+                        isAbstract)
+                    : Factory.SetAccessorMemberDeclaration(
+                        Factory.SetAccessor(propertyName, Factory.Identifier("value"), propertyType, functionBody.Statements),
+                        accessibilityModifier,
+                        isStatic,
+                        isAbstract);
 
                 accessorDeclaration = AddDocumentationComment(accessorDeclaration, node);
                 yield return accessorDeclaration;
