@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsParser.Types.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -219,7 +219,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
                 // TypeReference
                 // ReSharper disable once PatternAlwaysMatches
-                case TsTokenCode tc when IsStartOfIdentifier(tc):
+                case TsTokenCode tc when IsStartOfIdentifier(tc, isTypeDeclaration: false):
                     type = ParseTypeReference();
                     break;
 
@@ -439,7 +439,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             Read(TsTokenCode.LeftBracket);
 
-            ITsIdentifier parameterName = ParseIdentifier();
+            ITsIdentifier parameterName = ParseIdentifier(isTypeDeclaration: false);
             Read(TsTokenCode.Colon);
 
             bool isParameterNumberType;
@@ -554,7 +554,7 @@ namespace Desalt.TypeScriptAst.Parsing
             var typeParameters = new List<ITsTypeParameter>();
             do
             {
-                ITsIdentifier typeName = ParseIdentifier();
+                ITsIdentifier typeName = ParseIdentifier(isTypeDeclaration: false);
                 ITsType? constraint = null;
                 if (_reader.ReadIf(TsTokenCode.Extends))
                 {

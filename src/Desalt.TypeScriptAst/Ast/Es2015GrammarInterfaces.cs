@@ -95,6 +95,12 @@ namespace Desalt.TypeScriptAst.Ast
      *
      * Identifier:
      *   IdentifierName but not ReservedWord
+     *
+     * ReservedWord: (see the lists in TsTokenCodeExtensions)
+     *   Keyword
+     *   FutureReservedWord
+     *   NullLiteral
+     *   BooleanLiteral
      */
 
     public interface ITsIdentifier :

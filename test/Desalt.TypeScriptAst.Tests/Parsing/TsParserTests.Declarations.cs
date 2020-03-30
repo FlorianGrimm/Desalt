@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Tests.Parsing
 {
+    using System;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Parsing;
     using FluentAssertions;
@@ -26,7 +27,7 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         {
             AssertParseDeclaration(
                 "function () { }",
-                Factory.FunctionDeclaration(null, Factory.CallSignature(), new ITsStatementListItem[0]));
+                Factory.FunctionDeclaration(null, Factory.CallSignature(), Array.Empty<ITsStatementListItem>()));
         }
     }
 }

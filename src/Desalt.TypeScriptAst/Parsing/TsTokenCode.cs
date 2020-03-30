@@ -84,12 +84,12 @@ namespace Desalt.TypeScriptAst.Parsing
         TemplateLiteral,
 
         //// ===========================================================================================================
-        //// Identifiers and keywords must be at the end
+        //// Identifiers and Keywords
         //// ===========================================================================================================
 
         Identifier,
 
-        /* The following keywords are reserved and cannot be used as an Identifier: */
+        /* The following keywords are reserved and cannot be used as an Identifier. */
         Break,
         Case,
         Catch,
@@ -127,7 +127,7 @@ namespace Desalt.TypeScriptAst.Parsing
         While,
         With,
 
-        /* The following keywords cannot be used as identifiers in strict mode code, but are otherwise not restricted:*/
+        /* The following keywords cannot be used as identifiers in strict mode code, but are otherwise not restricted. */
         Implements,
         Interface,
         Let,
@@ -138,14 +138,14 @@ namespace Desalt.TypeScriptAst.Parsing
         Static,
         Yield,
 
-        /* The following keywords cannot be used as user defined type names, but are otherwise not restricted: */
+        /* The following keywords cannot be used as user defined type names, but are otherwise not restricted. */
         Any,
         Boolean,
         Number,
         String,
         Symbol,
 
-        /* The following keywords have special meaning in certain contexts, but are valid identifiers: */
+        /* The following keywords have special meaning in certain contexts, but are valid identifiers. */
         Abstract,
         As,
         Async,
@@ -163,11 +163,5 @@ namespace Desalt.TypeScriptAst.Parsing
         Require,
         Set,
         Type,
-
-        //// ===========================================================================================================
-        //// Markers
-        //// ===========================================================================================================
-
-        LastReservedWord = With,
     }
 }

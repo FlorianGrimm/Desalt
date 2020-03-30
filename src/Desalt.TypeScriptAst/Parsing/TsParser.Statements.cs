@@ -78,7 +78,8 @@ namespace Desalt.TypeScriptAst.Parsing
             }
 
             // LabeledStatement
-            if (IsStartOfIdentifier(tokenCode) && _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon)
+            if (IsStartOfIdentifier(tokenCode, isTypeDeclaration: false) &&
+                _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon)
             {
                 return true;
             }
@@ -172,7 +173,8 @@ namespace Desalt.TypeScriptAst.Parsing
 
                 // LabeledStatement
                 // ReSharper disable once PatternAlwaysMatches
-                case TsTokenCode tc when IsStartOfIdentifier(tc) && _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon:
+                case TsTokenCode tc when IsStartOfIdentifier(tc, isTypeDeclaration: false) &&
+                    _reader.Peek(2)[1].TokenCode == TsTokenCode.Colon:
                     return ParseLabeledStatement();
 
                 // ThrowStatement
@@ -282,7 +284,7 @@ namespace Desalt.TypeScriptAst.Parsing
             ITsVariableDeclaration declaration;
 
             // SimpleVariableDeclaration
-            if (TryParseIdentifier(out ITsIdentifier? variableName))
+            if (TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? variableName))
             {
                 ITsType? variableType = ParseOptionalTypeAnnotation();
                 ITsExpression? initializer = ParseOptionalInitializer();
@@ -426,7 +428,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsContinueStatement ParseContinueStatement()
         {
             Read(TsTokenCode.Continue);
-            TryParseIdentifier(out ITsIdentifier? label);
+            TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? label);
             Read(TsTokenCode.Semicolon);
 
             return Factory.Continue(label);
@@ -443,7 +445,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsBreakStatement ParseBreakStatement()
         {
             Read(TsTokenCode.Break);
-            TryParseIdentifier(out ITsIdentifier? label);
+            TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? label);
             Read(TsTokenCode.Semicolon);
 
             return Factory.Break(label);
@@ -576,7 +578,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsLabeledStatement ParseLabeledStatement()
         {
-            ITsIdentifier label = ParseIdentifier();
+            ITsIdentifier label = ParseIdentifier(isTypeDeclaration: false);
             Read(TsTokenCode.Colon);
 
             if (_reader.IsNext(TsTokenCode.Function))

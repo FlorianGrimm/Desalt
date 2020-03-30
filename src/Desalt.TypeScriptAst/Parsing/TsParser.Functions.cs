@@ -24,7 +24,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsFunctionExpression ParseFunctionExpression()
         {
             Read(TsTokenCode.Function);
-            TryParseIdentifier(out ITsIdentifier? functionName);
+            TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? functionName);
             ITsCallSignature callSignature = ParseCallSignature();
             ITsStatementListItem[] functionBody = ParseFunctionBody(withBraces: true);
 
@@ -61,7 +61,7 @@ namespace Desalt.TypeScriptAst.Parsing
             ITsExpression bodyExpression;
 
             // try to parse 'param =>' arrow functions
-            if (TryParseIdentifier(out ITsIdentifier? singleParameterName))
+            if (TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? singleParameterName))
             {
                 Read(TsTokenCode.EqualsGreaterThan);
                 if (_reader.IsNext(TsTokenCode.LeftBrace))
@@ -310,7 +310,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsRestParameter ParseRestParameter()
         {
             Read(TsTokenCode.DotDotDot);
-            ITsIdentifier parameterName = ParseIdentifier();
+            ITsIdentifier parameterName = ParseIdentifier(isTypeDeclaration: false);
             ITsType? parameterType = ParseOptionalTypeAnnotation();
 
             return Factory.RestParameter(parameterName, parameterType);
@@ -326,7 +326,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsBindingIdentifierOrPattern ParseBindingIdentifierOrPattern()
         {
-            if (TryParseIdentifier(out ITsIdentifier? identifier))
+            if (TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? identifier))
             {
                 return identifier;
             }
@@ -435,7 +435,7 @@ namespace Desalt.TypeScriptAst.Parsing
             ITsIdentifier? restElement = null;
             if (_reader.ReadIf(TsTokenCode.DotDotDot))
             {
-                restElement = ParseIdentifier();
+                restElement = ParseIdentifier(isTypeDeclaration: false);
             }
 
             Read(TsTokenCode.RightBracket);
@@ -492,7 +492,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 return Factory.PatternBinding(bindingPattern, initializer);
             }
 
-            ITsIdentifier name = ParseIdentifier();
+            ITsIdentifier name = ParseIdentifier(isTypeDeclaration: false);
             ITsExpression? defaultValue = ParseOptionalInitializer();
             return Factory.SingleNameBinding(name, defaultValue);
         }

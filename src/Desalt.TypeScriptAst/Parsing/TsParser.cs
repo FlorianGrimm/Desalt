@@ -25,14 +25,16 @@ namespace Desalt.TypeScriptAst.Parsing
         //// ===========================================================================================================
 
         private readonly TsTokenReader _reader;
+        private readonly bool _isStrictMode;
 
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
 
-        private TsParser(ImmutableArray<TsToken> tokens)
+        private TsParser(ImmutableArray<TsToken> tokens, bool isStrictMode)
         {
             _reader = new TsTokenReader(tokens);
+            _isStrictMode = isStrictMode;
         }
 
         //// ===========================================================================================================
@@ -43,11 +45,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// Parses a TypeScript expression.
         /// </summary>
         /// <param name="code">The code to parse</param>
+        /// <param name="isStrictMode">Indicates whether the parse should be done in strict mode.</param>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
-        public static ITsExpression ParseExpression(string code)
+        public static ITsExpression ParseExpression(string code, bool isStrictMode = true)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
-            var parser = new TsParser(tokens);
+            var parser = new TsParser(tokens, isStrictMode);
             return parser.ParseExpression();
         }
 
@@ -55,11 +58,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// Parses a TypeScript expression.
         /// </summary>
         /// <param name="code">The code to parse</param>
+        /// <param name="isStrictMode">Indicates whether the parse should be done in strict mode.</param>
         /// <returns>An <see cref="ITsType"/>.</returns>
-        internal static ITsType ParseType(string code)
+        internal static ITsType ParseType(string code, bool isStrictMode = true)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
-            var parser = new TsParser(tokens);
+            var parser = new TsParser(tokens, isStrictMode);
             return parser.ParseType();
         }
 
@@ -67,11 +71,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// Parses a TypeScript statement.
         /// </summary>
         /// <param name="code">The code to parse</param>
+        /// <param name="isStrictMode">Indicates whether the parse should be done in strict mode.</param>
         /// <returns>An <see cref="ITsStatement"/>.</returns>
-        internal static ITsStatement ParseStatement(string code)
+        internal static ITsStatement ParseStatement(string code, bool isStrictMode = true)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
-            var parser = new TsParser(tokens);
+            var parser = new TsParser(tokens, isStrictMode);
             return parser.ParseStatement();
         }
 
@@ -79,11 +84,12 @@ namespace Desalt.TypeScriptAst.Parsing
         /// Parses a TypeScript declaration.
         /// </summary>
         /// <param name="code">The code to parse</param>
+        /// <param name="isStrictMode">Indicates whether the parse should be done in strict mode.</param>
         /// <returns>An <see cref="ITsDeclaration"/>.</returns>
-        internal static ITsDeclaration ParseDeclaration(string code)
+        internal static ITsDeclaration ParseDeclaration(string code, bool isStrictMode = true)
         {
             ImmutableArray<TsToken> tokens = TsLexer.Lex(code);
-            var parser = new TsParser(tokens);
+            var parser = new TsParser(tokens, isStrictMode);
             return parser.ParseDeclaration();
         }
 
@@ -163,20 +169,41 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsIdentifier ParseIdentifierReference()
         {
-            return ParseIdentifier();
+            return ParseIdentifier(isTypeDeclaration: false);
         }
 
-        private static bool IsStartOfIdentifier(TsTokenCode tokenCode)
+        /// <summary>
+        /// Returns a value indicating whether the specified token code is a valid start of an Identifier, which is
+        /// defined as an IdentifierName but not ReservedWord.
+        /// </summary>
+        /// <param name="tokenCode">The token code to check.</param>
+        /// <param name="isTypeDeclaration">
+        /// Indicates whether the identifier will be a user-defined type name (class, interface, etc.) since some
+        /// keywords are not valid as type name identifiers ('boolean', 'number', etc.).
+        /// </param>
+        /// <returns>True if the token code is a valid identifier start token; false otherwise.</returns>
+        private bool IsStartOfIdentifier(TsTokenCode tokenCode, bool isTypeDeclaration)
         {
-            return tokenCode == TsTokenCode.Identifier || tokenCode > TsTokenCode.LastReservedWord;
+            return tokenCode == TsTokenCode.Identifier ||
+                (tokenCode.IsKeyword() && tokenCode.IsKeywordAllowedAsIdentifier(isTypeDeclaration, _isStrictMode));
         }
 
-        private bool TryParseIdentifier([NotNullWhen(true)] out ITsIdentifier? identifier)
+        /// <summary>
+        /// Tries to parse an identifier or a keyword that can be made into an identifier.
+        /// </summary>
+        /// <param name="isTypeDeclaration">
+        /// Indicates whether the identifier will be a user-defined type name (class, interface, etc.) since some
+        /// keywords are not valid as type name identifiers ('boolean', 'number', etc.).
+        /// </param>
+        /// <param name="identifier">The parsed identifier (or keyword as identifier) if successful; otherwise, null.</param>
+        /// <returns>True if the next token was successfully parsed as an identifier; false otherwise.</returns>
+        private bool TryParseIdentifier(bool isTypeDeclaration, [NotNullWhen(true)] out ITsIdentifier? identifier)
         {
             TsToken identifierToken;
+            TsTokenCode tokenCode = _reader.Peek().TokenCode;
 
-            // keywords can be identifiers as long as they're not reserved words
-            if (_reader.Peek().TokenCode > TsTokenCode.LastReservedWord)
+            // Keywords can be identifiers as long as they're not reserved words.
+            if (tokenCode.IsKeyword() && tokenCode.IsKeywordAllowedAsIdentifier(isTypeDeclaration, _isStrictMode))
             {
                 TsToken keywordAsIdentifierToken = _reader.Read();
                 identifierToken = TsToken.Identifier(
@@ -198,30 +225,22 @@ namespace Desalt.TypeScriptAst.Parsing
             return true;
         }
 
-        private ITsIdentifier ParseIdentifier()
+        /// <summary>
+        /// Parses either an identifier or a keyword that will be interpreted as an identifier.
+        /// </summary>
+        /// <param name="isTypeDeclaration">
+        /// Indicates whether the identifier will be a user-defined type name (class, interface, etc.) since some
+        /// keywords are not valid as type name identifiers ('boolean', 'number', etc.).
+        /// </param>
+        private ITsIdentifier ParseIdentifier(bool isTypeDeclaration)
         {
-            if (TryParseIdentifier(out ITsIdentifier? identifier))
+            if (TryParseIdentifier(isTypeDeclaration, out ITsIdentifier? identifier))
             {
                 return identifier;
             }
 
-            throw NewParseException("Expected an identifier as the next token");
-        }
-
-        /// <summary>
-        /// Parses either an identifier or a keyword that will be interpreted as an identifier.
-        /// </summary>
-        /// <returns></returns>
-        private ITsIdentifier ParseIdentifierOrKeyword()
-        {
-            if (_reader.Peek().TokenCode < TsTokenCode.Identifier)
-            {
-                throw NewParseException(
-                    $"Expected an identifier or keyword as the next token, but saw '{_reader.Peek().TokenCode}'");
-            }
-
-            TsToken token = _reader.Read();
-            return Factory.Identifier(token.Value.ToString());
+            throw NewParseException(
+                $"Expected an identifier or keyword as the next token, but saw '{_reader.Peek().TokenCode}'");
         }
 
         private TsToken Read(TsTokenCode expectedTokenCode)
