@@ -100,7 +100,8 @@ namespace Desalt.Core.Options
         //// Classes
         //// ===========================================================================================================
 
-        private class SortedByKeyDictionaryConverter<TValue> : JsonConverter<ImmutableDictionary<string, TValue>>
+        private class SortedByKeyDictionaryConverter<TKey, TValue> : JsonConverter<ImmutableDictionary<TKey, TValue>>
+            where TKey : notnull
         {
             /// <summary>
             /// Writes the JSON representation of the object.
@@ -110,15 +111,15 @@ namespace Desalt.Core.Options
             /// <param name="serializer">The calling serializer.</param>
             public override void WriteJson(
                 JsonWriter writer,
-                ImmutableDictionary<string, TValue> value,
+                ImmutableDictionary<TKey, TValue> value,
                 JsonSerializer serializer)
             {
                 writer.WriteStartObject();
 
-                var orderedPairs = value.OrderBy(pair => pair.Key, StringComparer.Ordinal);
-                foreach ((string key, TValue pairValue) in orderedPairs)
+                var orderedPairs = value.OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal);
+                foreach ((TKey key, TValue pairValue) in orderedPairs)
                 {
-                    writer.WritePropertyName(key, escape: true);
+                    writer.WritePropertyName(key.ToString(), escape: true);
                     serializer.Serialize(writer, pairValue);
                 }
 
@@ -136,21 +137,21 @@ namespace Desalt.Core.Options
             /// <param name="hasExistingValue">The existing value has a value.</param>
             /// <param name="serializer">The calling serializer.</param>
             /// <returns>The object value.</returns>
-            public override ImmutableDictionary<string, TValue> ReadJson(
+            public override ImmutableDictionary<TKey, TValue> ReadJson(
                 JsonReader reader,
                 Type objectType,
-                ImmutableDictionary<string, TValue> existingValue,
+                ImmutableDictionary<TKey, TValue> existingValue,
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
                 if (reader.TokenType == JsonToken.Null)
                 {
-                    return ImmutableDictionary<string, TValue>.Empty;
+                    return ImmutableDictionary<TKey, TValue>.Empty;
                 }
 
                 reader.Read(JsonToken.StartObject);
 
-                var dictionary = ImmutableDictionary.CreateBuilder<string, TValue>();
+                var dictionary = ImmutableDictionary.CreateBuilder<TKey, TValue>();
                 while (reader.TokenType != JsonToken.EndObject)
                 {
                     reader.VerifyToken(JsonToken.PropertyName);
@@ -161,7 +162,11 @@ namespace Desalt.Core.Options
                     var value = serializer.Deserialize<TValue>(reader);
                     reader.Read();
 
-                    dictionary.Add(key, value);
+                    TKey convertedKey = typeof(TKey).IsEnum
+                        ? (TKey)Enum.Parse(typeof(TKey), key, ignoreCase: true)
+                        : (TKey)(object)key;
+
+                    dictionary.Add(convertedKey, value);
                 }
 
                 // don't read the ending object - the caller will do that
@@ -171,7 +176,11 @@ namespace Desalt.Core.Options
             }
         }
 
-        private sealed class SpecificDiagnosticOptionsConverter : SortedByKeyDictionaryConverter<ReportDiagnostic>
+        private sealed class SpecificDiagnosticOptionsConverter : SortedByKeyDictionaryConverter<string, ReportDiagnostic>
+        {
+        }
+
+        private sealed class OperatorOverloadMethodNamesConverter : SortedByKeyDictionaryConverter<OperatorOverloadKind, string>
         {
         }
 

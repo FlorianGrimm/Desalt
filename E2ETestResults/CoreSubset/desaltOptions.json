@@ -10,7 +10,35 @@
   },
   "renameRules": {
     "enumRule": "matchCSharpName",
-    "fieldRule": "dollarPrefixOnlyForDuplicateName"
+    "fieldRule": "dollarPrefixOnlyForDuplicateName",
+    "operatorOverloadMethodNames": {
+      "Addition": "op_Addition",
+      "BitwiseAnd": "op_BitwiseAnd",
+      "BitwiseOr": "op_BitwiseOr",
+      "BitwiseXor": "op_BitwiseXor",
+      "Decrement": "op_Decrement",
+      "Division": "op_Division",
+      "Equality": "op_Equality",
+      "Explicit": "op_Explicit",
+      "False": "op_False",
+      "GreaterThan": "op_GreaterThan",
+      "GreaterThanEquals": "op_GreaterThanOrEqual",
+      "Implicit": "op_Implicit",
+      "Increment": "op_Increment",
+      "Inequality": "op_Inequality",
+      "LeftShift": "op_LeftShift",
+      "LessThan": "op_LessThan",
+      "LessThanEquals": "op_LessThanOrEqual",
+      "LogicalNot": "op_LogicalNot",
+      "Modulus": "op_Modulus",
+      "Multiplication": "op_Multiply",
+      "OnesComplement": "op_OnesComplement",
+      "RightShift": "op_RightShift",
+      "Subtraction": "op_Subtraction",
+      "True": "op_True",
+      "UnaryNegation": "op_UnaryNegation",
+      "UnaryPlus": "op_UnaryPlus"
+    }
   },
   "symbolTableOverrides": {
     "Tableau.JavaScript.Vql.Core.ScriptEx.Value<T>(T a, T b)": {
