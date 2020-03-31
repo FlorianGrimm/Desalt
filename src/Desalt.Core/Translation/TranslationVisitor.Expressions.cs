@@ -46,16 +46,16 @@ namespace Desalt.Core.Translation
             switch (node.Kind())
             {
                 case SyntaxKind.StringLiteralExpression:
-                    // use the raw text since C# strings are escaped the same as JavaScript strings
+                    // Use the raw text since C# strings are escaped the same as JavaScript strings.
                     string str = node.Token.Text;
                     bool isVerbatim = str.StartsWith("@", StringComparison.Ordinal);
 
-                    // trim the leading @ and surrounding quotes
+                    // Trim the leading @ and surrounding quotes.
                     str = isVerbatim ? str.Substring(1) : str;
                     str = str.StartsWith("\"", StringComparison.Ordinal) ? str.Substring(1) : str;
                     str = str.EndsWith("\"", StringComparison.Ordinal) ? str.Substring(0, str.Length - 1) : str;
 
-                    // for verbatim strings, we need to add the escape characters back in
+                    // For verbatim strings, we need to add the escape characters back in.
                     if (isVerbatim)
                     {
                         str = str.Replace(@"\", @"\\").Replace("\"\"", @"\""");
@@ -144,10 +144,10 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsIdentifier"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
         {
-            // try to get the script name of the expression
+            // Try to get the script name of the expression.
             ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
-            // if there's no symbol then just return an identifier
+            // If there's no symbol then just return an identifier.
             string scriptName = node.Keyword.ValueText;
             if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
@@ -163,10 +163,10 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
-            // try to get the script name of the expression
+            // Try to get the script name of the expression.
             ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
-            // if there's no symbol then just return an identifier
+            // If there's no symbol then just return an identifier.
             if (symbol == null)
             {
                 yield return Factory.Identifier(node.Identifier.Text);
@@ -187,22 +187,22 @@ namespace Desalt.Core.Translation
         {
             string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name);
 
-            // get the containing type of the symbol
+            // Get the containing type of the symbol.
             INamedTypeSymbol? containingType = symbol.ContainingType;
 
-            // get the containing type of the syntax node (usually an identifier)
+            // Get the containing type of the syntax node (usually an identifier).
             INamedTypeSymbol? containingTypeOfSyntaxNode = _semanticModel
                 .GetEnclosingSymbol(nodeLocation.SourceSpan.Start, _cancellationToken)
                 ?.ContainingType;
 
-            // see if the identifier is declared within this type
+            // See if the identifier is declared within this type.
             bool belongsToThisType = containingType != null &&
                 containingTypeOfSyntaxNode != null &&
                 SymbolEqualityComparer.Default.Equals(containingType, containingTypeOfSyntaxNode);
 
             ITsExpression expression;
 
-            // in TypeScript, static references need to be fully qualified with the type name
+            // In TypeScript, static references need to be fully qualified with the type name.
             if (symbol.IsStatic && containingType != null)
             {
                 string containingTypeScriptName =
@@ -211,7 +211,7 @@ namespace Desalt.Core.Translation
                 expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
             }
 
-            // add a "this." prefix if it's an instance symbol within our same type
+            // Add a "this." prefix if it's an instance symbol within our same type.
             else if (!symbol.IsStatic &&
                 belongsToThisType &&
                 !symbol.Kind.IsOneOf(SymbolKind.Parameter, SymbolKind.Local, SymbolKind.Label))
@@ -223,7 +223,7 @@ namespace Desalt.Core.Translation
                 expression = Factory.Identifier(scriptName);
             }
 
-            // add this type to the import list if it doesn't belong to us
+            // Add this type to the import list if it doesn't belong to us.
             if (!belongsToThisType)
             {
                 ITypeSymbol? typeToImport = symbol as ITypeSymbol ?? containingType;
@@ -264,8 +264,8 @@ namespace Desalt.Core.Translation
 
             ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
-            // get the script name - the symbol can be null if we're inside a dynamic scope since all
-            // bets are off with the type checking
+            // Get the script name - the symbol can be null if we're inside a dynamic scope since all
+            // bets are off with the type checking.
             string scriptName = symbol == null
                 ? node.Name.Identifier.Text
                 : _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
@@ -340,7 +340,7 @@ namespace Desalt.Core.Translation
                 // var x = new Thing { Prop = value; }
             }
 
-            // see if there's an [InlineCode] entry for the ctor invocation
+            // See if there's an [InlineCode] entry for the ctor invocation.
             if (_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
                 _inlineCodeTranslator.TryTranslate(
                     ctorAsMethodSymbol,
