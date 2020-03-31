@@ -8,6 +8,7 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
@@ -17,6 +18,7 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis;
 
     public partial class TranslationVisitorTests
     {
@@ -80,6 +82,45 @@ using System.Runtime.CompilerServices;
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
             string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
             translated.Should().Be(expectedTypeScriptCode);
+        }
+
+        private static async Task AssertTranslationHasDiagnostics(
+            string codeSnippet,
+            string expectedTypeScriptCode,
+            Action<IReadOnlyCollection<Diagnostic>> diagnosticsAssertionAction,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
+            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null)
+        {
+            string code = $@"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
+using System.Runtime.CompilerServices;
+
+{codeSnippet}
+";
+
+            // get rid of \r\n sequences in the expected output
+            expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
+
+            using TempProject tempProject = await TempProject.CreateAsync(code);
+            CompilerOptions? options = populateOptionsFunc?.Invoke(tempProject.Options);
+            DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
+                discoveryKind: discoveryKind,
+                options: options);
+
+            var diagnosticList = DiagnosticList.Create(tempProject.Options);
+            diagnosticList.ThrowOnErrors = false;
+
+            var visitor = new TranslationVisitor(context, diagnostics: diagnosticList);
+            ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
+
+            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+            string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+            translated.Should().Be(expectedTypeScriptCode);
+
+            diagnosticsAssertionAction(diagnosticList);
         }
     }
 }

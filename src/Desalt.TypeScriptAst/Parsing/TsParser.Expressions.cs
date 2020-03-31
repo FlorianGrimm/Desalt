@@ -117,7 +117,7 @@ namespace Desalt.TypeScriptAst.Parsing
                     return true;
             }
 
-            return IsStartOfIdentifier(tokenCode) || IsStartOfLeftHandSideExpression();
+            return IsStartOfIdentifier(tokenCode, isTypeDeclaration: false) || IsStartOfLeftHandSideExpression();
         }
 
         /// <summary>
@@ -532,15 +532,15 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsExpression ParseLeftHandSideExpression()
         {
-            // we have to peek ahead two characters since it can be super[x] or super.x, which are
-            // parsed as part of a member expression
+            // We have to peek ahead two characters since it can be super[x] or super.x, which are
+            // parsed as part of a member expression.
             if (_reader.IsNext(TsTokenCode.Super, TsTokenCode.LeftParen))
             {
                 return ParseSuperCall();
             }
 
             // NewExpression and CallExpression both start with a MemberExpression
-            // (the 'new NewExpression' production is handled as part of the member expression)
+            // (the 'new NewExpression' production is handled as part of the member expression).
             ITsExpression expression = ParseMemberExpression();
             if (_reader.IsNext(TsTokenCode.LeftParen))
             {
@@ -548,8 +548,8 @@ namespace Desalt.TypeScriptAst.Parsing
                 expression = Factory.Call(expression, arguments);
             }
 
-            // note that this is not an else if clause since we want to allow arguments to be parsed
-            // first above and then check for brackets and dots
+            // Note that this is not an else if clause since we want to allow arguments to be parsed
+            // first above and then check for brackets and dots.
             while (_reader.IsNext(TsTokenCode.LeftBracket) || _reader.IsNext(TsTokenCode.Dot))
             {
                 if (_reader.ReadIf(TsTokenCode.LeftBracket))
@@ -561,12 +561,12 @@ namespace Desalt.TypeScriptAst.Parsing
                 }
                 else if (_reader.ReadIf(TsTokenCode.Dot))
                 {
-                    ITsIdentifier identifier = ParseIdentifierOrKeyword();
+                    ITsIdentifier identifier = ParseIdentifier(isTypeDeclaration: false);
                     expression = Factory.MemberDot(expression, identifier.Text);
                 }
             }
 
-            // template literals aren't supported yet
+            // Template literals aren't supported yet.
 
             return expression;
         }
@@ -733,7 +733,7 @@ namespace Desalt.TypeScriptAst.Parsing
                 }
                 else if (_reader.ReadIf(TsTokenCode.Dot))
                 {
-                    ITsIdentifier identifier = ParseIdentifierOrKeyword();
+                    ITsIdentifier identifier = ParseIdentifier(isTypeDeclaration: false);
                     expression = Factory.MemberDot(expression, identifier.Text);
                 }
             }
@@ -762,56 +762,56 @@ namespace Desalt.TypeScriptAst.Parsing
             }
 
             Read(TsTokenCode.Dot);
-            ITsIdentifier identifier = ParseIdentifierOrKeyword();
+            ITsIdentifier identifier = ParseIdentifier(isTypeDeclaration: false);
             return Factory.SuperDot(identifier.Text);
         }
 
         private bool IsStartOfPrimaryExpression()
         {
-            switch (_reader.Peek().TokenCode)
+            TsTokenCode tokenCode = _reader.Peek().TokenCode;
+
+            return tokenCode switch
             {
-                case TsTokenCode.This:
+                TsTokenCode.This => true,
 
                 // IdentifierReference
-                case TsTokenCode.Identifier:
+                TsTokenCode.Identifier => true,
+
                 // ReSharper disable once PatternAlwaysMatches
-                case TsTokenCode tc when IsStartOfIdentifier(tc):
+                TsTokenCode tc when IsStartOfIdentifier(tc, isTypeDeclaration: false) => true,
 
                 // Literal
-                case TsTokenCode.Null:
-                case TsTokenCode.True:
-                case TsTokenCode.False:
-                case TsTokenCode.DecimalLiteral:
-                case TsTokenCode.BinaryIntegerLiteral:
-                case TsTokenCode.OctalIntegerLiteral:
-                case TsTokenCode.HexIntegerLiteral:
-                case TsTokenCode.StringLiteral:
+                TsTokenCode.Null => true,
+                TsTokenCode.True => true,
+                TsTokenCode.False => true,
+                TsTokenCode.DecimalLiteral => true,
+                TsTokenCode.BinaryIntegerLiteral => true,
+                TsTokenCode.OctalIntegerLiteral => true,
+                TsTokenCode.HexIntegerLiteral => true,
+                TsTokenCode.StringLiteral => true,
 
                 // ArrayLiteral
-                case TsTokenCode.LeftBracket:
+                TsTokenCode.LeftBracket => true,
 
                 // ObjectLiteral
-                case TsTokenCode.LeftBrace:
+                TsTokenCode.LeftBrace => true,
 
                 // FunctionExpression and GeneratorExpression
-                case TsTokenCode.Function:
+                TsTokenCode.Function => true,
 
                 // ClassExpression
-                case TsTokenCode.Class:
+                TsTokenCode.Class => true,
 
                 // RegularExpressionLiteral:
-                case TsTokenCode.Slash:
+                TsTokenCode.Slash => true,
 
                 // TemplateLiteral:
-                case TsTokenCode.TemplateLiteral:
+                TsTokenCode.TemplateLiteral => true,
 
                 // ParenthesizedExpression
-                case TsTokenCode.LeftParen:
-                    return true;
-
-                default:
-                    return false;
-            }
+                TsTokenCode.LeftParen => true,
+                _ => false
+            };
         }
 
         /// <summary>

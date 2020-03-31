@@ -18,8 +18,15 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
     {
         private static void AssertLex(string code, params TsToken[] expectedTokens)
         {
-            TsLexer.Lex(code).Should().ContainInOrder(expectedTokens.AsEnumerable());
+            TsLexer.Lex(code)
+                .Should()
+                .HaveCount(expectedTokens.Length)
+                .And.ContainInOrder(expectedTokens.AsEnumerable());
         }
+
+        //// ===========================================================================================================
+        //// Identifiers and Keywords Tests
+        //// ===========================================================================================================
 
         [Test]
         public void TsLexer_should_lex_identifiers()
@@ -56,35 +63,18 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
         [Test]
         public void Lex_should_recognize_keywords()
         {
-            string[] keywords =
+            foreach (TsTokenCode tokenCode in TsTokenCodeExtensions.AllKeywords)
             {
-                // The following keywords are reserved and cannot be used as an Identifier:
-                "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do",
-                "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "import", "in",
-                "instanceof", "new", "null", "return", "super", "switch", "this", "throw", "true", "try", "typeof",
-                "var", "void", "while", "with",
-
-                // The following keywords cannot be used as identifiers in strict mode code, but are otherwise not restricted:
-                "implements", "interface", "let", "package", "private", "protected", "public", "static", "yield",
-
-                // The following keywords cannot be used as user defined type names, but are otherwise not restricted:
-                "any", "boolean", "number", "string", "symbol",
-
-                // The following keywords have special meaning in certain contexts, but are valid identifiers:
-                "abstract", "as", "async", "await", "constructor", "declare", "from", "get", "is", "module",
-                "namespace", "of", "require", "set", "type",
-            };
-
-            foreach (string keyword in keywords)
-            {
+                string keyword = tokenCode.ToString().ToLowerInvariant();
                 AssertLex(
                     keyword,
-                    new TsToken(
-                        (TsTokenCode)Enum.Parse(typeof(TsTokenCode), keyword, ignoreCase: true),
-                        keyword,
-                        new TextReaderLocation(1, 1)));
+                    new TsToken(tokenCode, keyword, new TextReaderLocation(1, 1)));
             }
         }
+
+        //// ===========================================================================================================
+        //// Punctuators Tests
+        //// ===========================================================================================================
 
         [Test]
         public void Lex_should_recognize_punctuators()
@@ -148,6 +138,10 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                 AssertLex(text, new TsToken(tokenCode, text, new TextReaderLocation(1, 1)));
             }
         }
+
+        //// ===========================================================================================================
+        //// Number Literals Tests
+        //// ===========================================================================================================
 
         [Test]
         public void Lex_should_recognize_decimal_integer_literals()
@@ -289,6 +283,10 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
                 .And.Message.Should()
                 .Be("(1,1): error: Invalid hex integer literal '0x0123456789abcdef0123456789abcdef0123456789abcdef'");
         }
+
+        //// ===========================================================================================================
+        //// String Literal Tests
+        //// ===========================================================================================================
 
         [Test]
         public void Lex_should_recognize_string_literals()

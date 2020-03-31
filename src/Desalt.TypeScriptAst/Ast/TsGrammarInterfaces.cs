@@ -22,6 +22,9 @@ namespace Desalt.TypeScriptAst.Ast
      *
      * Many of these interface names and shapes are taken from the TypeScript source code at:
      * https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts.
+     *
+     * There is also an Antlr grammar defined here:
+     * https://raw.githubusercontent.com/antlr/grammars-v4/master/typescript/TypeScriptParser.g4
      **********************************************************************************************/
 
     /* A.1 Types
@@ -253,7 +256,7 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     /* PropertySignature:
-     *   PropertyName ?Opt TypeAnnotationOpt
+     *   readonlyOpt PropertyName ?Opt TypeAnnotationOpt
      *
      * PropertyName:
      *   LiteralPropertyName
@@ -274,6 +277,7 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsPropertySignature : ITsTypeMember
     {
         ITsPropertyName PropertyName { get; }
+        bool IsReadOnly { get; }
         bool IsOptional { get; }
         ITsType? PropertyType { get; }
     }

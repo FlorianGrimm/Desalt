@@ -21,10 +21,12 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public TsPropertySignature(
             ITsPropertyName propertyName,
-            bool isOptional = false,
-            ITsType? propertyType = null)
+            ITsType? propertyType = null,
+            bool isReadOnly = false,
+            bool isOptional = false)
         {
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+            IsReadOnly = isReadOnly;
             IsOptional = isOptional;
             PropertyType = propertyType;
         }
@@ -34,6 +36,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         //// ===========================================================================================================
 
         public ITsPropertyName PropertyName { get; }
+        public bool IsReadOnly { get; }
         public bool IsOptional { get; }
         public ITsType? PropertyType { get; }
 
@@ -46,11 +49,19 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitPropertySignature(this);
         }
 
-        public override string CodeDisplay => PropertyName + (IsOptional ? "?" : "") +
+        public override string CodeDisplay =>
+            (IsReadOnly ? "readonly " : "") +
+            PropertyName +
+            (IsOptional ? "?" : "") +
             PropertyType?.OptionalTypeAnnotation();
 
         protected override void EmitInternal(Emitter emitter)
         {
+            if (IsReadOnly)
+            {
+                emitter.Write("readonly ");
+            }
+
             PropertyName.Emit(emitter);
             if (IsOptional)
             {

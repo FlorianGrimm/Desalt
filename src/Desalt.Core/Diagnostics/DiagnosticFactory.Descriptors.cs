@@ -117,16 +117,14 @@ namespace Desalt.Core.Diagnostics
             [Error(1016, "[InlineCode] parsing error", "Error parsing inline code '{0}' for '{1}': {2}")]
             InlineCodeParsingError,
 
-            [Error(
-                1017,
-                "Invalid options file",
-                "Error in reading the options file in '{0}': {1}")]
+            [Error(1017, "Invalid options file", "Error in reading the options file in '{0}': {1}")]
             InvalidOptionsFile,
 
             [Error(
                 1028,
                 "Incorrect [ScriptSkip] usage",
-                "A [ScriptSkip] attribute must be placed on a static method or constructor with a single argument or an instance method/ctor with no arguments. Method: '{0}'")]
+                "A [ScriptSkip] attribute must be placed on a static method or constructor with a single argument or " +
+                "an instance method/ctor with no arguments. Method: '{0}'")]
             IncorrectScriptSkipUsage,
 
             [Error(1018, "Cannot open project", "Cannot open project file '{0}'.")]
@@ -158,6 +156,12 @@ namespace Desalt.Core.Diagnostics
 
             [Error(1027, "Error opening response file", "Error opening response file '{0}'.")]
             ErrorOpeningResponseFile,
+
+            [Error(
+                1028,
+                "Getter and setter accessors do not agree in visibility",
+                "Getter and setter accessors for property '{0}' do not agree in visibility.")]
+            GetterAndSetterAccessorsDoNotAgreeInVisibility,
         }
 
         //// ===========================================================================================================
@@ -191,8 +195,8 @@ namespace Desalt.Core.Diagnostics
         public static Diagnostic DocumentContainsNoSyntaxTree(Document document)
         {
             return Create(
-DiagnosticId.DocumentContainsNoSyntaxTree,
-Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+                DiagnosticId.DocumentContainsNoSyntaxTree,
+                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         }
 
         /// <summary>
@@ -202,8 +206,8 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic DocumentContainsNoSemanticModel(Document document)
         {
             return Create(
-DiagnosticId.DocumentContainsNoSemanticModel,
-Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
+                DiagnosticId.DocumentContainsNoSemanticModel,
+                Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         }
 
         /// <summary>
@@ -483,6 +487,16 @@ Location.Create(document.FilePath, new TextSpan(), new LinePositionSpan()));
         public static Diagnostic IncorrectScriptSkipUsage(string methodName, Location location)
         {
             return Create(DiagnosticId.IncorrectScriptSkipUsage, location, methodName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "Getter and setter accessors for property '{0}' do not agree in visibility."
+        /// </summary>
+        /// <param name="propertyName">The name of the property containing the getter and setter.</param>
+        /// <param name="location">The associated location in the source code.</param>
+        public static Diagnostic GetterAndSetterAccessorsDoNotAgreeInVisibility(string propertyName, Location location)
+        {
+            return Create(DiagnosticId.GetterAndSetterAccessorsDoNotAgreeInVisibility, location, propertyName);
         }
     }
 }

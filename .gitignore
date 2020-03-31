@@ -2,6 +2,8 @@
 /E2ETestResults/Test/Test.cs
 /E2ETestResults/Test/Test.dll
 /E2ETestResults/Test/Test.js
+/E2ETestResults/Test/ts/test.ts
+/E2ETestResults/Test/ts/test.js
 /packages/
 /src/**/bin/
 /src/**/obj/

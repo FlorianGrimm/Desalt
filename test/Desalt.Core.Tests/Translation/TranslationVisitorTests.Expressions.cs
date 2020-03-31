@@ -398,5 +398,34 @@ class C {
 ",
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
+
+        //// ===========================================================================================================
+        //// IntrinsicProperty Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Translate_should_treat_IntrinsicProperties_assignments_as_normal_property_assignments()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    [IntrinsicProperty]
+    public int Prop { get; set; }
+
+    public void Method()
+    {
+        Prop = 200;
+    }
+}
+",
+                @"
+class C {
+  public method(): void {
+    this.prop = 200;
+  }
+}
+");
+        }
     }
 }

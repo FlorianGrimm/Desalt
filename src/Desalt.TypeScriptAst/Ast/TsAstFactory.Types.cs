@@ -86,9 +86,10 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsPropertySignature PropertySignature(
             ITsPropertyName propertyName,
             ITsType? propertyType = null,
+            bool isReadOnly = false,
             bool isOptional = false)
         {
-            return new TsPropertySignature(propertyName, isOptional, propertyType);
+            return new TsPropertySignature(propertyName, propertyType, isReadOnly: isReadOnly, isOptional: isOptional);
         }
 
         public static ITsCallSignature CallSignature()

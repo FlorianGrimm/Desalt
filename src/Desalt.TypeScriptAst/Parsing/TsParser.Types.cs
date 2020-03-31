@@ -219,7 +219,7 @@ namespace Desalt.TypeScriptAst.Parsing
 
                 // TypeReference
                 // ReSharper disable once PatternAlwaysMatches
-                case TsTokenCode tc when IsStartOfIdentifier(tc):
+                case TsTokenCode tc when IsStartOfIdentifier(tc, isTypeDeclaration: false):
                     type = ParseTypeReference();
                     break;
 
@@ -349,7 +349,7 @@ namespace Desalt.TypeScriptAst.Parsing
         ///     MethodSignature     (starts with PropertyName)
         ///
         /// PropertySignature:
-        ///     PropertyName ?Opt TypeAnnotationOpt
+        ///     readonlyOpt PropertyName ?Opt TypeAnnotationOpt
         ///
         /// MethodSignature:
         ///     PropertyName ?Opt CallSignature
@@ -382,6 +382,11 @@ namespace Desalt.TypeScriptAst.Parsing
                         member = ParseCallSignature();
                         break;
 
+                    // PropertySignature
+                    case TsTokenCode.Readonly:
+                        member = ParsePropertySignature();
+                        break;
+
                     // PropertySignature and MethodSignature start the same way
                     default:
                         ITsPropertyName propertyName = ParsePropertyName();
@@ -394,7 +399,11 @@ namespace Desalt.TypeScriptAst.Parsing
                         else
                         {
                             ITsType? propertyType = ParseOptionalTypeAnnotation();
-                            member = Factory.PropertySignature(propertyName, propertyType, isOptional);
+                            member = Factory.PropertySignature(
+                                propertyName,
+                                propertyType,
+                                isReadOnly: false,
+                                isOptional);
                         }
 
                         break;
@@ -439,7 +448,7 @@ namespace Desalt.TypeScriptAst.Parsing
         {
             Read(TsTokenCode.LeftBracket);
 
-            ITsIdentifier parameterName = ParseIdentifier();
+            ITsIdentifier parameterName = ParseIdentifier(isTypeDeclaration: false);
             Read(TsTokenCode.Colon);
 
             bool isParameterNumberType;
@@ -512,6 +521,22 @@ namespace Desalt.TypeScriptAst.Parsing
         }
 
         /// <summary>
+        /// Parses a property signature.
+        /// </summary>
+        /// <remarks><code><![CDATA[
+        /// PropertySignature:
+        ///     readonlyOpt PropertyName ?Opt TypeAnnotationOpt
+        /// ]]></code></remarks>
+        private ITsPropertySignature ParsePropertySignature()
+        {
+            bool isReadOnly = _reader.ReadIf(TsTokenCode.Readonly);
+            ITsPropertyName propertyName = ParsePropertyName();
+            bool isOptional = _reader.ReadIf(TsTokenCode.Question);
+            ITsType? propertyType = ParseOptionalTypeAnnotation();
+            return Factory.PropertySignature(propertyName, propertyType, isReadOnly, isOptional);
+        }
+
+        /// <summary>
         /// Parses a call signature.
         /// </summary>
         /// <remarks><code><![CDATA[
@@ -554,7 +579,7 @@ namespace Desalt.TypeScriptAst.Parsing
             var typeParameters = new List<ITsTypeParameter>();
             do
             {
-                ITsIdentifier typeName = ParseIdentifier();
+                ITsIdentifier typeName = ParseIdentifier(isTypeDeclaration: false);
                 ITsType? constraint = null;
                 if (_reader.ReadIf(TsTokenCode.Extends))
                 {

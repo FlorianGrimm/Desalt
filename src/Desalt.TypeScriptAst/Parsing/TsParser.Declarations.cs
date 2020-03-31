@@ -89,7 +89,7 @@ namespace Desalt.TypeScriptAst.Parsing
         public ITsFunctionDeclaration ParseFunctionDeclaration()
         {
             Read(TsTokenCode.Function);
-            TryParseIdentifier(out ITsIdentifier? functionName);
+            TryParseIdentifier(isTypeDeclaration: false, out ITsIdentifier? functionName);
             ITsCallSignature callSignature = ParseCallSignature();
 
             ITsStatementListItem[] functionBody = Array.Empty<ITsStatementListItem>();

@@ -49,6 +49,7 @@ namespace Desalt.Core.Tests.TestUtility
         //// ===========================================================================================================
 
         public static string ProjectDir => Path.Combine("C:\\", ProjectName);
+        public static string DefaultFilePath => Path.Combine(ProjectDir, "File.cs");
 
         public string OutputPath =>
             Path.Combine(Path.GetDirectoryName(_workspace.CurrentSolution.Projects.Single().FilePath)!, "outputPath");

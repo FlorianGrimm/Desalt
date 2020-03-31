@@ -59,9 +59,19 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         public void Emit_object_property_signatures()
         {
             VerifyOutput(Factory.PropertySignature(s_x), "x");
+            VerifyOutput(Factory.PropertySignature(s_x, isReadOnly: true), "readonly x");
             VerifyOutput(Factory.PropertySignature(s_x, isOptional: true), "x?");
-            VerifyOutput(Factory.PropertySignature(s_x, isOptional: false, propertyType: Factory.StringType), "x: string");
+            VerifyOutput(Factory.PropertySignature(s_x, isReadOnly: true, isOptional: true), "readonly x?");
             VerifyOutput(Factory.PropertySignature(s_x, isOptional: true, propertyType: Factory.StringType), "x?: string");
+
+            VerifyOutput(
+                Factory.PropertySignature(s_x, isReadOnly: true, isOptional: false, propertyType: Factory.StringType),
+                "readonly x: string");
+
+            VerifyOutput(Factory.PropertySignature(s_x, isOptional: true, propertyType: Factory.StringType), "x?: string");
+            VerifyOutput(
+                Factory.PropertySignature(s_x, isReadOnly: true, isOptional: false, propertyType: Factory.StringType),
+                "readonly x: string");
         }
 
         [Test]
