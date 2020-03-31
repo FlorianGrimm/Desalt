@@ -14,6 +14,7 @@ namespace Desalt.ConsoleApp.Tests
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using NUnit.Framework;

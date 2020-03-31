@@ -12,6 +12,7 @@ namespace Desalt.Core.CompilerStages
     using Buildalyzer;
     using Buildalyzer.Workspaces;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
 

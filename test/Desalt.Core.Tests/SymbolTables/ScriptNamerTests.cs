@@ -11,6 +11,7 @@ namespace Desalt.Core.Tests.SymbolTables
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;

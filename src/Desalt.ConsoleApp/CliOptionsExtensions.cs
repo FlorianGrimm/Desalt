@@ -10,6 +10,7 @@ namespace Desalt.ConsoleApp
     using System;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
+    using Desalt.Core.Options;
 
     /// <summary>
     /// Converts <see cref="CliOptions"/> to <see cref="CompilerOptions"/> and <see cref="CompilationRequest"/>.

@@ -14,6 +14,7 @@ namespace Desalt.Core.SymbolTables
     using System.Linq;
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
+    using Desalt.Core.Options;
     using Desalt.Core.Translation;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;

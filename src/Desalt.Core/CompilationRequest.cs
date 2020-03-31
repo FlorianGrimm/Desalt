@@ -8,6 +8,7 @@
 namespace Desalt.Core
 {
     using Desalt.CompilerUtilities;
+    using Desalt.Core.Options;
 
     /// <summary>
     /// Represents an immutable request to compile a set of C# inputs to generated TypeScript.

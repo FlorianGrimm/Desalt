@@ -10,6 +10,7 @@ namespace Desalt.Core.SymbolTables
     using System;
     using System.Collections.Immutable;
     using System.Linq;
+    using Desalt.Core.Options;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
 

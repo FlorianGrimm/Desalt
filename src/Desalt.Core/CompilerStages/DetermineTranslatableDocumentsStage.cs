@@ -12,6 +12,7 @@ namespace Desalt.Core.CompilerStages
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;

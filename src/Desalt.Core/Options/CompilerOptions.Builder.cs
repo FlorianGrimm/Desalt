@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Options
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;

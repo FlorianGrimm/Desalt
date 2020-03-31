@@ -15,6 +15,7 @@ namespace Desalt.Core.Tests.TestUtility
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
     using FluentAssertions;

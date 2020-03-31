@@ -8,6 +8,7 @@
 namespace Desalt.Core.Diagnostics
 {
     using System.Collections.Immutable;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
     /// <summary>

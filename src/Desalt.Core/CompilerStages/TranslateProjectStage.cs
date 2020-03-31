@@ -14,6 +14,7 @@ namespace Desalt.Core.CompilerStages
     using System.Threading;
     using System.Threading.Tasks;
     using Desalt.CompilerUtilities.Extensions;
+    using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Desalt.Core.Utility;

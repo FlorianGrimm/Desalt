@@ -12,6 +12,7 @@ namespace Desalt.Core.Pipeline
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
 
     /// <summary>
     /// Represents a simple pipeline that keeps track of stages to be run in order.

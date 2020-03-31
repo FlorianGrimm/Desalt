@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Options
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,6 @@ namespace Desalt.Core
     using System.Linq;
     using System.Text;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Pipeline;
     using Microsoft.CodeAnalysis;
     using Newtonsoft.Json;
 

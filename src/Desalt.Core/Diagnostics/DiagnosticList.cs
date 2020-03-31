@@ -13,6 +13,7 @@ namespace Desalt.Core.Diagnostics
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
     /// <summary>

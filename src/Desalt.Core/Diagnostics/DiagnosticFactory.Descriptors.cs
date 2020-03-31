@@ -8,6 +8,7 @@
 namespace Desalt.Core.Diagnostics
 {
     using System;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

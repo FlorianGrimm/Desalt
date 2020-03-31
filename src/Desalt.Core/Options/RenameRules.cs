@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Options
 {
     /// <summary>
     /// Represents the types of renaming rules to apply to the translated TypeScript code.
