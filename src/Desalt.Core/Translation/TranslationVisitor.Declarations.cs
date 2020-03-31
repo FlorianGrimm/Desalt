@@ -16,7 +16,6 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
-    using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -294,21 +293,8 @@ namespace Desalt.Core.Translation
             ITsCallSignature callSignature = TranslateCallSignature(
                 node.ParameterList,
                 node.TypeParameterList,
-                node.ReturnType);
-
-            // see if the parameter list should be adjusted to accomodate [AlternateSignature] methods
-            bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
-                symbol,
-                callSignature.Parameters,
-                out ITsParameterList translatedParameterList,
-                out IEnumerable<Diagnostic> diagnostics);
-
-            _diagnostics.AddRange(diagnostics);
-
-            if (adjustedParameters)
-            {
-                callSignature = callSignature.WithParameters(translatedParameterList);
-            }
+                node.ReturnType,
+                symbol);
 
             // if we're defining an interface, then we need to return a ITsMethodSignature
             if (symbol.ContainingType.IsInterfaceType())

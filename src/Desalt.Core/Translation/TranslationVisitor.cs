@@ -16,6 +16,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
+    using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -246,10 +247,19 @@ namespace Desalt.Core.Translation
             return withDocComment;
         }
 
+        /// <summary>
+        /// Translates a C# call signature into a TypeScript equivalent.
+        /// </summary>
+        /// <param name="parameterListNode">The C# parameter list.</param>
+        /// <param name="typeParameterListNode">The C# type parameter list.</param>
+        /// <param name="returnTypeNode">The C# return type.</param>
+        /// <param name="methodSymbol">The method symbol, which is used for [AlternateSignature] methods.</param>
+        /// <returns></returns>
         private ITsCallSignature TranslateCallSignature(
             ParameterListSyntax? parameterListNode,
             TypeParameterListSyntax? typeParameterListNode = null,
-            TypeSyntax? returnTypeNode = null)
+            TypeSyntax? returnTypeNode = null,
+            IMethodSymbol? methodSymbol = null)
         {
             ITsTypeParameters typeParameters = typeParameterListNode == null
                 ? Factory.TypeParameters()
@@ -271,6 +281,24 @@ namespace Desalt.Core.Translation
             }
 
             ITsCallSignature callSignature = Factory.CallSignature(typeParameters, parameters, returnType);
+
+            // see if the parameter list should be adjusted to accomodate [AlternateSignature] methods
+            if (methodSymbol != null)
+            {
+                bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
+                    methodSymbol,
+                    callSignature.Parameters,
+                    out ITsParameterList translatedParameterList,
+                    out IEnumerable<Diagnostic> diagnostics);
+
+                _diagnostics.AddRange(diagnostics);
+
+                if (adjustedParameters)
+                {
+                    callSignature = callSignature.WithParameters(translatedParameterList);
+                }
+            }
+
             return callSignature;
         }
 
