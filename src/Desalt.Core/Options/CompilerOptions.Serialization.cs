@@ -14,6 +14,7 @@ namespace Desalt.Core.Options
     using System.Linq;
     using System.Text;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Newtonsoft.Json;
 
