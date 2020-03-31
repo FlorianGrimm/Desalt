@@ -478,140 +478,90 @@ namespace Desalt.Core.Translation
 
         private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
         {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (operatorToken.Kind())
+            TsAssignmentOperator? op = operatorToken.Kind() switch
             {
-                case SyntaxKind.EqualsToken:
-                    return TsAssignmentOperator.SimpleAssign;
+                SyntaxKind.EqualsToken => TsAssignmentOperator.SimpleAssign,
+                SyntaxKind.AsteriskEqualsToken => TsAssignmentOperator.MultiplyAssign,
+                SyntaxKind.SlashEqualsToken => TsAssignmentOperator.DivideAssign,
+                SyntaxKind.PercentEqualsToken => TsAssignmentOperator.ModuloAssign,
+                SyntaxKind.PlusEqualsToken => TsAssignmentOperator.AddAssign,
+                SyntaxKind.MinusEqualsToken => TsAssignmentOperator.SubtractAssign,
+                SyntaxKind.LessThanLessThanEqualsToken => TsAssignmentOperator.LeftShiftAssign,
+                SyntaxKind.GreaterThanGreaterThanEqualsToken => TsAssignmentOperator.SignedRightShiftAssign,
+                SyntaxKind.AmpersandEqualsToken => TsAssignmentOperator.BitwiseAndAssign,
+                SyntaxKind.CaretEqualsToken => TsAssignmentOperator.BitwiseXorAssign,
+                SyntaxKind.BarEqualsToken => TsAssignmentOperator.BitwiseOrAssign,
+                _ => null,
+            };
 
-                case SyntaxKind.AsteriskEqualsToken:
-                    return TsAssignmentOperator.MultiplyAssign;
-
-                case SyntaxKind.SlashEqualsToken:
-                    return TsAssignmentOperator.DivideAssign;
-
-                case SyntaxKind.PercentEqualsToken:
-                    return TsAssignmentOperator.ModuloAssign;
-
-                case SyntaxKind.PlusEqualsToken:
-                    return TsAssignmentOperator.AddAssign;
-
-                case SyntaxKind.MinusEqualsToken:
-                    return TsAssignmentOperator.SubtractAssign;
-
-                case SyntaxKind.LessThanLessThanEqualsToken:
-                    return TsAssignmentOperator.LeftShiftAssign;
-
-                case SyntaxKind.GreaterThanGreaterThanEqualsToken:
-                    return TsAssignmentOperator.SignedRightShiftAssign;
-
-                case SyntaxKind.AmpersandEqualsToken:
-                    return TsAssignmentOperator.BitwiseAndAssign;
-
-                case SyntaxKind.CaretEqualsToken:
-                    return TsAssignmentOperator.BitwiseXorAssign;
-
-                case SyntaxKind.BarEqualsToken:
-                    return TsAssignmentOperator.BitwiseOrAssign;
-
-                default:
-                    ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                    return TsAssignmentOperator.SimpleAssign;
+            if (op == null)
+            {
+                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                op = TsAssignmentOperator.SimpleAssign;
             }
+
+            return op.Value;
         }
 
         private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
         {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (operatorToken.Kind())
+            TsUnaryOperator? op = operatorToken.Kind() switch
             {
-                case SyntaxKind.PlusPlusToken:
-                    return asPrefix ? TsUnaryOperator.PrefixIncrement : TsUnaryOperator.PostfixIncrement;
+                SyntaxKind.PlusPlusToken => asPrefix
+                    ? TsUnaryOperator.PrefixIncrement
+                    : TsUnaryOperator.PostfixIncrement,
+                SyntaxKind.MinusMinusToken => asPrefix
+                    ? TsUnaryOperator.PrefixDecrement
+                    : TsUnaryOperator.PostfixDecrement,
+                SyntaxKind.PlusToken => TsUnaryOperator.Plus,
+                SyntaxKind.MinusToken => TsUnaryOperator.Minus,
+                SyntaxKind.TildeToken => TsUnaryOperator.BitwiseNot,
+                SyntaxKind.ExclamationToken => TsUnaryOperator.LogicalNot,
+                _ => null,
+            };
 
-                case SyntaxKind.MinusMinusToken:
-                    return asPrefix ? TsUnaryOperator.PrefixDecrement : TsUnaryOperator.PostfixDecrement;
-
-                case SyntaxKind.PlusToken:
-                    return TsUnaryOperator.Plus;
-
-                case SyntaxKind.MinusToken:
-                    return TsUnaryOperator.Minus;
-
-                case SyntaxKind.TildeToken:
-                    return TsUnaryOperator.BitwiseNot;
-
-                case SyntaxKind.ExclamationToken:
-                    return TsUnaryOperator.LogicalNot;
-
-                default:
-                    ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                    return TsUnaryOperator.Plus;
+            if (op == null)
+            {
+                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                op = TsUnaryOperator.Plus;
             }
+
+            return op.Value;
         }
 
         private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
         {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (operatorToken.Kind())
+            TsBinaryOperator? op = operatorToken.Kind() switch
             {
-                case SyntaxKind.AsteriskToken:
-                    return TsBinaryOperator.Multiply;
+                SyntaxKind.AsteriskToken => TsBinaryOperator.Multiply,
+                SyntaxKind.SlashToken => TsBinaryOperator.Divide,
+                SyntaxKind.PercentToken => TsBinaryOperator.Modulo,
+                SyntaxKind.PlusToken => TsBinaryOperator.Add,
+                SyntaxKind.MinusToken => TsBinaryOperator.Subtract,
+                SyntaxKind.LessThanLessThanToken => TsBinaryOperator.LeftShift,
+                SyntaxKind.GreaterThanGreaterThanToken => TsBinaryOperator.SignedRightShift,
+                SyntaxKind.LessThanToken => TsBinaryOperator.LessThan,
+                SyntaxKind.GreaterThanToken => TsBinaryOperator.GreaterThan,
+                SyntaxKind.LessThanEqualsToken => TsBinaryOperator.LessThanEqual,
+                SyntaxKind.GreaterThanEqualsToken => TsBinaryOperator.GreaterThanEqual,
+                SyntaxKind.EqualsEqualsToken => TsBinaryOperator.StrictEquals,
+                SyntaxKind.ExclamationEqualsToken => TsBinaryOperator.StrictNotEquals,
+                SyntaxKind.AmpersandToken => TsBinaryOperator.BitwiseAnd,
+                SyntaxKind.CaretToken => TsBinaryOperator.BitwiseXor,
+                SyntaxKind.BarToken => TsBinaryOperator.BitwiseOr,
+                SyntaxKind.AmpersandAmpersandToken => TsBinaryOperator.LogicalAnd,
+                SyntaxKind.BarBarToken => TsBinaryOperator.LogicalOr,
+                SyntaxKind.QuestionQuestionToken => TsBinaryOperator.LogicalOr,
+                _ => null,
+            };
 
-                case SyntaxKind.SlashToken:
-                    return TsBinaryOperator.Divide;
+            if (op == null)
+            {
+                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                op = TsBinaryOperator.Add;
+            }
 
-                case SyntaxKind.PercentToken:
-                    return TsBinaryOperator.Modulo;
-
-                case SyntaxKind.PlusToken:
-                    return TsBinaryOperator.Add;
-
-                case SyntaxKind.MinusToken:
-                    return TsBinaryOperator.Subtract;
-
-                case SyntaxKind.LessThanLessThanToken:
-                    return TsBinaryOperator.LeftShift;
-
-                case SyntaxKind.GreaterThanGreaterThanToken:
-                    return TsBinaryOperator.SignedRightShift;
-
-                case SyntaxKind.LessThanToken:
-                    return TsBinaryOperator.LessThan;
-
-                case SyntaxKind.GreaterThanToken:
-                    return TsBinaryOperator.GreaterThan;
-
-                case SyntaxKind.LessThanEqualsToken:
-                    return TsBinaryOperator.LessThanEqual;
-
-                case SyntaxKind.GreaterThanEqualsToken:
-                    return TsBinaryOperator.GreaterThanEqual;
-
-                case SyntaxKind.EqualsEqualsToken:
-                    return TsBinaryOperator.StrictEquals;
-
-                case SyntaxKind.ExclamationEqualsToken:
-                    return TsBinaryOperator.StrictNotEquals;
-
-                case SyntaxKind.AmpersandToken:
-                    return TsBinaryOperator.BitwiseAnd;
-
-                case SyntaxKind.CaretToken:
-                    return TsBinaryOperator.BitwiseXor;
-
-                case SyntaxKind.BarToken:
-                    return TsBinaryOperator.BitwiseOr;
-
-                case SyntaxKind.AmpersandAmpersandToken:
-                    return TsBinaryOperator.LogicalAnd;
-
-                case SyntaxKind.BarBarToken:
-                case SyntaxKind.QuestionQuestionToken:
-                    return TsBinaryOperator.LogicalOr;
-
-                default:
-                    ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                    return TsBinaryOperator.Add;
+            return op.Value;
             }
         }
     }
