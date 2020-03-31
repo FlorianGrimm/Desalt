@@ -100,8 +100,7 @@ namespace Desalt.Core.Options
         //// Classes
         //// ===========================================================================================================
 
-        private sealed class SpecificDiagnosticOptionsConverter
-            : JsonConverter<ImmutableDictionary<string, ReportDiagnostic>>
+        private class SortedByKeyDictionaryConverter<TValue> : JsonConverter<ImmutableDictionary<string, TValue>>
         {
             /// <summary>
             /// Writes the JSON representation of the object.
@@ -111,16 +110,16 @@ namespace Desalt.Core.Options
             /// <param name="serializer">The calling serializer.</param>
             public override void WriteJson(
                 JsonWriter writer,
-                ImmutableDictionary<string, ReportDiagnostic> value,
+                ImmutableDictionary<string, TValue> value,
                 JsonSerializer serializer)
             {
                 writer.WriteStartObject();
 
                 var orderedPairs = value.OrderBy(pair => pair.Key, StringComparer.Ordinal);
-                foreach (var pair in orderedPairs)
+                foreach ((string key, TValue pairValue) in orderedPairs)
                 {
-                    writer.WritePropertyName(pair.Key, escape: true);
-                    serializer.Serialize(writer, pair.Value);
+                    writer.WritePropertyName(key, escape: true);
+                    serializer.Serialize(writer, pairValue);
                 }
 
                 writer.WriteEndObject();
@@ -137,21 +136,21 @@ namespace Desalt.Core.Options
             /// <param name="hasExistingValue">The existing value has a value.</param>
             /// <param name="serializer">The calling serializer.</param>
             /// <returns>The object value.</returns>
-            public override ImmutableDictionary<string, ReportDiagnostic> ReadJson(
+            public override ImmutableDictionary<string, TValue> ReadJson(
                 JsonReader reader,
                 Type objectType,
-                ImmutableDictionary<string, ReportDiagnostic> existingValue,
+                ImmutableDictionary<string, TValue> existingValue,
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
                 if (reader.TokenType == JsonToken.Null)
                 {
-                    return ImmutableDictionary<string, ReportDiagnostic>.Empty;
+                    return ImmutableDictionary<string, TValue>.Empty;
                 }
 
                 reader.Read(JsonToken.StartObject);
 
-                var dictionary = ImmutableDictionary.CreateBuilder<string, ReportDiagnostic>();
+                var dictionary = ImmutableDictionary.CreateBuilder<string, TValue>();
                 while (reader.TokenType != JsonToken.EndObject)
                 {
                     reader.VerifyToken(JsonToken.PropertyName);
@@ -159,7 +158,7 @@ namespace Desalt.Core.Options
                     string key = reader.Value!.ToString();
                     reader.Read();
 
-                    var value = serializer.Deserialize<ReportDiagnostic>(reader);
+                    var value = serializer.Deserialize<TValue>(reader);
                     reader.Read();
 
                     dictionary.Add(key, value);
@@ -170,6 +169,10 @@ namespace Desalt.Core.Options
 
                 return dictionary.ToImmutable();
             }
+        }
+
+        private sealed class SpecificDiagnosticOptionsConverter : SortedByKeyDictionaryConverter<ReportDiagnostic>
+        {
         }
 
         private sealed class SymbolTableOverridesConverter : JsonConverter<SymbolTableOverrides>
