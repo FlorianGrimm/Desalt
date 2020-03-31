@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -37,11 +38,14 @@ namespace Desalt.Core.Translation
         private readonly CancellationToken _cancellationToken;
         private readonly SemanticModel _semanticModel;
         private readonly ScriptSymbolTable _scriptSymbolTable;
+        private readonly RenameRules _renameRules;
+
         private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly ScriptSkipTranslator _scriptSkipTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
+
         private readonly ISet<ITypeSymbol> _typesToImport = new HashSet<ITypeSymbol>();
         private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
@@ -72,8 +76,11 @@ namespace Desalt.Core.Translation
             ICollection<Diagnostic>? diagnostics = null)
         {
             _cancellationToken = cancellationToken;
+
             _semanticModel = context.SemanticModel;
             _scriptSymbolTable = context.ScriptSymbolTable;
+            _renameRules = context.Options.RenameRules;
+
             _extensionMethodTranslator =
                 new ExtensionMethodTranslator(_semanticModel, _scriptSymbolTable);
             _inlineCodeTranslator = new InlineCodeTranslator(_semanticModel, _scriptSymbolTable);

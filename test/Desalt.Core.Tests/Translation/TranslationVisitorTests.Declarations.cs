@@ -164,6 +164,10 @@ class C extends B implements IA, IC {
 ");
         }
 
+        //// ===========================================================================================================
+        //// Method Declaration Tests
+        //// ===========================================================================================================
+
         [Test]
         public async Task Translate_should_rename_overloaded_method_declarations()
         {
@@ -449,6 +453,215 @@ interface I {
 }
 
 class A {
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Overloaded Operator Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Translate_unary_operator_declarations()
+        {
+            await AssertTranslation(
+                @"
+sealed class JsNumber
+{
+    // Unary operators
+    public static JsNumber operator +(JsNumber x) { return new JsNumber(); }
+    public static JsNumber operator -(JsNumber x) { return new JsNumber(); }
+    public static JsNumber operator !(JsNumber x) { return new JsNumber(); }
+    public static JsNumber operator ~(JsNumber x) { return new JsNumber(); }
+    public static JsNumber operator ++(JsNumber x) { return new JsNumber(); }
+    public static JsNumber operator --(JsNumber x) { return new JsNumber(); }
+    public static bool operator true(JsNumber x) { return true; }
+    public static bool operator false(JsNumber x) { return false; }
+}",
+                @"
+class JsNumber {
+  public static op_UnaryPlus(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_UnaryNegation(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_LogicalNot(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_OnesComplement(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Increment(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Decrement(x: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_True(x: JsNumber): boolean {
+    return true;
+  }
+
+  public static op_False(x: JsNumber): boolean {
+    return false;
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_binary_operator_declarations()
+        {
+            await AssertTranslation(
+                @"
+sealed class JsNumber
+{
+    // Binary operators
+    public static JsNumber operator +(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator -(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator *(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator /(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator %(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator &(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator |(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator ^(JsNumber x, JsNumber y) { return new JsNumber(); }
+    public static JsNumber operator <<(JsNumber x, int y) { return new JsNumber(); }
+    public static JsNumber operator >>(JsNumber x, int y) { return new JsNumber(); }
+}",
+                @"
+class JsNumber {
+  public static op_Addition(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Subtraction(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Multiply(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Division(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_Modulus(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_BitwiseAnd(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_BitwiseOr(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_BitwiseXor(x: JsNumber, y: JsNumber): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_LeftShift(x: JsNumber, y: number): JsNumber {
+    return new JsNumber();
+  }
+
+  public static op_RightShift(x: JsNumber, y: number): JsNumber {
+    return new JsNumber();
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_comparison_operator_declarations()
+        {
+            await AssertTranslation(
+                @"
+sealed class JsNumber
+{
+    // Comparison operators
+    public static bool operator ==(JsNumber x, JsNumber y) { return false; }
+    public static bool operator !=(JsNumber x, JsNumber y) { return false; }
+    public static bool operator <(JsNumber x, JsNumber y) { return false; }
+    public static bool operator <=(JsNumber x, JsNumber y) { return false; }
+    public static bool operator >(JsNumber x, JsNumber y) { return false; }
+    public static bool operator >=(JsNumber x, JsNumber y) { return false; }
+}",
+                @"
+class JsNumber {
+  public static op_Equality(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+
+  public static op_Inequality(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+
+  public static op_LessThan(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+
+  public static op_LessThanOrEqual(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+
+  public static op_GreaterThan(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+
+  public static op_GreaterThanOrEqual(x: JsNumber, y: JsNumber): boolean {
+    return false;
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_conversion_operator_declarations()
+        {
+            await AssertTranslation(
+                @"
+sealed class JsNumber
+{
+    // Explicit and Implicit conversion operators
+    public static explicit operator int(JsNumber x) { return 0; }
+    public static implicit operator double(JsNumber x) { return 0.0; }
+}",
+                @"
+class JsNumber {
+  public static op_Explicit(x: JsNumber): number {
+    return 0;
+  }
+
+  public static op_Implicit(x: JsNumber): number {
+    return 0;
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_should_skip_operator_declarations_marked_with_InlineCode()
+        {
+            await AssertTranslation(
+                @"
+sealed class JsNumber
+{
+    [InlineCode(""{x} + {y}"")]
+    public static JsNumber operator +(JsNumber x, JsNumber y) { return new JsNumber(); }
+
+    [InlineCode(""{x}"")]
+    public static implicit operator double(JsNumber x) { return 0; }
+}",
+                @"
+class JsNumber {
 }
 ");
         }

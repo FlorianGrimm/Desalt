@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -538,6 +539,172 @@ namespace Desalt.Core.Translation
                 accessorDeclaration = AddDocumentationComment(accessorDeclaration, node);
                 yield return accessorDeclaration;
             }
+        }
+
+        //// ===========================================================================================================
+        //// Operator Overloads
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a OperatorDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsFunctionMemberDeclaration"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+        {
+            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
+
+            if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
+            {
+                ReportUnsupportedTranslation(
+                    DiagnosticFactory.InternalError(
+                        $"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.",
+                        node.GetLocation()));
+                yield break;
+            }
+
+            // If the method is decorated with [InlineCode], then we don't need to declare it.
+            if (scriptMethodSymbol.InlineCode != null)
+            {
+                yield break;
+            }
+
+            ITsIdentifier functionName = TranslateOperatorFunctionName(node);
+
+            // Create the call signature.
+            ITsCallSignature callSignature = TranslateCallSignature(
+                node.ParameterList,
+                returnTypeNode: node.ReturnType,
+                methodSymbol: methodSymbol);
+
+            // A function body can be null in the case of an 'extern' declaration.
+            ITsBlockStatement? functionBody = null;
+            if (node.Body != null)
+            {
+                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+            }
+
+            TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
+
+            ITsFunctionMemberDeclaration translated = Factory.FunctionMemberDeclaration(
+                functionName,
+                callSignature,
+                accessibilityModifier,
+                methodSymbol.IsStatic,
+                methodSymbol.IsAbstract,
+                functionBody?.Statements);
+
+            translated = AddDocumentationComment(translated, node);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a ConversionOperatorDeclarationSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsFunctionMemberDeclaration"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+        {
+            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
+
+            if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
+            {
+                ReportUnsupportedTranslation(
+                    DiagnosticFactory.InternalError(
+                        $"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.",
+                        node.GetLocation()));
+                yield break;
+            }
+
+            // If the method is decorated with [InlineCode], then we don't need to declare it.
+            if (scriptMethodSymbol.InlineCode != null)
+            {
+                yield break;
+            }
+
+            ITsIdentifier functionName = node.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ExplicitKeyword)
+                ? Factory.Identifier(_renameRules.OperatorOverloadMethodNames[OperatorOverloadKind.Explicit])
+                : Factory.Identifier(_renameRules.OperatorOverloadMethodNames[OperatorOverloadKind.Implicit]);
+
+            // Create the call signature.
+            ITsCallSignature callSignature = TranslateCallSignature(
+                node.ParameterList,
+                returnTypeNode: node.Type,
+                methodSymbol: methodSymbol);
+
+            // A function body can be null in the case of an 'extern' declaration.
+            ITsBlockStatement? functionBody = null;
+            if (node.Body != null)
+            {
+                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+            }
+
+            TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
+
+            ITsFunctionMemberDeclaration translated = Factory.FunctionMemberDeclaration(
+                functionName,
+                callSignature,
+                accessibilityModifier,
+                methodSymbol.IsStatic,
+                methodSymbol.IsAbstract,
+                functionBody?.Statements);
+
+            translated = AddDocumentationComment(translated, node);
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Translates an operator declaration function name.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private ITsIdentifier TranslateOperatorFunctionName(OperatorDeclarationSyntax node)
+        {
+            bool isUnary = node.ParameterList.Parameters.Count == 1;
+            OperatorOverloadKind? overloadKind = node.OperatorToken.Kind() switch
+            {
+                SyntaxKind.PlusToken when isUnary => OperatorOverloadKind.UnaryPlus,
+                SyntaxKind.MinusToken when isUnary => OperatorOverloadKind.UnaryNegation,
+                SyntaxKind.ExclamationToken => OperatorOverloadKind.LogicalNot,
+                SyntaxKind.TildeToken => OperatorOverloadKind.OnesComplement,
+                SyntaxKind.PlusPlusToken => OperatorOverloadKind.Increment,
+                SyntaxKind.MinusMinusToken => OperatorOverloadKind.Decrement,
+                SyntaxKind.TrueKeyword => OperatorOverloadKind.True,
+                SyntaxKind.FalseKeyword => OperatorOverloadKind.False,
+                SyntaxKind.PlusToken => OperatorOverloadKind.Addition,
+                SyntaxKind.MinusToken => OperatorOverloadKind.Subtraction,
+                SyntaxKind.AsteriskToken => OperatorOverloadKind.Multiplication,
+                SyntaxKind.SlashToken => OperatorOverloadKind.Division,
+                SyntaxKind.PercentToken => OperatorOverloadKind.Modulus,
+                SyntaxKind.AmpersandToken => OperatorOverloadKind.BitwiseAnd,
+                SyntaxKind.BarToken => OperatorOverloadKind.BitwiseOr,
+                SyntaxKind.CaretToken => OperatorOverloadKind.BitwiseXor,
+                SyntaxKind.LessThanLessThanToken => OperatorOverloadKind.LeftShift,
+                SyntaxKind.GreaterThanGreaterThanToken => OperatorOverloadKind.RightShift,
+                SyntaxKind.EqualsEqualsToken => OperatorOverloadKind.Equality,
+                SyntaxKind.ExclamationEqualsToken => OperatorOverloadKind.Inequality,
+                SyntaxKind.LessThanToken => OperatorOverloadKind.LessThan,
+                SyntaxKind.LessThanEqualsToken => OperatorOverloadKind.LessThanEquals,
+                SyntaxKind.GreaterThanToken => OperatorOverloadKind.GreaterThan,
+                SyntaxKind.GreaterThanEqualsToken => OperatorOverloadKind.GreaterThanEquals,
+                _ => null,
+            };
+
+            if (overloadKind == null)
+            {
+                _diagnostics.Add(DiagnosticFactory.OperatorDeclarationNotSupported(node));
+                return Factory.Identifier("op_ERROR");
+            }
+
+            if (!_renameRules.OperatorOverloadMethodNames.TryGetValue(overloadKind.Value, out string functionName))
+            {
+                ReportUnsupportedTranslation(
+                    DiagnosticFactory.InternalError(
+                        $"Operator overload function name not defined for {overloadKind}",
+                        node.GetLocation()));
+
+                return Factory.Identifier("op_ERROR");
+            }
+
+            return Factory.Identifier(functionName);
         }
     }
 }

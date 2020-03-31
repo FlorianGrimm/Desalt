@@ -163,6 +163,12 @@ namespace Desalt.Core.Diagnostics
                 "Getter and setter accessors do not agree in visibility",
                 "Getter and setter accessors for property '{0}' do not agree in visibility.")]
             GetterAndSetterAccessorsDoNotAgreeInVisibility,
+
+            [Error(
+                1029,
+                "TypeScript translation does not understand C# operator declaration type",
+                "C# operator declaration of kind '{0}' not supported: {1}")]
+            OperatorDeclarationNotSupported,
         }
 
         //// ===========================================================================================================
@@ -498,6 +504,20 @@ namespace Desalt.Core.Diagnostics
         public static Diagnostic GetterAndSetterAccessorsDoNotAgreeInVisibility(string propertyName, Location location)
         {
             return Create(DiagnosticId.GetterAndSetterAccessorsDoNotAgreeInVisibility, location, propertyName);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# operator declaration of kind '{0}' not supported: {1}".
+        /// </summary>
+        /// <param name="node">The unsupported syntax token.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic OperatorDeclarationNotSupported(OperatorDeclarationSyntax node)
+        {
+            return Create(
+                DiagnosticId.OperatorDeclarationNotSupported,
+                node.GetLocation(),
+                node.OperatorToken.Kind(),
+                node);
         }
     }
 }
