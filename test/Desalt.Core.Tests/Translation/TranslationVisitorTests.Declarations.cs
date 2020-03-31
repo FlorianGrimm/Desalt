@@ -7,7 +7,11 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System.Linq;
     using System.Threading.Tasks;
+    using Desalt.Core.Diagnostics;
+    using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using NUnit.Framework;
 
     public partial class TranslationVisitorTests
@@ -277,14 +281,11 @@ class A {
 class A
 {
     public static int StaticProp { get; set; }
-    public string GetOnly { get; private set; }
     public string GetAndSet { get; set; }
 }",
                 @"
 class A {
   private static _$staticPropField: number;
-
-  private _$getOnlyField: string;
 
   private _$getAndSetField: string;
 
@@ -294,14 +295,6 @@ class A {
 
   public static set staticProp(value: number) {
     A._$staticPropField = value;
-  }
-
-  public get getOnly(): string {
-    return this._$getOnlyField;
-  }
-
-  private set getOnly(value: string) {
-    this._$getOnlyField = value;
   }
 
   public get getAndSet(): string {
@@ -334,6 +327,103 @@ interface I {
   getAndSet: number;
 }
 ");
+        }
+
+        [Test]
+        public async Task
+            Translate_should_choose_the_most_visible_accessor_when_differing_visibility_for_property_declarations()
+        {
+            await AssertTranslationHasDiagnostics(
+                @"
+class A
+{
+    public int PublicProtected { get; protected set; }
+    public int PublicPrivate { get; private set; }
+    protected int ProtectedPrivate { get; private set; }
+    public int PrivatePublic { private get; set; }
+    protected int PrivateProtected { private get; set; }
+}
+",
+                @"
+class A {
+  private _$publicProtectedField: number;
+
+  private _$publicPrivateField: number;
+
+  private _$protectedPrivateField: number;
+
+  private _$privatePublicField: number;
+
+  private _$privateProtectedField: number;
+
+  public get publicProtected(): number {
+    return this._$publicProtectedField;
+  }
+
+  public set publicProtected(value: number) {
+    this._$publicProtectedField = value;
+  }
+
+  public get publicPrivate(): number {
+    return this._$publicPrivateField;
+  }
+
+  public set publicPrivate(value: number) {
+    this._$publicPrivateField = value;
+  }
+
+  protected get protectedPrivate(): number {
+    return this._$protectedPrivateField;
+  }
+
+  protected set protectedPrivate(value: number) {
+    this._$protectedPrivateField = value;
+  }
+
+  public get privatePublic(): number {
+    return this._$privatePublicField;
+  }
+
+  public set privatePublic(value: number) {
+    this._$privatePublicField = value;
+  }
+
+  protected get privateProtected(): number {
+    return this._$privateProtectedField;
+  }
+
+  protected set privateProtected(value: number) {
+    this._$privateProtectedField = value;
+  }
+}
+",
+                diagnostics =>
+                {
+                    diagnostics.Select(x => x.Id)
+                        .Should()
+                        .OnlyContain(
+                            id => id ==
+                                DiagnosticFactory
+                                    .GetterAndSetterAccessorsDoNotAgreeInVisibility("nothing", Location.None)
+                                    .Id);
+
+                    var propertyNamesFromErrors = from d in diagnostics
+                                                  let message = d.ToString()
+                                                  let tickIndex = message.IndexOf('\'')
+                                                  let propertyName = message.Substring(
+                                                      tickIndex + 1,
+                                                      message.LastIndexOf('\'') - tickIndex - 1)
+                                                  select propertyName;
+
+                    propertyNamesFromErrors.Should()
+                        .HaveCount(5)
+                        .And.ContainInOrder(
+                            "PublicProtected",
+                            "PublicPrivate",
+                            "ProtectedPrivate",
+                            "PrivatePublic",
+                            "PrivateProtected");
+                });
         }
     }
 }

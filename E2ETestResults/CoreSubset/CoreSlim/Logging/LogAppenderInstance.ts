@@ -24,7 +24,7 @@ export class LogAppenderInstance<T> {
     return this._$instanceField;
   }
 
-  private set instance(value: T) {
+  public set instance(value: T) {
     this._$instanceField = value;
   }
 

@@ -438,9 +438,25 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
+            // If the properties differ in accessibility, use the most visible (public/private => public). TypeScript
+            // doesn't support differing levels of accessibility for properties.
+            var accessibilities = node.AccessorList.Accessors.Select(GetAccessibilityModifier)
+                .Distinct()
+                .OrderBy(x => x, AccessibilityModifierComparer.MostVisibleToLeastVisible)
+                .ToArray();
+
+            if (accessibilities.Length > 1)
+            {
+                _diagnostics.Add(
+                    DiagnosticFactory.GetterAndSetterAccessorsDoNotAgreeInVisibility(
+                        node.Identifier.Text,
+                        node.GetLocation()));
+            }
+
+            TsAccessibilityModifier accessibilityModifier = accessibilities[0];
+
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
-                TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(accessor);
                 bool isGetter = accessor.Kind() == SyntaxKind.GetAccessorDeclaration;
 
                 // If there's no body, it can mean one of two things:

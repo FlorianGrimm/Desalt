@@ -20,7 +20,7 @@ namespace Desalt.Core.Diagnostics
     /// cref="CompilerOptions"/>. This is not thread-safe and designed to be used within a single
     /// thread to gather diagnostics for the running task.
     /// </summary>
-    internal sealed class DiagnosticList : ICollection<Diagnostic>
+    internal sealed class DiagnosticList : ICollection<Diagnostic>, IReadOnlyCollection<Diagnostic>
     {
         //// ===========================================================================================================
         //// Member Variables
