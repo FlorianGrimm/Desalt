@@ -270,6 +270,10 @@ namespace Desalt.Core.Translation
             return fieldDeclarations;
         }
 
+        //// ===========================================================================================================
+        //// Methods and Constructors
+        //// ===========================================================================================================
+
         /// <summary>
         /// Called when the visitor visits a MethodDeclarationSyntax node.
         /// </summary>
@@ -279,10 +283,10 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
 
             // If the method is decorated with [InlineCode] or [ScriptSkip] then we shouldn't output the declaration.
-            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
                 (scriptMethodSymbol.InlineCode != null || scriptMethodSymbol.ScriptSkip))
             {
                 yield break;
@@ -290,15 +294,15 @@ namespace Desalt.Core.Translation
 
             ITsIdentifier functionName = TranslateDeclarationIdentifier(node);
 
-            // create the call signature
+            // Create the call signature.
             ITsCallSignature callSignature = TranslateCallSignature(
                 node.ParameterList,
                 node.TypeParameterList,
                 node.ReturnType,
-                symbol);
+                methodSymbol);
 
-            // if we're defining an interface, then we need to return a ITsMethodSignature
-            if (symbol.ContainingType.IsInterfaceType())
+            // If we're defining an interface, then we need to return a ITsMethodSignature.
+            if (methodSymbol.ContainingType.IsInterfaceType())
             {
                 ITsMethodSignature methodSignature = Factory.MethodSignature(
                     functionName,
@@ -309,21 +313,18 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
-            // a function body can be null in the case of an 'extern' declaration.
-            ITsBlockStatement? functionBody = null;
-            if (node.Body != null)
-            {
-                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
-            }
+            ITsBlockStatement? functionBody = TranslateFunctionBody(
+                node,
+                methodSymbol.ReturnType.SpecialType == SpecialType.System_Void);
 
-            // we're within a class, so return a method declaration
+            // We're within a class, so return a method declaration.
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             ITsFunctionMemberDeclaration methodDeclaration = Factory.FunctionMemberDeclaration(
                 functionName,
                 callSignature,
                 accessibilityModifier,
-                symbol.IsStatic,
-                symbol.IsAbstract,
+                methodSymbol.IsStatic,
+                methodSymbol.IsAbstract,
                 functionBody?.Statements);
 
             methodDeclaration = AddDocumentationComment(methodDeclaration, node);
@@ -339,11 +340,11 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            IMethodSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
 
             // If the method is decorated with [InlineCode] then we shouldn't output the declaration (for [ScriptSkip]
             // we still output the declaration, but won't output any invocations).
-            if (_scriptSymbolTable.TryGetValue(symbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
                 scriptMethodSymbol.InlineCode != null)
             {
                 yield break;
@@ -351,7 +352,8 @@ namespace Desalt.Core.Translation
 
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
             var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
-            var functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+
+            ITsBlockStatement? functionBody = TranslateFunctionBody(node, isVoidReturn: true);
 
             ITsClassElement translated;
             if (node.Modifiers.Any(SyntaxKind.StaticKeyword))
@@ -361,7 +363,7 @@ namespace Desalt.Core.Translation
                     Factory.CallSignature(),
                     TsAccessibilityModifier.Public,
                     isStatic: true,
-                    functionBody: functionBody.Statements);
+                    functionBody: functionBody?.Statements);
 
                 translated = translated.WithLeadingTrivia(
                     Factory.SingleLineComment(
@@ -373,12 +375,35 @@ namespace Desalt.Core.Translation
                 translated = Factory.ConstructorDeclaration(
                     accessibilityModifier,
                     parameterList,
-                    functionBody.Statements);
+                    functionBody?.Statements);
             }
 
             translated = AddDocumentationComment(translated, node);
             yield return translated;
         }
+
+        private ITsBlockStatement? TranslateFunctionBody(BaseMethodDeclarationSyntax node, bool isVoidReturn)
+        {
+            ITsBlockStatement? functionBody = null;
+
+            // A function body can be null in the case of an 'extern' declaration.
+            if (node.Body != null)
+            {
+                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+            }
+            // This is for arrow expressions of the form `method() => x`
+            else if (node.ExpressionBody != null)
+            {
+                var bodyExpression = (ITsExpression)Visit(node.ExpressionBody).Single();
+                functionBody = isVoidReturn ? bodyExpression.ToBlock() : Factory.Return(bodyExpression).ToBlock();
+            }
+
+            return functionBody;
+        }
+
+        //// ===========================================================================================================
+        //// Property Declarations
+        //// ===========================================================================================================
 
         /// <summary>
         /// Called when the visitor visits a PropertyDeclarationSyntax node.
@@ -399,19 +424,6 @@ namespace Desalt.Core.Translation
                 node.Type.GetLocation);
             IPropertySymbol propertySymbol = _semanticModel.GetDeclaredSymbol(node);
 
-            bool isStatic = propertySymbol.IsStatic;
-            bool isAbstract = propertySymbol.IsAbstract;
-            bool isWithinInterface = propertySymbol.ContainingType.IsInterfaceType();
-
-            if (node.AccessorList == null)
-            {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        "When can a property declaration have a null accessor list?",
-                        node.GetLocation()));
-                yield break;
-            }
-
             // If the property is marked with [IntrinsicProperty], don't write out the declaration.
             if (!_scriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
             {
@@ -423,6 +435,34 @@ namespace Desalt.Core.Translation
 
             if (scriptPropertySymbol!.IntrinsicProperty)
             {
+                yield break;
+            }
+
+            bool isStatic = propertySymbol.IsStatic;
+            bool isAbstract = propertySymbol.IsAbstract;
+            bool isWithinInterface = propertySymbol.ContainingType.IsInterfaceType();
+
+            // Do a quick translation if the property has an arrow expression clause of the form: `Prop => value`. This
+            // represents a get-only property with an explicit body.
+            if (node.ExpressionBody != null)
+            {
+                var bodyExpression = (ITsExpression)Visit(node.ExpressionBody).Single();
+                TsAccessibilityModifier modifier = GetAccessibilityModifier(propertySymbol, node.GetLocation);
+                yield return Factory.GetAccessorMemberDeclaration(
+                    Factory.GetAccessor(propertyName, propertyType, Factory.Return(bodyExpression)),
+                    modifier,
+                    isStatic,
+                    isAbstract);
+                yield break;
+            }
+
+            if (node.AccessorList == null)
+            {
+                ReportUnsupportedTranslation(
+                    DiagnosticFactory.InternalError(
+                        "A property declaration with a null accessor list should have an expression body.",
+                        node.GetLocation()));
+
                 yield break;
             }
 
@@ -459,16 +499,16 @@ namespace Desalt.Core.Translation
             foreach (AccessorDeclarationSyntax accessor in node.AccessorList.Accessors)
             {
                 bool isGetter = accessor.Kind() == SyntaxKind.GetAccessorDeclaration;
-
-                // If there's no body, it can mean one of two things:
-                // 1) It's a property declaration in an interface (which cannot have a body)
-                // 2) It's an auto-generated property, so the compiler needs to generate a backing field.
-
                 ITsBlockStatement functionBody;
 
                 if (accessor.Body != null)
                 {
                     functionBody = (ITsBlockStatement)Visit(accessor.Body).Single();
+                }
+                else if (accessor.ExpressionBody != null)
+                {
+                    var bodyExpression = (ITsExpression)Visit(accessor.ExpressionBody).Single();
+                    functionBody = isGetter ? Factory.Return(bodyExpression).ToBlock() : bodyExpression.ToBlock();
                 }
                 else
                 {
@@ -576,12 +616,9 @@ namespace Desalt.Core.Translation
                 returnTypeNode: node.ReturnType,
                 methodSymbol: methodSymbol);
 
-            // A function body can be null in the case of an 'extern' declaration.
-            ITsBlockStatement? functionBody = null;
-            if (node.Body != null)
-            {
-                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
-            }
+            ITsBlockStatement? functionBody = TranslateFunctionBody(
+                node,
+                methodSymbol.ReturnType.SpecialType == SpecialType.System_Void);
 
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
 
@@ -630,12 +667,9 @@ namespace Desalt.Core.Translation
                 returnTypeNode: node.Type,
                 methodSymbol: methodSymbol);
 
-            // A function body can be null in the case of an 'extern' declaration.
-            ITsBlockStatement? functionBody = null;
-            if (node.Body != null)
-            {
-                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
-            }
+            ITsBlockStatement? functionBody = TranslateFunctionBody(
+                node,
+                methodSymbol.ReturnType.SpecialType == SpecialType.System_Void);
 
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
 

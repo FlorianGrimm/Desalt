@@ -169,6 +169,56 @@ class C extends B implements IA, IC {
         //// ===========================================================================================================
 
         [Test]
+        public async Task Translate_should_accept_arrow_expression_clauses_for_the_method_body()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    private int i;
+
+    public int ReturnNum() => 100;
+    public void NoReturn() => i++;
+}
+",
+                @"
+class A {
+  private i: number;
+
+  public returnNum(): number {
+    return 100;
+  }
+
+  public noReturn(): void {
+    this.i++;
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_should_accept_arrow_expression_clauses_for_the_ctor_body()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    private readonly int _x;
+    public A(int x) => _x = x;
+}
+",
+                @"
+class A {
+  private readonly _x: number;
+
+  public constructor(x: number) {
+    this._x = x;
+  }
+}
+");
+        }
+
+        [Test]
         public async Task Translate_should_rename_overloaded_method_declarations()
         {
             await AssertTranslation(
@@ -273,6 +323,38 @@ class A {
 
   public set getAndSet(value: number) {
     this._x = value;
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Translate_should_accept_arrow_expression_clauses_for_the_property_bodies()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    public int PropGet => 100;
+    public int PropGetAndSet
+    {
+        get => 200;
+        set => value = value;
+    }
+}
+",
+                @"
+class A {
+  public get propGet(): number {
+    return 100;
+  }
+
+  public get propGetAndSet(): number {
+    return 200;
+  }
+
+  public set propGetAndSet(value: number) {
+    value = value;
   }
 }
 ");
@@ -469,14 +551,14 @@ class A {
 sealed class JsNumber
 {
     // Unary operators
-    public static JsNumber operator +(JsNumber x) { return new JsNumber(); }
-    public static JsNumber operator -(JsNumber x) { return new JsNumber(); }
-    public static JsNumber operator !(JsNumber x) { return new JsNumber(); }
-    public static JsNumber operator ~(JsNumber x) { return new JsNumber(); }
-    public static JsNumber operator ++(JsNumber x) { return new JsNumber(); }
-    public static JsNumber operator --(JsNumber x) { return new JsNumber(); }
-    public static bool operator true(JsNumber x) { return true; }
-    public static bool operator false(JsNumber x) { return false; }
+    public static JsNumber operator +(JsNumber x) => new JsNumber();
+    public static JsNumber operator -(JsNumber x) => new JsNumber();
+    public static JsNumber operator !(JsNumber x) => new JsNumber();
+    public static JsNumber operator ~(JsNumber x) => new JsNumber();
+    public static JsNumber operator ++(JsNumber x) => new JsNumber();
+    public static JsNumber operator --(JsNumber x) => new JsNumber();
+    public static bool operator true(JsNumber x) => true;
+    public static bool operator false(JsNumber x) => false;
 }",
                 @"
 class JsNumber {
@@ -523,16 +605,16 @@ class JsNumber {
 sealed class JsNumber
 {
     // Binary operators
-    public static JsNumber operator +(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator -(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator *(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator /(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator %(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator &(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator |(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator ^(JsNumber x, JsNumber y) { return new JsNumber(); }
-    public static JsNumber operator <<(JsNumber x, int y) { return new JsNumber(); }
-    public static JsNumber operator >>(JsNumber x, int y) { return new JsNumber(); }
+    public static JsNumber operator +(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator -(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator *(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator /(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator %(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator &(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator |(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator ^(JsNumber x, JsNumber y) => new JsNumber();
+    public static JsNumber operator <<(JsNumber x, int y) => new JsNumber();
+    public static JsNumber operator >>(JsNumber x, int y) => new JsNumber();
 }",
                 @"
 class JsNumber {
@@ -587,12 +669,12 @@ class JsNumber {
 sealed class JsNumber
 {
     // Comparison operators
-    public static bool operator ==(JsNumber x, JsNumber y) { return false; }
-    public static bool operator !=(JsNumber x, JsNumber y) { return false; }
-    public static bool operator <(JsNumber x, JsNumber y) { return false; }
-    public static bool operator <=(JsNumber x, JsNumber y) { return false; }
-    public static bool operator >(JsNumber x, JsNumber y) { return false; }
-    public static bool operator >=(JsNumber x, JsNumber y) { return false; }
+    public static bool operator ==(JsNumber x, JsNumber y) => false;
+    public static bool operator !=(JsNumber x, JsNumber y) => false;
+    public static bool operator <(JsNumber x, JsNumber y) => false;
+    public static bool operator <=(JsNumber x, JsNumber y) => false;
+    public static bool operator >(JsNumber x, JsNumber y) => false;
+    public static bool operator >=(JsNumber x, JsNumber y) => false;
 }",
                 @"
 class JsNumber {
@@ -631,8 +713,8 @@ class JsNumber {
 sealed class JsNumber
 {
     // Explicit and Implicit conversion operators
-    public static explicit operator int(JsNumber x) { return 0; }
-    public static implicit operator double(JsNumber x) { return 0.0; }
+    public static explicit operator int(JsNumber x) => 0;
+    public static implicit operator double(JsNumber x) => 0.0;
 }",
                 @"
 class JsNumber {

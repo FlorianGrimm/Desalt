@@ -161,6 +161,16 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Called when the visitor visits a ArrowExpressionClauseSyntax node, which is the right side of the arrow in a
+        /// property or method body expression.
+        /// </summary>
+        /// <returns>An <see cref="ITsExpression"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitArrowExpressionClause(ArrowExpressionClauseSyntax node)
+        {
+            yield return (ITsExpression)Visit(node.Expression).Single();
+        }
+
+        /// <summary>
         /// Called when the visitor visits a ReturnStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsReturnStatement"/>.</returns>
