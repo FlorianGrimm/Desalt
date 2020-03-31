@@ -425,5 +425,31 @@ class A {
                             "PrivateProtected");
                 });
         }
+
+        [Test]
+        public async Task Translate_should_not_emit_declarations_for_IntrinsicProperty_properties()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    [IntrinsicProperty]
+    int Prop { get; set; }
+}
+
+class A
+{
+    [IntrinsicProperty]
+    private int Prop { get; set; }
+}
+",
+                @"
+interface I {
+}
+
+class A {
+}
+");
+        }
     }
 }

@@ -425,6 +425,20 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
+            // If the property is marked with [IntrinsicProperty], don't write out the declaration.
+            if (!_scriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
+            {
+                ReportUnsupportedTranslation(
+                    DiagnosticFactory.InternalError(
+                        $"We should have a script symbol for property '{node.Identifier.Text}'",
+                        node.GetLocation()));
+            }
+
+            if (scriptPropertySymbol!.IntrinsicProperty)
+            {
+                yield break;
+            }
+
             // Property declarations within interfaces don't have a body and are a different translation type
             // (ITsPropertySignature). We only need to create a single property signature for both the getter and setter.
             if (isWithinInterface)
