@@ -52,6 +52,7 @@ namespace Desalt.Core.CompilerStages
                         "BaseLogAppender.cs",
                         "BootstrapResponse.cs",
                         "ConsoleLogAppender.cs",
+                        "CssDictionary.cs",
                         "DoubleUtil.cs",
                         "ErrorTrace.cs",
                         "FeatureFlags.cs",
