@@ -442,7 +442,7 @@ namespace Desalt.Core.Translation
         }
 
         //// ===========================================================================================================
-        //// Assignments, Conditional, Unary, and Binary Expressions
+        //// Assignments and Conditional Expressions
         //// ===========================================================================================================
 
         /// <summary>
@@ -474,6 +474,10 @@ namespace Desalt.Core.Translation
             ITsConditionalExpression translated = Factory.Conditional(condition, whenTrue, whenFalse);
             yield return translated;
         }
+
+        //// ===========================================================================================================
+        //// Unary Expressions
+        //// ===========================================================================================================
 
         /// <summary>
         /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
@@ -533,6 +537,50 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
+        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
+        {
+            TsUnaryOperator? op = operatorToken.Kind() switch
+            {
+                SyntaxKind.PlusPlusToken => asPrefix
+                    ? TsUnaryOperator.PrefixIncrement
+                    : TsUnaryOperator.PostfixIncrement,
+                SyntaxKind.MinusMinusToken => asPrefix
+                    ? TsUnaryOperator.PrefixDecrement
+                    : TsUnaryOperator.PostfixDecrement,
+                SyntaxKind.PlusToken => TsUnaryOperator.Plus,
+                SyntaxKind.MinusToken => TsUnaryOperator.Minus,
+                SyntaxKind.TildeToken => TsUnaryOperator.BitwiseNot,
+                SyntaxKind.ExclamationToken => TsUnaryOperator.LogicalNot,
+                _ => null,
+            };
+
+            if (op == null)
+            {
+                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                op = TsUnaryOperator.Plus;
+            }
+
+            return op.Value;
+        }
+
+        private static OperatorOverloadKind? MethodNameToOperatorOverloadKind(string methodName)
+        {
+            return methodName switch
+            {
+                "op_Decrement" => OperatorOverloadKind.Decrement,
+                "op_Increment" => OperatorOverloadKind.Increment,
+                "op_LogicalNot" => OperatorOverloadKind.LogicalNot,
+                "op_OnesComplement" => OperatorOverloadKind.OnesComplement,
+                "op_UnaryPlus" => OperatorOverloadKind.UnaryPlus,
+                "op_UnaryNegation" => OperatorOverloadKind.UnaryNegation,
+                _ => null
+            };
+        }
+
+        //// ===========================================================================================================
+        //// Binary Expressions
+        //// ===========================================================================================================
+
         /// <summary>
         /// Called when the visitor visits a BinaryExpressionSyntax node.
         /// </summary>
@@ -576,32 +624,6 @@ namespace Desalt.Core.Translation
             return op.Value;
         }
 
-        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
-        {
-            TsUnaryOperator? op = operatorToken.Kind() switch
-            {
-                SyntaxKind.PlusPlusToken => asPrefix
-                    ? TsUnaryOperator.PrefixIncrement
-                    : TsUnaryOperator.PostfixIncrement,
-                SyntaxKind.MinusMinusToken => asPrefix
-                    ? TsUnaryOperator.PrefixDecrement
-                    : TsUnaryOperator.PostfixDecrement,
-                SyntaxKind.PlusToken => TsUnaryOperator.Plus,
-                SyntaxKind.MinusToken => TsUnaryOperator.Minus,
-                SyntaxKind.TildeToken => TsUnaryOperator.BitwiseNot,
-                SyntaxKind.ExclamationToken => TsUnaryOperator.LogicalNot,
-                _ => null,
-            };
-
-            if (op == null)
-            {
-                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                op = TsUnaryOperator.Plus;
-            }
-
-            return op.Value;
-        }
-
         private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
         {
             TsBinaryOperator? op = operatorToken.Kind() switch
@@ -635,20 +657,6 @@ namespace Desalt.Core.Translation
             }
 
             return op.Value;
-        }
-
-        private static OperatorOverloadKind? MethodNameToOperatorOverloadKind(string methodName)
-        {
-            return methodName switch
-            {
-                "op_Decrement" => OperatorOverloadKind.Decrement,
-                "op_Increment" => OperatorOverloadKind.Increment,
-                "op_LogicalNot" => OperatorOverloadKind.LogicalNot,
-                "op_OnesComplement" => OperatorOverloadKind.OnesComplement,
-                "op_UnaryPlus" => OperatorOverloadKind.UnaryPlus,
-                "op_UnaryNegation" => OperatorOverloadKind.UnaryNegation,
-                _ => null
-            };
         }
     }
 }
