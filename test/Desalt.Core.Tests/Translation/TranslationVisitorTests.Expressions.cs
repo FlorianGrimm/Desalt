@@ -280,6 +280,26 @@ class C {
         }
 
         //// ===========================================================================================================
+        //// Array Creation Expression Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task ArrayCreationExpression_with_an_initializer_should_work()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                "var arr = new int[] {1, 2, 3};",
+                "let arr: number[] = [1, 2, 3];");
+        }
+
+        [Test]
+        public async Task ArrayCreationExpression_with_no_initializer_should_work()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                "var arr = new int[0]; arr = new int[20]; arr = new int[1 + 10];",
+                "let arr: number[] = [];\n    arr = new Array(20);\n    arr = new Array(1 + 10);");
+        }
+
+        //// ===========================================================================================================
         //// Object Creation Expression Tests
         //// ===========================================================================================================
 

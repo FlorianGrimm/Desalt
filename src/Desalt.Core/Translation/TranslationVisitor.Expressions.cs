@@ -304,9 +304,42 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
         {
-            var arrayElements = Visit(node.Initializer).Cast<ITsExpression>();
-            ITsArrayLiteral translated = Factory.Array(arrayElements.ToArray());
-            yield return translated;
+            // Translate `new int[x]`
+            if (node.Initializer == null)
+            {
+                // TODO: Support multidimensional arrays `new int[x, y]` to `ss.multidimArray(0, x, y)`
+                if (node.Type.RankSpecifiers.Count > 1)
+                {
+                    ReportUnsupportedTranslation(
+                        DiagnosticFactory.MultidimensionalArraysNotSupported(node.GetLocation()));
+                    yield break;
+                }
+
+                var rankExpression = (ITsExpression)Visit(node.Type.RankSpecifiers[0].Sizes[0]).Single();
+
+                // Translate `new int[0]` to `[]`
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (rankExpression is ITsNumericLiteral literal && literal.Value == 0)
+                {
+                    ITsArrayLiteral translated = Factory.Array();
+                    yield return translated;
+                }
+                // Translate `new int[20]` to `new Array(20)`
+                else
+                {
+                    ITsNewCallExpression newArrayCall = Factory.NewCall(
+                        Factory.Identifier("Array"),
+                        Factory.ArgumentList(Factory.Argument(rankExpression)));
+                    yield return newArrayCall;
+                }
+            }
+            // Translate `new int[] { 1, 2, 3 }` to `[1, 2, 3]`
+            else
+            {
+                var arrayElements = Visit(node.Initializer).Cast<ITsExpression>();
+                var translated = Factory.Array(arrayElements.ToArray());
+                yield return translated;
+            }
         }
 
         /// <summary>
@@ -562,7 +595,6 @@ namespace Desalt.Core.Translation
             }
 
             return op.Value;
-            }
         }
     }
 }

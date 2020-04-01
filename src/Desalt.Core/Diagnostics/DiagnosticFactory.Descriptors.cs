@@ -164,8 +164,11 @@ namespace Desalt.Core.Diagnostics
                 "Getter and setter accessors for property '{0}' do not agree in visibility.")]
             GetterAndSetterAccessorsDoNotAgreeInVisibility,
 
+            [Error(1029, "Multidimensional arrays not supported", "Multidimensional arrays are currently not supported.")]
+            MultidimensionalArraysNotSupported,
+
             [Error(
-                1029,
+                1030,
                 "TypeScript translation does not understand C# operator declaration type",
                 "C# operator declaration of kind '{0}' not supported: {1}")]
             OperatorDeclarationNotSupported,
@@ -221,7 +224,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "C# syntax node of type '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic TranslationNotSupported(SyntaxNode node)
         {
             return Create(DiagnosticId.TranslationNotSupported, node.GetLocation(), node.GetType().Name, node);
@@ -231,7 +233,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "C# literal expression of kind '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported literal expression syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic LiteralExpressionTranslationNotSupported(LiteralExpressionSyntax node)
         {
             return Create(DiagnosticId.LiteralExpressionTranslationNotSupported, node.GetLocation(), node.Kind(), node);
@@ -241,7 +242,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "C# identifier node of type '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic IdentifierNotSupported(SyntaxNode node)
         {
             return Create(DiagnosticId.IdentifierNotSupported, node.GetLocation(), node.GetType().Name, node);
@@ -251,7 +251,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "C# operator token of kind '{0}' not supported: {1}".
         /// </summary>
         /// <param name="token">The unsupported syntax token.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic OperatorKindNotSupported(SyntaxToken token)
         {
             return Create(DiagnosticId.OperatorKindNotSupported, token.GetLocation(), token.Kind(), token);
@@ -320,7 +319,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "Element access with more than one expression is not supported: {0}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic ElementAccessWithMoreThanOneExpressionNotAllowed(BracketedArgumentListSyntax node)
         {
             return Create(DiagnosticId.ElementAccessWithMoreThanOneExpressionNotAllowed, node.GetLocation(), node);
@@ -330,7 +328,6 @@ namespace Desalt.Core.Diagnostics
         /// Returns a diagnostic of the form "Catch clauses with more than one parameter are not yet supported: {0}".
         /// </summary>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic CatchClausesWithMoreThanOneParameterNotYetSupported(SyntaxNode node)
         {
             return Create(DiagnosticId.CatchClausesWithMoreThanOneParameterNotYetSupported, node.GetLocation(), node);
@@ -341,7 +338,6 @@ namespace Desalt.Core.Diagnostics
         /// will be the same name in TypeScript. Please change one or the other name or add a
         /// [ScriptName] attribute to rename the compiled name.".
         /// </summary>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic ClassWithDuplicateFieldAndPropertyName(
             string className,
             string duplicateName,
@@ -373,7 +369,6 @@ namespace Desalt.Core.Diagnostics
         /// <param name="symbolName">The symbol containing the [InlineCode] attribute.</param>
         /// <param name="errorMessage">Details about the parsing error.</param>
         /// <param name="location">The associated location in the source code.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic InlineCodeParsingError(
             string inlineCode,
             string symbolName,
@@ -490,7 +485,6 @@ namespace Desalt.Core.Diagnostics
         /// </summary>
         /// <param name="methodName">The method that is incorrect.</param>
         /// <param name="location">The associated location in the source code.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic IncorrectScriptSkipUsage(string methodName, Location location)
         {
             return Create(DiagnosticId.IncorrectScriptSkipUsage, location, methodName);
@@ -507,10 +501,18 @@ namespace Desalt.Core.Diagnostics
         }
 
         /// <summary>
+        /// Returns a diagnostic of the form "Multidimensional arrays are currently not supported."
+        /// </summary>
+        /// <param name="location">The associated location in the source code.</param>
+        public static Diagnostic MultidimensionalArraysNotSupported(Location location)
+        {
+            return Create(DiagnosticId.MultidimensionalArraysNotSupported, location);
+        }
+
+        /// <summary>
         /// Returns a diagnostic of the form "C# operator declaration of kind '{0}' not supported: {1}".
         /// </summary>
         /// <param name="node">The unsupported syntax token.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic OperatorDeclarationNotSupported(OperatorDeclarationSyntax node)
         {
             return Create(

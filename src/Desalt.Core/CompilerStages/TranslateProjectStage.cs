@@ -13,7 +13,6 @@ namespace Desalt.Core.CompilerStages
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
@@ -45,40 +44,40 @@ namespace Desalt.Core.CompilerStages
             await Task.Yield();
 
             var results = input
-                // TODO: Remove this Where clause once enough language features are supported that we don't crash
-                .Where(
-                    context => context.Document.Name.IsOneOf(
-                        "AssemblyInfo.cs",
-                        "BaseLogAppender.cs",
-                        "BootstrapResponse.cs",
-                        "ConsoleLogAppender.cs",
-                        "CssDictionary.cs",
-                        "DoubleUtil.cs",
-                        "ErrorTrace.cs",
-                        "FeatureFlags.cs",
-                        "IBrowserViewport.cs",
-                        "ILogAppender.cs",
-                        "IWebClientMetricsLogger.cs",
-                        "jQueryExtensions.cs",
-                        "LogAppenderInstance.cs",
-                        "Logger.cs",
-                        "MetricsController.cs",
-                        "MetricsEvent.cs",
-                        "MetricsLogger.cs",
-                        "MiscUtil.cs",
-                        "NavigationMetricsCollector.cs",
-                        "Param.cs",
-                        "PerformanceReporting.cs",
-                        "Point.cs",
-                        "PointUtil.cs",
-                        "RecordCast.cs",
-                        "Rect.cs",
-                        "ScriptEx.cs",
-                        "Size.cs",
-                        "UriExtensions.cs",
-                        "Utility.cs",
-                        "WindowAppender.cs",
-                        "WindowHelper.cs"))
+                //// TODO: Remove this Where clause once enough language features are supported that we don't crash
+                //.Where(
+                //    context => context.Document.Name.IsOneOf(
+                //        "AssemblyInfo.cs",
+                //        "BaseLogAppender.cs",
+                //        "BootstrapResponse.cs",
+                //        "ConsoleLogAppender.cs",
+                //        "CssDictionary.cs",
+                //        "DoubleUtil.cs",
+                //        "ErrorTrace.cs",
+                //        "FeatureFlags.cs",
+                //        "IBrowserViewport.cs",
+                //        "ILogAppender.cs",
+                //        "IWebClientMetricsLogger.cs",
+                //        "jQueryExtensions.cs",
+                //        "LogAppenderInstance.cs",
+                //        "Logger.cs",
+                //        "MetricsController.cs",
+                //        "MetricsEvent.cs",
+                //        "MetricsLogger.cs",
+                //        "MiscUtil.cs",
+                //        "NavigationMetricsCollector.cs",
+                //        "Param.cs",
+                //        "PerformanceReporting.cs",
+                //        "Point.cs",
+                //        "PointUtil.cs",
+                //        "RecordCast.cs",
+                //        "Rect.cs",
+                //        "ScriptEx.cs",
+                //        "Size.cs",
+                //        "UriExtensions.cs",
+                //        "Utility.cs",
+                //        "WindowAppender.cs",
+                //        "WindowHelper.cs"))
                 .AsParallel()
                 .WithCancellation(cancellationToken)
                 .Select(context => TranslateDocument(context, cancellationToken))
