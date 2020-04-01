@@ -59,7 +59,7 @@ namespace Desalt.Core.Translation
                 ref methodSymbol,
                 ref leftSide,
                 ref arguments,
-                TranslateIdentifierName,
+                (ms, loc) => TranslateIdentifierName(ms, loc),
                 out Diagnostic? error);
             if (error != null)
             {

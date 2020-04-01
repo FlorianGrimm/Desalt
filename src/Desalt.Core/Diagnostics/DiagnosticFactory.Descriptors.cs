@@ -172,6 +172,12 @@ namespace Desalt.Core.Diagnostics
                 "TypeScript translation does not understand C# operator declaration type",
                 "C# operator declaration of kind '{0}' not supported: {1}")]
             OperatorDeclarationNotSupported,
+
+            [Error(
+                1031,
+                "TypeScript translation cannot invoke C# operator overload type",
+                "C# operator overload invocation of type '{0}' is not supported: {1}")]
+            OperatorOverloadInvocationNotSupported,
         }
 
         //// ===========================================================================================================
@@ -519,6 +525,24 @@ namespace Desalt.Core.Diagnostics
                 DiagnosticId.OperatorDeclarationNotSupported,
                 node.GetLocation(),
                 node.OperatorToken.Kind(),
+                node);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# operator overload invocation of type '{0}' is not
+        /// supported: {1}".
+        /// </summary>
+        /// <param name="overloadFunctionName">
+        /// The name of the overloaded operator function invocation (i.e. <c>op_Addition</c>.
+        /// </param>
+        /// <param name="node">The unsupported syntax node.</param>
+        /// <returns>A new <see cref="Diagnostic"/>.</returns>
+        public static Diagnostic OperatorOverloadInvocationNotSupported(string overloadFunctionName, SyntaxNode node)
+        {
+            return Create(
+                DiagnosticId.OperatorOverloadInvocationNotSupported,
+                node.GetLocation(),
+                overloadFunctionName,
                 node);
         }
     }

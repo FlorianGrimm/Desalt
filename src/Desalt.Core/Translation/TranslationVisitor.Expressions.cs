@@ -12,6 +12,7 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -182,10 +183,18 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="symbol">The symbol to translate.</param>
         /// <param name="nodeLocation">The start of the syntax node where this symbol was located.</param>
+        /// <param name="forcedScriptName">
+        /// If present, this name will be used instead of looking it up in the symbol table.
+        /// </param>
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
-        private ITsExpression TranslateIdentifierName(ISymbol symbol, Location nodeLocation)
+        private ITsExpression TranslateIdentifierName(
+            ISymbol symbol,
+            Location nodeLocation,
+            string? forcedScriptName = null)
         {
-            string scriptName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name);
+            ITsIdentifier scriptName = forcedScriptName != null
+                ? Factory.Identifier(forcedScriptName)
+                : symbol.GetScriptName(_scriptSymbolTable, symbol.Name);
 
             // Get the containing type of the symbol.
             INamedTypeSymbol? containingType = symbol.ContainingType;
@@ -205,10 +214,9 @@ namespace Desalt.Core.Translation
             // In TypeScript, static references need to be fully qualified with the type name.
             if (symbol.IsStatic && containingType != null)
             {
-                string containingTypeScriptName =
-                    _scriptSymbolTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
-
-                expression = Factory.MemberDot(Factory.Identifier(containingTypeScriptName), scriptName);
+                ITsIdentifier containingTypeScriptName =
+                    containingType.GetScriptName(_scriptSymbolTable, containingType.Name);
+                expression = Factory.MemberDot(containingTypeScriptName, scriptName);
             }
 
             // Add a "this." prefix if it's an instance symbol within our same type.
@@ -220,7 +228,7 @@ namespace Desalt.Core.Translation
             }
             else
             {
-                expression = Factory.Identifier(scriptName);
+                expression = scriptName;
             }
 
             // Add this type to the import list if it doesn't belong to us.
@@ -470,14 +478,46 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsUnaryExpression"/> or an <see cref="ITsCallExpression"/> if the unary
+        /// expression is backed by an overloaded operator function.
+        /// </returns>
         public override IEnumerable<ITsAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
             var operand = (ITsExpression)Visit(node.Operand).Single();
-            ITsUnaryExpression translated = Factory.UnaryExpression(
-                operand,
-                TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
-            yield return translated;
+
+            // See if this is actually a user-defined operator overload method call.
+            ISymbol? nodeSymbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            if (nodeSymbol is IMethodSymbol methodSymbol && methodSymbol.MethodKind == MethodKind.UserDefinedOperator)
+            {
+                OperatorOverloadKind? overloadKind = MethodNameToOperatorOverloadKind(methodSymbol.Name);
+                if (overloadKind == null)
+                {
+                    ReportUnsupportedTranslation(
+                        DiagnosticFactory.OperatorOverloadInvocationNotSupported(methodSymbol.Name, node));
+                    yield return Factory.Call(methodSymbol.GetScriptName(_scriptSymbolTable, "Error"));
+                    yield break;
+                }
+
+                // Get the translated name of the overload function.
+                string functionName = _renameRules.OperatorOverloadMethodNames[overloadKind.Value];
+
+                // The left side is what will become the argument to the overloaded operator method.
+                ITsExpression leftSide = TranslateIdentifierName(methodSymbol, node.GetLocation(), functionName);
+
+                // There should only be one argument.
+                ITsArgumentList arguments = Factory.ArgumentList(Factory.Argument(operand));
+
+                ITsCallExpression translated = Factory.Call(leftSide, arguments);
+                yield return translated;
+            }
+            else
+            {
+                ITsUnaryExpression translated = Factory.UnaryExpression(
+                    operand,
+                    TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
+                yield return translated;
+            }
         }
 
         /// <summary>
@@ -595,6 +635,20 @@ namespace Desalt.Core.Translation
             }
 
             return op.Value;
+        }
+
+        private static OperatorOverloadKind? MethodNameToOperatorOverloadKind(string methodName)
+        {
+            return methodName switch
+            {
+                "op_Decrement" => OperatorOverloadKind.Decrement,
+                "op_Increment" => OperatorOverloadKind.Increment,
+                "op_LogicalNot" => OperatorOverloadKind.LogicalNot,
+                "op_OnesComplement" => OperatorOverloadKind.OnesComplement,
+                "op_UnaryPlus" => OperatorOverloadKind.UnaryPlus,
+                "op_UnaryNegation" => OperatorOverloadKind.UnaryNegation,
+                _ => null
+            };
         }
     }
 }

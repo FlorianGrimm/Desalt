@@ -237,6 +237,11 @@ namespace Desalt.TypeScriptAst.Ast
             return TsMemberDotExpression.Create(leftSide, dotName);
         }
 
+        public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, ITsIdentifier dotName)
+        {
+            return TsMemberDotExpression.Create(leftSide, dotName.Text);
+        }
+
         public static ITsSuperBracketExpression SuperBracket(ITsExpression bracketContents)
         {
             return TsMemberBracketExpression.CreateSuper(bracketContents);

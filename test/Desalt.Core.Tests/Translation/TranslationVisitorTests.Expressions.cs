@@ -420,6 +420,75 @@ class C {
         }
 
         //// ===========================================================================================================
+        //// Overloaded Operator Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Invoking_overloaded_prefix_unary_operators_should_translate_correctly()
+        {
+            await AssertTranslation(
+                @"
+class Num
+{
+    public static Num operator +(Num x) => new Num();
+    public static Num operator -(Num x) => new Num();
+    public static Num operator !(Num x) => new Num();
+    public static Num operator ~(Num x) => new Num();
+    public static Num operator ++(Num x) => new Num();
+    public static Num operator --(Num x) => new Num();
+
+    public void Method()
+    {
+        var x = new Num();
+        x = +x;
+        x = -x;
+        x = !x;
+        x = ~x;
+        x = ++x;
+        x = --x;
+    }
+}",
+                @"
+class Num {
+  public static op_UnaryPlus(x: Num): Num {
+    return new Num();
+  }
+
+  public static op_UnaryNegation(x: Num): Num {
+    return new Num();
+  }
+
+  public static op_LogicalNot(x: Num): Num {
+    return new Num();
+  }
+
+  public static op_OnesComplement(x: Num): Num {
+    return new Num();
+  }
+
+  public static op_Increment(x: Num): Num {
+    return new Num();
+  }
+
+  public static op_Decrement(x: Num): Num {
+    return new Num();
+  }
+
+  public method(): void {
+    let x: Num = new Num();
+    x = Num.op_UnaryPlus(x);
+    x = Num.op_UnaryNegation(x);
+    x = Num.op_LogicalNot(x);
+    x = Num.op_OnesComplement(x);
+    x = Num.op_Increment(x);
+    x = Num.op_Decrement(x);
+  }
+}
+",
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
+        }
+
+        //// ===========================================================================================================
         //// Other Expression Types Tests
         //// ===========================================================================================================
 
