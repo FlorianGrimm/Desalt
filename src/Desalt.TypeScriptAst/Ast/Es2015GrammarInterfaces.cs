@@ -458,14 +458,14 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsCallExpression : ITsExpression
     {
         ITsExpression LeftSide { get; }
-        ITsArgumentList Arguments { get; }
+        ITsArgumentList ArgumentList { get; }
     }
 
     public interface ITsNewCallExpression : ITsCallExpression { }
 
     public interface ITsSuperCallExpression : ITsExpression
     {
-        ITsArgumentList Arguments { get; }
+        ITsArgumentList ArgumentList { get; }
     }
 
     public interface ITsArgumentList : ITsAstNode

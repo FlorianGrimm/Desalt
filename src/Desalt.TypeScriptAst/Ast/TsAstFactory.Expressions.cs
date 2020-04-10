@@ -252,19 +252,19 @@ namespace Desalt.TypeScriptAst.Ast
             return TsMemberDotExpression.CreateSuper(dotName);
         }
 
-        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList? arguments = null)
+        public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList? argumentList = null)
         {
-            return TsCallExpression.Create(leftSide, arguments);
+            return TsCallExpression.Create(leftSide, argumentList);
         }
 
-        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList? arguments = null)
+        public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList? argumentList = null)
         {
-            return TsCallExpression.CreateNew(leftSide, arguments);
+            return TsCallExpression.CreateNew(leftSide, argumentList);
         }
 
-        public static ITsSuperCallExpression SuperCall(ITsArgumentList arguments)
+        public static ITsSuperCallExpression SuperCall(ITsArgumentList argumentList)
         {
-            return TsCallExpression.CreateSuper(arguments);
+            return TsCallExpression.CreateSuper(argumentList);
         }
 
         public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false)
