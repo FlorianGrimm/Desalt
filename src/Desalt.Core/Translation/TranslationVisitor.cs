@@ -63,17 +63,16 @@ namespace Desalt.Core.Translation
         /// Initializes a new instance of the <see cref="TranslationVisitor"/> class.
         /// </summary>
         /// <param name="context">The context for the document translation.</param>
-        /// <param name="cancellationToken">An optional token to control canceling translation.</param>
         /// <param name="diagnostics">
-        /// An optional diagnostic collection to use for adding errors. This should normally not be
-        /// used since it could make this class not thread safe if access to the collection is not
-        /// guarded with thread locking mechanisms. No locking is done within this class. This is
-        /// used mainly for unit tests.
+        /// An optional diagnostic collection to use for adding errors. This should normally not be used since it could
+        /// make this class not thread safe if access to the collection is not guarded with thread locking mechanisms.
+        /// No locking is done within this class. This is used mainly for unit tests.
         /// </param>
+        /// <param name="cancellationToken">An optional token to control canceling translation.</param>
         public TranslationVisitor(
             DocumentTranslationContextWithSymbolTables context,
-            CancellationToken cancellationToken = default,
-            ICollection<Diagnostic>? diagnostics = null)
+            ICollection<Diagnostic>? diagnostics = null,
+            CancellationToken cancellationToken = default)
         {
             _cancellationToken = cancellationToken;
 
