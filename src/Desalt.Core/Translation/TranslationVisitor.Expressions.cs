@@ -82,8 +82,7 @@ namespace Desalt.Core.Translation
                     return Factory.Null.ToSingleEnumerable();
             }
 
-            Diagnostic diagnostic = DiagnosticFactory.LiteralExpressionTranslationNotSupported(node);
-            ReportUnsupportedTranslation(diagnostic);
+            _diagnostics.Add(DiagnosticFactory.LiteralExpressionTranslationNotSupported(node));
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -237,10 +236,7 @@ namespace Desalt.Core.Translation
                 ITypeSymbol? typeToImport = symbol as ITypeSymbol ?? containingType;
                 if (typeToImport == null)
                 {
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.InternalError(
-                            $"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'",
-                            node.GetLocation()));
+                    ReportInternalError($"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'", node);
                 }
                 else
                 {
@@ -318,8 +314,7 @@ namespace Desalt.Core.Translation
                 // TODO: Support multidimensional arrays `new int[x, y]` to `ss.multidimArray(0, x, y)`
                 if (node.Type.RankSpecifiers.Count > 1)
                 {
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.MultidimensionalArraysNotSupported(node.GetLocation()));
+                    _diagnostics.Add(DiagnosticFactory.MultidimensionalArraysNotSupported(node.GetLocation()));
                     yield break;
                 }
 
@@ -497,8 +492,7 @@ namespace Desalt.Core.Translation
                 UserDefinedOperatorKind? overloadKind = MethodNameToUserDefinedOperatorKind(methodSymbol.Name);
                 if (overloadKind == null)
                 {
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.OperatorOverloadInvocationNotSupported(methodSymbol.Name, node));
+                    _diagnostics.Add(DiagnosticFactory.OperatorOverloadInvocationNotSupported(methodSymbol.Name, node));
                     yield return Factory.Call(methodSymbol.GetScriptName(_scriptSymbolTable, "Error"));
                     yield break;
                 }
@@ -556,7 +550,7 @@ namespace Desalt.Core.Translation
 
             if (op == null)
             {
-                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                 op = TsUnaryOperator.Plus;
             }
 
@@ -617,7 +611,7 @@ namespace Desalt.Core.Translation
 
             if (op == null)
             {
-                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                 op = TsAssignmentOperator.SimpleAssign;
             }
 
@@ -652,7 +646,7 @@ namespace Desalt.Core.Translation
 
             if (op == null)
             {
-                ReportUnsupportedTranslation(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                 op = TsBinaryOperator.Add;
             }
 

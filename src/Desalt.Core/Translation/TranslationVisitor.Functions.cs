@@ -10,7 +10,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
@@ -42,10 +41,7 @@ namespace Desalt.Core.Translation
                 // For dynamic invocations, there isn't a symbol since the compiler can't tell what it is.
                 if (_semanticModel.GetTypeInfo(node).Type?.TypeKind != TypeKind.Dynamic)
                 {
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.InternalError(
-                            "Isn't an invocation always a method symbol?",
-                            node.GetLocation()));
+                    ReportInternalError("Isn't an invocation always a method symbol?", node);
                 }
 
                 yield return Factory.Call(leftSide, arguments);
@@ -63,7 +59,7 @@ namespace Desalt.Core.Translation
                 out Diagnostic? error);
             if (error != null)
             {
-                ReportUnsupportedTranslation(error);
+                _diagnostics.Add(error);
             }
 
             // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
@@ -149,10 +145,7 @@ namespace Desalt.Core.Translation
                     break;
 
                 default:
-                    ReportUnsupportedTranslation(
-                        DiagnosticFactory.InternalError(
-                            $"Unknown lambda expression body type: {node.Body}",
-                            node.Body.GetLocation()));
+                    ReportInternalError($"Unknown lambda expression body type: {node.Body}", node.Body);
                     translated = Factory.ArrowFunction(callSignature, Factory.Identifier("TranslationError"));
                     break;
             }

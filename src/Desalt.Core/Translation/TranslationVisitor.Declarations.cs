@@ -427,10 +427,7 @@ namespace Desalt.Core.Translation
             // If the property is marked with [IntrinsicProperty], don't write out the declaration.
             if (!_scriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
             {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        $"We should have a script symbol for property '{node.Identifier.Text}'",
-                        node.GetLocation()));
+                ReportInternalError($"We should have a script symbol for property '{node.Identifier.Text}'", node);
             }
 
             if (scriptPropertySymbol!.IntrinsicProperty)
@@ -458,10 +455,9 @@ namespace Desalt.Core.Translation
 
             if (node.AccessorList == null)
             {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        "A property declaration with a null accessor list should have an expression body.",
-                        node.GetLocation()));
+                ReportInternalError(
+                    "A property declaration with a null accessor list should have an expression body.",
+                    node);
 
                 yield break;
             }
@@ -595,10 +591,7 @@ namespace Desalt.Core.Translation
 
             if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
             {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        $"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.",
-                        node.GetLocation()));
+                ReportInternalError($"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.", node);
                 yield break;
             }
 
@@ -644,10 +637,7 @@ namespace Desalt.Core.Translation
 
             if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
             {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        $"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.",
-                        node.GetLocation()));
+                ReportInternalError($"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.", node);
                 yield break;
             }
 
@@ -730,11 +720,7 @@ namespace Desalt.Core.Translation
 
             if (!_renameRules.UserDefinedOperatorMethodNames.TryGetValue(overloadKind.Value, out string functionName))
             {
-                ReportUnsupportedTranslation(
-                    DiagnosticFactory.InternalError(
-                        $"Operator overload function name not defined for {overloadKind}",
-                        node.GetLocation()));
-
+                ReportInternalError($"Operator overload function name not defined for {overloadKind}", node);
                 return Factory.Identifier("op_ERROR");
             }
 
