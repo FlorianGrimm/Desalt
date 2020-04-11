@@ -18,18 +18,18 @@ namespace Desalt.Core.Tests.Options
         [Test]
         public void RenameRules_should_populate_the_OperatorOverloadMethodNames_with_missing_defaults()
         {
-            var operatorOverloadMethodNames = new Dictionary<OperatorOverloadKind, string>
+            var operatorOverloadMethodNames = new Dictionary<UserDefinedOperatorKind, string>
             {
-                [OperatorOverloadKind.Addition] = "WackyAddition"
+                [UserDefinedOperatorKind.Addition] = "WackyAddition"
             }.ToImmutableDictionary();
 
-            var rules = new RenameRules(operatorOverloadMethodNames: operatorOverloadMethodNames);
+            var rules = new RenameRules(userDefinedOperatorMethodNames: operatorOverloadMethodNames);
 
-            var builder = RenameRules.Default.OperatorOverloadMethodNames.ToBuilder();
-            builder[OperatorOverloadKind.Addition] = "WackyAddition";
+            var builder = RenameRules.Default.UserDefinedOperatorMethodNames.ToBuilder();
+            builder[UserDefinedOperatorKind.Addition] = "WackyAddition";
             var expected = builder.ToImmutable();
 
-            rules.OperatorOverloadMethodNames.Should().BeEquivalentTo(expected);
+            rules.UserDefinedOperatorMethodNames.Should().BeEquivalentTo(expected);
         }
     }
 }

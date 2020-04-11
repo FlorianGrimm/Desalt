@@ -646,7 +646,7 @@ class JsNumber {
     return new JsNumber();
   }
 
-  public static op_BitwiseXor(x: JsNumber, y: JsNumber): JsNumber {
+  public static op_ExclusiveOr(x: JsNumber, y: JsNumber): JsNumber {
     return new JsNumber();
   }
 

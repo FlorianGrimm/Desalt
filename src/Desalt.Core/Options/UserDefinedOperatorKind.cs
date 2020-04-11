@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="OperatorOverloadKind.cs" company="Justin Rockwood">
+// <copyright file="UserDefinedOperatorKind.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,7 +10,7 @@ namespace Desalt.Core.Options
     /// <summary>
     /// Represents the different kinds of operator overloaded methods that C# supports.
     /// </summary>
-    public enum OperatorOverloadKind
+    public enum UserDefinedOperatorKind
     {
         /// <summary>
         /// Represents a unary <c>+</c> operator of the form <c>public static object operator +(object x)</c>.
@@ -100,7 +100,7 @@ namespace Desalt.Core.Options
         /// Represents a bitwise XOR <c>^</c> operator of the form <c>public static object operator
         /// ^(object x, object y)</c>.
         /// </summary>
-        BitwiseXor,
+        ExclusiveOr,
 
         /// <summary>
         /// Represents a left shift <c>&lt;&lt;</c> operator of the form <c>public static object operator

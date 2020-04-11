@@ -169,7 +169,7 @@ namespace Desalt.Core.Options
                     },
                     new SpecificDiagnosticOptionsConverter(),
                     new SymbolTableOverridesConverter(),
-                    new OperatorOverloadMethodNamesConverter(),
+                    new UserDefinedOperatorMethodNamesConverter(),
                 },
                 DefaultValueHandling = DefaultValueHandling.Populate,
                 Formatting = Formatting.Indented,

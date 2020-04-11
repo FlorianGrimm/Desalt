@@ -658,8 +658,8 @@ namespace Desalt.Core.Translation
             }
 
             ITsIdentifier functionName = node.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ExplicitKeyword)
-                ? Factory.Identifier(_renameRules.OperatorOverloadMethodNames[OperatorOverloadKind.Explicit])
-                : Factory.Identifier(_renameRules.OperatorOverloadMethodNames[OperatorOverloadKind.Implicit]);
+                ? Factory.Identifier(_renameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Explicit])
+                : Factory.Identifier(_renameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Implicit]);
 
             // Create the call signature.
             ITsCallSignature callSignature = TranslateCallSignature(
@@ -693,32 +693,32 @@ namespace Desalt.Core.Translation
         private ITsIdentifier TranslateOperatorFunctionName(OperatorDeclarationSyntax node)
         {
             bool isUnary = node.ParameterList.Parameters.Count == 1;
-            OperatorOverloadKind? overloadKind = node.OperatorToken.Kind() switch
+            UserDefinedOperatorKind? overloadKind = node.OperatorToken.Kind() switch
             {
-                SyntaxKind.PlusToken when isUnary => OperatorOverloadKind.UnaryPlus,
-                SyntaxKind.MinusToken when isUnary => OperatorOverloadKind.UnaryNegation,
-                SyntaxKind.ExclamationToken => OperatorOverloadKind.LogicalNot,
-                SyntaxKind.TildeToken => OperatorOverloadKind.OnesComplement,
-                SyntaxKind.PlusPlusToken => OperatorOverloadKind.Increment,
-                SyntaxKind.MinusMinusToken => OperatorOverloadKind.Decrement,
-                SyntaxKind.TrueKeyword => OperatorOverloadKind.True,
-                SyntaxKind.FalseKeyword => OperatorOverloadKind.False,
-                SyntaxKind.PlusToken => OperatorOverloadKind.Addition,
-                SyntaxKind.MinusToken => OperatorOverloadKind.Subtraction,
-                SyntaxKind.AsteriskToken => OperatorOverloadKind.Multiplication,
-                SyntaxKind.SlashToken => OperatorOverloadKind.Division,
-                SyntaxKind.PercentToken => OperatorOverloadKind.Modulus,
-                SyntaxKind.AmpersandToken => OperatorOverloadKind.BitwiseAnd,
-                SyntaxKind.BarToken => OperatorOverloadKind.BitwiseOr,
-                SyntaxKind.CaretToken => OperatorOverloadKind.BitwiseXor,
-                SyntaxKind.LessThanLessThanToken => OperatorOverloadKind.LeftShift,
-                SyntaxKind.GreaterThanGreaterThanToken => OperatorOverloadKind.RightShift,
-                SyntaxKind.EqualsEqualsToken => OperatorOverloadKind.Equality,
-                SyntaxKind.ExclamationEqualsToken => OperatorOverloadKind.Inequality,
-                SyntaxKind.LessThanToken => OperatorOverloadKind.LessThan,
-                SyntaxKind.LessThanEqualsToken => OperatorOverloadKind.LessThanEquals,
-                SyntaxKind.GreaterThanToken => OperatorOverloadKind.GreaterThan,
-                SyntaxKind.GreaterThanEqualsToken => OperatorOverloadKind.GreaterThanEquals,
+                SyntaxKind.PlusToken when isUnary => UserDefinedOperatorKind.UnaryPlus,
+                SyntaxKind.MinusToken when isUnary => UserDefinedOperatorKind.UnaryNegation,
+                SyntaxKind.ExclamationToken => UserDefinedOperatorKind.LogicalNot,
+                SyntaxKind.TildeToken => UserDefinedOperatorKind.OnesComplement,
+                SyntaxKind.PlusPlusToken => UserDefinedOperatorKind.Increment,
+                SyntaxKind.MinusMinusToken => UserDefinedOperatorKind.Decrement,
+                SyntaxKind.TrueKeyword => UserDefinedOperatorKind.True,
+                SyntaxKind.FalseKeyword => UserDefinedOperatorKind.False,
+                SyntaxKind.PlusToken => UserDefinedOperatorKind.Addition,
+                SyntaxKind.MinusToken => UserDefinedOperatorKind.Subtraction,
+                SyntaxKind.AsteriskToken => UserDefinedOperatorKind.Multiplication,
+                SyntaxKind.SlashToken => UserDefinedOperatorKind.Division,
+                SyntaxKind.PercentToken => UserDefinedOperatorKind.Modulus,
+                SyntaxKind.AmpersandToken => UserDefinedOperatorKind.BitwiseAnd,
+                SyntaxKind.BarToken => UserDefinedOperatorKind.BitwiseOr,
+                SyntaxKind.CaretToken => UserDefinedOperatorKind.ExclusiveOr,
+                SyntaxKind.LessThanLessThanToken => UserDefinedOperatorKind.LeftShift,
+                SyntaxKind.GreaterThanGreaterThanToken => UserDefinedOperatorKind.RightShift,
+                SyntaxKind.EqualsEqualsToken => UserDefinedOperatorKind.Equality,
+                SyntaxKind.ExclamationEqualsToken => UserDefinedOperatorKind.Inequality,
+                SyntaxKind.LessThanToken => UserDefinedOperatorKind.LessThan,
+                SyntaxKind.LessThanEqualsToken => UserDefinedOperatorKind.LessThanEquals,
+                SyntaxKind.GreaterThanToken => UserDefinedOperatorKind.GreaterThan,
+                SyntaxKind.GreaterThanEqualsToken => UserDefinedOperatorKind.GreaterThanEquals,
                 _ => null,
             };
 
@@ -728,7 +728,7 @@ namespace Desalt.Core.Translation
                 return Factory.Identifier("op_ERROR");
             }
 
-            if (!_renameRules.OperatorOverloadMethodNames.TryGetValue(overloadKind.Value, out string functionName))
+            if (!_renameRules.UserDefinedOperatorMethodNames.TryGetValue(overloadKind.Value, out string functionName))
             {
                 ReportUnsupportedTranslation(
                     DiagnosticFactory.InternalError(

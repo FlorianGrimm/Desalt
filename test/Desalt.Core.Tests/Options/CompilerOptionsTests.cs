@@ -33,14 +33,14 @@ namespace Desalt.Core.Tests.Options
   ""renameRules"": {
     ""enumRule"": ""matchCSharpName"",
     ""fieldRule"": ""dollarPrefixOnlyForDuplicateName"",
-    ""operatorOverloadMethodNames"": {
+    ""userDefinedOperatorMethodNames"": {
       ""Addition"": ""op_Addition"",
       ""BitwiseAnd"": ""op_BitwiseAnd"",
       ""BitwiseOr"": ""op_BitwiseOr"",
-      ""BitwiseXor"": ""op_BitwiseXor"",
       ""Decrement"": ""op_Decrement"",
       ""Division"": ""op_Division"",
       ""Equality"": ""op_Equality"",
+      ""ExclusiveOr"": ""op_ExclusiveOr"",
       ""Explicit"": ""op_Explicit"",
       ""False"": ""op_False"",
       ""GreaterThan"": ""op_GreaterThan"",

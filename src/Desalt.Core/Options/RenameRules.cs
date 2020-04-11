@@ -20,40 +20,40 @@ namespace Desalt.Core.Options
         //// Member Variables
         //// ===========================================================================================================
 
-        private static readonly ImmutableDictionary<OperatorOverloadKind, string> s_defaultOperatorOverloadMethodNames =
-            new Dictionary<OperatorOverloadKind, string>
+        private static readonly ImmutableDictionary<UserDefinedOperatorKind, string>
+            s_defaultUserDefinedOperatorMethodNames = new Dictionary<UserDefinedOperatorKind, string>
             {
-                [OperatorOverloadKind.UnaryPlus] = "op_UnaryPlus",
-                [OperatorOverloadKind.UnaryNegation] = "op_UnaryNegation",
-                [OperatorOverloadKind.LogicalNot] = "op_LogicalNot",
-                [OperatorOverloadKind.OnesComplement] = "op_OnesComplement",
-                [OperatorOverloadKind.Increment] = "op_Increment",
-                [OperatorOverloadKind.Decrement] = "op_Decrement",
-                [OperatorOverloadKind.True] = "op_True",
-                [OperatorOverloadKind.False] = "op_False",
-                [OperatorOverloadKind.Addition] = "op_Addition",
-                [OperatorOverloadKind.Subtraction] = "op_Subtraction",
-                [OperatorOverloadKind.Multiplication] = "op_Multiply",
-                [OperatorOverloadKind.Division] = "op_Division",
-                [OperatorOverloadKind.Modulus] = "op_Modulus",
-                [OperatorOverloadKind.BitwiseAnd] = "op_BitwiseAnd",
-                [OperatorOverloadKind.BitwiseOr] = "op_BitwiseOr",
-                [OperatorOverloadKind.BitwiseXor] = "op_BitwiseXor",
-                [OperatorOverloadKind.LeftShift] = "op_LeftShift",
-                [OperatorOverloadKind.RightShift] = "op_RightShift",
-                [OperatorOverloadKind.Equality] = "op_Equality",
-                [OperatorOverloadKind.Inequality] = "op_Inequality",
-                [OperatorOverloadKind.LessThan] = "op_LessThan",
-                [OperatorOverloadKind.LessThanEquals] = "op_LessThanOrEqual",
-                [OperatorOverloadKind.GreaterThan] = "op_GreaterThan",
-                [OperatorOverloadKind.GreaterThanEquals] = "op_GreaterThanOrEqual",
-                [OperatorOverloadKind.Explicit] = "op_Explicit",
-                [OperatorOverloadKind.Implicit] = "op_Implicit",
+                [UserDefinedOperatorKind.UnaryPlus] = "op_UnaryPlus",
+                [UserDefinedOperatorKind.UnaryNegation] = "op_UnaryNegation",
+                [UserDefinedOperatorKind.LogicalNot] = "op_LogicalNot",
+                [UserDefinedOperatorKind.OnesComplement] = "op_OnesComplement",
+                [UserDefinedOperatorKind.Increment] = "op_Increment",
+                [UserDefinedOperatorKind.Decrement] = "op_Decrement",
+                [UserDefinedOperatorKind.True] = "op_True",
+                [UserDefinedOperatorKind.False] = "op_False",
+                [UserDefinedOperatorKind.Addition] = "op_Addition",
+                [UserDefinedOperatorKind.Subtraction] = "op_Subtraction",
+                [UserDefinedOperatorKind.Multiplication] = "op_Multiply",
+                [UserDefinedOperatorKind.Division] = "op_Division",
+                [UserDefinedOperatorKind.Modulus] = "op_Modulus",
+                [UserDefinedOperatorKind.BitwiseAnd] = "op_BitwiseAnd",
+                [UserDefinedOperatorKind.BitwiseOr] = "op_BitwiseOr",
+                [UserDefinedOperatorKind.ExclusiveOr] = "op_ExclusiveOr",
+                [UserDefinedOperatorKind.LeftShift] = "op_LeftShift",
+                [UserDefinedOperatorKind.RightShift] = "op_RightShift",
+                [UserDefinedOperatorKind.Equality] = "op_Equality",
+                [UserDefinedOperatorKind.Inequality] = "op_Inequality",
+                [UserDefinedOperatorKind.LessThan] = "op_LessThan",
+                [UserDefinedOperatorKind.LessThanEquals] = "op_LessThanOrEqual",
+                [UserDefinedOperatorKind.GreaterThan] = "op_GreaterThan",
+                [UserDefinedOperatorKind.GreaterThanEquals] = "op_GreaterThanOrEqual",
+                [UserDefinedOperatorKind.Explicit] = "op_Explicit",
+                [UserDefinedOperatorKind.Implicit] = "op_Implicit",
             }.ToImmutableDictionary();
 
         public static readonly RenameRules Default = new RenameRules(
             instanceToCopy: null,
-            operatorOverloadMethodNames: s_defaultOperatorOverloadMethodNames);
+            userDefinedOperatorMethodNames: s_defaultUserDefinedOperatorMethodNames);
 
         /// <summary>
         /// Represents the rename rules that Saltarelle uses for JavaScript translation.
@@ -72,8 +72,8 @@ namespace Desalt.Core.Options
         public RenameRules(
             EnumRenameRule enumRule = DefaultEnumMemberRule,
             FieldRenameRule fieldRule = DefaultFieldRule,
-            ImmutableDictionary<OperatorOverloadKind, string>? operatorOverloadMethodNames = null)
-            : this(instanceToCopy: null, enumRule, fieldRule, operatorOverloadMethodNames)
+            ImmutableDictionary<UserDefinedOperatorKind, string>? userDefinedOperatorMethodNames = null)
+            : this(instanceToCopy: null, enumRule, fieldRule, userDefinedOperatorMethodNames)
         {
         }
 
@@ -81,21 +81,21 @@ namespace Desalt.Core.Options
             RenameRules? instanceToCopy = null,
             EnumRenameRule? enumRule = null,
             FieldRenameRule? fieldRule = null,
-            ImmutableDictionary<OperatorOverloadKind, string>? operatorOverloadMethodNames = null)
+            ImmutableDictionary<UserDefinedOperatorKind, string>? userDefinedOperatorMethodNames = null)
         {
             EnumRule = enumRule ?? instanceToCopy?.EnumRule ?? DefaultEnumMemberRule;
             FieldRule = fieldRule ?? instanceToCopy?.FieldRule ?? DefaultFieldRule;
-            OperatorOverloadMethodNames = operatorOverloadMethodNames ??
-                instanceToCopy?.OperatorOverloadMethodNames ?? s_defaultOperatorOverloadMethodNames;
+            UserDefinedOperatorMethodNames = userDefinedOperatorMethodNames ??
+                instanceToCopy?.UserDefinedOperatorMethodNames ?? s_defaultUserDefinedOperatorMethodNames;
 
             // make sure to add any missing entries in the operator overloaded method names dictionary
-            var missingPairs = s_defaultOperatorOverloadMethodNames
-                .Where(pair => !OperatorOverloadMethodNames.ContainsKey(pair.Key))
+            var missingPairs = s_defaultUserDefinedOperatorMethodNames
+                .Where(pair => !UserDefinedOperatorMethodNames.ContainsKey(pair.Key))
                 .ToImmutableArray();
 
             if (missingPairs.Length > 0)
             {
-                OperatorOverloadMethodNames = OperatorOverloadMethodNames.AddRange(missingPairs);
+                UserDefinedOperatorMethodNames = UserDefinedOperatorMethodNames.AddRange(missingPairs);
             }
         }
 
@@ -124,16 +124,16 @@ namespace Desalt.Core.Options
         }
 
         /// <summary>
-        /// Gets a dictionary keyed by <see cref="OperatorOverloadKind"/>, containing the method name
+        /// Gets a dictionary keyed by <see cref="UserDefinedOperatorKind"/>, containing the method name
         /// to use for each overloaded operator method declaration.
         /// </summary>
-        public ImmutableDictionary<OperatorOverloadKind, string> OperatorOverloadMethodNames { get; }
+        public ImmutableDictionary<UserDefinedOperatorKind, string> UserDefinedOperatorMethodNames { get; }
 
-        public RenameRules WithOperatorOverloadMethodNames(ImmutableDictionary<OperatorOverloadKind, string> value)
+        public RenameRules WithUserDefinedOperatorMethodNames(ImmutableDictionary<UserDefinedOperatorKind, string> value)
         {
-            return value == OperatorOverloadMethodNames
+            return value == UserDefinedOperatorMethodNames
                 ? this
-                : new RenameRules(this, operatorOverloadMethodNames: value);
+                : new RenameRules(this, userDefinedOperatorMethodNames: value);
         }
     }
 }

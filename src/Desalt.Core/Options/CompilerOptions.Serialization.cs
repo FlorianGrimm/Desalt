@@ -180,7 +180,8 @@ namespace Desalt.Core.Options
         {
         }
 
-        private sealed class OperatorOverloadMethodNamesConverter : SortedByKeyDictionaryConverter<OperatorOverloadKind, string>
+        private sealed class UserDefinedOperatorMethodNamesConverter
+            : SortedByKeyDictionaryConverter<UserDefinedOperatorKind, string>
         {
         }
 

@@ -494,7 +494,7 @@ namespace Desalt.Core.Translation
             ISymbol? nodeSymbol = _semanticModel.GetSymbolInfo(node).Symbol;
             if (nodeSymbol is IMethodSymbol methodSymbol && methodSymbol.MethodKind == MethodKind.UserDefinedOperator)
             {
-                OperatorOverloadKind? overloadKind = MethodNameToOperatorOverloadKind(methodSymbol.Name);
+                UserDefinedOperatorKind? overloadKind = MethodNameToUserDefinedOperatorKind(methodSymbol.Name);
                 if (overloadKind == null)
                 {
                     ReportUnsupportedTranslation(
@@ -504,7 +504,7 @@ namespace Desalt.Core.Translation
                 }
 
                 // Get the translated name of the overload function.
-                string functionName = _renameRules.OperatorOverloadMethodNames[overloadKind.Value];
+                string functionName = _renameRules.UserDefinedOperatorMethodNames[overloadKind.Value];
 
                 // The left side is what will become the argument to the overloaded operator method.
                 ITsExpression leftSide = TranslateIdentifierName(methodSymbol, node.GetLocation(), functionName);
@@ -563,16 +563,16 @@ namespace Desalt.Core.Translation
             return op.Value;
         }
 
-        private static OperatorOverloadKind? MethodNameToOperatorOverloadKind(string methodName)
+        private static UserDefinedOperatorKind? MethodNameToUserDefinedOperatorKind(string methodName)
         {
             return methodName switch
             {
-                "op_Decrement" => OperatorOverloadKind.Decrement,
-                "op_Increment" => OperatorOverloadKind.Increment,
-                "op_LogicalNot" => OperatorOverloadKind.LogicalNot,
-                "op_OnesComplement" => OperatorOverloadKind.OnesComplement,
-                "op_UnaryPlus" => OperatorOverloadKind.UnaryPlus,
-                "op_UnaryNegation" => OperatorOverloadKind.UnaryNegation,
+                "op_Decrement" => UserDefinedOperatorKind.Decrement,
+                "op_Increment" => UserDefinedOperatorKind.Increment,
+                "op_LogicalNot" => UserDefinedOperatorKind.LogicalNot,
+                "op_OnesComplement" => UserDefinedOperatorKind.OnesComplement,
+                "op_UnaryPlus" => UserDefinedOperatorKind.UnaryPlus,
+                "op_UnaryNegation" => UserDefinedOperatorKind.UnaryNegation,
                 _ => null
             };
         }
