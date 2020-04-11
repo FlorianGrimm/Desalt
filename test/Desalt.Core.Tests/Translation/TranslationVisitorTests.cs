@@ -23,6 +23,23 @@ namespace Desalt.Core.Tests.Translation
 
     public partial class TranslationVisitorTests
     {
+        private static string ExtractApplicableLines(string code, string blockName)
+        {
+            string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                // Read until we see the block name.
+                .SkipWhile(line => !line.Contains(blockName, StringComparison.Ordinal))
+                .Skip(1)
+                // Skip any lines that contain an opening brace (in C#)
+                .SkipWhile(line => line.TrimStart().StartsWith('{'))
+                // Read all of the contents until the next brace.
+                .TakeWhile(line => !line.TrimStart().StartsWith('}'))
+                // Get rid of the extraneous whitespace.
+                .Select(line => line.Trim())
+                .ToArray();
+
+            return string.Join('\n', lines);
+        }
+
         private static Task AssertTranslationWithClassCAndMethod(
             string codeSnippet,
             string expectedTypeScriptCode,
@@ -44,14 +61,31 @@ class C {{
   }}
 }}
 ",
-                discoveryKind);
+                discoveryKind,
+                extractApplicableTypeScriptSnippetFunc: code => ExtractApplicableLines(code, "method"));
         }
 
+        /// <summary>
+        /// Runs the translation against the specified C# code and compares the result with the expected TypeScript code.
+        /// </summary>
+        /// <param name="codeSnippet">The C# to translate.</param>
+        /// <param name="expectedTypeScriptCode">The expected TypeScript code.</param>
+        /// <param name="discoveryKind">
+        /// How symbols should be discovered. By default only the document symbols are used, which means that any
+        /// external references won't be pulled in. This makes it much, much faster, but sometimes will produce wrong
+        /// results in the translated code. For example, [InlineCode] won't be used for the system symbols.
+        /// </param>
+        /// <param name="populateOptionsFunc">If provided, allows callers to adjust the options used for the translation.</param>
+        /// <param name="extractApplicableTypeScriptSnippetFunc">
+        /// If provided, allows callers to extract just the piece of translated TypeScript code that should be examined.
+        /// This is helpful when using a boilerplate class/method and you only care about the statements inside of the function.
+        /// </param>
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
-            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null)
+            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null,
+            Func<string, string>? extractApplicableTypeScriptSnippetFunc = null)
         {
             string code = $@"
 using System;
@@ -82,7 +116,11 @@ using System.Runtime.CompilerServices;
 
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
             string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
-            translated.Should().Be(expectedTypeScriptCode);
+            string applicableTranslated = extractApplicableTypeScriptSnippetFunc?.Invoke(translated) ?? translated;
+            string applicableExpected = extractApplicableTypeScriptSnippetFunc?.Invoke(expectedTypeScriptCode) ??
+                expectedTypeScriptCode;
+
+            applicableTranslated.Should().Be(applicableExpected);
         }
 
         private static async Task AssertTranslationHasDiagnostics(
