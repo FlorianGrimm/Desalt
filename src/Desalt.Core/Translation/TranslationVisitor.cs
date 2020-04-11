@@ -162,6 +162,91 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Gets an expected symbol from the semantic model and calls <see cref="ReportInternalError"/> if the
+        /// symbol is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol associated with the syntax node.</returns>
+        private ISymbol GetExpectedSymbol(SyntaxNode node)
+        {
+            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            if (symbol == null)
+            {
+                ReportInternalError($"Node '{node}' should have an expected symbol.", node);
+            }
+
+            return symbol;
+        }
+
+        /// <summary>
+        /// Gets an expected symbol from the semantic model and calls <see cref="ReportInternalError"/> if the
+        /// symbol is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol associated with the syntax node.</returns>
+        private TSymbol GetExpectedDeclaredSymbol<TSymbol>(SyntaxNode node) where TSymbol : class, ISymbol
+        {
+            var symbol = _semanticModel.GetDeclaredSymbol(node) as TSymbol;
+            if (symbol == null)
+            {
+                ReportInternalError($"Node '{node}' should have an expected declared symbol.", node);
+            }
+
+            return symbol;
+        }
+
+        /// <summary>
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
+        /// cref="ReportInternalError"/> if either is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        private (ISymbol symbol, IScriptSymbol scriptSymbol) GetExpectedScriptSymbol(SyntaxNode node)
+        {
+            ISymbol symbol = GetExpectedSymbol(node);
+
+            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+            {
+                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
+            }
+
+            return (symbol, scriptSymbol);
+        }
+
+        /// <summary>
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
+        /// cref="ReportInternalError"/> if either is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        private (TSymbol symbol, TScriptSymbol scriptSymbol) GetExpectedDeclaredScriptSymbol<TSymbol, TScriptSymbol>(
+            SyntaxNode node)
+            where TSymbol : class, ISymbol
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            TSymbol symbol = GetExpectedDeclaredSymbol<TSymbol>(node);
+
+            if (!_scriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
+            {
+                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
+            }
+
+            return (symbol, scriptSymbol);
+        }
+
+        /// <summary>
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
+        /// cref="ReportInternalError"/> if either is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        private TScriptSymbol GetExpectedDeclaredScriptSymbol<TScriptSymbol>(SyntaxNode node)
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            return GetExpectedDeclaredScriptSymbol<ISymbol, TScriptSymbol>(node).scriptSymbol;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a CompilationUnitSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsImplementationModule"/>.</returns>
@@ -181,19 +266,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsIdentifier"/>.</returns>
         private ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
-            ISymbol? symbol = _semanticModel.GetDeclaredSymbol(node);
-            if (symbol == null)
-            {
-                _diagnostics.Add(DiagnosticFactory.IdentifierNotSupported(node));
-                return Factory.Identifier("Error");
-            }
-
-            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
-            {
-                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
-                return Factory.Identifier("Error");
-            }
-
+            var scriptSymbol = GetExpectedDeclaredScriptSymbol<IScriptSymbol>(node);
             return Factory.Identifier(scriptSymbol.ComputedScriptName);
         }
 

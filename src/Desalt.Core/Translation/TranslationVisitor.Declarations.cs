@@ -587,13 +587,8 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsFunctionMemberDeclaration"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitOperatorDeclaration(OperatorDeclarationSyntax node)
         {
-            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
-
-            if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
-            {
-                ReportInternalError($"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.", node);
-                yield break;
-            }
+            (IMethodSymbol methodSymbol, IScriptMethodSymbol scriptMethodSymbol) =
+                GetExpectedDeclaredScriptSymbol<IMethodSymbol, IScriptMethodSymbol>(node);
 
             // If the method is decorated with [InlineCode], then we don't need to declare it.
             if (scriptMethodSymbol.InlineCode != null)
@@ -633,13 +628,8 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsFunctionMemberDeclaration"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
         {
-            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
-
-            if (!_scriptSymbolTable.TryGetValue(methodSymbol, out ScriptMethodSymbol? scriptMethodSymbol))
-            {
-                ReportInternalError($"Cannot find the symbol for '{methodSymbol.ToHashDisplay()}'.", node);
-                yield break;
-            }
+            (IMethodSymbol methodSymbol, IScriptMethodSymbol scriptMethodSymbol) =
+                GetExpectedDeclaredScriptSymbol<IMethodSymbol, IScriptMethodSymbol>(node);
 
             // If the method is decorated with [InlineCode], then we don't need to declare it.
             if (scriptMethodSymbol.InlineCode != null)
