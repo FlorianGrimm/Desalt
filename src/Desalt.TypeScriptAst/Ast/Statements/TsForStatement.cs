@@ -28,17 +28,17 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
         /// </summary>
         public TsForStatement(
-            ITsExpression initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? initializer,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
-            Initializer = initializer ?? throw new ArgumentNullException(nameof(initializer));
+            Initializer = initializer;
             InitializerWithVariableDeclarations = ImmutableArray<ITsVariableDeclaration>.Empty;
             InitializerWithLexicalDeclaration = null;
 
-            Condition = condition ?? throw new ArgumentNullException(nameof(condition));
-            Incrementor = incrementor ?? throw new ArgumentNullException(nameof(incrementor));
+            Condition = condition;
+            Incrementor = incrementor;
             Statement = statement ?? throw new ArgumentNullException(nameof(statement));
         }
 
@@ -47,8 +47,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         /// </summary>
         public TsForStatement(
             IEnumerable<ITsVariableDeclaration> initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
             Initializer = null;
@@ -62,8 +62,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                     nameof(initializer));
             }
 
-            Condition = condition ?? throw new ArgumentNullException(nameof(condition));
-            Incrementor = incrementor ?? throw new ArgumentNullException(nameof(incrementor));
+            Condition = condition;
+            Incrementor = incrementor;
             Statement = statement ?? throw new ArgumentNullException(nameof(statement));
         }
 
@@ -72,16 +72,16 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         /// </summary>
         public TsForStatement(
             ITsLexicalDeclaration initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
             Initializer = null;
             InitializerWithVariableDeclarations = ImmutableArray<ITsVariableDeclaration>.Empty;
             InitializerWithLexicalDeclaration = initializer ?? throw new ArgumentNullException(nameof(initializer));
 
-            Condition = condition ?? throw new ArgumentNullException(nameof(condition));
-            Incrementor = incrementor ?? throw new ArgumentNullException(nameof(incrementor));
+            Condition = condition;
+            Incrementor = incrementor;
             Statement = statement ?? throw new ArgumentNullException(nameof(statement));
         }
 
@@ -93,8 +93,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public ImmutableArray<ITsVariableDeclaration>? InitializerWithVariableDeclarations { get; }
         public ITsLexicalDeclaration? InitializerWithLexicalDeclaration { get; }
 
-        public ITsExpression Condition { get; }
-        public ITsExpression Incrementor { get; }
+        public ITsExpression? Condition { get; }
+        public ITsExpression? Incrementor { get; }
         public ITsStatement Statement { get; }
 
         //// ===========================================================================================================
@@ -130,8 +130,8 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                     builder.Append(" ");
                 }
 
-                builder.Append(Condition.CodeDisplay).Append("; ");
-                builder.Append(Incrementor.CodeDisplay).Append(") ");
+                builder.Append(Condition?.CodeDisplay).Append("; ");
+                builder.Append(Incrementor?.CodeDisplay).Append(") ");
                 builder.Append(Statement.CodeDisplay);
 
                 return builder.ToString();
@@ -164,10 +164,10 @@ namespace Desalt.TypeScriptAst.Ast.Statements
                 emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
             }
 
-            Condition.Emit(emitter);
+            Condition?.Emit(emitter);
             emitter.Write("; ");
 
-            Incrementor.Emit(emitter);
+            Incrementor?.Emit(emitter);
 
             Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
         }
