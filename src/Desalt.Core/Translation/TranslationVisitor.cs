@@ -147,6 +147,58 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
+        /// Visits a node where it is known that a single value of the specified type will be returned.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated <see cref="ITsAstNode"/>.</typeparam>
+        /// <param name="node">The syntax node to translate.</param>
+        /// <returns>A single <see cref="ITsAstNode"/>.</returns>
+        private T VisitSingleOfType<T>(SyntaxNode node)
+            where T : ITsAstNode
+        {
+            return (T)Visit(node).Single();
+        }
+
+        /// <summary>
+        /// Shortcut of <see cref="VisitSingleOfType{ITsExpression}"/>.
+        /// </summary>
+        private ITsExpression VisitExpression(SyntaxNode node)
+        {
+            return VisitSingleOfType<ITsExpression>(node);
+        }
+
+        /// <summary>
+        /// Shortcut of <see cref="VisitSingleOfType{ITsStatement}"/>.
+        /// </summary>
+        private ITsStatement VisitStatement(SyntaxNode node)
+        {
+            return VisitSingleOfType<ITsStatement>(node);
+        }
+
+        /// <summary>
+        /// Visits a series of nodes that should all get translated similarly and returns a list of the translated <see cref="ITsAstNode"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated <see cref="ITsAstNode"/>.</typeparam>
+        /// <param name="nodes">The syntax node list to translate.</param>
+        /// <returns>A list of translated <see cref="ITsAstNode"/>.</returns>
+        private List<T> VisitMultipleOfType<T>(IEnumerable<SyntaxNode> nodes)
+            where T : ITsAstNode
+        {
+            return nodes.SelectMany(Visit).Cast<T>().ToList();
+        }
+
+        /// <summary>
+        /// Visits a node that gets translated to multiple <see cref="ITsAstNode"/> of the same type. For example,
+        /// TypeArgumentListSyntax or other nodes that inherently represent a list.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated <see cref="ITsAstNode"/>.</typeparam>
+        /// <param name="node">The syntax node to translate.</param>
+        /// <returns>A list of translated <see cref="ITsAstNode"/>.</returns>
+        private List<T> VisitMultipleOfType<T>(SyntaxNode node) where T : ITsAstNode
+        {
+            return Visit(node).Cast<T>().ToList();
+        }
+
+        /// <summary>
         /// Creates a new InternalError diagnostic, adds it to the diagnostics list, and then throws an exception so we
         /// can get a stack trace in debug mode and returns an empty enumerable.
         /// </summary>

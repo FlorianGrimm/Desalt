@@ -96,7 +96,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsParenthesizedExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
         {
-            var expression = (ITsExpression)Visit(node.Expression).Single();
+            var expression = VisitExpression(node.Expression);
             ITsParenthesizedExpression translated = Factory.ParenthesizedExpression(expression);
             yield return translated;
         }
@@ -113,7 +113,7 @@ namespace Desalt.Core.Translation
                 _diagnostics,
                 node.Type.GetLocation);
 
-            var expression = (ITsExpression)Visit(node.Expression).Single();
+            var expression = VisitExpression(node.Expression);
             ITsCastExpression translated = Factory.Cast(castType, expression);
             yield return translated;
         }
@@ -253,8 +253,8 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsGenericTypeName"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitGenericName(GenericNameSyntax node)
         {
-            ITsType[] typeArguments = Visit(node.TypeArgumentList).Cast<ITsType>().ToArray();
-            ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments);
+            List<ITsType> typeArguments = VisitMultipleOfType<ITsType>(node.TypeArgumentList);
+            ITsGenericTypeName translated = Factory.GenericTypeName(node.Identifier.Text, typeArguments.ToArray());
             yield return translated;
         }
 
@@ -264,7 +264,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).Single();
+            var leftSide = VisitExpression(node.Expression);
 
             ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
 
@@ -283,10 +283,10 @@ namespace Desalt.Core.Translation
         /// </summary>
         public override IEnumerable<ITsAstNode> VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Expression).Single();
-            var bracketContents = (ITsExpression)Visit(node.ArgumentList).Single();
+            var leftSide = VisitExpression(node.Expression);
+            var bracketContents = VisitExpression(node.ArgumentList);
             ITsMemberBracketExpression translation = Factory.MemberBracket(leftSide, bracketContents);
-            return translation.ToSingleEnumerable();
+            yield return translation;
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Desalt.Core.Translation
                     yield break;
                 }
 
-                var rankExpression = (ITsExpression)Visit(node.Type.RankSpecifiers[0].Sizes[0]).Single();
+                var rankExpression = VisitExpression(node.Type.RankSpecifiers[0].Sizes[0]);
 
                 // Translate `new int[0]` to `[]`
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -339,7 +339,7 @@ namespace Desalt.Core.Translation
             // Translate `new int[] { 1, 2, 3 }` to `[1, 2, 3]`
             else
             {
-                var arrayElements = Visit(node.Initializer).Cast<ITsExpression>();
+                var arrayElements = VisitMultipleOfType<ITsExpression>(node.Initializer);
                 var translated = Factory.Array(arrayElements.ToArray());
                 yield return translated;
             }
@@ -360,7 +360,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsNewCallExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Type).Single();
+            var leftSide = VisitExpression(node.Type);
 
             // node.ArgumentList can be null in the case of the following pattern:
             // var x = new Thing { Prop = value; }
@@ -410,8 +410,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
-            var elements =
-                new List<ITsExpression>(node.Initializer.Expressions.SelectMany(Visit).Cast<ITsExpression>());
+            var elements = VisitMultipleOfType<ITsExpression>(node.Initializer.Expressions);
             ITsArrayLiteral translated = Factory.Array(elements.ToArray());
             yield return translated;
         }
@@ -446,8 +445,8 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsAssignmentExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
-            var leftSide = (ITsExpression)Visit(node.Left).Single();
-            var rightSide = (ITsExpression)Visit(node.Right).Single();
+            var leftSide = VisitExpression(node.Left);
+            var rightSide = VisitExpression(node.Right);
 
             ITsAssignmentExpression translated = Factory.Assignment(
                 leftSide,
@@ -462,9 +461,9 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsConditionalExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitConditionalExpression(ConditionalExpressionSyntax node)
         {
-            var condition = (ITsExpression)Visit(node.Condition).Single();
-            var whenTrue = (ITsExpression)Visit(node.WhenTrue).Single();
-            var whenFalse = (ITsExpression)Visit(node.WhenFalse).Single();
+            var condition = VisitExpression(node.Condition);
+            var whenTrue = VisitExpression(node.WhenTrue);
+            var whenFalse = VisitExpression(node.WhenFalse);
 
             ITsConditionalExpression translated = Factory.Conditional(condition, whenTrue, whenFalse);
             yield return translated;

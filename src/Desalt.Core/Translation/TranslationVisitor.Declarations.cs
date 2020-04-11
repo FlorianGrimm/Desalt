@@ -10,7 +10,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
@@ -30,7 +29,7 @@ namespace Desalt.Core.Translation
         /// <returns>A list of <see cref="ITsImplementationModuleElement"/> elements.</returns>
         public override IEnumerable<ITsAstNode> VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-            return node.Members.SelectMany(Visit).Cast<ITsImplementationModuleElement>();
+            return VisitMultipleOfType<ITsImplementationModuleElement>(node.Members);
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace Desalt.Core.Translation
             ITsIdentifier interfaceName = TranslateDeclarationIdentifier(node);
 
             // translate the interface body
-            var translatedMembers = node.Members.SelectMany(Visit).Cast<ITsTypeMember>();
+            IList<ITsTypeMember> translatedMembers = VisitMultipleOfType<ITsTypeMember>(node.Members);
             ITsObjectType body = Factory.ObjectType(translatedMembers.ToArray());
 
             // translate the generic type parameters
@@ -63,7 +62,7 @@ namespace Desalt.Core.Translation
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final = ExportAndAddDocComment(interfaceDeclaration, node);
-            return final.ToSingleEnumerable();
+            yield return final;
         }
 
         /// <summary>
@@ -81,12 +80,12 @@ namespace Desalt.Core.Translation
             bool isConst = _semanticModel.GetDeclaredSymbol(node).GetFlagAttribute(SaltarelleAttributeName.NamedValues);
 
             // translate the enum body
-            var enumMembers = node.Members.SelectMany(Visit).Cast<ITsEnumMember>();
+            IList<ITsEnumMember> enumMembers = VisitMultipleOfType<ITsEnumMember>(node.Members);
             ITsEnumDeclaration enumDeclaration = Factory.EnumDeclaration(enumName, enumMembers, isConst);
 
             // export if necessary and add documentation comments
             ITsImplementationModuleElement final = ExportAndAddDocComment(enumDeclaration, node);
-            return final.ToSingleEnumerable();
+            yield return final;
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace Desalt.Core.Translation
             ITsExpression? value = null;
             if (node.EqualsValue != null)
             {
-                value = Visit(node.EqualsValue.Value).Cast<ITsExpression>().Single();
+                value = VisitSingleOfType<ITsExpression>(node.EqualsValue.Value);
             }
 
             // ignore the value if the enum is [NamedValues] and generate our own value
@@ -114,7 +113,7 @@ namespace Desalt.Core.Translation
             }
 
             ITsEnumMember translatedMember = Factory.EnumMember(scriptName, value);
-            return translatedMember.ToSingleEnumerable();
+            yield return translatedMember;
         }
 
         /// <summary>
@@ -134,7 +133,7 @@ namespace Desalt.Core.Translation
             // translate the type parameters if there are any
             ITsTypeParameters? typeParameters = node.TypeParameterList == null
                 ? null
-                : (ITsTypeParameters)Visit(node.TypeParameterList).Single();
+                : VisitSingleOfType<ITsTypeParameters>(node.TypeParameterList);
 
             // translate the class heritage (extends and implements)
             ITsTypeReference? extendsClause = null;
@@ -174,7 +173,7 @@ namespace Desalt.Core.Translation
             ITsClassHeritage heritage = Factory.ClassHeritage(extendsClause, implementsTypes.ToArray());
 
             // translate the body
-            var classBody = node.Members.SelectMany(Visit).Cast<ITsClassElement>().ToList();
+            var classBody = VisitMultipleOfType<ITsClassElement>(node.Members);
 
             // add any auto-generated class member variable declarations at the top of the class, for example when
             // adding auto-generated properties
@@ -208,7 +207,7 @@ namespace Desalt.Core.Translation
         /// <returns>An enumerable of <see cref="ITsTypeReference"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitBaseList(BaseListSyntax node)
         {
-            return node.Types.SelectMany(Visit).Cast<ITsTypeReference>();
+            return VisitMultipleOfType<ITsTypeReference>(node.Types);
         }
 
         /// <summary>
@@ -351,7 +350,7 @@ namespace Desalt.Core.Translation
             }
 
             TsAccessibilityModifier accessibilityModifier = GetAccessibilityModifier(node);
-            var parameterList = (ITsParameterList)Visit(node.ParameterList).Single();
+            var parameterList = VisitSingleOfType<ITsParameterList>(node.ParameterList);
 
             ITsBlockStatement? functionBody = TranslateFunctionBody(node, isVoidReturn: true);
 
@@ -389,12 +388,12 @@ namespace Desalt.Core.Translation
             // A function body can be null in the case of an 'extern' declaration.
             if (node.Body != null)
             {
-                functionBody = (ITsBlockStatement)Visit(node.Body).Single();
+                functionBody = VisitSingleOfType<ITsBlockStatement>(node.Body);
             }
             // This is for arrow expressions of the form `method() => x`
             else if (node.ExpressionBody != null)
             {
-                var bodyExpression = (ITsExpression)Visit(node.ExpressionBody).Single();
+                var bodyExpression = VisitSingleOfType<ITsExpression>(node.ExpressionBody);
                 functionBody = isVoidReturn ? bodyExpression.ToBlock() : Factory.Return(bodyExpression).ToBlock();
             }
 
@@ -499,11 +498,11 @@ namespace Desalt.Core.Translation
 
                 if (accessor.Body != null)
                 {
-                    functionBody = (ITsBlockStatement)Visit(accessor.Body).Single();
+                    functionBody = VisitSingleOfType<ITsBlockStatement>(accessor.Body);
                 }
                 else if (accessor.ExpressionBody != null)
                 {
-                    var bodyExpression = (ITsExpression)Visit(accessor.ExpressionBody).Single();
+                    var bodyExpression = VisitExpression(accessor.ExpressionBody);
                     functionBody = isGetter ? Factory.Return(bodyExpression).ToBlock() : bodyExpression.ToBlock();
                 }
                 else
