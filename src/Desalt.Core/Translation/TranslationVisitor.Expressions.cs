@@ -174,7 +174,7 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
-            ITsExpression translated = TranslateIdentifierName(symbol, node.GetLocation());
+            ITsExpression translated = TranslateIdentifierName(symbol, node);
             yield return translated;
         }
 
@@ -182,14 +182,14 @@ namespace Desalt.Core.Translation
         /// Translates an identifier name represented by the symbol, taking into account static vs. instance references.
         /// </summary>
         /// <param name="symbol">The symbol to translate.</param>
-        /// <param name="nodeLocation">The start of the syntax node where this symbol was located.</param>
+        /// <param name="node">The start of the syntax node where this symbol was located.</param>
         /// <param name="forcedScriptName">
         /// If present, this name will be used instead of looking it up in the symbol table.
         /// </param>
         /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
         private ITsExpression TranslateIdentifierName(
             ISymbol symbol,
-            Location nodeLocation,
+            SyntaxNode node,
             string? forcedScriptName = null)
         {
             ITsIdentifier scriptName = forcedScriptName != null
@@ -201,7 +201,7 @@ namespace Desalt.Core.Translation
 
             // Get the containing type of the syntax node (usually an identifier).
             INamedTypeSymbol? containingTypeOfSyntaxNode = _semanticModel
-                .GetEnclosingSymbol(nodeLocation.SourceSpan.Start, _cancellationToken)
+                .GetEnclosingSymbol(node.GetLocation().SourceSpan.Start, _cancellationToken)
                 ?.ContainingType;
 
             // See if the identifier is declared within this type.
@@ -240,7 +240,7 @@ namespace Desalt.Core.Translation
                     ReportUnsupportedTranslation(
                         DiagnosticFactory.InternalError(
                             $"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'",
-                            nodeLocation));
+                            node.GetLocation()));
                 }
                 else
                 {
@@ -507,7 +507,7 @@ namespace Desalt.Core.Translation
                 string functionName = _renameRules.UserDefinedOperatorMethodNames[overloadKind.Value];
 
                 // The left side is what will become the argument to the overloaded operator method.
-                ITsExpression leftSide = TranslateIdentifierName(methodSymbol, node.GetLocation(), functionName);
+                ITsExpression leftSide = TranslateIdentifierName(methodSymbol, node, functionName);
 
                 // There should only be one argument.
                 ITsArgumentList arguments = Factory.ArgumentList(Factory.Argument(operand));
