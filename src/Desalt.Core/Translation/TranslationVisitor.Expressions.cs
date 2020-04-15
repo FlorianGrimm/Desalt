@@ -9,10 +9,10 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -290,7 +290,8 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Called when the visitor visits a EqualsValueClauseSyntax node.
+        /// Called when the visitor visits a EqualsValueClauseSyntax node, which is an expression of the form `=
+        /// expression`. It's used inside of a <see cref="VariableDeclaratorSyntax"/> when declaring variables.
         /// </summary>
         /// <returns>An <see cref="ITsExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitEqualsValueClause(EqualsValueClauseSyntax node)
@@ -469,127 +470,6 @@ namespace Desalt.Core.Translation
             yield return translated;
         }
 
-        //// ===========================================================================================================
-        //// Unary Expressions
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITsUnaryExpression"/> or an <see cref="ITsCallExpression"/> if the unary
-        /// expression is backed by an overloaded operator function.
-        /// </returns>
-        public override IEnumerable<ITsAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
-        {
-            var operand = (ITsExpression)Visit(node.Operand).Single();
-
-            // See if this is actually a user-defined operator overload method call.
-            ISymbol? nodeSymbol = _semanticModel.GetSymbolInfo(node).Symbol;
-            if (nodeSymbol is IMethodSymbol methodSymbol && methodSymbol.MethodKind == MethodKind.UserDefinedOperator)
-            {
-                UserDefinedOperatorKind? overloadKind = MethodNameToUserDefinedOperatorKind(methodSymbol.Name);
-                if (overloadKind == null)
-                {
-                    _diagnostics.Add(DiagnosticFactory.OperatorOverloadInvocationNotSupported(methodSymbol.Name, node));
-                    yield return Factory.Call(methodSymbol.GetScriptName(_scriptSymbolTable, "Error"));
-                    yield break;
-                }
-
-                // Get the translated name of the overload function.
-                string functionName = _renameRules.UserDefinedOperatorMethodNames[overloadKind.Value];
-
-                // The left side is what will become the argument to the overloaded operator method.
-                ITsExpression leftSide = TranslateIdentifierName(methodSymbol, node, functionName);
-
-                // There should only be one argument.
-                ITsArgumentList arguments = Factory.ArgumentList(Factory.Argument(operand));
-
-                ITsCallExpression translated = Factory.Call(leftSide, arguments);
-                yield return translated;
-            }
-            else
-            {
-                ITsUnaryExpression translated = Factory.UnaryExpression(
-                    operand,
-                    TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
-                yield return translated;
-            }
-        }
-
-        /// <summary>
-        /// Called when the visitor visits a PostfixUnaryExpressionSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
-        {
-            var operand = (ITsExpression)Visit(node.Operand).Single();
-            ITsUnaryExpression translated = Factory.UnaryExpression(
-                operand,
-                TranslateUnaryOperator(node.OperatorToken, asPrefix: false));
-            yield return translated;
-        }
-
-        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
-        {
-            TsUnaryOperator? op = operatorToken.Kind() switch
-            {
-                SyntaxKind.PlusPlusToken => asPrefix
-                    ? TsUnaryOperator.PrefixIncrement
-                    : TsUnaryOperator.PostfixIncrement,
-                SyntaxKind.MinusMinusToken => asPrefix
-                    ? TsUnaryOperator.PrefixDecrement
-                    : TsUnaryOperator.PostfixDecrement,
-                SyntaxKind.PlusToken => TsUnaryOperator.Plus,
-                SyntaxKind.MinusToken => TsUnaryOperator.Minus,
-                SyntaxKind.TildeToken => TsUnaryOperator.BitwiseNot,
-                SyntaxKind.ExclamationToken => TsUnaryOperator.LogicalNot,
-                _ => null,
-            };
-
-            if (op == null)
-            {
-                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                op = TsUnaryOperator.Plus;
-            }
-
-            return op.Value;
-        }
-
-        private static UserDefinedOperatorKind? MethodNameToUserDefinedOperatorKind(string methodName)
-        {
-            return methodName switch
-            {
-                "op_Decrement" => UserDefinedOperatorKind.Decrement,
-                "op_Increment" => UserDefinedOperatorKind.Increment,
-                "op_LogicalNot" => UserDefinedOperatorKind.LogicalNot,
-                "op_OnesComplement" => UserDefinedOperatorKind.OnesComplement,
-                "op_UnaryPlus" => UserDefinedOperatorKind.UnaryPlus,
-                "op_UnaryNegation" => UserDefinedOperatorKind.UnaryNegation,
-                _ => null
-            };
-        }
-
-        //// ===========================================================================================================
-        //// Binary Expressions
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Called when the visitor visits a BinaryExpressionSyntax node.
-        /// </summary>
-        /// <returns>An <see cref="ITsBinaryExpression"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
-        {
-            var leftSide = (ITsExpression)Visit(node.Left).Single();
-            var rightSide = (ITsExpression)Visit(node.Right).Single();
-
-            ITsBinaryExpression translated = Factory.BinaryExpression(
-                leftSide,
-                TranslateBinaryOperator(node.OperatorToken),
-                rightSide);
-            yield return translated;
-        }
-
         private TsAssignmentOperator TranslateAssignmentOperator(SyntaxToken operatorToken)
         {
             TsAssignmentOperator? op = operatorToken.Kind() switch
@@ -615,6 +495,102 @@ namespace Desalt.Core.Translation
             }
 
             return op.Value;
+        }
+
+        //// ===========================================================================================================
+        //// Unary Expressions
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a PrefixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITsUnaryExpression"/> or an <see cref="ITsCallExpression"/> if the unary
+        /// expression is backed by an overloaded operator function.
+        /// </returns>
+        public override IEnumerable<ITsAstNode> VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        {
+            if (!TryTranslateUserDefinedOperator(
+                node,
+                isTopLevelExpressionInStatement: false,
+                out ITsExpression? translated))
+            {
+                var operand = VisitExpression(node.Operand);
+                translated = Factory.UnaryExpression(
+                    operand,
+                    TranslateUnaryOperator(node.OperatorToken, asPrefix: true));
+            }
+
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a PostfixUnaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsUnaryExpression"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            if (!TryTranslateUserDefinedOperator(
+                node,
+                isTopLevelExpressionInStatement: false,
+                out ITsExpression? translated))
+            {
+                var operand = VisitExpression(node.Operand);
+                translated = Factory.UnaryExpression(
+                    operand,
+                    TranslateUnaryOperator(node.OperatorToken, asPrefix: false));
+            }
+
+            yield return translated;
+        }
+
+        private TsUnaryOperator TranslateUnaryOperator(SyntaxToken operatorToken, bool asPrefix)
+        {
+            TsUnaryOperator? op = operatorToken.Kind() switch
+            {
+                SyntaxKind.PlusPlusToken => asPrefix
+                    ? TsUnaryOperator.PrefixIncrement
+                    : TsUnaryOperator.PostfixIncrement,
+                SyntaxKind.MinusMinusToken => asPrefix
+                    ? TsUnaryOperator.PrefixDecrement
+                    : TsUnaryOperator.PostfixDecrement,
+                SyntaxKind.PlusToken => TsUnaryOperator.Plus,
+                SyntaxKind.MinusToken => TsUnaryOperator.Minus,
+                SyntaxKind.TildeToken => TsUnaryOperator.BitwiseNot,
+                SyntaxKind.ExclamationToken => TsUnaryOperator.LogicalNot,
+                _ => null,
+            };
+
+            if (op != null)
+            {
+                return op.Value;
+            }
+
+            _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+            return TsUnaryOperator.Plus;
+        }
+
+        //// ===========================================================================================================
+        //// Binary Expressions
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Called when the visitor visits a BinaryExpressionSyntax node.
+        /// </summary>
+        /// <returns>An <see cref="ITsBinaryExpression"/>.</returns>
+        public override IEnumerable<ITsAstNode> VisitBinaryExpression(BinaryExpressionSyntax node)
+        {
+            if (!TryTranslateUserDefinedOperator(
+                node,
+                isTopLevelExpressionInStatement: false,
+                out ITsExpression? translated))
+            {
+                var leftSide = VisitExpression(node.Left);
+                var rightSide = VisitExpression(node.Right);
+                translated = Factory.BinaryExpression(leftSide, TranslateBinaryOperator(node.OperatorToken), rightSide);
+            }
+
+            yield return translated;
         }
 
         private TsBinaryOperator TranslateBinaryOperator(SyntaxToken operatorToken)
@@ -643,13 +619,32 @@ namespace Desalt.Core.Translation
                 _ => null,
             };
 
-            if (op == null)
+            if (op != null)
             {
-                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
-                op = TsBinaryOperator.Add;
+                return op.Value;
             }
 
-            return op.Value;
+            _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+            return TsBinaryOperator.Add;
+        }
+
+        private bool TryTranslateUserDefinedOperator(
+            ExpressionSyntax node,
+            bool isTopLevelExpressionInStatement,
+            [NotNullWhen(true)] out ITsExpression? translatedExpression)
+        {
+            if (_userDefinedOperatorTranslator.TryTranslate(
+                node,
+                isTopLevelExpressionInStatement,
+                out translatedExpression,
+                out IEnumerable<ITsStatementListItem> addAdditionalStatementsRequiredBeforeTranslatedExpression))
+            {
+                _additionalStatementsNeededBeforeCurrentStatement.AddRange(
+                    addAdditionalStatementsRequiredBeforeTranslatedExpression);
+                return true;
+            }
+
+            return false;
         }
     }
 }

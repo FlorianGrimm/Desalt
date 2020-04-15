@@ -78,5 +78,12 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
             return new TsLexicalDeclaration(declaration.IsConst, valueAsImmutableArray);
         }
+
+        public static ITsLexicalDeclaration AddDeclarations(
+            this ITsLexicalDeclaration declaration,
+            IEnumerable<ITsLexicalBinding> valuesToAdd)
+        {
+            return new TsLexicalDeclaration(declaration.IsConst, declaration.Declarations.AddRange(valuesToAdd));
+        }
     }
 }

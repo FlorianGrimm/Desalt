@@ -8,6 +8,7 @@
 namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
@@ -34,12 +35,34 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a ExpressionStatementSyntax node.
         /// </summary>
-        /// <returns>An <see cref="ITsExpressionStatement"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsExpressionStatement"/> or a series of <see cref="ITsExpressionStatement"/> if the original
+        /// expression expands to multiple statements.
+        /// </returns>
         public override IEnumerable<ITsAstNode> VisitExpressionStatement(ExpressionStatementSyntax node)
         {
-            var expression = (ITsExpression)Visit(node.Expression).Single();
-            ITsExpressionStatement translated = Factory.ExpressionStatement(expression);
-            yield return translated;
+            // Special case: "naked" post increment/decrement user-defined operators are usually translated using
+            // temporary variables. However, if they are the only statement (`x++`), it only needs to get translated as
+            // `x = op_Increment(x)`.
+            if (TryTranslateUserDefinedOperator(
+                node.Expression,
+                isTopLevelExpressionInStatement: true,
+                out ITsExpression? translatedExpression))
+            {
+                return new[] { translatedExpression.ToStatement() };
+            }
+
+            var translatedStatements = new List<ITsStatementListItem>();
+            translatedExpression = VisitExpression(node.Expression);
+            ITsExpressionStatement translated = Factory.ExpressionStatement(translatedExpression);
+
+            // We may have additional statements that we have to output before this one. Do it now.
+            translatedStatements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
+            translatedStatements.Add(translated);
+
+            return translatedStatements;
         }
 
         /// <summary>
@@ -74,7 +97,10 @@ namespace Desalt.Core.Translation
         /// cref="LocalDeclarationStatementSyntax"/> contains a series of <see cref="VariableDeclaratorSyntax"/> for
         /// each variable declaration.
         /// </summary>
-        /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
+        /// <returns>
+        /// An <see cref="ITsLexicalDeclaration"/> and <see cref="_additionalStatementsNeededBeforeCurrentStatement"/>
+        /// should be empty.
+        /// </returns>
         public override IEnumerable<ITsAstNode> VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
             // TODO: figure out if the variable ever changes to determine if it's const vs. let
@@ -88,13 +114,35 @@ namespace Desalt.Core.Translation
                 node.Declaration.Type.GetLocation);
 
             // Translate all of the VariableDeclaratorSyntax nodes.
-            ITsSimpleLexicalBinding[] declarations =
-                VisitMultipleOfType<ITsSimpleLexicalBinding>(node.Declaration.Variables)
-                    .Select(binding => binding.WithVariableType(type))
-                    .ToArray();
+            ITsLexicalDeclaration translated = TranslateDeclarationVariables(node.Declaration.Variables, isConst, type);
 
-            // ReSharper disable once CoVariantArrayConversion
-            ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, declarations);
+            // Add all of the additional statements before this declaration.
+            var preStatements = _additionalStatementsNeededBeforeCurrentStatement.ToImmutableArray();
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+            foreach (ITsStatementListItem statement in preStatements)
+            {
+                yield return statement;
+            }
+
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Called when the visitor visits a <see cref="VariableDeclarationSyntax"/> node, which is a variable
+        /// declaration within a blocked statement like 'using' or 'for'. A <see cref="VariableDeclarationSyntax"/>
+        /// contains a series of <see cref="VariableDeclaratorSyntax"/> for each variable declaration.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITsLexicalDeclaration"/> and <see cref="_additionalStatementsNeededBeforeCurrentStatement"/>
+        /// could be populated with temporary variable declarations.
+        /// </returns>
+        public override IEnumerable<ITsAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            // TODO: Determine whether this should be a const or let declaration
+            const bool isConst = false;
+
+            // Iterate over all of the variables and translate them.
+            ITsLexicalDeclaration translated = TranslateDeclarationVariables(node.Variables, isConst);
             yield return translated;
         }
 
@@ -121,21 +169,62 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Called when the visitor visits a VariableDeclarationSyntax node, which is a variable declaration within a
-        /// blocked statement like 'using' or 'for'. A <see cref="VariableDeclarationSyntax"/> contains a series of <see
-        /// cref="VariableDeclaratorSyntax"/> for each variable declaration.
+        /// Translates a list of <see cref="VariableDeclaratorSyntax"/> nodes, taking into account user-defined
+        /// operators. Used in both <see cref="VisitVariableDeclaration"/> and <see
+        /// cref="VisitLocalDeclarationStatement"/>, where the only difference is whether a type definition is added to
+        /// the <see cref="ITsLexicalDeclaration"/>.
         /// </summary>
-        /// <returns>An <see cref="ITsLexicalDeclaration"/>.</returns>
-        public override IEnumerable<ITsAstNode> VisitVariableDeclaration(VariableDeclarationSyntax node)
+        /// <param name="variables">The list of <see cref="VariableDeclaratorSyntax"/> nodes to translate.</param>
+        /// <param name="isConst">TODO: Determine whether this should be a const or let declaration</param>
+        /// <param name="type">An optional type to add to the lexical declaration.</param>
+        /// <returns>
+        /// A <see cref="ITsLexicalDeclaration"/> containing all of the translated initializers. Also, <see
+        /// cref="_additionalStatementsNeededBeforeCurrentStatement"/> will contain any temporary variable declarations
+        /// that need to be prepended before the current statement.
+        /// </returns>
+        private ITsLexicalDeclaration TranslateDeclarationVariables(
+            SeparatedSyntaxList<VariableDeclaratorSyntax> variables,
+            bool isConst,
+            ITsType? type = null)
         {
-            // TODO: Determine whether this should be a const or let declaration
-            const bool isConst = false;
+            var preDeclarationStatements = new List<ITsStatementListItem>();
+            var declarations = new List<ITsSimpleLexicalBinding>();
 
-            // Iterate over all of the variables and translate them.
-            var lexicalBindings = VisitMultipleOfType<ITsLexicalBinding>(node.Variables);
+            ITsLexicalDeclaration CreateDeclaration()
+            {
+                ITsLexicalBinding[] bindings =
+                    (type != null ? declarations.Select(x => x.WithVariableType(type)) : declarations)
+                    .Cast<ITsLexicalBinding>()
+                    .ToArray();
 
-            ITsLexicalDeclaration translated = Factory.LexicalDeclaration(isConst, lexicalBindings.ToArray());
-            yield return translated;
+                return Factory.LexicalDeclaration(isConst, bindings);
+            }
+
+            foreach (var translatedBinding in variables.Select(VisitSingleOfType<ITsSimpleLexicalBinding>))
+            {
+                if (_additionalStatementsNeededBeforeCurrentStatement.Any())
+                {
+                    // Add any already-translated bindings to a new lexical declaration that should appear before the
+                    // additional statements (temporary variable declarations).
+                    if (declarations.Any())
+                    {
+                        ITsLexicalDeclaration combinedDeclaration = CreateDeclaration();
+                        preDeclarationStatements.Add(combinedDeclaration);
+
+                        declarations.Clear();
+                    }
+
+                    // Add the additional statements (temporary variable declarations).
+                    preDeclarationStatements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+                    _additionalStatementsNeededBeforeCurrentStatement.Clear();
+                }
+
+                declarations.Add(translatedBinding);
+            }
+
+            _additionalStatementsNeededBeforeCurrentStatement.AddRange(preDeclarationStatements);
+            ITsLexicalDeclaration declaration = CreateDeclaration();
+            return declaration;
         }
 
         //// ===========================================================================================================
@@ -457,58 +546,143 @@ namespace Desalt.Core.Translation
         {
             ITsLexicalDeclaration? initializerWithLexicalDeclaration = null;
             ITsExpression? initializer = null;
-            if (node.Declaration != null)
-            {
-                initializerWithLexicalDeclaration = VisitSingleOfType<ITsLexicalDeclaration>(node.Declaration);
-            }
-            else
-            {
-                // translate all of the initializers and create a comma expression from them
-                ITsExpression[] initializers = VisitMultipleOfType<ITsExpression>(node.Initializers).ToArray();
-                initializer = initializers.Length == 1 ? initializers[0] : Factory.CommaExpression(initializers);
-            }
+            TranslateForLoopInitializers(node, ref initializerWithLexicalDeclaration, ref initializer);
+            var preLoopInitializers = new List<ITsStatementListItem>(_additionalStatementsNeededBeforeCurrentStatement);
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
 
             ITsExpression? condition = node.Condition == null ? null : VisitExpression(node.Condition);
             ITsStatement statement = VisitStatement(node.Statement);
+            ITsExpression? incrementor = TranslateForLoopIncrementors(node.Incrementors, ref statement);
 
-            var translatedIncrementors = new List<ITsExpression>();
+            ITsForStatement translated = initializerWithLexicalDeclaration != null
+                ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
+                : Factory.For(initializer!, condition, incrementor, statement);
 
-            // Translate all of the incrementors and create a comma expression from them.
-            foreach (ExpressionSyntax incrementorNode in node.Incrementors)
+            foreach (ITsStatementListItem preLoopInitializer in preLoopInitializers)
             {
-                if (incrementorNode.Kind()
-                    .IsOneOf(
-                        SyntaxKind.PreIncrementExpression,
-                        SyntaxKind.PreDecrementExpression,
-                        SyntaxKind.PostIncrementExpression,
-                        SyntaxKind.PostDecrementExpression) &&
-                    GetExpectedSymbol(incrementorNode).IsUserDefinedOperator(out IMethodSymbol? methodSymbol))
+                yield return preLoopInitializer;
+            }
+
+            yield return translated;
+        }
+
+        /// <summary>
+        /// Translates the initializer part of a for loop `for(initializers, condition, incrementors)`, taking into
+        /// account user-defined operators.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="initializerWithLexicalDeclaration"></param>
+        /// <param name="initializer"></param>
+        private void TranslateForLoopInitializers(
+            ForStatementSyntax node,
+            ref ITsLexicalDeclaration? initializerWithLexicalDeclaration,
+            ref ITsExpression? initializer)
+        {
+            var preLoopStatements = new List<ITsStatementListItem>();
+
+            if (node.Declaration != null)
+            {
+                initializerWithLexicalDeclaration = VisitSingleOfType<ITsLexicalDeclaration>(node.Declaration);
+                return;
+            }
+
+            // Translate all of the initializers and create a comma expression from them.
+            var translatedInitializers = new List<ITsExpression>();
+            foreach (ExpressionSyntax initializerNode in node.Initializers)
+            {
+                // Translate the initializer either by converting it to a user-defined operator function call or a
+                // standard expression.
+                if (!TryTranslateUserDefinedOperator(
+                    initializerNode,
+                    isTopLevelExpressionInStatement: true,
+                    out initializer))
                 {
-                    var operandNode = incrementorNode is PrefixUnaryExpressionSyntax prefixUnaryExpression
-                        ? prefixUnaryExpression.Operand
-                        : ((PostfixUnaryExpressionSyntax)incrementorNode).Operand;
+                    initializer = VisitExpression(initializerNode);
+                }
 
-                    var translatedOperand = VisitExpression(operandNode);
+                // If we have additional statements that need to be output before the initializer, then we have to move this
+                // initializer and all preceding initializers outside of the for loop.
+                if (_additionalStatementsNeededBeforeCurrentStatement.Any())
+                {
+                    // Add the already-translated initializers first.
+                    preLoopStatements.AddRange(translatedInitializers.Select(x => x.ToStatement()));
 
-                    UserDefinedOperatorKind kind = _userDefinedOperatorTranslator.MethodNameToOperatorOverloadKind(
-                        methodSymbol.Name,
-                        incrementorNode.GetLocation);
-                    string functionName = _renameRules.UserDefinedOperatorMethodNames[kind];
-                    ITsExpression leftSide = TranslateIdentifierName(methodSymbol, incrementorNode, functionName);
-                    ITsCallExpression callExpression = Factory.Call(
-                        leftSide,
-                        Factory.ArgumentList(Factory.Argument(translatedOperand)));
+                    // Then add the additional statements (temporary variable declarations).
+                    preLoopStatements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+                    _additionalStatementsNeededBeforeCurrentStatement.Clear();
 
-                    ITsAssignmentExpression assignmentExpression = Factory.Assignment(
-                        translatedOperand,
-                        TsAssignmentOperator.SimpleAssign,
-                        callExpression);
-
-                    translatedIncrementors.Add(assignmentExpression);
+                    // And clear the already-translated initializers.
+                    translatedInitializers.Clear();
                 }
                 else
                 {
-                    var translatedIncrementor = VisitExpression(incrementorNode);
+                    translatedInitializers.Add(initializer);
+                }
+            }
+
+            initializer = translatedInitializers.Count switch
+            {
+                0 => null,
+                1 => translatedInitializers[0],
+                _ => Factory.CommaExpression(translatedInitializers.ToArray()),
+            };
+
+            _additionalStatementsNeededBeforeCurrentStatement.AddRange(preLoopStatements);
+        }
+
+        /// <summary>
+        /// Translates the incrementor part of a for loop `for(initializers, condition, incrementors)`, taking into
+        /// account user-defined operators.
+        /// </summary>
+        /// <param name="incrementors">The incrementor list to translate.</param>
+        /// <param name="forLoopStatement">
+        /// A reference to the already-translated for loop statement, which could be changed in this method.
+        /// </param>
+        /// <returns>A <see cref="ITsExpression"/> representing the incrementor.</returns>
+        private ITsExpression? TranslateForLoopIncrementors(
+            SeparatedSyntaxList<ExpressionSyntax> incrementors,
+            ref ITsStatement forLoopStatement)
+        {
+            var translatedIncrementors = new List<ITsExpression>();
+            var blockStatements = new List<ITsStatementListItem>();
+
+            foreach (ExpressionSyntax incrementorNode in incrementors)
+            {
+                // Translate the incrementor either by converting it to a user-defined operator function call or a
+                // standard expression.
+                if (!TryTranslateUserDefinedOperator(
+                    incrementorNode,
+                    isTopLevelExpressionInStatement: true,
+                    out ITsExpression? translatedIncrementor))
+                {
+                    translatedIncrementor = VisitExpression(incrementorNode);
+                }
+
+                // If we have additional statements that need to be output before the incrementor, then we have to move the
+                // incrementor inside the for loop right before the end.
+                if (_additionalStatementsNeededBeforeCurrentStatement.Any())
+                {
+                    // Add the already-translated incrementors first.
+                    blockStatements.AddRange(translatedIncrementors.Select(x => x.ToStatement()));
+
+                    // Then add the additional statements (temporary variable declarations).
+                    blockStatements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+                    _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
+                    // Then add the just-translated incrementor.
+                    blockStatements.Add(translatedIncrementor.ToStatement());
+
+                    // And clear the already-translated incrementor list.
+                    translatedIncrementors.Clear();
+                }
+                else if (blockStatements.Any())
+                {
+                    // If we've already had to move the incrementors to the body, add it there.
+                    blockStatements.Add(translatedIncrementor.ToStatement());
+                }
+                else
+                {
+                    // Incrementors (so far) can appear as part of the for loop incrementor list.
                     translatedIncrementors.Add(translatedIncrementor);
                 }
             }
@@ -520,11 +694,23 @@ namespace Desalt.Core.Translation
                 _ => Factory.CommaExpression(translatedIncrementors.ToArray())
             };
 
-            ITsForStatement translated = initializerWithLexicalDeclaration != null
-                ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
-                : Factory.For(initializer!, condition, incrementor, statement);
+            // If we had to move the incrementors to the body, then convert the statement to a block statement if
+            // needed, and then add the incrementors at the end of the block.
+            if (blockStatements.Any())
+            {
+                if (forLoopStatement is ITsBlockStatement blockStatement)
+                {
+                    blockStatement = Factory.Block(blockStatement.Statements.Concat(blockStatements).ToArray());
+                }
+                else
+                {
+                    blockStatement = Factory.Block(new[] { forLoopStatement }.Concat(blockStatements).ToArray());
+                }
 
-            yield return translated;
+                forLoopStatement = blockStatement;
+            }
+
+            return incrementor;
         }
 
         /// <summary>

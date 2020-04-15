@@ -50,11 +50,14 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Wraps the statement in a block statement.
+        /// Wraps the statement in a block statement, unless it's already a <see cref="ITsBlockStatement"/>, in which
+        /// case it is just returned.
         /// </summary>
         public static ITsBlockStatement ToBlock(this ITsStatement statement)
         {
-            return new TsBlockStatement(statement.ToSafeArray());
+            return statement is ITsBlockStatement blockStatement
+                ? blockStatement
+                : new TsBlockStatement(new[] { statement });
         }
 
         /// <summary>
@@ -86,38 +89,23 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static string ToCodeDisplay(this TsUnaryOperator unaryOperator)
         {
-            switch (unaryOperator)
+            return unaryOperator switch
             {
-                case TsUnaryOperator.Delete:
-                    return "delete";
-                case TsUnaryOperator.Void:
-                    return "void";
-                case TsUnaryOperator.Typeof:
-                    return "typeof";
-
-                case TsUnaryOperator.PrefixIncrement:
-                case TsUnaryOperator.PostfixIncrement:
-                    return "++";
-
-                case TsUnaryOperator.PrefixDecrement:
-                case TsUnaryOperator.PostfixDecrement:
-                    return "--";
-
-                case TsUnaryOperator.Plus:
-                    return "+";
-                case TsUnaryOperator.Minus:
-                    return "-";
-                case TsUnaryOperator.BitwiseNot:
-                    return "~";
-                case TsUnaryOperator.LogicalNot:
-                    return "!";
-
-                case TsUnaryOperator.Cast:
-                    throw new InvalidOperationException($"Use {nameof(TsCastExpression.Emit)} instead");
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null);
-            }
+                TsUnaryOperator.Delete => "delete",
+                TsUnaryOperator.Void => "void",
+                TsUnaryOperator.Typeof => "typeof",
+                TsUnaryOperator.PrefixIncrement => "++",
+                TsUnaryOperator.PostfixIncrement => "++",
+                TsUnaryOperator.PrefixDecrement => "--",
+                TsUnaryOperator.PostfixDecrement => "--",
+                TsUnaryOperator.Plus => "+",
+                TsUnaryOperator.Minus => "-",
+                TsUnaryOperator.BitwiseNot => "~",
+                TsUnaryOperator.LogicalNot => "!",
+                TsUnaryOperator.Cast => throw new InvalidOperationException(
+                    $"Use {nameof(TsCastExpression.Emit)} instead"),
+                _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null)
+            };
         }
 
         /// <summary>
@@ -125,57 +113,33 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static string ToCodeDisplay(this TsBinaryOperator binaryOperator)
         {
-            switch (binaryOperator)
+            return binaryOperator switch
             {
-                case TsBinaryOperator.Multiply:
-                    return "*";
-                case TsBinaryOperator.Divide:
-                    return "/";
-                case TsBinaryOperator.Modulo:
-                    return "%";
-                case TsBinaryOperator.Add:
-                    return "+";
-                case TsBinaryOperator.Subtract:
-                    return "-";
-                case TsBinaryOperator.LeftShift:
-                    return "<<";
-                case TsBinaryOperator.SignedRightShift:
-                    return ">>";
-                case TsBinaryOperator.UnsignedRightShift:
-                    return ">>>";
-                case TsBinaryOperator.LessThan:
-                    return "<";
-                case TsBinaryOperator.GreaterThan:
-                    return ">";
-                case TsBinaryOperator.LessThanEqual:
-                    return "<=";
-                case TsBinaryOperator.GreaterThanEqual:
-                    return ">=";
-                case TsBinaryOperator.InstanceOf:
-                    return "instanceof";
-                case TsBinaryOperator.In:
-                    return "in";
-                case TsBinaryOperator.Equals:
-                    return "==";
-                case TsBinaryOperator.NotEquals:
-                    return "!=";
-                case TsBinaryOperator.StrictEquals:
-                    return "===";
-                case TsBinaryOperator.StrictNotEquals:
-                    return "!==";
-                case TsBinaryOperator.BitwiseAnd:
-                    return "&";
-                case TsBinaryOperator.BitwiseXor:
-                    return "^";
-                case TsBinaryOperator.BitwiseOr:
-                    return "|";
-                case TsBinaryOperator.LogicalAnd:
-                    return "&&";
-                case TsBinaryOperator.LogicalOr:
-                    return "||";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null);
-            }
+                TsBinaryOperator.Multiply => "*",
+                TsBinaryOperator.Divide => "/",
+                TsBinaryOperator.Modulo => "%",
+                TsBinaryOperator.Add => "+",
+                TsBinaryOperator.Subtract => "-",
+                TsBinaryOperator.LeftShift => "<<",
+                TsBinaryOperator.SignedRightShift => ">>",
+                TsBinaryOperator.UnsignedRightShift => ">>>",
+                TsBinaryOperator.LessThan => "<",
+                TsBinaryOperator.GreaterThan => ">",
+                TsBinaryOperator.LessThanEqual => "<=",
+                TsBinaryOperator.GreaterThanEqual => ">=",
+                TsBinaryOperator.InstanceOf => "instanceof",
+                TsBinaryOperator.In => "in",
+                TsBinaryOperator.Equals => "==",
+                TsBinaryOperator.NotEquals => "!=",
+                TsBinaryOperator.StrictEquals => "===",
+                TsBinaryOperator.StrictNotEquals => "!==",
+                TsBinaryOperator.BitwiseAnd => "&",
+                TsBinaryOperator.BitwiseXor => "^",
+                TsBinaryOperator.BitwiseOr => "|",
+                TsBinaryOperator.LogicalAnd => "&&",
+                TsBinaryOperator.LogicalOr => "||",
+                _ => throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null)
+            };
         }
 
         /// <summary>
@@ -183,35 +147,25 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static string ToCodeDisplay(this TsAssignmentOperator assignmentOperator)
         {
-            switch (assignmentOperator)
+            return assignmentOperator switch
             {
-                case TsAssignmentOperator.SimpleAssign:
-                    return "=";
-                case TsAssignmentOperator.MultiplyAssign:
-                    return "*=";
-                case TsAssignmentOperator.DivideAssign:
-                    return "/=";
-                case TsAssignmentOperator.ModuloAssign:
-                    return "%=";
-                case TsAssignmentOperator.AddAssign:
-                    return "+=";
-                case TsAssignmentOperator.SubtractAssign:
-                    return "-=";
-                case TsAssignmentOperator.LeftShiftAssign:
-                    return "<<=";
-                case TsAssignmentOperator.SignedRightShiftAssign:
-                    return ">>=";
-                case TsAssignmentOperator.UnsignedRightShiftAssign:
-                    return ">>>=";
-                case TsAssignmentOperator.BitwiseAndAssign:
-                    return "&=";
-                case TsAssignmentOperator.BitwiseXorAssign:
-                    return "^=";
-                case TsAssignmentOperator.BitwiseOrAssign:
-                    return "|=";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(assignmentOperator), assignmentOperator, message: null);
-            }
+                TsAssignmentOperator.SimpleAssign => "=",
+                TsAssignmentOperator.MultiplyAssign => "*=",
+                TsAssignmentOperator.DivideAssign => "/=",
+                TsAssignmentOperator.ModuloAssign => "%=",
+                TsAssignmentOperator.AddAssign => "+=",
+                TsAssignmentOperator.SubtractAssign => "-=",
+                TsAssignmentOperator.LeftShiftAssign => "<<=",
+                TsAssignmentOperator.SignedRightShiftAssign => ">>=",
+                TsAssignmentOperator.UnsignedRightShiftAssign => ">>>=",
+                TsAssignmentOperator.BitwiseAndAssign => "&=",
+                TsAssignmentOperator.BitwiseXorAssign => "^=",
+                TsAssignmentOperator.BitwiseOrAssign => "|=",
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(assignmentOperator),
+                    assignmentOperator,
+                    message: null)
+            };
         }
 
         /// <summary>
