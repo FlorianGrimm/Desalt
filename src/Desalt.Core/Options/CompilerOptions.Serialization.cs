@@ -159,7 +159,7 @@ namespace Desalt.Core.Options
                     string key = reader.Value!.ToString();
                     reader.Read();
 
-                    var value = serializer.Deserialize<TValue>(reader);
+                    var value = serializer.Deserialize<TValue>(reader) ?? throw new InvalidOperationException();
                     reader.Read();
 
                     TKey convertedKey = typeof(TKey).IsEnum

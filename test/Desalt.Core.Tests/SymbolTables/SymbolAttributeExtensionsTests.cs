@@ -68,7 +68,7 @@ class C {}";
                 .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                 .Single(m => m.Name == "C");
 
-            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
+            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string? value)
                 .Should()
                 .BeFalse();
             value.Should().BeNull();
@@ -94,7 +94,7 @@ class C {}";
                 .Select(node => context.SemanticModel.GetDeclaredSymbol(node))
                 .Single(m => m.Name == "C");
 
-            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string value)
+            classSymbol.TryGetAttributeValue(SaltarelleAttributeName.ScriptName, out string? value)
                 .Should()
                 .BeTrue();
             value.Should().Be("Success");

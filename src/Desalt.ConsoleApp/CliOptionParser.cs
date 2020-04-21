@@ -322,7 +322,7 @@ namespace Desalt.ConsoleApp
             }
 
             value = _argReader.Read();
-            return true;
+            return symbol != null && value != null;
         }
 
         private bool TryParseMappedValue<T>(string optionName, IReadOnlyDictionary<string, T> mappings, out T enumValue)
