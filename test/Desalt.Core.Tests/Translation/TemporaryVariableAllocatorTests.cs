@@ -7,6 +7,7 @@
 
 namespace Desalt.Core.Tests.Translation
 {
+    using System;
     using Desalt.Core.Translation;
     using FluentAssertions;
     using NUnit.Framework;
@@ -47,6 +48,29 @@ namespace Desalt.Core.Tests.Translation
             allocator.Return("a3");
 
             allocator.Reserve("a").Should().Be("a2");
+        }
+
+        [Test]
+        public void Push_PopReservationScope_should_keep_track_of_reserved_variables()
+        {
+            var allocator = new TemporaryVariableAllocator();
+            allocator.Reserve("a").Should().Be("a1");
+
+            allocator.PushReservationScope();
+            allocator.Reserve("a").Should().Be("a2");
+            allocator.Reserve("b").Should().Be("b1");
+            allocator.PopReservationScope();
+
+            allocator.Reserve("a").Should().Be("a2");
+            allocator.Reserve("b").Should().Be("b1");
+        }
+
+        [Test]
+        public void PopReservationScope_should_throw_if_there_are_no_scopes()
+        {
+            var allocator = new TemporaryVariableAllocator();
+            Action action = () => allocator.PopReservationScope();
+            action.Should().ThrowExactly<InvalidOperationException>();
         }
     }
 }
