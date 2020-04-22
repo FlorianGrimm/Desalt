@@ -170,7 +170,7 @@ class Num {{
 }}
 ",
                 discoveryKind,
-                extractApplicableTypeScriptSnippetFunc: code => ExtractApplicableLines(code, "method"));
+                extractApplicableTypeScriptSnippet: true);
         }
 
         [Test]

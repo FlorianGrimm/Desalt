@@ -22,12 +22,12 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    List<int> list = new List<int>();
-    list.AddRange(new [] { 1, 2, 3 });
+List<int> list = new List<int>();
+list.AddRange(new [] { 1, 2, 3 });
 ",
                 @"
-    let list: number[] = [];
-    ss.arrayAddRange(list, [1, 2, 3]);
+let list: number[] = [];
+ss.arrayAddRange(list, [1, 2, 3]);
 ",
                 SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
@@ -44,16 +44,16 @@ namespace Desalt.Core.Tests.Translation
         public async Task InvocationExpression_should_handle_nested_invocations_with_InlineCode()
         {
             await AssertTranslationWithClassCAndMethod(@"
-    const string requestFuncName = ""requestAnimationFrame"";
-    Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
-    {
-        return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
-    };
+const string requestFuncName = ""requestAnimationFrame"";
+Func<Action, int> requestAnimationFrameFunc = delegate(Action callback)
+{
+    return TypeUtil.GetField<Func<Action, int>>(typeof(Window), requestFuncName)(callback);
+};
 ", @"
-    const requestFuncName: string = 'requestAnimationFrame';
-    let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
-      return window[requestFuncName](callback);
-    };
+const requestFuncName: string = 'requestAnimationFrame';
+let requestAnimationFrameFunc: (action: () => void) => number = (callback: () => void) => {
+  return window[requestFuncName](callback);
+};
 ", SymbolDiscoveryKind.DocumentAndAllAssemblyTypes);
         }
 

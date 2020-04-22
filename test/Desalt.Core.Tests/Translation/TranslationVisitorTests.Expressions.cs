@@ -111,21 +111,21 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 123;
-    x = +x;
-    x = -x;
-    x = ~x;
-    x = ++x;
-    x = --x;
-    bool y = !true;",
+int x = 123;
+x = +x;
+x = -x;
+x = ~x;
+x = ++x;
+x = --x;
+bool y = !true;",
                 @"
-    let x: number = 123;
-    x = +x;
-    x = -x;
-    x = ~x;
-    x = ++x;
-    x = --x;
-    let y: boolean = !true;
+let x: number = 123;
+x = +x;
+x = -x;
+x = ~x;
+x = ++x;
+x = --x;
+let y: boolean = !true;
 ");
         }
 
@@ -134,14 +134,14 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 123;
-    x = x++;
-    x = x--;
+int x = 123;
+x = x++;
+x = x--;
 ",
                 @"
-    let x: number = 123;
-    x = x++;
-    x = x--;
+let x: number = 123;
+x = x++;
+x = x--;
 ");
         }
 
@@ -149,32 +149,32 @@ class Logger {
         public async Task Binary_expressions_on_numbers()
         {
             await AssertTranslationWithClassCAndMethod(@"
-    int x = 1;
-    int y = 2;
-    x = x * y;
-    x = x / y;
-    x = x % y;
-    x = x + y;
-    x = x - y;
-    x = x << y;
-    x = x >> y;
-    x = x & y;
-    x = x ^ y;
-    x = x | y;
+int x = 1;
+int y = 2;
+x = x * y;
+x = x / y;
+x = x % y;
+x = x + y;
+x = x - y;
+x = x << y;
+x = x >> y;
+x = x & y;
+x = x ^ y;
+x = x | y;
 ",
                 @"
-    let x: number = 1;
-    let y: number = 2;
-    x = x * y;
-    x = x / y;
-    x = x % y;
-    x = x + y;
-    x = x - y;
-    x = x << y;
-    x = x >> y;
-    x = x & y;
-    x = x ^ y;
-    x = x | y;
+let x: number = 1;
+let y: number = 2;
+x = x * y;
+x = x / y;
+x = x % y;
+x = x + y;
+x = x - y;
+x = x << y;
+x = x >> y;
+x = x & y;
+x = x ^ y;
+x = x | y;
 ");
         }
 
@@ -183,24 +183,24 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 1;
-    int y = 2;
-    bool z = x < y;
-    z = x > y;
-    z = x <= y;
-    z = x >= y;
-    z = x == y;
-    z = x != y;
+int x = 1;
+int y = 2;
+bool z = x < y;
+z = x > y;
+z = x <= y;
+z = x >= y;
+z = x == y;
+z = x != y;
 ",
                 @"
-    let x: number = 1;
-    let y: number = 2;
-    let z: boolean = x < y;
-    z = x > y;
-    z = x <= y;
-    z = x >= y;
-    z = x === y;
-    z = x !== y;
+let x: number = 1;
+let y: number = 2;
+let z: boolean = x < y;
+z = x > y;
+z = x <= y;
+z = x >= y;
+z = x === y;
+z = x !== y;
 ");
         }
 
@@ -209,16 +209,16 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    bool x = true;
-    bool y = false;
-    x = x && y;
-    x = x || y;
+bool x = true;
+bool y = false;
+x = x && y;
+x = x || y;
 ",
                 @"
-    let x: boolean = true;
-    let y: boolean = false;
-    x = x && y;
-    x = x || y;
+let x: boolean = true;
+let y: boolean = false;
+x = x && y;
+x = x || y;
 ");
         }
 
@@ -251,32 +251,32 @@ class C {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 1;
-    x = x;
-    x *= x;
-    x /= x;
-    x %= x;
-    x += x;
-    x -= x;
-    x <<= x;
-    x >>= x;
-    x &= x;
-    x ^= x;
-    x |= x;
+int x = 1;
+x = x;
+x *= x;
+x /= x;
+x %= x;
+x += x;
+x -= x;
+x <<= x;
+x >>= x;
+x &= x;
+x ^= x;
+x |= x;
 ",
                 @"
-    let x: number = 1;
-    x = x;
-    x *= x;
-    x /= x;
-    x %= x;
-    x += x;
-    x -= x;
-    x <<= x;
-    x >>= x;
-    x &= x;
-    x ^= x;
-    x |= x;
+let x: number = 1;
+x = x;
+x *= x;
+x /= x;
+x %= x;
+x += x;
+x -= x;
+x <<= x;
+x >>= x;
+x &= x;
+x ^= x;
+x |= x;
 ");
         }
 
@@ -296,8 +296,16 @@ class C {
         public async Task ArrayCreationExpression_with_no_initializer_should_work()
         {
             await AssertTranslationWithClassCAndMethod(
-                "var arr = new int[0]; arr = new int[20]; arr = new int[1 + 10];",
-                "let arr: number[] = [];\n    arr = new Array(20);\n    arr = new Array(1 + 10);");
+                @"
+var arr = new int[0];
+arr = new int[20];
+arr = new int[1 + 10];
+",
+                @"
+let arr: number[] = [];
+arr = new Array(20);
+arr = new Array(1 + 10);
+");
         }
 
         //// ===========================================================================================================

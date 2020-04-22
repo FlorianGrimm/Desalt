@@ -23,23 +23,6 @@ namespace Desalt.Core.Tests.Translation
 
     public partial class TranslationVisitorTests
     {
-        private static string ExtractApplicableLines(string code, string blockName)
-        {
-            string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                // Read until we see the block name.
-                .SkipWhile(line => !line.Contains(blockName, StringComparison.Ordinal))
-                .Skip(1)
-                // Skip any lines that contain an opening brace (in C#)
-                .SkipWhile(line => line.TrimStart().StartsWith('{'))
-                // Read all of the contents until the next brace.
-                .TakeWhile(line => !line.TrimStart().StartsWith('}'))
-                // Get rid of the extraneous whitespace.
-                .Select(line => line.Trim())
-                .ToArray();
-
-            return string.Join('\n', lines);
-        }
-
         private static Task AssertTranslationWithClassCAndMethod(
             string codeSnippet,
             string expectedTypeScriptCode,
@@ -51,18 +34,22 @@ class C
 {{
     void Method()
     {{
+        int startHere = 0;
         {codeSnippet}
+        int endHere = 0;
     }}
 }}",
                 $@"
 class C {{
   private method(): void {{
-    {expectedTypeScriptCode.Replace("\r\n", "\n").Trim()}
+    let startHere: number = 0;
+{expectedTypeScriptCode.Replace("\r\n", "\n").Trim()}
+    let endHere: number = 0;
   }}
 }}
 ",
                 discoveryKind,
-                extractApplicableTypeScriptSnippetFunc: code => ExtractApplicableLines(code, "method"));
+                extractApplicableTypeScriptSnippet: true);
         }
 
         /// <summary>
@@ -76,7 +63,7 @@ class C {{
         /// results in the translated code. For example, [InlineCode] won't be used for the system symbols.
         /// </param>
         /// <param name="populateOptionsFunc">If provided, allows callers to adjust the options used for the translation.</param>
-        /// <param name="extractApplicableTypeScriptSnippetFunc">
+        /// <param name="extractApplicableTypeScriptSnippet">
         /// If provided, allows callers to extract just the piece of translated TypeScript code that should be examined.
         /// This is helpful when using a boilerplate class/method and you only care about the statements inside of the function.
         /// </param>
@@ -85,7 +72,7 @@ class C {{
             string expectedTypeScriptCode,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
             Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null,
-            Func<string, string>? extractApplicableTypeScriptSnippetFunc = null)
+            bool extractApplicableTypeScriptSnippet = false)
         {
             string code = $@"
 using System;
@@ -97,7 +84,7 @@ using System.Runtime.CompilerServices;
 {codeSnippet}
 ";
 
-            // get rid of \r\n sequences in the expected output
+            // Get rid of \r\n sequences in the expected output.
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
@@ -114,11 +101,34 @@ using System.Runtime.CompilerServices;
 
             visitor.Diagnostics.Should().BeEmpty();
 
-            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
+            static string ExtractApplicableLines(string code, bool isActual)
+            {
+                string[] lines = code.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+
+                    // Read until we see the block name.
+                    .SkipWhile(line => !line.Contains("startHere", StringComparison.Ordinal))
+                    .Skip(1)
+
+                    // Read all of the contents until the next brace.
+                    .TakeWhile(line => !line.Contains("endHere", StringComparison.Ordinal))
+
+                    // Get rid of the extraneous whitespace.
+                    .Select(line => isActual ? line.StartsWith("    ", StringComparison.Ordinal) ? line[4..] : line : line)
+                    .ToArray();
+
+                return string.Join('\n', lines);
+            }
+
+            // Rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings.
             string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
-            string applicableTranslated = extractApplicableTypeScriptSnippetFunc?.Invoke(translated) ?? translated;
-            string applicableExpected = extractApplicableTypeScriptSnippetFunc?.Invoke(expectedTypeScriptCode) ??
-                expectedTypeScriptCode;
+
+            string applicableTranslated = extractApplicableTypeScriptSnippet
+                ? ExtractApplicableLines(translated, isActual: true)
+                : translated;
+
+            string applicableExpected = extractApplicableTypeScriptSnippet
+                ? ExtractApplicableLines(expectedTypeScriptCode, isActual: false)
+                : expectedTypeScriptCode;
 
             applicableTranslated.Should().Be(applicableExpected);
         }
