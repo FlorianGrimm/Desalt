@@ -24,6 +24,25 @@ namespace Desalt.Core.Translation
     internal sealed partial class TranslationVisitor
     {
         /// <summary>
+        /// Returns the specified translated statement after any additional statements and clears the <see
+        /// cref="_additionalStatementsNeededBeforeCurrentStatement"/> list.
+        /// </summary>
+        private IEnumerable<ITsStatementListItem> ReturnVisitResultPlusAdditionalStatements(
+            ITsStatementListItem translated)
+        {
+            // Copy the additional statements here in case they change while we're iterating (it shouldn't but to be safe...).
+            var copy = _additionalStatementsNeededBeforeCurrentStatement.ToImmutableArray();
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
+            foreach (ITsStatementListItem statement in copy)
+            {
+                yield return statement;
+            }
+
+            yield return translated;
+        }
+
+        /// <summary>
         /// Called when the visitor visits a EmptyStatementSyntax node.
         /// </summary>
         /// <returns>An <see cref="ITsEmptyStatement"/>.</returns>
@@ -44,25 +63,16 @@ namespace Desalt.Core.Translation
             // Special case: "naked" post increment/decrement user-defined operators are usually translated using
             // temporary variables. However, if they are the only statement (`x++`), it only needs to get translated as
             // `x = op_Increment(x)`.
-            if (TryTranslateUserDefinedOperator(
+            if (!TryTranslateUserDefinedOperator(
                 node.Expression,
                 isTopLevelExpressionInStatement: true,
                 out ITsExpression? translatedExpression))
             {
-                return new[] { translatedExpression.ToStatement() };
+                translatedExpression = VisitExpression(node.Expression);
             }
 
-            var translatedStatements = new List<ITsStatementListItem>();
-            translatedExpression = VisitExpression(node.Expression);
             ITsExpressionStatement translated = Factory.ExpressionStatement(translatedExpression);
-
-            // We may have additional statements that we have to output before this one. Do it now.
-            translatedStatements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
-            _additionalStatementsNeededBeforeCurrentStatement.Clear();
-
-            translatedStatements.Add(translated);
-
-            return translatedStatements;
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -115,16 +125,7 @@ namespace Desalt.Core.Translation
 
             // Translate all of the VariableDeclaratorSyntax nodes.
             ITsLexicalDeclaration translated = TranslateDeclarationVariables(node.Declaration.Variables, isConst, type);
-
-            // Add all of the additional statements before this declaration.
-            var preStatements = _additionalStatementsNeededBeforeCurrentStatement.ToImmutableArray();
-            _additionalStatementsNeededBeforeCurrentStatement.Clear();
-            foreach (ITsStatementListItem statement in preStatements)
-            {
-                yield return statement;
-            }
-
-            yield return translated;
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -238,11 +239,15 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitIfStatement(IfStatementSyntax node)
         {
             var ifCondition = VisitExpression(node.Condition);
-            var ifStatement = VisitStatement(node.Statement);
+            var ifStatements = VisitMultipleOfType<ITsStatementListItem>(node.Statement);
+            ITsStatement ifStatement = ifStatements.Count > 1
+                ? Factory.Block(ifStatements.ToArray())
+                : (ITsStatement)ifStatements[0];
+
             ITsStatement? elseStatement = node.Else == null ? null : VisitStatement(node.Else.Statement);
 
             ITsIfStatement translated = Factory.IfStatement(ifCondition, ifStatement, elseStatement);
-            yield return translated;
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         //// ===========================================================================================================
@@ -263,10 +268,7 @@ namespace Desalt.Core.Translation
             {
                 if (_lastCatchIdentifier == null)
                 {
-                    _diagnostics.Add(
-                        DiagnosticFactory.InternalError(
-                            "_lastCatchIdentifier should have been set",
-                            node.GetLocation()));
+                    ReportInternalError("_lastCatchIdentifier should have been set", node);
                     expression = Factory.Identifier("FIXME");
                 }
                 else
@@ -280,7 +282,7 @@ namespace Desalt.Core.Translation
             }
 
             ITsThrowStatement translated = Factory.Throw(expression);
-            yield return translated;
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -291,7 +293,7 @@ namespace Desalt.Core.Translation
         {
             var tryBlock = VisitSingleOfType<ITsBlockStatement>(node.Block);
 
-            // translate only the first catch clause
+            // Translate only the first catch clause.
             if (node.Catches.Count > 1)
             {
                 _diagnostics.Add(DiagnosticFactory.CatchClausesWithMoreThanOneParameterNotYetSupported(node));
@@ -385,11 +387,11 @@ namespace Desalt.Core.Translation
             // }
             if (node.Declaration != null)
             {
-                // translate the declaration
+                // Translate the declaration.
                 var declaration = VisitSingleOfType<ITsLexicalDeclaration>(node.Declaration);
                 declaration = declaration.WithIsConst(true);
 
-                // get the type of the declaration
+                // Get the type of the declaration.
                 ITypeSymbol? typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
                 ITsType? declarationType = typeSymbol == null
                     ? null
@@ -399,13 +401,17 @@ namespace Desalt.Core.Translation
                         _diagnostics,
                         node.Declaration.Type.GetLocation);
 
-                // fix up all of the declarations to add the type
+                // Fix up all of the declarations to add the type.
                 if (declarationType != null)
                 {
                     declaration = declaration.WithDeclarations(
                         declaration.Declarations.Cast<ITsSimpleLexicalBinding>()
                             .Select(binding => binding.WithVariableType(declarationType)));
                 }
+
+                // Add any additional statements before this statement.
+                statements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+                _additionalStatementsNeededBeforeCurrentStatement.Clear();
 
                 statements.Add(declaration);
 
@@ -429,10 +435,16 @@ namespace Desalt.Core.Translation
             // }
             else
             {
-                // translate the expression
-                var expression = VisitExpression(node.Expression!);
+                // Translate the expression.
+                if (!TryTranslateUserDefinedOperator(
+                    node.Expression!,
+                    isTopLevelExpressionInStatement: true,
+                    out ITsExpression? expression))
+                {
+                    expression = VisitExpression(node.Expression!);
+                }
 
-                // try to find the type of the expression
+                // Try to find the type of the expression.
                 ITypeSymbol? expressionTypeSymbol =
                     _semanticModel.GetTypeInfo(node.Expression, _cancellationToken).ConvertedType;
 
@@ -444,11 +456,11 @@ namespace Desalt.Core.Translation
                         _diagnostics,
                         node.Expression!.GetLocation);
 
-                // create a temporary variable name to hold the expression
+                // Create a temporary variable name to hold the expression.
                 reservedTemporaryVariable = _temporaryVariableAllocator.Reserve("$using");
                 variableNameIdentifier = Factory.Identifier(reservedTemporaryVariable);
 
-                // assign the expression to the temporary variable
+                // Assign the expression to the temporary variable.
                 ITsLexicalDeclaration declaration = Factory.LexicalDeclaration(
                     isConst: true,
                     declarations: new ITsLexicalBinding[]
@@ -456,14 +468,18 @@ namespace Desalt.Core.Translation
                         Factory.SimpleLexicalBinding(variableNameIdentifier, variableType, expression)
                     });
 
+                // Add any additional statements before this statement.
+                statements.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+                _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
                 statements.Add(declaration);
             }
 
-            // create the try block, which is the using block
+            // Create the try block, which is the using block.
             var usingBlock = VisitStatement(node.Statement);
             if (usingBlock is ITsBlockStatement tryBlock)
             {
-                // remove any trailing newlines
+                // Remove any trailing newlines.
                 tryBlock = tryBlock.WithTrailingTrivia();
             }
             else
@@ -471,20 +487,20 @@ namespace Desalt.Core.Translation
                 tryBlock = Factory.Block(usingBlock);
             }
 
-            // create the finally block, which disposes the object
+            // Create the finally block, which disposes the object.
             ITsBlockStatement finallyBlock = Factory.Block(
                 Factory.IfStatement(
                     variableNameIdentifier,
                     Factory.Block(Factory.Call(Factory.MemberDot(variableNameIdentifier, "dispose")).ToStatement())));
 
-            // create the try/finally statement
+            // Create the try/finally statement.
             ITsTryStatement tryFinally = Factory.TryFinally(tryBlock, finallyBlock);
             statements.Add(tryFinally);
 
-            // wrap the declaration inside of a block so that scoping will be correct
+            // Wrap the declaration inside of a block so that scoping will be correct.
             ITsBlockStatement translated = Factory.Block(statements.ToArray()).WithTrailingTrivia(Factory.Newline);
 
-            // return the temporary variable to the allocator
+            // Return the temporary variable to the allocator.
             if (reservedTemporaryVariable != null)
             {
                 _temporaryVariableAllocator.Return(reservedTemporaryVariable);
@@ -523,11 +539,19 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsForOfStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitForEachStatement(ForEachStatementSyntax node)
         {
-            // translate the variable declaration - the 'x' in 'for (const x of )'
+            // Translate the variable declaration - the 'x' in 'for (const x of )'.
             // NOTE: in TypeScript you can't actually have a type annotation on the left hand side of
             //       a for/of loop, so we just translate the variable name.
             ITsIdentifier declaration = Factory.Identifier(node.Identifier.Text);
-            var rightSide = VisitExpression(node.Expression);
+
+            if (!TryTranslateUserDefinedOperator(
+                node.Expression,
+                isTopLevelExpressionInStatement: true,
+                out ITsExpression? rightSide))
+            {
+                rightSide = VisitExpression(node.Expression);
+            }
+
             var statement = VisitStatement(node.Statement);
 
             ITsForOfStatement translated = Factory.ForOf(
@@ -535,7 +559,8 @@ namespace Desalt.Core.Translation
                 declaration,
                 rightSide,
                 statement);
-            yield return translated;
+
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -551,6 +576,9 @@ namespace Desalt.Core.Translation
             _additionalStatementsNeededBeforeCurrentStatement.Clear();
 
             ITsExpression? condition = node.Condition == null ? null : VisitExpression(node.Condition);
+            preLoopInitializers.AddRange(_additionalStatementsNeededBeforeCurrentStatement);
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
             ITsStatement statement = VisitStatement(node.Statement);
             ITsExpression? incrementor = TranslateForLoopIncrementors(node.Incrementors, ref statement);
 
@@ -558,12 +586,8 @@ namespace Desalt.Core.Translation
                 ? Factory.For(initializerWithLexicalDeclaration, condition, incrementor, statement)
                 : Factory.For(initializer!, condition, incrementor, statement);
 
-            foreach (ITsStatementListItem preLoopInitializer in preLoopInitializers)
-            {
-                yield return preLoopInitializer;
-            }
-
-            yield return translated;
+            _additionalStatementsNeededBeforeCurrentStatement.AddRange(preLoopInitializers);
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -614,10 +638,8 @@ namespace Desalt.Core.Translation
                     // And clear the already-translated initializers.
                     translatedInitializers.Clear();
                 }
-                else
-                {
-                    translatedInitializers.Add(initializer);
-                }
+
+                translatedInitializers.Add(initializer);
             }
 
             initializer = translatedInitializers.Count switch

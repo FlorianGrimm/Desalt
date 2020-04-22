@@ -15,11 +15,11 @@ namespace Desalt.Core.Tests.Translation
         private static Task AssertUserDefinedOperatorTranslation(
             string methodSnippet,
             string expectedTypeScriptMethodSnippet,
-            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
         {
             return AssertTranslation(
                 $@"
-class Num
+class Num : IDisposable
 {{
     // Unary operators
     public static Num operator +(Num x) => new Num();
@@ -47,6 +47,8 @@ class Num
     public static Num operator ^(Num x, Num y) => new Num();
     public static Num operator |(Num x, Num y) => new Num();
 
+    public static explicit operator int(Num x) => 0;
+
     public Num MyNum
     {{
         get {{ return new Num(); }}
@@ -60,112 +62,21 @@ class Num
 
     public void Method()
     {{
+        int startHere = 0;
 {methodSnippet}
+        int endHere = 0;
     }}
+
+    public void Dispose() {{ }}
 }}
 ",
                 $@"
-class Num {{
-  public static op_UnaryPlus(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_UnaryNegation(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_LogicalNot(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_OnesComplement(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Increment(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Decrement(x: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Addition(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Subtraction(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Multiply(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Division(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_Modulus(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_LeftShift(x: Num, y: number): Num {{
-    return new Num();
-  }}
-
-  public static op_RightShift(x: Num, y: number): Num {{
-    return new Num();
-  }}
-
-  public static op_LessThan(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_LessThanOrEqual(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_GreaterThan(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_GreaterThanOrEqual(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_Equality(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_Inequality(x: Num, y: Num): boolean {{
-    return false;
-  }}
-
-  public static op_BitwiseAnd(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_BitwiseXor(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public static op_BitwiseOr(x: Num, y: Num): Num {{
-    return new Num();
-  }}
-
-  public get myNum(): Num {{
-    return new Num();
-  }}
-
-  public set myNum(value: Num) {{ }}
-
-  public do(num: Num): Num {{
-    return num;
-  }}
-
+class Num implements ss.IDisposable {{
+  // The rest of the generated code is not examined.
   public method(): void {{
+    let startHere: number = 0;
 {expectedTypeScriptMethodSnippet}
+    let endHere: number = 0;
   }}
 }}
 ",
@@ -364,7 +275,265 @@ let a: Num = $t2, b: Num = x = Num.op_Increment(x);");
         }
 
         //// ===========================================================================================================
-        //// Unary increment/decrement operators inside of for loops
+        //// Unary increment/decrement operators inside of array bracket statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_should_work_on_array_bracket_statements()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+var x = new Num();
+var arr = new[] { x };
+arr[(int)++x] = new Num();
+",
+                @"
+let x: Num = new Num();
+let arr: Num[] = [x];
+arr[<number>(x = Num.op_Increment(x))] = new Num();
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_should_work_on_array_bracket_statements()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y;
+var arr = new[] { x };
+arr[(int)(y = x++)] = new Num();
+",
+                @"
+let x: Num = new Num(), y: Num;
+let arr: Num[] = [x];
+const $t1 = x;
+x = Num.op_Increment($t1);
+arr[<number>(y = $t1)] = new Num();
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `if` statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_should_work_inside_if_statement_conditions()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+if (++x < y) { }
+if (--x < y) { }
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+if (Num.op_LessThan(x = Num.op_Increment(x), y)) { }
+if (Num.op_LessThan(x = Num.op_Decrement(x), y)) { }
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_should_be_pulled_out_of_if_statement_conditions()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+if (x++ < y) { }
+if (x-- < y) { }
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+const $t1 = x;
+x = Num.op_Increment($t1);
+if (Num.op_LessThan($t1, y)) { }
+const $t2 = x;
+x = Num.op_Decrement($t2);
+if (Num.op_LessThan($t2, y)) { }
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_cause_a_block_statement_to_be_created()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+if (true) y = x++;
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+if (true) {
+  const $t1 = x;
+  x = Num.op_Increment($t1);
+  y = $t1;
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside `throw` statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_in_a_throw_statement_should_work()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num();
+throw new ArgumentOutOfRangeException(""param"", ++x, null);
+",
+                @"
+let x: Num = new Num();
+throw new ArgumentOutOfRangeException('param', x = Num.op_Increment(x), null);
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_in_a_throw_statement_should_add_temp_variables()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y;
+throw new ArgumentOutOfRangeException(""param"", y = x++, null);
+",
+                @"
+let x: Num = new Num(), y: Num;
+const $t1 = x;
+x = Num.op_Increment($t1);
+throw new ArgumentOutOfRangeException('param', y = $t1, null);
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside `try/catch/finally` statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_in_a_try_catch_finally_statement_should_work()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num();
+try { x++; }
+catch { x--; }
+",
+                @"
+let x: Num = new Num();
+try {
+  x = Num.op_Increment(x);
+} catch {
+  x = Num.op_Decrement(x);
+}
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_in_a_try_catch_statement_should_work()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y;
+try { y = x++; }
+catch { y = x--; }
+",
+                @"
+let x: Num = new Num(), y: Num;
+try {
+  const $t1 = x;
+  x = Num.op_Increment($t1);
+  y = $t1;
+} catch {
+  const $t2 = x;
+  x = Num.op_Decrement($t2);
+  y = $t2;
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside `using` statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_in_a_using_statement_with_DECLARATION_should_work()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+var x = new Num();
+using (var y = x++) { }
+",
+                @"
+let x: Num = new Num();
+{
+  const $t1 = x;
+  x = Num.op_Increment($t1);
+  const y: Num = $t1;
+  try { } finally {
+    if (y) {
+      y.dispose();
+    }
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_in_a_using_statement_with_EXPRESSION_should_work()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+var x = new Num();
+using (x++) { }
+",
+                @"
+let x: Num = new Num();
+{
+  const $using1: Num = x = Num.op_Increment(x);
+  try { } finally {
+    if ($using1) {
+      $using1.dispose();
+    }
+  }
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `foreach` loops
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_should_work_inside_of_foreach_initializers()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+var x = new Num();
+foreach (var num in new Num[] { ++x }) { }
+",
+                @"
+let x: Num = new Num();
+for (const num of [x = Num.op_Increment(x)]) { }
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_should_work_inside_of_foreach_initializers()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+var x = new Num();
+foreach (var num in new Num[] { x-- }) { }
+",
+                @"
+let x: Num = new Num();
+const $t1 = x;
+x = Num.op_Decrement($t1);
+for (const num of [$t1]) { }
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `for` loops
         //// ===========================================================================================================
 
         [Test]
@@ -388,27 +557,7 @@ for (x = Num.op_Decrement(x); true; ) { }
         }
 
         [Test]
-        public async Task Complex_increment_and_decrement_operators_should_be_pulled_outside_the_for_loop_initializers()
-        {
-            await AssertUserDefinedOperatorTranslation(
-                @"
-var x = new Num();
-for (var y = x++; true; ) { }
-for (var y = x--; true; ) { }
-",
-                @"
-let x: Num = new Num();
-const $t1 = x;
-x = Num.op_Increment($t1);
-for (let y = $t1; true; ) { }
-const $t2 = x;
-x = Num.op_Decrement($t2);
-for (let y = $t2; true; ) { }
-");
-        }
-
-        [Test]
-        public async Task For_loop_initializer_lists_should_pull_out_necessary_additional_statements()
+        public async Task For_loop_initializer_lists_should_pull_out_necessary_additional_statements_for_DECLARATIONS()
         {
             await AssertUserDefinedOperatorTranslation(
                 @"
@@ -423,6 +572,52 @@ let y = this.do($t1), z = x;
 const $t2 = y;
 y = Num.op_Increment($t2);
 for (let a = $t2, b = x = Num.op_Increment(x); true; ) { }
+");
+        }
+
+        [Test]
+        public async Task For_loop_initializer_lists_should_pull_out_necessary_additional_statements_for_INITIALIZERS()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y, z, a, b;
+for (y = Do(x++), z = x, a = y++, b = ++x; true; ) { }
+",
+                @"
+let x: Num = new Num(), y: Num, z: Num, a: Num, b: Num;
+const $t1 = x;
+x = Num.op_Increment($t1);
+y = this.do($t1);
+z = x;
+const $t2 = y;
+y = Num.op_Increment($t2);
+for (a = $t2, b = x = Num.op_Increment(x); true; ) { }
+");
+        }
+
+        [Test]
+        public async Task Simple_increment_and_decrement_operators_should_work_inside_for_loop_conditionals()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+for (var x = new Num(); x != ++x; ) { }
+",
+                @"
+for (let x = new Num(); Num.op_Inequality(x, x = Num.op_Increment(x)); ) { }
+");
+        }
+
+        [Test]
+        public async Task Complex_increment_and_decrement_operators_should_work_inside_for_loop_conditionals()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+for (var x = new Num(); x != x--; ) { }
+",
+                @"
+const $t1 = x;
+x = Num.op_Decrement($t1);
+for (let x = new Num(); Num.op_Inequality(x, $t1); ) { }
 ");
         }
 
@@ -484,6 +679,35 @@ for (let x = new Num(), y = new Num(); true; ) {
   y = $t1;
   --i;
 }");
+        }
+
+        [Test]
+        public async Task
+            For_loops_with_complex_expressions_should_put_all_of_the_additional_statements_in_the_right_place()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y, z;
+for (y = x++, z = y; x < y--; z = x++, y++, z--)
+{
+    Do(x);
+}
+",
+                @"
+let x: Num = new Num(), y: Num, z: Num;
+const $t1 = x;
+x = Num.op_Increment($t1);
+const $t2 = y;
+y = Num.op_Decrement($t2);
+for (y = $t1, z = y; Num.op_LessThan(x, $t2); ) {
+  this.do(x);
+  const $t3 = x;
+  x = Num.op_Increment($t3);
+  z = $t3;
+  y = Num.op_Increment(y);
+  z = Num.op_Decrement(z);
+}
+");
         }
     }
 }
