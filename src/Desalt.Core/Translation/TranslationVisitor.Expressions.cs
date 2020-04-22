@@ -114,6 +114,12 @@ namespace Desalt.Core.Translation
                 node.Type.GetLocation);
 
             var expression = VisitExpression(node.Expression);
+            bool isComplexExpression = expression is ITsAssignmentExpression;
+            if (isComplexExpression)
+            {
+                expression = expression.WithParentheses();
+            }
+
             ITsCastExpression translated = Factory.Cast(castType, expression);
             yield return translated;
         }
