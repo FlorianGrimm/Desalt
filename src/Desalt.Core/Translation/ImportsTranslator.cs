@@ -13,7 +13,6 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using System.Threading;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -45,10 +44,10 @@ namespace Desalt.Core.Translation
                 throw new ArgumentNullException(nameof(context));
             }
 
-            // get all of the types that we should import
+            // Get all of the types that we should import.
             var importTypes = typesToImport.Where(ShouldImport).ToImmutableArray();
 
-            // find all of the imports that aren't defined anywhere and create an error
+            // Find all of the imports that aren't defined anywhere and create an error.
             ITypeSymbol[] undefinedTypes = importTypes.Where(symbol => !_scriptSymbolTable.HasSymbol(symbol)).ToArray();
 
             var undefinedTypeErrors = undefinedTypes.Select(
@@ -56,15 +55,17 @@ namespace Desalt.Core.Translation
 
             var diagnostics = new List<Diagnostic>(undefinedTypeErrors);
 
-            // get rid of all of the undefined imports
+            // Get rid of all of the undefined imports.
             var validImportTypes = importTypes.Except(undefinedTypes);
 
-            // group each valid import by file name (but don't include the types that are defined in this class).
+            // Group each valid import by file name (but don't include the types that are defined in this class).
             var groupedByFileName = validImportTypes.OrderBy(symbol => symbol.Name)
+                .Select(symbol => _scriptSymbolTable.Get<IScriptSymbol>(symbol))
+                .OfType<IScriptTypeSymbol>()
                 .Select(
-                    symbol =>
+                    scriptSymbol =>
                     {
-                        ImportSymbolInfo importInfo = _scriptSymbolTable.Get<IScriptTypeSymbol>(symbol).ImportInfo;
+                        ImportSymbolInfo importInfo = scriptSymbol.ImportInfo;
                         string relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
                         if (importInfo.IsInternalReference)
                         {
@@ -89,6 +90,7 @@ namespace Desalt.Core.Translation
                             relativePathOrModuleName = importInfo.RelativeTypeScriptFilePathOrModuleName;
                         }
 
+                        ISymbol symbol = scriptSymbol.Symbol;
                         return new
                         {
                             TypeName = _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, symbol.Name),
@@ -99,13 +101,13 @@ namespace Desalt.Core.Translation
                 .Distinct()
                 .GroupBy(item => item.RelativePathOrModuleName);
 
-            // add an import statement for each group
+            // Add an import statement for each group
             var importDeclarations = new List<ITsImportDeclaration>();
             foreach (var grouping in groupedByFileName)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // special case: mscorlib - needs to be imported like this: `import 'mscorlib';`
+                // Special case: mscorlib - needs to be imported like this: `import 'mscorlib';`
                 if (grouping.Key == "mscorlib")
                 {
                     ITsImportDeclaration import = Factory.ImportDeclaration(Factory.String("mscorlib"));
@@ -113,13 +115,13 @@ namespace Desalt.Core.Translation
                 }
                 else
                 {
-                    // create the list inside of `import { list } from 'file'`
+                    // Create the list inside of `import { list } from 'file'`.
                     ITsImportSpecifier[] importNames = grouping.Select(
                             item => Factory.ImportSpecifier(Factory.Identifier(item.TypeName)))
                         .ToArray();
                     ITsImportClause importClause = Factory.ImportClause(importNames.First(), importNames.Skip(1).ToArray());
 
-                    // create the from clause
+                    // Create the from clause.
                     ITsFromClause fromClause = Factory.FromClause(Factory.String(grouping.Key));
 
                     ITsImportDeclaration import = Factory.ImportDeclaration(importClause, fromClause);
@@ -132,27 +134,27 @@ namespace Desalt.Core.Translation
 
         private bool ShouldImport(ITypeSymbol symbol)
         {
-            // don't import array types
+            // Don't import array types.
             if (symbol is IArrayTypeSymbol)
             {
                 return false;
             }
 
-            // don't import native TypeScript types
+            // Don't import native TypeScript types.
             if (symbol is INamedTypeSymbol namedTypeSymbol &&
                 TypeTranslator.TranslatesToNativeTypeScriptType(namedTypeSymbol))
             {
                 return false;
             }
 
-            // don't import types that get translated to a native TypeScript type - for example List<T> is really an array
+            // Don't import types that get translated to a native TypeScript type - for example List<T> is really an array.
             if (_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol) &&
                 TypeTranslator.IsNativeTypeScriptTypeName(scriptSymbol.ComputedScriptName))
             {
                 return false;
             }
 
-            // don't import types from the Web assembly, since those are already built-in to TypeScript
+            // Don't import types from the Web assembly, since those are already built-in to TypeScript.
             if (symbol.ContainingAssembly?.Name == "Web")
             {
                 return false;

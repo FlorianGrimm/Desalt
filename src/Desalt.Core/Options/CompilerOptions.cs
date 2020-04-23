@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Options
 {
     using System;
     using System.Collections.Generic;
@@ -169,6 +169,7 @@ namespace Desalt.Core
                     },
                     new SpecificDiagnosticOptionsConverter(),
                     new SymbolTableOverridesConverter(),
+                    new UserDefinedOperatorMethodNamesConverter(),
                 },
                 DefaultValueHandling = DefaultValueHandling.Populate,
                 Formatting = Formatting.Indented,

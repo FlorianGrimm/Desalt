@@ -13,6 +13,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;

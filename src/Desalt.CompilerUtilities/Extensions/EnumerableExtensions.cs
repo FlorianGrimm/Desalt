@@ -116,9 +116,9 @@ namespace Desalt.CompilerUtilities.Extensions
         /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
         /// <param name="sequence">The sequence to filter.</param>
         /// <returns>The same sequence as the original with only non-null values.</returns>
-        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> sequence)
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> sequence) where T : class
         {
-            return sequence.Where(x => !(x is null));
+            return sequence.Where(x => !(x is null)).Select(x => x!);
         }
 
         /// <summary>

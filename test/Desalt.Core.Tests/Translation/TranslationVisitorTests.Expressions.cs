@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests.Translation
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
     using NUnit.Framework;
+    using NUnit.Framework.Internal;
 
     public partial class TranslationVisitorTests
     {
@@ -110,21 +111,21 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 123;
-    x = +x;
-    x = -x;
-    x = ~x;
-    x = ++x;
-    x = --x;
-    bool y = !true;",
+int x = 123;
+x = +x;
+x = -x;
+x = ~x;
+x = ++x;
+x = --x;
+bool y = !true;",
                 @"
-    let x: number = 123;
-    x = +x;
-    x = -x;
-    x = ~x;
-    x = ++x;
-    x = --x;
-    let y: boolean = !true;
+let x: number = 123;
+x = +x;
+x = -x;
+x = ~x;
+x = ++x;
+x = --x;
+let y: boolean = !true;
 ");
         }
 
@@ -133,14 +134,14 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 123;
-    x = x++;
-    x = x--;
+int x = 123;
+x = x++;
+x = x--;
 ",
                 @"
-    let x: number = 123;
-    x = x++;
-    x = x--;
+let x: number = 123;
+x = x++;
+x = x--;
 ");
         }
 
@@ -148,32 +149,32 @@ class Logger {
         public async Task Binary_expressions_on_numbers()
         {
             await AssertTranslationWithClassCAndMethod(@"
-    int x = 1;
-    int y = 2;
-    x = x * y;
-    x = x / y;
-    x = x % y;
-    x = x + y;
-    x = x - y;
-    x = x << y;
-    x = x >> y;
-    x = x & y;
-    x = x ^ y;
-    x = x | y;
+int x = 1;
+int y = 2;
+x = x * y;
+x = x / y;
+x = x % y;
+x = x + y;
+x = x - y;
+x = x << y;
+x = x >> y;
+x = x & y;
+x = x ^ y;
+x = x | y;
 ",
                 @"
-    let x: number = 1;
-    let y: number = 2;
-    x = x * y;
-    x = x / y;
-    x = x % y;
-    x = x + y;
-    x = x - y;
-    x = x << y;
-    x = x >> y;
-    x = x & y;
-    x = x ^ y;
-    x = x | y;
+let x: number = 1;
+let y: number = 2;
+x = x * y;
+x = x / y;
+x = x % y;
+x = x + y;
+x = x - y;
+x = x << y;
+x = x >> y;
+x = x & y;
+x = x ^ y;
+x = x | y;
 ");
         }
 
@@ -182,24 +183,24 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 1;
-    int y = 2;
-    bool z = x < y;
-    z = x > y;
-    z = x <= y;
-    z = x >= y;
-    z = x == y;
-    z = x != y;
+int x = 1;
+int y = 2;
+bool z = x < y;
+z = x > y;
+z = x <= y;
+z = x >= y;
+z = x == y;
+z = x != y;
 ",
                 @"
-    let x: number = 1;
-    let y: number = 2;
-    let z: boolean = x < y;
-    z = x > y;
-    z = x <= y;
-    z = x >= y;
-    z = x === y;
-    z = x !== y;
+let x: number = 1;
+let y: number = 2;
+let z: boolean = x < y;
+z = x > y;
+z = x <= y;
+z = x >= y;
+z = x === y;
+z = x !== y;
 ");
         }
 
@@ -208,16 +209,16 @@ class Logger {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    bool x = true;
-    bool y = false;
-    x = x && y;
-    x = x || y;
+bool x = true;
+bool y = false;
+x = x && y;
+x = x || y;
 ",
                 @"
-    let x: boolean = true;
-    let y: boolean = false;
-    x = x && y;
-    x = x || y;
+let x: boolean = true;
+let y: boolean = false;
+x = x && y;
+x = x || y;
 ");
         }
 
@@ -250,32 +251,60 @@ class C {
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int x = 1;
-    x = x;
-    x *= x;
-    x /= x;
-    x %= x;
-    x += x;
-    x -= x;
-    x <<= x;
-    x >>= x;
-    x &= x;
-    x ^= x;
-    x |= x;
+int x = 1;
+x = x;
+x *= x;
+x /= x;
+x %= x;
+x += x;
+x -= x;
+x <<= x;
+x >>= x;
+x &= x;
+x ^= x;
+x |= x;
 ",
                 @"
-    let x: number = 1;
-    x = x;
-    x *= x;
-    x /= x;
-    x %= x;
-    x += x;
-    x -= x;
-    x <<= x;
-    x >>= x;
-    x &= x;
-    x ^= x;
-    x |= x;
+let x: number = 1;
+x = x;
+x *= x;
+x /= x;
+x %= x;
+x += x;
+x -= x;
+x <<= x;
+x >>= x;
+x &= x;
+x ^= x;
+x |= x;
+");
+        }
+
+        //// ===========================================================================================================
+        //// Array Creation Expression Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task ArrayCreationExpression_with_an_initializer_should_work()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                "var arr = new int[] {1, 2, 3};",
+                "let arr: number[] = [1, 2, 3];");
+        }
+
+        [Test]
+        public async Task ArrayCreationExpression_with_no_initializer_should_work()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"
+var arr = new int[0];
+arr = new int[20];
+arr = new int[1 + 10];
+",
+                @"
+let arr: number[] = [];
+arr = new Array(20);
+arr = new Array(1 + 10);
 ");
         }
 
@@ -371,35 +400,6 @@ class C {
         }
 
         //// ===========================================================================================================
-        //// Other Expression Types Tests
-        //// ===========================================================================================================
-
-        [Test]
-        public async Task List_of_Func_type_should_translate_to_Array_of_func()
-        {
-            await AssertTranslation(
-                @"
-class C
-{
-    private static List<Func<string, bool>> Filters
-    {
-        get
-        {
-            return (List<Func<string, bool>>)new List<Func<string, bool>>();
-        }
-    }
-}",
-                @"
-class C {
-  private static get filters(): Array<(string: string) => boolean> {
-    return <Array<(string: string) => boolean>>[];
-  }
-}
-",
-                SymbolDiscoveryKind.DocumentAndReferencedTypes);
-        }
-
-        //// ===========================================================================================================
         //// IntrinsicProperty Tests
         //// ===========================================================================================================
 
@@ -426,6 +426,35 @@ class C {
   }
 }
 ");
+        }
+
+        //// ===========================================================================================================
+        //// Other Expression Types Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task List_of_Func_type_should_translate_to_Array_of_func()
+        {
+            await AssertTranslation(
+                @"
+class C
+{
+    private static List<Func<string, bool>> Filters
+    {
+        get
+        {
+            return (List<Func<string, bool>>)new List<Func<string, bool>>();
+        }
+    }
+}",
+                @"
+class C {
+  private static get filters(): Array<(string: string) => boolean> {
+    return <Array<(string: string) => boolean>>[];
+  }
+}
+",
+                SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }
 }

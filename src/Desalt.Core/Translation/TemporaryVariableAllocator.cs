@@ -21,10 +21,29 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private readonly Dictionary<string, SortedSet<int>> _reserveSets = new Dictionary<string, SortedSet<int>>();
+        private readonly Stack<IList<string>> _variablesReservedInScopes = new Stack<IList<string>>();
 
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public void PushReservationScope()
+        {
+            _variablesReservedInScopes.Push(new List<string>());
+        }
+
+        public void PopReservationScope()
+        {
+            if (!_variablesReservedInScopes.TryPop(out IList<string> scope))
+            {
+                throw new InvalidOperationException("Cannot pop a reservation scope when the scope stack is empty.");
+            }
+
+            foreach (string variableName in scope)
+            {
+                Return(variableName);
+            }
+        }
 
         public string Reserve(string prefix)
         {
@@ -43,7 +62,15 @@ namespace Desalt.Core.Translation
             // reserve the number
             _reserveSets[prefix].Add(reservationNumber);
 
-            return prefix + reservationNumber;
+            string variableName = prefix + reservationNumber;
+
+            // Add the variable to the current scope (if there is one).
+            if (_variablesReservedInScopes.TryPeek(out IList<string> scope))
+            {
+                scope.Add(variableName);
+            }
+
+            return variableName;
         }
 
         public void Return(string variableName)

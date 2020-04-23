@@ -10,6 +10,7 @@ namespace Desalt.Core.Pipeline
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
 
     /// <summary>
     /// Abstract base class for all compiler pipeline stages.

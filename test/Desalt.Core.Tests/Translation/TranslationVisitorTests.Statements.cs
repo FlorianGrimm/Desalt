@@ -18,14 +18,14 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    Func<string, bool> func = delegate(string x) {
-        return x == ""y"";
-    };
+Func<string, bool> func = delegate(string x) {
+    return x == ""y"";
+};
 ",
                 @"
-    let func: (string: string) => boolean = (x: string) => {
-      return x === 'y';
-    };
+let func: (string: string) => boolean = (x: string) => {
+  return x === 'y';
+};
 ");
         }
 
@@ -38,17 +38,17 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int i = 0;
-    while (i < 10)
-    {
-        i++;
-    }
+int i = 0;
+while (i < 10)
+{
+    i++;
+}
 ",
                 @"
-    let i: number = 0;
-    while (i < 10) {
-      i++;
-    }");
+let i: number = 0;
+while (i < 10) {
+  i++;
+}");
         }
 
         [Test]
@@ -56,17 +56,17 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int i = 0;
-    do
-    {
-        i++;
-    } while (i < 10);
+int i = 0;
+do
+{
+    i++;
+} while (i < 10);
 ",
                 @"
-    let i: number = 0;
-    do {
-      i++;
-    } while (i < 10);");
+let i: number = 0;
+do {
+  i++;
+} while (i < 10);");
         }
 
         [Test]
@@ -92,37 +92,37 @@ namespace Desalt.Core.Tests.Translation
         {
             await AssertTranslationWithClassCAndMethod(
                 @"
-    int num = 0;
-    switch (num)
-    {
-        case 0:
-        case 1:
-            num++;
-            break;
-
-        case 2:
-            break;
-
-        default:
-            num--;
-            break;
-    }
-",
-                @"
-    let num: number = 0;
-    switch (num) {
-      case 0:
-      case 1:
+int num = 0;
+switch (num)
+{
+    case 0:
+    case 1:
         num++;
         break;
 
-      case 2:
+    case 2:
         break;
 
-      default:
+    default:
         num--;
         break;
-    }
+}
+",
+                @"
+let num: number = 0;
+switch (num) {
+  case 0:
+  case 1:
+    num++;
+    break;
+
+  case 2:
+    break;
+
+  default:
+    num--;
+    break;
+}
 ");
         }
 

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="DiagnosticFactory.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -11,6 +11,7 @@ namespace Desalt.Core.Diagnostics
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -143,7 +144,7 @@ namespace Desalt.Core.Diagnostics
                 int id,
                 string title,
                 string? messageFormat = null,
-                WarningLevel warningLevel = Core.WarningLevel.Severe,
+                WarningLevel warningLevel = Core.Options.WarningLevel.Severe,
                 string category = TranslationCategory,
                 string[]? customTags = null,
                 string? description = null) : base(

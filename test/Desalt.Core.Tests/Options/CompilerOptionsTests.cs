@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CompileOptionsTests.cs" company="Justin Rockwood">
+// <copyright file="CompilerOptionsTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core.Tests
+namespace Desalt.Core.Tests.Options
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -14,11 +14,12 @@ namespace Desalt.Core.Tests
     using System.Text;
     using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using NUnit.Framework;
 
-    public class CompileOptionsTests
+    public class CompilerOptionsTests
     {
         private const string JsonContents = @"{
   ""outputPath"": ""outDir"",
@@ -31,7 +32,35 @@ namespace Desalt.Core.Tests
   },
   ""renameRules"": {
     ""enumRule"": ""matchCSharpName"",
-    ""fieldRule"": ""dollarPrefixOnlyForDuplicateName""
+    ""fieldRule"": ""dollarPrefixOnlyForDuplicateName"",
+    ""userDefinedOperatorMethodNames"": {
+      ""Addition"": ""op_Addition"",
+      ""BitwiseAnd"": ""op_BitwiseAnd"",
+      ""BitwiseOr"": ""op_BitwiseOr"",
+      ""Decrement"": ""op_Decrement"",
+      ""Division"": ""op_Division"",
+      ""Equality"": ""op_Equality"",
+      ""ExclusiveOr"": ""op_ExclusiveOr"",
+      ""Explicit"": ""op_Explicit"",
+      ""False"": ""op_False"",
+      ""GreaterThan"": ""op_GreaterThan"",
+      ""GreaterThanEquals"": ""op_GreaterThanOrEqual"",
+      ""Implicit"": ""op_Implicit"",
+      ""Increment"": ""op_Increment"",
+      ""Inequality"": ""op_Inequality"",
+      ""LeftShift"": ""op_LeftShift"",
+      ""LessThan"": ""op_LessThan"",
+      ""LessThanEquals"": ""op_LessThanOrEqual"",
+      ""LogicalNot"": ""op_LogicalNot"",
+      ""Modulus"": ""op_Modulus"",
+      ""Multiplication"": ""op_Multiply"",
+      ""OnesComplement"": ""op_OnesComplement"",
+      ""RightShift"": ""op_RightShift"",
+      ""Subtraction"": ""op_Subtraction"",
+      ""True"": ""op_True"",
+      ""UnaryNegation"": ""op_UnaryNegation"",
+      ""UnaryPlus"": ""op_UnaryPlus""
+    }
   },
   ""symbolTableOverrides"": {
     ""System.Script"": {

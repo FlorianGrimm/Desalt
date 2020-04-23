@@ -11,6 +11,7 @@ namespace Desalt.ConsoleApp.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core;
+    using Desalt.Core.Options;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using NUnit.Framework;

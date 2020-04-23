@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.Core
+namespace Desalt.Core.Options
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Desalt.Core
     using System.Linq;
     using System.Text;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Pipeline;
+    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Newtonsoft.Json;
 
@@ -100,8 +100,8 @@ namespace Desalt.Core
         //// Classes
         //// ===========================================================================================================
 
-        private sealed class SpecificDiagnosticOptionsConverter
-            : JsonConverter<ImmutableDictionary<string, ReportDiagnostic>>
+        private class SortedByKeyDictionaryConverter<TKey, TValue> : JsonConverter<ImmutableDictionary<TKey, TValue>>
+            where TKey : notnull
         {
             /// <summary>
             /// Writes the JSON representation of the object.
@@ -111,16 +111,16 @@ namespace Desalt.Core
             /// <param name="serializer">The calling serializer.</param>
             public override void WriteJson(
                 JsonWriter writer,
-                ImmutableDictionary<string, ReportDiagnostic> value,
+                ImmutableDictionary<TKey, TValue> value,
                 JsonSerializer serializer)
             {
                 writer.WriteStartObject();
 
-                var orderedPairs = value.OrderBy(pair => pair.Key, StringComparer.Ordinal);
-                foreach (var pair in orderedPairs)
+                var orderedPairs = value.OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal);
+                foreach ((TKey key, TValue pairValue) in orderedPairs)
                 {
-                    writer.WritePropertyName(pair.Key, escape: true);
-                    serializer.Serialize(writer, pair.Value);
+                    writer.WritePropertyName(key.ToString(), escape: true);
+                    serializer.Serialize(writer, pairValue);
                 }
 
                 writer.WriteEndObject();
@@ -137,21 +137,21 @@ namespace Desalt.Core
             /// <param name="hasExistingValue">The existing value has a value.</param>
             /// <param name="serializer">The calling serializer.</param>
             /// <returns>The object value.</returns>
-            public override ImmutableDictionary<string, ReportDiagnostic> ReadJson(
+            public override ImmutableDictionary<TKey, TValue> ReadJson(
                 JsonReader reader,
                 Type objectType,
-                ImmutableDictionary<string, ReportDiagnostic> existingValue,
+                ImmutableDictionary<TKey, TValue> existingValue,
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
                 if (reader.TokenType == JsonToken.Null)
                 {
-                    return ImmutableDictionary<string, ReportDiagnostic>.Empty;
+                    return ImmutableDictionary<TKey, TValue>.Empty;
                 }
 
                 reader.Read(JsonToken.StartObject);
 
-                var dictionary = ImmutableDictionary.CreateBuilder<string, ReportDiagnostic>();
+                var dictionary = ImmutableDictionary.CreateBuilder<TKey, TValue>();
                 while (reader.TokenType != JsonToken.EndObject)
                 {
                     reader.VerifyToken(JsonToken.PropertyName);
@@ -159,10 +159,14 @@ namespace Desalt.Core
                     string key = reader.Value!.ToString();
                     reader.Read();
 
-                    var value = serializer.Deserialize<ReportDiagnostic>(reader);
+                    var value = serializer.Deserialize<TValue>(reader) ?? throw new InvalidOperationException();
                     reader.Read();
 
-                    dictionary.Add(key, value);
+                    TKey convertedKey = typeof(TKey).IsEnum
+                        ? (TKey)Enum.Parse(typeof(TKey), key, ignoreCase: true)
+                        : (TKey)(object)key;
+
+                    dictionary.Add(convertedKey, value);
                 }
 
                 // don't read the ending object - the caller will do that
@@ -170,6 +174,15 @@ namespace Desalt.Core
 
                 return dictionary.ToImmutable();
             }
+        }
+
+        private sealed class SpecificDiagnosticOptionsConverter : SortedByKeyDictionaryConverter<string, ReportDiagnostic>
+        {
+        }
+
+        private sealed class UserDefinedOperatorMethodNamesConverter
+            : SortedByKeyDictionaryConverter<UserDefinedOperatorKind, string>
+        {
         }
 
         private sealed class SymbolTableOverridesConverter : JsonConverter<SymbolTableOverrides>

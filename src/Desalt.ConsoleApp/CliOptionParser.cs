@@ -17,6 +17,7 @@ namespace Desalt.ConsoleApp
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
     internal sealed class CliOptionParser
@@ -321,7 +322,7 @@ namespace Desalt.ConsoleApp
             }
 
             value = _argReader.Read();
-            return true;
+            return symbol != null && value != null;
         }
 
         private bool TryParseMappedValue<T>(string optionName, IReadOnlyDictionary<string, T> mappings, out T enumValue)

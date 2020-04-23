@@ -79,7 +79,7 @@ namespace Desalt.Core.Translation
             ref IMethodSymbol methodSymbol,
             ref ITsExpression translatedLeftSide,
             ref ITsArgumentList translatedArgumentList,
-            Func<IMethodSymbol, Location, ITsExpression> translateIdentifierNameFunc,
+            TranslateIdentifierFunc translateIdentifierNameFunc,
             out Diagnostic? error)
         {
             // See if this is an extension method invoked as `receiver.Extension()` and change the call signature so
@@ -106,7 +106,7 @@ namespace Desalt.Core.Translation
 
             // Translate the name of the reduced type, which is the new left side of the invocation:
             // `x.Extension()` -> `ExtensionClass.Extension(x)`.
-            translatedLeftSide = translateIdentifierNameFunc(methodSymbol, node.GetLocation());
+            translatedLeftSide = translateIdentifierNameFunc(methodSymbol, node);
 
             // Take the left side of the expression and instead make it the first argument to the static
             // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.

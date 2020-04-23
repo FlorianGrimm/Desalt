@@ -9,6 +9,7 @@ namespace Desalt.ConsoleApp
 {
     using System.Collections.Immutable;
     using Desalt.Core;
+    using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
     /// <summary>

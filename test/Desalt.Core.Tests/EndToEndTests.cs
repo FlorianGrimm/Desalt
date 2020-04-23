@@ -13,6 +13,7 @@ namespace Desalt.Core.Tests
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.Diagnostics;
+    using Desalt.Core.Options;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using NUnit.Framework;

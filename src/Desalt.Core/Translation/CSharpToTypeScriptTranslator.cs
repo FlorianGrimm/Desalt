@@ -10,7 +10,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using Desalt.Core.Pipeline;
     using Desalt.TypeScriptAst.Ast;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -27,7 +26,7 @@ namespace Desalt.Core.Translation
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default)
         {
-            var visitor = new TranslationVisitor(context, cancellationToken);
+            var visitor = new TranslationVisitor(context, cancellationToken: cancellationToken);
             var implementationModule = (ITsImplementationModule)visitor.Visit(context.RootSyntax).Single();
 
             var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);

@@ -10,6 +10,7 @@ namespace Desalt.Core.Tests.Pipeline
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
+    using Desalt.Core.Options;
     using Desalt.Core.Pipeline;
 
     internal delegate Task<IExtendedResult<TOutput>> ExecuteFunc<in TInput, TOutput>(

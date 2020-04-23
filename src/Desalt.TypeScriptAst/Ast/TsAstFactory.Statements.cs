@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
-    using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast.Statements;
 
     public static partial class TsAstFactory
@@ -206,9 +205,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// Creates a for loop of the form, 'for (i = 0; i &lt; 10; i++) statement'.
         /// </summary>
         public static ITsForStatement For(
-            ITsExpression initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? initializer,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
             return new TsForStatement(initializer, condition, incrementor, statement);
@@ -219,11 +218,11 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsForStatement For(
             ITsVariableDeclaration initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
-            return new TsForStatement(initializer.ToSafeArray(), condition, incrementor, statement);
+            return new TsForStatement(new[] { initializer }, condition, incrementor, statement);
         }
 
         /// <summary>
@@ -231,8 +230,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsForStatement For(
             IEnumerable<ITsVariableDeclaration> initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
             return new TsForStatement(initializer, condition, incrementor, statement);
@@ -243,8 +242,8 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsForStatement For(
             ITsLexicalDeclaration initializer,
-            ITsExpression condition,
-            ITsExpression incrementor,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
             ITsStatement statement)
         {
             return new TsForStatement(initializer, condition, incrementor, statement);

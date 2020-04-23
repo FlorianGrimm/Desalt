@@ -22,7 +22,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         private TsCallExpression(ITsExpression leftSide, CallKind kind, ITsArgumentList? arguments = null)
         {
             LeftSide = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
-            Arguments = arguments ?? new TsArgumentList();
+            ArgumentList = arguments ?? new TsArgumentList();
             Kind = kind;
         }
 
@@ -42,7 +42,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// ===========================================================================================================
 
         public ITsExpression LeftSide { get; }
-        public ITsArgumentList Arguments { get; }
+        public ITsArgumentList ArgumentList { get; }
 
         private CallKind Kind { get; }
 
@@ -87,7 +87,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         }
 
         public override string CodeDisplay =>
-            (Kind == CallKind.New ? "new " : "") + $"{LeftSide}{Arguments}";
+            (Kind == CallKind.New ? "new " : "") + $"{LeftSide}{ArgumentList}";
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -97,7 +97,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             }
 
             LeftSide.Emit(emitter);
-            Arguments.Emit(emitter);
+            ArgumentList.Emit(emitter);
         }
     }
 }

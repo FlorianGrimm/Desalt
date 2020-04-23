@@ -20,30 +20,6 @@ namespace Desalt.Core.SymbolTables
         /// Finds a Saltarelle attribute attached to a specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
-        /// <returns>
-        /// The found attribute or null if the symbol does not have an attached attribute of the
-        /// given name.
-        /// </returns>
-        public static AttributeData? FindAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
-        {
-            var format = new SymbolDisplayFormat(
-                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-
-            string fullAttributeName = $"{attributeFullyQualifiedNameMinusSuffix}Attribute";
-            AttributeData? attributeData = symbol?.GetAttributes()
-                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
-
-            return attributeData;
-        }
-
-        /// <summary>
-        /// Finds a Saltarelle attribute attached to a specified symbol.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
         /// <param name="attributeName">The Saltarelle attribute to find.</param>
         /// <returns>
         /// The found attribute or null if the symbol does not have an attached attribute of the
@@ -51,25 +27,14 @@ namespace Desalt.Core.SymbolTables
         /// </returns>
         public static AttributeData? FindAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
         {
-            string fullAttributeName = FullyQualifiedName(attributeName);
-            return FindAttribute(symbol, fullAttributeName);
-        }
+            var format = new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
-        /// <summary>
-        /// Returns a value indicating whether the specified symbol has the specified attribute.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
-        /// <returns>
-        /// True if the attribute was found; false if the symbol does not have an attached attribute
-        /// of the given name.
-        /// </returns>
-        public static bool HasAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
-        {
-            return FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix) != null;
+            string fullAttributeName = $"{FullyQualifiedName(attributeName)}Attribute";
+            AttributeData? attributeData = symbol?.GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass.ToDisplayString(format) == fullAttributeName);
+
+            return attributeData;
         }
 
         /// <summary>
@@ -83,7 +48,7 @@ namespace Desalt.Core.SymbolTables
         /// </returns>
         public static bool HasAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
         {
-            return HasAttribute(symbol, FullyQualifiedName(attributeName));
+            return FindAttribute(symbol, attributeName) != null;
         }
 
         /// <summary>
@@ -91,35 +56,7 @@ namespace Desalt.Core.SymbolTables
         /// the specified symbol. For example, reading [ScriptName("x")] will return "x".
         /// </summary>
         /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
-        /// <param name="value">The value of the attribute if present; otherwise, null.</param>
-        /// <returns>
-        /// True if the attribute is present and has a value in the constructor; otherwise false.
-        /// </returns>
-        public static bool TryGetAttributeValue<T>(
-            this ISymbol symbol,
-            string attributeFullyQualifiedNameMinusSuffix,
-            [NotNullWhen(true)]  out T value)
-        {
-            return TryGetAttributeValue(
-                symbol,
-                attributeFullyQualifiedNameMinusSuffix,
-                propertyName: null,
-                value: out value);
-        }
-
-        /// <summary>
-        /// Tries to gets the value of the first constructor argument of the attribute attached to
-        /// the specified symbol. For example, reading [ScriptName("x")] will return "x".
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
+        /// <param name="attributeName">The Saltarelle attribute to find.</param>
         /// <param name="propertyName">
         /// An optional property value to retrieve. For example, the [Imported(ObeysTypeSystem=true)]
         /// returns true if "ObeysTypeSystem" is pass as this parameter value. A null value indicates
@@ -129,47 +66,18 @@ namespace Desalt.Core.SymbolTables
         /// <returns>
         /// True if the attribute is present and has a value in the constructor; otherwise false.
         /// </returns>
-        public static bool TryGetAttributeValue<T>(
+        private static bool TryGetAttributeValue(
             this ISymbol symbol,
-            string attributeFullyQualifiedNameMinusSuffix,
-            string? propertyName,
-            [NotNullWhen(true)] out T value)
+            SaltarelleAttributeName attributeName,
+            SaltarelleAttributeArgumentName? propertyName,
+            [NotNullWhen(true)] out object? value)
         {
-            AttributeData? attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
-            object? rawValue = propertyName == null
+            AttributeData? attributeData = FindAttribute(symbol, attributeName);
+            value = propertyName == null
                 ? attributeData?.ConstructorArguments.FirstOrDefault().Value
-                : attributeData?.NamedArguments.FirstOrDefault(pair => pair.Key == propertyName).Value.Value;
+                : attributeData?.NamedArguments.FirstOrDefault(pair => pair.Key == propertyName.ToString()).Value.Value;
 
-            value = rawValue == null ? default : (T)rawValue;
-            return rawValue != null;
-        }
-
-        /// <summary>
-        /// Gets the value of the attribute or the default value if it's not found.
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
-        /// <param name="propertyName">
-        /// An optional property value to retrieve. For example, the [Imported(ObeysTypeSystem=true)]
-        /// returns true if "ObeysTypeSystem" is pass as this parameter value. A null value indicates
-        /// that the first constructor argument will be queried instead of a named argument.
-        /// </param>
-        /// <param name="defaultValue">The value to return if not present.</param>
-        /// <returns>
-        /// Either the value or the default value, depending on whether the attribute was found.
-        /// </returns>
-        public static T GetAttributeValueOrDefault<T>(
-            this ISymbol symbol,
-            string attributeFullyQualifiedNameMinusSuffix,
-            T defaultValue = default,
-            string? propertyName = null)
-        {
-            return TryGetAttributeValue(symbol, attributeFullyQualifiedNameMinusSuffix, propertyName, out T value)
-                ? value
-                : defaultValue;
+            return value != null;
         }
 
         /// <summary>
@@ -182,12 +90,19 @@ namespace Desalt.Core.SymbolTables
         /// <returns>
         /// True if the attribute is present and has a value in the constructor; otherwise false.
         /// </returns>
-        public static bool TryGetAttributeValue<T>(
+        public static bool TryGetAttributeValue(
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
-            [NotNullWhen(true)] out T value)
+            [NotNullWhen(true)] out string? value)
         {
-            return TryGetAttributeValue(symbol, FullyQualifiedName(attributeName), out value);
+            if (TryGetAttributeValue(symbol, attributeName, propertyName: null, out object? rawValue))
+            {
+                value = (string)rawValue;
+                return true;
+            }
+
+            value = default;
+            return false;
         }
 
         /// <summary>
@@ -209,9 +124,17 @@ namespace Desalt.Core.SymbolTables
             this ISymbol symbol,
             SaltarelleAttributeName attributeName,
             SaltarelleAttributeArgumentName propertyName,
-            [NotNullWhen(true)] out T value)
+            out T value)
+            where T : struct
         {
-            return TryGetAttributeValue(symbol, FullyQualifiedName(attributeName), propertyName.ToString(), out value);
+            if (TryGetAttributeValue(symbol, attributeName, propertyName, out object? rawValue))
+            {
+                value = (T)rawValue;
+                return true;
+            }
+
+            value = default;
+            return false;
         }
 
         /// <summary>
@@ -234,11 +157,12 @@ namespace Desalt.Core.SymbolTables
             string? defaultValue = null,
             SaltarelleAttributeArgumentName? propertyName = null)
         {
-            return GetAttributeValueOrDefault(
-                symbol,
-                FullyQualifiedName(attributeName),
-                propertyName: propertyName?.ToString(),
-                defaultValue: defaultValue);
+            if (TryGetAttributeValue(symbol, attributeName, propertyName, out object? rawValue))
+            {
+                return (string)rawValue;
+            }
+
+            return defaultValue;
         }
 
         /// <summary>
@@ -260,12 +184,14 @@ namespace Desalt.Core.SymbolTables
             SaltarelleAttributeName attributeName,
             T defaultValue = default,
             SaltarelleAttributeArgumentName? propertyName = null)
+            where T : struct
         {
-            return GetAttributeValueOrDefault(
-                symbol,
-                FullyQualifiedName(attributeName),
-                propertyName: propertyName?.ToString(),
-                defaultValue: defaultValue);
+            if (TryGetAttributeValue(symbol, attributeName, propertyName, out object? rawValue))
+            {
+                return (T)rawValue;
+            }
+
+            return defaultValue;
         }
 
         /// <summary>
@@ -276,44 +202,22 @@ namespace Desalt.Core.SymbolTables
         /// ]]>
         /// </summary>
         /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeFullyQualifiedNameMinusSuffix">
-        /// The fully qualified name of the attribute to find, minus the "Attribute" suffix. For
-        /// example, "System.Runtime.CompilerServices.InlineCode".
-        /// </param>
+        /// <param name="attributeName">The Saltarelle attribute to find.</param>
         /// <returns>The value of the flag attribute.</returns>
-        public static bool GetFlagAttribute(this ISymbol symbol, string attributeFullyQualifiedNameMinusSuffix)
+        public static bool GetFlagAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
         {
-            AttributeData? attributeData = FindAttribute(symbol, attributeFullyQualifiedNameMinusSuffix);
-
+            AttributeData? attributeData = FindAttribute(symbol, attributeName);
             if (attributeData == null)
             {
                 return false;
             }
 
-            // return true if the attribute value is missing
+            // Return true if the attribute value is missing.
             object? value = attributeData.ConstructorArguments.IsEmpty
                 ? null
                 : attributeData.ConstructorArguments[0].Value;
-            if (value == null)
-            {
-                return true;
-            }
 
-            return (bool)value;
-        }
-
-        /// <summary>
-        /// Gets the value of a Saltarelle flag-type attribute according to the following table:
-        /// * No attribute =&gt; false
-        /// * [Attr] =&gt; true
-        /// * [Attr(value)] =&gt; value
-        /// </summary>
-        /// <param name="symbol">The symbol to query.</param>
-        /// <param name="attributeName">The Saltarelle attribute to find.</param>
-        /// <returns>The value of the flag attribute.</returns>
-        public static bool GetFlagAttribute(this ISymbol symbol, SaltarelleAttributeName attributeName)
-        {
-            return GetFlagAttribute(symbol, FullyQualifiedName(attributeName));
+            return (bool?)value != false;
         }
 
         private static string FullyQualifiedName(SaltarelleAttributeName attributeName)

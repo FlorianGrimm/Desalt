@@ -11,6 +11,7 @@ namespace Desalt.Core.SymbolTables
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
+    using Desalt.Core.Options;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
 
@@ -165,54 +166,27 @@ namespace Desalt.Core.SymbolTables
         public bool TryGetValue<TScriptSymbol>(ISymbol symbol, [NotNullWhen(true)] out TScriptSymbol? value)
             where TScriptSymbol : class, IScriptSymbol
         {
-            if (symbol == null)
+            _ = symbol ?? throw new ArgumentNullException(nameof(symbol));
+
+            // Look in the document symbols first.
+            if (!TryFindSymbol(
+                symbol,
+                DocumentSymbols,
+                out ISymbol symbolUsedForLookup,
+                out IScriptSymbol? scriptSymbol))
             {
-                throw new ArgumentNullException(nameof(symbol));
-            }
-
-            // Detect if there is a generic version of a symbol (for example, if the symbol is a
-            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`.
-            bool hasGenericVersion =
-                symbol.OriginalDefinition != null && !ReferenceEquals(symbol.OriginalDefinition, symbol);
-
-            // Extension methods can be reduced during translation. For example, `ExtensionMethod(this object x)`
-            // invoked as `x.ExtensionMethod()` will have the reduced symbol `System.Object.ExtensionMethod()`. We need
-            // to detect this case and look for the non-reduced form in the symbol table.
-            IMethodSymbol? nonReducedMethodSymbol = (symbol as IMethodSymbol)?.ReducedFrom;
-
-            // local function to search the specified dictionary for the symbol first, then the
-            // generic version if there is one
-            bool TryFindSymbolOrGenericVersion<TValue>(
-                ImmutableDictionary<ISymbol, TValue> dictionary,
-                out TValue foundValue)
-            {
-                if (dictionary.TryGetValue(symbol, out foundValue))
+                // Then in the directly-referenced symbols.
+                if (!TryFindSymbol(
+                    symbol,
+                    DirectlyReferencedExternalSymbols,
+                    out symbolUsedForLookup,
+                    out scriptSymbol))
                 {
-                    return true;
-                }
-
-                if (hasGenericVersion && dictionary.TryGetValue(symbol.OriginalDefinition, out foundValue))
-                {
-                    return true;
-                }
-
-                if (nonReducedMethodSymbol != null && dictionary.TryGetValue(nonReducedMethodSymbol, out foundValue))
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            // look in the document symbols first
-            if (!TryFindSymbolOrGenericVersion(DocumentSymbols, out IScriptSymbol? scriptSymbol))
-            {
-                // then in the directly-referenced symbols
-                if (!TryFindSymbolOrGenericVersion(DirectlyReferencedExternalSymbols, out scriptSymbol))
-                {
-                    // then in the indirectly-referenced symbols
-                    if (TryFindSymbolOrGenericVersion(
+                    // And finally in the indirectly-referenced symbols.
+                    if (TryFindSymbol(
+                        symbol,
                         IndirectlyReferencedExternalSymbols,
+                        out symbolUsedForLookup,
                         out Lazy<IScriptSymbol?> lazyValue))
                     {
                         scriptSymbol = lazyValue.Value;
@@ -220,22 +194,108 @@ namespace Desalt.Core.SymbolTables
                 }
             }
 
-            // check the overrides to see if there's a defined value
-            if ((scriptSymbol != null &&
-                    OverrideSymbols.TryGetValue(symbol.ToHashDisplay(), out SymbolTableOverride? @override)) ||
-                (hasGenericVersion &&
-                    OverrideSymbols.TryGetValue(symbol.OriginalDefinition!.ToHashDisplay(), out @override)) ||
-                (nonReducedMethodSymbol != null &&
-                    OverrideSymbols.TryGetValue(nonReducedMethodSymbol.ToHashDisplay(), out @override)))
+            // Check the overrides to see if there's a defined value.
+            if (scriptSymbol != null &&
+                OverrideSymbols.TryGetValue(
+                    symbolUsedForLookup.ToHashDisplay(),
+                    out SymbolTableOverride? symbolTableOverride))
             {
-                if (@override.InlineCode != null && scriptSymbol is IScriptMethodSymbol scriptMethodSymbol)
+                if (symbolTableOverride.InlineCode != null && scriptSymbol is IScriptMethodSymbol scriptMethodSymbol)
                 {
-                    scriptSymbol = scriptMethodSymbol.WithInlineCode(@override.InlineCode);
+                    scriptSymbol = scriptMethodSymbol.WithInlineCode(symbolTableOverride.InlineCode);
                 }
             }
 
             value = scriptSymbol as TScriptSymbol;
             return value != null;
+        }
+
+        /// <summary>
+        /// Checks the specified dictionary for the symbol, by checking the symbol, its original definition (if it's
+        /// generic), or its non-reduced form (for extension methods).
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// The value of the item in the dictionary (usually a <see cref="IScriptSymbol"/> or <see cref="Lazy{IScriptSymbol}"/>).
+        /// </typeparam>
+        /// <param name="symbol">The <see cref="ISymbol"/> to query.</param>
+        /// <param name="dictionary">The <see cref="ImmutableDictionary{ISymbol,TValue}"/> to search.</param>
+        /// <param name="symbolUsedForLookup">
+        /// Contains the symbol that was used for the lookup, which will either be the specified symbol, its original
+        /// definition, or its non-reduced form, depending on which was found in the symbol table.
+        /// </param>
+        /// <param name="foundValue">
+        /// Contains the found value if the method returns true. If the method returns false, this is undefined.
+        /// </param>
+        /// <returns>True if the symbol (or one of its derivatives) was found; otherwise, false.</returns>
+        private static bool TryFindSymbol<TValue>(
+            ISymbol symbol,
+            ImmutableDictionary<ISymbol, TValue> dictionary,
+            out ISymbol symbolUsedForLookup,
+            out TValue foundValue)
+        {
+            if (dictionary.TryGetValue(symbol, out foundValue))
+            {
+                symbolUsedForLookup = symbol;
+                return true;
+            }
+
+            // Detect if there is a generic version of a symbol (for example, if the symbol is a
+            // method `Value<int>(int x)`, then the original definition is `Value<T>(T x)`.
+            if (HasGenericVersion(symbol, out ISymbol? originalDefinition) &&
+                dictionary.TryGetValue(originalDefinition, out foundValue))
+            {
+                symbolUsedForLookup = originalDefinition;
+                return true;
+            }
+
+            // Extension methods can be reduced during translation. For example, `ExtensionMethod(this object x)`
+            // invoked as `x.ExtensionMethod()` will have the reduced symbol `System.Object.ExtensionMethod()`. We need
+            // to detect this case and look for the non-reduced form in the symbol table.
+            if (IsReducedMethod(symbol, out IMethodSymbol? nonReducedMethodSymbol) &&
+                dictionary.TryGetValue(nonReducedMethodSymbol, out foundValue))
+            {
+                symbolUsedForLookup = nonReducedMethodSymbol;
+                return true;
+            }
+
+            symbolUsedForLookup = symbol;
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether there is a generic version of a symbol. For example, if the symbol is a
+        /// method `Value{int}(int x)`, then the original definition is `Value{T}(T x)`.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to query.</param>
+        /// <param name="originalDefinition">
+        /// If the method returns true, contains the original definition of the symbol. If the method returns false,
+        /// this is null.
+        /// </param>
+        /// <returns>True if the symbol has a generic version; otherwise, false.</returns>
+        private static bool HasGenericVersion(ISymbol symbol, [NotNullWhen(true)] out ISymbol? originalDefinition)
+        {
+            originalDefinition = symbol.OriginalDefinition;
+            return originalDefinition != null &&
+                !SymbolEqualityComparer.Default.Equals(symbol.OriginalDefinition, symbol);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified symbol is a reduced method. Extension methods can be
+        /// reduced during translation. For example, `ExtensionMethod(this object x)` invoked as `x.ExtensionMethod()`
+        /// will have the reduced symbol `System.Object.ExtensionMethod()`. We need to detect this case and look for the
+        /// non-reduced form in the symbol table.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to query.</param>
+        /// <param name="nonReducedMethodSymbol">
+        /// If the method returns true, contains the non-reduced method symbol. If the method returns false, this is null.
+        /// </param>
+        /// <returns>True if the symbol is a reduced method symbol; otherwise, false.</returns>
+        private static bool IsReducedMethod(
+            ISymbol symbol,
+            [NotNullWhen(true)] out IMethodSymbol? nonReducedMethodSymbol)
+        {
+            nonReducedMethodSymbol = (symbol as IMethodSymbol)?.ReducedFrom;
+            return nonReducedMethodSymbol != null;
         }
     }
 }
