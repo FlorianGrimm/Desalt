@@ -709,5 +709,83 @@ for (y = $t1, z = y; Num.op_LessThan(x, $t2); ) {
 }
 ");
         }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `while` loops
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task While_loops_with_simple_increment_and_decrement_conditions_should_be_translated_in_place()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+while (++x > y) { }
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+while (Num.op_GreaterThan(x = Num.op_Increment(x), y)) { }
+");
+        }
+
+        [Test]
+        public async Task While_loops_with_complex_increment_and_decrement_conditions_should_be_extracted_to_the_body()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+while (x++ > y) Do(y);
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+while (true) {
+  const $t1 = x;
+  x = Num.op_Increment($t1);
+  if (Num.op_GreaterThan($t1, y)) {
+    break;
+  }
+  this.do(y);
+}
+");
+        }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `do` loops
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Do_loops_with_simple_increment_and_decrement_conditions_should_be_translated_in_place()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+do {} while (++x > y);
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+do { } while (Num.op_GreaterThan(x = Num.op_Increment(x), y));
+");
+        }
+
+        [Test]
+        public async Task Do_loops_with_complex_increment_and_decrement_conditions_should_be_extracted_to_the_body()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+do { Do(y); } while (x++ > y);
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+do {
+  this.do(y);
+  const $t1 = x;
+  x = Num.op_Increment($t1);
+  if (Num.op_GreaterThan($t1, y)) {
+    break;
+  }
+} while (true);
+");
+        }
     }
 }

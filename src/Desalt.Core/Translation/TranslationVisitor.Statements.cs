@@ -718,19 +718,10 @@ namespace Desalt.Core.Translation
 
             // If we had to move the incrementors to the body, then convert the statement to a block statement if
             // needed, and then add the incrementors at the end of the block.
-            if (blockStatements.Any())
-            {
-                if (forLoopStatement is ITsBlockStatement blockStatement)
-                {
-                    blockStatement = Factory.Block(blockStatement.Statements.Concat(blockStatements).ToArray());
-                }
-                else
-                {
-                    blockStatement = Factory.Block(new[] { forLoopStatement }.Concat(blockStatements).ToArray());
-                }
-
-                forLoopStatement = blockStatement;
-            }
+            forLoopStatement = AddAdditionalStatementsToExistingStatement(
+                forLoopStatement,
+                blockStatements,
+                prependAdditionalStatements: false);
 
             return incrementor;
         }
@@ -741,11 +732,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsWhileStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitWhileStatement(WhileStatementSyntax node)
         {
-            var whileCondition = VisitExpression(node.Condition);
-            var whileStatement = VisitStatement(node.Statement);
-
-            ITsWhileStatement translated = Factory.While(whileCondition, whileStatement);
-            yield return translated;
+            yield return TranslateWhileAndDoWhileLoops(node.Condition, node.Statement, isWhileLoop: true);
         }
 
         /// <summary>
@@ -754,11 +741,102 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsDoWhileStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitDoStatement(DoStatementSyntax node)
         {
-            var doStatement = VisitStatement(node.Statement);
-            var whileCondition = VisitExpression(node.Condition);
+            yield return TranslateWhileAndDoWhileLoops(node.Condition, node.Statement, isWhileLoop: false);
+        }
 
-            ITsDoWhileStatement translated = Factory.DoWhile(doStatement, whileCondition);
-            yield return translated;
+        private ITsStatementListItem TranslateWhileAndDoWhileLoops(
+            ExpressionSyntax condition,
+            StatementSyntax statement,
+            bool isWhileLoop)
+        {
+            if (!TryTranslateUserDefinedOperator(
+                condition,
+                isTopLevelExpressionInStatement: true,
+                out ITsExpression? whileCondition))
+            {
+                whileCondition = VisitExpression(condition);
+            }
+
+            // If there are any additional statements from translating the condition, we need to add those to the block.
+            var blockStatements = new List<ITsStatementListItem>(_additionalStatementsNeededBeforeCurrentStatement);
+            bool conditionHasAdditionalStatements = _additionalStatementsNeededBeforeCurrentStatement.Count > 0;
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
+            // Translate the statement.
+            var whileStatement = VisitStatement(statement);
+
+            // If there were additional statements when translating the condition, then we need to pull them out of the
+            // 'while' condition and into the loop before any translated statements.
+            if (conditionHasAdditionalStatements)
+            {
+                // Add an explicit 'if' check here to exit the loop.
+                blockStatements.Add(Factory.IfStatement(whileCondition, Factory.Break().ToBlock()));
+                whileCondition = Factory.True;
+            }
+
+            whileStatement = AddAdditionalStatementsToExistingStatement(
+                whileStatement,
+                blockStatements,
+                prependAdditionalStatements: isWhileLoop);
+
+            ITsStatementListItem translated = isWhileLoop
+                ? (ITsStatementListItem)Factory.While(whileCondition, whileStatement)
+                : Factory.DoWhile(whileStatement, whileCondition);
+
+            return translated;
+        }
+
+        /// <summary>
+        /// Inserts the specified additional statements before or after the specified existing statement by creating a
+        /// block statement if needed.
+        /// </summary>
+        /// <param name="existingStatement">The existing statement (or statements if this is a <see cref="ITsBlockStatement"/>).</param>
+        /// <param name="additionalStatements">
+        /// A list of additional statements to insert before or after the existing statement.
+        /// </param>
+        /// <param name="prependAdditionalStatements">
+        /// If true, the additional statements will appear before the existing statement. If false, the additional
+        /// statements will be appended after the existing statement.
+        /// </param>
+        /// <returns>
+        /// If there are no additional statements, <paramref name="existingStatement"/>; otherwise a new <see
+        /// cref="ITsBlockStatement"/> with the additional statements prepended (or appended) to the existing statement.
+        /// </returns>
+        private static ITsStatement AddAdditionalStatementsToExistingStatement(
+            ITsStatement existingStatement,
+            ICollection<ITsStatementListItem> additionalStatements,
+            bool prependAdditionalStatements)
+        {
+            // Just return the original statement if there aren't any additional statements to add.
+            if (additionalStatements.Count == 0)
+            {
+                return existingStatement;
+            }
+
+            var newStatements = new List<ITsStatementListItem>();
+
+            // Add the existing statements to the block.
+            if (existingStatement is ITsBlockStatement existingBlock)
+            {
+                newStatements.AddRange(existingBlock.Statements);
+            }
+            else
+            {
+                newStatements.Add(existingStatement);
+            }
+
+            // Add the additional statements to the block.
+            if (prependAdditionalStatements)
+            {
+                newStatements.InsertRange(0, additionalStatements);
+            }
+            else
+            {
+                newStatements.AddRange(additionalStatements);
+            }
+
+            var blockStatement = Factory.Block(newStatements.ToArray());
+            return blockStatement;
         }
 
         //// ===========================================================================================================
