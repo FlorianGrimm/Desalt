@@ -787,5 +787,124 @@ do {
 } while (true);
 ");
         }
+
+        //// ===========================================================================================================
+        //// Unary increment/decrement operators inside of `switch` statements
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task
+            Switch_statements_with_simple_increment_and_decrement_conditions_should_be_translated_in_place()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+switch (++x > y)
+{
+    case true: return;
+}
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+switch (Num.op_GreaterThan(x = Num.op_Increment(x), y)) {
+  case true:
+    return;
+}
+");
+        }
+
+        [Test]
+        public async Task
+            Switch_statements_with_complex_increment_and_decrement_conditions_should_be_extracted_to_the_body()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+switch (x++ > y)
+{
+    case true: return;
+}
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+const $t1 = x;
+x = Num.op_Increment($t1);
+switch (Num.op_GreaterThan($t1, y)) {
+  case true:
+    return;
+}
+");
+        }
+
+        [Test]
+        public async Task Case_statements_with_simple_increment_and_decrement_conditions_should_be_translated_in_place()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+int i = 10;
+switch (i)
+{
+    case 10:
+        ++x;
+        break;
+
+    case 20:
+        x--;
+        break;
+}
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+let i: number = 10;
+switch (i) {
+  case 10:
+    x = Num.op_Increment(x);
+    break;
+
+  case 20:
+    x = Num.op_Decrement(x);
+    break;
+}
+");
+        }
+
+        [Test]
+        public async Task
+            Case_statements_with_complex_increment_and_decrement_conditions_should_be_translated_correctly()
+        {
+            await AssertUserDefinedOperatorTranslation(
+                @"
+Num x = new Num(), y = new Num();
+int i = 10;
+switch (i)
+{
+    case 10:
+        y = x++;
+        break;
+
+    case 20:
+        y = x--;
+        break;
+}
+",
+                @"
+let x: Num = new Num(), y: Num = new Num();
+let i: number = 10;
+switch (i) {
+  case 10:
+    const $t1 = x;
+    x = Num.op_Increment($t1);
+    y = $t1;
+    break;
+
+  case 20:
+    const $t2 = x;
+    x = Num.op_Decrement($t2);
+    y = $t2;
+    break;
+}
+");
+        }
     }
 }

@@ -849,11 +849,23 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsSwitchStatement"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitSwitchStatement(SwitchStatementSyntax node)
         {
-            var condition = VisitExpression(node.Expression);
+            if (!TryTranslateUserDefinedOperator(
+                node.Expression,
+                isTopLevelExpressionInStatement: true,
+                out ITsExpression? condition))
+            {
+                condition = VisitExpression(node.Expression);
+            }
+
+            var preSwitchStatements = new List<ITsStatementListItem>(_additionalStatementsNeededBeforeCurrentStatement);
+            _additionalStatementsNeededBeforeCurrentStatement.Clear();
+
             var clauses = VisitMultipleOfType<ITsCaseOrDefaultClause>(node.Sections);
 
             ITsSwitchStatement translated = Factory.Switch(condition, clauses.ToArray());
-            yield return translated;
+
+            _additionalStatementsNeededBeforeCurrentStatement.AddRange(preSwitchStatements);
+            return ReturnVisitResultPlusAdditionalStatements(translated);
         }
 
         /// <summary>
@@ -865,7 +877,7 @@ namespace Desalt.Core.Translation
             List<ITsCaseOrDefaultClause> labels = VisitMultipleOfType<ITsCaseOrDefaultClause>(node.Labels);
             List<ITsStatementListItem> statements = VisitMultipleOfType<ITsStatementListItem>(node.Statements);
 
-            // attach the statements to the last label
+            // Attach the statements to the last label
             labels[^1] = labels[^1].WithStatements(statements);
 
             return labels;
