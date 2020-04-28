@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
+    using Desalt.Core.SymbolTables;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
     using Microsoft.CodeAnalysis;
@@ -28,6 +29,7 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         private readonly SemanticModel _semanticModel;
+        private readonly ScriptSymbolTable _scriptSymbolTable;
         private readonly RenameRules _renameRules;
         private readonly TranslateIdentifierFunc _translateIdentifierFunc;
         private readonly TranslationVisitFunc<ITsExpression> _visitFunc;
@@ -40,6 +42,7 @@ namespace Desalt.Core.Translation
 
         public UserDefinedOperatorTranslator(
             SemanticModel semanticModel,
+            ScriptSymbolTable scriptSymbolTable,
             RenameRules renameRules,
             TranslateIdentifierFunc translateIdentifierFunc,
             TranslationVisitFunc<ITsExpression> visitFunc,
@@ -47,6 +50,7 @@ namespace Desalt.Core.Translation
             ICollection<Diagnostic>? diagnostics = null)
         {
             _semanticModel = semanticModel;
+            _scriptSymbolTable = scriptSymbolTable;
             _renameRules = renameRules;
             _translateIdentifierFunc = translateIdentifierFunc;
             _visitFunc = visitFunc;
@@ -83,8 +87,17 @@ namespace Desalt.Core.Translation
         {
             additionalStatementsRequiredBeforeTranslatedExpression = Enumerable.Empty<ITsStatementListItem>();
 
-            // See if this is actually a user-defined operator overload method call.
+            // No need to translate if this isn't actually a user-defined operator overload method call.
             if (!IsUserDefinedOperator(expressionNode, out IMethodSymbol? methodSymbol))
+            {
+                translatedExpression = null;
+                return false;
+            }
+
+            // No need to translate if the user-defined operator is decorated with [IntrinsicOperator], which means that
+            // it should be treated like the built-in operator.
+            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+                scriptMethodSymbol.IntrinsicOperator)
             {
                 translatedExpression = null;
                 return false;
