@@ -906,5 +906,152 @@ switch (i) {
 }
 ");
         }
+
+        //// ===========================================================================================================
+        //// [IntrinsicOperator] Tests
+        //// ===========================================================================================================
+
+        private static Task AssertIntrinsicOperatorTranslation(
+            string methodSnippet,
+            string expectedTypeScriptMethodSnippet,
+            SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.DocumentAndReferencedTypes)
+        {
+            return AssertTranslation(
+                $@"
+class Num
+{{
+    [IntrinsicOperator]
+    public static Num operator ++(Num x) => new Num();
+
+    [IntrinsicOperator]
+    public static bool operator <(Num x, Num y) => false;
+
+    [IntrinsicOperator]
+    public static bool operator >(Num x, Num y) => false;
+
+    [IntrinsicOperator]
+    public static explicit operator int(Num x) => 0;
+
+    public void Method()
+    {{
+        Num x = new Num(), y = new Num();
+        int startHere = 0;
+{methodSnippet}
+        int endHere = 0;
+    }}
+}}
+",
+                $@"
+class Num {{
+  // The rest of the generated code is not examined.
+  public method(): void {{
+    let x: Num = new Num(), y: Num;
+    let startHere: number = 0;
+{expectedTypeScriptMethodSnippet}
+    let endHere: number = 0;
+  }}
+}}
+",
+                discoveryKind,
+                extractApplicableTypeScriptSnippet: true);
+        }
+
+        [Test]
+        public async Task IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_STATEMENTS()
+        {
+            await AssertIntrinsicOperatorTranslation(@"x++;", @"x++;");
+        }
+
+        [Test]
+        public async Task IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_LOCAL_DECLARATIONS()
+        {
+            await AssertIntrinsicOperatorTranslation(@"Num z = x++;", @"let z: Num = x++;");
+        }
+
+        [Test]
+        public async Task IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_ARRAY_BRACKET_STATEMENTS()
+        {
+            await AssertIntrinsicOperatorTranslation(
+                @"
+Num[] arr = new[] { x };
+arr[(int)x++] = x;
+", @"
+let arr: Num[] = [x];
+arr[<number>x++] = x;
+");
+        }
+
+        [Test]
+        public async Task IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_IF_statements()
+        {
+            await AssertIntrinsicOperatorTranslation(@"if (x++ > y) { }", @"if (x++ > y) { }");
+        }
+
+        [Test]
+        public async Task IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_THROW_statements()
+        {
+            await AssertIntrinsicOperatorTranslation(
+                @"throw new ArgumentOutOfRangeException(""param"", y = x++, null);",
+                @"throw new ArgumentOutOfRangeException('param', y = x++, null);");
+        }
+
+        [Test]
+        public async Task
+            IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_TRY_CATCH_FINALLY_statements()
+        {
+            await AssertIntrinsicOperatorTranslation(
+                @"
+try { y = x++; }
+catch { y = x++; }
+",
+                @"
+try {
+  y = x++;
+} catch {
+  y = x++;
+}
+");
+        }
+
+        [Test]
+        public async Task
+            IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_LOOPS()
+        {
+            await AssertIntrinsicOperatorTranslation(
+                @"
+for (y = x++; x > y; y = x++) { }
+foreach (var num in new Num[] { x++ }) { }
+while (x++ > y) { }
+do {} while (x++ > y);
+",
+                @"
+for (y = x++; x > y; y = x++) { }
+for (const num of [x++]) { }
+while (x++ > y) { }
+do { } while (x++ > y);
+");
+        }
+
+        [Test]
+        public async Task
+            IntrinsicOperator_should_bypass_the_user_defined_operator_code_for_SWITCH_statements()
+        {
+            await AssertIntrinsicOperatorTranslation(
+                @"
+switch (x++ > y)
+{
+    case true:
+        y = x++;
+        break;
+}
+",
+                @"
+switch (x++ > y) {
+  case true:
+    y = x++;
+    break;
+}
+");
+        }
     }
 }

@@ -140,6 +140,7 @@ namespace Desalt.Core.Translation
 
             _userDefinedOperatorTranslator = new UserDefinedOperatorTranslator(
                 _semanticModel,
+                _scriptSymbolTable,
                 _renameRules,
                 TranslateIdentifierName,
                 VisitSingleOfType<ITsExpression>,
