@@ -93,8 +93,10 @@ using System.Runtime.CompilerServices;
                 discoveryKind: discoveryKind,
                 options: options);
 
-            var throwingDiagnosticList = DiagnosticList.Create(tempProject.Options);
-            throwingDiagnosticList.ThrowOnErrors = true;
+            var throwingDiagnosticList = new DiagnosticList(tempProject.Options.DiagnosticOptions)
+            {
+                ThrowOnErrors = true
+            };
 
             var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
             ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
@@ -159,8 +161,10 @@ using System.Runtime.CompilerServices;
                 discoveryKind: discoveryKind,
                 options: options);
 
-            var diagnosticList = DiagnosticList.Create(tempProject.Options);
-            diagnosticList.ThrowOnErrors = false;
+            var diagnosticList = new DiagnosticList(tempProject.Options.DiagnosticOptions)
+            {
+                ThrowOnErrors = false
+            };
 
             var visitor = new TranslationVisitor(context, diagnostics: diagnosticList);
             ITsAstNode result = visitor.Visit(context.RootSyntax).Single();

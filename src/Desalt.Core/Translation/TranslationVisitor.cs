@@ -125,7 +125,7 @@ namespace Desalt.Core.Translation
 
             if (diagnostics == null)
             {
-                var diagnosticList = DiagnosticList.Create(context.Options);
+                var diagnosticList = new DiagnosticList(context.Options.DiagnosticOptions);
                 _diagnostics = diagnosticList;
 #if DEBUG
 
