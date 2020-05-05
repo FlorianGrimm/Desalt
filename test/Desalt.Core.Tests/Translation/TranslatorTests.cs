@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CSharpToTypeScriptTranslatorTests.cs" company="Justin Rockwood">
+// <copyright file="TranslatorTests.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Desalt.Core.Tests.Translation
     using FluentAssertions;
     using NUnit.Framework;
 
-    public class CSharpToTypeScriptTranslatorTests
+    public class TranslatorTests
     {
         private static async Task AssertTranslationAsync(string csharpCode, string expectedTypeScriptCode)
         {
@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
             var context = await tempProject.CreateContextWithSymbolTablesForFileAsync();
-            var translator = new CSharpToTypeScriptTranslator();
+            var translator = new Translator();
             IExtendedResult<TypeScriptAst.Ast.ITsImplementationModule> result = translator.TranslateDocument(context);
 
             result.Diagnostics.Should().BeEmpty();

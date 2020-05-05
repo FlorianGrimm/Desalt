@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="CSharpToTypeScriptTranslator.cs" company="Justin Rockwood">
+// <copyright file="Translator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -16,7 +16,7 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Converts a CSharp syntax tree into a TypeScript syntax tree.
     /// </summary>
-    internal class CSharpToTypeScriptTranslator
+    internal class Translator
     {
         //// ===========================================================================================================
         //// Methods
