@@ -1,6 +1,7 @@
-{
+﻿{
   "outputPath": ".",
   "diagnosticOptions": {
+    "throwOnErrors": false,
     "warningLevel": "informational",
     "generalDiagnosticOption": "default",
     "specificDiagnosticOptions": {

@@ -38,6 +38,7 @@ namespace Desalt.Core.Diagnostics
         {
             _options = options;
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
+            ThrowOnErrors = options.ThrowOnErrors;
         }
 
         //// ===========================================================================================================

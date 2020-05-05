@@ -24,6 +24,7 @@ namespace Desalt.Core.Tests.Options
         private const string JsonContents = @"{
   ""outputPath"": ""outDir"",
   ""diagnosticOptions"": {
+    ""throwOnErrors"": false,
     ""warningLevel"": ""minor"",
     ""generalDiagnosticOption"": ""error"",
     ""specificDiagnosticOptions"": {

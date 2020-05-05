@@ -35,12 +35,14 @@ namespace Desalt.Core.Diagnostics
         public DiagnosticOptions(
             WarningLevel warningLevel = DefaultWarningLevel,
             ReportDiagnostic generalDiagnosticOption = DefaultGeneralDiagnosticOption,
-            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null)
+            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            bool throwOnErrors = false)
             : this(
                 instanceToCopy: null,
                 warningLevel,
                 generalDiagnosticOption,
-                specificDiagnosticOptions)
+                specificDiagnosticOptions,
+                throwOnErrors)
         {
         }
 
@@ -55,7 +57,8 @@ namespace Desalt.Core.Diagnostics
             DiagnosticOptions? instanceToCopy = null,
             WarningLevel? warningLevel = null,
             ReportDiagnostic? generalDiagnosticOption = null,
-            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null)
+            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            bool? throwOnErrors = null)
         {
             WarningLevel = warningLevel ?? instanceToCopy?.WarningLevel ?? DefaultWarningLevel;
             GeneralDiagnosticOption = generalDiagnosticOption ??
@@ -63,11 +66,24 @@ namespace Desalt.Core.Diagnostics
 
             SpecificDiagnosticOptions = specificDiagnosticOptions ??
                 instanceToCopy?.SpecificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
+
+            ThrowOnErrors = throwOnErrors ?? instanceToCopy?.ThrowOnErrors ?? false;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
+
+        /// <summary>
+        /// Determines whether to throw an exception when a filtered error is added. Mainly used in unit tests - should
+        /// not normally be used.
+        /// </summary>
+        public bool ThrowOnErrors { get; }
+
+        public DiagnosticOptions WithThrowOnErrors(bool value)
+        {
+            return value == ThrowOnErrors ? this : new DiagnosticOptions(this, throwOnErrors: value);
+        }
 
         /// <summary>
         /// Gets the global warning level.
