@@ -9,6 +9,7 @@ namespace Desalt.Core.Options
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using Desalt.Core.Diagnostics;
     using Microsoft.CodeAnalysis;
 
     public partial class CompilerOptions
@@ -27,9 +28,11 @@ namespace Desalt.Core.Options
             internal Builder(CompilerOptions copy)
             {
                 OutputPath = copy.OutputPath;
-                WarningLevel = copy.WarningLevel;
-                GeneralDiagnosticOption = copy.GeneralDiagnosticOption;
-                SpecificDiagnosticOptions = new Dictionary<string, ReportDiagnostic>(copy.SpecificDiagnosticOptions);
+                WarningLevel = copy.DiagnosticOptions.WarningLevel;
+                GeneralDiagnosticOption = copy.DiagnosticOptions.GeneralDiagnosticOption;
+                SpecificDiagnosticOptions =
+                    new Dictionary<string, ReportDiagnostic>(copy.DiagnosticOptions.SpecificDiagnosticOptions);
+
                 RenameRules = copy.RenameRules;
                 SymbolTableOverrides = new Dictionary<string, SymbolTableOverride>(copy.SymbolTableOverrides);
             }
@@ -77,9 +80,10 @@ namespace Desalt.Core.Options
             {
                 return new CompilerOptions(
                     outputPath: OutputPath,
-                    warningLevel: WarningLevel,
-                    generalDiagnosticOption: GeneralDiagnosticOption,
-                    specificDiagnosticOptions: SpecificDiagnosticOptions.ToImmutableDictionary(),
+                    diagnosticOptions: new DiagnosticOptions(
+                        WarningLevel,
+                        GeneralDiagnosticOption,
+                        SpecificDiagnosticOptions.ToImmutableDictionary()),
                     renameRules: RenameRules,
                     symbolTableOverrides: new SymbolTableOverrides(SymbolTableOverrides.ToImmutableDictionary()));
             }

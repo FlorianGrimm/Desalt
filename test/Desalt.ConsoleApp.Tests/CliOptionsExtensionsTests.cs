@@ -11,6 +11,7 @@ namespace Desalt.ConsoleApp.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.Core;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -22,7 +23,9 @@ namespace Desalt.ConsoleApp.Tests
         public void ToCompilationRequest_should_convert_to_a_valid_CompilationRequest_object()
         {
             var cliOptions = new CliOptions { ProjectFile = "projectFile", OutDirectory = "out", WarningLevel = 3, };
-            var expectedOptions = new CompilerOptions("out", WarningLevel.Minor);
+            var expectedOptions =
+                new CompilerOptions("out").WithDiagnosticOptions(
+                    DiagnosticOptions.Default.WithWarningLevel(WarningLevel.Minor));
 
             cliOptions.ToCompilationRequest()
                 .Should()
@@ -37,7 +40,9 @@ namespace Desalt.ConsoleApp.Tests
                 ProjectFile = "projectFile",
                 GeneralDiagnosticOption = ReportDiagnostic.Error
             };
-            cliOptions.ToCompilationRequest().Options.GeneralDiagnosticOption.Should().Be(ReportDiagnostic.Error);
+            cliOptions.ToCompilationRequest()
+                .Options.DiagnosticOptions.GeneralDiagnosticOption.Should()
+                .Be(ReportDiagnostic.Error);
         }
 
         [Test]
@@ -57,7 +62,7 @@ namespace Desalt.ConsoleApp.Tests
             };
 
             cliOptions.ToCompilationRequest()
-                .Options.SpecificDiagnosticOptions.Should()
+                .Options.DiagnosticOptions.SpecificDiagnosticOptions.Should()
                 .HaveCount(3)
                 .And.Equal(
                     new Dictionary<string, ReportDiagnostic>

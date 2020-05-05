@@ -23,7 +23,8 @@ namespace Desalt.Core.Tests.Diagnostics
         [Test]
         public void Ctor_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
+            var options = new CompilerOptions("out").WithDiagnosticOptions(
+                DiagnosticOptions.Default.WithGeneralDiagnosticOptions(ReportDiagnostic.Suppress));
             Diagnostic[] diagnostics = new[]
             {
                 DiagnosticsTestFactories.CreateDiagnostic(id: "id1"),
@@ -65,7 +66,8 @@ namespace Desalt.Core.Tests.Diagnostics
         [Test]
         public void Add_should_do_nothing_if_the_diagnostic_is_suppressed()
         {
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
+            var options = new CompilerOptions("out").WithDiagnosticOptions(
+                DiagnosticOptions.Default.WithGeneralDiagnosticOptions(ReportDiagnostic.Suppress));
             var list = new DiagnosticList(options.DiagnosticOptions);
             Diagnostic warning = DiagnosticsTestFactories.CreateWarning();
 
@@ -85,7 +87,8 @@ namespace Desalt.Core.Tests.Diagnostics
         [Test]
         public void AddRange_should_add_only_the_errors_if_the_options_have_warnings_suppressed()
         {
-            var options = new CompilerOptions("out", generalDiagnosticOption: ReportDiagnostic.Suppress);
+            var options = new CompilerOptions("out").WithDiagnosticOptions(
+                DiagnosticOptions.Default.WithGeneralDiagnosticOptions(ReportDiagnostic.Suppress));
             var list = new DiagnosticList(options.DiagnosticOptions);
             list.AddRange(
                 new[]
