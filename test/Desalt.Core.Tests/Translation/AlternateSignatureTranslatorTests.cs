@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Tests.Translation
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.CompilerUtilities.Extensions;
@@ -53,10 +52,8 @@ using System.Runtime.CompilerServices;
                 translationContext,
                 methodSymbol,
                 translatedParameterList,
-                out ITsParameterList actualParameterList,
-                out IEnumerable<Diagnostic> diagnostics);
+                out ITsParameterList actualParameterList);
 
-            diagnostics.Should().BeEmpty();
             translationContext.Diagnostics.Should().BeEmpty();
 
             result.Should().Be(expectedResult, because: "the parameter list should not have changed");

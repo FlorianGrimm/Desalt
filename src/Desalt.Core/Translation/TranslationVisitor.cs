@@ -405,10 +405,7 @@ namespace Desalt.Core.Translation
                     Context,
                     methodSymbol,
                     callSignature.Parameters,
-                    out ITsParameterList translatedParameterList,
-                    out IEnumerable<Diagnostic> diagnostics);
-
-                Context.Diagnostics.AddRange(diagnostics);
+                    out ITsParameterList translatedParameterList);
 
                 if (adjustedParameters)
                 {

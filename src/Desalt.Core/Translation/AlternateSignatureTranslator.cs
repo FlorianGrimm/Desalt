@@ -8,7 +8,6 @@
 namespace Desalt.Core.Translation
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.SymbolTables;
@@ -35,18 +34,14 @@ namespace Desalt.Core.Translation
         /// <param name="methodSymbol">The method declaration that should be examined.</param>
         /// <param name="translatedParameterList">The already-translated parameter list that may be adjusted.</param>
         /// <param name="adjustedParameterList">The newly-translated parameter list.</param>
-        /// <param name="diagnostics">Any diagnostics produced during adjustment.</param>
         /// <returns>true if the parameter list was adjusted; otherwise, false.</returns>
         public static bool TryAdjustParameterListTypes(
             TranslationContext context,
             IMethodSymbol methodSymbol,
             ITsParameterList translatedParameterList,
-            out ITsParameterList adjustedParameterList,
-            out IEnumerable<Diagnostic> diagnostics)
+            out ITsParameterList adjustedParameterList)
         {
             adjustedParameterList = translatedParameterList;
-            var diagnosticsList = new List<Diagnostic>();
-            diagnostics = diagnosticsList;
 
             // we don't need to adjust anything if the method doesn't belong to an [AlternateSignature] group
             if (!context.AlternateSignatureSymbolTable.TryGetValue(
