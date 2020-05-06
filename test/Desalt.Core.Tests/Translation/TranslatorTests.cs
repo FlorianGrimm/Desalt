@@ -11,12 +11,10 @@ namespace Desalt.Core.Tests.Translation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
-    using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -67,12 +65,16 @@ class C {{
         /// If provided, allows callers to extract just the piece of translated TypeScript code that should be examined.
         /// This is helpful when using a boilerplate class/method and you only care about the statements inside of the function.
         /// </param>
+        /// <param name="includeImports">
+        /// Determines whether an imports section is emitted at the top of the TypeScript file.
+        /// </param>
         private static async Task AssertTranslation(
             string codeSnippet,
             string expectedTypeScriptCode,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
             Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null,
-            bool extractApplicableTypeScriptSnippet = false)
+            bool extractApplicableTypeScriptSnippet = false,
+            bool includeImports = false)
         {
             string code = $@"
 using System;
@@ -88,20 +90,16 @@ using System.Runtime.CompilerServices;
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
-            CompilerOptions? options = populateOptionsFunc?.Invoke(tempProject.Options);
+            CompilerOptions? options = populateOptionsFunc?.Invoke(tempProject.Options) ??
+                tempProject.Options.WithDiagnosticOptions(
+                    tempProject.Options.DiagnosticOptions.WithThrowOnErrors(true));
+
             DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                 discoveryKind: discoveryKind,
                 options: options);
 
-            var throwingDiagnosticList = new DiagnosticList(tempProject.Options.DiagnosticOptions)
-            {
-                ThrowOnErrors = true
-            };
-
-            var visitor = new TranslationVisitor(context, diagnostics: throwingDiagnosticList);
-            ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
-
-            visitor.Diagnostics.Should().BeEmpty();
+            var result = Translator.TranslateDocument(context, skipImports: !includeImports);
+            result.Diagnostics.Should().BeEmpty();
 
             static string ExtractApplicableLines(string code, bool isActual)
             {
@@ -122,7 +120,7 @@ using System.Runtime.CompilerServices;
             }
 
             // Rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings.
-            string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+            string translated = result.Result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
 
             string applicableTranslated = extractApplicableTypeScriptSnippet
                 ? ExtractApplicableLines(translated, isActual: true)
@@ -140,7 +138,8 @@ using System.Runtime.CompilerServices;
             string expectedTypeScriptCode,
             Action<IReadOnlyCollection<Diagnostic>> diagnosticsAssertionAction,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes,
-            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null)
+            Func<CompilerOptions, CompilerOptions>? populateOptionsFunc = null,
+            bool includeImports = false)
         {
             string code = $@"
 using System;
@@ -152,28 +151,25 @@ using System.Runtime.CompilerServices;
 {codeSnippet}
 ";
 
-            // get rid of \r\n sequences in the expected output
+            // Get rid of \r\n sequences in the expected output.
             expectedTypeScriptCode = expectedTypeScriptCode.Replace("\r\n", "\n").TrimStart();
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
-            CompilerOptions? options = populateOptionsFunc?.Invoke(tempProject.Options);
+
+            CompilerOptions options = populateOptionsFunc?.Invoke(tempProject.Options) ?? tempProject.Options;
+            options = options.WithDiagnosticOptions(options.DiagnosticOptions.WithThrowOnErrors(false));
+
             DocumentTranslationContextWithSymbolTables context = await tempProject.CreateContextWithSymbolTablesForFileAsync(
                 discoveryKind: discoveryKind,
                 options: options);
 
-            var diagnosticList = new DiagnosticList(tempProject.Options.DiagnosticOptions)
-            {
-                ThrowOnErrors = false
-            };
+            var result = Translator.TranslateDocument(context, skipImports: !includeImports);
 
-            var visitor = new TranslationVisitor(context, diagnostics: diagnosticList);
-            ITsAstNode result = visitor.Visit(context.RootSyntax).Single();
-
-            // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings
-            string translated = result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
+            // Rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings.
+            string translated = result.Result.EmitAsString(emitOptions: EmitOptions.UnixSpaces);
             translated.Should().Be(expectedTypeScriptCode);
 
-            diagnosticsAssertionAction(diagnosticList);
+            diagnosticsAssertionAction(result.Diagnostics);
         }
     }
 }
