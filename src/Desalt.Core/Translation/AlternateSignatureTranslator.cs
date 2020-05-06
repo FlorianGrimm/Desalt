@@ -27,7 +27,6 @@ namespace Desalt.Core.Translation
         //// Member Variables
         //// ===========================================================================================================
 
-        private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureSymbolTable _alternateSignatureSymbolTable;
 
         //// ===========================================================================================================
@@ -41,15 +40,10 @@ namespace Desalt.Core.Translation
         /// <param name="alternateSignatureSymbolTable">
         /// A symbol table containing methods that have been decorated with the [AlternateSignature] attribute.
         /// </param>
-        /// <param name="typeTranslator">The <see cref="TypeTranslator"/> to use.</param>
-        public AlternateSignatureTranslator(
-            AlternateSignatureSymbolTable alternateSignatureSymbolTable,
-            TypeTranslator typeTranslator)
+        public AlternateSignatureTranslator(AlternateSignatureSymbolTable alternateSignatureSymbolTable)
         {
             _alternateSignatureSymbolTable = alternateSignatureSymbolTable ??
                 throw new ArgumentNullException(nameof(alternateSignatureSymbolTable));
-
-            _typeTranslator = typeTranslator ?? throw new ArgumentNullException(nameof(typeTranslator));
         }
 
         //// ===========================================================================================================
@@ -60,6 +54,7 @@ namespace Desalt.Core.Translation
         /// Adjusts the parameter list if necessary by taking into account all of the methods in an [AlternateSignature]
         /// method group and changing the parameter types to match the union of types amongst all of the methods in the group.
         /// </summary>
+        /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="methodSymbol">The method declaration that should be examined.</param>
         /// <param name="translatedParameterList">
         /// The already-translated parameter list that may be adjusted.
@@ -68,6 +63,7 @@ namespace Desalt.Core.Translation
         /// <param name="diagnostics">Any diagnostics produced during adjustment.</param>
         /// <returns>true if the parameter list was adjusted; otherwise, false.</returns>
         public bool TryAdjustParameterListTypes(
+            TranslationContext context,
             IMethodSymbol methodSymbol,
             ITsParameterList translatedParameterList,
             out ITsParameterList adjustedParameterList,
@@ -105,15 +101,15 @@ namespace Desalt.Core.Translation
 
             // adjust all of the required and optional parameters
             ImmutableArray<ITsBoundRequiredParameter> requiredParameters = AdjustRequiredParameters(
+                context,
                 methodGroup,
-                translatedRequiredParameters,
-                diagnosticsList);
+                translatedRequiredParameters);
 
             ImmutableArray<ITsBoundOptionalParameter> optionalParameters = AdjustOptionalParameters(
+                context,
                 methodGroup,
                 translatedRequiredParameters,
-                translatedOptionalParameters,
-                diagnosticsList);
+                translatedOptionalParameters);
 
             ITsRestParameter? restParameter = translatedParameterList.RestParameter;
 
@@ -127,10 +123,10 @@ namespace Desalt.Core.Translation
         /// Adjusts the translated parameter list by treating only the first N parameters as
         /// required, where N is the minimum number of parameters in the method group.
         /// </summary>
-        private ImmutableArray<ITsBoundRequiredParameter> AdjustRequiredParameters(
+        private static ImmutableArray<ITsBoundRequiredParameter> AdjustRequiredParameters(
+            TranslationContext context,
             AlternateSignatureMethodGroup methodGroup,
-            ImmutableArray<ITsBoundRequiredParameter> translatedRequiredParameters,
-            ICollection<Diagnostic> diagnostics)
+            ImmutableArray<ITsBoundRequiredParameter> translatedRequiredParameters)
         {
             int requiredParamCount = Math.Min(methodGroup.MinParameterCount, translatedRequiredParameters.Length);
 
@@ -138,7 +134,7 @@ namespace Desalt.Core.Translation
             // everything else - the other ones will be converted to optional parameters below)
             var requiredParameters = translatedRequiredParameters.Take(requiredParamCount)
                 .Select(
-                    (param, index) => param.WithParameterType(DetermineParameterType(methodGroup, index, diagnostics)))
+                    (param, index) => param.WithParameterType(DetermineParameterType(context, methodGroup, index)))
                 .ToImmutableArray();
 
             return requiredParameters;
@@ -149,11 +145,11 @@ namespace Desalt.Core.Translation
         /// adding optional parameters if necessary, and adding union types for the set of all
         /// supported parameter types.
         /// </summary>
-        private ImmutableArray<ITsBoundOptionalParameter> AdjustOptionalParameters(
+        private static ImmutableArray<ITsBoundOptionalParameter> AdjustOptionalParameters(
+            TranslationContext context,
             AlternateSignatureMethodGroup methodGroup,
             ImmutableArray<ITsBoundRequiredParameter> translatedRequiredParameters,
-            ImmutableArray<ITsBoundOptionalParameter> translatedOptionalParameters,
-            ICollection<Diagnostic> diagnostics)
+            ImmutableArray<ITsBoundOptionalParameter> translatedOptionalParameters)
         {
             int requiredParamCount = Math.Min(methodGroup.MinParameterCount, translatedRequiredParameters.Length);
 
@@ -168,12 +164,12 @@ namespace Desalt.Core.Translation
                 .Select(
                     (translatedParameter, index) => Factory.BoundOptionalParameter(
                         translatedParameter.ParameterName,
-                        DetermineParameterType(methodGroup, index + requiredParamCount, diagnostics)));
+                        DetermineParameterType(context, methodGroup, index + requiredParamCount)));
 
             // translate the optional parameter types
             var originalOptionalParameters = translatedOptionalParameters.Select(
                 (param, index) => param.WithParameterType(
-                    DetermineParameterType(methodGroup, index + translatedRequiredParameters.Length, diagnostics)));
+                    DetermineParameterType(context, methodGroup, index + translatedRequiredParameters.Length)));
 
             // add additional optional parameters if the implementing method doesn't have enough
             int maxParamsCount = methodGroup.MaxParameterCount;
@@ -186,7 +182,7 @@ namespace Desalt.Core.Translation
                     .Select(
                         index => Factory.BoundOptionalParameter(
                             Factory.Identifier(methodGroup.MethodWithMaxParams.Parameters[index].Name),
-                            DetermineParameterType(methodGroup, index, diagnostics)));
+                            DetermineParameterType(context, methodGroup, index)));
             }
 
             var optionalParameters = convertedOptionalParameters.Concat(originalOptionalParameters)
@@ -200,16 +196,16 @@ namespace Desalt.Core.Translation
         /// Determines the translated type of the parameter by examining the types of all of the
         /// methods in the group and creating union types if necessary.
         /// </summary>
+        /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="group">The method group.</param>
         /// <param name="parameterIndex">The index of the parameter to examine.</param>
-        /// <param name="diagnostics">The diagnostics to add errors to.</param>
         /// <returns>
         /// Either the parameter type or a union type of all of the possible types for the parameter.
         /// </returns>
-        private ITsType DetermineParameterType(
+        private static ITsType DetermineParameterType(
+            TranslationContext context,
             AlternateSignatureMethodGroup group,
-            int parameterIndex,
-            ICollection<Diagnostic> diagnostics)
+            int parameterIndex)
         {
             Location GetLocation() =>
                 group.ImplementingMethod.Parameters[parameterIndex]
@@ -219,10 +215,9 @@ namespace Desalt.Core.Translation
 
             ITsType[] translatedTypes = group.TypesForParameter(parameterIndex)
                 .Select(
-                    typeSymbol => _typeTranslator.TranslateTypeSymbol(
+                    typeSymbol => TypeTranslator.TranslateTypeSymbol(
+                        context,
                         typeSymbol,
-                        typesToImport: null,
-                        diagnostics: diagnostics,
                         getLocationFunc: GetLocation))
                 .Distinct()
                 .ToArray();

@@ -8,11 +8,8 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
-    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
@@ -44,8 +41,8 @@ class Foo
 ";
 
             using TempProject tempProject = await TempProject.CreateAsync(code);
-            DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
-            var contexts = context.ToSingleEnumerable().ToImmutableArray();
+            DocumentTranslationContextWithSymbolTables context =
+                await tempProject.CreateContextWithSymbolTablesForFileAsync(discoveryKind: discoveryKind);
 
             // Find the type symbol for the class member.
             VariableDeclarationSyntax variableDeclaration =
@@ -57,21 +54,13 @@ class Foo
                 throw new InvalidOperationException($"Cannot find symbol for {variableDeclaration.Type}");
             }
 
-            // create the script name symbol table
-            var scriptNamer = new ScriptNamer(
-                SymbolDiscoverer.GetMscorlibAssemblySymbol(context.SemanticModel.Compilation));
-            var scriptNameTable = ScriptSymbolTable.Create(contexts, scriptNamer, discoveryKind);
-
-            var translator = new TypeTranslator(scriptNameTable);
-            var diagnostics = new List<Diagnostic>();
-
-            ITsType actualTranslation = translator.TranslateTypeSymbol(
+            var translationContext = new TranslationContext(context);
+            ITsType actualTranslation = TypeTranslator.TranslateTypeSymbol(
+                translationContext,
                 typeSymbol,
-                typesToImport: null,
-                diagnostics: diagnostics,
                 getLocationFunc: variableDeclaration.Type.GetLocation);
 
-            diagnostics.Should().BeEmpty();
+            translationContext.Diagnostics.Should().BeEmpty();
             actualTranslation.Should().BeEquivalentTo(expectedType);
         }
 

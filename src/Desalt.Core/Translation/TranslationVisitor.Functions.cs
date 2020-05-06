@@ -231,10 +231,9 @@ namespace Desalt.Core.Translation
             else
             {
                 ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
-                parameterType = _typeTranslator.TranslateTypeSymbol(
+                parameterType = TypeTranslator.TranslateTypeSymbol(
+                    Context,
                     parameterTypeSymbol,
-                    Context.TypesToImport,
-                    Context.Diagnostics,
                     () => node.Type.GetLocation());
             }
 
@@ -291,11 +290,7 @@ namespace Desalt.Core.Translation
             var translated = from typeSyntax in node.Arguments
                              let typeSymbol = typeSyntax.GetTypeSymbol(Context.SemanticModel)
                              where typeSymbol != null
-                             select _typeTranslator.TranslateTypeSymbol(
-                                 typeSymbol,
-                                 Context.TypesToImport,
-                                 Context.Diagnostics,
-                                 typeSyntax.GetLocation);
+                             select TypeTranslator.TranslateTypeSymbol(Context, typeSymbol, typeSyntax.GetLocation);
             return translated;
         }
 

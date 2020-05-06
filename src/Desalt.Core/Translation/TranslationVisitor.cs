@@ -51,7 +51,6 @@ namespace Desalt.Core.Translation
         private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly ScriptSkipTranslator _scriptSkipTranslator;
-        private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly UserDefinedOperatorTranslator _userDefinedOperatorTranslator;
 
@@ -92,11 +91,8 @@ namespace Desalt.Core.Translation
             _inlineCodeTranslator = new InlineCodeTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
             _scriptSkipTranslator = new ScriptSkipTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
 
-            _typeTranslator = new TypeTranslator(Context.ScriptSymbolTable);
-
             _alternateSignatureTranslator = new AlternateSignatureTranslator(
-                context.AlternateSignatureSymbolTable,
-                _typeTranslator);
+                context.AlternateSignatureSymbolTable);
 
             _userDefinedOperatorTranslator = new UserDefinedOperatorTranslator(
                 Context.SemanticModel,
@@ -398,10 +394,9 @@ namespace Desalt.Core.Translation
             ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(Context.SemanticModel);
             if (returnTypeNode != null && returnTypeSymbol != null)
             {
-                returnType = _typeTranslator.TranslateTypeSymbol(
+                returnType = TypeTranslator.TranslateTypeSymbol(
+                    Context,
                     returnTypeSymbol,
-                    Context.TypesToImport,
-                    Context.Diagnostics,
                     returnTypeNode.GetLocation);
             }
 
@@ -411,6 +406,7 @@ namespace Desalt.Core.Translation
             if (methodSymbol != null)
             {
                 bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
+                    Context,
                     methodSymbol,
                     callSignature.Parameters,
                     out ITsParameterList translatedParameterList,

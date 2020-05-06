@@ -117,10 +117,9 @@ namespace Desalt.Core.Translation
             bool isConst = node.IsConst;
 
             // Get the type of all of the declarations.
-            ITsType type = _typeTranslator.TranslateTypeSymbol(
+            ITsType type = TypeTranslator.TranslateTypeSymbol(
+                Context,
                 node.Declaration.Type.GetTypeSymbol(Context.SemanticModel),
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Declaration.Type.GetLocation);
 
             // Translate all of the VariableDeclaratorSyntax nodes.
@@ -395,11 +394,7 @@ namespace Desalt.Core.Translation
                 ITypeSymbol? typeSymbol = Context.SemanticModel.GetTypeInfo(node.Declaration.Type).Type;
                 ITsType? declarationType = typeSymbol == null
                     ? null
-                    : _typeTranslator.TranslateTypeSymbol(
-                        typeSymbol,
-                        Context.TypesToImport,
-                        Context.Diagnostics,
-                        node.Declaration.Type.GetLocation);
+                    : TypeTranslator.TranslateTypeSymbol(Context, typeSymbol, node.Declaration.Type.GetLocation);
 
                 // Fix up all of the declarations to add the type.
                 if (declarationType != null)
@@ -450,11 +445,7 @@ namespace Desalt.Core.Translation
 
                 ITsType? variableType = expressionTypeSymbol == null
                     ? null
-                    : _typeTranslator.TranslateTypeSymbol(
-                        expressionTypeSymbol,
-                        Context.TypesToImport,
-                        Context.Diagnostics,
-                        node.Expression!.GetLocation);
+                    : TypeTranslator.TranslateTypeSymbol(Context, expressionTypeSymbol, node.Expression!.GetLocation);
 
                 // Create a temporary variable name to hold the expression.
                 reservedTemporaryVariable = Context.TemporaryVariableAllocator.Reserve("$using");

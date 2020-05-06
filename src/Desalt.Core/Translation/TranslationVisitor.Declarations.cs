@@ -217,10 +217,9 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitSimpleBaseType(SimpleBaseTypeSyntax node)
         {
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
-            var translated = (ITsTypeReference)_typeTranslator.TranslateTypeSymbol(
+            var translated = (ITsTypeReference)TypeTranslator.TranslateTypeSymbol(
+                Context,
                 typeSymbol,
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Type.GetLocation);
             yield return translated;
         }
@@ -241,10 +240,9 @@ namespace Desalt.Core.Translation
                 bool isReadOnly = node.Modifiers.Any(
                     token => token.IsKind(SyntaxKind.ReadOnlyKeyword) || token.IsKind(SyntaxKind.ConstKeyword));
 
-                ITsType typeAnnotation = _typeTranslator.TranslateTypeSymbol(
+                ITsType typeAnnotation = TypeTranslator.TranslateTypeSymbol(
+                    Context,
                     node.Declaration.Type.GetTypeSymbol(Context.SemanticModel),
-                    Context.TypesToImport,
-                    Context.Diagnostics,
                     node.Declaration.Type.GetLocation);
 
                 ITsExpression? initializer = null;
@@ -416,10 +414,9 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
             ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
-            ITsType propertyType = _typeTranslator.TranslateTypeSymbol(
+            ITsType propertyType = TypeTranslator.TranslateTypeSymbol(
+                Context,
                 typeSymbol,
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Type.GetLocation);
             IPropertySymbol propertySymbol = Context.SemanticModel.GetDeclaredSymbol(node);
 

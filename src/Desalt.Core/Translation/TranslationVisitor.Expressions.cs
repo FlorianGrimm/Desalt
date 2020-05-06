@@ -107,10 +107,9 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCastExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
-            ITsType castType = _typeTranslator.TranslateTypeSymbol(
+            ITsType castType = TypeTranslator.TranslateTypeSymbol(
+                Context,
                 node.Type.GetTypeSymbol(Context.SemanticModel),
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Type.GetLocation);
 
             var expression = VisitExpression(node.Expression);
@@ -130,10 +129,9 @@ namespace Desalt.Core.Translation
         /// <remarks>An <see cref="ITsIdentifier"/>.</remarks>
         public override IEnumerable<ITsAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
-            ITsType type = _typeTranslator.TranslateTypeSymbol(
+            ITsType type = TypeTranslator.TranslateTypeSymbol(
+                Context,
                 node.Type.GetTypeSymbol(Context.SemanticModel),
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Type.GetLocation);
 
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
@@ -360,10 +358,9 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
         {
-            ITsType translatedType = _typeTranslator.TranslateTypeSymbol(
+            ITsType translatedType = TypeTranslator.TranslateTypeSymbol(
+                Context,
                 node.Type.GetTypeSymbol(Context.SemanticModel),
-                Context.TypesToImport,
-                Context.Diagnostics,
                 node.Type.GetLocation);
 
             ITsCallExpression translated = Factory.Call(
