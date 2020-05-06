@@ -479,7 +479,7 @@ namespace Desalt.TypeScriptAst.Ast
         ITsExpression Expression { get; }
 
         /// <summary>
-        /// Indicates whether the <see cref="Expression"/> is preceded by a spread operator '...'.
+        /// Indicates whether the argument is preceded by a spread operator '...'.
         /// </summary>
         bool IsSpreadArgument { get; }
     }

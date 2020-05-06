@@ -10,7 +10,6 @@ namespace Desalt.Core.Tests.Translation
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
     using NUnit.Framework;
-    using NUnit.Framework.Internal;
 
     public partial class TranslatorTests
     {
@@ -18,8 +17,24 @@ namespace Desalt.Core.Tests.Translation
         public async Task This_expression_assigning_numeric_literals()
         {
             await AssertTranslation(
-                "class C { private int Int32; public C() { this.Int32 = 1; } }",
-                "class C {\n  private int32: number;\n\n  public constructor() {\n    this.int32 = 1;\n  }\n}\n");
+                @"
+class C
+{
+    private int Int32;
+    public C()
+    {
+        this.Int32 = 1;
+    }
+}",
+                @"
+class C {
+  private int32: number;
+
+  public constructor() {
+    this.int32 = 1;
+  }
+}
+");
         }
 
         [Test]

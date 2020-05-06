@@ -181,6 +181,12 @@ namespace Desalt.Core.Diagnostics
                 "TypeScript translation cannot invoke C# operator overload type",
                 "C# operator overload invocation of type '{0}' is not supported: {1}")]
             OperatorOverloadInvocationNotSupported,
+
+            [Error(
+                1032,
+                "Default interface implementations not supported",
+                "C# 8 default implementations in interfaces is not supported")]
+            DefaultInterfaceImplementationNotSupported,
         }
 
         //// ===========================================================================================================
@@ -546,6 +552,15 @@ namespace Desalt.Core.Diagnostics
                 node.GetLocation(),
                 overloadFunctionName,
                 node);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# 8 default implementations in interfaces is not supported".
+        /// </summary>
+        /// <param name="node">The unsupported syntax node.</param>
+        public static Diagnostic DefaultInterfaceImplementationNotSupported(SyntaxNode node)
+        {
+            return Create(DiagnosticId.DefaultInterfaceImplementationNotSupported, node.GetLocation());
         }
     }
 }

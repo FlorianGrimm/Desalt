@@ -10,6 +10,7 @@ namespace Desalt.Core.Translation
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
@@ -18,13 +19,15 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Contains data structures and helper methods needed for translation of C# to TypeScript.
     /// </summary>
     /// <remarks>
-    /// Many translation functions are split between multiple sub-translators, but they all might participate in a larger
+    /// Many translation functions are split between multiple sub-translators, for example <see
+    /// cref="ExpressionTranslator"/> and <see cref="StatementTranslator"/>, but they all might participate in a larger
     /// translation context. Having this shared information in a single class allows the sub-translators to add
     /// information during a translation, for example the diagnostics or types to import.
     ///
@@ -220,6 +223,157 @@ namespace Desalt.Core.Translation
             }
 
             return expression;
+        }
+
+        /// <summary>
+        /// Gets an expected symbol from the semantic model and calls <c>ReportInternalError</c> if the symbol is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol associated with the syntax node.</returns>
+        public TSymbol GetExpectedDeclaredSymbol<TSymbol>(SyntaxNode node)
+            where TSymbol : class, ISymbol
+        {
+            var symbol = SemanticModel.GetDeclaredSymbol(node) as TSymbol;
+            if (symbol == null)
+            {
+                ReportInternalError($"Node '{node}' should have an expected declared symbol.", node);
+            }
+
+            return symbol;
+        }
+
+        /// <summary>
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
+        /// either is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        public (TSymbol symbol, TScriptSymbol scriptSymbol) GetExpectedDeclaredScriptSymbol<TSymbol, TScriptSymbol>(
+            SyntaxNode node)
+            where TSymbol : class, ISymbol
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            TSymbol symbol = GetExpectedDeclaredSymbol<TSymbol>(node);
+
+            if (!ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
+            {
+                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
+            }
+
+            return (symbol, scriptSymbol);
+        }
+
+        /// <summary>
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
+        /// either is not found.
+        /// </summary>
+        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
+        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        public TScriptSymbol GetExpectedDeclaredScriptSymbol<TScriptSymbol>(SyntaxNode node)
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            return GetExpectedDeclaredScriptSymbol<ISymbol, TScriptSymbol>(node).scriptSymbol;
+        }
+
+        /// <summary>
+        /// Gets an expected script symbol and calls <c>ReportInternalError</c> if not found.
+        /// </summary>
+        public TScriptSymbol GetExpectedScriptSymbol<TScriptSymbol>(ISymbol symbol, SyntaxNode node)
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            if (!ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
+            {
+                ReportInternalError(
+                    $"Symbol should have been added to the {nameof(ScriptSymbolTable)}: {symbol.ToHashDisplay()}",
+                    node);
+            }
+
+            return scriptSymbol;
+        }
+
+        /// <summary>
+        /// Translates an identifier used in a declaration (class, interface, method, etc.) by looking up the symbol
+        /// and the associated script name.
+        /// </summary>
+        /// <param name="node">The node to translate.</param>
+        /// <returns>An <see cref="ITsIdentifier"/>.</returns>
+        public ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
+        {
+            var scriptSymbol = GetExpectedDeclaredScriptSymbol<IScriptSymbol>(node);
+            return Factory.Identifier(scriptSymbol.ComputedScriptName);
+        }
+
+        /// <summary>
+        /// Translates the C# XML documentation comment into a JSDoc comment if there is a
+        /// documentation comment on the specified node.
+        /// </summary>
+        /// <typeparam name="T">The type of the translated node.</typeparam>
+        /// <param name="translatedNode">The already-translated TypeScript AST node.</param>
+        /// <param name="node">The C# syntax node to get documentation comments from.</param>
+        /// <param name="symbolNode">
+        /// The C# syntax node to use for retrieving the symbol. If not supplied <paramref
+        /// name="node"/> is used.
+        /// </param>
+        /// <returns>
+        /// If there are documentation comments, a new TypeScript AST node with the translated JsDoc
+        /// comments prepended. If there are no documentation comments, the same node is returned.
+        /// </returns>
+        public T AddDocumentationComment<T>(T translatedNode, SyntaxNode node, SyntaxNode? symbolNode = null)
+            where T : ITsAstNode
+        {
+            if (!node.HasStructuredTrivia)
+            {
+                return translatedNode;
+            }
+
+            ISymbol? symbol = SemanticModel.GetDeclaredSymbol(symbolNode ?? node);
+            if (symbol == null)
+            {
+                return translatedNode;
+            }
+
+            DocumentationComment? documentationComment = symbol.GetDocumentationComment(
+                preferredCulture: CultureInfo.InvariantCulture,
+                expandIncludes: true,
+                cancellationToken: CancellationToken);
+
+            if (documentationComment == null)
+            {
+                return translatedNode;
+            }
+
+            var result = DocumentationCommentTranslator.Translate(documentationComment);
+            Diagnostics.AddRange(result.Diagnostics);
+
+            return translatedNode.WithLeadingTrivia(result.Result);
+        }
+
+        public TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
+        {
+            ISymbol symbol = SemanticModel.GetDeclaredSymbol(node);
+            return GetAccessibilityModifier(symbol, node.GetLocation);
+        }
+
+        public TsAccessibilityModifier GetAccessibilityModifier(ISymbol symbol, Func<Location> getLocationFunc)
+        {
+            TsAccessibilityModifier? translated = symbol.DeclaredAccessibility switch
+            {
+                Accessibility.Private => TsAccessibilityModifier.Private,
+                Accessibility.Protected => TsAccessibilityModifier.Protected,
+                Accessibility.Public => TsAccessibilityModifier.Public,
+                _ => null,
+            };
+
+            if (translated == null)
+            {
+                Diagnostics.Add(
+                    DiagnosticFactory.UnsupportedAccessibility(
+                        symbol.DeclaredAccessibility.ToString(),
+                        "public",
+                        getLocationFunc()));
+            }
+
+            return translated ?? TsAccessibilityModifier.Public;
         }
     }
 }
