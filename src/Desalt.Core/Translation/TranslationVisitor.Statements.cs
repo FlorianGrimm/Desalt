@@ -98,7 +98,7 @@ namespace Desalt.Core.Translation
 
             if (node.Arguments.Count > 0)
             {
-                yield return VisitSingleOfType<ITsArgument>(node.Arguments[0]).Argument;
+                yield return VisitSingleOfType<ITsArgument>(node.Arguments[0]).Expression;
             }
         }
 

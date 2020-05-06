@@ -267,9 +267,9 @@ namespace Desalt.TypeScriptAst.Ast
             return TsCallExpression.CreateSuper(argumentList);
         }
 
-        public static ITsArgument Argument(ITsExpression argument, bool isSpreadArgument = false)
+        public static ITsArgument Argument(ITsExpression expression, bool isSpreadArgument = false)
         {
-            return new TsArgument(argument, isSpreadArgument);
+            return new TsArgument(expression, isSpreadArgument);
         }
 
         public static ITsArgumentList ArgumentList()

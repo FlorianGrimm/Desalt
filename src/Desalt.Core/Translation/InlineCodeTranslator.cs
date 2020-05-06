@@ -279,7 +279,7 @@ namespace Desalt.Core.Translation
                     builder.Append(", ");
                 }
 
-                builder.Append(translatedValue.Argument.EmitAsString());
+                builder.Append(translatedValue.Expression.EmitAsString());
             }
 
             return builder.ToString();

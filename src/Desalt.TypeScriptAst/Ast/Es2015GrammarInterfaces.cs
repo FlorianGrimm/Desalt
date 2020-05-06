@@ -476,10 +476,10 @@ namespace Desalt.TypeScriptAst.Ast
 
     public interface ITsArgument : ITsAstNode
     {
-        ITsExpression Argument { get; }
+        ITsExpression Expression { get; }
 
         /// <summary>
-        /// Indicates whether the <see cref="Argument"/> is preceded by a spread operator '...'.
+        /// Indicates whether the <see cref="Expression"/> is preceded by a spread operator '...'.
         /// </summary>
         bool IsSpreadArgument { get; }
     }

@@ -107,8 +107,8 @@ namespace Desalt.Core.Translation
             var propertyDefinitions = new List<ITsPropertyDefinition>();
             for (int i = 0; i < argCount; i += 2)
             {
-                ITsExpression key = translatedArgumentList.Arguments[i].Argument;
-                ITsExpression value = translatedArgumentList.Arguments[i + 1].Argument;
+                ITsExpression key = translatedArgumentList.Arguments[i].Expression;
+                ITsExpression value = translatedArgumentList.Arguments[i + 1].Expression;
 
                 // We may have an expression as a property name, which would have been translated as
                 // an expression instead of a literal string or number.

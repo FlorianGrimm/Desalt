@@ -97,7 +97,7 @@ namespace Desalt.Core.Translation
                     return false;
                 }
 
-                translatedExpression = translatedArgumentList.Arguments[0].Argument;
+                translatedExpression = translatedArgumentList.Arguments[0].Expression;
                 return true;
             }
 
