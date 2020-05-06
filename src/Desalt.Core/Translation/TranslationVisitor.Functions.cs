@@ -59,12 +59,12 @@ namespace Desalt.Core.Translation
 
             // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
             // and there's no need to use [InlineCode].
-            if (_scriptSkipTranslator.TryTranslateInvocationExpression(
+            if (ScriptSkipTranslator.TryTranslateInvocationExpression(
+                Context,
                 node,
                 methodSymbol,
                 leftSide,
                 arguments,
-                Context.Diagnostics,
                 out ITsExpression? translatedExpression))
             {
                 yield return translatedExpression;

@@ -7,8 +7,6 @@
 
 namespace Desalt.Core.Translation
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
@@ -20,33 +18,8 @@ namespace Desalt.Core.Translation
     /// Translates method and constructor declarations with [ScriptSkip] and invocations against methods and
     /// constructors marked with [ScriptSkip].
     /// </summary>
-    internal class ScriptSkipTranslator
+    internal static class ScriptSkipTranslator
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly SemanticModel _semanticModel;
-        private readonly ScriptSymbolTable _scriptSymbolTable;
-
-        //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Creates a new instance of a <see cref="ScriptSkipTranslator"/> from the specified
-        /// semantic model and symbol tables.
-        /// </summary>
-        /// <param name="semanticModel">The semantic model to use.</param>
-        /// <param name="scriptSymbolTable"> A symbol table containing script names given a symbol.</param>
-        public ScriptSkipTranslator(SemanticModel semanticModel, ScriptSymbolTable scriptSymbolTable)
-        {
-            _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
-
-            _scriptSymbolTable =
-                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -54,27 +27,27 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Tries to translate an invocation expression that may contain a method marked with [ScriptSkip].
         /// </summary>
+        /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="node">The <see cref="InvocationExpressionSyntax"/> node to translate.</param>
         /// <param name="methodSymbol">The method symbol of the invocation.</param>
         /// <param name="translatedLeftSide">The already-translated left side of the invocation expression.</param>
         /// <param name="translatedArgumentList">The already-translated argument list for the method invocation.</param>
         /// <param name="translatedExpression">The translated expression if this method returns true; otherwise, null.</param>
-        /// <param name="diagnostics">Contains any potential errors while attempting to translate.</param>
         /// <returns>
         /// True if the node was translated (it contained a [ScriptSkip] attribute); false if the node was not
         /// translated or if there was an error.
         /// </returns>
-        public bool TryTranslateInvocationExpression(
+        public static bool TryTranslateInvocationExpression(
+            TranslationContext context,
             InvocationExpressionSyntax node,
             IMethodSymbol methodSymbol,
             ITsExpression translatedLeftSide,
             ITsArgumentList translatedArgumentList,
-            ICollection<Diagnostic> diagnostics,
             [NotNullWhen(true)] out ITsExpression? translatedExpression)
         {
             // See if the method should be translated (if the [ScriptSkip] attribute is present).
             if (methodSymbol == null ||
-                !_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) ||
+                !context.ScriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) ||
                 !scriptMethodSymbol.ScriptSkip)
             {
                 translatedExpression = null;
@@ -92,7 +65,7 @@ namespace Desalt.Core.Translation
                 if (translatedArgumentList.Arguments.Length != 1)
                 {
                     translatedExpression = null;
-                    diagnostics.Add(
+                    context.Diagnostics.Add(
                         DiagnosticFactory.IncorrectScriptSkipUsage(methodSymbol.Name, node.GetLocation()));
                     return false;
                 }
@@ -105,7 +78,7 @@ namespace Desalt.Core.Translation
             if (translatedArgumentList.Arguments.Length != 0)
             {
                 translatedExpression = null;
-                diagnostics.Add(
+                context.Diagnostics.Add(
                     DiagnosticFactory.IncorrectScriptSkipUsage(methodSymbol.Name, node.GetLocation()));
                 return false;
             }
