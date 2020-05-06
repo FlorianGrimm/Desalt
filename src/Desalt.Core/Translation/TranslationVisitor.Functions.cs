@@ -36,10 +36,10 @@ namespace Desalt.Core.Translation
             var arguments = (ITsArgumentList)Visit(node.ArgumentList).First();
 
             // Get the method symbol, which is either a constructor or "normal" method.
-            if (!(_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol methodSymbol))
+            if (!(Context.SemanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol methodSymbol))
             {
                 // For dynamic invocations, there isn't a symbol since the compiler can't tell what it is.
-                if (_semanticModel.GetTypeInfo(node).Type?.TypeKind != TypeKind.Dynamic)
+                if (Context.SemanticModel.GetTypeInfo(node).Type?.TypeKind != TypeKind.Dynamic)
                 {
                     ReportInternalError("Isn't an invocation always a method symbol?", node);
                 }
@@ -59,7 +59,7 @@ namespace Desalt.Core.Translation
                 out Diagnostic? error);
             if (error != null)
             {
-                _diagnostics.Add(error);
+                Context.Diagnostics.Add(error);
             }
 
             // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
@@ -69,7 +69,7 @@ namespace Desalt.Core.Translation
                 methodSymbol,
                 leftSide,
                 arguments,
-                _diagnostics,
+                Context.Diagnostics,
                 out ITsExpression? translatedExpression))
             {
                 yield return translatedExpression;
@@ -88,7 +88,7 @@ namespace Desalt.Core.Translation
                     node.Expression.GetLocation(),
                     leftSide,
                     arguments,
-                    _diagnostics,
+                    Context.Diagnostics,
                     out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
@@ -230,11 +230,11 @@ namespace Desalt.Core.Translation
             }
             else
             {
-                ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+                ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
                 parameterType = _typeTranslator.TranslateSymbol(
                     parameterTypeSymbol,
-                    _typesToImport,
-                    _diagnostics,
+                    Context.TypesToImport,
+                    Context.Diagnostics,
                     () => node.Type.GetLocation());
             }
 
@@ -289,12 +289,12 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitTypeArgumentList(TypeArgumentListSyntax node)
         {
             var translated = from typeSyntax in node.Arguments
-                             let typeSymbol = typeSyntax.GetTypeSymbol(_semanticModel)
+                             let typeSymbol = typeSyntax.GetTypeSymbol(Context.SemanticModel)
                              where typeSymbol != null
                              select _typeTranslator.TranslateSymbol(
                                  typeSymbol,
-                                 _typesToImport,
-                                 _diagnostics,
+                                 Context.TypesToImport,
+                                 Context.Diagnostics,
                                  typeSyntax.GetLocation);
             return translated;
         }

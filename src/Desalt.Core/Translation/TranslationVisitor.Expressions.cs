@@ -82,7 +82,7 @@ namespace Desalt.Core.Translation
                     return Factory.Null.ToSingleEnumerable();
             }
 
-            _diagnostics.Add(DiagnosticFactory.LiteralExpressionTranslationNotSupported(node));
+            Context.Diagnostics.Add(DiagnosticFactory.LiteralExpressionTranslationNotSupported(node));
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -108,9 +108,9 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
             ITsType castType = _typeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _typesToImport,
-                _diagnostics,
+                node.Type.GetTypeSymbol(Context.SemanticModel),
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Type.GetLocation);
 
             var expression = VisitExpression(node.Expression);
@@ -131,9 +131,9 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
             ITsType type = _typeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _typesToImport,
-                _diagnostics,
+                node.Type.GetTypeSymbol(Context.SemanticModel),
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Type.GetLocation);
 
             ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
@@ -151,11 +151,11 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitPredefinedType(PredefinedTypeSyntax node)
         {
             // Try to get the script name of the expression.
-            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 
             // If there's no symbol then just return an identifier.
             string scriptName = node.Keyword.ValueText;
-            if (symbol != null && _scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+            if (symbol != null && Context.ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
                 scriptName = scriptSymbol.ComputedScriptName;
             }
@@ -170,7 +170,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitIdentifierName(IdentifierNameSyntax node)
         {
             // Try to get the script name of the expression.
-            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 
             // If there's no symbol then just return an identifier.
             if (symbol == null)
@@ -199,14 +199,14 @@ namespace Desalt.Core.Translation
         {
             ITsIdentifier scriptName = forcedScriptName != null
                 ? Factory.Identifier(forcedScriptName)
-                : symbol.GetScriptName(_scriptSymbolTable, symbol.Name);
+                : symbol.GetScriptName(Context.ScriptSymbolTable, symbol.Name);
 
             // Get the containing type of the symbol.
             INamedTypeSymbol? containingType = symbol.ContainingType;
 
             // Get the containing type of the syntax node (usually an identifier).
-            INamedTypeSymbol? containingTypeOfSyntaxNode = _semanticModel
-                .GetEnclosingSymbol(node.GetLocation().SourceSpan.Start, _cancellationToken)
+            INamedTypeSymbol? containingTypeOfSyntaxNode = Context.SemanticModel
+                .GetEnclosingSymbol(node.GetLocation().SourceSpan.Start, Context.CancellationToken)
                 ?.ContainingType;
 
             // See if the identifier is declared within this type.
@@ -220,7 +220,7 @@ namespace Desalt.Core.Translation
             if (symbol.IsStatic && containingType != null)
             {
                 ITsIdentifier containingTypeScriptName =
-                    containingType.GetScriptName(_scriptSymbolTable, containingType.Name);
+                    containingType.GetScriptName(Context.ScriptSymbolTable, containingType.Name);
                 expression = Factory.MemberDot(containingTypeScriptName, scriptName);
             }
 
@@ -246,7 +246,7 @@ namespace Desalt.Core.Translation
                 }
                 else
                 {
-                    _typesToImport.Add(typeToImport);
+                    Context.TypesToImport.Add(typeToImport);
                 }
             }
 
@@ -272,13 +272,13 @@ namespace Desalt.Core.Translation
         {
             var leftSide = VisitExpression(node.Expression);
 
-            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 
             // Get the script name - the symbol can be null if we're inside a dynamic scope since all
             // bets are off with the type checking.
             string scriptName = symbol == null
                 ? node.Name.Identifier.Text
-                : _scriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
+                : Context.ScriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
 
             ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
             yield return translated;
@@ -321,7 +321,7 @@ namespace Desalt.Core.Translation
                 // TODO: Support multidimensional arrays `new int[x, y]` to `ss.multidimArray(0, x, y)`
                 if (node.Type.RankSpecifiers.Count > 1)
                 {
-                    _diagnostics.Add(DiagnosticFactory.MultidimensionalArraysNotSupported(node.GetLocation()));
+                    Context.Diagnostics.Add(DiagnosticFactory.MultidimensionalArraysNotSupported(node.GetLocation()));
                     yield break;
                 }
 
@@ -384,13 +384,13 @@ namespace Desalt.Core.Translation
             }
 
             // See if there's an [InlineCode] entry for the ctor invocation.
-            if (_semanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
+            if (Context.SemanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
                 _inlineCodeTranslator.TryTranslate(
                     ctorAsMethodSymbol,
                     node.GetLocation(),
                     leftSide,
                     arguments,
-                    _diagnostics,
+                    Context.Diagnostics,
                     out ITsAstNode? translatedNode))
             {
                 yield return translatedNode;
@@ -398,8 +398,8 @@ namespace Desalt.Core.Translation
             else if (JsDictionaryTranslator.TryTranslateObjectCreationSyntax(
                 node,
                 arguments,
-                _semanticModel,
-                _diagnostics,
+                Context.SemanticModel,
+                Context.Diagnostics,
                 out ITsObjectLiteral? translatedObjectLiteral))
             {
                 yield return translatedObjectLiteral;
@@ -431,9 +431,9 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
         {
             ITsType translatedType = _typeTranslator.TranslateSymbol(
-                node.Type.GetTypeSymbol(_semanticModel),
-                _typesToImport,
-                _diagnostics,
+                node.Type.GetTypeSymbol(Context.SemanticModel),
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Type.GetLocation);
 
             ITsCallExpression translated = Factory.Call(
@@ -496,7 +496,7 @@ namespace Desalt.Core.Translation
 
             if (op == null)
             {
-                _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+                Context.Diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
                 op = TsAssignmentOperator.SimpleAssign;
             }
 
@@ -572,7 +572,7 @@ namespace Desalt.Core.Translation
                 return op.Value;
             }
 
-            _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+            Context.Diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
             return TsUnaryOperator.Plus;
         }
 
@@ -630,7 +630,7 @@ namespace Desalt.Core.Translation
                 return op.Value;
             }
 
-            _diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
+            Context.Diagnostics.Add(DiagnosticFactory.OperatorKindNotSupported(operatorToken));
             return TsBinaryOperator.Add;
         }
 

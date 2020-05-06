@@ -93,7 +93,7 @@ namespace Desalt.Core.Translation
         {
             if (node.Arguments.Count > 1)
             {
-                _diagnostics.Add(DiagnosticFactory.ElementAccessWithMoreThanOneExpressionNotAllowed(node));
+                Context.Diagnostics.Add(DiagnosticFactory.ElementAccessWithMoreThanOneExpressionNotAllowed(node));
             }
 
             if (node.Arguments.Count > 0)
@@ -118,9 +118,9 @@ namespace Desalt.Core.Translation
 
             // Get the type of all of the declarations.
             ITsType type = _typeTranslator.TranslateSymbol(
-                node.Declaration.Type.GetTypeSymbol(_semanticModel),
-                _typesToImport,
-                _diagnostics,
+                node.Declaration.Type.GetTypeSymbol(Context.SemanticModel),
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Declaration.Type.GetLocation);
 
             // Translate all of the VariableDeclaratorSyntax nodes.
@@ -296,7 +296,7 @@ namespace Desalt.Core.Translation
             // Translate only the first catch clause.
             if (node.Catches.Count > 1)
             {
-                _diagnostics.Add(DiagnosticFactory.CatchClausesWithMoreThanOneParameterNotYetSupported(node));
+                Context.Diagnostics.Add(DiagnosticFactory.CatchClausesWithMoreThanOneParameterNotYetSupported(node));
             }
 
             CatchClauseSyntax? catchClause = node.Catches.Count > 0 ? node.Catches[0] : null;
@@ -392,13 +392,13 @@ namespace Desalt.Core.Translation
                 declaration = declaration.WithIsConst(true);
 
                 // Get the type of the declaration.
-                ITypeSymbol? typeSymbol = _semanticModel.GetTypeInfo(node.Declaration.Type).Type;
+                ITypeSymbol? typeSymbol = Context.SemanticModel.GetTypeInfo(node.Declaration.Type).Type;
                 ITsType? declarationType = typeSymbol == null
                     ? null
                     : _typeTranslator.TranslateSymbol(
                         typeSymbol,
-                        _typesToImport,
-                        _diagnostics,
+                        Context.TypesToImport,
+                        Context.Diagnostics,
                         node.Declaration.Type.GetLocation);
 
                 // Fix up all of the declarations to add the type.
@@ -446,18 +446,18 @@ namespace Desalt.Core.Translation
 
                 // Try to find the type of the expression.
                 ITypeSymbol? expressionTypeSymbol =
-                    _semanticModel.GetTypeInfo(node.Expression, _cancellationToken).ConvertedType;
+                    Context.SemanticModel.GetTypeInfo(node.Expression, Context.CancellationToken).ConvertedType;
 
                 ITsType? variableType = expressionTypeSymbol == null
                     ? null
                     : _typeTranslator.TranslateSymbol(
                         expressionTypeSymbol,
-                        _typesToImport,
-                        _diagnostics,
+                        Context.TypesToImport,
+                        Context.Diagnostics,
                         node.Expression!.GetLocation);
 
                 // Create a temporary variable name to hold the expression.
-                reservedTemporaryVariable = _temporaryVariableAllocator.Reserve("$using");
+                reservedTemporaryVariable = Context.TemporaryVariableAllocator.Reserve("$using");
                 variableNameIdentifier = Factory.Identifier(reservedTemporaryVariable);
 
                 // Assign the expression to the temporary variable.
@@ -503,7 +503,7 @@ namespace Desalt.Core.Translation
             // Return the temporary variable to the allocator.
             if (reservedTemporaryVariable != null)
             {
-                _temporaryVariableAllocator.Return(reservedTemporaryVariable);
+                Context.TemporaryVariableAllocator.Return(reservedTemporaryVariable);
             }
 
             yield return translated;

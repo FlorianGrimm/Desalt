@@ -77,7 +77,7 @@ namespace Desalt.Core.Translation
             ITsIdentifier enumName = TranslateDeclarationIdentifier(node);
 
             // make the enum const if [NamedValues] is present
-            bool isConst = _semanticModel.GetDeclaredSymbol(node).GetFlagAttribute(SaltarelleAttributeName.NamedValues);
+            bool isConst = Context.SemanticModel.GetDeclaredSymbol(node).GetFlagAttribute(SaltarelleAttributeName.NamedValues);
 
             // translate the enum body
             IList<ITsEnumMember> enumMembers = VisitMultipleOfType<ITsEnumMember>(node.Members);
@@ -103,11 +103,11 @@ namespace Desalt.Core.Translation
             }
 
             // ignore the value if the enum is [NamedValues] and generate our own value
-            bool isNamedValues = _semanticModel.GetDeclaredSymbol(node.Parent)
+            bool isNamedValues = Context.SemanticModel.GetDeclaredSymbol(node.Parent)
                 .GetFlagAttribute(SaltarelleAttributeName.NamedValues);
             if (isNamedValues)
             {
-                IFieldSymbol fieldSymbol = _semanticModel.GetDeclaredSymbol(node);
+                IFieldSymbol fieldSymbol = Context.SemanticModel.GetDeclaredSymbol(node);
                 string defaultFieldName = ScriptNamer.DetermineEnumFieldDefaultScriptName(fieldSymbol);
                 value = Factory.String(defaultFieldName);
             }
@@ -144,7 +144,7 @@ namespace Desalt.Core.Translation
 
                 // get the type symbols so we can tell which ones are interfaces
                 var typeSymbols = node.BaseList.Types
-                    .Select(typeSyntax => typeSyntax.Type.GetTypeSymbol(_semanticModel))
+                    .Select(typeSyntax => typeSyntax.Type.GetTypeSymbol(Context.SemanticModel))
                     .ToImmutableArray();
 
                 for (int i = 0; i < baseList.Length; i++)
@@ -157,7 +157,7 @@ namespace Desalt.Core.Translation
                     {
                         if (extendsClause != null)
                         {
-                            _diagnostics.Add(
+                            Context.Diagnostics.Add(
                                 DiagnosticFactory.InternalError(
                                     "C# isn't supposed to support multiple inheritance! We already saw " +
                                     $"'{extendsClause.EmitAsString()}' but we have another type " +
@@ -216,11 +216,11 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsTypeReference"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitSimpleBaseType(SimpleBaseTypeSyntax node)
         {
-            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
             var translated = (ITsTypeReference)_typeTranslator.TranslateSymbol(
                 typeSymbol,
-                _typesToImport,
-                _diagnostics,
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Type.GetLocation);
             yield return translated;
         }
@@ -233,8 +233,8 @@ namespace Desalt.Core.Translation
             var fieldDeclarations = new List<ITsVariableMemberDeclaration>();
             foreach (VariableDeclaratorSyntax variableDeclaration in node.Declaration.Variables)
             {
-                ISymbol symbol = _semanticModel.GetDeclaredSymbol(variableDeclaration);
-                ITsIdentifier variableName = symbol.GetScriptName(_scriptSymbolTable, variableDeclaration.Identifier.Text);
+                ISymbol symbol = Context.SemanticModel.GetDeclaredSymbol(variableDeclaration);
+                ITsIdentifier variableName = symbol.GetScriptName(Context.ScriptSymbolTable, variableDeclaration.Identifier.Text);
                 TsAccessibilityModifier accessibilityModifier =
                     GetAccessibilityModifier(symbol, variableDeclaration.GetLocation);
 
@@ -242,9 +242,9 @@ namespace Desalt.Core.Translation
                     token => token.IsKind(SyntaxKind.ReadOnlyKeyword) || token.IsKind(SyntaxKind.ConstKeyword));
 
                 ITsType typeAnnotation = _typeTranslator.TranslateSymbol(
-                    node.Declaration.Type.GetTypeSymbol(_semanticModel),
-                    _typesToImport,
-                    _diagnostics,
+                    node.Declaration.Type.GetTypeSymbol(Context.SemanticModel),
+                    Context.TypesToImport,
+                    Context.Diagnostics,
                     node.Declaration.Type.GetLocation);
 
                 ITsExpression? initializer = null;
@@ -282,10 +282,10 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
+            IMethodSymbol methodSymbol = Context.SemanticModel.GetDeclaredSymbol(node);
 
             // If the method is decorated with [InlineCode] or [ScriptSkip] then we shouldn't output the declaration.
-            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+            if (Context.ScriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
                 (scriptMethodSymbol.InlineCode != null || scriptMethodSymbol.ScriptSkip))
             {
                 yield break;
@@ -339,11 +339,11 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            IMethodSymbol methodSymbol = _semanticModel.GetDeclaredSymbol(node);
+            IMethodSymbol methodSymbol = Context.SemanticModel.GetDeclaredSymbol(node);
 
             // If the method is decorated with [InlineCode] then we shouldn't output the declaration (for [ScriptSkip]
             // we still output the declaration, but won't output any invocations).
-            if (_scriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
+            if (Context.ScriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? scriptMethodSymbol) &&
                 scriptMethodSymbol.InlineCode != null)
             {
                 yield break;
@@ -415,16 +415,16 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             ITsIdentifier propertyName = TranslateDeclarationIdentifier(node);
-            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(_semanticModel);
+            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
             ITsType propertyType = _typeTranslator.TranslateSymbol(
                 typeSymbol,
-                _typesToImport,
-                _diagnostics,
+                Context.TypesToImport,
+                Context.Diagnostics,
                 node.Type.GetLocation);
-            IPropertySymbol propertySymbol = _semanticModel.GetDeclaredSymbol(node);
+            IPropertySymbol propertySymbol = Context.SemanticModel.GetDeclaredSymbol(node);
 
             // If the property is marked with [IntrinsicProperty], don't write out the declaration.
-            if (!_scriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
+            if (!Context.ScriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
             {
                 ReportInternalError($"We should have a script symbol for property '{node.Identifier.Text}'", node);
             }
@@ -483,7 +483,7 @@ namespace Desalt.Core.Translation
 
             if (accessibilities.Length > 1)
             {
-                _diagnostics.Add(
+                Context.Diagnostics.Add(
                     DiagnosticFactory.GetterAndSetterAccessorsDoNotAgreeInVisibility(
                         node.Identifier.Text,
                         node.GetLocation()));
@@ -539,7 +539,7 @@ namespace Desalt.Core.Translation
                         // In TypeScript, static references need to be fully qualified with the type name.
                         INamedTypeSymbol containingType = propertySymbol.ContainingType;
                         string containingTypeScriptName =
-                            _scriptSymbolTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
+                            Context.ScriptSymbolTable.GetComputedScriptNameOrDefault(containingType, containingType.Name);
 
                         fieldReference = Factory.MemberDot(
                             Factory.Identifier(containingTypeScriptName),
@@ -637,8 +637,8 @@ namespace Desalt.Core.Translation
             }
 
             ITsIdentifier functionName = node.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ExplicitKeyword)
-                ? Factory.Identifier(_renameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Explicit])
-                : Factory.Identifier(_renameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Implicit]);
+                ? Factory.Identifier(Context.RenameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Explicit])
+                : Factory.Identifier(Context.RenameRules.UserDefinedOperatorMethodNames[UserDefinedOperatorKind.Implicit]);
 
             // Create the call signature.
             ITsCallSignature callSignature = TranslateCallSignature(
@@ -703,11 +703,11 @@ namespace Desalt.Core.Translation
 
             if (overloadKind == null)
             {
-                _diagnostics.Add(DiagnosticFactory.OperatorDeclarationNotSupported(node));
+                Context.Diagnostics.Add(DiagnosticFactory.OperatorDeclarationNotSupported(node));
                 return Factory.Identifier("op_ERROR");
             }
 
-            if (!_renameRules.UserDefinedOperatorMethodNames.TryGetValue(overloadKind.Value, out string functionName))
+            if (!Context.RenameRules.UserDefinedOperatorMethodNames.TryGetValue(overloadKind.Value, out string functionName))
             {
                 ReportInternalError($"Operator overload function name not defined for {overloadKind}", node);
                 return Factory.Identifier("op_ERROR");

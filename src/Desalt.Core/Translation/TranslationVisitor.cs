@@ -14,7 +14,6 @@ namespace Desalt.Core.Translation
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
@@ -51,21 +50,12 @@ namespace Desalt.Core.Translation
 
         private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
 
-        private readonly ICollection<Diagnostic> _diagnostics;
-        private readonly CancellationToken _cancellationToken;
-        private readonly SemanticModel _semanticModel;
-        private readonly ScriptSymbolTable _scriptSymbolTable;
-        private readonly RenameRules _renameRules;
-
         private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly ScriptSkipTranslator _scriptSkipTranslator;
         private readonly TypeTranslator _typeTranslator;
         private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly UserDefinedOperatorTranslator _userDefinedOperatorTranslator;
-
-        private readonly ISet<ITypeSymbol> _typesToImport = new HashSet<ITypeSymbol>();
-        private readonly TemporaryVariableAllocator _temporaryVariableAllocator = new TemporaryVariableAllocator();
 
         /// <summary>
         /// Keeps track of the auto-generated property names, keyed by the property symbol and containing the property name.
@@ -103,58 +93,51 @@ namespace Desalt.Core.Translation
         /// <param name="cancellationToken">An optional token to control canceling translation.</param>
         public TranslationVisitor(
             DocumentTranslationContextWithSymbolTables context,
-            ICollection<Diagnostic>? diagnostics = null,
+            DiagnosticList? diagnostics = null,
             CancellationToken cancellationToken = default)
         {
-            _cancellationToken = cancellationToken;
+            if (diagnostics == null)
+            {
+                diagnostics = new DiagnosticList(context.Options.DiagnosticOptions);
+#if DEBUG
 
-            _semanticModel = context.SemanticModel;
-            _scriptSymbolTable = context.ScriptSymbolTable;
-            _renameRules = context.Options.RenameRules;
+                // Throwing an exception lets us fail fast and see the problem in the unit test failure window.
+                diagnostics.ThrowOnErrors = true;
+#endif
+            }
+
+            Context = new TranslationContext(context, diagnostics, cancellationToken: cancellationToken);
 
             _extensionMethodTranslator =
-                new ExtensionMethodTranslator(_semanticModel, _scriptSymbolTable);
-            _inlineCodeTranslator = new InlineCodeTranslator(_semanticModel, _scriptSymbolTable);
-            _scriptSkipTranslator = new ScriptSkipTranslator(_semanticModel, _scriptSymbolTable);
+                new ExtensionMethodTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
+            _inlineCodeTranslator = new InlineCodeTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
+            _scriptSkipTranslator = new ScriptSkipTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
 
-            _typeTranslator = new TypeTranslator(_scriptSymbolTable);
+            _typeTranslator = new TypeTranslator(Context.ScriptSymbolTable);
 
             _alternateSignatureTranslator = new AlternateSignatureTranslator(
                 context.AlternateSignatureSymbolTable,
                 _typeTranslator);
 
-            if (diagnostics == null)
-            {
-                var diagnosticList = new DiagnosticList(context.Options.DiagnosticOptions);
-                _diagnostics = diagnosticList;
-#if DEBUG
-
-                // Throwing an exception lets us fail fast and see the problem in the unit test failure window.
-                diagnosticList.ThrowOnErrors = true;
-#endif
-            }
-            else
-            {
-                _diagnostics = diagnostics;
-            }
-
             _userDefinedOperatorTranslator = new UserDefinedOperatorTranslator(
-                _semanticModel,
-                _scriptSymbolTable,
-                _renameRules,
+                Context.SemanticModel,
+                Context.ScriptSymbolTable,
+                Context.RenameRules,
                 TranslateIdentifierName,
                 VisitSingleOfType<ITsExpression>,
-                _temporaryVariableAllocator,
-                _diagnostics);
+                Context.TemporaryVariableAllocator,
+                Context.Diagnostics);
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
 
-        public IEnumerable<Diagnostic> Diagnostics => _diagnostics.AsEnumerable();
+        public IEnumerable<Diagnostic> Diagnostics => Context.Diagnostics.AsEnumerable();
 
-        public IEnumerable<ITypeSymbol> TypesToImport => _typesToImport.AsEnumerable();
+        public IEnumerable<ITypeSymbol> TypesToImport => Context.TypesToImport.AsEnumerable();
+
+        private TranslationContext Context { get; }
 
         //// ===========================================================================================================
         //// Visit Methods
@@ -163,7 +146,7 @@ namespace Desalt.Core.Translation
         public override IEnumerable<ITsAstNode> DefaultVisit(SyntaxNode node)
         {
             Diagnostic diagnostic = DiagnosticFactory.TranslationNotSupported(node);
-            _diagnostics.Add(diagnostic);
+            Context.Diagnostics.Add(diagnostic);
             return Enumerable.Empty<ITsAstNode>();
         }
 
@@ -230,7 +213,7 @@ namespace Desalt.Core.Translation
         private void ReportInternalError(string message, SyntaxNode node)
         {
             var diagnostic = DiagnosticFactory.InternalError(message, node.GetLocation());
-            _diagnostics.Add(diagnostic);
+            Context.Diagnostics.Add(diagnostic);
             throw new Exception(diagnostic.ToString());
         }
 
@@ -242,7 +225,7 @@ namespace Desalt.Core.Translation
         /// <returns>The symbol associated with the syntax node.</returns>
         private ISymbol GetExpectedSymbol(SyntaxNode node)
         {
-            ISymbol? symbol = _semanticModel.GetSymbolInfo(node).Symbol;
+            ISymbol? symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
             if (symbol == null)
             {
                 ReportInternalError($"Node '{node}' should have an expected symbol.", node);
@@ -259,7 +242,7 @@ namespace Desalt.Core.Translation
         /// <returns>The symbol associated with the syntax node.</returns>
         private TSymbol GetExpectedDeclaredSymbol<TSymbol>(SyntaxNode node) where TSymbol : class, ISymbol
         {
-            var symbol = _semanticModel.GetDeclaredSymbol(node) as TSymbol;
+            var symbol = Context.SemanticModel.GetDeclaredSymbol(node) as TSymbol;
             if (symbol == null)
             {
                 ReportInternalError($"Node '{node}' should have an expected declared symbol.", node);
@@ -278,7 +261,7 @@ namespace Desalt.Core.Translation
         {
             ISymbol symbol = GetExpectedSymbol(node);
 
-            if (!_scriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+            if (!Context.ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
                 ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
             }
@@ -299,7 +282,7 @@ namespace Desalt.Core.Translation
         {
             TSymbol symbol = GetExpectedDeclaredSymbol<TSymbol>(node);
 
-            if (!_scriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
+            if (!Context.ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
             {
                 ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
             }
@@ -366,7 +349,7 @@ namespace Desalt.Core.Translation
                 return translatedNode;
             }
 
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(symbolNode ?? node);
+            ISymbol symbol = Context.SemanticModel.GetDeclaredSymbol(symbolNode ?? node);
             if (symbol == null)
             {
                 return translatedNode;
@@ -379,7 +362,7 @@ namespace Desalt.Core.Translation
             }
 
             var result = DocumentationCommentTranslator.Translate(documentationComment);
-            _diagnostics.AddRange(result.Diagnostics);
+            Context.Diagnostics.AddRange(result.Diagnostics);
 
             return translatedNode.WithLeadingTrivia(result.Result);
         }
@@ -398,7 +381,7 @@ namespace Desalt.Core.Translation
             BaseTypeDeclarationSyntax node)
         {
             // determine if this declaration should be exported
-            INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            INamedTypeSymbol symbol = Context.SemanticModel.GetDeclaredSymbol(node);
             if (symbol.DeclaredAccessibility != Accessibility.Public)
             {
                 return translatedDeclaration;
@@ -451,13 +434,13 @@ namespace Desalt.Core.Translation
                 : (ITsParameterList)Visit(parameterListNode).Single();
 
             ITsType? returnType = null;
-            ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(_semanticModel);
+            ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(Context.SemanticModel);
             if (returnTypeNode != null && returnTypeSymbol != null)
             {
                 returnType = _typeTranslator.TranslateSymbol(
                     returnTypeSymbol,
-                    _typesToImport,
-                    _diagnostics,
+                    Context.TypesToImport,
+                    Context.Diagnostics,
                     returnTypeNode.GetLocation);
             }
 
@@ -472,7 +455,7 @@ namespace Desalt.Core.Translation
                     out ITsParameterList translatedParameterList,
                     out IEnumerable<Diagnostic> diagnostics);
 
-                _diagnostics.AddRange(diagnostics);
+                Context.Diagnostics.AddRange(diagnostics);
 
                 if (adjustedParameters)
                 {
@@ -485,7 +468,7 @@ namespace Desalt.Core.Translation
 
         private TsAccessibilityModifier GetAccessibilityModifier(SyntaxNode node)
         {
-            ISymbol symbol = _semanticModel.GetDeclaredSymbol(node);
+            ISymbol symbol = Context.SemanticModel.GetDeclaredSymbol(node);
             return GetAccessibilityModifier(symbol, node.GetLocation);
         }
 
@@ -506,7 +489,7 @@ namespace Desalt.Core.Translation
                 case Accessibility.Internal:
                 case Accessibility.ProtectedAndInternal:
                 case Accessibility.ProtectedOrInternal:
-                    _diagnostics.Add(
+                    Context.Diagnostics.Add(
                         DiagnosticFactory.UnsupportedAccessibility(
                             symbol.DeclaredAccessibility.ToString(),
                             "public",
