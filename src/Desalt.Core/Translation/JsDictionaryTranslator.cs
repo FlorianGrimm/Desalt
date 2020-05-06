@@ -59,7 +59,7 @@ namespace Desalt.Core.Translation
         /// The translated <see cref="ITsObjectLiteral"/>, or null if it was not translated.
         /// </param>
         /// <returns>True if the node was translated; otherwise, false.</returns>
-        public static bool TryTranslateObjectCreationSyntax(
+        public static bool TryTranslateObjectCreation(
             ObjectCreationExpressionSyntax node,
             ITsArgumentList translatedArgumentList,
             SemanticModel semanticModel,

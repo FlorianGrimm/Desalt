@@ -61,7 +61,7 @@ class C
             var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
 
             var diagnostics = new List<Diagnostic>();
-            bool success = translator.TryTranslate(
+            bool success = translator.TryTranslateMethodCall(
                 methodSymbol,
                 methodSyntax.GetLocation(),
                 translatedLeftSide,

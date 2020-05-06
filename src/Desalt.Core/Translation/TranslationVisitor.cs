@@ -437,7 +437,7 @@ namespace Desalt.Core.Translation
             ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(Context.SemanticModel);
             if (returnTypeNode != null && returnTypeSymbol != null)
             {
-                returnType = _typeTranslator.TranslateSymbol(
+                returnType = _typeTranslator.TranslateTypeSymbol(
                     returnTypeSymbol,
                     Context.TypesToImport,
                     Context.Diagnostics,

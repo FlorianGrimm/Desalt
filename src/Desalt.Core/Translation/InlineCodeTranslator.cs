@@ -79,7 +79,7 @@ namespace Desalt.Core.Translation
         /// <returns>
         /// True if the translation happened or false if no translation is possible (an error condition).
         /// </returns>
-        public bool TryTranslate(
+        public bool TryTranslateMethodCall(
             IMethodSymbol methodSymbol,
             Location methodExpressionLocation,
             ITsExpression translatedLeftSide,

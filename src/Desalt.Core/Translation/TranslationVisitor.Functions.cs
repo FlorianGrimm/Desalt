@@ -83,7 +83,7 @@ namespace Desalt.Core.Translation
             .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
 
             // see if there's an [InlineCode] entry for the method invocation
-            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode && _inlineCodeTranslator.TryTranslate(
+            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode && _inlineCodeTranslator.TryTranslateMethodCall(
                     methodSymbol,
                     node.Expression.GetLocation(),
                     leftSide,
@@ -231,7 +231,7 @@ namespace Desalt.Core.Translation
             else
             {
                 ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(Context.SemanticModel);
-                parameterType = _typeTranslator.TranslateSymbol(
+                parameterType = _typeTranslator.TranslateTypeSymbol(
                     parameterTypeSymbol,
                     Context.TypesToImport,
                     Context.Diagnostics,
@@ -291,7 +291,7 @@ namespace Desalt.Core.Translation
             var translated = from typeSyntax in node.Arguments
                              let typeSymbol = typeSyntax.GetTypeSymbol(Context.SemanticModel)
                              where typeSymbol != null
-                             select _typeTranslator.TranslateSymbol(
+                             select _typeTranslator.TranslateTypeSymbol(
                                  typeSymbol,
                                  Context.TypesToImport,
                                  Context.Diagnostics,

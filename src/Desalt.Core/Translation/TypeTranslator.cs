@@ -158,7 +158,7 @@ namespace Desalt.Core.Translation
         /// A function returning the location in the source code of the symbol. Used for error reporting.
         /// </param>
         /// <returns>The translated TypeScript <see cref="ITsType"/>.</returns>
-        public ITsType TranslateSymbol(
+        public ITsType TranslateTypeSymbol(
             ITypeSymbol symbol,
             ISet<ITypeSymbol>? typesToImport,
             ICollection<Diagnostic> diagnostics,
@@ -196,7 +196,7 @@ namespace Desalt.Core.Translation
             // translate arrays
             if (symbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                ITsType elementType = TranslateSymbol(
+                ITsType elementType = TranslateTypeSymbol(
                     arrayTypeSymbol.ElementType,
                     typesToImport,
                     diagnostics,
@@ -241,7 +241,7 @@ namespace Desalt.Core.Translation
                 ITsType elementType = Factory.AnyType;
                 if (namedTypeSymbol?.TypeArguments.FirstOrDefault() != null)
                 {
-                    elementType = TranslateSymbol(
+                    elementType = TranslateTypeSymbol(
                         namedTypeSymbol.TypeArguments.First(),
                         typesToImport,
                         diagnostics,
@@ -260,7 +260,7 @@ namespace Desalt.Core.Translation
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;
                 translatedTypeMembers = typeMembers
-                    .Select(typeMember => TranslateSymbol(typeMember, typesToImport, diagnostics, getLocationFunc))
+                    .Select(typeMember => TranslateTypeSymbol(typeMember, typesToImport, diagnostics, getLocationFunc))
                     .ToArray();
             }
 
@@ -284,7 +284,7 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
-            ITsType translatedGenericArgument = TranslateSymbol(
+            ITsType translatedGenericArgument = TranslateTypeSymbol(
                 namedTypeSymbol.TypeArguments[0],
                 typesToImport,
                 diagnostics,
@@ -332,7 +332,7 @@ namespace Desalt.Core.Translation
                     isParameterNumberType = !keySymbol.GetFlagAttribute(SaltarelleAttributeName.NamedValues);
                 }
 
-                translatedValueType = TranslateSymbol(
+                translatedValueType = TranslateTypeSymbol(
                     namedTypeSymbol.TypeArguments[1],
                     typesToImport,
                     diagnostics,
@@ -368,7 +368,7 @@ namespace Desalt.Core.Translation
                 string parameterName = typeArgument.Name;
                 parameterName = char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
 
-                ITsType parameterType = TranslateSymbol(typeArgument, typesToImport, diagnostics, getLocationFunc);
+                ITsType parameterType = TranslateTypeSymbol(typeArgument, typesToImport, diagnostics, getLocationFunc);
                 ITsBoundRequiredParameter requiredParameter = Factory.BoundRequiredParameter(
                     Factory.Identifier(parameterName),
                     parameterType);
@@ -378,7 +378,7 @@ namespace Desalt.Core.Translation
             ITsParameterList parameterList = Factory.ParameterList(requiredParameters: requiredParameters);
 
             ITsType returnType = isFunc
-                ? TranslateSymbol(symbol.TypeArguments.Last(), typesToImport, diagnostics, getLocationFunc)
+                ? TranslateTypeSymbol(symbol.TypeArguments.Last(), typesToImport, diagnostics, getLocationFunc)
                 : Factory.VoidType;
 
             return Factory.FunctionType(parameterList, returnType);

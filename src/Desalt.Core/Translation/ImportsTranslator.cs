@@ -34,7 +34,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Creates import statements, grouping them by file and module for each of the types to import.
         /// </summary>
-        public IExtendedResult<IEnumerable<ITsImportDeclaration>> TranslateImports(
+        public IExtendedResult<IEnumerable<ITsImportDeclaration>> GatherImportDeclarations(
             DocumentTranslationContext context,
             IEnumerable<ITypeSymbol> typesToImport,
             CancellationToken cancellationToken = default)

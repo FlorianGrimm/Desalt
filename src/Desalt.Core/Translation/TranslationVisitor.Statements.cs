@@ -117,7 +117,7 @@ namespace Desalt.Core.Translation
             bool isConst = node.IsConst;
 
             // Get the type of all of the declarations.
-            ITsType type = _typeTranslator.TranslateSymbol(
+            ITsType type = _typeTranslator.TranslateTypeSymbol(
                 node.Declaration.Type.GetTypeSymbol(Context.SemanticModel),
                 Context.TypesToImport,
                 Context.Diagnostics,
@@ -395,7 +395,7 @@ namespace Desalt.Core.Translation
                 ITypeSymbol? typeSymbol = Context.SemanticModel.GetTypeInfo(node.Declaration.Type).Type;
                 ITsType? declarationType = typeSymbol == null
                     ? null
-                    : _typeTranslator.TranslateSymbol(
+                    : _typeTranslator.TranslateTypeSymbol(
                         typeSymbol,
                         Context.TypesToImport,
                         Context.Diagnostics,
@@ -450,7 +450,7 @@ namespace Desalt.Core.Translation
 
                 ITsType? variableType = expressionTypeSymbol == null
                     ? null
-                    : _typeTranslator.TranslateSymbol(
+                    : _typeTranslator.TranslateTypeSymbol(
                         expressionTypeSymbol,
                         Context.TypesToImport,
                         Context.Diagnostics,

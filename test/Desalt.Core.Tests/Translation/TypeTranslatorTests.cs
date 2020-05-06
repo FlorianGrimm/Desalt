@@ -65,7 +65,7 @@ class Foo
             var translator = new TypeTranslator(scriptNameTable);
             var diagnostics = new List<Diagnostic>();
 
-            ITsType actualTranslation = translator.TranslateSymbol(
+            ITsType actualTranslation = translator.TranslateTypeSymbol(
                 typeSymbol,
                 typesToImport: null,
                 diagnostics: diagnostics,

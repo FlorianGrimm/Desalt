@@ -95,7 +95,7 @@ class C
 
             var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
             IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results =
-                importsTranslator.TranslateImports(context, typesToImport);
+                importsTranslator.GatherImportDeclarations(context, typesToImport);
 
             results.Diagnostics.Should().BeEmpty();
 

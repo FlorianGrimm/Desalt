@@ -219,7 +219,7 @@ namespace Desalt.Core.Translation
 
             ITsType[] translatedTypes = group.TypesForParameter(parameterIndex)
                 .Select(
-                    typeSymbol => _typeTranslator.TranslateSymbol(
+                    typeSymbol => _typeTranslator.TranslateTypeSymbol(
                         typeSymbol,
                         typesToImport: null,
                         diagnostics: diagnostics,

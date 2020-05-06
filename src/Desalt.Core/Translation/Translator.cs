@@ -37,7 +37,7 @@ namespace Desalt.Core.Translation
 
             var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
             IExtendedResult<IEnumerable<ITsImportDeclaration>> addImportsResult =
-                importsTranslator.TranslateImports(context, visitor.TypesToImport, cancellationToken);
+                importsTranslator.GatherImportDeclarations(context, visitor.TypesToImport, cancellationToken);
             IEnumerable<ITsImportDeclaration> importDeclarations = addImportsResult.Result;
 
             // insert the imports at the top of the translated file

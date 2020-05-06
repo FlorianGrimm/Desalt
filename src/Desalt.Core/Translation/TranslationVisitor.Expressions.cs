@@ -107,7 +107,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsCastExpression"/>.</returns>
         public override IEnumerable<ITsAstNode> VisitCastExpression(CastExpressionSyntax node)
         {
-            ITsType castType = _typeTranslator.TranslateSymbol(
+            ITsType castType = _typeTranslator.TranslateTypeSymbol(
                 node.Type.GetTypeSymbol(Context.SemanticModel),
                 Context.TypesToImport,
                 Context.Diagnostics,
@@ -130,7 +130,7 @@ namespace Desalt.Core.Translation
         /// <remarks>An <see cref="ITsIdentifier"/>.</remarks>
         public override IEnumerable<ITsAstNode> VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
-            ITsType type = _typeTranslator.TranslateSymbol(
+            ITsType type = _typeTranslator.TranslateTypeSymbol(
                 node.Type.GetTypeSymbol(Context.SemanticModel),
                 Context.TypesToImport,
                 Context.Diagnostics,
@@ -385,7 +385,7 @@ namespace Desalt.Core.Translation
 
             // See if there's an [InlineCode] entry for the ctor invocation.
             if (Context.SemanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
-                _inlineCodeTranslator.TryTranslate(
+                _inlineCodeTranslator.TryTranslateMethodCall(
                     ctorAsMethodSymbol,
                     node.GetLocation(),
                     leftSide,
@@ -395,7 +395,7 @@ namespace Desalt.Core.Translation
             {
                 yield return translatedNode;
             }
-            else if (JsDictionaryTranslator.TryTranslateObjectCreationSyntax(
+            else if (JsDictionaryTranslator.TryTranslateObjectCreation(
                 node,
                 arguments,
                 Context.SemanticModel,
@@ -430,7 +430,7 @@ namespace Desalt.Core.Translation
         /// </returns>
         public override IEnumerable<ITsAstNode> VisitDefaultExpression(DefaultExpressionSyntax node)
         {
-            ITsType translatedType = _typeTranslator.TranslateSymbol(
+            ITsType translatedType = _typeTranslator.TranslateTypeSymbol(
                 node.Type.GetTypeSymbol(Context.SemanticModel),
                 Context.TypesToImport,
                 Context.Diagnostics,
