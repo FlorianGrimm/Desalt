@@ -334,6 +334,27 @@ class A {
         }
 
         //// ===========================================================================================================
+        //// Method Declarations with params and [ExpandParams]
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Translate_should_convert_params_arguments_to_an_array()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    public void NormalParams(params int[] args) { }
+}
+",
+                @"
+class A {
+  public normalParams(args: number[]): void { }
+}
+");
+        }
+
+        //// ===========================================================================================================
         //// Property Declaration Tests
         //// ===========================================================================================================
 
