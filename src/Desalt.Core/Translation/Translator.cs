@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
@@ -48,7 +47,7 @@ namespace Desalt.Core.Translation
 
             if (!skipImports)
             {
-                implementationModule = AddImports(translationContext, context, implementationModule);
+                implementationModule = AddImports(translationContext, context.TypeScriptFilePath, implementationModule);
             }
 
             return new ExtendedResult<ITsImplementationModule>(implementationModule, diagnostics);
@@ -66,18 +65,16 @@ namespace Desalt.Core.Translation
 
         private static ITsImplementationModule AddImports(
             TranslationContext translationContext,
-            DocumentTranslationContextWithSymbolTables documentContext,
+            string typeScriptFilePath,
             ITsImplementationModule implementationModule)
         {
-            var importsTranslator = new ImportsTranslator(translationContext.ScriptSymbolTable);
-            IExtendedResult<IEnumerable<ITsImportDeclaration>> importDeclarations = importsTranslator.GatherImportDeclarations(
-                documentContext,
-                translationContext.TypesToImport,
-                translationContext.CancellationToken);
+            ImmutableArray<ITsImportDeclaration> importDeclarations = ImportsTranslator.GatherImportDeclarations(
+                translationContext,
+                typeScriptFilePath);
 
             // Insert the imports at the top of the translated file.
             ImmutableArray<ITsImplementationModuleElement> newElements =
-                implementationModule.Elements.InsertRange(0, importDeclarations.Result);
+                implementationModule.Elements.InsertRange(0, importDeclarations);
             ITsImplementationModule moduleWithImports = Factory.ImplementationModule(newElements);
             return moduleWithImports;
         }
