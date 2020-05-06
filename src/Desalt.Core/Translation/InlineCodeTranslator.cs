@@ -60,9 +60,9 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
-        /// Attempts to translate the method call by using the specified [InlineCode]. A method call
-        /// can be either a constructor, regular method, or a property get/set method. If the inline
-        /// code cannot be parsed, <see langword="null"/> is returned.
+        /// Attempts to translate the method call by using the specified [InlineCode]. A method call can be either a
+        /// constructor, regular method, or a property get/set method. If the inline code cannot be parsed, <see
+        /// langword="null"/> is returned.
         /// </summary>
         /// <param name="methodSymbol">The symbol of the method to translate.</param>
         /// <param name="methodExpressionLocation">The location of the method expression to translate.</param>

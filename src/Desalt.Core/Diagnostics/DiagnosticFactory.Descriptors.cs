@@ -164,7 +164,10 @@ namespace Desalt.Core.Diagnostics
                 "Getter and setter accessors for property '{0}' do not agree in visibility.")]
             GetterAndSetterAccessorsDoNotAgreeInVisibility,
 
-            [Error(1029, "Multidimensional arrays not supported", "Multidimensional arrays are currently not supported.")]
+            [Error(
+                1029,
+                "Multidimensional arrays not supported",
+                "Multidimensional arrays are currently not supported.")]
             MultidimensionalArraysNotSupported,
 
             [Error(
@@ -536,7 +539,6 @@ namespace Desalt.Core.Diagnostics
         /// The name of the overloaded operator function invocation (i.e. <c>op_Addition</c>.
         /// </param>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic OperatorOverloadInvocationNotSupported(string overloadFunctionName, SyntaxNode node)
         {
             return Create(

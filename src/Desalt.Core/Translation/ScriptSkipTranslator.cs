@@ -17,8 +17,8 @@ namespace Desalt.Core.Translation
     using TypeScriptAst.Ast;
 
     /// <summary>
-    /// Translates method and constructor declarations with [ScriptSkip] and invocations against
-    /// methods and constructors marked with [ScriptSkip].
+    /// Translates method and constructor declarations with [ScriptSkip] and invocations against methods and
+    /// constructors marked with [ScriptSkip].
     /// </summary>
     internal class ScriptSkipTranslator
     {

@@ -18,8 +18,8 @@ namespace Desalt.Core.Translation
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
-    /// Translates the parameters of a method or constructor declaration to adjust the types
-    /// depending on the signatures of the methods marked with [AlternateSignature].
+    /// Translates the parameters of a method or constructor declaration to adjust the types depending on the signatures
+    /// of the methods marked with [AlternateSignature].
     /// </summary>
     internal class AlternateSignatureTranslator
     {
@@ -57,9 +57,8 @@ namespace Desalt.Core.Translation
         //// ===========================================================================================================
 
         /// <summary>
-        /// Adjusts the parameter list if necessary by taking into account all of the methods in an
-        /// [AlternateSignature] method group and changing the parameter types to match the union of
-        /// types amongst all of the methods in the group.
+        /// Adjusts the parameter list if necessary by taking into account all of the methods in an [AlternateSignature]
+        /// method group and changing the parameter types to match the union of types amongst all of the methods in the group.
         /// </summary>
         /// <param name="methodSymbol">The method declaration that should be examined.</param>
         /// <param name="translatedParameterList">

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExtensionMethodTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -14,6 +14,7 @@ namespace Desalt.Core.Translation
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Recognizes and adapts extension method invocations to a standard TypeScript/JavaScript static method invocation.
@@ -110,9 +111,9 @@ namespace Desalt.Core.Translation
 
             // Take the left side of the expression and instead make it the first argument to the static
             // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.
-            translatedArgumentList = TsAstFactory.ArgumentList(
+            translatedArgumentList = Factory.ArgumentList(
                 translatedArgumentList.TypeArguments,
-                translatedArgumentList.Arguments.Insert(0, TsAstFactory.Argument(memberDotExpression.LeftSide)).ToArray());
+                translatedArgumentList.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)).ToArray());
 
             error = null;
             return true;

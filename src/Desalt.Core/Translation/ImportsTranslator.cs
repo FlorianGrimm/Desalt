@@ -73,13 +73,13 @@ namespace Desalt.Core.Translation
                                 context.TypeScriptFilePath,
                                 relativePathOrModuleName);
 
-                            // remove the file extension
+                            // Remove the file extension.
                             relativePathOrModuleName = PathUtil.ReplaceExtension(relativePathOrModuleName, "");
 
-                            // TypeScript import paths can always use forward slashes
+                            // TypeScript import paths can always use forward slashes.
                             relativePathOrModuleName = relativePathOrModuleName.Replace("\\", "/");
 
-                            // make sure the path start with ./ or ../
+                            // Make sure the path starts with './' or '../'.
                             if (!relativePathOrModuleName.StartsWith(".", StringComparison.Ordinal))
                             {
                                 relativePathOrModuleName = "./" + relativePathOrModuleName;
@@ -101,7 +101,7 @@ namespace Desalt.Core.Translation
                 .Distinct()
                 .GroupBy(item => item.RelativePathOrModuleName);
 
-            // Add an import statement for each group
+            // Add an import statement for each group.
             var importDeclarations = new List<ITsImportDeclaration>();
             foreach (var grouping in groupedByFileName)
             {

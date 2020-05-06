@@ -13,7 +13,6 @@ namespace Desalt.Core.Translation
     using System.Text;
     using Desalt.CompilerUtilities;
     using Desalt.Core.Diagnostics;
-    using Desalt.Core.Pipeline;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
@@ -22,20 +21,14 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Converts a CSharp XML documentation comment into a TypeScript JsDoc comment.
     /// </summary>
-    internal class DocumentationCommentTranslator
+    internal static class DocumentationCommentTranslator
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment documentationComment)
+        public static IExtendedResult<ITsJsDocComment> Translate(DocumentationComment comment)
         {
-            DocumentationComment comment = documentationComment ?? throw new ArgumentNullException(nameof(documentationComment));
-
             var diagnostics = new List<Diagnostic>();
             ITsJsDocCommentBuilder builder = Factory.JsDocCommentBuilder();
 

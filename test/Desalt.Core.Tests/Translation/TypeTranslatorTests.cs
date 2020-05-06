@@ -31,7 +31,7 @@ namespace Desalt.Core.Tests.Translation
             ITsType expectedType,
             SymbolDiscoveryKind discoveryKind = SymbolDiscoveryKind.OnlyDocumentTypes)
         {
-            // parse the C# code and get the root syntax node
+            // Parse the C# code and get the root syntax node.
             string code = $@"
 using System;
 using System.Collections;
@@ -47,7 +47,7 @@ class Foo
             DocumentTranslationContext context = await tempProject.CreateContextForFileAsync();
             var contexts = context.ToSingleEnumerable().ToImmutableArray();
 
-            // find the type symbol for the class member
+            // Find the type symbol for the class member.
             VariableDeclarationSyntax variableDeclaration =
                 context.RootSyntax.DescendantNodes().OfType<VariableDeclarationSyntax>().First();
 
