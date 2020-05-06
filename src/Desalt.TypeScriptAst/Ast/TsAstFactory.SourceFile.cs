@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Ast
 {
+    using System.Collections.Generic;
     using Desalt.TypeScriptAst.Ast.Declarations;
 
     public static partial class TsAstFactory
@@ -18,6 +19,15 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsImplementationScript ImplementationScript(params ITsImplementationScriptElement[] elements)
         {
             return new TsImplementationScript(elements);
+        }
+
+        /// <summary>
+        /// Create a TypeScript implementation source file (extension '.ts'), containing exported
+        /// statements and declarations.
+        /// </summary>
+        public static ITsImplementationModule ImplementationModule(IEnumerable<ITsImplementationModuleElement> elements)
+        {
+            return new TsImplementationModule(elements);
         }
 
         /// <summary>

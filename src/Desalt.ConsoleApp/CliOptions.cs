@@ -8,7 +8,7 @@
 namespace Desalt.ConsoleApp
 {
     using System.Collections.Immutable;
-    using Desalt.Core;
+    using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
     using Microsoft.CodeAnalysis;
 
@@ -80,7 +80,7 @@ namespace Desalt.ConsoleApp
         public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; set; } =
             ImmutableDictionary<string, ReportDiagnostic>.Empty;
 
-        public int WarningLevel { get; set; } = (int)CompilerOptions.DefaultWarningLevel;
+        public int WarningLevel { get; set; } = (int)DiagnosticOptions.DefaultWarningLevel;
 
         public bool ShouldShowHelp { get; set; }
         public bool NoLogo { get; set; }

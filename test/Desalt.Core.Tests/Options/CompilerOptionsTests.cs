@@ -23,12 +23,15 @@ namespace Desalt.Core.Tests.Options
     {
         private const string JsonContents = @"{
   ""outputPath"": ""outDir"",
-  ""warningLevel"": ""minor"",
-  ""generalDiagnosticOption"": ""error"",
-  ""specificDiagnosticOptions"": {
-    ""DSC1003"": ""error"",
-    ""DSC1005"": ""info"",
-    ""DSC1012"": ""suppress""
+  ""diagnosticOptions"": {
+    ""throwOnErrors"": false,
+    ""warningLevel"": ""minor"",
+    ""generalDiagnosticOption"": ""error"",
+    ""specificDiagnosticOptions"": {
+      ""DSC1003"": ""error"",
+      ""DSC1005"": ""info"",
+      ""DSC1012"": ""suppress""
+    }
   },
   ""renameRules"": {
     ""enumRule"": ""matchCSharpName"",
@@ -74,14 +77,15 @@ namespace Desalt.Core.Tests.Options
 
         private static readonly CompilerOptions s_overridesObject = new CompilerOptions(
             outputPath: "outDir",
-            warningLevel: WarningLevel.Minor,
-            generalDiagnosticOption: ReportDiagnostic.Error,
-            specificDiagnosticOptions: new[]
-            {
-                new KeyValuePair<string, ReportDiagnostic>("DSC1005", ReportDiagnostic.Info),
-                new KeyValuePair<string, ReportDiagnostic>("DSC1003", ReportDiagnostic.Error),
-                new KeyValuePair<string, ReportDiagnostic>("DSC1012", ReportDiagnostic.Suppress),
-            }.ToImmutableDictionary(),
+            diagnosticOptions: new DiagnosticOptions(
+                warningLevel: WarningLevel.Minor,
+                generalDiagnosticOption: ReportDiagnostic.Error,
+                specificDiagnosticOptions: new[]
+                {
+                    new KeyValuePair<string, ReportDiagnostic>("DSC1005", ReportDiagnostic.Info),
+                    new KeyValuePair<string, ReportDiagnostic>("DSC1003", ReportDiagnostic.Error),
+                    new KeyValuePair<string, ReportDiagnostic>("DSC1012", ReportDiagnostic.Suppress),
+                }.ToImmutableDictionary()),
             renameRules: RenameRules.Default.WithFieldRule(FieldRenameRule.DollarPrefixOnlyForDuplicateName),
             symbolTableOverrides: new SymbolTableOverrides(
                 new KeyValuePair<string, SymbolTableOverride>(

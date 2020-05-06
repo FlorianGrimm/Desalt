@@ -11,7 +11,7 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.SymbolTables;
     using NUnit.Framework;
 
-    public partial class TranslationVisitorTests
+    public partial class TranslatorTests
     {
         [Test]
         public async Task Translate_anonymous_methods_should_correctly_infer_the_return_type()

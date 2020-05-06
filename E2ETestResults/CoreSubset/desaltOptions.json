@@ -1,12 +1,15 @@
 ﻿{
   "outputPath": ".",
-  "warningLevel": "informational",
-  "generalDiagnosticOption": "default",
-  "specificDiagnosticOptions": {
-    "DSC1003": "suppress",
-    "DSC1005": "suppress",
-    "DSC1012": "suppress",
-    "DSC1028": "suppress"
+  "diagnosticOptions": {
+    "throwOnErrors": false,
+    "warningLevel": "informational",
+    "generalDiagnosticOption": "default",
+    "specificDiagnosticOptions": {
+      "DSC1003": "suppress",
+      "DSC1005": "suppress",
+      "DSC1012": "suppress",
+      "DSC1028": "suppress"
+    }
   },
   "renameRules": {
     "enumRule": "matchCSharpName",

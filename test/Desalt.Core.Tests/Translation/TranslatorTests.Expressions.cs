@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TranslationVisitorTests.Expressions.cs" company="Justin Rockwood">
+// <copyright file="TranslatorTests.Expressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,16 +10,31 @@ namespace Desalt.Core.Tests.Translation
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
     using NUnit.Framework;
-    using NUnit.Framework.Internal;
 
-    public partial class TranslationVisitorTests
+    public partial class TranslatorTests
     {
         [Test]
         public async Task This_expression_assigning_numeric_literals()
         {
             await AssertTranslation(
-                "class C { private int Int32; public C() { this.Int32 = 1; } }",
-                "class C {\n  private int32: number;\n\n  public constructor() {\n    this.int32 = 1;\n  }\n}\n");
+                @"
+class C
+{
+    private int Int32;
+    public C()
+    {
+        this.Int32 = 1;
+    }
+}",
+                @"
+class C {
+  private int32: number;
+
+  public constructor() {
+    this.int32 = 1;
+  }
+}
+");
         }
 
         [Test]

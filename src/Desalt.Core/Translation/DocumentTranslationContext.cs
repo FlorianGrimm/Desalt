@@ -15,7 +15,6 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
-    using Desalt.Core.Pipeline;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;

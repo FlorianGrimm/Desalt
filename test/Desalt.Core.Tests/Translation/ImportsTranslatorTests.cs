@@ -9,11 +9,13 @@ namespace Desalt.Core.Tests.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
+    using Desalt.TypeScriptAst.Ast;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -91,15 +93,15 @@ class C
                     codeFiles[0].FileName,
                     discoveryKind: discoveryKind);
 
-            IEnumerable<ITypeSymbol> typesToImport = getSymbolsFunc(context);
+            ISet<ITypeSymbol> typesToImport = getSymbolsFunc(context).ToImmutableHashSet();
 
-            var importsTranslator = new ImportsTranslator(context.ScriptSymbolTable);
-            IExtendedResult<IEnumerable<TypeScriptAst.Ast.ITsImportDeclaration>> results =
-                importsTranslator.TranslateImports(context, typesToImport);
+            var translationContext = new TranslationContext(context, typesToImport: typesToImport);
+            ImmutableArray<ITsImportDeclaration> results =
+                ImportsTranslator.GatherImportDeclarations(translationContext, context.TypeScriptFilePath);
 
-            results.Diagnostics.Should().BeEmpty();
+            translationContext.Diagnostics.Should().BeEmpty();
 
-            IEnumerable<string> actualImportLines = results.Result.Select(import => import.EmitAsString().TrimEnd());
+            IEnumerable<string> actualImportLines = results.Select(import => import.EmitAsString().TrimEnd());
             actualImportLines.Should().BeEquivalentTo(expectedImportLinesForFirstFile);
         }
 

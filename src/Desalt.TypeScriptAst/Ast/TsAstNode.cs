@@ -180,12 +180,6 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public T WithLeadingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
         {
-            // when there are no trivia nodes to append, return the original object
-            if (triviaNodes == null || triviaNodes.Length == 0)
-            {
-                return (T)this;
-            }
-
             var copy = (TsAstNode)MemberwiseClone();
             copy.LeadingTrivia = triviaNodes.ToImmutableArray();
             return (T)copy;

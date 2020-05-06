@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Tests.Translation
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.CompilerUtilities.Extensions;
@@ -48,19 +47,14 @@ using System.Runtime.CompilerServices;
                 .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
                 .First(symbol => symbol.ToHashDisplay() == methodKey);
 
-            var typeTranslator = new TypeTranslator(context.ScriptSymbolTable);
-
-            var translator = new AlternateSignatureTranslator(
-                context.AlternateSignatureSymbolTable,
-                typeTranslator);
-
-            bool result = translator.TryAdjustParameterListTypes(
+            var translationContext = new TranslationContext(context);
+            bool result = AlternateSignatureTranslator.TryAdjustParameterListTypes(
+                translationContext,
                 methodSymbol,
                 translatedParameterList,
-                out ITsParameterList actualParameterList,
-                out IEnumerable<Diagnostic> diagnostics);
+                out ITsParameterList actualParameterList);
 
-            diagnostics.Should().BeEmpty();
+            translationContext.Diagnostics.Should().BeEmpty();
 
             result.Should().Be(expectedResult, because: "the parameter list should not have changed");
             actualParameterList.Should().BeEquivalentTo(expectedParameterList);

@@ -74,7 +74,7 @@ namespace Desalt.Core.Tests
 
             var options = new CompilerOptions(
                 outputPath: outputPath,
-                specificDiagnosticOptions: ignoredDiagnostics,
+                diagnosticOptions: DiagnosticOptions.Default.WithSpecificDiagnosticOptions(ignoredDiagnostics),
                 renameRules: renameRules,
                 symbolTableOverrides: overrides);
 

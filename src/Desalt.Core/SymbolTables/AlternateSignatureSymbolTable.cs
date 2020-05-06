@@ -13,15 +13,13 @@ namespace Desalt.Core.SymbolTables
     using System.Linq;
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
-    using Desalt.Core.Pipeline;
     using Desalt.Core.Translation;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
     /// <summary>
-    /// Contains mappings of fully-qualified method names to <see
-    /// cref="AlternateSignatureMethodGroup"/> for all of the methods that are decorated with an
-    /// <c>[AlternateSignature]</c> attribute and their associated non-decorated methods.
+    /// Contains mappings of fully-qualified method names to <see cref="AlternateSignatureMethodGroup"/> for all of the
+    /// methods that are decorated with an <c>[AlternateSignature]</c> attribute and their associated non-decorated methods.
     /// </summary>
     internal class AlternateSignatureSymbolTable
     {

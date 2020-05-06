@@ -7,44 +7,17 @@
 
 namespace Desalt.Core.Translation
 {
-    using System;
     using System.Linq;
-    using Desalt.Core.Diagnostics;
-    using Desalt.Core.SymbolTables;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Recognizes and adapts extension method invocations to a standard TypeScript/JavaScript static method invocation.
     /// </summary>
-    internal class ExtensionMethodTranslator
+    internal static class ExtensionMethodTranslator
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly SemanticModel _semanticModel;
-        private readonly ScriptSymbolTable _scriptSymbolTable;
-
-        //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Creates a new instance of a <see cref="ScriptSkipTranslator"/> from the specified
-        /// semantic model and symbol tables.
-        /// </summary>
-        /// <param name="semanticModel">The semantic model to use.</param>
-        /// <param name="scriptSymbolTable"> A symbol table containing script names given a symbol.</param>
-        public ExtensionMethodTranslator(SemanticModel semanticModel, ScriptSymbolTable scriptSymbolTable)
-        {
-            _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
-
-            _scriptSymbolTable =
-                scriptSymbolTable ?? throw new ArgumentNullException(nameof(scriptSymbolTable));
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -53,6 +26,7 @@ namespace Desalt.Core.Translation
         /// Tries to adapt an already-translated method invocation expression that may contain an extension method from
         /// `x.Extension()` to `ExtensionClass.Extension(x)`.
         /// </summary>
+        /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="node">The <see cref="InvocationExpressionSyntax"/> node to translate.</param>
         /// <param name="methodSymbol">
         /// The method symbol of the invocation. This will be changed to the non-reduced method symbol if the adaptation occurred.
@@ -65,37 +39,30 @@ namespace Desalt.Core.Translation
         /// The already-translated argument list for the method invocation. This will be changed to have the former left
         /// side of the expression as the first argument if the adaptation occurred.
         /// </param>
-        /// <param name="translateIdentifierNameFunc">
-        /// The function to call in order to translate the identifier needed to invoke the message, which is the name of
-        /// the containing class of the extension method.
-        /// </param>
-        /// <param name="error">Contains any potential error while attempting to adapt the invocation expression.</param>
         /// <returns>
         /// True if the node was adapted (it was an extension method invoked as `x.Extension()`); false if the node was
         /// not adapted or if there was an error.
         /// </returns>
-        public bool TryAdaptMethodInvocation(
+        public static bool TryAdaptMethodInvocation(
+            TranslationContext context,
             InvocationExpressionSyntax node,
             ref IMethodSymbol methodSymbol,
             ref ITsExpression translatedLeftSide,
-            ref ITsArgumentList translatedArgumentList,
-            TranslateIdentifierFunc translateIdentifierNameFunc,
-            out Diagnostic? error)
+            ref ITsArgumentList translatedArgumentList)
         {
             // See if this is an extension method invoked as `receiver.Extension()` and change the call signature so
             // that the left side is the first argument to the static method.
             if (!methodSymbol.IsExtensionMethod || methodSymbol.ReducedFrom == null)
             {
-                error = null;
                 return false;
             }
 
             if (!(translatedLeftSide is ITsMemberDotExpression memberDotExpression))
             {
-                error = DiagnosticFactory.InternalError(
+                context.ReportInternalError(
                     "Translating an extension method that doesn't start with a member dot expression is " +
                     "currently not supported, since I couldn't think of a way this could be.",
-                    node.GetLocation());
+                    node);
                 return false;
             }
 
@@ -106,15 +73,14 @@ namespace Desalt.Core.Translation
 
             // Translate the name of the reduced type, which is the new left side of the invocation:
             // `x.Extension()` -> `ExtensionClass.Extension(x)`.
-            translatedLeftSide = translateIdentifierNameFunc(methodSymbol, node);
+            translatedLeftSide = context.TranslateIdentifierName(methodSymbol, node);
 
             // Take the left side of the expression and instead make it the first argument to the static
             // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.
-            translatedArgumentList = TsAstFactory.ArgumentList(
+            translatedArgumentList = Factory.ArgumentList(
                 translatedArgumentList.TypeArguments,
-                translatedArgumentList.Arguments.Insert(0, TsAstFactory.Argument(memberDotExpression.LeftSide)).ToArray());
+                translatedArgumentList.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)).ToArray());
 
-            error = null;
             return true;
         }
     }

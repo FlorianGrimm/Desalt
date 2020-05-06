@@ -19,9 +19,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArgument(ITsExpression argument, bool isSpreadArgument = false)
+        public TsArgument(ITsExpression expression, bool isSpreadArgument = false)
         {
-            Argument = argument ?? throw new ArgumentNullException(nameof(argument));
+            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
             IsSpreadArgument = isSpreadArgument;
         }
 
@@ -29,10 +29,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Argument { get; }
+        public ITsExpression Expression { get; }
 
         /// <summary>
-        /// Indicates whether the <see cref="Argument"/> is preceded by a spread operator '...'.
+        /// Indicates whether the <see cref="Expression"/> is preceded by a spread operator '...'.
         /// </summary>
         public bool IsSpreadArgument { get; }
 
@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArgument(this);
         }
 
-        public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Argument;
+        public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Expression;
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -54,7 +54,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
                 emitter.Write("... ");
             }
 
-            Argument.Emit(emitter);
+            Expression.Emit(emitter);
         }
     }
 }

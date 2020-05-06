@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Desalt.Core.Diagnostics;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
@@ -20,7 +19,7 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Contains methods to aid in translating <c>JsDictionary</c> types.
     /// </summary>
-    internal class JsDictionaryTranslator
+    internal static class JsDictionaryTranslator
     {
         /// <summary>
         /// Returns a value indicating whether the specified type symbol is an instance of
@@ -49,25 +48,21 @@ namespace Desalt.Core.Translation
         /// { 'key': 'value', [expr]: 'value2' }
         /// </code>
         /// </summary>
+        /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="node">The <see cref="ObjectCreationExpressionSyntax"/> node to translate.</param>
         /// <param name="translatedArgumentList">An already-translated argument list.</param>
-        /// <param name="semanticModel">
-        /// The <see cref="SemanticModel"/> to use for getting type information.
-        /// </param>
-        /// <param name="diagnostics">A list of diagnostics to add to when there are errors.</param>
         /// <param name="translation">
         /// The translated <see cref="ITsObjectLiteral"/>, or null if it was not translated.
         /// </param>
         /// <returns>True if the node was translated; otherwise, false.</returns>
-        public static bool TryTranslateObjectCreationSyntax(
+        public static bool TryTranslateObjectCreation(
+            TranslationContext context,
             ObjectCreationExpressionSyntax node,
             ITsArgumentList translatedArgumentList,
-            SemanticModel semanticModel,
-            ICollection<Diagnostic> diagnostics,
             [NotNullWhen(true)] out ITsObjectLiteral? translation)
         {
             // Nothing to translate if we don't have a JsDictionary.
-            if (!IsJsDictionary(semanticModel.GetTypeInfo(node).Type))
+            if (!IsJsDictionary(context.SemanticModel.GetTypeInfo(node).Type))
             {
                 translation = null;
                 return false;
@@ -85,20 +80,18 @@ namespace Desalt.Core.Translation
             // Check some preconditions that the Saltarelle compiler should have enforced.
             if (argCount % 2 != 0)
             {
-                diagnostics.Add(
-                    DiagnosticFactory.InternalError(
+                context.ReportInternalError(
                         "Saltarelle should have ensured that there are an even number of parameters to a JsDictionary ctor",
-                        node.ArgumentList?.GetLocation() ?? node.GetLocation()));
+                        node.ArgumentList?.GetLocation() ?? node.GetLocation());
                 translation = null;
                 return false;
             }
 
             if (argCount != translatedArgumentList.Arguments.Length)
             {
-                diagnostics.Add(
-                    DiagnosticFactory.InternalError(
-                        "The translated argument list count should have been equal to the node's argument list count",
-                        node.ArgumentList?.GetLocation() ?? node.GetLocation()));
+                context.ReportInternalError(
+                    "The translated argument list count should have been equal to the node's argument list count",
+                    node.ArgumentList?.GetLocation() ?? node.GetLocation());
                 translation = null;
                 return false;
             }
@@ -107,8 +100,8 @@ namespace Desalt.Core.Translation
             var propertyDefinitions = new List<ITsPropertyDefinition>();
             for (int i = 0; i < argCount; i += 2)
             {
-                ITsExpression key = translatedArgumentList.Arguments[i].Argument;
-                ITsExpression value = translatedArgumentList.Arguments[i + 1].Argument;
+                ITsExpression key = translatedArgumentList.Arguments[i].Expression;
+                ITsExpression value = translatedArgumentList.Arguments[i + 1].Expression;
 
                 // We may have an expression as a property name, which would have been translated as
                 // an expression instead of a literal string or number.

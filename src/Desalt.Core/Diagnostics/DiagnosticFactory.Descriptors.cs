@@ -164,7 +164,10 @@ namespace Desalt.Core.Diagnostics
                 "Getter and setter accessors for property '{0}' do not agree in visibility.")]
             GetterAndSetterAccessorsDoNotAgreeInVisibility,
 
-            [Error(1029, "Multidimensional arrays not supported", "Multidimensional arrays are currently not supported.")]
+            [Error(
+                1029,
+                "Multidimensional arrays not supported",
+                "Multidimensional arrays are currently not supported.")]
             MultidimensionalArraysNotSupported,
 
             [Error(
@@ -178,6 +181,12 @@ namespace Desalt.Core.Diagnostics
                 "TypeScript translation cannot invoke C# operator overload type",
                 "C# operator overload invocation of type '{0}' is not supported: {1}")]
             OperatorOverloadInvocationNotSupported,
+
+            [Error(
+                1032,
+                "Default interface implementations not supported",
+                "C# 8 default implementations in interfaces is not supported")]
+            DefaultInterfaceImplementationNotSupported,
         }
 
         //// ===========================================================================================================
@@ -536,7 +545,6 @@ namespace Desalt.Core.Diagnostics
         /// The name of the overloaded operator function invocation (i.e. <c>op_Addition</c>.
         /// </param>
         /// <param name="node">The unsupported syntax node.</param>
-        /// <returns>A new <see cref="Diagnostic"/>.</returns>
         public static Diagnostic OperatorOverloadInvocationNotSupported(string overloadFunctionName, SyntaxNode node)
         {
             return Create(
@@ -544,6 +552,15 @@ namespace Desalt.Core.Diagnostics
                 node.GetLocation(),
                 overloadFunctionName,
                 node);
+        }
+
+        /// <summary>
+        /// Returns a diagnostic of the form "C# 8 default implementations in interfaces is not supported".
+        /// </summary>
+        /// <param name="node">The unsupported syntax node.</param>
+        public static Diagnostic DefaultInterfaceImplementationNotSupported(SyntaxNode node)
+        {
+            return Create(DiagnosticId.DefaultInterfaceImplementationNotSupported, node.GetLocation());
         }
     }
 }

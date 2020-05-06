@@ -8,7 +8,6 @@
 namespace Desalt.Core.Tests.Translation
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Desalt.Core.SymbolTables;
@@ -58,18 +57,16 @@ class C
             IMethodSymbol methodSymbol = context.SemanticModel.GetSymbolInfo(methodSyntax).Symbol as IMethodSymbol ??
                 throw new InvalidOperationException();
 
-            var translator = new InlineCodeTranslator(context.SemanticModel, context.ScriptSymbolTable);
-
-            var diagnostics = new List<Diagnostic>();
-            bool success = translator.TryTranslate(
+            var translationContext = new TranslationContext(context);
+            bool success = InlineCodeTranslator.TryTranslateMethodCall(
+                translationContext,
                 methodSymbol,
                 methodSyntax.GetLocation(),
                 translatedLeftSide,
                 translatedArgumentList,
-                diagnostics,
-                out ITsAstNode? result);
+                out ITsExpression? result);
 
-            diagnostics.Should().BeEmpty();
+            translationContext.Diagnostics.Should().BeEmpty();
             success.Should().BeTrue(because: "there should be an [InlineCode] translation");
 
             // rather than try to implement equality tests for all IAstNodes, just emit both and compare the strings

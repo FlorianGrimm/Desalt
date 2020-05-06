@@ -34,24 +34,11 @@ namespace Desalt.Core.Diagnostics
         //// Constructors
         //// ===========================================================================================================
 
-        private DiagnosticList(DiagnosticOptions options, IEnumerable<Diagnostic> diagnostics)
+        public DiagnosticList(DiagnosticOptions options, IEnumerable<Diagnostic>? diagnostics = null)
         {
             _options = options;
             _diagnostics = new List<Diagnostic>(Filter(options, diagnostics));
-        }
-
-        public static DiagnosticList Create(CompilerOptions options, params Diagnostic[] diagnostics)
-        {
-            return new DiagnosticList(
-                options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)),
-                diagnostics);
-        }
-
-        public static DiagnosticList From(CompilerOptions options, IEnumerable<Diagnostic> diagnostics)
-        {
-            return new DiagnosticList(
-                options?.DiagnosticOptions ?? throw new ArgumentNullException(nameof(options)),
-                diagnostics ?? throw new ArgumentNullException(nameof(diagnostics)));
+            ThrowOnErrors = options.ThrowOnErrors;
         }
 
         //// ===========================================================================================================

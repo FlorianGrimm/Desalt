@@ -9,10 +9,7 @@ namespace Desalt.Core.Options
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.ComponentModel;
     using Desalt.Core.Diagnostics;
-    using Microsoft.CodeAnalysis;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Serialization;
@@ -28,9 +25,6 @@ namespace Desalt.Core.Options
 
         public static readonly CompilerOptions Default = new CompilerOptions(instanceToCopy: null);
 
-        public const WarningLevel DefaultWarningLevel = DiagnosticOptions.DefaultWarningLevel;
-        public const ReportDiagnostic DefaultGeneralDiagnosticOption = DiagnosticOptions.DefaultGeneralDiagnosticOption;
-
         //// ===========================================================================================================
         //// Constructors
         //// ===========================================================================================================
@@ -40,17 +34,13 @@ namespace Desalt.Core.Options
         /// </summary>
         public CompilerOptions(
             string? outputPath = null,
-            WarningLevel warningLevel = DefaultWarningLevel,
-            ReportDiagnostic generalDiagnosticOption = DefaultGeneralDiagnosticOption,
-            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            DiagnosticOptions? diagnosticOptions = null,
             RenameRules? renameRules = null,
             SymbolTableOverrides? symbolTableOverrides = null)
             : this(
                 instanceToCopy: null,
                 outputPath: outputPath,
-                warningLevel: warningLevel,
-                generalDiagnosticOption: generalDiagnosticOption,
-                specificDiagnosticOptions: specificDiagnosticOptions,
+                diagnosticOptions: diagnosticOptions,
                 renameRules: renameRules,
                 symbolTableOverrides: symbolTableOverrides)
         {
@@ -66,28 +56,15 @@ namespace Desalt.Core.Options
         private CompilerOptions(
             CompilerOptions? instanceToCopy = null,
             string? outputPath = null,
-            WarningLevel? warningLevel = null,
-            ReportDiagnostic? generalDiagnosticOption = null,
-            ImmutableDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
+            DiagnosticOptions? diagnosticOptions = null,
             RenameRules? renameRules = null,
             SymbolTableOverrides? symbolTableOverrides = null)
         {
             OutputPath = outputPath ?? instanceToCopy?.OutputPath;
+            DiagnosticOptions = diagnosticOptions ?? instanceToCopy?.DiagnosticOptions ?? DiagnosticOptions.Default;
             RenameRules = renameRules ?? instanceToCopy?.RenameRules ?? RenameRules.Default;
             SymbolTableOverrides = symbolTableOverrides ??
                 instanceToCopy?.SymbolTableOverrides ?? SymbolTableOverrides.Empty;
-
-            // initialize the diagnostic options
-            WarningLevel warningLevelToUse = warningLevel ?? instanceToCopy?.WarningLevel ?? DefaultWarningLevel;
-            ReportDiagnostic generalDiagnosticOptionToUse = generalDiagnosticOption ??
-                instanceToCopy?.GeneralDiagnosticOption ?? DefaultGeneralDiagnosticOption;
-            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptionsToUse = specificDiagnosticOptions ??
-                instanceToCopy?.SpecificDiagnosticOptions ?? ImmutableDictionary<string, ReportDiagnostic>.Empty;
-
-            DiagnosticOptions = new DiagnosticOptions(
-                warningLevelToUse,
-                generalDiagnosticOptionToUse,
-                specificDiagnosticOptionsToUse);
         }
 
         //// ===========================================================================================================
@@ -100,22 +77,9 @@ namespace Desalt.Core.Options
         public string? OutputPath { get; }
 
         /// <summary>
-        /// Gets the global warning level.
+        /// Gets the options that relate to how errors and warnings are handled during a compile.
         /// </summary>
-        [DefaultValue(DefaultWarningLevel)]
-        public WarningLevel WarningLevel => DiagnosticOptions.WarningLevel;
-
-        /// <summary>
-        /// Global warning report option.
-        /// </summary>
-        [DefaultValue(DefaultGeneralDiagnosticOption)]
-        public ReportDiagnostic GeneralDiagnosticOption => DiagnosticOptions.GeneralDiagnosticOption;
-
-        /// <summary>
-        /// Warning report option for each warning.
-        /// </summary>
-        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions =>
-            DiagnosticOptions.SpecificDiagnosticOptions;
+        public DiagnosticOptions DiagnosticOptions { get; }
 
         /// <summary>
         /// Gets the renaming rules to apply during TypeScript translation.
@@ -128,11 +92,14 @@ namespace Desalt.Core.Options
         /// </summary>
         public SymbolTableOverrides SymbolTableOverrides { get; }
 
-        internal DiagnosticOptions DiagnosticOptions { get; }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
+
+        public CompilerOptions WithDiagnosticOptions(DiagnosticOptions value)
+        {
+            return DiagnosticOptions.Equals(value) ? this : new CompilerOptions(this, diagnosticOptions: value);
+        }
 
         public CompilerOptions WithRenameRules(RenameRules value)
         {

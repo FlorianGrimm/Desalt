@@ -361,15 +361,16 @@ namespace Desalt.ConsoleApp
             CompilerOptions loadedOptions = result.Result ?? throw new InvalidOperationException();
 
             // Merge the parsed options file with the current options, overriding any conflicts.
-            _options.WarningLevel = (int)loadedOptions.WarningLevel;
-            _options.GeneralDiagnosticOption = loadedOptions.GeneralDiagnosticOption;
+            _options.WarningLevel = (int)loadedOptions.DiagnosticOptions.WarningLevel;
+            _options.GeneralDiagnosticOption = loadedOptions.DiagnosticOptions.GeneralDiagnosticOption;
 
             _warnAsErrors.UnionWith(
-                loadedOptions.SpecificDiagnosticOptions.Where(x => x.Value == ReportDiagnostic.Error)
+                loadedOptions.DiagnosticOptions.SpecificDiagnosticOptions.Where(x => x.Value == ReportDiagnostic.Error)
                     .Select(x => x.Key));
 
             _noWarns.UnionWith(
-                loadedOptions.SpecificDiagnosticOptions.Where(x => x.Value == ReportDiagnostic.Suppress)
+                loadedOptions.DiagnosticOptions.SpecificDiagnosticOptions
+                    .Where(x => x.Value == ReportDiagnostic.Suppress)
                     .Select(x => x.Key));
 
             foreach ((string key, SymbolTableOverride overrideValue) in loadedOptions.SymbolTableOverrides)

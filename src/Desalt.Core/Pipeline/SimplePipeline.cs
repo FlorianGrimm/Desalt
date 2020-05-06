@@ -91,7 +91,7 @@ namespace Desalt.Core.Pipeline
 
             var previousOutputs = new List<object?> { input };
 
-            var diagnostics = DiagnosticList.Create(options);
+            var diagnostics = new DiagnosticList(options.DiagnosticOptions);
             foreach (IPipelineStage stage in StagesInner)
             {
                 // find the next input, which is the latest previous output of a compatible type

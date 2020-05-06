@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScriptAst.Ast.Declarations
 {
-    using System;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -20,8 +19,9 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         //// ===========================================================================================================
 
         public TsExportImplementationElement(ITsImplementationElement exportedElement)
+            : base(exportedElement.LeadingTrivia)
         {
-            ExportedElement = exportedElement ?? throw new ArgumentNullException(nameof(exportedElement));
+            ExportedElement = exportedElement.WithLeadingTrivia();
         }
 
         //// ===========================================================================================================
