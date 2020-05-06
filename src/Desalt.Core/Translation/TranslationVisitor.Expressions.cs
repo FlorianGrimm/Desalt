@@ -324,10 +324,9 @@ namespace Desalt.Core.Translation
                 yield return translatedNode;
             }
             else if (JsDictionaryTranslator.TryTranslateObjectCreation(
+                Context,
                 node,
                 arguments,
-                Context.SemanticModel,
-                Context.Diagnostics,
                 out ITsObjectLiteral? translatedObjectLiteral))
             {
                 yield return translatedObjectLiteral;
