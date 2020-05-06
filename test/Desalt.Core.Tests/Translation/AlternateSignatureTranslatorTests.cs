@@ -48,11 +48,8 @@ using System.Runtime.CompilerServices;
                 .Select(methodSyntax => context.SemanticModel.GetDeclaredSymbol(methodSyntax))
                 .First(symbol => symbol.ToHashDisplay() == methodKey);
 
-            var translator = new AlternateSignatureTranslator(
-                context.AlternateSignatureSymbolTable);
-
             var translationContext = new TranslationContext(context);
-            bool result = translator.TryAdjustParameterListTypes(
+            bool result = AlternateSignatureTranslator.TryAdjustParameterListTypes(
                 translationContext,
                 methodSymbol,
                 translatedParameterList,

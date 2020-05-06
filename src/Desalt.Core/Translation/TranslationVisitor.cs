@@ -51,7 +51,6 @@ namespace Desalt.Core.Translation
         private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly ScriptSkipTranslator _scriptSkipTranslator;
-        private readonly AlternateSignatureTranslator _alternateSignatureTranslator;
         private readonly UserDefinedOperatorTranslator _userDefinedOperatorTranslator;
 
         /// <summary>
@@ -90,9 +89,6 @@ namespace Desalt.Core.Translation
                 new ExtensionMethodTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
             _inlineCodeTranslator = new InlineCodeTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
             _scriptSkipTranslator = new ScriptSkipTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
-
-            _alternateSignatureTranslator = new AlternateSignatureTranslator(
-                context.AlternateSignatureSymbolTable);
 
             _userDefinedOperatorTranslator = new UserDefinedOperatorTranslator(
                 Context.SemanticModel,
@@ -405,7 +401,7 @@ namespace Desalt.Core.Translation
             // See if the parameter list should be adjusted to accomodate [AlternateSignature] methods.
             if (methodSymbol != null)
             {
-                bool adjustedParameters = _alternateSignatureTranslator.TryAdjustParameterListTypes(
+                bool adjustedParameters = AlternateSignatureTranslator.TryAdjustParameterListTypes(
                     Context,
                     methodSymbol,
                     callSignature.Parameters,

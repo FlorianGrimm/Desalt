@@ -21,31 +21,8 @@ namespace Desalt.Core.Translation
     /// Translates the parameters of a method or constructor declaration to adjust the types depending on the signatures
     /// of the methods marked with [AlternateSignature].
     /// </summary>
-    internal class AlternateSignatureTranslator
+    internal static class AlternateSignatureTranslator
     {
-        //// ===========================================================================================================
-        //// Member Variables
-        //// ===========================================================================================================
-
-        private readonly AlternateSignatureSymbolTable _alternateSignatureSymbolTable;
-
-        //// ===========================================================================================================
-        //// Constructors
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Creates a new instance of a <see cref="InlineCodeTranslator"/> from the specified
-        /// semantic model and symbol tables.
-        /// </summary>
-        /// <param name="alternateSignatureSymbolTable">
-        /// A symbol table containing methods that have been decorated with the [AlternateSignature] attribute.
-        /// </param>
-        public AlternateSignatureTranslator(AlternateSignatureSymbolTable alternateSignatureSymbolTable)
-        {
-            _alternateSignatureSymbolTable = alternateSignatureSymbolTable ??
-                throw new ArgumentNullException(nameof(alternateSignatureSymbolTable));
-        }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -56,13 +33,11 @@ namespace Desalt.Core.Translation
         /// </summary>
         /// <param name="context">The <see cref="TranslationContext"/> to use.</param>
         /// <param name="methodSymbol">The method declaration that should be examined.</param>
-        /// <param name="translatedParameterList">
-        /// The already-translated parameter list that may be adjusted.
-        /// </param>
+        /// <param name="translatedParameterList">The already-translated parameter list that may be adjusted.</param>
         /// <param name="adjustedParameterList">The newly-translated parameter list.</param>
         /// <param name="diagnostics">Any diagnostics produced during adjustment.</param>
         /// <returns>true if the parameter list was adjusted; otherwise, false.</returns>
-        public bool TryAdjustParameterListTypes(
+        public static bool TryAdjustParameterListTypes(
             TranslationContext context,
             IMethodSymbol methodSymbol,
             ITsParameterList translatedParameterList,
@@ -74,7 +49,7 @@ namespace Desalt.Core.Translation
             diagnostics = diagnosticsList;
 
             // we don't need to adjust anything if the method doesn't belong to an [AlternateSignature] group
-            if (!_alternateSignatureSymbolTable.TryGetValue(
+            if (!context.AlternateSignatureSymbolTable.TryGetValue(
                 methodSymbol,
                 out AlternateSignatureMethodGroup? methodGroup))
             {
@@ -215,10 +190,7 @@ namespace Desalt.Core.Translation
 
             ITsType[] translatedTypes = group.TypesForParameter(parameterIndex)
                 .Select(
-                    typeSymbol => TypeTranslator.TranslateTypeSymbol(
-                        context,
-                        typeSymbol,
-                        getLocationFunc: GetLocation))
+                    typeSymbol => TypeTranslator.TranslateTypeSymbol(context, typeSymbol, getLocationFunc: GetLocation))
                 .Distinct()
                 .ToArray();
 
