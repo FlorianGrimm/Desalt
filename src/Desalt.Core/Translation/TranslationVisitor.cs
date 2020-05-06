@@ -48,7 +48,6 @@ namespace Desalt.Core.Translation
 
         private static readonly ITsIdentifier s_staticCtorName = Factory.Identifier("__ctor");
 
-        private readonly ExtensionMethodTranslator _extensionMethodTranslator;
         private readonly InlineCodeTranslator _inlineCodeTranslator;
         private readonly ScriptSkipTranslator _scriptSkipTranslator;
         private readonly UserDefinedOperatorTranslator _userDefinedOperatorTranslator;
@@ -85,8 +84,6 @@ namespace Desalt.Core.Translation
         {
             Context = context;
 
-            _extensionMethodTranslator =
-                new ExtensionMethodTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
             _inlineCodeTranslator = new InlineCodeTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
             _scriptSkipTranslator = new ScriptSkipTranslator(Context.SemanticModel, Context.ScriptSymbolTable);
 

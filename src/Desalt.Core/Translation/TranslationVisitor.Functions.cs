@@ -50,17 +50,13 @@ namespace Desalt.Core.Translation
 
             // Try to adapt the method if it's an extension method (convert it from `x.Extension()` to
             // `ExtensionClass.Extension(x)`. This must be done first before translating [InlineCode] or [ScriptSkip] methods.
-            _extensionMethodTranslator.TryAdaptMethodInvocation(
+            ExtensionMethodTranslator.TryAdaptMethodInvocation(
+                Context,
                 node,
                 ref methodSymbol,
                 ref leftSide,
                 ref arguments,
-                Context.TranslateIdentifierName,
-                out Diagnostic? error);
-            if (error != null)
-            {
-                Context.Diagnostics.Add(error);
-            }
+                Context.TranslateIdentifierName);
 
             // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
             // and there's no need to use [InlineCode].
