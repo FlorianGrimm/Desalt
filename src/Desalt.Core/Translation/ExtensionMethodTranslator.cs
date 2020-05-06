@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExtensionMethodTranslator.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -39,10 +39,6 @@ namespace Desalt.Core.Translation
         /// The already-translated argument list for the method invocation. This will be changed to have the former left
         /// side of the expression as the first argument if the adaptation occurred.
         /// </param>
-        /// <param name="translateIdentifierNameFunc">
-        /// The function to call in order to translate the identifier needed to invoke the message, which is the name of
-        /// the containing class of the extension method.
-        /// </param>
         /// <returns>
         /// True if the node was adapted (it was an extension method invoked as `x.Extension()`); false if the node was
         /// not adapted or if there was an error.
@@ -52,8 +48,7 @@ namespace Desalt.Core.Translation
             InvocationExpressionSyntax node,
             ref IMethodSymbol methodSymbol,
             ref ITsExpression translatedLeftSide,
-            ref ITsArgumentList translatedArgumentList,
-            TranslateIdentifierFunc translateIdentifierNameFunc)
+            ref ITsArgumentList translatedArgumentList)
         {
             // See if this is an extension method invoked as `receiver.Extension()` and change the call signature so
             // that the left side is the first argument to the static method.
@@ -78,7 +73,7 @@ namespace Desalt.Core.Translation
 
             // Translate the name of the reduced type, which is the new left side of the invocation:
             // `x.Extension()` -> `ExtensionClass.Extension(x)`.
-            translatedLeftSide = translateIdentifierNameFunc(methodSymbol, node);
+            translatedLeftSide = context.TranslateIdentifierName(methodSymbol, node);
 
             // Take the left side of the expression and instead make it the first argument to the static
             // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.

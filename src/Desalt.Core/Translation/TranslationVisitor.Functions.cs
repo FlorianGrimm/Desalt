@@ -55,8 +55,7 @@ namespace Desalt.Core.Translation
                 node,
                 ref methodSymbol,
                 ref leftSide,
-                ref arguments,
-                Context.TranslateIdentifierName);
+                ref arguments);
 
             // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
             // and there's no need to use [InlineCode].
