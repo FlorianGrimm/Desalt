@@ -78,13 +78,14 @@ namespace Desalt.Core.Translation
             .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
 
             // see if there's an [InlineCode] entry for the method invocation
-            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode && _inlineCodeTranslator.TryTranslateMethodCall(
+            if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode &&
+                InlineCodeTranslator.TryTranslateMethodCall(
+                    Context,
                     methodSymbol,
                     node.Expression.GetLocation(),
                     leftSide,
                     arguments,
-                    Context.Diagnostics,
-                    out ITsAstNode? translatedNode))
+                    out ITsExpression? translatedNode))
             {
                 yield return translatedNode;
                 yield break;

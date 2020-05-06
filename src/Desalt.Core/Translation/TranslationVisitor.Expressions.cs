@@ -313,13 +313,13 @@ namespace Desalt.Core.Translation
 
             // See if there's an [InlineCode] entry for the ctor invocation.
             if (Context.SemanticModel.GetSymbolInfo(node).Symbol is IMethodSymbol ctorAsMethodSymbol &&
-                _inlineCodeTranslator.TryTranslateMethodCall(
+                InlineCodeTranslator.TryTranslateMethodCall(
+                    Context,
                     ctorAsMethodSymbol,
                     node.GetLocation(),
                     leftSide,
                     arguments,
-                    Context.Diagnostics,
-                    out ITsAstNode? translatedNode))
+                    out ITsExpression? translatedNode))
             {
                 yield return translatedNode;
             }
