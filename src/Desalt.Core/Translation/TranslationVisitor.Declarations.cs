@@ -426,7 +426,7 @@ namespace Desalt.Core.Translation
             // If the property is marked with [IntrinsicProperty], don't write out the declaration.
             if (!Context.ScriptSymbolTable.TryGetValue(propertySymbol, out ScriptPropertySymbol? scriptPropertySymbol))
             {
-                ReportInternalError($"We should have a script symbol for property '{node.Identifier.Text}'", node);
+                Context.ReportInternalError($"We should have a script symbol for property '{node.Identifier.Text}'", node);
             }
 
             if (scriptPropertySymbol!.IntrinsicProperty)
@@ -454,7 +454,7 @@ namespace Desalt.Core.Translation
 
             if (node.AccessorList == null)
             {
-                ReportInternalError(
+                Context.ReportInternalError(
                     "A property declaration with a null accessor list should have an expression body.",
                     node);
 
@@ -709,7 +709,7 @@ namespace Desalt.Core.Translation
 
             if (!Context.RenameRules.UserDefinedOperatorMethodNames.TryGetValue(overloadKind.Value, out string functionName))
             {
-                ReportInternalError($"Operator overload function name not defined for {overloadKind}", node);
+                Context.ReportInternalError($"Operator overload function name not defined for {overloadKind}", node);
                 return Factory.Identifier("op_ERROR");
             }
 

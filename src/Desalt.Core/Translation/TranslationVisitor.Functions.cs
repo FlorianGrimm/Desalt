@@ -41,7 +41,7 @@ namespace Desalt.Core.Translation
                 // For dynamic invocations, there isn't a symbol since the compiler can't tell what it is.
                 if (Context.SemanticModel.GetTypeInfo(node).Type?.TypeKind != TypeKind.Dynamic)
                 {
-                    ReportInternalError("Isn't an invocation always a method symbol?", node);
+                    Context.ReportInternalError("Isn't an invocation always a method symbol?", node);
                 }
 
                 yield return Factory.Call(leftSide, arguments);
@@ -145,7 +145,7 @@ namespace Desalt.Core.Translation
                     break;
 
                 default:
-                    ReportInternalError($"Unknown lambda expression body type: {node.Body}", node.Body);
+                    Context.ReportInternalError($"Unknown lambda expression body type: {node.Body}", node.Body);
                     translated = Factory.ArrowFunction(callSignature, Factory.Identifier("TranslationError"));
                     break;
             }

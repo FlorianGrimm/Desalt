@@ -268,7 +268,7 @@ namespace Desalt.Core.Translation
             {
                 if (_lastCatchIdentifier == null)
                 {
-                    ReportInternalError("_lastCatchIdentifier should have been set", node);
+                    Context.ReportInternalError("_lastCatchIdentifier should have been set", node);
                     expression = Factory.Identifier("FIXME");
                 }
                 else

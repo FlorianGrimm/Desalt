@@ -242,7 +242,7 @@ namespace Desalt.Core.Translation
                 ITypeSymbol? typeToImport = symbol as ITypeSymbol ?? containingType;
                 if (typeToImport == null)
                 {
-                    ReportInternalError($"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'", node);
+                    Context.ReportInternalError($"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'", node);
                 }
                 else
                 {

@@ -7,7 +7,9 @@
 
 namespace Desalt.Core.Translation
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
@@ -112,5 +114,35 @@ namespace Desalt.Core.Translation
         /// need to be imported at the top of the translated TypeScript file.
         /// </summary>
         public ISet<ITypeSymbol> TypesToImport { get; }
+
+        //// ===========================================================================================================
+        //// Methods
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Creates a new InternalError diagnostic, adds it to the diagnostics list, and then throws an exception so we
+        /// can get a stack trace in debug mode and returns an empty enumerable.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="node">The node where the error occurs.</param>
+        [DoesNotReturn]
+        public void ReportInternalError(string message, SyntaxNode? node = null)
+        {
+            ReportInternalError(message, node?.GetLocation());
+        }
+
+        /// <summary>
+        /// Creates a new InternalError diagnostic, adds it to the diagnostics list, and then throws an exception so we
+        /// can get a stack trace in debug mode and returns an empty enumerable.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="nodeLocation">The location in the source code where the error occurs.</param>
+        [DoesNotReturn]
+        public void ReportInternalError(string message, Location? nodeLocation = null)
+        {
+            var diagnostic = DiagnosticFactory.InternalError(message, nodeLocation);
+            Diagnostics.Add(diagnostic);
+            throw new InvalidOperationException(diagnostic.ToString());
+        }
     }
 }

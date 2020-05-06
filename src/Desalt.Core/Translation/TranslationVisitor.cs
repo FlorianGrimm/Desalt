@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using Desalt.CompilerUtilities.Extensions;
@@ -203,23 +202,7 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Creates a new InternalError diagnostic, adds it to the diagnostics list, and then throws an exception so we
-        /// can get a stack trace in debug mode and returns an empty enumerable.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        /// <param name="node">The node where the error occurs.</param>
-        /// <returns>An empty <see cref="IEnumerable{ITsAstNode}"/>.</returns>
-        [DoesNotReturn]
-        private void ReportInternalError(string message, SyntaxNode node)
-        {
-            var diagnostic = DiagnosticFactory.InternalError(message, node.GetLocation());
-            Context.Diagnostics.Add(diagnostic);
-            throw new Exception(diagnostic.ToString());
-        }
-
-        /// <summary>
-        /// Gets an expected symbol from the semantic model and calls <see cref="ReportInternalError"/> if the
-        /// symbol is not found.
+        /// Gets an expected symbol from the semantic model and calls <c>ReportInternalError</c> if the symbol is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
         /// <returns>The symbol associated with the syntax node.</returns>
@@ -228,15 +211,14 @@ namespace Desalt.Core.Translation
             ISymbol? symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
             if (symbol == null)
             {
-                ReportInternalError($"Node '{node}' should have an expected symbol.", node);
+                Context.ReportInternalError($"Node '{node}' should have an expected symbol.", node);
             }
 
             return symbol;
         }
 
         /// <summary>
-        /// Gets an expected symbol from the semantic model and calls <see cref="ReportInternalError"/> if the
-        /// symbol is not found.
+        /// Gets an expected symbol from the semantic model and calls <c>ReportInternalError</c> if the symbol is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
         /// <returns>The symbol associated with the syntax node.</returns>
@@ -245,15 +227,15 @@ namespace Desalt.Core.Translation
             var symbol = Context.SemanticModel.GetDeclaredSymbol(node) as TSymbol;
             if (symbol == null)
             {
-                ReportInternalError($"Node '{node}' should have an expected declared symbol.", node);
+                Context.ReportInternalError($"Node '{node}' should have an expected declared symbol.", node);
             }
 
             return symbol;
         }
 
         /// <summary>
-        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
-        /// cref="ReportInternalError"/> if either is not found.
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
+        /// either is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
         /// <returns>The symbol and script symbol associated with the syntax node.</returns>
@@ -263,15 +245,15 @@ namespace Desalt.Core.Translation
 
             if (!Context.ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
             {
-                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
+                Context.ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
             }
 
             return (symbol, scriptSymbol);
         }
 
         /// <summary>
-        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
-        /// cref="ReportInternalError"/> if either is not found.
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
+        /// either is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
         /// <returns>The symbol and script symbol associated with the syntax node.</returns>
@@ -284,15 +266,14 @@ namespace Desalt.Core.Translation
 
             if (!Context.ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
             {
-                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
+                Context.ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
             }
 
             return (symbol, scriptSymbol);
         }
 
         /// <summary>
-        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <see
-        /// cref="ReportInternalError"/> if either is not found.
+        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if either is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
         /// <returns>The symbol and script symbol associated with the syntax node.</returns>
