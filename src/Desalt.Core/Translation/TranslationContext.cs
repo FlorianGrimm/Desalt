@@ -11,10 +11,14 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
+    using Desalt.Core.Utility;
+    using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
+    using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
     /// Contains data structures and helper methods needed for translation of C# to TypeScript.
@@ -143,6 +147,79 @@ namespace Desalt.Core.Translation
             var diagnostic = DiagnosticFactory.InternalError(message, nodeLocation);
             Diagnostics.Add(diagnostic);
             throw new InvalidOperationException(diagnostic.ToString());
+        }
+
+        /// <summary>
+        /// Translates an identifier name represented by the symbol, taking into account static vs. instance references.
+        /// </summary>
+        /// <param name="symbol">The symbol to translate.</param>
+        /// <param name="node">The start of the syntax node where this symbol was located.</param>
+        /// <param name="forcedScriptName">
+        /// If present, this name will be used instead of looking it up in the symbol table.
+        /// </param>
+        /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
+        public ITsExpression TranslateIdentifierName(
+            ISymbol symbol,
+            SyntaxNode node,
+            string? forcedScriptName = null)
+        {
+            ITsIdentifier scriptName = forcedScriptName != null
+                ? Factory.Identifier(forcedScriptName)
+                : symbol.GetScriptName(ScriptSymbolTable, symbol.Name);
+
+            // Get the containing type of the symbol.
+            INamedTypeSymbol? containingType = symbol.ContainingType;
+
+            // Get the containing type of the syntax node (usually an identifier).
+            INamedTypeSymbol? containingTypeOfSyntaxNode = SemanticModel
+                .GetEnclosingSymbol(node.GetLocation().SourceSpan.Start)
+                ?.ContainingType;
+
+            // See if the identifier is declared within this type.
+            bool belongsToThisType = containingType != null &&
+                containingTypeOfSyntaxNode != null &&
+                SymbolEqualityComparer.Default.Equals(containingType, containingTypeOfSyntaxNode);
+
+            ITsExpression expression;
+
+            // In TypeScript, static references need to be fully qualified with the type name.
+            if (symbol.IsStatic && containingType != null)
+            {
+                ITsIdentifier containingTypeScriptName = containingType.GetScriptName(
+                    ScriptSymbolTable,
+                    containingType.Name);
+                expression = Factory.MemberDot(containingTypeScriptName, scriptName);
+            }
+
+            // Add a "this." prefix if it's an instance symbol within our same type.
+            else if (!symbol.IsStatic &&
+                belongsToThisType &&
+                !symbol.Kind.IsOneOf(SymbolKind.Parameter, SymbolKind.Local, SymbolKind.Label))
+            {
+                expression = Factory.MemberDot(Factory.This, scriptName);
+            }
+            else
+            {
+                expression = scriptName;
+            }
+
+            // Add this type to the import list if it doesn't belong to us.
+            if (!belongsToThisType)
+            {
+                var typeToImport = symbol as ITypeSymbol ?? containingType;
+                if (typeToImport == null)
+                {
+                    ReportInternalError(
+                        $"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'",
+                        node.GetLocation());
+                }
+                else
+                {
+                    TypesToImport.Add(typeToImport);
+                }
+            }
+
+            return expression;
         }
     }
 }

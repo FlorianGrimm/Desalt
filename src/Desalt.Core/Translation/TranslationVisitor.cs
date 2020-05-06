@@ -122,7 +122,7 @@ namespace Desalt.Core.Translation
                 Context.SemanticModel,
                 Context.ScriptSymbolTable,
                 Context.RenameRules,
-                TranslateIdentifierName,
+                Context.TranslateIdentifierName,
                 VisitSingleOfType<ITsExpression>,
                 Context.TemporaryVariableAllocator,
                 Context.Diagnostics);

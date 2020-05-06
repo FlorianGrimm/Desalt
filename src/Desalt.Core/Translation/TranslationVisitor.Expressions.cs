@@ -179,78 +179,8 @@ namespace Desalt.Core.Translation
                 yield break;
             }
 
-            ITsExpression translated = TranslateIdentifierName(symbol, node);
+            ITsExpression translated = Context.TranslateIdentifierName(symbol, node);
             yield return translated;
-        }
-
-        /// <summary>
-        /// Translates an identifier name represented by the symbol, taking into account static vs. instance references.
-        /// </summary>
-        /// <param name="symbol">The symbol to translate.</param>
-        /// <param name="node">The start of the syntax node where this symbol was located.</param>
-        /// <param name="forcedScriptName">
-        /// If present, this name will be used instead of looking it up in the symbol table.
-        /// </param>
-        /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
-        private ITsExpression TranslateIdentifierName(
-            ISymbol symbol,
-            SyntaxNode node,
-            string? forcedScriptName = null)
-        {
-            ITsIdentifier scriptName = forcedScriptName != null
-                ? Factory.Identifier(forcedScriptName)
-                : symbol.GetScriptName(Context.ScriptSymbolTable, symbol.Name);
-
-            // Get the containing type of the symbol.
-            INamedTypeSymbol? containingType = symbol.ContainingType;
-
-            // Get the containing type of the syntax node (usually an identifier).
-            INamedTypeSymbol? containingTypeOfSyntaxNode = Context.SemanticModel
-                .GetEnclosingSymbol(node.GetLocation().SourceSpan.Start, Context.CancellationToken)
-                ?.ContainingType;
-
-            // See if the identifier is declared within this type.
-            bool belongsToThisType = containingType != null &&
-                containingTypeOfSyntaxNode != null &&
-                SymbolEqualityComparer.Default.Equals(containingType, containingTypeOfSyntaxNode);
-
-            ITsExpression expression;
-
-            // In TypeScript, static references need to be fully qualified with the type name.
-            if (symbol.IsStatic && containingType != null)
-            {
-                ITsIdentifier containingTypeScriptName =
-                    containingType.GetScriptName(Context.ScriptSymbolTable, containingType.Name);
-                expression = Factory.MemberDot(containingTypeScriptName, scriptName);
-            }
-
-            // Add a "this." prefix if it's an instance symbol within our same type.
-            else if (!symbol.IsStatic &&
-                belongsToThisType &&
-                !symbol.Kind.IsOneOf(SymbolKind.Parameter, SymbolKind.Local, SymbolKind.Label))
-            {
-                expression = Factory.MemberDot(Factory.This, scriptName);
-            }
-            else
-            {
-                expression = scriptName;
-            }
-
-            // Add this type to the import list if it doesn't belong to us.
-            if (!belongsToThisType)
-            {
-                ITypeSymbol? typeToImport = symbol as ITypeSymbol ?? containingType;
-                if (typeToImport == null)
-                {
-                    Context.ReportInternalError($"Cannot find the type to import for symbol '{symbol.ToHashDisplay()}'", node);
-                }
-                else
-                {
-                    Context.TypesToImport.Add(typeToImport);
-                }
-            }
-
-            return expression;
         }
 
         /// <summary>
