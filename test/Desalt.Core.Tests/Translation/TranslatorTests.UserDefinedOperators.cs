@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TranslationVisitorTests.UserDefinedOperators.cs" company="Justin Rockwood">
+// <copyright file="TranslatorTests.UserDefinedOperators.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -10,7 +10,7 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.SymbolTables;
     using NUnit.Framework;
 
-    public partial class TranslationVisitorTests
+    public partial class TranslatorTests
     {
         private static Task AssertUserDefinedOperatorTranslation(
             string methodSnippet,

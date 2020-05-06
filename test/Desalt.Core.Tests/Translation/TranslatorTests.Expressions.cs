@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TranslationVisitorTests.Expressions.cs" company="Justin Rockwood">
+// <copyright file="TranslatorTests.Expressions.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Desalt.Core.Tests.Translation
     using NUnit.Framework;
     using NUnit.Framework.Internal;
 
-    public partial class TranslationVisitorTests
+    public partial class TranslatorTests
     {
         [Test]
         public async Task This_expression_assigning_numeric_literals()
