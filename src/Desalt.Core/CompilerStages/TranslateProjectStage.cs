@@ -84,9 +84,8 @@ namespace Desalt.Core.CompilerStages
             // ----------------------------------------------------
 
             // translate the C# syntax tree to TypeScript
-            var translator = new Translator();
             IExtendedResult<ITsImplementationSourceFile> translation =
-                translator.TranslateDocument(context, cancellationToken);
+                Translator.TranslateDocument(context, cancellationToken);
             ImmutableArray<Diagnostic> diagnostics = translation.Diagnostics;
 
             using (var stream = new FileStream(

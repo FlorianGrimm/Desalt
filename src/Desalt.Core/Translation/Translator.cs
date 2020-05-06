@@ -16,13 +16,19 @@ namespace Desalt.Core.Translation
     /// <summary>
     /// Converts a CSharp syntax tree into a TypeScript syntax tree.
     /// </summary>
-    internal class Translator
+    internal static class Translator
     {
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
 
-        public IExtendedResult<ITsImplementationModule> TranslateDocument(
+        /// <summary>
+        /// Translates a C# document into a TypeScript document.
+        /// </summary>
+        /// <param name="context">The <see cref="DocumentTranslationContextWithSymbolTables"/> to use.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to control canceling a translation.</param>
+        /// <returns>A translated TypeScript module document.</returns>
+        public static IExtendedResult<ITsImplementationModule> TranslateDocument(
             DocumentTranslationContextWithSymbolTables context,
             CancellationToken cancellationToken = default)
         {
