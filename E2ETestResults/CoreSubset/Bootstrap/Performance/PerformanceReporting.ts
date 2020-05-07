@@ -33,7 +33,7 @@ export class PerformanceReporting {
       try {
         performance.measure(measureName, startMarkName, endMarkName);
       } catch (e) {
-        console.error('Missing a performance mark', e);
+        console.error('Missing a performance mark', [e]);
       }
     }
   }

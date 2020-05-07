@@ -520,13 +520,13 @@ namespace Desalt.Core.Translation
                     return translatedExpression;
                 }
 
-                // If the node's left side expression is a method or a constructor, then it will have
-                // already been translated and the [InlineCode] would have already been applied - we
-                // shouldn't do it twice because it will be wrong the second time.
+                // If the node's left side expression is a method or a constructor, then it will have already been
+                // translated and the [InlineCode] would have already been applied - we shouldn't do it twice because it
+                // will be wrong the second time.
                 bool hasLeftSideAlreadyBeenTranslatedWithInlineCode = node.Expression.Kind()
-                .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
+                    .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
 
-                // see if there's an [InlineCode] entry for the method invocation
+                // Wee if there's an [InlineCode] entry for the method invocation.
                 if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode &&
                     InlineCodeTranslator.TryTranslateMethodCall(
                         Context,
@@ -615,8 +615,21 @@ namespace Desalt.Core.Translation
 
             private ITsArgumentList TranslateArgumentList(ArgumentListSyntax node)
             {
-                ITsArgument[] arguments = node.Arguments.Select(TranslateArgument).ToArray();
-                ITsArgumentList translated = Factory.ArgumentList(arguments);
+                var arguments = node.Arguments.Select(TranslateArgument).ToList();
+
+                if (SemanticModel.GetSymbolInfo(node.Parent).Symbol is IMethodSymbol methodSymbol &&
+                    methodSymbol.Parameters.LastOrDefault()?.IsParams == true)
+                {
+                    int indexOfParams = methodSymbol.Parameters.Length - 1;
+
+                    // Take the translated arguments starting at the index of the params and convert them into an array.
+                    var array = Factory.Array(
+                        arguments.Skip(indexOfParams).Select(arg => Factory.ArrayElement(arg.Expression)).ToArray());
+                    arguments.RemoveRange(indexOfParams, array.Elements.Length);
+                    arguments.Add(Factory.Argument(array));
+                }
+
+                ITsArgumentList translated = Factory.ArgumentList(arguments.ToArray());
                 return translated;
             }
 

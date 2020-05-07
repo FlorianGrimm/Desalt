@@ -65,7 +65,7 @@ export class ErrorTrace {
   public static wrap(func: () => void): () => any {
     return () => {
       try {
-        return func.apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
+        return func.apply(ss.this, [<any[]>Array.prototype.slice.call(arguments)]);
       } catch (e) {
         ErrorTrace.report(e);
         throw e;
@@ -85,7 +85,7 @@ export class ErrorTrace {
     let callback: () => any = () => {
       let args: any[] = ss.arrayClone((<any[]>Array.prototype.slice.call(arguments)));
       let originalCallback: any = args[0];
-      return originalFunction.apply(ss.this, args);
+      return originalFunction.apply(ss.this, [args]);
     };
     window[functionName] = callback;
   }
@@ -114,7 +114,7 @@ export class ErrorTrace {
   public static windowOnError$1(message: Object<Event, string>, url: string, lineNo: number, column: number, error: any, errorDialogShown: boolean): boolean {
     let locations: StackLocation[] = StackTraceParser.parseJsErrorForStackLines(<Error>error);
     let stack: StackTrace = new StackTrace(StackTraceMode.OnError, <string>message, 'window.onError', locations, errorDialogShown);
-    ErrorTrace.queuedTraces.push(stack);
+    ErrorTrace.queuedTraces.push([stack]);
     if (ss.isValue(ErrorTrace.oldOnErrorHandler)) {
       ErrorTrace.oldOnErrorHandler(message, url, lineNo, column, error);
     }
@@ -188,7 +188,7 @@ export class ErrorTrace {
    */
   public static report(e: ss.Exception, errorDialogShown: boolean = false): void {
     let stack: StackTrace = ErrorTrace.getStackTraceFor(e, errorDialogShown);
-    ErrorTrace.queuedTraces.push(stack);
+    ErrorTrace.queuedTraces.push([stack]);
   }
 }
 
@@ -336,7 +336,7 @@ export class SourceCacheForErrorStacks {
     let end: number = <number>Math.min(source.length, lineNo + linesAfter);
     for (let i = start; i < end; i++) {
       if (!ss.isNullOrEmptyString(source[i])) {
-        context.push(source[i]);
+        context.push([source[i]]);
       }
     }
     return context;

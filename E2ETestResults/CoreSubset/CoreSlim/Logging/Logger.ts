@@ -82,7 +82,7 @@ export class Logger {
     for (const logAppender of Logger.appenders) {
       logAppender.clearFilters();
     }
-    Logger.filters.splice(0, Logger.filters.length);
+    Logger.filters.splice(0, Logger.filters.length, []);
   }
 
   /**
@@ -122,7 +122,7 @@ export class Logger {
    * Clears all appenders.
    */
   public static clearAppenders(): void {
-    Logger.appenders.splice(0, Logger.filters.length);
+    Logger.appenders.splice(0, Logger.filters.length, []);
   }
 
   /**
@@ -142,7 +142,7 @@ export class Logger {
     for (const filter of Logger.filters) {
       appender.addFilter(filter);
     }
-    Logger.appenders.push(appender);
+    Logger.appenders.push([appender]);
   }
 
   /**
@@ -152,7 +152,7 @@ export class Logger {
   public static removeAppender(appender: ILogAppender): void {
     let indexOfAppender: number = Logger.appenders.indexOf(appender);
     if (indexOfAppender > -1) {
-      Logger.appenders.splice(indexOfAppender, 1);
+      Logger.appenders.splice(indexOfAppender, 1, []);
     }
   }
 
@@ -206,7 +206,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public debug(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Debug, message, args);
+    this.logInternal(LoggerLevel.Debug, message, [args]);
   }
 
   /**
@@ -215,7 +215,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public info(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Info, message, args);
+    this.logInternal(LoggerLevel.Info, message, [args]);
   }
 
   /**
@@ -224,7 +224,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public warn(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Warn, message, args);
+    this.logInternal(LoggerLevel.Warn, message, [args]);
   }
 
   /**
@@ -233,14 +233,14 @@ export class Logger {
    * @param args The format arguments.
    */
   public error(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Error, message, args);
+    this.logInternal(LoggerLevel.Error, message, [args]);
   }
 
   /**
    * Logs the given message.
    */
   public log(level: LoggerLevel, message: string, args: any[]): void {
-    this.logInternal(level, message, args);
+    this.logInternal(level, message, [args]);
   }
 
   private static setupUrlFilters(): void {
@@ -268,7 +268,7 @@ export class Logger {
   }
 
   private static addFilter(filterFunc: (logger: Logger, loggerLevel: LoggerLevel) => boolean): void {
-    Logger.filters.push(filterFunc);
+    Logger.filters.push([filterFunc]);
     for (const logAppender of Logger.appenders) {
       logAppender.addFilter(filterFunc);
     }

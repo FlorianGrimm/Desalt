@@ -122,7 +122,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     if (this.eventBuffer.length >= MetricsLogger.maxEventBufferSize) {
       this.eventBuffer.shift();
     }
-    this.eventBuffer.push(evt);
+    this.eventBuffer.push([evt]);
     this.startProcessingTimer();
   }
 
@@ -165,7 +165,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
   private outputEventsToConsole(evts: MetricsEvent[]): void {
     this.logger = (this.logger) || (Logger.lazyGetLogger(MetricsLogger));
     for (const evt of evts) {
-      this.logger.debug(MetricsLogger.formatEvent(evt, true));
+      this.logger.debug(MetricsLogger.formatEvent(evt, true), []);
     }
   }
 
@@ -213,7 +213,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
       eventDict = <{ [key: string]: any }>MiscUtil.cloneObject(eventDict);
       let extraInfoParts: string[] = parameters.ei.split(': ');
       if (extraInfoParts.length > 1) {
-        let fakeProps: { [key: string]: string } = new JsDictionary<string, string>(extraInfoParts);
+        let fakeProps: { [key: string]: string } = new JsDictionary<string, string>([extraInfoParts]);
         eventDict[MetricsParameterName.properties] = fakeProps;
         delete eventDict['ei'];
       }
@@ -315,7 +315,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     let beaconStr: string = hostname;
     beaconStr += '?' + versionStr + '&' + payload;
     beaconImg.src = beaconStr;
-    this.beaconImages.push(beaconImg);
+    this.beaconImages.push([beaconImg]);
     if (this.beaconImages.length > MetricsLogger.maxBeaconElementArraySize) {
       this.beaconImages.shift();
     }
@@ -331,7 +331,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
       let index: number = 0;
       while (index < this.beaconImages.length) {
         if (this.beaconImages[index].complete) {
-          this.beaconImages.splice(index, 1);
+          this.beaconImages.splice(index, 1, []);
         } else {
           index++;
         }

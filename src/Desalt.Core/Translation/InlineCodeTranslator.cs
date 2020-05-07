@@ -54,24 +54,24 @@ namespace Desalt.Core.Translation
             ITsArgumentList translatedArgumentList,
             [NotNullWhen(true)] out ITsExpression? translatedNode)
         {
-            // see if there's an [InlineCode] entry for the method invocation
-            if (context.ScriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? methodScriptSymbol) &&
-                methodScriptSymbol.InlineCode != null)
+            // See if there's an [InlineCode] entry for the method invocation.
+            if (!context.ScriptSymbolTable.TryGetValue(methodSymbol, out IScriptMethodSymbol? methodScriptSymbol) ||
+                methodScriptSymbol.InlineCode == null)
             {
-                var inlineCodeContext = new InlineCodeContext(
-                    context,
-                    methodScriptSymbol.InlineCode,
-                    methodExpressionLocation,
-                    methodSymbol,
-                    translatedLeftSide,
-                    translatedArgumentList);
-
-                translatedNode = Translate(inlineCodeContext);
-                return translatedNode != null;
+                translatedNode = null;
+                return false;
             }
 
-            translatedNode = null;
-            return false;
+            var inlineCodeContext = new InlineCodeContext(
+                context,
+                methodScriptSymbol.InlineCode,
+                methodExpressionLocation,
+                methodSymbol,
+                translatedLeftSide,
+                translatedArgumentList);
+
+            translatedNode = Translate(inlineCodeContext);
+            return translatedNode != null;
         }
 
         private static ITsExpression Translate(InlineCodeContext inlineCodeContext)
@@ -96,7 +96,7 @@ namespace Desalt.Core.Translation
 
             using (var reader = new PeekingTextReader(inlineCodeContext.InlineCode))
             {
-                // define a local helper function to read an expected character
+                // Define a local helper function to read an expected character.
                 void Read(char expected)
                 {
                     int read = reader.Read();
@@ -108,10 +108,10 @@ namespace Desalt.Core.Translation
 
                 while (!reader.IsAtEnd)
                 {
-                    // read all of the text until we hit the start of a parameter
+                    // Read all of the text until we hit the start of a parameter.
                     builder.Append(reader.ReadUntil('{'));
 
-                    // check for an escaped brace
+                    // Check for an escaped brace.
                     if (reader.Peek(2) == "{{")
                     {
                         reader.Read(2);
@@ -122,7 +122,7 @@ namespace Desalt.Core.Translation
                         Read('{');
                         string? parameterName = reader.ReadUntil('}');
 
-                        // check for an escaped brace
+                        // Check for an escaped brace.
                         while (reader.Peek(2) == "}}")
                         {
                             parameterName += "}" + reader.ReadUntil('}');
@@ -152,7 +152,7 @@ namespace Desalt.Core.Translation
                 return FindScriptNameOfType(parameterName.Substring(1), inlineCodeContext);
             }
 
-            // a parameter of the form '*rest' means to expand the parameter array
+            // A parameter of the form '*rest' means to expand the parameter array.
             if (parameterName[0] == '*')
             {
                 return ExpandParams(parameterName.Substring(1), inlineCodeContext);
@@ -160,8 +160,8 @@ namespace Desalt.Core.Translation
 
             if (parameterName == "this")
             {
-                // get the expression that should be substituted for the 'this' instance, which is
-                // everything to the left of a member.dot expression
+                // Get the expression that should be substituted for the 'this' instance, which is
+                // everything to the left of a member.dot expression.
                 switch (inlineCodeContext.TranslatedLeftSide)
                 {
                     case ITsMemberDotExpression memberDotExpression:
@@ -172,7 +172,7 @@ namespace Desalt.Core.Translation
                 }
             }
 
-            // find the translated parameter and use it for substitution
+            // Find the translated parameter and use it for substitution.
             int index = TryFindIndexOfParameter(parameterName, inlineCodeContext, out Diagnostic? diagnostic);
             if (diagnostic != null)
             {
@@ -190,7 +190,7 @@ namespace Desalt.Core.Translation
 
         private static string FindScriptNameOfType(string fullTypeName, InlineCodeContext inlineCodeContext)
         {
-            // try to resolve the type
+            // Try to resolve the type.
             TypeSyntax typeSyntax = SyntaxFactory.ParseTypeName(fullTypeName);
 
             if (typeSyntax == null)
@@ -224,31 +224,40 @@ namespace Desalt.Core.Translation
 
         private static string ExpandParams(string parameterName, InlineCodeContext inlineCodeContext)
         {
-            // find the index of the translated param
+            // Find the index of the translated param.
             int index = TryFindIndexOfParameter(parameterName, inlineCodeContext, out _);
 
-            // if there are no more parameters, then there's nothing to expand
+            // If there are no more parameters, then there's nothing to expand.
             if (index < 0)
             {
                 return string.Empty;
             }
 
-            // a parameter of the form '*rest' means to expand the parameter array
+            // A parameter of the form '*rest' means to expand the parameter array.
             if (!inlineCodeContext.MethodSymbol.Parameters[index].IsParams)
             {
                 inlineCodeContext.AddParseError($"Parameter '{parameterName}' is not a 'params' parameter.");
                 return parameterName;
             }
 
+            if (!(inlineCodeContext.TranslatedArgumentList.Arguments[^1].Expression is ITsArrayLiteral translatedArray))
+            {
+                inlineCodeContext.AddParseError($"Parameter '{parameterName}' does not correspond to an array.");
+                return parameterName;
+            }
+
             var builder = new StringBuilder();
-            foreach (ITsArgument translatedValue in inlineCodeContext.TranslatedArgumentList.Arguments.Skip(index))
+            foreach (ITsArrayElement? translatedValue in translatedArray.Elements)
             {
                 if (builder.Length > 0)
                 {
                     builder.Append(", ");
                 }
 
-                builder.Append(translatedValue.Expression.EmitAsString());
+                if (translatedValue != null)
+                {
+                    builder.Append(translatedValue.Element.EmitAsString());
+                }
             }
 
             return builder.ToString();
@@ -259,7 +268,7 @@ namespace Desalt.Core.Translation
             InlineCodeContext inlineCodeContext,
             [NotNullWhen(true)] out Diagnostic? diagnostic)
         {
-            // find the position of the parameter in the parameter list
+            // Find the position of the parameter in the parameter list.
             IParameterSymbol foundParameter =
                 inlineCodeContext.MethodSymbol.Parameters.FirstOrDefault(parameter => parameter.Name == parameterName);
             if (foundParameter == null)
@@ -270,7 +279,7 @@ namespace Desalt.Core.Translation
 
             int index = inlineCodeContext.MethodSymbol.Parameters.IndexOf(foundParameter);
 
-            // find the translated parameter and use it for substitution
+            // Find the translated parameter and use it for substitution.
             if (index >= inlineCodeContext.TranslatedArgumentList.Arguments.Length)
             {
                 diagnostic = inlineCodeContext.CreateParseError(

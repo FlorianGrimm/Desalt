@@ -110,7 +110,7 @@ export class MiscUtil {
     let usernameValidChars: { [key: string]: string } = {};
     let addCodes: (char: number, char: number) => void = (from: number, to: number) => {
       for (let i = from; i <= to; i++) {
-        let s: string = string.fromCharCode(i);
+        let s: string = string.fromCharCode([i]);
         usernameValidChars[s] = s;
       }
     };
