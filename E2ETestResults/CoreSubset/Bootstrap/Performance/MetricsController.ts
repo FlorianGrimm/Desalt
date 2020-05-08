@@ -232,7 +232,7 @@ export class MetricsController {
       }
     } else {
       newContext = new MetricsContext(MetricsController.instance.getNextContextID(), suite, description, extraInfo);
-      MetricsController.instance.contextStack.push([newContext]);
+      MetricsController.instance.contextStack.push(newContext);
     }
     return newContext;
   }
@@ -267,7 +267,7 @@ export class MetricsController {
     if (MetricsController.instance.eventLoggers.length > 0) {
       MetricsController.sendMetricToAllLoggers(evt);
     } else {
-      MetricsController.instance.eventBuffer.push([evt]);
+      MetricsController.instance.eventBuffer.push(evt);
     }
   }
 

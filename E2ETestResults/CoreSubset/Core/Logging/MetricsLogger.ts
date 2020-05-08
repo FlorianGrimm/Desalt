@@ -122,7 +122,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     if (this.eventBuffer.length >= MetricsLogger.maxEventBufferSize) {
       this.eventBuffer.shift();
     }
-    this.eventBuffer.push([evt]);
+    this.eventBuffer.push(evt);
     this.startProcessingTimer();
   }
 
@@ -315,7 +315,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
     let beaconStr: string = hostname;
     beaconStr += '?' + versionStr + '&' + payload;
     beaconImg.src = beaconStr;
-    this.beaconImages.push([beaconImg]);
+    this.beaconImages.push(beaconImg);
     if (this.beaconImages.length > MetricsLogger.maxBeaconElementArraySize) {
       this.beaconImages.shift();
     }
@@ -331,7 +331,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
       let index: number = 0;
       while (index < this.beaconImages.length) {
         if (this.beaconImages[index].complete) {
-          this.beaconImages.splice(index, 1, []);
+          this.beaconImages.splice(index, 1);
         } else {
           index++;
         }

@@ -617,8 +617,22 @@ namespace Desalt.Core.Translation
             {
                 var arguments = node.Arguments.Select(TranslateArgument).ToList();
 
-                if (SemanticModel.GetSymbolInfo(node.Parent).Symbol is IMethodSymbol methodSymbol &&
-                    methodSymbol.Parameters.LastOrDefault()?.IsParams == true)
+                // If the last argument is a `params` list, we need to do some special processing to convert the
+                // arguments to an array.
+                var methodSymbol = SemanticModel.GetSymbolInfo(node.Parent).Symbol as IMethodSymbol;
+                bool hasParamsArgument = methodSymbol?.Parameters.LastOrDefault()?.IsParams == true;
+                IScriptMethodSymbol? scriptMethodSymbol = null;
+                if (methodSymbol != null)
+                {
+                    ScriptSymbolTable.TryGetValue(methodSymbol, out scriptMethodSymbol);
+                }
+
+                // If the method is marked with [ExpandParams] the arguments should be translated
+                // normally. Well, there's one more caveat... if it also is marked with [InlineCode] then we ignore the
+                // [ExpandParams] attribute.
+                if (methodSymbol != null &&
+                    hasParamsArgument &&
+                    (scriptMethodSymbol?.InlineCode != null || scriptMethodSymbol?.ExpandParams == false))
                 {
                     int indexOfParams = methodSymbol.Parameters.Length - 1;
 

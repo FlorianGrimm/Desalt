@@ -82,7 +82,7 @@ export class Logger {
     for (const logAppender of Logger.appenders) {
       logAppender.clearFilters();
     }
-    Logger.filters.splice(0, Logger.filters.length, []);
+    Logger.filters.splice(0, Logger.filters.length);
   }
 
   /**
@@ -122,7 +122,7 @@ export class Logger {
    * Clears all appenders.
    */
   public static clearAppenders(): void {
-    Logger.appenders.splice(0, Logger.filters.length, []);
+    Logger.appenders.splice(0, Logger.filters.length);
   }
 
   /**
@@ -142,7 +142,7 @@ export class Logger {
     for (const filter of Logger.filters) {
       appender.addFilter(filter);
     }
-    Logger.appenders.push([appender]);
+    Logger.appenders.push(appender);
   }
 
   /**
@@ -152,7 +152,7 @@ export class Logger {
   public static removeAppender(appender: ILogAppender): void {
     let indexOfAppender: number = Logger.appenders.indexOf(appender);
     if (indexOfAppender > -1) {
-      Logger.appenders.splice(indexOfAppender, 1, []);
+      Logger.appenders.splice(indexOfAppender, 1);
     }
   }
 
@@ -268,7 +268,7 @@ export class Logger {
   }
 
   private static addFilter(filterFunc: (logger: Logger, loggerLevel: LoggerLevel) => boolean): void {
-    Logger.filters.push([filterFunc]);
+    Logger.filters.push(filterFunc);
     for (const logAppender of Logger.appenders) {
       logAppender.addFilter(filterFunc);
     }

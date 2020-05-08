@@ -66,7 +66,7 @@ export class NavigationMetricsCollector {
         for (const name of NavigationMetricsCollector.navigationMetricsOrder) {
           let metric: number = NavigationMetricsCollector.navMetrics[name];
           metric = (metric === 0 ? 0 : metric - start);
-          metricArray.push([metric]);
+          metricArray.push(metric);
         }
         let parameters: MetricsEventParameters = new MetricsEventParameters();
         let evt: MetricsEvent = new MetricsEvent(MetricsEventType.Navigation, MetricsSuites.Navigation, parameters);

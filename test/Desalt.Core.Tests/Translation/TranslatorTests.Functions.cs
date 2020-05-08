@@ -561,5 +561,117 @@ class A {
 }
 ");
         }
+
+        //// ===========================================================================================================
+        //// Method Invocations with [ExpandParams]
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task ExpandParams_method_invocations_with_a_params_array_should_NOT_create_an_array()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    public void WithParams(int number1, params int[] numbers) { }
+    public void Method()
+    {
+        WithParams(1);
+        WithParams(1, 2, 3);
+    }
+}
+",
+                @"
+class A {
+  public withParams(number1: number, numbers: number[]): void { }
+
+  public method(): void {
+    this.withParams(1);
+    this.withParams(1, 2, 3);
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task ExpandParams_ctor_invocations_with_a_params_array_should_create_an_array()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    public A(int number1, params int[] numbers) { }
+    public void Method()
+    {
+        var a = new A(1);
+        a = new A(1, 2, 3);
+    }
+}
+",
+                @"
+class A {
+  public constructor(number1: number, numbers: number[]) { }
+
+  public method(): void {
+    let a: A = new A(1);
+    a = new A(1, 2, 3);
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task
+            Method_invocations_with_ExpandParams_and_InlineCode_and_params_should_use_the_array_in_the_inline_code_expansion()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    [InlineCode(""inlineCode({numbers})"")]
+    public void WithParams(params int[] numbers) { }
+    public void Method()
+    {
+        WithParams(1, 2, 3);
+    }
+}
+",
+                @"
+class A {
+  public method(): void {
+    inlineCode([1, 2, 3]);
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task
+            Ctor_invocations_with_ExpandParams_InlineCode_and_params_should_use_the_array_in_the_inline_code_expansion()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    [InlineCode(""inlineCode({numbers})"")]
+    public A(params int[] numbers) { }
+    public void Method()
+    {
+        var a = new A(1, 2, 3);
+    }
+}
+",
+                @"
+class A {
+  public method(): void {
+    let a: A = inlineCode([1, 2, 3]);
+  }
+}
+");
+        }
     }
 }

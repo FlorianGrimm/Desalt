@@ -30,7 +30,7 @@ export class ConsoleLogAppender extends BaseLogAppender {
     }
     message = source.name + ': ' + message;
     let consoleArgs: any[] = [];
-    consoleArgs = consoleArgs.concat([message]).concat([args]);
+    consoleArgs = consoleArgs.concat(message).concat(args);
     try {
       (<any>Function.prototype).apply.call(this.getConsoleMethod(level), (<any>window).console, consoleArgs);
     } catch { }
