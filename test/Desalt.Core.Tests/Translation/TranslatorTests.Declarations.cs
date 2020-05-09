@@ -192,6 +192,26 @@ export type MyFunc = (x: number, y: string) => string;
 ");
         }
 
+        [Test]
+        public async Task Using_a_delegate_as_a_type_should_use_the_delegate_name()
+        {
+            await AssertTranslation(
+                @"
+public delegate string MyFunc(int x, string y);
+class C
+{
+    public void Method(MyFunc func) { }
+}
+",
+                @"
+export type MyFunc = (x: number, y: string) => string;
+
+class C {
+  public method(func: MyFunc): void { }
+}
+");
+        }
+
         //// ===========================================================================================================
         //// Method Declaration Tests
         //// ===========================================================================================================
