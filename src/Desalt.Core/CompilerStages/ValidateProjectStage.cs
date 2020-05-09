@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ValidateProjectStage.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -45,7 +45,7 @@ namespace Desalt.Core.CompilerStages
                 new NoPartialClassesValidator(),
             };
 
-            // run all of the validators in parallel
+            // Run all of the validators in parallel.
             var tasks = validators.Select(v => Task.Run(() => v.Validate(input), cancellationToken));
             IExtendedResult<bool>[] results = await Task.WhenAll(tasks);
 

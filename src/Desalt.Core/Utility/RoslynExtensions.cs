@@ -11,6 +11,7 @@ namespace Desalt.Core.Utility
     using System.Globalization;
     using System.Linq;
     using System.Threading;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Translation;
     using Desalt.TypeScriptAst.Ast;
@@ -117,7 +118,7 @@ namespace Desalt.Core.Utility
         /// </param>
         /// <returns>
         /// An <see cref="IEnumerable{INamedTypeSymbol}"/> of all of the declared type symbols in the
-        /// syntax tree..
+        /// syntax tree.
         /// </returns>
         public static IEnumerable<INamedTypeSymbol> GetAllDeclaredTypes(
             this CompilationUnitSyntax rootSyntax,
@@ -139,11 +140,7 @@ namespace Desalt.Core.Utility
                 }
             }
 
-            var query = rootSyntax.DescendantNodes()
-                .Select(GetDeclaredSymbol)
-                .Where(symbol => symbol != null)
-                .Select(x => x!);
-
+            var query = rootSyntax.DescendantNodes().Select(GetDeclaredSymbol).WhereNotNull();
             return query;
         }
     }

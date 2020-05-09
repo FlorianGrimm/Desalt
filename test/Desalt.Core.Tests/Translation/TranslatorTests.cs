@@ -62,8 +62,8 @@ class C {{
         /// </param>
         /// <param name="populateOptionsFunc">If provided, allows callers to adjust the options used for the translation.</param>
         /// <param name="extractApplicableTypeScriptSnippet">
-        /// If provided, allows callers to extract just the piece of translated TypeScript code that should be examined.
-        /// This is helpful when using a boilerplate class/method and you only care about the statements inside of the function.
+        /// If true, only the snippet part of the translated TypeScript code be examined. This is helpful when using a
+        /// boilerplate class/method and you only care about the statements inside of the function.
         /// </param>
         /// <param name="includeImports">
         /// Determines whether an imports section is emitted at the top of the TypeScript file.

@@ -254,15 +254,15 @@ namespace Desalt.Core.SymbolTables
 
         private static bool ShouldProcessMember(ISymbol member)
         {
-            // skip over compiler-generated stuff like auto-property backing fields, event add/remove
-            // functions, and property get/set methods
+            // Skip over compiler-generated stuff like auto-property backing fields, event add/remove
+            // functions, and property get/set methods.
             if (member.IsImplicitlyDeclared)
             {
                 return false;
             }
 
-            // include all methods except static constructors, property get/set methods, and event
-            // add/remove methods
+            // Include all methods except static constructors, property get/set methods, and event
+            // add/remove methods.
             if (member is IMethodSymbol methodSymbol)
             {
                 return !methodSymbol.MethodKind.IsOneOf(
@@ -273,8 +273,8 @@ namespace Desalt.Core.SymbolTables
                     MethodKind.EventRemove);
             }
 
-            // there's an apparent corruption in the NativeTypeDefs.TypeUtil assembly and this
-            // compiler-generated symbol is not valid - just skip it
+            // There's an apparent corruption in the NativeTypeDefs.TypeUtil assembly and this
+            // compiler-generated symbol is not valid - just skip it.
             if (member.ToDisplayString() == "System.TypeUtil.<>o__3")
             {
                 return false;
