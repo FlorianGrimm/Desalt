@@ -128,6 +128,26 @@ namespace Desalt.Core.Translation
                 }
             }
 
+            public override IEnumerable<ITsImplementationModuleElement> VisitDelegateDeclaration(
+                DelegateDeclarationSyntax node)
+            {
+                ITsIdentifier aliasName = Context.TranslateDeclarationIdentifier(node);
+                ITsCallSignature callSignature = FunctionTranslator.TranslateCallSignature(
+                    Context,
+                    node.ParameterList,
+                    node.TypeParameterList,
+                    node.ReturnType);
+
+                var translatedType = Factory.FunctionType(
+                    callSignature.TypeParameters,
+                    callSignature.Parameters,
+                    callSignature.ReturnType!);
+
+                ITsTypeAliasDeclaration translated = Factory.TypeAliasDeclaration(aliasName, translatedType);
+                ITsImplementationModuleElement exported = ExportIfNeeded(translated, node);
+                yield return exported;
+            }
+
             /// <summary>
             /// Converts the translated declaration to an exported declaration if the C# declaration is public.
             /// </summary>
@@ -139,9 +159,9 @@ namespace Desalt.Core.Translation
             /// </returns>
             private ITsImplementationModuleElement ExportIfNeeded(
                 ITsImplementationElement translatedDeclaration,
-                BaseTypeDeclarationSyntax node)
+                MemberDeclarationSyntax node)
             {
-                // Determine if this declaration should be exported
+                // Determine if this declaration should be exported.
                 INamedTypeSymbol symbol = Context.GetExpectedDeclaredSymbol<INamedTypeSymbol>(node);
                 if (symbol.DeclaredAccessibility != Accessibility.Public)
                 {

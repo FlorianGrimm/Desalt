@@ -165,6 +165,34 @@ class C extends B implements IA, IC {
         }
 
         //// ===========================================================================================================
+        //// Delegate Declaration Tests
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Delegate_declarations_should_be_translated_as_a_type_alias()
+        {
+            await AssertTranslation(
+                @"
+delegate string MyFunc(int x, string y);
+",
+                @"
+type MyFunc = (x: number, y: string) => string;
+");
+        }
+
+        [Test]
+        public async Task Public_delegate_declarations_should_be_translated_as_an_exported_type_alias()
+        {
+            await AssertTranslation(
+                @"
+public delegate string MyFunc(int x, string y);
+",
+                @"
+export type MyFunc = (x: number, y: string) => string;
+");
+        }
+
+        //// ===========================================================================================================
         //// Method Declaration Tests
         //// ===========================================================================================================
 
