@@ -420,7 +420,7 @@ interface I {
         public async Task
             Translate_should_choose_the_most_visible_accessor_when_differing_visibility_for_property_declarations()
         {
-            await AssertTranslationHasDiagnostics(
+            await AssertTranslation(
                 @"
 class A
 {
@@ -484,7 +484,7 @@ class A {
   }
 }
 ",
-                diagnostics =>
+                diagnosticsAssertionAction: diagnostics =>
                 {
                     diagnostics.Select(x => x.Id)
                         .Should()
