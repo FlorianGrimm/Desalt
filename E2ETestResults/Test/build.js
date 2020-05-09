@@ -7,7 +7,7 @@ const compilerBinariesPath = path.resolve(__dirname, '..', '..', 'test', 'Saltar
 function getSourceFiles() {
   const relativeFileNames = ['Test.cs'];
 
-  return relativeFileNames.map(file => path.normalize(file));
+  return relativeFileNames.map((file) => path.normalize(file));
 }
 
 function getReferenceAssemblies() {
@@ -21,14 +21,14 @@ function getReferenceAssemblies() {
   ];
 
   const runtimeAssemblyPath = path.resolve(compilerBinariesPath, 'Runtime');
-  return assemblies.map(assembly => path.resolve(runtimeAssemblyPath, assembly));
+  return assemblies.map((assembly) => path.resolve(runtimeAssemblyPath, assembly));
 }
 
 function getCommand() {
   const scexe = path.resolve(compilerBinariesPath, 'Cli', 'sc.dll');
   const options = `${isDebug ? '-debug' : ''} -w:0 -outasm:Test.dll -outscript:Test.js`;
   const refs = getReferenceAssemblies()
-    .map(ref => `-r:${ref}`)
+    .map((ref) => `-r:${ref}`)
     .join(' ');
   const sourceFiles = getSourceFiles().join(' ');
 
@@ -49,7 +49,7 @@ child_process.exec(getCommand(), { cwd: __dirname }, (error, stdout, stderr) => 
 console.log('Running TypeScript compiler...');
 
 child_process.exec(
-  `tsc --pretty --target ES2015 --module commonjs --lib es2015,dom --strict --alwaysStrict --noImplicitAny test.ts`,
+  `tsc --pretty --target es2015 --module commonjs --lib es2015,dom --strict --alwaysStrict --noImplicitAny test.ts`,
   { cwd: path.resolve(__dirname, 'ts') },
   (error, stdout, stderr) => {
     if (error) {
