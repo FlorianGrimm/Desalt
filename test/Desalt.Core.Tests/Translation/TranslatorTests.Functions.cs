@@ -673,5 +673,75 @@ class A {
 }
 ");
         }
+
+        [Test]
+        public async Task ExpandParams_on_the_interface_should_be_considered_when_invoking_an_implementing_method()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    [ExpandParams]
+    void WithExpandParams(int num, params int[] numbers);
+}
+
+class A : I
+{
+    public void WithExpandParams(int num, params int[] numbers) { }
+    public void Method()
+    {
+        WithExpandParams(1, 2, 3);
+    }
+}
+",
+                @"
+interface I {
+  withExpandParams(num: number, numbers: number[]): void;
+}
+
+class A implements I {
+  public withExpandParams(num: number, numbers: number[]): void { }
+
+  public method(): void {
+    this.withExpandParams(1, 2, 3);
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task ExpandParams_on_the_interface_should_trump_the_implementing_method()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    void NoInterfaceExpandParams(int num, params int[] numbers);
+}
+
+class A : I
+{
+    [ExpandParams]
+    public void NoInterfaceExpandParams(int num, params int[] numbers) { }
+    public void Method()
+    {
+        NoInterfaceExpandParams(1, 2, 3);
+    }
+}
+",
+                @"
+interface I {
+  noInterfaceExpandParams(num: number, numbers: number[]): void;
+}
+
+class A implements I {
+  public noInterfaceExpandParams(num: number, numbers: number[]): void { }
+
+  public method(): void {
+    this.noInterfaceExpandParams(1, [2, 3]);
+  }
+}
+");
+        }
     }
 }

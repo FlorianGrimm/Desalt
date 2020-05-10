@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExpressionTranslator.Visitor.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -13,6 +13,7 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
+    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
     using Microsoft.CodeAnalysis;
@@ -631,7 +632,17 @@ namespace Desalt.Core.Translation
                 IScriptMethodSymbol? scriptMethodSymbol = null;
                 if (methodSymbol != null)
                 {
-                    ScriptSymbolTable.TryGetValue(methodSymbol, out scriptMethodSymbol);
+                    // If this method implements an interface, we use the interface's [ExpandParams] (or lack of)
+                    // instead of the method's.
+                    if (methodSymbol.TryFindInterfaceMethodOfImplementingMethod(
+                        out IMethodSymbol? interfaceMethodSymbol))
+                    {
+                        ScriptSymbolTable.TryGetValue(interfaceMethodSymbol, out scriptMethodSymbol);
+                    }
+                    else
+                    {
+                        ScriptSymbolTable.TryGetValue(methodSymbol, out scriptMethodSymbol);
+                    }
                 }
 
                 // If the method is marked with [ExpandParams] the arguments should be translated
