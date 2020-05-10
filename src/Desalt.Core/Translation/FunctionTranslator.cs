@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
@@ -50,7 +49,9 @@ namespace Desalt.Core.Translation
                 : TranslateParameterList(context, parameterListNode);
 
             ITsType? returnType = null;
-            ITypeSymbol? returnTypeSymbol = returnTypeNode?.GetTypeSymbol(context.SemanticModel);
+            ITypeSymbol? returnTypeSymbol = returnTypeNode != null
+                ? context.GetExpectedTypeSymbol(returnTypeNode)
+                : null;
             if (returnTypeNode != null && returnTypeSymbol != null)
             {
                 returnType = TypeTranslator.TranslateTypeSymbol(context, returnTypeSymbol, returnTypeNode.GetLocation);
@@ -123,7 +124,7 @@ namespace Desalt.Core.Translation
             }
             else
             {
-                ITypeSymbol parameterTypeSymbol = node.Type.GetTypeSymbol(context.SemanticModel);
+                ITypeSymbol parameterTypeSymbol = context.GetExpectedTypeSymbol(node.Type);
                 parameterType = TypeTranslator.TranslateTypeSymbol(
                     context,
                     parameterTypeSymbol,
@@ -170,7 +171,7 @@ namespace Desalt.Core.Translation
         private static ITsType[] VisitTypeArgumentList(TranslationContext context, TypeArgumentListSyntax node)
         {
             var translated = from typeSyntax in node.Arguments
-                             let typeSymbol = typeSyntax.GetTypeSymbol(context.SemanticModel)
+                             let typeSymbol = context.GetExpectedTypeSymbol(typeSyntax)
                              where typeSymbol != null
                              select TypeTranslator.TranslateTypeSymbol(context, typeSymbol, typeSyntax.GetLocation);
             return translated.ToArray();

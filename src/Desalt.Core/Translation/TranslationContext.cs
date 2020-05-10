@@ -19,6 +19,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -289,6 +290,20 @@ namespace Desalt.Core.Translation
             }
 
             return scriptSymbol;
+        }
+
+        /// <summary>
+        /// Extracts the semantic type symbol from the specified type syntax node.
+        /// </summary>
+        public ITypeSymbol GetExpectedTypeSymbol(TypeSyntax typeSyntax)
+        {
+            ITypeSymbol? typeSymbol = SemanticModel.GetTypeInfo(typeSyntax).Type;
+            if (typeSymbol == null)
+            {
+                ReportInternalError($"Type symbol for syntax node '{typeSyntax}' should have been defined", typeSyntax);
+            }
+
+            return typeSymbol;
         }
 
         /// <summary>

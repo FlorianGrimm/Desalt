@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExpressionTranslator.Visitor.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -13,7 +13,6 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
     using Microsoft.CodeAnalysis;
@@ -142,7 +141,7 @@ namespace Desalt.Core.Translation
             {
                 ITsType castType = TypeTranslator.TranslateTypeSymbol(
                     Context,
-                    node.Type.GetTypeSymbol(SemanticModel),
+                    Context.GetExpectedTypeSymbol(node.Type),
                     node.Type.GetLocation);
 
                 var expression = Visit(node.Expression);
@@ -164,7 +163,7 @@ namespace Desalt.Core.Translation
             {
                 ITsType type = TypeTranslator.TranslateTypeSymbol(
                     Context,
-                    node.Type.GetTypeSymbol(SemanticModel),
+                    Context.GetExpectedTypeSymbol(node.Type),
                     node.Type.GetLocation);
 
                 ITsIdentifier translated = Factory.Identifier(type.EmitAsString());
@@ -220,7 +219,7 @@ namespace Desalt.Core.Translation
             public override ITsExpression VisitGenericName(GenericNameSyntax node)
             {
                 var typeArguments = (from typeSyntax in node.TypeArgumentList.Arguments
-                                     let typeSymbol = typeSyntax.GetTypeSymbol(SemanticModel)
+                                     let typeSymbol = Context.GetExpectedTypeSymbol(typeSyntax)
                                      where typeSymbol != null
                                      select TypeTranslator.TranslateTypeSymbol(
                                          Context,
@@ -396,7 +395,7 @@ namespace Desalt.Core.Translation
             {
                 ITsType translatedType = TypeTranslator.TranslateTypeSymbol(
                     Context,
-                    node.Type.GetTypeSymbol(SemanticModel),
+                    Context.GetExpectedTypeSymbol(node.Type),
                     node.Type.GetLocation);
 
                 ITsCallExpression translated = Factory.Call(

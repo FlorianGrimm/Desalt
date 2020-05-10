@@ -12,7 +12,6 @@ namespace Desalt.Core.Translation
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
     using Desalt.Core.SymbolTables;
-    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -120,7 +119,7 @@ namespace Desalt.Core.Translation
                 }
 
                 ITsIdentifier propertyName = Context.TranslateDeclarationIdentifier(node);
-                ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(SemanticModel);
+                ITypeSymbol typeSymbol = Context.GetExpectedTypeSymbol(node.Type);
                 ITsType propertyType = TypeTranslator.TranslateTypeSymbol(Context, typeSymbol, node.Type.GetLocation);
 
                 if (node.AccessorList == null)

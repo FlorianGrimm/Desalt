@@ -77,7 +77,7 @@ namespace Desalt.Core.Translation
 
                     ITsType typeAnnotation = TypeTranslator.TranslateTypeSymbol(
                         Context,
-                        node.Declaration.Type.GetTypeSymbol(SemanticModel),
+                        Context.GetExpectedTypeSymbol(node.Declaration.Type),
                         node.Declaration.Type.GetLocation);
 
                     ITsExpression? initializer = null;
@@ -267,7 +267,7 @@ namespace Desalt.Core.Translation
                 }
 
                 ITsIdentifier propertyName = Context.TranslateDeclarationIdentifier(node);
-                ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(SemanticModel);
+                ITypeSymbol typeSymbol = Context.GetExpectedTypeSymbol(node.Type);
                 ITsType propertyType = TypeTranslator.TranslateTypeSymbol(Context, typeSymbol, node.Type.GetLocation);
 
                 IPropertySymbol propertySymbol = SemanticModel.GetDeclaredSymbol(node);

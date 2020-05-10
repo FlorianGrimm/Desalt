@@ -9,7 +9,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Declarations;
     using Microsoft.CodeAnalysis;
@@ -36,7 +35,7 @@ namespace Desalt.Core.Translation
             // Get the type of all of the declarations.
             ITsType type = TypeTranslator.TranslateTypeSymbol(
                 Context,
-                node.Declaration.Type.GetTypeSymbol(SemanticModel),
+                Context.GetExpectedTypeSymbol(node.Declaration.Type),
                 node.Declaration.Type.GetLocation);
 
             // Translate all of the VariableDeclaratorSyntax nodes.

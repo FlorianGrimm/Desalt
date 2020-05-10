@@ -62,14 +62,6 @@ namespace Desalt.Core.Utility
             return symbol.ToDisplayString(s_symbolDisplayFormat);
         }
 
-        /// <summary>
-        /// Extracts the semantic type symbol from the specified type syntax node.
-        /// </summary>
-        public static ITypeSymbol GetTypeSymbol(this TypeSyntax typeSyntax, SemanticModel semanticModel)
-        {
-            return semanticModel.GetTypeInfo(typeSyntax).Type!;
-        }
-
         public static bool IsInterfaceType(this ITypeSymbol symbol)
         {
             return symbol?.TypeKind == TypeKind.Interface;
