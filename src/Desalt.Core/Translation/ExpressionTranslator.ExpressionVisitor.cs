@@ -378,7 +378,8 @@ namespace Desalt.Core.Translation
             /// Called when the visitor visits a ImplicitArrayCreationExpressionSyntax node.
             /// </summary>
             /// <returns>An <see cref="ITsArrayLiteral"/>.</returns>
-            public override ITsExpression VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+            public override ITsExpression VisitImplicitArrayCreationExpression(
+                ImplicitArrayCreationExpressionSyntax node)
             {
                 var elements = node.Initializer.Expressions.Select(Visit).ToArray();
                 ITsArrayLiteral translated = Factory.Array(elements);
@@ -389,7 +390,8 @@ namespace Desalt.Core.Translation
             /// Called when the visitor visits a DefaultExpressionSyntax node.
             /// </summary>
             /// <returns>
-            /// An <see cref="ITsCallExpression"/>, since `default(T)` gets translated as a call to `ss.getDefaultValue(T)`
+            /// An <see cref="ITsCallExpression"/>, since `default(T)` gets translated as a call to
+            /// `ss.getDefaultValue(T)`.
             /// </returns>
             public override ITsExpression VisitDefaultExpression(DefaultExpressionSyntax node)
             {
@@ -503,8 +505,14 @@ namespace Desalt.Core.Translation
                 }
 
                 // Try to adapt the method if it's an extension method (convert it from `x.Extension()` to
-                // `ExtensionClass.Extension(x)`. This must be done first before translating [InlineCode] or [ScriptSkip] methods.
-                ExtensionMethodTranslator.TryAdaptMethodInvocation(Context, node, ref methodSymbol, ref leftSide, ref arguments);
+                // `ExtensionClass.Extension(x)`. This must be done first before translating [InlineCode] or
+                // [ScriptSkip] methods.
+                ExtensionMethodTranslator.TryAdaptMethodInvocation(
+                    Context,
+                    node,
+                    ref methodSymbol,
+                    ref leftSide,
+                    ref arguments);
 
                 // Check [ScriptSkip] before [InlineCode]. If a method is marked with both, [ScriptSkip] takes precedence
                 // and there's no need to use [InlineCode].
@@ -599,8 +607,8 @@ namespace Desalt.Core.Translation
             }
 
             /// <summary>
-            /// Called when the visitor visits a ArrowExpressionClauseSyntax node, which is the right side of the arrow in a
-            /// property or method body expression.
+            /// Called when the visitor visits a ArrowExpressionClauseSyntax node, which is the right side of the arrow
+            /// in a property or method body expression.
             /// </summary>
             /// <returns>An <see cref="ITsExpression"/>.</returns>
             public override ITsExpression VisitArrowExpressionClause(ArrowExpressionClauseSyntax node)
@@ -608,9 +616,9 @@ namespace Desalt.Core.Translation
                 return VisitSubExpression(node.Expression);
             }
 
-            //// ===========================================================================================================
+            //// =======================================================================================================
             //// Arguments and Parameters
-            //// ===========================================================================================================
+            //// =======================================================================================================
 
             private ITsArgumentList TranslateArgumentList(ArgumentListSyntax node)
             {
