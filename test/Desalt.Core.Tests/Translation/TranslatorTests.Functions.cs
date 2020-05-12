@@ -584,7 +584,7 @@ class A
 ",
                 @"
 class A {
-  public withParams(number1: number, numbers: number[]): void { }
+  public withParams(number1: number, ...numbers: number[]): void { }
 
   public method(): void {
     this.withParams(1);
@@ -612,7 +612,7 @@ class A
 ",
                 @"
 class A {
-  public constructor(number1: number, numbers: number[]) { }
+  public constructor(number1: number, ...numbers: number[]) { }
 
   public method(): void {
     let a: A = new A(1);
@@ -696,11 +696,11 @@ class A : I
 ",
                 @"
 interface I {
-  withExpandParams(num: number, numbers: number[]): void;
+  withExpandParams(num: number, ...numbers: number[]): void;
 }
 
 class A implements I {
-  public withExpandParams(num: number, numbers: number[]): void { }
+  public withExpandParams(num: number, ...numbers: number[]): void { }
 
   public method(): void {
     this.withExpandParams(1, 2, 3);

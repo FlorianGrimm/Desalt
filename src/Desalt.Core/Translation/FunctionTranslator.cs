@@ -9,9 +9,12 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Desalt.Core.SymbolTables;
+    using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -94,13 +97,22 @@ namespace Desalt.Core.Translation
                 {
                     requiredParameters.Add(requiredParameter);
                 }
+                else if (parameter is ITsOptionalParameter optionalParameter)
+                {
+                    optionalParameters.Add(optionalParameter);
+                }
+                else if (parameter is ITsRestParameter restParam)
+                {
+                    restParameter = restParam;
+                }
                 else
                 {
-                    optionalParameters.Add((ITsOptionalParameter)parameter);
+                    context.ReportInternalError(
+                        $"Unknown translated parameter type: {parameter.GetType().Name}.",
+                        parameterNode);
                 }
             }
 
-            // ReSharper disable once ExpressionIsAlwaysNull
             ITsParameterList parameterList = Factory.ParameterList(
                 requiredParameters,
                 optionalParameters,
@@ -111,7 +123,10 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Called when the visitor visits a ParameterSyntax node.
         /// </summary>
-        /// <returns>Either a <see cref="ITsBoundRequiredParameter"/> or a <see cref="ITsBoundOptionalParameter"/>.</returns>
+        /// <returns>
+        /// One of the following: <see cref="ITsBoundRequiredParameter"/> for required parameters, <see
+        /// cref="ITsBoundOptionalParameter"/> for optional parameters, or <see cref="ITsRestParameter"/> for a rest parameter.
+        /// </returns>
         private static ITsAstNode TranslateParameter(TranslationContext context, ParameterSyntax node)
         {
             ITsIdentifier parameterName = Factory.Identifier(node.Identifier.Text);
@@ -131,14 +146,8 @@ namespace Desalt.Core.Translation
                     () => node.Type.GetLocation());
             }
 
-            ITsAstNode parameter;
-
             // Check for default parameter values.
-            if (node.Default == null)
-            {
-                parameter = Factory.BoundRequiredParameter(parameterName, parameterType);
-            }
-            else
+            if (node.Default != null)
             {
                 IExpressionTranslation initializer = ExpressionTranslator.Translate(context, node.Default.Value);
                 if (initializer.AdditionalStatementsRequiredBeforeExpression.Any())
@@ -148,10 +157,60 @@ namespace Desalt.Core.Translation
                         node.Default);
                 }
 
-                parameter = Factory.BoundOptionalParameter(parameterName, parameterType, initializer.Expression);
+                ITsBoundOptionalParameter optionalParam = Factory.BoundOptionalParameter(
+                    parameterName,
+                    parameterType,
+                    initializer.Expression);
+                return optionalParam;
             }
 
-            return parameter;
+            // For 'params' arguments with [ExpandParams], use a TypeScript 'rest' operator:
+            // `Method(params int[] args)` => `method(...args: number[])`.
+            bool isParamsArg = node.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.ParamsKeyword));
+            if (isParamsArg)
+            {
+                // node.Parent is the ParameterSyntax node; node.Parent.Parent is the method/delegate/operator
+                // declaration that contains the parameter list.
+                SyntaxNode methodOrDelegateNode = node.Parent.Parent;
+                ISymbol methodOrDelegateSymbol = context.SemanticModel.GetDeclaredSymbol(methodOrDelegateNode);
+                bool expandParams = false;
+
+                if (methodOrDelegateSymbol is INamedTypeSymbol delegateSymbol &&
+                    delegateSymbol.DelegateInvokeMethod != null)
+                {
+                    expandParams = context.GetExpectedDeclaredScriptSymbol<IScriptDelegateSymbol>(methodOrDelegateNode)
+                        .ExpandParams;
+                }
+                else if (methodOrDelegateSymbol is IMethodSymbol methodSymbol)
+                {
+                    // If this method implements an interface, we use the interface's [ExpandParams] (or lack of)
+                    // instead of the method's.
+                    IScriptMethodSymbol? scriptMethodSymbol =
+                        context.GetExpectedDeclaredScriptSymbol<IScriptMethodSymbol>(
+                            methodSymbol.TryFindInterfaceMethodOfImplementingMethod(
+                                out IMethodSymbol? interfaceMethodSymbol)
+                                ? interfaceMethodSymbol
+                                : methodSymbol,
+                            methodOrDelegateNode);
+
+                    expandParams = scriptMethodSymbol?.ExpandParams == true;
+                }
+                else
+                {
+                    context.ReportInternalError(
+                        $"Unknown symbol type '{methodOrDelegateSymbol.Kind}' for parameter node '{node}'.",
+                        node);
+                }
+
+                if (expandParams)
+                {
+                    ITsRestParameter restParameter = Factory.RestParameter(parameterName, parameterType);
+                    return restParameter;
+                }
+            }
+
+            ITsBoundRequiredParameter requiredParam = Factory.BoundRequiredParameter(parameterName, parameterType);
+            return requiredParam;
         }
 
         public static ITsTypeParameters TranslateTypeParameterList(TypeParameterListSyntax node)
