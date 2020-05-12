@@ -41,11 +41,11 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitRestParameter(this);
         }
 
-        public override string CodeDisplay => $"... {ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
+        public override string CodeDisplay => $"...{ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
 
         protected override void EmitInternal(Emitter emitter)
         {
-            emitter.Write("... ");
+            emitter.Write("...");
             ParameterName.Emit(emitter);
             ParameterType?.EmitOptionalTypeAnnotation(emitter);
         }

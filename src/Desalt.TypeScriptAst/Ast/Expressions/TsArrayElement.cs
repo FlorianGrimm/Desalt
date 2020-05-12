@@ -45,13 +45,13 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArrayElement(this);
         }
 
-        public override string CodeDisplay => (IsSpreadElement ? "... " : "") + Element.CodeDisplay;
+        public override string CodeDisplay => (IsSpreadElement ? "..." : "") + Element.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {
             if (IsSpreadElement)
             {
-                emitter.Write("... ");
+                emitter.Write("...");
             }
 
             Element.Emit(emitter);

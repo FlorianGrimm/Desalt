@@ -120,7 +120,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         [Test]
         public void Emit_array_literals_with_spread_operator()
         {
-            VerifyOutput(Factory.Array(Factory.ArrayElement(s_y, isSpreadElement: true)), "[... y]");
+            VerifyOutput(Factory.Array(Factory.ArrayElement(s_y, isSpreadElement: true)), "[...y]");
         }
 
         [Test]
