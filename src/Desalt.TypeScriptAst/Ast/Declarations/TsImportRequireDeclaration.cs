@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"import {Name} = require({Require});";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("import ");
             Name.Emit(emitter);

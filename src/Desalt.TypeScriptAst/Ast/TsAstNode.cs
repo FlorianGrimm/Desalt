@@ -150,7 +150,7 @@ namespace Desalt.TypeScriptAst.Ast
                 trivia.Emit(emitter);
             }
 
-            EmitInternal(emitter);
+            EmitContent(emitter);
 
             foreach (ITsAstTriviaNode trivia in TrailingTrivia)
             {
@@ -202,10 +202,11 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>. This will be called after the
+        /// leading trivia has been emitted and before the trailing trivia.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        protected abstract void EmitInternal(Emitter emitter);
+        protected abstract void EmitContent(Emitter emitter);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

@@ -41,7 +41,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"from {Module}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("from ");
             Module.Emit(emitter);

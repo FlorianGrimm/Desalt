@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"{VariableName}{VariableType?.OptionalTypeAnnotation()}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             VariableName.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);

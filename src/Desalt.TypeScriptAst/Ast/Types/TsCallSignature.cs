@@ -47,7 +47,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType?.OptionalTypeAnnotation()}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             TypeParameters?.Emit(emitter);
             emitter.Write("(");

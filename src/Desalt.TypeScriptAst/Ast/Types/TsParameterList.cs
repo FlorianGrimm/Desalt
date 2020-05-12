@@ -60,7 +60,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             (OptionalParameters.Length > 0 && RestParameter != null ? ", " : "") +
             RestParameter?.CodeDisplay;
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (RequiredParameters.Length > 0)
             {

@@ -47,9 +47,9 @@ namespace Desalt.TypeScriptAst.Ast
         public override string CodeDisplay =>
             base.CodeDisplay + (TypeArguments.Length > 0 ? $"<{TypeArguments.ToElidedList()}>" : "");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
-            base.EmitInternal(emitter);
+            base.EmitContent(emitter);
 
             if (TypeArguments.Length > 0)
             {

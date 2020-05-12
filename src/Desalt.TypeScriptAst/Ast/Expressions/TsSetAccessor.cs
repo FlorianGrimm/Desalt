@@ -55,7 +55,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             $"set {PropertyName}({ParameterName}{ParameterType?.OptionalTypeAnnotation()}) " +
             $"{{ {FunctionBody.ToElidedList()} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("set ");
             PropertyName.Emit(emitter);

@@ -48,7 +48,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
             (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (ExtendsClause != null)
             {

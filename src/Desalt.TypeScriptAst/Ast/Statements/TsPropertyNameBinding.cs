@@ -44,7 +44,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public override string CodeDisplay => $"{PropertyName}: {BindingElement}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             PropertyName.Emit(emitter);
             emitter.Write(": ");

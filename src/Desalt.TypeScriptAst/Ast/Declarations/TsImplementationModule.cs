@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"{GetType().Name}, Elements.Length = {Elements.Length}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(Elements, indent: false, itemDelimiter: emitter.Options.Newline);
         }

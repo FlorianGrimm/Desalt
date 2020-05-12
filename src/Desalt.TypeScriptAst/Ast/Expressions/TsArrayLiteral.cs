@@ -42,7 +42,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }

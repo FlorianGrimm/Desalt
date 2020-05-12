@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsEnumDeclaration.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -51,7 +51,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override string CodeDisplay =>
             (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (IsConst)
             {

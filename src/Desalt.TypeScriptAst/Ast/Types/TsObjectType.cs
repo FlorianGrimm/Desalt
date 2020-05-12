@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             bool multiLine = !ForceSingleLine;
             emitter.WriteList(

@@ -108,7 +108,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             $"{FunctionName}{CallSignature.CodeDisplay}" +
             (FunctionBody?.ToElidedList() ?? ";");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             emitter.Write(IsStatic ? "static " : "");

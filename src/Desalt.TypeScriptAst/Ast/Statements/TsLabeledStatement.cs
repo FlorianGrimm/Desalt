@@ -50,7 +50,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public override string CodeDisplay => $"{Label}: {Statement?.CodeDisplay}{FunctionDeclaration?.CodeDisplay}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             int currentIndentLevel = emitter.IndentLevel;
 

@@ -48,7 +48,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public override string CodeDisplay => Value ? "true" : "false";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(CodeDisplay);
         }

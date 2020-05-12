@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"{Name}{Value?.OptionalAssignment()}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             Name.Emit(emitter);
             Value?.EmitOptionalAssignment(emitter);

@@ -72,7 +72,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public override string CodeDisplay => Text;
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(Text);
         }

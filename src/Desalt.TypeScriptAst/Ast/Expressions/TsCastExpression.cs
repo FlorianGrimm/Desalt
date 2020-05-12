@@ -46,7 +46,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
 
         public override string CodeDisplay => $"<{CastType}>{Expression}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("<");
             CastType.Emit(emitter);

@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public override string CodeDisplay =>
             (TypeArguments.IsEmpty ? "" : $"<{TypeArguments.ToElidedList()}>") + $"({Arguments.ToElidedList()})";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (!TypeArguments.IsEmpty)
             {

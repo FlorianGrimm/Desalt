@@ -49,7 +49,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 
         public override string CodeDisplay => $"type {AliasName}{TypeParameters} = {Type};";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("type ");
             AliasName.Emit(emitter);

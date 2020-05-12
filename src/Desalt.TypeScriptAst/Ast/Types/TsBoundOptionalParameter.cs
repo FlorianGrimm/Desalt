@@ -56,7 +56,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             ParameterType?.OptionalTypeAnnotation() +
             (Initializer != null ? $" = {Initializer}" : "");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             Modifier.EmitOptional(emitter);
 

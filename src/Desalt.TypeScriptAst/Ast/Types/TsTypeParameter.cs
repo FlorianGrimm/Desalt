@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
 
         public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

@@ -46,7 +46,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         public override string CodeDisplay =>
             TypeArguments.Length == 0 ? TypeName.CodeDisplay : $"{TypeName}<{TypeArguments.ToElidedList()}>";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             TypeName.Emit(emitter);
 

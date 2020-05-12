@@ -55,7 +55,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             (IsOptional ? "?" : "") +
             PropertyType?.OptionalTypeAnnotation();
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (IsReadOnly)
             {

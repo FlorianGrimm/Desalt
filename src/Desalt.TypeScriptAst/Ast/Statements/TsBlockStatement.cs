@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
 
         public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteBlock(Statements, skipNewlines: true);
         }

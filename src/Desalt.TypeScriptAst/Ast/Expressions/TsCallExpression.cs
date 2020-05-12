@@ -89,7 +89,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public override string CodeDisplay =>
             (Kind == CallKind.New ? "new " : "") + $"{LeftSide}{ArgumentList}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (Kind == CallKind.New)
             {

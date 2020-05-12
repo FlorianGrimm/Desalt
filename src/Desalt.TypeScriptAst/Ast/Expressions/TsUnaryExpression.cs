@@ -70,7 +70,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             }
         }
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             switch (Operator)
             {

@@ -45,7 +45,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public override string CodeDisplay =>
             "[" + Elements.ToElidedList() + (RestElement != null ? $", ... {RestElement}" : "") + "]";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (RestElement != null)
             {

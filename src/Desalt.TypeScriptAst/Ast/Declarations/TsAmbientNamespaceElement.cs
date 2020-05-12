@@ -62,7 +62,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             HasExportKeyword ? "export " : "" +
             $"{Declaration?.CodeDisplay}{InterfaceDeclaration?.CodeDisplay}{ImportAliasDeclaration?.CodeDisplay}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (HasExportKeyword)
             {

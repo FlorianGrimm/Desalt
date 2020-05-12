@@ -46,7 +46,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public override string CodeDisplay =>
             $"if ({IfCondition}) {IfStatement}" + (ElseStatement != null ? $" else {ElseStatement}" : "");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("if (");
             IfCondition.Emit(emitter);

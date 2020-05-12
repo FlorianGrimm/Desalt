@@ -59,7 +59,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
             }
         }
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             ParameterName.Emit(emitter);
             if (IsOptional)

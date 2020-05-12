@@ -76,7 +76,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             }
         }
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("function");
 

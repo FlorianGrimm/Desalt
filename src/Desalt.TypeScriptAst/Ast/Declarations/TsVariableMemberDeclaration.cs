@@ -111,7 +111,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             Initializer?.OptionalAssignment() +
             ";";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
             emitter.Write(IsStatic ? "static " : "");

@@ -59,7 +59,7 @@ namespace Desalt.TypeScriptAst.Ast
             }
         }
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             foreach (ITsIdentifier left in Left)
             {

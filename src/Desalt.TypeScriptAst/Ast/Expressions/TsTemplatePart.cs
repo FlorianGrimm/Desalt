@@ -43,7 +43,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public override string CodeDisplay =>
             (Template ?? "") + (Expression != null ? "${" + Expression + "}" : "");
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (Template != null)
             {

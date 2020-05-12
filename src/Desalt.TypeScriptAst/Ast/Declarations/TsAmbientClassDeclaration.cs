@@ -55,7 +55,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override string CodeDisplay =>
             $"class {ClassName}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("class ");
             ClassName.Emit(emitter);

@@ -52,7 +52,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             $"get {PropertyName}(){PropertyType?.OptionalTypeAnnotation()} " +
             $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("get ");
             PropertyName.Emit(emitter);

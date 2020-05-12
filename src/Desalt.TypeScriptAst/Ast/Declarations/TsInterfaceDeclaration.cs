@@ -56,7 +56,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             $"interface {InterfaceName}{TypeParameters}" +
             (ExtendsClause.IsEmpty ? "" : $" extends {ExtendsClause.ToElidedList()}") + Body;
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("interface ");
             InterfaceName.Emit(emitter);

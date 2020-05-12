@@ -62,7 +62,7 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public override string CodeDisplay =>
             Expression == null ? "default: " : "case {Expression}: " + $"{Statements.ToElidedList()}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             if (Expression != null)
             {

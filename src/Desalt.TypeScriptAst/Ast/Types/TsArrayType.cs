@@ -42,7 +42,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         public override string CodeDisplay =>
             Type is ITsFunctionType ? $"Array<{Type.CodeDisplay}>" : $"{Type.CodeDisplay}[]";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             // special case: if we have an array of function types, we need to use the Array<T>
             // syntax instead of brackets, otherwise it will be (x: string) => bool[], which is a

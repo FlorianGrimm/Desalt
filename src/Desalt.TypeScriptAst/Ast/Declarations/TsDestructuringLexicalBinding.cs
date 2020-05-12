@@ -49,7 +49,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override string CodeDisplay =>
             $"{BindingPattern}{VariableType?.OptionalTypeAnnotation()}{Initializer?.OptionalAssignment()}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             BindingPattern.Emit(emitter);
             VariableType?.EmitOptionalTypeAnnotation(emitter);

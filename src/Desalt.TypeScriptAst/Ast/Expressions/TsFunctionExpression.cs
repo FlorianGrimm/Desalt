@@ -54,7 +54,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             CallSignature.CodeDisplay +
             $" {{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
 
-        protected override void EmitInternal(Emitter emitter)
+        protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("function");
 
