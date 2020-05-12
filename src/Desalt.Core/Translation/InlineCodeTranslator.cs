@@ -256,7 +256,7 @@ namespace Desalt.Core.Translation
 
                 if (translatedValue != null)
                 {
-                    builder.Append(translatedValue.Element.EmitAsString());
+                    builder.Append(translatedValue.Expression.EmitAsString());
                 }
             }
 

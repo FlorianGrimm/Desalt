@@ -94,7 +94,7 @@ namespace Desalt.Core.Translation
             ITsExpression[] translatedArguments =
                 translatedArgumentList.Arguments.Length == 1 &&
                 translatedArgumentList.Arguments[0].Expression is ITsArrayLiteral array
-                    ? array.Elements.Select(x => x?.Element).WhereNotNull().ToArray()
+                    ? array.Elements.Select(x => x?.Expression).WhereNotNull().ToArray()
                     : translatedArgumentList.Arguments.Select(x => x.Expression).ToArray();
 
             if (argCount != translatedArguments.Length)

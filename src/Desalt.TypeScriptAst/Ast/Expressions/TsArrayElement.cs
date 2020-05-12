@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScriptAst.Ast.Expressions
 {
-    using System;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -19,9 +18,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Constructors
         //// ===========================================================================================================
 
-        public TsArrayElement(ITsExpression element, bool isSpreadElement = false)
+        public TsArrayElement(ITsExpression expression, bool isSpreadElement = false)
         {
-            Element = element ?? throw new ArgumentNullException(nameof(element));
+            Expression = expression;
             IsSpreadElement = isSpreadElement;
         }
 
@@ -29,10 +28,10 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         //// Properties
         //// ===========================================================================================================
 
-        public ITsExpression Element { get; }
+        public ITsExpression Expression { get; }
 
         /// <summary>
-        /// Indicates whether the <see cref="ITsArrayElement.Element"/> is preceded by a spread operator '...'.
+        /// Indicates whether the <see cref="ITsArrayElement.Expression"/> is preceded by a spread operator '...'.
         /// </summary>
         public bool IsSpreadElement { get; }
 
@@ -45,7 +44,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArrayElement(this);
         }
 
-        public override string CodeDisplay => (IsSpreadElement ? "..." : "") + Element.CodeDisplay;
+        public override string CodeDisplay => (IsSpreadElement ? "..." : "") + Expression.CodeDisplay;
 
         protected override void EmitInternal(Emitter emitter)
         {
@@ -54,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
                 emitter.Write("...");
             }
 
-            Element.Emit(emitter);
+            Expression.Emit(emitter);
         }
     }
 }
