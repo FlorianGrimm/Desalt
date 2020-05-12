@@ -9,6 +9,8 @@ namespace Desalt.Core.Translation
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
@@ -87,7 +89,15 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
-            if (argCount != translatedArgumentList.Arguments.Length)
+            // The translated argument list may be an array. In which case, let's expand it so the rest of the code
+            // below simply works on a list of arguments.
+            ITsExpression[] translatedArguments =
+                translatedArgumentList.Arguments.Length == 1 &&
+                translatedArgumentList.Arguments[0].Expression is ITsArrayLiteral array
+                    ? array.Elements.Select(x => x?.Expression).WhereNotNull().ToArray()
+                    : translatedArgumentList.Arguments.Select(x => x.Expression).ToArray();
+
+            if (argCount != translatedArguments.Length)
             {
                 context.ReportInternalError(
                     "The translated argument list count should have been equal to the node's argument list count",
@@ -100,11 +110,11 @@ namespace Desalt.Core.Translation
             var propertyDefinitions = new List<ITsPropertyDefinition>();
             for (int i = 0; i < argCount; i += 2)
             {
-                ITsExpression key = translatedArgumentList.Arguments[i].Expression;
-                ITsExpression value = translatedArgumentList.Arguments[i + 1].Expression;
+                ITsExpression key = translatedArguments[i];
+                ITsExpression value = translatedArguments[i + 1];
 
-                // We may have an expression as a property name, which would have been translated as
-                // an expression instead of a literal string or number.
+                // We may have an expression as a property name, which would have been translated as an expression
+                // instead of a literal string or number.
                 if (!(key is ITsPropertyName propertyName))
                 {
                     propertyName = Factory.ComputedPropertyName(key);

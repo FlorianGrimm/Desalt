@@ -86,7 +86,7 @@ export class DoubleUtil {
    */
   public static sigFigs(n: number, numSigFigs: number): number {
     if (n === 0 || numSigFigs === 0) {
-      DoubleUtil.log.warn('Neither the input nor the number of significant figures can be 0');
+      DoubleUtil.log.warn('Neither the input nor the number of significant figures can be 0', []);
       return n;
     }
     let mult: number = Math.pow(10, <number>numSigFigs - Math.floor(Math.log(Math.abs(n)) / Math.LN10) - 1);

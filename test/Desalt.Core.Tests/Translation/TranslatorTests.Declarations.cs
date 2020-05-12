@@ -334,6 +334,117 @@ class A {
         }
 
         //// ===========================================================================================================
+        //// Method Declarations with params and [ExpandParams]
+        //// ===========================================================================================================
+
+        [Test]
+        public async Task Translate_should_convert_params_arguments_to_an_array()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    void NormalParams(params int[] args);
+}
+
+class A
+{
+    public void NormalParams(params int[] args) { }
+}
+",
+                @"
+interface I {
+  normalParams(args: number[]): void;
+}
+
+class A {
+  public normalParams(args: number[]): void { }
+}
+");
+        }
+
+        [Test]
+        public async Task Delegate_declarations_with_ExpandParams_should_use_a_rest_parameter()
+        {
+            await AssertTranslation(
+                @"
+[ExpandParams]
+delegate void D(params int[] args);
+",
+                @"
+type D = (...args: number[]) => void;
+");
+        }
+
+        [Test]
+        public async Task Interface_declarations_with_ExpandParams_should_use_a_rest_parameter()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    [ExpandParams]
+    void WithExpandParams(params int[] args);
+}
+",
+                @"
+interface I {
+  withExpandParams(...args: number[]): void;
+}
+");
+        }
+
+        [Test]
+        public async Task Class_declarations_with_ExpandParams_should_use_a_rest_parameter()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    public A(params int[] args) { }
+
+    [ExpandParams]
+    public void WithExpandParams(params int[] args) { }
+}
+",
+                @"
+class A {
+  public constructor(...args: number[]) { }
+
+  public withExpandParams(...args: number[]): void { }
+}
+");
+        }
+
+        [Test]
+        public async Task Interface_declarations_with_ExpandParams_should_also_override_a_class_method()
+        {
+            await AssertTranslation(
+                @"
+interface I
+{
+    [ExpandParams]
+    void IFaceExpandParams(params int[] args);
+}
+
+class C : I
+{
+    public void IFaceExpandParams(params int[] args) { }
+}
+",
+                @"
+interface I {
+  iFaceExpandParams(...args: number[]): void;
+}
+
+class C implements I {
+  public iFaceExpandParams(...args: number[]): void { }
+}
+");
+        }
+
+        //// ===========================================================================================================
         //// Property Declaration Tests
         //// ===========================================================================================================
 

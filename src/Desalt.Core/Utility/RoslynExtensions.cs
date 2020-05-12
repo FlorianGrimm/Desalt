@@ -8,6 +8,7 @@
 namespace Desalt.Core.Utility
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -60,14 +61,6 @@ namespace Desalt.Core.Utility
         public static string ToHashDisplay(this ISymbol symbol)
         {
             return symbol.ToDisplayString(s_symbolDisplayFormat);
-        }
-
-        /// <summary>
-        /// Extracts the semantic type symbol from the specified type syntax node.
-        /// </summary>
-        public static ITypeSymbol GetTypeSymbol(this TypeSyntax typeSyntax, SemanticModel semanticModel)
-        {
-            return semanticModel.GetTypeInfo(typeSyntax).Type!;
         }
 
         public static bool IsInterfaceType(this ITypeSymbol symbol)
@@ -142,6 +135,33 @@ namespace Desalt.Core.Utility
 
             var query = rootSyntax.DescendantNodes().Select(GetDeclaredSymbol).WhereNotNull();
             return query;
+        }
+
+        /// <summary>
+        /// Attempts to find the interface method that the specified class method symbol implements.
+        /// </summary>
+        /// <param name="classMethodSymbol">The class method which may or may not implement an interface method.</param>
+        /// <param name="interfaceMethodSymbol">
+        /// The interface method symbol if <paramref name="classMethodSymbol"/> implements an interface method;
+        /// otherwise, null.
+        /// </param>
+        /// <returns>True if the class method symbol implements an interface; otherwise, false.</returns>
+        public static bool TryFindInterfaceMethodOfImplementingMethod(
+            this IMethodSymbol classMethodSymbol,
+            [NotNullWhen(true)] out IMethodSymbol? interfaceMethodSymbol)
+        {
+            // Get the containing class symbol.
+            INamedTypeSymbol classSymbol = classMethodSymbol.ContainingType;
+
+            // Gather all of the interfaces (including recursive base classes/interfaces) and search each one until the
+            // implementation is found that matches the passed-in class method symbol.
+            interfaceMethodSymbol = classSymbol.AllInterfaces.SelectMany(iface => iface.GetMembers().OfType<IMethodSymbol>())
+                .FirstOrDefault(
+                    interfaceMethod => SymbolEqualityComparer.Default.Equals(
+                        classMethodSymbol,
+                        classSymbol.FindImplementationForInterfaceMember(interfaceMethod)));
+
+            return interfaceMethodSymbol != null;
         }
     }
 }

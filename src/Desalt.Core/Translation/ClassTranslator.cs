@@ -56,7 +56,7 @@ namespace Desalt.Core.Translation
 
                 // Get the type symbols so we can tell which ones are interfaces.
                 var typeSymbols = node.BaseList.Types
-                    .Select(typeSyntax => typeSyntax.Type.GetTypeSymbol(context.SemanticModel))
+                    .Select(typeSyntax => context.GetExpectedTypeSymbol(typeSyntax.Type))
                     .ToImmutableArray();
 
                 for (int i = 0; i < baseList.Length; i++)
@@ -129,7 +129,7 @@ namespace Desalt.Core.Translation
         /// <returns>An <see cref="ITsTypeReference"/>.</returns>
         private static ITsTypeReference TranslateBaseType(TranslationContext context, BaseTypeSyntax node)
         {
-            ITypeSymbol typeSymbol = node.Type.GetTypeSymbol(context.SemanticModel);
+            ITypeSymbol typeSymbol = context.GetExpectedTypeSymbol(node.Type);
             var translated = (ITsTypeReference)TypeTranslator.TranslateTypeSymbol(
                 context,
                 typeSymbol,

@@ -9,7 +9,6 @@ namespace Desalt.Core.SymbolTables
 {
     using System.Collections.Generic;
     using System.Threading;
-    using Desalt.Core.Utility;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -91,13 +90,13 @@ namespace Desalt.Core.SymbolTables
 
         private void AddTypeIfNecessary(TypeSyntax? node)
         {
-            // sometimes the node won't have a type, for example in anonymous delegates
+            // Sometimes the node won't have a type, for example in anonymous delegates.
             if (node == null)
             {
                 return;
             }
 
-            ITypeSymbol typeSymbol = node.GetTypeSymbol(_semanticModel);
+            ITypeSymbol? typeSymbol = _semanticModel.GetTypeInfo(node).Type;
             AddTypeIfNecessary(typeSymbol);
         }
 
@@ -105,20 +104,20 @@ namespace Desalt.Core.SymbolTables
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            // don't add the type if it's defined in our assembly
+            // Don't add the type if it's defined in our assembly.
             if (typeSymbol == null || SymbolEqualityComparer.Default.Equals(typeSymbol.ContainingAssembly, _assemblyBeingTranslated))
             {
                 return;
             }
 
-            // if we're an array, then recurse and add the type elements
+            // If we're an array, then recurse and add the type elements.
             if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
             {
                 AddTypeIfNecessary(arrayTypeSymbol.ElementType);
             }
             else if (typeSymbol.Kind == SymbolKind.DynamicType)
             {
-                // don't add 'dynamic' types
+                // Don't add 'dynamic' types.
             }
             else
             {

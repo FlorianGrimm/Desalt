@@ -403,8 +403,8 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
   private _items: T[];
 
-  public constructor(item: T, ... items: T[]) {
-    this._items = [item, ... items];
+  public constructor(item: T, ...items: T[]) {
+    this._items = [item, ...items];
   }
 
   [index: number]: T;
@@ -648,7 +648,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                     }),
                 @"class AnimalCollection<T extends IAnimal> extends Collection<T> implements ICollection<T> {
   private _items: T[];
-  constructor(item: T, ... items: T[]);
+  constructor(item: T, ...items: T[]);
   [index: number]: T;
   protected add(item: T): void;
 }

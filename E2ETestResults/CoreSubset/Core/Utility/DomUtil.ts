@@ -71,7 +71,7 @@ export class DomUtil {
         return s;
       }
     }
-    DomUtil.log.warn('Calling GetComputedStyle but is unsupported');
+    DomUtil.log.warn('Calling GetComputedStyle but is unsupported', []);
     return e.style;
   }
 
@@ -294,7 +294,7 @@ export class DomUtil {
    */
   public static getTransformOffset(element: Object): jQueryPosition {
     if (element === null) {
-      DomUtil.log.warn('Attempting to get transformation on null element!');
+      DomUtil.log.warn('Attempting to get transformation on null element!', []);
       return new jQueryPosition(0, 0);
     }
     let fullTransform: string = element.css('transform');
@@ -316,7 +316,7 @@ export class DomUtil {
    */
   public static getTransformScale(element: Object): number {
     if (element === null) {
-      DomUtil.log.warn('Attempting to get transformation on null element!');
+      DomUtil.log.warn('Attempting to get transformation on null element!', []);
       return 1;
     }
     let fullTransform: string = element.css('transform');

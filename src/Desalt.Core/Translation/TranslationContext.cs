@@ -19,6 +19,7 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -243,52 +244,75 @@ namespace Desalt.Core.Translation
         }
 
         /// <summary>
-        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
-        /// either is not found.
+        /// Gets an expected <see cref="IScriptSymbol"/> associated with the specified syntax node and calls
+        /// <c>ReportInternalError</c> if it is not found.
         /// </summary>
         /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
-        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
-        public (TSymbol symbol, TScriptSymbol scriptSymbol) GetExpectedDeclaredScriptSymbol<TSymbol, TScriptSymbol>(
-            SyntaxNode node)
-            where TSymbol : class, ISymbol
-            where TScriptSymbol : class, IScriptSymbol
-        {
-            TSymbol symbol = GetExpectedDeclaredSymbol<TSymbol>(node);
-
-            if (!ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
-            {
-                ReportInternalError($"Node should have been added to the ScriptSymbolTable: {node}", node);
-            }
-
-            return (symbol, scriptSymbol);
-        }
-
-        /// <summary>
-        /// Gets an expected symbol and associated <see cref="IScriptSymbol"/> and calls <c>ReportInternalError</c> if
-        /// either is not found.
-        /// </summary>
-        /// <param name="node">The <see cref="SyntaxNode"/> from which to get a symbol.</param>
-        /// <returns>The symbol and script symbol associated with the syntax node.</returns>
+        /// <returns>The script symbol associated with the syntax node.</returns>
         public TScriptSymbol GetExpectedDeclaredScriptSymbol<TScriptSymbol>(SyntaxNode node)
             where TScriptSymbol : class, IScriptSymbol
         {
-            return GetExpectedDeclaredScriptSymbol<ISymbol, TScriptSymbol>(node).scriptSymbol;
+            ISymbol symbol = GetExpectedDeclaredSymbol<ISymbol>(node);
+            TScriptSymbol scriptSymbol = GetExpectedDeclaredScriptSymbol<TScriptSymbol>(symbol, node);
+            return scriptSymbol;
+        }
+
+        /// <summary>
+        /// Gets an expected <see cref="IScriptSymbol"/> associated with the specified syntax node and calls
+        /// <c>ReportInternalError</c> if it is not found.
+        /// </summary>
+        /// <param name="symbol">
+        /// The symbol from which to look up the <see cref="IScriptSymbol"/> in the script symbol table.
+        /// </param>
+        /// <param name="nodeForErrorMessage">The <see cref="SyntaxNode"/> that should be used for reporting errors.</param>
+        /// <returns>The script symbol associated with the syntax node.</returns>
+        public TScriptSymbol GetExpectedDeclaredScriptSymbol<TScriptSymbol>(
+            ISymbol symbol,
+            SyntaxNode nodeForErrorMessage)
+            where TScriptSymbol : class, IScriptSymbol
+        {
+            if (!ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
+            {
+                ReportInternalError(
+                    $"Node should have been added to the ScriptSymbolTable: {nodeForErrorMessage}",
+                    nodeForErrorMessage);
+            }
+
+            return scriptSymbol;
         }
 
         /// <summary>
         /// Gets an expected script symbol and calls <c>ReportInternalError</c> if not found.
         /// </summary>
-        public TScriptSymbol GetExpectedScriptSymbol<TScriptSymbol>(ISymbol symbol, SyntaxNode node)
+        /// <param name="symbol">
+        /// The symbol from which to look up the <see cref="IScriptSymbol"/> in the script symbol table.
+        /// </param>
+        /// <param name="nodeForErrorMessage">The <see cref="SyntaxNode"/> that should be used for reporting errors.</param>
+        public TScriptSymbol GetExpectedScriptSymbol<TScriptSymbol>(ISymbol symbol, SyntaxNode nodeForErrorMessage)
             where TScriptSymbol : class, IScriptSymbol
         {
             if (!ScriptSymbolTable.TryGetValue(symbol, out TScriptSymbol? scriptSymbol))
             {
                 ReportInternalError(
                     $"Symbol should have been added to the {nameof(ScriptSymbolTable)}: {symbol.ToHashDisplay()}",
-                    node);
+                    nodeForErrorMessage);
             }
 
             return scriptSymbol;
+        }
+
+        /// <summary>
+        /// Extracts the semantic type symbol from the specified type syntax node.
+        /// </summary>
+        public ITypeSymbol GetExpectedTypeSymbol(TypeSyntax typeSyntax)
+        {
+            ITypeSymbol? typeSymbol = SemanticModel.GetTypeInfo(typeSyntax).Type;
+            if (typeSymbol == null)
+            {
+                ReportInternalError($"Type symbol for syntax node '{typeSyntax}' should have been defined", typeSyntax);
+            }
+
+            return typeSymbol;
         }
 
         /// <summary>

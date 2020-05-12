@@ -152,8 +152,7 @@ class C
                 translatedLeftSide: Factory.GenericTypeName("List", Factory.NumberType),
                 translatedArgumentList: Factory.ArgumentList(
                     Factory.Argument(Factory.Number(1)),
-                    Factory.Argument(Factory.Number(2)),
-                    Factory.Argument(Factory.Number(3))),
+                    Factory.Argument(Factory.Array(Factory.Number(2), Factory.Number(3)))),
                 discoveryKind: SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
     }

@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Tests.Ast
 {
+    using System;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
     using NUnit.Framework;
@@ -295,6 +296,32 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         }
 
         [Test]
+        public void Emit_parameter_list_with_only_optional_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Array.Empty<ITsRequiredParameter>(),
+                    optionalParameters: new ITsOptionalParameter[]
+                    {
+                        Factory.StringOptionalParameter(s_y, Factory.String("value")),
+                        Factory.BoundOptionalParameter(s_z, Factory.NumberType, Factory.Zero),
+                        Factory.BoundOptionalParameter(s_p, Factory.BooleanType),
+                        Factory.BoundOptionalParameter(Factory.Identifier("noType")),
+                    }),
+                "y?: 'value', z: number = 0, p?: boolean, noType?");
+        }
+
+        [Test]
+        public void Emit_parameter_list_with_only_rest_parameter()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Array.Empty<ITsRequiredParameter>(),
+                    restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
+                "...z: MyType");
+        }
+
+        [Test]
         public void Emit_parameter_list_with_required_and_optional_parameters()
         {
             VerifyOutput(
@@ -311,6 +338,28 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         }
 
         [Test]
+        public void Emit_parameter_list_with_required_and_rest_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Factory.BoundRequiredParameter(s_x).ToSafeArray(),
+                    restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
+                "x, ...z: MyType");
+        }
+
+        [Test]
+        public void Emit_parameter_list_with_optional_and_rest_parameters()
+        {
+            VerifyOutput(
+                Factory.ParameterList(
+                    requiredParameters: Array.Empty<ITsRequiredParameter>(),
+                    optionalParameters: Factory.BoundOptionalParameter(s_y, Factory.BooleanType, Factory.False)
+                        .ToSafeArray(),
+                    restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
+                "y: boolean = false, ...z: MyType");
+        }
+
+        [Test]
         public void Emit_parameter_list_with_required_optional_and_rest_parameters()
         {
             VerifyOutput(
@@ -319,7 +368,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                     optionalParameters: Factory.BoundOptionalParameter(s_y, Factory.BooleanType, Factory.False)
                         .ToSafeArray(),
                     restParameter: Factory.RestParameter(s_z, s_MyTypeRef)),
-                "x, y: boolean = false, ... z: MyType");
+                "x, y: boolean = false, ...z: MyType");
         }
 
         [Test]

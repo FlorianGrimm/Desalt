@@ -65,7 +65,7 @@ export class ErrorTrace {
   public static wrap(func: () => void): () => any {
     return () => {
       try {
-        return func.apply(ss.this, <any[]>Array.prototype.slice.call(arguments));
+        return func.apply(ss.this, [<any[]>Array.prototype.slice.call(arguments)]);
       } catch (e) {
         ErrorTrace.report(e);
         throw e;
@@ -85,7 +85,7 @@ export class ErrorTrace {
     let callback: () => any = () => {
       let args: any[] = ss.arrayClone((<any[]>Array.prototype.slice.call(arguments)));
       let originalCallback: any = args[0];
-      return originalFunction.apply(ss.this, args);
+      return originalFunction.apply(ss.this, [args]);
     };
     window[functionName] = callback;
   }

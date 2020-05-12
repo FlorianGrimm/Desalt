@@ -206,7 +206,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public debug(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Debug, message, args);
+    this.logInternal(LoggerLevel.Debug, message, [args]);
   }
 
   /**
@@ -215,7 +215,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public info(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Info, message, args);
+    this.logInternal(LoggerLevel.Info, message, [args]);
   }
 
   /**
@@ -224,7 +224,7 @@ export class Logger {
    * @param args The format arguments.
    */
   public warn(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Warn, message, args);
+    this.logInternal(LoggerLevel.Warn, message, [args]);
   }
 
   /**
@@ -233,14 +233,14 @@ export class Logger {
    * @param args The format arguments.
    */
   public error(message: string, args: any[]): void {
-    this.logInternal(LoggerLevel.Error, message, args);
+    this.logInternal(LoggerLevel.Error, message, [args]);
   }
 
   /**
    * Logs the given message.
    */
   public log(level: LoggerLevel, message: string, args: any[]): void {
-    this.logInternal(level, message, args);
+    this.logInternal(level, message, [args]);
   }
 
   private static setupUrlFilters(): void {

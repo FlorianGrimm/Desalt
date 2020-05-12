@@ -82,9 +82,9 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsArrayLiteral(elements?.Select(e => e == null ? null : ArrayElement(e)));
         }
 
-        public static ITsArrayElement ArrayElement(ITsExpression element, bool isSpreadElement = false)
+        public static ITsArrayElement ArrayElement(ITsExpression expression, bool isSpreadElement = false)
         {
-            return new TsArrayElement(element, isSpreadElement);
+            return new TsArrayElement(expression, isSpreadElement);
         }
 
         public static ITsTemplateLiteral TemplateString(params ITsTemplatePart[] parts)

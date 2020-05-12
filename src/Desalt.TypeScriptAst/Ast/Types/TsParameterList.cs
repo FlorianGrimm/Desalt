@@ -67,7 +67,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
                 emitter.WriteList(RequiredParameters, indent: false, itemDelimiter: ", ");
             }
 
-            if ((RequiredParameters.Length > 0 && OptionalParameters.Length > 0) || RestParameter != null)
+            if (RequiredParameters.Length > 0 && (OptionalParameters.Length > 0 || RestParameter != null))
             {
                 emitter.Write(", ");
             }

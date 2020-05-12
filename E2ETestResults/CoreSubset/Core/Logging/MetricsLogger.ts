@@ -165,7 +165,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
   private outputEventsToConsole(evts: MetricsEvent[]): void {
     this.logger = (this.logger) || (Logger.lazyGetLogger(MetricsLogger));
     for (const evt of evts) {
-      this.logger.debug(MetricsLogger.formatEvent(evt, true));
+      this.logger.debug(MetricsLogger.formatEvent(evt, true), []);
     }
   }
 
@@ -213,7 +213,7 @@ export class MetricsLogger implements IWebClientMetricsLogger {
       eventDict = <{ [key: string]: any }>MiscUtil.cloneObject(eventDict);
       let extraInfoParts: string[] = parameters.ei.split(': ');
       if (extraInfoParts.length > 1) {
-        let fakeProps: { [key: string]: string } = new JsDictionary<string, string>(extraInfoParts);
+        let fakeProps: { [key: string]: string } = new JsDictionary<string, string>([extraInfoParts]);
         eventDict[MetricsParameterName.properties] = fakeProps;
         delete eventDict['ei'];
       }
