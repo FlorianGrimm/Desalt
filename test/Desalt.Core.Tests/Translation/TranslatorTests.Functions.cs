@@ -595,7 +595,7 @@ class A {
         }
 
         [Test]
-        public async Task ExpandParams_ctor_invocations_with_a_params_array_should_create_an_array()
+        public async Task ExpandParams_ctor_invocations_with_a_params_array_should_NOT_create_an_array()
         {
             await AssertTranslation(
                 @"
@@ -739,6 +739,34 @@ class A implements I {
 
   public method(): void {
     this.noInterfaceExpandParams(1, [2, 3]);
+  }
+}
+");
+        }
+
+        [Test]
+        public async Task Passing_in_an_array_to_an_ExpandParams_method_should_flatten_the_array()
+        {
+            await AssertTranslation(
+                @"
+class A
+{
+    [ExpandParams]
+    public void WithParams(int number1, params int[] numbers) { }
+    public void Method()
+    {
+        WithParams(1);
+        WithParams(1, new[] { 2, 3 });
+    }
+}
+",
+                @"
+class A {
+  public withParams(number1: number, ...numbers: number[]): void { }
+
+  public method(): void {
+    this.withParams(1);
+    this.withParams(1, 2, 3);
   }
 }
 ");

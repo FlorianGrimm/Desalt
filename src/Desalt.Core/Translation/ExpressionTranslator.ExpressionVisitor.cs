@@ -9,6 +9,7 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.Core.Diagnostics;
@@ -623,45 +624,12 @@ namespace Desalt.Core.Translation
 
             private ITsArgumentList TranslateArgumentList(ArgumentListSyntax node)
             {
-                var arguments = node.Arguments.Select(TranslateArgument).ToList();
-
-                // If the last argument is a `params` list, we need to do some special processing to convert the
-                // arguments to an array.
-                var methodSymbol = SemanticModel.GetSymbolInfo(node.Parent).Symbol as IMethodSymbol;
-                bool hasParamsArgument = methodSymbol?.Parameters.LastOrDefault()?.IsParams == true;
-                IScriptMethodSymbol? scriptMethodSymbol = null;
-                if (methodSymbol != null)
+                var translatedArguments = node.Arguments.Select(TranslateArgument).ToList();
+                if (!TryTranslateParamsArgument(node, translatedArguments, out ITsArgumentList? translated))
                 {
-                    // If this method implements an interface, we use the interface's [ExpandParams] (or lack of)
-                    // instead of the method's.
-                    if (methodSymbol.TryFindInterfaceMethodOfImplementingMethod(
-                        out IMethodSymbol? interfaceMethodSymbol))
-                    {
-                        ScriptSymbolTable.TryGetValue(interfaceMethodSymbol, out scriptMethodSymbol);
-                    }
-                    else
-                    {
-                        ScriptSymbolTable.TryGetValue(methodSymbol, out scriptMethodSymbol);
-                    }
+                    translated = Factory.ArgumentList(translatedArguments.ToArray());
                 }
 
-                // If the method is marked with [ExpandParams] the arguments should be translated
-                // normally. Well, there's one more caveat... if it also is marked with [InlineCode] then we ignore the
-                // [ExpandParams] attribute.
-                if (methodSymbol != null &&
-                    hasParamsArgument &&
-                    (scriptMethodSymbol?.InlineCode != null || scriptMethodSymbol?.ExpandParams == false))
-                {
-                    int indexOfParams = methodSymbol.Parameters.Length - 1;
-
-                    // Take the translated arguments starting at the index of the params and convert them into an array.
-                    var array = Factory.Array(
-                        arguments.Skip(indexOfParams).Select(arg => Factory.ArrayElement(arg.Expression)).ToArray());
-                    arguments.RemoveRange(indexOfParams, array.Elements.Length);
-                    arguments.Add(Factory.Argument(array));
-                }
-
-                ITsArgumentList translated = Factory.ArgumentList(arguments.ToArray());
                 return translated;
             }
 
@@ -670,6 +638,77 @@ namespace Desalt.Core.Translation
                 ITsExpression expression = VisitSubExpression(node.Expression);
                 ITsArgument argument = Factory.Argument(expression);
                 return argument;
+            }
+
+            private bool TryTranslateParamsArgument(
+                ArgumentListSyntax node,
+                IReadOnlyList<ITsArgument> translatedArguments,
+                [NotNullWhen(true)] out ITsArgumentList? translatedArgumentList)
+            {
+                SyntaxNode methodNode = node.Parent;
+                var methodSymbol = SemanticModel.GetSymbolInfo(methodNode).Symbol as IMethodSymbol;
+                bool isParamsArgument = methodSymbol?.Parameters.LastOrDefault()?.IsParams == true;
+
+                // If the last argument isn't a `params` argument, we don't need to do any special processing, so exit early.
+                if (methodSymbol == null || !isParamsArgument)
+                {
+                    translatedArgumentList = null;
+                    return false;
+                }
+
+                // If this method implements an interface, we use the interface's [ExpandParams] (or lack of)
+                // instead of the method's.
+                IScriptMethodSymbol scriptMethodSymbol = Context.GetExpectedScriptSymbol<IScriptMethodSymbol>(
+                    methodSymbol.TryFindInterfaceMethodOfImplementingMethod(out IMethodSymbol? interfaceMethodSymbol)
+                        ? interfaceMethodSymbol
+                        : methodSymbol,
+                    methodNode);
+
+                // Create a copy of the translated arguments, since we may modify it.
+                var convertedArgs = new List<ITsArgument>(translatedArguments);
+
+                // We need to convert the 'params' arguments into an array if one of the following are true:
+                // * The method (or interface method) is marked with [InlineCode], which always requires an array even
+                //   if the [ExpandParams] is set.
+                // * The [ExpandParams] is not set on the method (or the interface method, which takes precedence).
+                bool convertToArray = scriptMethodSymbol.InlineCode != null || !scriptMethodSymbol.ExpandParams;
+                bool isLastArgumentAlreadyArray = translatedArguments.Last().Expression is ITsArrayLiteral;
+                if (convertToArray && !isLastArgumentAlreadyArray)
+                {
+                    int indexOfParams = methodSymbol.Parameters.Length - 1;
+
+                    // Take the translated arguments starting at the index of the params and convert them into an array.
+                    ITsArrayLiteral array = Factory.Array(
+                        translatedArguments.Skip(indexOfParams).Select(arg => Factory.ArrayElement(arg.Expression)).ToArray());
+
+                    convertedArgs.RemoveRange(indexOfParams, array.Elements.Length);
+                    convertedArgs.Add(Factory.Argument(array));
+                }
+
+                // In C#, you can pass in an array into a 'params' argument. If the [ExpandParams] has been set, then we
+                // need to flatten the array into individual arguments.
+                if (!convertToArray && isLastArgumentAlreadyArray)
+                {
+                    var lastArray = (ITsArrayLiteral)translatedArguments.Last().Expression;
+
+                    // Remove the array from the converted args.
+                    convertedArgs.RemoveAt(convertedArgs.Count - 1);
+
+                    foreach (ITsArrayElement? arrayElement in lastArray.Elements)
+                    {
+                        if (arrayElement == null)
+                        {
+                            Context.ReportInternalError(
+                                "There should never be an uninitialized array element since it can't happen in C#",
+                                node);
+                        }
+
+                        convertedArgs.Add(Factory.Argument(arrayElement?.Expression ?? Factory.Null));
+                    }
+                }
+
+                translatedArgumentList = Factory.ArgumentList(convertedArgs.ToArray());
+                return true;
             }
         }
     }
