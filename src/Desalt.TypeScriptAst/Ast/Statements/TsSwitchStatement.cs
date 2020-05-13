@@ -43,8 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitSwitchStatement(this);
         }
 
-        public override string CodeDisplay => $"switch ({Condition}) {{ {Clauses.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("switch (");

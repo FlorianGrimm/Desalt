@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitImportAliasDeclaration(this);
         }
 
-        public override string CodeDisplay => $"import {Alias} = {ImportedName};";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("import ");

@@ -47,9 +47,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitImportDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            $"import {Module?.CodeDisplay}{ImportClause?.CodeDisplay} {FromClause?.CodeDisplay} ;";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("import ");

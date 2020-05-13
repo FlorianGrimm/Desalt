@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Text;
     using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
@@ -74,19 +73,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             else
             {
                 visitor.VisitConstructorDeclaration(this);
-            }
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append(AccessibilityModifier.OptionalCodeDisplay());
-                builder.Append("constructor(").Append(ParameterList).Append(")");
-                builder.Append(FunctionBody.IsDefault ? ";" : FunctionBody.ToElidedList());
-
-                return builder.ToString();
             }
         }
 

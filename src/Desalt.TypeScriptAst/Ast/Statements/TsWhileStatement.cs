@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitWhileStatement(this);
         }
 
-        public override string CodeDisplay => $"while ({WhileCondition}) {WhileStatement}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("while (");

@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientVariableDeclaration(this);
         }
 
-        public override string CodeDisplay => $"{DeclarationKind.CodeDisplay()}{Declarations.ToElidedList()};";
-
         protected override void EmitContent(Emitter emitter)
         {
             DeclarationKind.Emit(emitter);

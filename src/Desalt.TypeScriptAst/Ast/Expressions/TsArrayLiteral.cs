@@ -40,8 +40,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArrayLiteral(this);
         }
 
-        public override string CodeDisplay => $"[{Elements.ToElidedList()}]";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");

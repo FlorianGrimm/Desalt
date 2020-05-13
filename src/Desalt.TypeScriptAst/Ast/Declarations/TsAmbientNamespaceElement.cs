@@ -58,10 +58,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientNamespaceElement(this);
         }
 
-        public override string CodeDisplay =>
-            HasExportKeyword ? "export " : "" +
-            $"{Declaration?.CodeDisplay}{InterfaceDeclaration?.CodeDisplay}{ImportAliasDeclaration?.CodeDisplay}";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (HasExportKeyword)

@@ -43,22 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitStringRequiredParameter(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = ParameterName.CodeDisplay;
-                if (IsOptional)
-                {
-                    display += "?";
-                }
-
-                display += $": {StringLiteral}";
-
-                return display;
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             ParameterName.Emit(emitter);

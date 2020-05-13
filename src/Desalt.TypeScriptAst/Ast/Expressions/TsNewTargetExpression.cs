@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitNewTargetExpression(this);
         }
 
-        public override string CodeDisplay => "new.target";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("new.target");

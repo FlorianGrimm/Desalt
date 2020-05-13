@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitThrowStatement(this);
         }
 
-        public override string CodeDisplay => $"throw {Expression};";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("throw ");

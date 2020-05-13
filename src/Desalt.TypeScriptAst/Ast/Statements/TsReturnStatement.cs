@@ -38,8 +38,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitReturnStatement(this);
         }
 
-        public override string CodeDisplay => "return" + (Expression != null ? $" {Expression}" : "") + ";";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("return");

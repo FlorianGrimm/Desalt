@@ -46,8 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitCommaExpression(this);
         }
 
-        public override string CodeDisplay => Expressions.ToElidedList();
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(Expressions, indent: false, itemDelimiter: ", ");

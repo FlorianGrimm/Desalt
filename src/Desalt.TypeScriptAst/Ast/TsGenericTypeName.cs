@@ -44,9 +44,6 @@ namespace Desalt.TypeScriptAst.Ast
             visitor.VisitGenericTypeName(this);
         }
 
-        public override string CodeDisplay =>
-            base.CodeDisplay + (TypeArguments.Length > 0 ? $"<{TypeArguments.ToElidedList()}>" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             base.EmitContent(emitter);

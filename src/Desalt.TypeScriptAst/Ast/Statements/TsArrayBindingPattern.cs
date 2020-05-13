@@ -42,9 +42,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitArrayBindingPattern(this);
         }
 
-        public override string CodeDisplay =>
-            "[" + Elements.ToElidedList() + (RestElement != null ? $", ... {RestElement}" : "") + "]";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (RestElement != null)

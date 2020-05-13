@@ -11,7 +11,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Text;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Emit;
     using TagNames = TsJsDocTagNames;
@@ -175,33 +174,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// Gets an array of @see tags.
         /// </summary>
         public ImmutableArray<ITsJsDocBlock> SeeTags { get; }
-
-        /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder(Description?.CodeDisplay ?? string.Empty);
-
-                if (SummaryTag != null)
-                {
-                    builder.Append(TagNames.Summary).Append(" ").Append(SummaryTag.CodeDisplay);
-                }
-
-                if (SeeTags != null)
-                {
-                    foreach (ITsJsDocBlock seeTag in SeeTags)
-                    {
-                        builder.Append(TagNames.See).Append(" ").Append(seeTag);
-                    }
-                }
-
-                return builder.ToString();
-            }
-        }
 
         //// ===========================================================================================================
         //// Methods

@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientBinding(this);
         }
 
-        public override string CodeDisplay => $"{VariableName}{VariableType?.OptionalTypeAnnotation()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             VariableName.Emit(emitter);

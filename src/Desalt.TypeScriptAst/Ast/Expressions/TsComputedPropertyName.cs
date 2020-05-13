@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitComputedPropertyName(this);
         }
 
-        public override string CodeDisplay => $"[{Expression.CodeDisplay}]";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("[");

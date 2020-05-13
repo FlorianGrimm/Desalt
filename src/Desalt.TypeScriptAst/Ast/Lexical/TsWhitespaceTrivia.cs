@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsWhitespaceTrivia.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -42,8 +42,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
 
         public bool IsNewline { get; }
         public string Text { get; }
-
-        public override string CodeDisplay => Text;
 
         //// ===========================================================================================================
         //// Methods

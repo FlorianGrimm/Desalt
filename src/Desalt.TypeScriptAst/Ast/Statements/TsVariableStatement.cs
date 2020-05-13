@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitVariableStatement(this);
         }
 
-        public override string CodeDisplay => $"var {Declarations.ToElidedList()};";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("var ");

@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitCallSignature(this);
         }
 
-        public override string CodeDisplay => $"{TypeParameters}({Parameters}){ReturnType?.OptionalTypeAnnotation()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             TypeParameters?.Emit(emitter);

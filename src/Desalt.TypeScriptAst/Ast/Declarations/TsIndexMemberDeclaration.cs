@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitIndexMemberDeclaration(this);
         }
 
-        public override string CodeDisplay => $"{IndexSignature};";
-
         protected override void EmitContent(Emitter emitter)
         {
             IndexSignature.Emit(emitter);

@@ -49,12 +49,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitPropertySignature(this);
         }
 
-        public override string CodeDisplay =>
-            (IsReadOnly ? "readonly " : "") +
-            PropertyName +
-            (IsOptional ? "?" : "") +
-            PropertyType?.OptionalTypeAnnotation();
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsReadOnly)

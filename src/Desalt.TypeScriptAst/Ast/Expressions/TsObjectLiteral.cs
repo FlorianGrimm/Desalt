@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScriptAst.Ast.Expressions
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Emit;
@@ -41,8 +40,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         {
             visitor.VisitObjectLiteral(this);
         }
-
-        public override string CodeDisplay => $"{{ {PropertyDefinitions.ToElidedList($",{Environment.NewLine}")} }}";
 
         protected override void EmitContent(Emitter emitter)
         {

@@ -44,8 +44,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArrayElement(this);
         }
 
-        public override string CodeDisplay => (IsSpreadElement ? "..." : "") + Expression.CodeDisplay;
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsSpreadElement)

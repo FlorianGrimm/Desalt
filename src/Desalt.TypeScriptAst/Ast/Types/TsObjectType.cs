@@ -43,8 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitObjectType(this);
         }
 
-        public override string CodeDisplay => $"{{{TypeMembers.ToElidedList()}}}";
-
         protected override void EmitContent(Emitter emitter)
         {
             bool multiLine = !ForceSingleLine;

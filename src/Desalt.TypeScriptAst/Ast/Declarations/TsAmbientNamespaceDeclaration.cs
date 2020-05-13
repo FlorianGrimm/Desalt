@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientNamespaceDeclaration(this);
         }
 
-        public override string CodeDisplay => $"namespace {NamespaceName} {{ {Body.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("namespace ");

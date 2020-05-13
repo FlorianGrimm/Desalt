@@ -48,8 +48,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitLabeledStatement(this);
         }
 
-        public override string CodeDisplay => $"{Label}: {Statement?.CodeDisplay}{FunctionDeclaration?.CodeDisplay}";
-
         protected override void EmitContent(Emitter emitter)
         {
             int currentIndentLevel = emitter.IndentLevel;

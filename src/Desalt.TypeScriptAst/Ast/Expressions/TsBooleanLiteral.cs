@@ -46,11 +46,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitBooleanLiteral(this);
         }
 
-        public override string CodeDisplay => Value ? "true" : "false";
-
         protected override void EmitContent(Emitter emitter)
         {
-            emitter.Write(CodeDisplay);
+            emitter.Write(Value ? "true" : "false");
         }
     }
 }

@@ -37,8 +37,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitNullLiteral(this);
         }
 
-        public override string CodeDisplay => "null";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("null");

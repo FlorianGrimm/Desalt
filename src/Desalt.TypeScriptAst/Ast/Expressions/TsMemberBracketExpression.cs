@@ -60,8 +60,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             }
         }
 
-        public override string CodeDisplay => $"{LeftSide}[{BracketContents}]";
-
         protected override void EmitContent(Emitter emitter)
         {
             LeftSide.Emit(emitter);

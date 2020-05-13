@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitSingleNameBinding(this);
         }
 
-        public override string CodeDisplay => $"{Name}{DefaultValue?.OptionalAssignment()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             Name.Emit(emitter);

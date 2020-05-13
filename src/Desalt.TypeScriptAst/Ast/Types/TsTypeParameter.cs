@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitTypeParameter(this);
         }
 
-        public override string CodeDisplay => TypeName.CodeDisplay + (Constraint != null ? $" extends {Constraint}" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             TypeName.Emit(emitter);

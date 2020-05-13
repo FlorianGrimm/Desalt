@@ -43,17 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitIndexSignature(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = $"[{ParameterName.CodeDisplay}: ";
-                display += IsParameterNumberType ? "number" : "string";
-                display += $"]: {ReturnType}";
-                return display;
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("[");

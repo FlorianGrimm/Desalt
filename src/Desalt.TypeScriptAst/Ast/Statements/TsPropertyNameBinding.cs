@@ -42,8 +42,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitPropertyNameBinding(this);
         }
 
-        public override string CodeDisplay => $"{PropertyName}: {BindingElement}";
-
         protected override void EmitContent(Emitter emitter)
         {
             PropertyName.Emit(emitter);

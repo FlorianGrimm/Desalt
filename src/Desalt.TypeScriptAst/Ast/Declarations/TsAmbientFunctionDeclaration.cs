@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -40,18 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitAmbientFunctionDeclaration(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("function ").Append(FunctionName).Append(" ");
-                builder.Append(CallSignature.CodeDisplay);
-                builder.Append(";");
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

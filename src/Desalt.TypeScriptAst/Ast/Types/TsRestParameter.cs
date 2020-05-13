@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitRestParameter(this);
         }
 
-        public override string CodeDisplay => $"...{ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("...");

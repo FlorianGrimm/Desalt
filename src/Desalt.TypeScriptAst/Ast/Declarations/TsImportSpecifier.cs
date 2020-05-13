@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitImportSpecifier(this);
         }
 
-        public override string CodeDisplay => $"${Name}" + (AsName != null ? $" as {AsName}" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             Name.Emit(emitter);

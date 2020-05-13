@@ -37,12 +37,6 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public abstract string CodeDisplay { get; }
-
-        /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
         /// </summary>
         public ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; private set; }
@@ -56,7 +50,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// Gets a concise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
-        protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
+        protected virtual string DebuggerDisplay => $"{GetType().Name}: {EmitAsString()}";
 
         //// ===========================================================================================================
         //// Operator Overloads
@@ -136,7 +130,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return CodeDisplay;
+            return EmitAsString();
         }
 
         /// <summary>

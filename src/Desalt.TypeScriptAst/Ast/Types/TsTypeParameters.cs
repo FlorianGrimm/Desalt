@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitTypeParameters(this);
         }
 
-        public override string CodeDisplay => TypeParameters.IsEmpty ? "" : $"<{TypeParameters.ToElidedList()}>";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(

@@ -47,8 +47,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitTypeAliasDeclaration(this);
         }
 
-        public override string CodeDisplay => $"type {AliasName}{TypeParameters} = {Type};";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("type ");

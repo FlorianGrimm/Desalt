@@ -54,10 +54,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitClassDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            (IsAbstract ? "abstract " : "") +
-            $"class {ClassName?.CodeDisplay}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsAbstract)

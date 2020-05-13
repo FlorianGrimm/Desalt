@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitFromClause(this);
         }
 
-        public override string CodeDisplay => $"from {Module}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("from ");

@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast.Statements
 {
     using System;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -106,38 +105,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitTryStatement(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("try ").Append(TryBlock.CodeDisplay);
-
-                if (CatchBlock != null)
-                {
-                    builder.AppendLine();
-                    if (CatchParameter != null)
-                    {
-                        builder.Append("catch (").Append(CatchParameter.CodeDisplay).Append(") ");
-                    }
-                    else
-                    {
-                        builder.Append("catch ");
-                    }
-
-                    builder.Append(CatchBlock);
-                }
-
-                if (FinallyBlock != null)
-                {
-                    builder.AppendLine();
-                    builder.Append("finally ").Append(FinallyBlock.CodeDisplay);
-                }
-
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

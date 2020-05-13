@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -63,35 +62,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitArrowFunction(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                if (SingleParameterName != null)
-                {
-                    builder.Append(SingleParameterName);
-                }
-                else
-                {
-                    builder.Append(CallSignature);
-                }
-
-                builder.Append(" => ");
-
-                if (BodyExpression != null)
-                {
-                    builder.Append(BodyExpression);
-                }
-                else
-                {
-                    builder.Append("{ ").Append(Body?.ToElidedList()).Append("}");
-                }
-
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

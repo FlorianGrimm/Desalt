@@ -48,9 +48,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitEnumDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            (IsConst ? "const " : "") + $"enum {EnumName} {{ {EnumBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsConst)

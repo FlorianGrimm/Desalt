@@ -43,11 +43,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitRegularExpressionLiteral(this);
         }
 
-        public override string CodeDisplay => $"/{Body}/{Flags}";
-
         protected override void EmitContent(Emitter emitter)
         {
-            emitter.Write(CodeDisplay);
+            emitter.Write($"/{Body}/{Flags}");
         }
     }
 }

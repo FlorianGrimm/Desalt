@@ -40,8 +40,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitObjectBindingPattern(this);
         }
 
-        public override string CodeDisplay => $"{{{Properties.ToElidedList()}}}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(

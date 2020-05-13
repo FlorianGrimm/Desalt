@@ -42,11 +42,9 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitStringLiteral(this);
         }
 
-        public override string CodeDisplay => $"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}";
-
         protected override void EmitContent(Emitter emitter)
         {
-            emitter.Write(CodeDisplay);
+            emitter.Write($"{QuoteChar}{Value.Replace(QuoteChar, "\\" + QuoteChar)}{QuoteChar}");
         }
     }
 }

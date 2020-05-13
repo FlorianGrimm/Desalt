@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -42,21 +41,6 @@ namespace Desalt.TypeScriptAst.Ast
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitQualifiedName(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                foreach (ITsIdentifier identifier in Left)
-                {
-                    builder.Append(identifier.CodeDisplay).Append('.');
-                }
-
-                builder.Append(Right.CodeDisplay);
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

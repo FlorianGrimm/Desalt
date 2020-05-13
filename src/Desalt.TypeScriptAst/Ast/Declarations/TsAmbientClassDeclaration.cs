@@ -52,9 +52,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitAmbientClassDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            $"class {ClassName}{TypeParameters}{Heritage} {{ {ClassBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("class ");

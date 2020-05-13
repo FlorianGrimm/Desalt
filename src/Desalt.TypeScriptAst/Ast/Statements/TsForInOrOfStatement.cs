@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast.Statements
 {
     using System;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -78,32 +77,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             else
             {
                 visitor.VisitForInStatement(this);
-            }
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("for (");
-
-                if (Initializer != null)
-                {
-                    builder.Append(Initializer.CodeDisplay);
-                }
-                else
-                {
-                    builder.Append(DeclarationKind?.CodeDisplay());
-                    builder.Append(Declaration?.CodeDisplay);
-                }
-
-                builder.Append(OfLoop ? " of " : " in ");
-
-                builder.Append(RightSide.CodeDisplay).Append(") ");
-                builder.Append(Statement.CodeDisplay);
-
-                return builder.ToString();
             }
         }
 

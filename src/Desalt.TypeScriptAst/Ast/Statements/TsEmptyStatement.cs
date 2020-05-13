@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitEmptyStatement(this);
         }
 
-        public override string CodeDisplay => ";";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteLine(";");

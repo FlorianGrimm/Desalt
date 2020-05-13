@@ -48,12 +48,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitFunctionExpression(this);
         }
 
-        public override string CodeDisplay =>
-            "function " +
-            (FunctionName != null ? FunctionName.CodeDisplay : "") +
-            CallSignature.CodeDisplay +
-            $" {{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("function");

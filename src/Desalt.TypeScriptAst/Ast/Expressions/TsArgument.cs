@@ -45,8 +45,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArgument(this);
         }
 
-        public override string CodeDisplay => (IsSpreadArgument ? "... " : "") + Expression;
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsSpreadArgument)

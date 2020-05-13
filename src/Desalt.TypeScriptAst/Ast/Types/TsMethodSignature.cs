@@ -43,21 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitMethodSignature(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = PropertyName.CodeDisplay;
-                if (IsOptional)
-                {
-                    display += "?";
-                }
-
-                display += CallSignature.CodeDisplay;
-                return display;
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             PropertyName.Emit(emitter);

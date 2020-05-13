@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitExportImplementationElement(this);
         }
 
-        public override string CodeDisplay => $"export {ExportedElement}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("export ");

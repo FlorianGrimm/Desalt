@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitImplementationModule(this);
         }
 
-        public override string CodeDisplay => $"{GetType().Name}, Elements.Length = {Elements.Length}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteList(Elements, indent: false, itemDelimiter: emitter.Options.Newline);

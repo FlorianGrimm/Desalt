@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitEnumMember(this);
         }
 
-        public override string CodeDisplay => $"{Name}{Value?.OptionalAssignment()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             Name.Emit(emitter);

@@ -226,15 +226,6 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Returns a ": type" type annotation if the type is not null.
-        /// </summary>
-        /// <param name="type">The type annotation to write.</param>
-        public static string OptionalTypeAnnotation(this ITsType type)
-        {
-            return type != null ? $": {type.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
         /// Writes out a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
@@ -249,15 +240,6 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Returns a " = expression" assignment if the expression is not null.
-        /// </summary>
-        /// <param name="expression">The expression to assign.</param>
-        public static string OptionalAssignment(this ITsExpression expression)
-        {
-            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
         /// Writes out a " = expression" assignment if the expression is not null.
         /// </summary>
         /// <param name="expression">The expression to assign.</param>
@@ -269,11 +251,6 @@ namespace Desalt.TypeScriptAst.Ast
                 emitter.Write(" = ");
                 expression.Emit(emitter);
             }
-        }
-
-        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier)
-        {
-            return accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
         }
 
         public static void EmitOptional(this TsAccessibilityModifier? accessibilityModifier, Emitter emitter)

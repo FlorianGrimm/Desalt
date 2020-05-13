@@ -42,9 +42,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitArgumentList(this);
         }
 
-        public override string CodeDisplay =>
-            (TypeArguments.IsEmpty ? "" : $"<{TypeArguments.ToElidedList()}>") + $"({Arguments.ToElidedList()})";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (!TypeArguments.IsEmpty)

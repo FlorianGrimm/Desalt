@@ -47,8 +47,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitLexicalDeclaration(this);
         }
 
-        public override string CodeDisplay => (IsConst ? "const " : "let ") + $"{Declarations.ToElidedList()};";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(IsConst ? "const " : "let ");

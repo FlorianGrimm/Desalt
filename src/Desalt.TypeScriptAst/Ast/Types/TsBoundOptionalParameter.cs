@@ -49,13 +49,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitBoundOptionalParameter(this);
         }
 
-        public override string CodeDisplay =>
-            $"{Modifier.OptionalCodeDisplay()}" +
-            ParameterName +
-            (Initializer == null ? "?" : "") +
-            ParameterType?.OptionalTypeAnnotation() +
-            (Initializer != null ? $" = {Initializer}" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             Modifier.EmitOptional(emitter);

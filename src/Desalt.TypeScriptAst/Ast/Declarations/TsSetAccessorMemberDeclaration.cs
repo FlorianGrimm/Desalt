@@ -49,12 +49,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitSetAccessorMemberDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            AccessibilityModifier.OptionalCodeDisplay() +
-            (IsStatic ? "static " : "") +
-            (IsAbstract ? "abstract " : "") +
-            SetAccessor.CodeDisplay;
-
         protected override void EmitContent(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);

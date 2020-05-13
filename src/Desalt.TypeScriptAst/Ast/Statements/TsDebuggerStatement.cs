@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitDebuggerStatement(this);
         }
 
-        public override string CodeDisplay => "debugger;";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.WriteLine("debugger;");

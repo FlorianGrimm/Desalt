@@ -40,8 +40,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitTemplateLiteral(this);
         }
 
-        public override string CodeDisplay => $"`{Parts.ToElidedList()}`";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("`");

@@ -37,8 +37,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitThis(this);
         }
 
-        public override string CodeDisplay => "this";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("this");

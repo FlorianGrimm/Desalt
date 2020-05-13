@@ -39,13 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         public string NamespaceOrUrl { get; }
         public string? Text { get; }
 
-        /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public override string CodeDisplay =>
-            string.IsNullOrEmpty(Text) ? $"{{@link {NamespaceOrUrl}}}" : $"[{Text}]{{@link {NamespaceOrUrl}}}";
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -56,17 +49,8 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
         /// <param name="emitter">The emitter to use.</param>
         public override void Emit(Emitter emitter)
         {
-            emitter.Write(CodeDisplay);
-        }
-
-        /// <summary>
-        /// Emits a node using a string stream. Useful for unit tests and debugging.
-        /// </summary>
-        /// <param name="emitOptions">The optional emit options.</param>
-        /// <returns>The node emitted to a string stream.</returns>
-        public override string EmitAsString(EmitOptions? emitOptions = null)
-        {
-            return CodeDisplay;
+            emitter.Write(
+                string.IsNullOrEmpty(Text) ? $"{{@link {NamespaceOrUrl}}}" : $"[{Text}]{{@link {NamespaceOrUrl}}}");
         }
     }
 }

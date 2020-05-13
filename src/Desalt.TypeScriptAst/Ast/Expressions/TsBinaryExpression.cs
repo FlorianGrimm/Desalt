@@ -46,8 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitBinaryExpression(this);
         }
 
-        public override string CodeDisplay => $"{LeftSide} {Operator.ToCodeDisplay()} {RightSide}";
-
         protected override void EmitContent(Emitter emitter)
         {
             LeftSide.Emit(emitter);

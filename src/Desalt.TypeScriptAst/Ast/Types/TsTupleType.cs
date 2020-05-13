@@ -25,7 +25,7 @@ namespace Desalt.TypeScriptAst.Ast.Types
         {
             if (elementType == null)
             { throw new ArgumentNullException(nameof(elementType)); }
-            ElementTypes = new[] { elementType }.Concat(elementTypes ?? new ITsType[0]).ToImmutableArray();
+            ElementTypes = new[] { elementType }.Concat(elementTypes ?? Array.Empty<ITsType>()).ToImmutableArray();
         }
 
         //// ===========================================================================================================
@@ -42,8 +42,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
         {
             visitor.VisitTupleType(this);
         }
-
-        public override string CodeDisplay => $"[{ElementTypes.ToElidedList()}]";
 
         protected override void EmitContent(Emitter emitter)
         {

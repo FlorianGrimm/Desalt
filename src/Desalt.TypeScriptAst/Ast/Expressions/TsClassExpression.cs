@@ -47,9 +47,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitClassExpression(this);
         }
 
-        public override string CodeDisplay =>
-            $"class {ClassName}{Heritage?.CodeDisplay} {{ {ClassBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("class ");

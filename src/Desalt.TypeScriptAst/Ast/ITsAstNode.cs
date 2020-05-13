@@ -21,12 +21,6 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        string CodeDisplay { get; }
-
-        /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
         /// </summary>
         ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; }

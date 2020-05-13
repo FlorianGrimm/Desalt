@@ -48,9 +48,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitPropertyFunction(this);
         }
 
-        public override string CodeDisplay =>
-            $"{PropertyName.CodeDisplay}{CallSignature.CodeDisplay} {{ {FunctionBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             PropertyName.Emit(emitter);

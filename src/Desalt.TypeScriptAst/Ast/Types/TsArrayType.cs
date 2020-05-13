@@ -39,9 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitArrayType(this);
         }
 
-        public override string CodeDisplay =>
-            Type is ITsFunctionType ? $"Array<{Type.CodeDisplay}>" : $"{Type.CodeDisplay}[]";
-
         protected override void EmitContent(Emitter emitter)
         {
             // special case: if we have an array of function types, we need to use the Array<T>

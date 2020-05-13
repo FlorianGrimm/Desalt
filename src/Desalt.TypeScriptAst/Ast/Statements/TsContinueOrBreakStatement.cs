@@ -47,9 +47,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             }
         }
 
-        public override string CodeDisplay =>
-            (IsContinue ? "continue" : "break") + (Label == null ? "" : $" {Label}") + ";";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(IsContinue ? "continue" : "break");

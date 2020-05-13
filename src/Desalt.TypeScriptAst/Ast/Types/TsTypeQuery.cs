@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitTypeQuery(this);
         }
 
-        public override string CodeDisplay => $"typeof {Query}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("typeof ");

@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitPropertyAssignment(this);
         }
 
-        public override string CodeDisplay => $"{PropertyName.CodeDisplay}: {Initializer.CodeDisplay}";
-
         protected override void EmitContent(Emitter emitter)
         {
             PropertyName.Emit(emitter);

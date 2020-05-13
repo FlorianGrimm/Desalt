@@ -40,9 +40,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitTemplatePart(this);
         }
 
-        public override string CodeDisplay =>
-            (Template ?? "") + (Expression != null ? "${" + Expression + "}" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             if (Template != null)

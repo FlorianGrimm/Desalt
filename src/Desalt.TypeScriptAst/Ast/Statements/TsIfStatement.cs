@@ -43,9 +43,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitIfStatement(this);
         }
 
-        public override string CodeDisplay =>
-            $"if ({IfCondition}) {IfStatement}" + (ElseStatement != null ? $" else {ElseStatement}" : "");
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("if (");

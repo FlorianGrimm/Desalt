@@ -11,7 +11,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
-    using System.Text;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Emit;
 
@@ -104,38 +103,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitForStatement(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("for (");
-
-                if (Initializer != null)
-                {
-                    builder.Append(Initializer.CodeDisplay);
-                    builder.Append("; ");
-                }
-                else if (InitializerWithVariableDeclarations?.Length > 0)
-                {
-                    builder.Append("var ");
-                    builder.Append(InitializerWithVariableDeclarations?.ToElidedList());
-                    builder.Append("; ");
-                }
-                else
-                {
-                    builder.Append(InitializerWithLexicalDeclaration?.CodeDisplay);
-                    builder.Append(" ");
-                }
-
-                builder.Append(Condition?.CodeDisplay).Append("; ");
-                builder.Append(Incrementor?.CodeDisplay).Append(") ");
-                builder.Append(Statement.CodeDisplay);
-
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

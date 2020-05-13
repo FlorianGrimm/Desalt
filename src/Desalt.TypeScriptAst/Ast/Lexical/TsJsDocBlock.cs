@@ -34,16 +34,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
 
         public ImmutableArray<ITsJsDocInlineContent> Content { get; }
 
-        /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public override string CodeDisplay =>
-            Content.Aggregate(
-                new StringBuilder(),
-                (builder, content) => builder.Append(content.CodeDisplay),
-                builder => builder.ToString());
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================

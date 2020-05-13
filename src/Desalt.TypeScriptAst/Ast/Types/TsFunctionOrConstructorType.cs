@@ -66,9 +66,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             }
         }
 
-        public override string CodeDisplay =>
-            (IsConstructorType ? "new " : "") + $"{TypeParameters}({Parameters?.CodeDisplay}) => {ReturnType}";
-
         protected override void EmitContent(Emitter emitter)
         {
             if (IsConstructorType)

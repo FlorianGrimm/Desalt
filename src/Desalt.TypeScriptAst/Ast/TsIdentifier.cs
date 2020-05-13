@@ -70,8 +70,6 @@ namespace Desalt.TypeScriptAst.Ast
             visitor.VisitIdentifier(this);
         }
 
-        public override string CodeDisplay => Text;
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(Text);

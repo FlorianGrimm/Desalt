@@ -41,35 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitUnaryExpression(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                switch (Operator)
-                {
-                    case TsUnaryOperator.Delete:
-                    case TsUnaryOperator.Void:
-                    case TsUnaryOperator.Typeof:
-                        return $"{Operator.ToCodeDisplay()} {Operand}";
-
-                    case TsUnaryOperator.PrefixIncrement:
-                    case TsUnaryOperator.PrefixDecrement:
-                    case TsUnaryOperator.Plus:
-                    case TsUnaryOperator.Minus:
-                    case TsUnaryOperator.BitwiseNot:
-                    case TsUnaryOperator.LogicalNot:
-                        return $"{Operator.ToCodeDisplay()}{Operand}";
-
-                    case TsUnaryOperator.PostfixIncrement:
-                    case TsUnaryOperator.PostfixDecrement:
-                        return $"{Operand}{Operator.ToCodeDisplay()}";
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(Operator));
-                }
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             switch (Operator)

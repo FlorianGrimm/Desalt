@@ -7,7 +7,6 @@
 
 namespace Desalt.TypeScriptAst.Ast.Statements
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Emit;
@@ -40,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
         {
             visitor.VisitBlockStatement(this);
         }
-
-        public override string CodeDisplay => $"{{ {Statements.ToElidedList(Environment.NewLine)} }}";
 
         protected override void EmitContent(Emitter emitter)
         {

@@ -46,17 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitSimpleLexicalBinding(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = VariableName.CodeDisplay;
-                display += VariableType?.OptionalTypeAnnotation();
-                display += Initializer?.OptionalAssignment();
-                return display;
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             VariableName.Emit(emitter);

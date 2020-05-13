@@ -51,10 +51,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitSetAccessor(this);
         }
 
-        public override string CodeDisplay =>
-            $"set {PropertyName}({ParameterName}{ParameterType?.OptionalTypeAnnotation()}) " +
-            $"{{ {FunctionBody.ToElidedList()} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("set ");

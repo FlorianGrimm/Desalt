@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -47,33 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitFunctionDeclaration(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("function ");
-
-                if (FunctionName != null)
-                {
-                    builder.Append(FunctionName).Append(" ");
-                }
-
-                builder.Append(CallSignature.CodeDisplay);
-
-                if (FunctionBody.IsEmpty)
-                {
-                    builder.Append(";");
-                }
-                else
-                {
-                    builder.Append("{").Append(FunctionBody.ToElidedList()).Append("}");
-                }
-
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

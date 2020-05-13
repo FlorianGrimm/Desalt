@@ -46,9 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitDestructuringLexicalBinding(this);
         }
 
-        public override string CodeDisplay =>
-            $"{BindingPattern}{VariableType?.OptionalTypeAnnotation()}{Initializer?.OptionalAssignment()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             BindingPattern.Emit(emitter);

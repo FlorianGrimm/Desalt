@@ -48,10 +48,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitGetAccessor(this);
         }
 
-        public override string CodeDisplay =>
-            $"get {PropertyName}(){PropertyType?.OptionalTypeAnnotation()} " +
-            $"{{ {FunctionBody.ToElidedList(Environment.NewLine)} }}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("get ");

@@ -46,21 +46,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitBoundRequiredParameter(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                string display = string.Empty;
-                if (Modifier.HasValue)
-                {
-                    display = $"{Modifier.Value.ToString().ToLowerInvariant()} ";
-                }
-
-                display += $"{ParameterName}{ParameterType?.OptionalTypeAnnotation()}";
-                return display;
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
             if (Modifier.HasValue)

@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Text;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -114,35 +113,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         public override void Accept(TsVisitor visitor)
         {
             visitor.VisitImportClause(this);
-        }
-
-        public override string CodeDisplay
-        {
-            get
-            {
-                var builder = new StringBuilder();
-
-                if (DefaultBinding != null)
-                {
-                    builder.Append(DefaultBinding.CodeDisplay);
-                    if (NamespaceBinding != null || NamedImports != null)
-                    {
-                        builder.Append(", ");
-                    }
-                }
-
-                if (NamespaceBinding != null)
-                {
-                    builder.Append("* as ").Append(NamespaceBinding.CodeDisplay);
-                }
-
-                if (NamedImports != null)
-                {
-                    builder.Append("{ ").Append(NamedImports?.ToElidedList()).Append(" }");
-                }
-
-                return builder.ToString();
-            }
         }
 
         protected override void EmitContent(Emitter emitter)

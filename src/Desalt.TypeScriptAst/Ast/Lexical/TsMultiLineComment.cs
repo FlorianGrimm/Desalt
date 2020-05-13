@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Lexical
 
         public ImmutableArray<string> Lines { get; }
 
-        public override string CodeDisplay => $"{Prefix} {string.Join("\n", Lines.ToArray())}\n*/";
-
         private string Prefix => IsJsDoc ? "/**" : "/*";
 
         //// ===========================================================================================================

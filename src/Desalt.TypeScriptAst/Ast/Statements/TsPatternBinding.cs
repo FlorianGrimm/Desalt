@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitPatternBinding(this);
         }
 
-        public override string CodeDisplay => $"{BindingPattern}{Initializer?.OptionalAssignment()}";
-
         protected override void EmitContent(Emitter emitter)
         {
             BindingPattern.Emit(emitter);

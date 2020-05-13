@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitCoverInitializedName(this);
         }
 
-        public override string CodeDisplay => $"{Identifier} = ${Initializer}";
-
         protected override void EmitContent(Emitter emitter)
         {
             Identifier.Emit(emitter);

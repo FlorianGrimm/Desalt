@@ -44,10 +44,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitClassHeritage(this);
         }
 
-        public override string CodeDisplay =>
-            (ExtendsClause != null ? $" extends {ExtendsClause}" : "") +
-            (ImplementsClause.IsEmpty ? "" : $" implements {ImplementsClause.ToElidedList()}");
-
         protected override void EmitContent(Emitter emitter)
         {
             if (ExtendsClause != null)

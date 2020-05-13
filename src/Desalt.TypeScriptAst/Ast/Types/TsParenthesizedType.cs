@@ -39,8 +39,6 @@ namespace Desalt.TypeScriptAst.Ast.Types
             visitor.VisitParenthesizedType(this);
         }
 
-        public override string CodeDisplay => $"({Type.CodeDisplay})";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("(");

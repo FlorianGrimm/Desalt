@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitImportRequireDeclaration(this);
         }
 
-        public override string CodeDisplay => $"import {Name} = require({Require});";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("import ");

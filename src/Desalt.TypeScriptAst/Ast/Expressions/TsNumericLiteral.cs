@@ -75,33 +75,18 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
             visitor.VisitNumericLiteral(this);
         }
 
-        public override string CodeDisplay
-        {
-            get
-            {
-                switch (Kind)
-                {
-                    case TsNumericLiteralKind.Decimal:
-                        return Value.ToString(CultureInfo.InvariantCulture);
-
-                    case TsNumericLiteralKind.BinaryInteger:
-                        return "0b" + Convert.ToString((long)Value, 2);
-
-                    case TsNumericLiteralKind.OctalInteger:
-                        return "0o" + Convert.ToString((long)Value, 8);
-
-                    case TsNumericLiteralKind.HexInteger:
-                        return "0x" + Convert.ToString((long)Value, 16);
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(Kind));
-                }
-            }
-        }
-
         protected override void EmitContent(Emitter emitter)
         {
-            emitter.Write(CodeDisplay);
+            string number = Kind switch
+            {
+                TsNumericLiteralKind.Decimal => Value.ToString(CultureInfo.InvariantCulture),
+                TsNumericLiteralKind.BinaryInteger => "0b" + Convert.ToString((long)Value, 2),
+                TsNumericLiteralKind.OctalInteger => "0o" + Convert.ToString((long)Value, 8),
+                TsNumericLiteralKind.HexInteger => "0x" + Convert.ToString((long)Value, 16),
+                _ => throw new ArgumentOutOfRangeException(nameof(Kind))
+            };
+
+            emitter.Write(number);
         }
     }
 }

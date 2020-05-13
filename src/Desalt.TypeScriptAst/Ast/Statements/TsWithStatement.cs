@@ -41,8 +41,6 @@ namespace Desalt.TypeScriptAst.Ast.Statements
             visitor.VisitWithStatement(this);
         }
 
-        public override string CodeDisplay => $"with ({Expression}) {Statement}";
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("with (");

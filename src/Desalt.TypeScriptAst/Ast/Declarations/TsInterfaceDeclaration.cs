@@ -52,10 +52,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             visitor.VisitInterfaceDeclaration(this);
         }
 
-        public override string CodeDisplay =>
-            $"interface {InterfaceName}{TypeParameters}" +
-            (ExtendsClause.IsEmpty ? "" : $" extends {ExtendsClause.ToElidedList()}") + Body;
-
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write("interface ");

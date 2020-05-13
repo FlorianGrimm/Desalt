@@ -101,13 +101,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             }
         }
 
-        public override string CodeDisplay =>
-            AccessibilityModifier.OptionalCodeDisplay() +
-            (IsStatic ? "static " : "") +
-            (IsAbstract ? "abstract " : "") +
-            $"{FunctionName}{CallSignature.CodeDisplay}" +
-            (FunctionBody?.ToElidedList() ?? ";");
-
         protected override void EmitContent(Emitter emitter)
         {
             AccessibilityModifier.EmitOptional(emitter);
