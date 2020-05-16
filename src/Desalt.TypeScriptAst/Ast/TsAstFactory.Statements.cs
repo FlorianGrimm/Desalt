@@ -77,7 +77,7 @@ namespace Desalt.TypeScriptAst.Ast
             IEnumerable<ITsBindingElement?> elements,
             ITsIdentifier? restElement = null)
         {
-            return new TsArrayBindingPattern(elements, restElement);
+            return new TsArrayBindingPattern(elements.ToImmutableArray(), restElement);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArrayBindingPattern ArrayBindingPattern(params ITsBindingElement?[] elements)
         {
-            return new TsArrayBindingPattern(elements);
+            return new TsArrayBindingPattern(elements.ToImmutableArray(), null);
         }
 
         /// <summary>

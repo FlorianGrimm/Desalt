@@ -797,5 +797,31 @@
       <Comment>Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.</Comment>
       <Property name="Properties" type="ImmutableArray&lt;ITsBindingProperty&gt;" />
     </AstNode>
+    <AstNode name="ArrayBindingPattern" baseInterfaces="ITsBindingPattern">
+      <Comment>Represents an array binding pattern of the form '[x = y, z]' or '[x = y, z, ...p]'.</Comment>
+      <Property name="Elements" type="ImmutableArray&lt;ITsBindingElement?&gt;" />
+      <Property name="RestElement" type="ITsIdentifier?" />
+    </AstNode>
+    <AstNode name="BindingProperty" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Marker interface for properties that are bound in array or object initializers.</Comment>
+    </AstNode>
+    <AstNode name="SingleNameBinding" baseInterfaces="ITsBindingProperty, ITsBindingElement">
+      <Comment>Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.</Comment>
+      <Property name="Name" type="ITsIdentifier" />
+      <Property name="DefaultValue" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="PropertyNameBinding" baseInterfaces="ITsBindingProperty">
+      <Comment>Represents a property name binding pattern used in object and array bindings, of the form 'propertyName = expression'.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="BindingElement" type="ITsBindingElement" />
+    </AstNode>
+    <AstNode name="BindingElement" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Marker interface for binding elements in object and array bindings.</Comment>
+    </AstNode>
+    <AstNode name="PatternBinding" baseInterfaces="ITsBindingElement">
+      <Comment>Represents a recursive pattern binding in an object or array binding.</Comment>
+      <Property name="BindingPattern" type="ITsBindingPattern" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
   </AstNodes>
 </Grammar>

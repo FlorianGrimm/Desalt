@@ -303,5 +303,51 @@ namespace Desalt.TypeScriptAst.Ast
                 itemDelimiter: ", ",
                 emptyContents: "{}");
         }
+
+        public static Emitter WriteArrayBindingPattern(
+            this Emitter emitter,
+            ImmutableArray<ITsBindingElement?> elements,
+            ITsIdentifier? restElement)
+        {
+            if (restElement != null)
+            {
+                return emitter.Write("[")
+                    .WriteList(elements, indent: false, itemDelimiter: ", ", delimiterAfterLastItem: true)
+                    .Write("... ")
+                    .Write(restElement)
+                    .Write("]");
+            }
+
+            return emitter.WriteList(
+                elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
+        }
+
+        public static Emitter WriteSingleNameBinding(
+            this Emitter emitter,
+            ITsIdentifier name,
+            ITsExpression? defaultValue)
+        {
+            name.Emit(emitter);
+            defaultValue?.EmitOptionalAssignment(emitter);
+            return emitter;
+        }
+
+        public static Emitter WritePropertyNameBinding(
+            this Emitter emitter,
+            ITsPropertyName propertyName,
+            ITsBindingElement bindingElement)
+        {
+            return emitter.Write(propertyName).Write(": ").Write(bindingElement);
+        }
+
+        public static Emitter WritePatternBinding(
+            this Emitter emitter,
+            ITsBindingPattern bindingPattern,
+            ITsExpression? initializer)
+        {
+            bindingPattern.Emit(emitter);
+            initializer?.EmitOptionalAssignment(emitter);
+            return emitter;
+        }
     }
 }

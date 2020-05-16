@@ -78,34 +78,6 @@ namespace Desalt.TypeScriptAst.Ast
         string Text { get; }
     }
 
-    public interface ITsArrayBindingPattern : ITsBindingPattern
-    {
-        ImmutableArray<ITsBindingElement?> Elements { get; }
-        ITsIdentifier? RestElement { get; }
-    }
-
-    public interface ITsBindingProperty : ITsAstNode { }
-
-    public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
-    {
-        ITsIdentifier Name { get; }
-        ITsExpression? DefaultValue { get; }
-    }
-
-    public interface ITsPropertyNameBinding : ITsBindingProperty
-    {
-        ITsPropertyName PropertyName { get; }
-        ITsBindingElement BindingElement { get; }
-    }
-
-    public interface ITsBindingElement : ITsAstNode { }
-
-    public interface ITsPatternBinding : ITsBindingElement
-    {
-        ITsBindingPattern BindingPattern { get; }
-        ITsExpression? Initializer { get; }
-    }
-
     /* 13.4 Empty Statement
      * --------------------
      * EmptyStatement:

@@ -1702,4 +1702,214 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsObjectBindingPattern WithProperties(this ITsObjectBindingPattern node, ImmutableArray<ITsBindingProperty> value) =>
             node.Properties == value ? node : new TsObjectBindingPattern(value, node.LeadingTrivia, node.TrailingTrivia);
     }
+
+    //// ===============================================================================================================
+    //// ArrayBindingPattern
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an array binding pattern of the form '[x = y, z]' or '[x = y, z, ...p]'.
+    /// </summary>
+    public interface ITsArrayBindingPattern : ITsBindingPattern
+    {
+        ImmutableArray<ITsBindingElement?> Elements { get; }
+        ITsIdentifier? RestElement { get; }
+    }
+
+    /// <summary>
+    /// Represents an array binding pattern of the form '[x = y, z]' or '[x = y, z, ...p]'.
+    /// </summary>
+    internal partial class TsArrayBindingPattern : TsAstNode, ITsArrayBindingPattern
+    {
+        public TsArrayBindingPattern(
+            ImmutableArray<ITsBindingElement?> elements,
+            ITsIdentifier? restElement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(elements, restElement);
+            Elements = elements;
+            RestElement = restElement;
+        }
+
+        public ImmutableArray<ITsBindingElement?> Elements { get; }
+        public ITsIdentifier? RestElement { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsBindingElement?> elements, ITsIdentifier? restElement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrayBindingPattern(this);
+        protected override void EmitContent(Emitter emitter) => emitter.WriteArrayBindingPattern(Elements, RestElement);
+    }
+
+    public static class ArrayBindingPatternExtensions
+    {
+        public static ITsArrayBindingPattern WithElements(this ITsArrayBindingPattern node, ImmutableArray<ITsBindingElement?> value) =>
+            node.Elements == value ? node : new TsArrayBindingPattern(value, node.RestElement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrayBindingPattern WithRestElement(this ITsArrayBindingPattern node, ITsIdentifier? value) =>
+            node.RestElement == value ? node : new TsArrayBindingPattern(node.Elements, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// BindingProperty
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Marker interface for properties that are bound in array or object initializers.
+    /// </summary>
+    public interface ITsBindingProperty : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// SingleNameBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
+    /// </summary>
+    public interface ITsSingleNameBinding : ITsBindingProperty, ITsBindingElement
+    {
+        ITsIdentifier Name { get; }
+        ITsExpression? DefaultValue { get; }
+    }
+
+    /// <summary>
+    /// Represents a single name binding pattern used in object and array bindings, of the form 'name = expression'.
+    /// </summary>
+    internal partial class TsSingleNameBinding : TsAstNode, ITsSingleNameBinding
+    {
+        public TsSingleNameBinding(
+            ITsIdentifier name,
+            ITsExpression? defaultValue,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(name, defaultValue);
+            Name = name;
+            DefaultValue = defaultValue;
+        }
+
+        public ITsIdentifier Name { get; }
+        public ITsExpression? DefaultValue { get; }
+
+        partial void VerifyInputs(ITsIdentifier name, ITsExpression? defaultValue);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
+        protected override void EmitContent(Emitter emitter) => emitter.WriteSingleNameBinding(Name, DefaultValue);
+    }
+
+    public static class SingleNameBindingExtensions
+    {
+        public static ITsSingleNameBinding WithName(this ITsSingleNameBinding node, ITsIdentifier value) =>
+            node.Name == value ? node : new TsSingleNameBinding(value, node.DefaultValue, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSingleNameBinding WithDefaultValue(this ITsSingleNameBinding node, ITsExpression? value) =>
+            node.DefaultValue == value ? node : new TsSingleNameBinding(node.Name, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// PropertyNameBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a property name binding pattern used in object and array bindings, of the form 'propertyName = expression'.
+    /// </summary>
+    public interface ITsPropertyNameBinding : ITsBindingProperty
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsBindingElement BindingElement { get; }
+    }
+
+    /// <summary>
+    /// Represents a property name binding pattern used in object and array bindings, of the form 'propertyName = expression'.
+    /// </summary>
+    internal partial class TsPropertyNameBinding : TsAstNode, ITsPropertyNameBinding
+    {
+        public TsPropertyNameBinding(
+            ITsPropertyName propertyName,
+            ITsBindingElement bindingElement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(propertyName, bindingElement);
+            PropertyName = propertyName;
+            BindingElement = bindingElement;
+        }
+
+        public ITsPropertyName PropertyName { get; }
+        public ITsBindingElement BindingElement { get; }
+
+        partial void VerifyInputs(ITsPropertyName propertyName, ITsBindingElement bindingElement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyNameBinding(this);
+        protected override void EmitContent(Emitter emitter) => emitter.WritePropertyNameBinding(PropertyName, BindingElement);
+    }
+
+    public static class PropertyNameBindingExtensions
+    {
+        public static ITsPropertyNameBinding WithPropertyName(this ITsPropertyNameBinding node, ITsPropertyName value) =>
+            node.PropertyName == value ? node : new TsPropertyNameBinding(value, node.BindingElement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsPropertyNameBinding WithBindingElement(this ITsPropertyNameBinding node, ITsBindingElement value) =>
+            node.BindingElement == value ? node : new TsPropertyNameBinding(node.PropertyName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// BindingElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Marker interface for binding elements in object and array bindings.
+    /// </summary>
+    public interface ITsBindingElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// PatternBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a recursive pattern binding in an object or array binding.
+    /// </summary>
+    public interface ITsPatternBinding : ITsBindingElement
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a recursive pattern binding in an object or array binding.
+    /// </summary>
+    internal partial class TsPatternBinding : TsAstNode, ITsPatternBinding
+    {
+        public TsPatternBinding(
+            ITsBindingPattern bindingPattern,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(bindingPattern, initializer);
+            BindingPattern = bindingPattern;
+            Initializer = initializer;
+        }
+
+        public ITsBindingPattern BindingPattern { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
+        protected override void EmitContent(Emitter emitter) => emitter.WritePatternBinding(BindingPattern, Initializer);
+    }
+
+    public static class PatternBindingExtensions
+    {
+        public static ITsPatternBinding WithBindingPattern(this ITsPatternBinding node, ITsBindingPattern value) =>
+            node.BindingPattern == value ? node : new TsPatternBinding(value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsPatternBinding WithInitializer(this ITsPatternBinding node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsPatternBinding(node.BindingPattern, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
 }
