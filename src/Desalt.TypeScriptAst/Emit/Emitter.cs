@@ -70,42 +70,56 @@ namespace Desalt.TypeScriptAst.Emit
         //// Methods
         //// ===========================================================================================================
 
-        public void Write(string text)
+        public Emitter Write(string text)
         {
             WriteLeadingSpaceIfNeeded(text);
             _writer.Write(text);
             SetLastWriteWasWhitespace(text);
+            return this;
         }
 
-        public void WriteLine()
+        public Emitter WriteIf(bool condition, string text)
+        {
+            if (condition)
+            {
+                Write(text);
+            }
+
+            return this;
+        }
+
+        public Emitter WriteLine()
         {
             _writer.WriteLine();
             _lastWriteWasWhitespace = true;
             _nextWriteRequiresSpace = false;
+            return this;
         }
 
-        public void WriteLine(string text)
+        public Emitter WriteLine(string text)
         {
             WriteLeadingSpaceIfNeeded(text);
             _writer.WriteLine(text);
             _lastWriteWasWhitespace = true;
+            return this;
         }
 
         /// <summary>
         /// Writes the specified string to a line without tabs.
         /// </summary>
-        public void WriteLineWithoutIndentation()
+        public Emitter WriteLineWithoutIndentation()
         {
             _writer.WriteLineWithoutIndentation();
             _lastWriteWasWhitespace = true;
             _nextWriteRequiresSpace = false;
+            return this;
         }
 
         /// <summary>
         /// Writes the keyword, ensuring that it is surrounded by spaces.
         /// </summary>
         /// <param name="keyword"></param>
-        public void WriteKeyword(string keyword)
+        public Emitter WriteKeyword(string keyword)
         {
             _nextWriteRequiresSpace = true;
             WriteLeadingSpaceIfNeeded(keyword);
@@ -114,6 +128,8 @@ namespace Desalt.TypeScriptAst.Emit
 
             SetLastWriteWasWhitespace(keyword);
             _nextWriteRequiresSpace = true;
+
+            return this;
         }
 
         /// <summary>
@@ -124,9 +140,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// Indicates whether to skip writing newlines between items. Useful for writing blocks of
         /// statements that already have newlines.
         /// </param>
-        public void WriteBlock(IReadOnlyList<ITsAstNode> items, bool skipNewlines = false)
+        public Emitter WriteBlock(IReadOnlyList<ITsAstNode> items, bool skipNewlines = false)
         {
-            WriteList(
+            return WriteList(
                 items,
                 indent: true,
                 prefix: "{",
@@ -143,9 +159,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// Writes a list of items separated by a comma.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteCommaList(IReadOnlyList<ITsAstNode> items)
+        public Emitter WriteCommaList(IReadOnlyList<ITsAstNode> items)
         {
-            WriteList(items, indent: false, itemDelimiter: ", ");
+            return WriteList(items, indent: false, itemDelimiter: ", ");
         }
 
         /// <summary>
@@ -153,9 +169,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// new line.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteCommaNewlineSeparatedBlock(IReadOnlyList<ITsAstNode> items)
+        public Emitter WriteCommaNewlineSeparatedBlock(IReadOnlyList<ITsAstNode> items)
         {
-            WriteList(
+            return WriteList(
                 items,
                 indent: true,
                 prefix: "{",
@@ -170,9 +186,9 @@ namespace Desalt.TypeScriptAst.Emit
         /// Writes a comma-separated list wrapped in a () block.
         /// </summary>
         /// <param name="items">The items to write.</param>
-        public void WriteParameterList(IReadOnlyList<ITsAstNode> items)
+        public Emitter WriteParameterList(IReadOnlyList<ITsAstNode> items)
         {
-            WriteList(items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
+            return WriteList(items, indent: false, prefix: "(", suffix: ")", itemDelimiter: ", ");
         }
 
         /// <summary>
@@ -201,7 +217,7 @@ namespace Desalt.TypeScriptAst.Emit
         /// The contents to write if the list is empty. If not supplied, it will just be <c><paramref
         /// name="prefix"/><paramref name="suffix"/></c>
         /// </param>
-        public void WriteList(
+        public Emitter WriteList(
             IReadOnlyList<ITsAstNode> items,
             bool indent,
             string? prefix = null,
@@ -225,8 +241,7 @@ namespace Desalt.TypeScriptAst.Emit
             // Special case - if the list is empty
             if (items.Count == 0)
             {
-                Write(emptyContents ?? $"{prefix}{suffix}");
-                return;
+                return Write(emptyContents ?? $"{prefix}{suffix}");
             }
 
             bool newlineAfterItems = false;
@@ -280,7 +295,7 @@ namespace Desalt.TypeScriptAst.Emit
                 IndentLevel--;
             }
 
-            Write(suffix);
+            return Write(suffix);
         }
 
         /// <summary>
@@ -300,7 +315,7 @@ namespace Desalt.TypeScriptAst.Emit
         /// <param name="newlineAfterBlock">
         /// Indicates whether to add a newline after the block if it's a block statement.
         /// </param>
-        public void WriteStatementIndentedOrInBlock(
+        public Emitter WriteStatementIndentedOrInBlock(
             ITsAstNode statement,
             bool isBlockStatement,
             string? prefixForIndentedStatement = null,
@@ -324,6 +339,8 @@ namespace Desalt.TypeScriptAst.Emit
                 statement.Emit(this);
                 IndentLevel--;
             }
+
+            return this;
         }
 
         public void Dispose()
