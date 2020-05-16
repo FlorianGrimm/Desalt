@@ -1,0 +1,360 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#+
+    public string RootOutputDirectory => Path.Combine(Path.GetDirectoryName(Host.TemplateFile), "..", "Generated");
+    public string TemplateFileName => Path.GetFileName(Host.TemplateFile);
+
+    private static readonly XNamespace Xmlns = "https://github.com/jrockwood/Desalt/GrammarSchema.xsd";
+    private static readonly string SingleIndent = new string(' ', 4);
+    private static readonly string DoubleIndent = new string(' ', 8);
+    private static readonly string TripleIndent = new string(' ', 12);
+
+    public void SaveToFile(string subDirectoryName, string fileName, string generatedText)
+    {
+        string directoryPath = Path.Combine(RootOutputDirectory, subDirectoryName);
+        Directory.CreateDirectory(directoryPath);
+
+        string filePath = Path.Combine(directoryPath, fileName);
+        File.WriteAllText(filePath, generatedText);
+    }
+
+    public IReadOnlyList<AstNodeDefinition> GatherDefinitions()
+    {
+        string grammarPath = Host.ResolvePath(@"TypeScriptGrammar.xml");
+        XDocument doc = XDocument.Load(grammarPath);
+
+        var definitions = new List<AstNodeDefinition>();
+
+        var triviaDefinitions = doc.Root.Descendants(Xmlns + "AstNode").Select(ParseNode);
+        definitions.AddRange(triviaDefinitions);
+
+        return definitions;
+    }
+
+    public void WriteEnumDeclarations(AstNodeDefinition node)
+    {
+        PushIndent(SingleIndent);
+
+        foreach (var enumDefinition in node.Enums)
+        {
+            WriteLine($"public enum {enumDefinition.Name}");
+            WriteLine("{");
+            PushIndent("    ");
+
+            foreach (var value in enumDefinition.Values)
+            {
+                WriteLine($"{value},");
+            }
+
+            PopIndent();
+            WriteLine("}");
+        }
+
+        PopIndent();
+
+        if (node.Enums.Any())
+        {
+            WriteLine("");
+        }
+    }
+
+    public void WriteProperties(AstNodeDefinition node, bool isInterface)
+    {
+        if (!node.HasProperties)
+        {
+            return;
+        }
+
+        if (!isInterface)
+        {
+            WriteLine("");
+        }
+
+        PushIndent(DoubleIndent);
+
+        foreach (var property in node.Properties)
+        {
+            if (property.Comment != null)
+            {
+                WriteLine("/// <summary>");
+                WriteLine("/// " + property.Comment);
+                WriteLine("/// </summary>");
+            }
+
+            if (!isInterface)
+            {
+                Write("public ");
+            }
+
+            WriteLine($"{property.Type} {property.Name} {{ get; }}");
+        }
+
+        PopIndent();
+    }
+
+    public void WriteCtorAssignments(AstNodeDefinition node)
+    {
+        PushIndent(TripleIndent);
+
+        WriteLine($"VerifyInputs({node.ToPropertyList(noTypes: true)});");
+
+        foreach (var property in node.Properties)
+        {
+            WriteLine($"{property.Name} = {property.ArgumentName};");
+        }
+
+        PopIndent();
+    }
+
+    public void WriteWithExtensionMethods(AstNodeDefinition node)
+    {
+        if (!node.HasProperties)
+        {
+            return;
+        }
+
+        WriteLine("");
+
+        PushIndent(SingleIndent);
+
+        WriteLine($"public static class {node.Name}Extensions");
+        WriteLine("{");
+        PushIndent(SingleIndent);
+
+        for (int i = 0; i < node.Properties.Count; i++)
+        {
+            var property = node.Properties[i];
+
+            if (i > 0)
+            {
+                WriteLine("");
+            }
+
+            Write($"public static {node.InterfaceName} With{property.Name}(");
+            WriteLine($"this {node.InterfaceName} node, {property.Type} value) =>");
+            PushIndent(SingleIndent);
+            Write($"node.{property.Name} == value ? node : new {node.ClassName}(");
+
+            for (int j = 0; j < node.Properties.Count; j++)
+            {
+                var argProp = node.Properties[j];
+
+                if (j > 0)
+                {
+                    Write(", ");
+                }
+
+                if (argProp.Name == property.Name)
+                {
+                    Write("value");
+                }
+                else
+                {
+                    Write($"node.{argProp.Name}");
+                }
+            }
+
+            // Write the trivia node arguments.
+            WriteLine(", node.LeadingTrivia, node.TrailingTrivia);");
+
+            PopIndent();
+        }
+
+        PopIndent();
+        WriteLine("}");
+
+        PopIndent();
+    }
+
+    private static readonly ISet<string> s_csharpKeywords = new HashSet<string>
+    {
+        "operator"
+    };
+
+    private static string SafeArgumentName(string name)
+    {
+        string argumentName = char.ToLowerInvariant(name[0]) + name.Substring(1);
+
+        if (s_csharpKeywords.Contains(argumentName))
+        {
+            argumentName = "@" + argumentName;
+        }
+
+        return argumentName;
+    }
+
+    private static AstNodeDefinition ParseNode(XElement node)
+    {
+        string defaultBaseClassName = "TsAstNode";
+        string defaultBaseInterface = "TsAstNode";
+
+        string name = (string)node.Attribute("name");
+        string comment = (string)node.Element(Xmlns + "Comment") ?? string.Empty;
+
+        string baseClassName = (string)node.Attribute("baseClass") ?? defaultBaseClassName;
+        string rawBaseInterfaces = (string)node.Attribute("baseInterfaces") ?? defaultBaseInterface;
+        string baseInterfaces = string.Join(", ", rawBaseInterfaces.Split(',').Select(s => s.Trim()));
+
+        bool interfaceOnly = ((bool?)node.Attribute("interfaceOnly")) ?? false;
+
+        var properties = new List<PropertyDefinition>();
+        foreach (var propertyNode in node.Descendants(Xmlns + "Property"))
+        {
+            string propertyName = (string)propertyNode.Attribute("name");
+            string propertyType = (string)propertyNode.Attribute("type");
+            string propertyComment = (string)propertyNode.Element(Xmlns + "Comment");
+
+            properties.Add(new PropertyDefinition(propertyName, propertyType, propertyComment));
+        }
+
+        var enums = new List<EnumDefinition>();
+        foreach (var enumNode in node.Descendants(Xmlns + "Enum"))
+        {
+            string enumName = (string)enumNode.Attribute("name");
+            var enumValues = enumNode.Descendants(Xmlns + "EnumValue").Select(x => (string)x.Attribute("name")).ToList();
+            var enumDefinition = new EnumDefinition(enumName, enumValues);
+            enums.Add(enumDefinition);
+        }
+
+        return new AstNodeDefinition(name)
+        {
+            Comment = comment,
+            BaseClassName = baseClassName,
+            BaseInterfaces = baseInterfaces,
+            Enums = enums,
+            InterfaceOnly = interfaceOnly,
+            Properties = properties,
+        };
+    }
+
+    public sealed class AstNodeDefinition
+    {
+        public AstNodeDefinition(string name)
+        {
+            Name = name;
+        }
+
+        // Read-only Properties
+        public string Name { get; }
+        public string BaseCtorArgumentList { get; } = "leadingTrivia, trailingTrivia";
+
+        // Writable Properties
+        public string Comment { get; set; }
+        public string BaseClassName { get; set; }
+        public string BaseInterfaces { get; set; }
+        public bool InterfaceOnly { get; set; }
+
+        public IList<EnumDefinition> Enums { get; set; } = new List<EnumDefinition>();
+        public IList<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
+
+        // Computed Properties
+        public string ArgumentName => SafeArgumentName(Name);
+        public string ClassName => "Ts" + Name;
+        public bool HasProperties => Properties.Any();
+        public string InterfaceName => "ITs" + Name;
+        public string EmitImplementation =>
+            $"emitter.Write{Name}({ToPropertyList(noTypes: true, useNameInsteadOfArgumentName: true)})";
+
+        public string ToPropertyList(
+            bool includeTriviaParams = false,
+            bool multipleLines = false,
+            bool noTypes = false,
+            bool prefixComma = false,
+            bool useNameInsteadOfArgumentName = false)
+        {
+            string indent = TripleIndent;
+
+            var builder = new StringBuilder();
+
+            for (int i = 0; i < Properties.Count; i++)
+            {
+                var property = Properties[i];
+
+                if (i == 0)
+                {
+                    if (prefixComma && multipleLines)
+                    {
+                        builder.AppendLine(",");
+                    }
+                    else if (prefixComma && !multipleLines)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    if (multipleLines)
+                    {
+                        builder.AppendLine().Append(indent);
+                    }
+                }
+                else
+                {
+                    if (multipleLines)
+                    {
+                        builder.AppendLine(",").Append(indent);
+                    }
+                    else
+                    {
+                        builder.Append(", ");
+                    }
+                }
+
+                if (!noTypes)
+                {
+                    builder.Append(property.Type).Append(" ");
+                }
+
+                builder.Append(useNameInsteadOfArgumentName ? property.Name : property.ArgumentName);
+            }
+
+            // Add the base class argumnets.
+            if (includeTriviaParams)
+            {
+                if (Properties.Count > 0)
+                {
+                    builder.Append(",");
+                }
+
+                builder.AppendLine().Append(indent).Append("ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null");
+                builder.AppendLine(",").Append(indent).Append("ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null");
+            }
+
+            return builder.ToString();
+        }
+    }
+
+    public sealed class PropertyDefinition
+    {
+        public PropertyDefinition(string name, string type, string comment)
+        {
+            Name = name;
+            Type = type;
+            Comment = comment;
+        }
+
+        public string Name { get; }
+        public string ArgumentName => SafeArgumentName(Name);
+
+        public string Type { get; }
+        public string Comment { get; }
+    }
+
+    public sealed class EnumDefinition
+    {
+        public EnumDefinition(string name, IEnumerable<string> values = null)
+        {
+            Name = name;
+            Values = values?.ToList() ?? new List<string>();
+        }
+
+        public string Name { get; }
+        public IList<string> Values { get; }
+    }
+#>

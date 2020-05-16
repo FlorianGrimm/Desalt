@@ -9,7 +9,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
-    using Op = TypeScriptAst.Ast.Expressions.TsAssignmentOperator;
+    using Op = Desalt.TypeScriptAst.Ast.TsAssignmentOperator;
 
     public partial class TsEmitTests
     {

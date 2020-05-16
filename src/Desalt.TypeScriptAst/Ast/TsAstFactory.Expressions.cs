@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.TypeScriptAst.Ast.Expressions;
 
@@ -19,21 +20,23 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsCommaExpression CommaExpression(params ITsExpression[] expressions)
         {
-            return new TsCommaExpression(expressions);
+            return new TsCommaExpression(expressions.ToImmutableArray());
         }
 
         //// ===========================================================================================================
         //// Literal Expressions
         //// ===========================================================================================================
 
-        public static ITsThis This => TsThis.Instance;
-        public static readonly ITsObjectLiteral EmptyObject = new TsObjectLiteral();
+        public static readonly ITsThis This = new TsThis();
 
-        public static ITsNullLiteral Null => TsNullLiteral.Instance;
-        public static ITsBooleanLiteral True => TsBooleanLiteral.True;
-        public static ITsBooleanLiteral False => TsBooleanLiteral.False;
+        public static readonly ITsObjectLiteral EmptyObject =
+            new TsObjectLiteral(ImmutableArray<ITsPropertyDefinition>.Empty);
 
-        public static ITsNumericLiteral Zero => TsNumericLiteral.Zero;
+        public static readonly ITsNullLiteral Null = new TsNullLiteral();
+        public static readonly ITsBooleanLiteral True = new TsBooleanLiteral(true);
+        public static readonly ITsBooleanLiteral False = new TsBooleanLiteral(false);
+
+        public static readonly ITsNumericLiteral Zero = new TsNumericLiteral(0, TsNumericLiteralKind.Decimal);
 
         public static ITsStringLiteral String(
             string value,
@@ -44,22 +47,22 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsNumericLiteral Number(double value)
         {
-            return new TsNumericLiteral(TsNumericLiteralKind.Decimal, value);
+            return new TsNumericLiteral(value, TsNumericLiteralKind.Decimal);
         }
 
         public static ITsNumericLiteral BinaryInteger(long value)
         {
-            return new TsNumericLiteral(TsNumericLiteralKind.BinaryInteger, value);
+            return new TsNumericLiteral(value, TsNumericLiteralKind.BinaryInteger);
         }
 
         public static ITsNumericLiteral OctalInteger(long value)
         {
-            return new TsNumericLiteral(TsNumericLiteralKind.OctalInteger, value);
+            return new TsNumericLiteral(value, TsNumericLiteralKind.OctalInteger);
         }
 
         public static ITsNumericLiteral HexInteger(long value)
         {
-            return new TsNumericLiteral(TsNumericLiteralKind.HexInteger, value);
+            return new TsNumericLiteral(value, TsNumericLiteralKind.HexInteger);
         }
 
         public static ITsRegularExpressionLiteral RegularExpression(string body, string? flags)
@@ -69,17 +72,17 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrayLiteral Array()
         {
-            return new TsArrayLiteral();
+            return new TsArrayLiteral(ImmutableArray<ITsArrayElement?>.Empty);
         }
 
         public static ITsArrayLiteral Array(params ITsArrayElement?[] elements)
         {
-            return new TsArrayLiteral(elements);
+            return new TsArrayLiteral(elements.ToImmutableArray());
         }
 
         public static ITsArrayLiteral Array(params ITsExpression?[] elements)
         {
-            return new TsArrayLiteral(elements?.Select(e => e == null ? null : ArrayElement(e)));
+            return new TsArrayLiteral(elements.Select(e => e == null ? null : ArrayElement(e)).ToImmutableArray());
         }
 
         public static ITsArrayElement ArrayElement(ITsExpression expression, bool isSpreadElement = false)
@@ -89,7 +92,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsTemplateLiteral TemplateString(params ITsTemplatePart[] parts)
         {
-            return new TsTemplateLiteral(parts);
+            return new TsTemplateLiteral(parts.ToImmutableArray());
         }
 
         public static ITsTemplatePart TemplatePart(string template, ITsExpression? expression = null)
@@ -108,12 +111,12 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsObjectLiteral Object(IEnumerable<ITsPropertyDefinition> propertyDefinitions)
         {
-            return new TsObjectLiteral(propertyDefinitions);
+            return new TsObjectLiteral(propertyDefinitions.ToImmutableArray());
         }
 
         public static ITsObjectLiteral Object(params ITsPropertyDefinition[] propertyDefinitions)
         {
-            return new TsObjectLiteral(propertyDefinitions);
+            return new TsObjectLiteral(propertyDefinitions.ToImmutableArray());
         }
 
         /// <summary>
@@ -229,42 +232,42 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsMemberBracketExpression MemberBracket(ITsExpression leftSide, ITsExpression bracketContents)
         {
-            return TsMemberBracketExpression.Create(leftSide, bracketContents);
+            return new TsMemberBracketExpression(leftSide, bracketContents);
         }
 
         public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, string dotName)
         {
-            return TsMemberDotExpression.Create(leftSide, dotName);
+            return new TsMemberDotExpression(leftSide, dotName);
         }
 
         public static ITsMemberDotExpression MemberDot(ITsExpression leftSide, ITsIdentifier dotName)
         {
-            return TsMemberDotExpression.Create(leftSide, dotName.Text);
+            return new TsMemberDotExpression(leftSide, dotName.Text);
         }
 
         public static ITsSuperBracketExpression SuperBracket(ITsExpression bracketContents)
         {
-            return TsMemberBracketExpression.CreateSuper(bracketContents);
+            return new TsSuperBracketExpression(bracketContents);
         }
 
         public static ITsSuperDotExpression SuperDot(string dotName)
         {
-            return TsMemberDotExpression.CreateSuper(dotName);
+            return new TsSuperDotExpression(dotName);
         }
 
         public static ITsCallExpression Call(ITsExpression leftSide, ITsArgumentList? argumentList = null)
         {
-            return TsCallExpression.Create(leftSide, argumentList);
+            return new TsCallExpression(leftSide, argumentList ?? ArgumentList());
         }
 
         public static ITsNewCallExpression NewCall(ITsExpression leftSide, ITsArgumentList? argumentList = null)
         {
-            return TsCallExpression.CreateNew(leftSide, argumentList);
+            return new TsNewCallExpression(leftSide, argumentList ?? ArgumentList());
         }
 
         public static ITsSuperCallExpression SuperCall(ITsArgumentList argumentList)
         {
-            return TsCallExpression.CreateSuper(argumentList);
+            return new TsSuperCallExpression(argumentList);
         }
 
         public static ITsArgument Argument(ITsExpression expression, bool isSpreadArgument = false)
@@ -274,7 +277,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArgumentList ArgumentList()
         {
-            return new TsArgumentList();
+            return new TsArgumentList(ImmutableArray<ITsType>.Empty, ImmutableArray<ITsArgument>.Empty);
         }
 
         /// <summary>
@@ -282,7 +285,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArgumentList ArgumentList(IEnumerable<ITsType>? typeArguments, params ITsArgument[] arguments)
         {
-            return new TsArgumentList(typeArguments, arguments);
+            return new TsArgumentList(
+                typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty,
+                arguments.ToImmutableArray());
         }
 
         /// <summary>
@@ -290,7 +295,9 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArgumentList ArgumentList(params ITsArgument[] arguments)
         {
-            return new TsArgumentList(typeArguments: null, arguments: arguments);
+            return new TsArgumentList(
+                typeArguments: ImmutableArray<ITsType>.Empty,
+                arguments: arguments.ToImmutableArray());
         }
 
         /// <summary>
@@ -298,10 +305,12 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArgumentList ArgumentList(params ITsIdentifier[] arguments)
         {
-            return new TsArgumentList(typeArguments: null, arguments: arguments.Select(id => Argument(id)));
+            return new TsArgumentList(
+                typeArguments: ImmutableArray<ITsType>.Empty,
+                arguments: arguments.Select(id => Argument(id)).ToImmutableArray());
         }
 
-        public static ITsNewTargetExpression NewTarget => TsNewTargetExpression.Instance;
+        public static readonly ITsNewTargetExpression NewTarget = new TsNewTargetExpression();
 
         //// ===========================================================================================================
         //// Function and Class Expressions

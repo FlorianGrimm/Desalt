@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Ast.Statements;
 
     public static partial class TsAstFactory
@@ -16,7 +17,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsBlockStatement Block(params ITsStatementListItem[] statements)
         {
-            return new TsBlockStatement(statements);
+            return new TsBlockStatement(statements.ToImmutableArray());
         }
 
         public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
@@ -26,7 +27,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsVariableStatement VariableStatement(params ITsVariableDeclaration[] declarations)
         {
-            return new TsVariableStatement(declarations);
+            return new TsVariableStatement(declarations.ToImmutableArray());
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsObjectBindingPattern ObjectBindingPattern(params ITsBindingProperty[] properties)
         {
-            return new TsObjectBindingPattern(properties);
+            return new TsObjectBindingPattern(properties.ToImmutableArray());
         }
 
         /// <summary>

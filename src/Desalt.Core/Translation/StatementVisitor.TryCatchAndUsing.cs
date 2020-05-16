@@ -176,7 +176,9 @@ namespace Desalt.Core.Translation
                 {
                     declaration = declaration.WithDeclarations(
                         declaration.Declarations.Cast<ITsSimpleLexicalBinding>()
-                            .Select(binding => binding.WithVariableType(declarationType)));
+                            .Select(binding => binding.WithVariableType(declarationType))
+                            .Cast<ITsLexicalBinding>()
+                            .ToImmutableArray());
                 }
 
                 // Add any additional statements before this statement.

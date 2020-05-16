@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Tests.Ast
 {
+    using Desalt.TypeScriptAst.Ast;
     using Desalt.TypeScriptAst.Ast.Expressions;
     using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;

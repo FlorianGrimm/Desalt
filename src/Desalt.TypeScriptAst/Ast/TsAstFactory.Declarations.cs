@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast.Declarations;
@@ -43,7 +44,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool isConst,
             params ITsLexicalBinding[] declarations)
         {
-            return new TsLexicalDeclaration(isConst, declarations);
+            return new TsLexicalDeclaration(isConst, declarations.ToImmutableArray());
         }
 
         /// <summary>

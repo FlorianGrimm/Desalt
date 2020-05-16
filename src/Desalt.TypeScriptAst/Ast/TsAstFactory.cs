@@ -37,7 +37,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsIdentifier Identifier(string name)
         {
-            return TsIdentifier.Get(name);
+            return new TsIdentifier(name);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast
                 return QualifiedName(parts.ToArray());
             }
 
-            return new TsQualifiedName(TsIdentifier.Get(parts[0]));
+            return new TsQualifiedName(new TsIdentifier(parts[0]));
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace Desalt.TypeScriptAst.Ast
                 throw new ArgumentException("Empty names array", nameof(names));
             }
 
-            var right = TsIdentifier.Get(names.Last());
-            IEnumerable<TsIdentifier> left = names.Take(names.Length - 1).Select(TsIdentifier.Get);
+            var right = new TsIdentifier(names.Last());
+            IEnumerable<TsIdentifier> left = names.Take(names.Length - 1).Select(name => new TsIdentifier(name));
             return new TsQualifiedName(right, left);
         }
 

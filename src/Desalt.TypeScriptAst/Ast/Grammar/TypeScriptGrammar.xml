@@ -1,0 +1,801 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+****************************************************************************************************
+* Ecma-262 6.0 (ES 2015) Grammar
+* See http://www.ecma-international.org/ecma-262/6.0/
+****************************************************************************************************
+-->
+<Grammar xmlns="https://github.com/jrockwood/Desalt/GrammarSchema.xsd" language="TypeScript">
+  <TriviaNodes>
+    <!--
+    11.4 Comments
+    =============
+    Comment:
+      MultiLineComment
+      SingleLineComment
+
+    MultiLineComment:
+      slash* MultiLineCommentCharsOpt *slash
+
+    MultiLineCommentChars:
+      MultiLineNotAsteriskChar MultiLineCommentCharsOpt
+      * PostAsteriskCommentCharsOpt
+
+    PostAsteriskCommentChars:
+      MultiLineNotForwardSlashOrAsteriskChar MultiLineCommentCharsOpt
+      *PostAsteriskCommentCharsOpt
+
+    MultiLineNotAsteriskChar:
+      SourceCharacter but not *
+
+    MultiLineNotForwardSlashOrAsteriskChar:
+      SourceCharacter but not one of / or *
+
+    SingleLineComment:
+      // SingleLineCommentCharsOpt
+
+    SingleLineCommentChars:
+      SingleLineCommentChar SingleLineCommentCharsOpt
+
+    SingleLineCommentChar:
+      SourceCharacter but not LineTerminator
+    -->
+    <TriviaNode name="WhitespaceTrivia">
+      <Comment>
+        <![CDATA[Represents whitespace that can appear before or after another <see cref="ITsAstNode" />.]]>
+      </Comment>
+      <Property name="Text" type="string" />
+      <Property name="IsNewline" type="bool" />
+    </TriviaNode>
+    <TriviaNode name="MultiLineComment">
+      <Comment><![CDATA[Represents a TypeScript multi-line comment of the form '/* lines */'.]]></Comment>
+      <Property name="IsJsDoc" type="bool">
+        <Comment><![CDATA[Indicates whether the comment should start with '/**' (JsDoc) or '/*'.]]></Comment>
+      </Property>
+      <Property name="Lines" type="ImmutableArray&lt;string&gt;" />
+    </TriviaNode>
+    <TriviaNode name="SingleLineComment">
+      <Comment><![CDATA[Represents a TypeScript single-line comment of the form '// comment'.]]></Comment>
+      <Property name="Text" type="string" />
+    </TriviaNode>
+  </TriviaNodes>
+  <AstNodes>
+    <!--
+    /* 12.1 Identifiers
+     * ================
+     * IdentifierReference:
+     *   Identifier
+     *   [~Yield] yield
+     *
+     * BindingIdentifier:
+     *   Identifier
+     *   [~Yield] yield
+     *
+     * LabelIdentifier:
+     *   Identifier
+     *   [~Yield] yield
+     *
+     * Identifier:
+     *   IdentifierName but not ReservedWord
+     *
+     * ReservedWord: (see the lists in TsTokenCodeExtensions)
+     *   Keyword
+     *   FutureReservedWord
+     *   NullLiteral
+     *   BooleanLiteral
+     */
+    -->
+    <AstNode name="Identifier"
+             baseInterfaces="ITsTypeName, ITsPropertyDefinition, ITsLiteralPropertyName, ITsBindingIdentifierOrPattern">
+      <Comment>Represents a TypeScript identifier.</Comment>
+      <Property name="Text" type="string" />
+    </AstNode>
+
+    <!--
+    /* 12.2 Primary Expression
+     * =======================
+     * PrimaryExpression:
+     *   this
+     *   IdentifierReference
+     *   Literal
+     *   ArrayLiteral
+     *   ObjectLiteral
+     *   FunctionExpression
+     *   ClassExpression
+     *   GeneratorExpression
+     *   RegularExpressionLiteral
+     *   TemplateLiteral
+     *   CoverParenthesizedExpressionAndArrowParameterList
+     */
+    -->
+    <AstNode name="This" baseInterfaces="ITsExpression">
+      <Comment>Represents the 'this' expression.</Comment>
+    </AstNode>
+
+    <!--
+    /*
+     * CoverParenthesizedExpressionAndArrowParameterList:
+     *   ( Expression )
+     *   ( )
+     *   ( ... BindingIdentifier )
+     *   ( Expression , ... BindingIdentifier )
+     *
+     * When processing the production
+     * PrimaryExpression: CoverParenthesizedExpressionAndArrowParameterList the interpretation of
+     * CoverParenthesizedExpressionAndArrowParameterList is refined using the following grammar:
+     *
+     * ParenthesizedExpression:
+     *   ( Expression )
+     */
+    -->
+    <AstNode name="ParenthesizedExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a parenthesized expression, of the form '(expression)'.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.2.4 Literals
+     * ===============
+     * Literal:
+     *   NullLiteral
+     *   BooleanLiteral
+     *   NumericLiteral
+     *   StringLiteral
+     *
+     * NullLiteral: null
+     * BooleanLiteral: true | false
+     * NumericLiteral:
+     *   DecimalLiteral
+     *   BinaryIntegerLiteral
+     *   OctalIntegerLiteral
+     *   HexIntegerLiteral
+     *
+     * StringLiteral:
+     *   " DoubleStringCharacters "
+     *   ' SingleStringCharacters '
+     */
+    -->
+    <AstNode name="NullLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents the 'null' literal expression.</Comment>
+    </AstNode>
+    <AstNode name="BooleanLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents a boolean literal expression (either 'true' or 'false').</Comment>
+      <Property name="Value" type="bool" />
+    </AstNode>
+    <AstNode name="NumericLiteral" baseInterfaces="ITsExpression, ITsLiteralPropertyName">
+      <Comment>Represents an expression containing a numeric literal value.</Comment>
+      <Enum name="TsNumericLiteralKind">
+        <EnumValue name="Decimal" />
+        <EnumValue name="BinaryInteger" />
+        <EnumValue name="OctalInteger" />
+        <EnumValue name="HexInteger" />
+      </Enum>
+      <Property name="Value" type="double" />
+      <Property name="Kind" type="TsNumericLiteralKind" />
+    </AstNode>
+    <AstNode name="StringLiteral" baseInterfaces="ITsExpression, ITsLiteralPropertyName">
+      <Comment>Represents a string literal of the form 'string' or "string".</Comment>
+      <Enum name="StringLiteralQuoteKind">
+        <EnumValue name="DoubleQuote" />
+        <EnumValue name="SingleQuote" />
+      </Enum>
+      <Property name="Value" type="string" />
+      <Property name="QuoteKind" type="StringLiteralQuoteKind" />
+    </AstNode>
+
+    <!--
+    /* 11.8.5 - Regular Expression Literal
+     * ===================================
+     * RegularExpressionLiteral:
+     *   / RegularExpressionBody / RegularExpressionFlags
+     */
+    -->
+    <AstNode name="RegularExpressionLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents a regular expression literal of the form '/body/flags'.</Comment>
+      <Property name="Body" type="string" />
+      <Property name="Flags" type="string?" />
+    </AstNode>
+
+    <!--
+    /* 12.2.5 Array Initializer
+     * ========================
+     * ArrayLiteral:
+     *   [ ElisionOpt ]
+     *   [ ElementList ]
+     *   [ ElementList , ElisionOpt ]
+     *
+     * ElementList:
+     *   ElisionOpt AssignmentExpression
+     *   ElisionOpt SpreadElement
+     *   ElementList , ElisionOpt AssignmentExpression
+     *   ElementList , ElisionOpt SpreadElement
+     *
+     * Elision:
+     *   ,
+     *   Elision ,
+     *
+     * SpreadElement:
+     *   ... AssignmentExpression
+     */
+    -->
+    <AstNode name="ArrayLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents an array literal of the form '[element...]'.</Comment>
+      <Property name="Elements" type="ImmutableArray&lt;ITsArrayElement?&gt;" />
+    </AstNode>
+    <AstNode name="ArrayElement" baseInterfaces="ITsAstNode">
+      <Comment>Represents an element in an array.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+      <Property name="IsSpreadElement" type="bool">
+        <Comment><![CDATA[Indicates whether the <see cref="Expression" /> is preceded by a spread operator '...'.]]></Comment>
+      </Property>
+    </AstNode>
+
+    <!--
+    /* 12.2.6 Object Initializer
+     * =========================
+     * ObjectLiteral:
+     *   { }
+     *   { PropertyDefinition }
+     *   { PropertyDefinitionList , PropertyDefinition }
+     *
+     * PropertyDefinitionList:
+     *   PropertyDefinition
+     *   PropertyDefinitionList , PropertyDefinition
+     *
+     * PropertyDefinition:
+     *   IdentifierReference
+     *   CoverInitializedName
+     *   PropertyName : AssignmentExpression
+     *   xx MethodDefinition xx (not in TypeScript)
+     *   (see TypeScript extensions for more)
+     *
+     * PropertyName:
+     *   LiteralPropertyName
+     *   ComputedPropertyName
+     *
+     * LiteralPropertyName:
+     *   IdentifierName
+     *   StringLiteral
+     *   NumericLiteral
+     *
+     * ComputedPropertyName:
+     *   [ AssignmentExpression ]
+     *
+     * CoverInitializedName:
+     *   IdentifierReference Initializer
+     *
+     * Initializer:
+     *   = AssignmentExpression
+     */
+    -->
+    <AstNode name="ObjectLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents on object literal of the form '{ PropertyDefinition... }'.</Comment>
+      <Property name="PropertyDefinitions" type="ImmutableArray&lt;ITsPropertyDefinition&gt;" />
+    </AstNode>
+    <AstNode name="PropertyDefinition" baseInterfaces="ITsExpression" interfaceOnly="true">
+      <Comment>Represents a property definition within an object literal.</Comment>
+    </AstNode>
+    <AstNode name="CoverInitializedName" baseInterfaces="ITsPropertyDefinition">
+      <Comment>Represents an element in an object initializer of the form 'identifier = expression'.</Comment>
+      <Property name="Identifier" type="ITsIdentifier" />
+      <Property name="Initializer" type="ITsExpression" />
+    </AstNode>
+    <AstNode name="PropertyAssignment" baseInterfaces="ITsPropertyDefinition">
+      <Comment>Represents a property assignment within an object literal of the form 'propertyName: initializer'.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="Initializer" type="ITsExpression" />
+    </AstNode>
+    <AstNode name="PropertyName" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Represents a single property name within an object literal.</Comment>
+    </AstNode>
+    <AstNode name="LiteralPropertyName" baseInterfaces="ITsPropertyName" interfaceOnly="true">
+      <Comment>Represents a property name within an object literal, which can be an identifier, string literal, or a numeric literal.</Comment>
+    </AstNode>
+    <AstNode name="ComputedPropertyName" baseInterfaces="ITsPropertyName">
+      <Comment>Represents a property name inside of an object of the form '[ expression ]'.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.2.9 Template Literals (and 11.8.6 Template Literal Lexical Components)
+     * =========================================================================
+     * TemplateLiteral:
+     *   NoSubstitutionTemplate
+     *   TemplateHead Expression TemplateSpans
+     *
+     * TemplateSpans:
+     *   TemplateTail
+     *   TemplateMiddleList TemplateTail
+     *
+     * TemplateMiddleList:
+     *   TemplateMiddle Expression
+     *   TemplateMiddleList TemplateMiddle Expression
+     *
+     * NoSubstitutionTemplate:
+     *   ` TemplateCharactersOpt `
+     *
+     * TemplateHead:
+     *   ` TemplateCharactersOpt ${
+     *
+     * TemplateMiddle:
+     *   } TemplateCharactersOpt ${
+     *
+     * TemplateTail:
+     *   } TemplateCharactersOpt `
+     *
+     * TemplateCharacters:
+     *   TemplateCharacter TemplateCharactersOpt
+     *
+     * TemplateCharacter:
+     *   $ [lookahead != {]
+     *   \ EscapeSequence
+     *   LineContinuation
+     *   LineTerminatorSequence
+     *   SourceCharacter but not one of ` or \ or $ or LineTerminator
+     */
+    -->
+    <AstNode name="TemplatePart" baseInterfaces="ITsAstNode">
+      <Comment>Represents a part within a template string literal.</Comment>
+      <Property name="Template" type="string" />
+      <Property name="Expression" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="TemplateLiteral" baseInterfaces="ITsExpression">
+      <Comment>Represents a template string literal.</Comment>
+      <Property name="Parts" type="ImmutableArray&lt;ITsTemplatePart&gt;" />
+    </AstNode>
+
+    <!--
+    /* 12.e Left-Hand-Side Expressions
+     * ===============================
+     * MemberExpression:
+     *   PrimaryExpression
+     *   MemberExpression [ Expression ]
+     *   MemberExpression . IdentifierName
+     *   MemberExpression TemplateLiteral
+     *   SuperProperty
+     *   MetaProperty
+     *   new MemberExpression Arguments
+     */
+    -->
+    <AstNode name="MemberBracketExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a member expression of the form 'expression[expression]'.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="BracketContents" type="ITsExpression" />
+    </AstNode>
+    <AstNode name="MemberDotExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a member expression of the form 'expression.name'.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="DotName" type="string" />
+    </AstNode>
+
+    <!--
+    /* SuperProperty:
+     *   super [ Expression ]
+     *   super . IdentifierName
+     */
+    -->
+    <AstNode name="SuperBracketExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a member expression of the form 'super[expression]'.</Comment>
+      <Property name="BracketContents" type="ITsExpression" />
+    </AstNode>
+    <AstNode name="SuperDotExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a member expression of the form 'super.name'.</Comment>
+      <Property name="DotName" type="string" />
+    </AstNode>
+
+    <!--
+    /* MetaProperty:
+     *   NewTarget
+     *
+     * NewTarget:
+     *   new . target
+     */
+    -->
+    <AstNode name="NewTargetExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents an expression of the form 'new.target'.</Comment>
+    </AstNode>
+
+    <!--
+    /* NewExpression:
+     *   MemberExpression
+     *   new NewExpression
+     *
+     * CallExpression:
+     *   MemberExpression Arguments
+     *   SuperCall
+     *   CallExpression Arguments
+     *   CallExpression [ Expression ]
+     *   CallExpression . IdentifierName
+     *   CallExpression TemplateLiteral
+     *
+     * SuperCall:
+     *   super Arguments
+     *
+     * Arguments: (see TypeScript grammar copied below)
+     *   ( )
+     *   ( ArgumentList )
+     *
+     * Arguments: ( Modified )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
+     *
+     * ArgumentList:
+     *   AssignmentExpression
+     *   ... AssignmentExpression
+     *   ArgumentList , AssignmentExpression
+     *   ArgumentList , ... AssignmentExpression
+     *
+     * LeftHandSideExpression:
+     *   NewExpression
+     *   CallExpression
+     */
+    -->
+    <AstNode name="CallExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a call expression of the form 'expression(arguments)'.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="ArgumentList" type="ITsArgumentList" />
+    </AstNode>
+    <AstNode name="NewCallExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a call expression of the form 'new expression(arguments)'.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="ArgumentList" type="ITsArgumentList" />
+    </AstNode>
+    <AstNode name="SuperCallExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a call expression of the form 'super(arguments)'.</Comment>
+      <Property name="ArgumentList" type="ITsArgumentList" />
+    </AstNode>
+    <AstNode name="ArgumentList" baseInterfaces="ITsAstNode">
+      <Comment><![CDATA[Represents an argument list of the form '&lt;T&gt;(x: type, y: type).]]></Comment>
+      <Property name="TypeArguments" type="ImmutableArray&lt;ITsType&gt;" />
+      <Property name="Arguments" type="ImmutableArray&lt;ITsArgument&gt;" />
+    </AstNode>
+    <AstNode name="Argument" baseInterfaces="ITsAstNode">
+      <Comment><![CDATA[Represents an argument within an <see cref="ITsArgumentList" />.]]></Comment>
+      <Property name="Expression" type="ITsExpression" />
+      <Property name="IsSpreadArgument" type="bool">
+        <Comment>Indicates whether the argument is preceded by a spread operator '...'.</Comment>
+      </Property>
+    </AstNode>
+
+    <!--
+    /* 12.4 Postfix Expressions
+     * ========================
+     * PostfixExpression:
+     *   LeftHandSideExpression
+     *   LeftHandSideExpression [no LineTerminator here] ++
+     *   LeftHandSideExpression [no LineTerminator here] (minus minus)
+     */
+
+    /* 12.5 Unary Operators
+     * ====================
+     * UnaryExpression:
+     *   PostfixExpression
+     *   delete UnaryExpression
+     *   void UnaryExpression
+     *   typeof UnaryExpression
+     *   ++ UnaryExpression
+     *   (minus minus) UnaryExpression
+     *   + UnaryExpression
+     *   - UnaryExpression
+     *   ~ UnaryExpression
+     *   ! UnaryExpression
+     *   < Type > UnaryExpression (from TypeScript grammar)
+     */
+    -->
+    <AstNode name="UnaryExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a unary expression.</Comment>
+      <Property name="Operand" type="ITsExpression" />
+      <Property name="Operator" type="TsUnaryOperator" />
+    </AstNode>
+    <AstNode name="CastExpression" baseInterfaces="ITsExpression">
+      <Comment><![CDATA[Represents a unary cast expression of the form, '&lt;Type&gt;expression'.]]></Comment>
+      <Property name="CastType" type="ITsType" />
+      <Property name="Expression" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.6 Multiplicative Operators
+     * =============================
+     * MultiplicativeExpression:
+     *   UnaryExpression
+     *   MultiplicativeExpression MultiplicativeOperator UnaryExpression
+     *
+     * MultiplicativeOperator: one of
+     *   * / %
+     */
+
+    /* 12.7 Additive Operators
+     * =======================
+     * AdditiveExpression:
+     *   MultiplicativeExpression
+     *   AdditiveExpression + MultiplicativeExpression
+     *   AdditiveExpression - MultiplicativeExpression
+     */
+
+    /* 12.8 Bitwise Shift Operators
+     * ============================
+     * ShiftExpression:
+     *   AdditiveExpression
+     *   ShiftExpression << AdditiveExpression
+     *   ShiftExpression >> AdditiveExpression
+     *   ShiftExpression >>> AdditiveExpression
+     */
+
+    /* 12.9 Relational Operators
+     * =========================
+     * RelationalExpression:
+     *   ShiftExpression
+     *   RelationalExpression < ShiftExpression
+     *   RelationalExpression > ShiftExpression
+     *   RelationalExpression <= ShiftExpression
+     *   RelationalExpression >= ShiftExpression
+     *   RelationalExpression instanceof ShiftExpression
+     *   RelationalExpression in ShiftExpression
+     */
+
+    /* 12.10 Equality Operators
+     * ========================
+     * EqualityExpression:
+     *   RelationalExpression
+     *   EqualityExpression == RelationalExpression
+     *   EqualityExpression != RelationalExpression
+     *   EqualityExpression === RelationalExpression
+     *   EqualityExpression !== RelationalExpression
+     */
+
+    /* 12.11 Binary Bitwise Operators
+     * ==============================
+     * BitwiseANDExpression:
+     *   EqualityExpression
+     *   BitwiseANDExpression & EqualityExpression
+     *
+     * BitwiseXORExpression:
+     *   BitwiseANDExpression
+     *   BitwiseXORExpression ^ BitwiseANDExpression
+     *
+     * BitwiseORExpression:
+     *   BitwiseXORExpression
+     *   BitwiseORExpression | BitwiseXORExpression
+     */
+
+    /* 12.12 Binary Logical Operators
+     * ==============================
+     * LogicalANDExpression:
+     *   BitwiseORExpression
+     *   LogicalANDExpression && BitwiseORExpression
+     *
+     * LogicalORExpression:
+     *   LogicalANDExpression
+     *   LogicalORExpression || LogicalANDExpression
+     */
+    -->
+    <AstNode name="BinaryExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a binary expression.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="Operator" type="TsBinaryOperator" />
+      <Property name="RightSide" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.13 Conditional Operator ( ? : )
+     * ==================================
+     * ConditionalExpression:
+     *   LogicalORExpression
+     *   LogicalORExpression ? AssignmentExpression : AssignmentExpression
+     */
+    -->
+    <AstNode name="ConditionalExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a conditional expression of the form 'x ? y : z'.</Comment>
+      <Property name="Condition" type="ITsExpression" />
+      <Property name="WhenTrue" type="ITsExpression" />
+      <Property name="WhenFalse" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.14 Assignment Operators
+     * ==========================
+     * AssignmentExpression:
+     *   ConditionalExpression
+     *   YieldExpression
+     *   ArrowFunction
+     *   LeftHandSideExpression = AssignmentExpression
+     *   LeftHandSideExpression AssignmentOperator AssignmentExpression
+     *
+     * AssignmentOperator: one of
+     *   *=   /=   %=   +=   -=   <<=   >>=   >>>=   &=   ^=   |=
+     */
+    -->
+    <AstNode name="AssignmentExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents an assignment of the form 'left == right'.</Comment>
+      <Property name="LeftSide" type="ITsExpression" />
+      <Property name="Operator" type="TsAssignmentOperator" />
+      <Property name="RightSide" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.15 Comma Operator ( , )
+     * ==========================
+     * Expression:
+     *   AssignmentExpression
+     *   Expression , AssignmentExpression
+     */
+    -->
+    <AstNode name="Expression" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all expressions.</Comment>
+    </AstNode>
+    <AstNode name="CommaExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents an expression list separated by commas. Useful in for loops for the initializer or incrementor, for example.</Comment>
+      <Property name="Expressions" type="ImmutableArray&lt;ITsExpression&gt;" />
+    </AstNode>
+
+    <!--
+    /* A.3 Statements
+     * ==============
+     * Statement:
+     *   BlockStatement
+     *   VariableStatement
+     *   EmptyStatement
+     *   ExpressionStatement
+     *   IfStatement
+     *   BreakableStatement
+     *   ContinueStatement
+     *   BreakStatement
+     *   ReturnStatement
+     *   WithStatement
+     *   LabeledStatement
+     *   ThrowStatement
+     *   TryStatement
+     *   DebuggerStatement
+     */
+    -->
+    <AstNode name="Statement" interfaceOnly="true"
+             baseInterfaces="ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement">
+      <Comment>Base interface for all statements.</Comment>
+    </AstNode>
+
+    <!--
+    /* Declaration:
+     *   HoistableDeclaration
+     *   ClassDeclaration
+     *   LexicalDeclaration
+     *   (see more in TypeScript grammar)
+     *
+     * HoistableDeclaration:
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *
+     * BreakableStatement:
+     *   IterationStatement
+     *   SwitchStatement
+     */
+    -->
+    <AstNode name="Declaration" interfaceOnly="true"
+             baseInterfaces="ITsStatementListItem, ITsNamespaceElement, ITsImplementationElement">
+      <Comment>Base interface for all declarations.</Comment>
+    </AstNode>
+
+    <!--
+    /* 13.2 Block
+     * ==========
+     * BlockStatement:
+     *   Block
+     *
+     * Block:
+     *   { StatementListOpt }
+     *
+     * StatementList:
+     *   StatementListItem
+     *   StatementList StatementListItem
+     *
+     * StatementListItem:
+     *   Statement
+     *   Declaration
+     */
+    -->
+    <AstNode name="BlockStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a block statement of the form '{ statements }'.</Comment>
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+    <AstNode name="StatementListItem" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Marker interface for items that can be part of a statement list.</Comment>
+    </AstNode>
+
+    <!--
+    /* 13.3.1 Let and Const Declarations
+     * =================================
+     * LexicalDeclaration:
+     *   LetOrConst BindingList ;
+     *
+     * LetOrConst:
+     *   let
+     *   const
+     *
+     * BindingList:
+     *   LexicalBinding
+     *   BindingList , LexicalBinding
+     *
+     * LexicalBinding: (see TypeScript grammar)
+     *   BindingIdentifier InitializerOpt
+     *   BindingPattern Initializer
+     */
+    -->
+    <AstNode name="LexicalDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment>Represents a lexical declaration of the form 'const|let x: type, y: type = z;'.</Comment>
+      <Property name="IsConst" type="bool" />
+      <Property name="Declarations" type="ImmutableArray&lt;ITsLexicalBinding&gt;" />
+    </AstNode>
+
+    <!--
+    /* 13.3.2 Variable Statement
+     * =========================
+     * VariableStatement:
+     *   var VariableDeclarationList ;
+     *
+     * VariableDeclarationList:
+     *   VariableDeclaration
+     *   VariableDeclarationList , VariableDeclaration
+     *
+     * VariableDeclaration: (see TypeScript definition)
+     *   BindingIdentifier InitializerOpt
+     *   BindingPattern Initializer
+     */
+    -->
+    <AstNode name="VariableStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a variable declaration statement of the form 'var x = y;'.</Comment>
+      <Property name="Declarations" type="ImmutableArray&lt;ITsVariableDeclaration&gt;" />
+    </AstNode>
+
+    <!--
+    /* 13.3.3 Destructuring Binding Patterns
+     * =====================================
+     * BindingPattern:
+     *   ObjectBindingPattern
+     *   ArrayBindingPattern
+     */
+    -->
+    <AstNode name="BindingPattern" baseInterfaces="ITsBindingIdentifierOrPattern" interfaceOnly="true">
+      <Comment>Marker interface for a binding pattern.</Comment>
+    </AstNode>
+
+    <!--
+    /* ObjectBindingPattern:
+     *   { }
+     *   { BindingPropertyList }
+     *   { BindingPropertyList , }
+     *
+     * ArrayBindingPattern:
+     *   [ ElisionOpt BindingRestElementOpt ]
+     *   [ BindingElementList ]
+     *   [ BindingElementList , ElisionOpt BindingRestElementOpt ]
+     *
+     * BindingPropertyList:
+     *   BindingProperty
+     *   BindingPropertyList , BindingProperty
+     *
+     * BindingElementList:
+     *   BindingElisionElement
+     *   BindingElementList , BindingElisionElement
+     *
+     * BindingElisionElement:
+     *   ElisionOpt BindingElement
+     *
+     * BindingProperty:
+     *   SingleNameBinding
+     *   PropertyName : BindingElement
+     *
+     * BindingElement:
+     *   SingleNameBinding
+     *   BindingPattern InitializerOpt
+     *
+     * SingleNameBinding:
+     *   BindingIdentifier InitializerOpt
+     *
+     * BindingRestElement:
+     *   ... BindingIdentifier
+     */
+    -->
+    <AstNode name="ObjectBindingPattern" baseInterfaces="ITsBindingPattern">
+      <Comment>Represents an object binding pattern of the form '{propName = defaultValue, propName: otherPropName}'.</Comment>
+      <Property name="Properties" type="ImmutableArray&lt;ITsBindingProperty&gt;" />
+    </AstNode>
+  </AstNodes>
+</Grammar>

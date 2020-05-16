@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast
 {
     /// <summary>
     /// Represents the kinds of binary operators.

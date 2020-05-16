@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="GrammarSchema"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           targetNamespace="https://github.com/jrockwood/Desalt/GrammarSchema.xsd"
+           xmlns="https://github.com/jrockwood/Desalt/GrammarSchema.xsd"
+           xmlns:mstns="https://github.com/jrockwood/Desalt/GrammarSchema.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Top Element -->
+  <xs:element name="Grammar" type="GrammarType" />
+
+  <!-- Simple Types -->
+  <xs:simpleType name="ListOfStrings">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <!-- Complex Types -->
+  <xs:complexType name="GrammarType">
+    <xs:sequence maxOccurs="1">
+      <xs:element name="TriviaNodes" type="TriviaNodesType" minOccurs="0" maxOccurs="1" />
+      <xs:element name="AstNodes" type="AstNodesType" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="language" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="TriviaNodesType">
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="TriviaNode" type="NodeType" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AstNodesType">
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="AstNode" type="AstNodeType">
+        <xs:unique name="UniqueAstNodeName">
+          <!-- ReSharper disable once MarkupAttributeTypo -->
+          <xs:selector xpath="mstns:AstNode" />
+          <xs:field xpath="@name" />
+        </xs:unique>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NodeType">
+    <xs:sequence>
+      <xs:element name="Comment" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Enum" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="Property" type="PropertyType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="baseInterfaces" type="ListOfStrings" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="AstNodeType">
+    <xs:complexContent>
+      <xs:extension base="NodeType">
+        <xs:attribute name="baseClass" type="xs:string" use="optional" />
+        <xs:attribute name="generateEmit" type="xs:boolean" use="optional" />
+        <xs:attribute name="interfaceOnly" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyType">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="Comment" maxOccurs="1" nillable="true" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="type" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="EnumType">
+    <xs:sequence>
+      <xs:element name="EnumValue" type="EnumValueType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="EnumValueType">
+    <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+</xs:schema>

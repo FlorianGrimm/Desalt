@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.IO;
@@ -25,11 +24,11 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         protected TsAstNode(
-            IEnumerable<ITsAstTriviaNode>? leadingTrivia = null,
-            IEnumerable<ITsAstTriviaNode>? trailingTrivia = null)
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
         {
-            LeadingTrivia = leadingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
-            TrailingTrivia = trailingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
+            LeadingTrivia = leadingTrivia ?? ImmutableArray<ITsAstTriviaNode>.Empty;
+            TrailingTrivia = trailingTrivia ?? ImmutableArray<ITsAstTriviaNode>.Empty;
         }
 
         //// ===========================================================================================================

@@ -5,7 +5,7 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
-namespace Desalt.TypeScriptAst.Ast.Expressions
+namespace Desalt.TypeScriptAst.Ast
 {
     /// <summary>
     /// Represents the different types of TypeScript unary expression operators.
@@ -66,10 +66,5 @@ namespace Desalt.TypeScriptAst.Ast.Expressions
         /// The logical not (!) operator.
         /// </summary>
         LogicalNot,
-
-        /// <summary>
-        /// The cast (&lt;type&gt;) operator.
-        /// </summary>
-        Cast,
     }
 }
