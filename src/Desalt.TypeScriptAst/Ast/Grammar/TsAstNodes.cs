@@ -59,7 +59,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string text);
         public override void Accept(TsVisitor visitor) => visitor.VisitIdentifier(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteIdentifier(Text);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIdentifier(emitter, Text);
     }
 
     public static class IdentifierExtensions
@@ -94,7 +94,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitThis(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteThis();
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThis(emitter);
     }
 
     //// ===============================================================================================================
@@ -128,7 +128,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteParenthesizedExpression(Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParenthesizedExpression(emitter, Expression);
     }
 
     public static class ParenthesizedExpressionExtensions
@@ -163,7 +163,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteNullLiteral();
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNullLiteral(emitter);
     }
 
     //// ===============================================================================================================
@@ -197,7 +197,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(bool value);
         public override void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteBooleanLiteral(Value);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBooleanLiteral(emitter, Value);
     }
 
     public static class BooleanLiteralExtensions
@@ -249,7 +249,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(double value, TsNumericLiteralKind kind);
         public override void Accept(TsVisitor visitor) => visitor.VisitNumericLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteNumericLiteral(Value, Kind);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNumericLiteral(emitter, Value, Kind);
     }
 
     public static class NumericLiteralExtensions
@@ -302,7 +302,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string value, StringLiteralQuoteKind quoteKind);
         public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteStringLiteral(Value, QuoteKind);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringLiteral(emitter, Value, QuoteKind);
     }
 
     public static class StringLiteralExtensions
@@ -349,7 +349,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string body, string? flags);
         public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteRegularExpressionLiteral(Body, Flags);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRegularExpressionLiteral(emitter, Body, Flags);
     }
 
     public static class RegularExpressionLiteralExtensions
@@ -392,7 +392,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsArrayElement?> elements);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteArrayLiteral(Elements);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayLiteral(emitter, Elements);
     }
 
     public static class ArrayLiteralExtensions
@@ -442,7 +442,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression, bool isSpreadElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteArrayElement(Expression, IsSpreadElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayElement(emitter, Expression, IsSpreadElement);
     }
 
     public static class ArrayElementExtensions
@@ -485,7 +485,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsPropertyDefinition> propertyDefinitions);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteObjectLiteral(PropertyDefinitions);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectLiteral(emitter, PropertyDefinitions);
     }
 
     public static class ObjectLiteralExtensions
@@ -540,7 +540,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsIdentifier identifier, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteCoverInitializedName(Identifier, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCoverInitializedName(emitter, Identifier, Initializer);
     }
 
     public static class CoverInitializedNameExtensions
@@ -587,7 +587,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsPropertyName propertyName, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WritePropertyAssignment(PropertyName, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyAssignment(emitter, PropertyName, Initializer);
     }
 
     public static class PropertyAssignmentExtensions
@@ -652,7 +652,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteComputedPropertyName(Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitComputedPropertyName(emitter, Expression);
     }
 
     public static class ComputedPropertyNameExtensions
@@ -696,7 +696,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string template, ITsExpression? expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplatePart(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteTemplatePart(Template, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplatePart(emitter, Template, Expression);
     }
 
     public static class TemplatePartExtensions
@@ -739,7 +739,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsTemplatePart> parts);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteTemplateLiteral(Parts);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplateLiteral(emitter, Parts);
     }
 
     public static class TemplateLiteralExtensions
@@ -783,7 +783,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteMemberBracketExpression(LeftSide, BracketContents);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberBracketExpression(emitter, LeftSide, BracketContents);
     }
 
     public static class MemberBracketExpressionExtensions
@@ -830,7 +830,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteMemberDotExpression(LeftSide, DotName);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberDotExpression(emitter, LeftSide, DotName);
     }
 
     public static class MemberDotExpressionExtensions
@@ -873,7 +873,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperBracketExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteSuperBracketExpression(BracketContents);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperBracketExpression(emitter, BracketContents);
     }
 
     public static class SuperBracketExpressionExtensions
@@ -913,7 +913,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperDotExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteSuperDotExpression(DotName);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperDotExpression(emitter, DotName);
     }
 
     public static class SuperDotExpressionExtensions
@@ -948,7 +948,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNewTargetExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteNewTargetExpression();
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewTargetExpression(emitter);
     }
 
     //// ===============================================================================================================
@@ -986,7 +986,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteCallExpression(LeftSide, ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCallExpression(emitter, LeftSide, ArgumentList);
     }
 
     public static class CallExpressionExtensions
@@ -1033,7 +1033,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitNewCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteNewCallExpression(LeftSide, ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewCallExpression(emitter, LeftSide, ArgumentList);
     }
 
     public static class NewCallExpressionExtensions
@@ -1076,7 +1076,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteSuperCallExpression(ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperCallExpression(emitter, ArgumentList);
     }
 
     public static class SuperCallExpressionExtensions
@@ -1120,7 +1120,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsType> typeArguments, ImmutableArray<ITsArgument> arguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgumentList(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteArgumentList(TypeArguments, Arguments);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgumentList(emitter, TypeArguments, Arguments);
     }
 
     public static class ArgumentListExtensions
@@ -1173,7 +1173,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression, bool isSpreadArgument);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgument(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteArgument(Expression, IsSpreadArgument);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgument(emitter, Expression, IsSpreadArgument);
     }
 
     public static class ArgumentExtensions
@@ -1220,7 +1220,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression operand, TsUnaryOperator @operator);
         public override void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteUnaryExpression(Operand, Operator);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitUnaryExpression(emitter, Operand, Operator);
     }
 
     public static class UnaryExpressionExtensions
@@ -1267,7 +1267,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsType castType, ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitCastExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteCastExpression(CastType, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCastExpression(emitter, CastType, Expression);
     }
 
     public static class CastExpressionExtensions
@@ -1318,7 +1318,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, TsBinaryOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteBinaryExpression(LeftSide, Operator, RightSide);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBinaryExpression(emitter, LeftSide, Operator, RightSide);
     }
 
     public static class BinaryExpressionExtensions
@@ -1372,7 +1372,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression condition, ITsExpression whenTrue, ITsExpression whenFalse);
         public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteConditionalExpression(Condition, WhenTrue, WhenFalse);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConditionalExpression(emitter, Condition, WhenTrue, WhenFalse);
     }
 
     public static class ConditionalExpressionExtensions
@@ -1426,7 +1426,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, TsAssignmentOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteAssignmentExpression(LeftSide, Operator, RightSide);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAssignmentExpression(emitter, LeftSide, Operator, RightSide);
     }
 
     public static class AssignmentExpressionExtensions
@@ -1483,7 +1483,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsExpression> expressions);
         public override void Accept(TsVisitor visitor) => visitor.VisitCommaExpression(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteCommaExpression(Expressions);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCommaExpression(emitter, Expressions);
     }
 
     public static class CommaExpressionExtensions
@@ -1545,7 +1545,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitBlockStatement(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteBlockStatement(Statements);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBlockStatement(emitter, Statements);
     }
 
     public static class BlockStatementExtensions
@@ -1600,7 +1600,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(bool isConst, ImmutableArray<ITsLexicalBinding> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitLexicalDeclaration(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteLexicalDeclaration(IsConst, Declarations);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLexicalDeclaration(emitter, IsConst, Declarations);
     }
 
     public static class LexicalDeclarationExtensions
@@ -1643,7 +1643,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsVariableDeclaration> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitVariableStatement(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteVariableStatement(Declarations);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitVariableStatement(emitter, Declarations);
     }
 
     public static class VariableStatementExtensions
@@ -1694,7 +1694,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsBindingProperty> properties);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectBindingPattern(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteObjectBindingPattern(Properties);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectBindingPattern(emitter, Properties);
     }
 
     public static class ObjectBindingPatternExtensions
@@ -1738,7 +1738,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsBindingElement?> elements, ITsIdentifier? restElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayBindingPattern(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteArrayBindingPattern(Elements, RestElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayBindingPattern(emitter, Elements, RestElement);
     }
 
     public static class ArrayBindingPatternExtensions
@@ -1796,7 +1796,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsIdentifier name, ITsExpression? defaultValue);
         public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WriteSingleNameBinding(Name, DefaultValue);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSingleNameBinding(emitter, Name, DefaultValue);
     }
 
     public static class SingleNameBindingExtensions
@@ -1843,7 +1843,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsPropertyName propertyName, ITsBindingElement bindingElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyNameBinding(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WritePropertyNameBinding(PropertyName, BindingElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyNameBinding(emitter, PropertyName, BindingElement);
     }
 
     public static class PropertyNameBindingExtensions
@@ -1901,7 +1901,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsExpression? initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
-        protected override void EmitContent(Emitter emitter) => emitter.WritePatternBinding(BindingPattern, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPatternBinding(emitter, BindingPattern, Initializer);
     }
 
     public static class PatternBindingExtensions

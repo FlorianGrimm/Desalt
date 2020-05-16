@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="TsAstNodeEmitExtensions.cs" company="Justin Rockwood">
+// <copyright file="TsAstEmitter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Desalt.TypeScriptAst.Ast
     using System.Globalization;
     using Desalt.TypeScriptAst.Emit;
 
-    internal static class TsAstNodeEmitExtensions
+    internal static class TsAstEmitter
     {
         public static Emitter Write(this Emitter emitter, ITsAstNode node)
         {
@@ -20,32 +20,32 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter;
         }
 
-        public static Emitter WriteIdentifier(this Emitter emitter, string text)
+        public static Emitter EmitIdentifier(Emitter emitter, string text)
         {
             return emitter.Write(text);
         }
 
-        public static Emitter WriteThis(this Emitter emitter)
+        public static Emitter EmitThis(Emitter emitter)
         {
             return emitter.Write("this");
         }
 
-        public static Emitter WriteParenthesizedExpression(this Emitter emitter, ITsExpression expression)
+        public static Emitter EmitParenthesizedExpression(Emitter emitter, ITsExpression expression)
         {
             return emitter.Write("(").Write(expression).Write(")");
         }
 
-        public static Emitter WriteNullLiteral(this Emitter emitter)
+        public static Emitter EmitNullLiteral(Emitter emitter)
         {
             return emitter.Write("null");
         }
 
-        public static Emitter WriteBooleanLiteral(this Emitter emitter, bool value)
+        public static Emitter EmitBooleanLiteral(Emitter emitter, bool value)
         {
             return emitter.Write(value ? "true" : "false");
         }
 
-        public static Emitter WriteNumericLiteral(this Emitter emitter, double value, TsNumericLiteralKind kind)
+        public static Emitter EmitNumericLiteral(Emitter emitter, double value, TsNumericLiteralKind kind)
         {
             string number = kind switch
             {
@@ -59,37 +59,37 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter.Write(number);
         }
 
-        public static Emitter WriteStringLiteral(this Emitter emitter, string value, StringLiteralQuoteKind quoteKind)
+        public static Emitter EmitStringLiteral(Emitter emitter, string value, StringLiteralQuoteKind quoteKind)
         {
             string quoteChar = quoteKind == StringLiteralQuoteKind.SingleQuote ? "'" : "\"";
             emitter.Write($"{quoteChar}{value.Replace(quoteChar, "\\" + quoteChar)}{quoteChar}");
             return emitter;
         }
 
-        public static Emitter WriteRegularExpressionLiteral(this Emitter emitter, string body, string? flags)
+        public static Emitter EmitRegularExpressionLiteral(Emitter emitter, string body, string? flags)
         {
             return emitter.Write($"/{body}/{flags ?? string.Empty}");
         }
 
-        public static Emitter WriteArrayLiteral(this Emitter emitter, ImmutableArray<ITsArrayElement?> elements)
+        public static Emitter EmitArrayLiteral(Emitter emitter, ImmutableArray<ITsArrayElement?> elements)
         {
             return emitter.WriteList(elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
 
-        public static Emitter WriteArrayElement(this Emitter emitter, ITsExpression expression, bool isSpreadElement)
+        public static Emitter EmitArrayElement(Emitter emitter, ITsExpression expression, bool isSpreadElement)
         {
             return emitter.WriteIf(isSpreadElement, "...").Write(expression);
         }
 
-        public static Emitter WriteObjectLiteral(
-            this Emitter emitter,
+        public static Emitter EmitObjectLiteral(
+            Emitter emitter,
             ImmutableArray<ITsPropertyDefinition> propertyDefinitions)
         {
             return emitter.WriteCommaNewlineSeparatedBlock(propertyDefinitions);
         }
 
-        public static Emitter WriteCoverInitializedName(
-            this Emitter emitter,
+        public static Emitter EmitCoverInitializedName(
+            Emitter emitter,
             ITsIdentifier identifier,
             ITsExpression initializer)
         {
@@ -98,20 +98,20 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter;
         }
 
-        public static Emitter WritePropertyAssignment(
-            this Emitter emitter,
+        public static Emitter EmitPropertyAssignment(
+            Emitter emitter,
             ITsPropertyName propertyName,
             ITsExpression initializer)
         {
             return emitter.Write(propertyName).Write(": ").Write(initializer);
         }
 
-        public static Emitter WriteComputedPropertyName(this Emitter emitter, ITsExpression expression)
+        public static Emitter EmitComputedPropertyName(Emitter emitter, ITsExpression expression)
         {
             return emitter.Write("[").Write(expression).Write("]");
         }
 
-        public static Emitter WriteTemplatePart(this Emitter emitter, string template, ITsExpression? expression)
+        public static Emitter EmitTemplatePart(Emitter emitter, string template, ITsExpression? expression)
         {
             emitter.Write(template);
 
@@ -123,62 +123,59 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter;
         }
 
-        public static Emitter WriteTemplateLiteral(this Emitter emitter, ImmutableArray<ITsTemplatePart> parts)
+        public static Emitter EmitTemplateLiteral(Emitter emitter, ImmutableArray<ITsTemplatePart> parts)
         {
             return emitter.Write("`").WriteList(parts, indent: false).Write("`");
         }
 
-        public static Emitter WriteMemberBracketExpression(
-            this Emitter emitter,
+        public static Emitter EmitMemberBracketExpression(
+            Emitter emitter,
             ITsExpression leftSide,
             ITsExpression bracketContents)
         {
             return emitter.Write(leftSide).Write("[").Write(bracketContents).Write("]");
         }
 
-        public static Emitter WriteMemberDotExpression(this Emitter emitter, ITsExpression leftSide, string dotName)
+        public static Emitter EmitMemberDotExpression(Emitter emitter, ITsExpression leftSide, string dotName)
         {
             return emitter.Write(leftSide).Write($".{dotName}");
         }
 
-        public static Emitter WriteSuperBracketExpression(this Emitter emitter, ITsExpression bracketContents)
+        public static Emitter EmitSuperBracketExpression(Emitter emitter, ITsExpression bracketContents)
         {
             return emitter.Write("super[").Write(bracketContents).Write("]");
         }
 
-        public static Emitter WriteSuperDotExpression(this Emitter emitter, string dotName)
+        public static Emitter EmitSuperDotExpression(Emitter emitter, string dotName)
         {
             return emitter.Write($"super.{dotName}");
         }
 
-        public static Emitter WriteNewTargetExpression(this Emitter emitter)
+        public static Emitter EmitNewTargetExpression(Emitter emitter)
         {
             return emitter.Write("new.target");
         }
 
-        public static Emitter WriteCallExpression(
-            this Emitter emitter,
-            ITsExpression leftSide,
-            ITsArgumentList argumentList)
+        public static Emitter EmitCallExpression(Emitter emitter, ITsExpression leftSide, ITsArgumentList argumentList)
         {
             return emitter.Write(leftSide).Write(argumentList);
         }
 
-        public static Emitter WriteNewCallExpression(
-            this Emitter emitter,
+        public static Emitter EmitNewCallExpression(
+            Emitter emitter,
             ITsExpression leftSide,
             ITsArgumentList argumentList)
         {
             return emitter.Write("new ").Write(leftSide).Write(argumentList);
         }
 
-        public static Emitter WriteSuperCallExpression(this Emitter emitter, ITsArgumentList argumentList)
+        public static Emitter EmitSuperCallExpression(Emitter emitter, ITsArgumentList argumentList)
         {
             return emitter.Write("super").Write(argumentList);
         }
 
-        public static Emitter WriteArgumentList(
-            this Emitter emitter,
+        public static Emitter EmitArgumentList(
+            Emitter emitter,
             ImmutableArray<ITsType> typeArguments,
             ImmutableArray<ITsArgument> arguments)
         {
@@ -190,15 +187,12 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter.WriteParameterList(arguments);
         }
 
-        public static Emitter WriteArgument(this Emitter emitter, ITsExpression expression, bool isSpreadArgument)
+        public static Emitter EmitArgument(Emitter emitter, ITsExpression expression, bool isSpreadArgument)
         {
             return emitter.WriteIf(isSpreadArgument, "... ").Write(expression);
         }
 
-        public static Emitter WriteUnaryExpression(
-            this Emitter emitter,
-            ITsExpression operand,
-            TsUnaryOperator @operator)
+        public static Emitter EmitUnaryExpression(Emitter emitter, ITsExpression operand, TsUnaryOperator @operator)
         {
             switch (@operator)
             {
@@ -232,13 +226,13 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter;
         }
 
-        public static Emitter WriteCastExpression(this Emitter emitter, ITsType castType, ITsExpression expression)
+        public static Emitter EmitCastExpression(Emitter emitter, ITsType castType, ITsExpression expression)
         {
             return emitter.Write("<").Write(castType).Write(">").Write(expression);
         }
 
-        public static Emitter WriteBinaryExpression(
-            this Emitter emitter,
+        public static Emitter EmitBinaryExpression(
+            Emitter emitter,
             ITsExpression leftSide,
             TsBinaryOperator @operator,
             ITsExpression rightSide)
@@ -246,8 +240,8 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter.Write(leftSide).Write($" {@operator.ToCodeDisplay()} ").Write(rightSide);
         }
 
-        public static Emitter WriteConditionalExpression(
-            this Emitter emitter,
+        public static Emitter EmitConditionalExpression(
+            Emitter emitter,
             ITsExpression condition,
             ITsExpression whenTrue,
             ITsExpression whenFalse)
@@ -255,8 +249,8 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter.Write(condition).Write(" ? ").Write(whenTrue).Write(" : ").Write(whenFalse);
         }
 
-        public static Emitter WriteAssignmentExpression(
-            this Emitter emitter,
+        public static Emitter EmitAssignmentExpression(
+            Emitter emitter,
             ITsExpression leftSide,
             TsAssignmentOperator @operator,
             ITsExpression rightSide)
@@ -264,18 +258,18 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter.Write(leftSide).Write($" {@operator.ToCodeDisplay()} ").Write(rightSide);
         }
 
-        public static Emitter WriteCommaExpression(this Emitter emitter, ImmutableArray<ITsExpression> expressions)
+        public static Emitter EmitCommaExpression(Emitter emitter, ImmutableArray<ITsExpression> expressions)
         {
             return emitter.WriteList(expressions, indent: false, itemDelimiter: ", ");
         }
 
-        public static Emitter WriteBlockStatement(this Emitter emitter, ImmutableArray<ITsStatementListItem> statements)
+        public static Emitter EmitBlockStatement(Emitter emitter, ImmutableArray<ITsStatementListItem> statements)
         {
             return emitter.WriteBlock(statements, skipNewlines: true);
         }
 
-        public static Emitter WriteLexicalDeclaration(
-            this Emitter emitter,
+        public static Emitter EmitLexicalDeclaration(
+            Emitter emitter,
             bool isConst,
             ImmutableArray<ITsLexicalBinding> declarations)
         {
@@ -284,16 +278,14 @@ namespace Desalt.TypeScriptAst.Ast
                 .WriteLine(";");
         }
 
-        public static Emitter WriteVariableStatement(
-            this Emitter emitter,
+        public static Emitter EmitVariableStatement(
+            Emitter emitter,
             ImmutableArray<ITsVariableDeclaration> declarations)
         {
             return emitter.Write("var ").WriteList(declarations, indent: false, itemDelimiter: ", ").WriteLine(";");
         }
 
-        public static Emitter WriteObjectBindingPattern(
-            this Emitter emitter,
-            ImmutableArray<ITsBindingProperty> properties)
+        public static Emitter EmitObjectBindingPattern(Emitter emitter, ImmutableArray<ITsBindingProperty> properties)
         {
             return emitter.WriteList(
                 properties,
@@ -304,8 +296,8 @@ namespace Desalt.TypeScriptAst.Ast
                 emptyContents: "{}");
         }
 
-        public static Emitter WriteArrayBindingPattern(
-            this Emitter emitter,
+        public static Emitter EmitArrayBindingPattern(
+            Emitter emitter,
             ImmutableArray<ITsBindingElement?> elements,
             ITsIdentifier? restElement)
         {
@@ -319,29 +311,31 @@ namespace Desalt.TypeScriptAst.Ast
             }
 
             return emitter.WriteList(
-                elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ", emptyContents: "[]");
+                elements,
+                indent: false,
+                prefix: "[",
+                suffix: "]",
+                itemDelimiter: ", ",
+                emptyContents: "[]");
         }
 
-        public static Emitter WriteSingleNameBinding(
-            this Emitter emitter,
-            ITsIdentifier name,
-            ITsExpression? defaultValue)
+        public static Emitter EmitSingleNameBinding(Emitter emitter, ITsIdentifier name, ITsExpression? defaultValue)
         {
             name.Emit(emitter);
             defaultValue?.EmitOptionalAssignment(emitter);
             return emitter;
         }
 
-        public static Emitter WritePropertyNameBinding(
-            this Emitter emitter,
+        public static Emitter EmitPropertyNameBinding(
+            Emitter emitter,
             ITsPropertyName propertyName,
             ITsBindingElement bindingElement)
         {
             return emitter.Write(propertyName).Write(": ").Write(bindingElement);
         }
 
-        public static Emitter WritePatternBinding(
-            this Emitter emitter,
+        public static Emitter EmitPatternBinding(
+            Emitter emitter,
             ITsBindingPattern bindingPattern,
             ITsExpression? initializer)
         {

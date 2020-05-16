@@ -261,7 +261,8 @@
         public bool HasProperties => Properties.Any();
         public string InterfaceName => "ITs" + Name;
         public string EmitImplementation =>
-            $"emitter.Write{Name}({ToPropertyList(noTypes: true, useNameInsteadOfArgumentName: true)})";
+            $"TsAstEmitter.Emit{Name}(emitter" +
+            $"{ToPropertyList(noTypes: true, useNameInsteadOfArgumentName: true, prefixComma: true)})";
 
         public string ToPropertyList(
             bool includeTriviaParams = false,
