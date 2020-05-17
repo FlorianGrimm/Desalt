@@ -49,13 +49,12 @@
       <xs:element name="Property" type="PropertyType" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="baseInterfaces" type="ListOfStrings" use="optional" />
+    <xs:attribute name="baseInterfaces" type="ListOfStrings" use="required" />
   </xs:complexType>
 
   <xs:complexType name="AstNodeType">
     <xs:complexContent>
       <xs:extension base="NodeType">
-        <xs:attribute name="baseClass" type="xs:string" use="optional" />
         <xs:attribute name="generateEmit" type="xs:boolean" use="optional" />
         <xs:attribute name="interfaceOnly" type="xs:boolean" use="optional" />
       </xs:extension>
@@ -68,6 +67,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="type" type="xs:string" use="required" />
+    <xs:attribute name="declaredInBaseInterface" type="xs:boolean" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="EnumType">

@@ -9,10 +9,10 @@ namespace Desalt.Core.Translation
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Statements;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -151,11 +151,18 @@ namespace Desalt.Core.Translation
         /// <returns>An enumerable of <see cref="ITsCaseOrDefaultClause"/>.</returns>
         private IEnumerable<ITsCaseOrDefaultClause> TranslateSwitchSection(SwitchSectionSyntax node)
         {
-            var labels = node.Labels.Select(TranslateSwitchLabel).ToArray();
-            var statements = node.Statements.SelectMany(Visit);
+            ITsCaseOrDefaultClause[] labels = node.Labels.Select(TranslateSwitchLabel).ToArray();
+            var statements = node.Statements.SelectMany(Visit).ToImmutableArray();
 
             // Attach the statements to the last label.
-            labels[^1] = labels[^1].WithStatements(statements);
+            if (labels[^1] is ITsCaseClause caseClause)
+            {
+                labels[^1] = caseClause.WithStatements(statements);
+            }
+            else
+            {
+                labels[^1] = ((ITsDefaultClause)labels[^1]).WithStatements(statements);
+            }
 
             return labels;
         }

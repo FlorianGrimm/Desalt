@@ -5,11 +5,15 @@
 // </copyright>
 // ---------------------------------------------------------------------------------------------------------------------
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Immutable;
     using System.Globalization;
+    using System.IO;
+    using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Emit;
 
     internal static class TsAstEmitter
@@ -20,187 +24,179 @@ namespace Desalt.TypeScriptAst.Ast
             return emitter;
         }
 
-        public static Emitter EmitIdentifier(Emitter emitter, string text)
+        public static void EmitIdentifier(Emitter emitter, ITsIdentifier identifier)
         {
-            return emitter.Write(text);
+            emitter.Write(identifier.Text);
         }
 
-        public static Emitter EmitThis(Emitter emitter)
+        public static void EmitThis(Emitter emitter, ITsThis @this)
         {
-            return emitter.Write("this");
+            emitter.Write("this");
         }
 
-        public static Emitter EmitParenthesizedExpression(Emitter emitter, ITsExpression expression)
+        public static void EmitParenthesizedExpression(Emitter emitter, ITsParenthesizedExpression expression)
         {
-            return emitter.Write("(").Write(expression).Write(")");
+            emitter.Write("(").Write(expression.Expression).Write(")");
         }
 
-        public static Emitter EmitNullLiteral(Emitter emitter)
+        public static void EmitNullLiteral(Emitter emitter, ITsNullLiteral nullLiteral)
         {
-            return emitter.Write("null");
+            emitter.Write("null");
         }
 
-        public static Emitter EmitBooleanLiteral(Emitter emitter, bool value)
+        public static void EmitBooleanLiteral(Emitter emitter, ITsBooleanLiteral booleanLiteral)
         {
-            return emitter.Write(value ? "true" : "false");
+            emitter.Write(booleanLiteral.Value ? "true" : "false");
         }
 
-        public static Emitter EmitNumericLiteral(Emitter emitter, double value, TsNumericLiteralKind kind)
+        public static void EmitNumericLiteral(Emitter emitter, ITsNumericLiteral numericLiteral)
         {
-            string number = kind switch
+            double value = numericLiteral.Value;
+            string number = numericLiteral.Kind switch
             {
                 TsNumericLiteralKind.Decimal => value.ToString(CultureInfo.InvariantCulture),
                 TsNumericLiteralKind.BinaryInteger => "0b" + Convert.ToString((long)value, 2),
                 TsNumericLiteralKind.OctalInteger => "0o" + Convert.ToString((long)value, 8),
                 TsNumericLiteralKind.HexInteger => "0x" + Convert.ToString((long)value, 16),
-                _ => throw new ArgumentOutOfRangeException(nameof(kind))
+                _ => throw new ArgumentOutOfRangeException(nameof(numericLiteral.Kind))
             };
 
-            return emitter.Write(number);
+            emitter.Write(number);
         }
 
-        public static Emitter EmitStringLiteral(Emitter emitter, string value, StringLiteralQuoteKind quoteKind)
+        public static void EmitStringLiteral(Emitter emitter, ITsStringLiteral stringLiteral)
         {
-            string quoteChar = quoteKind == StringLiteralQuoteKind.SingleQuote ? "'" : "\"";
-            emitter.Write($"{quoteChar}{value.Replace(quoteChar, "\\" + quoteChar)}{quoteChar}");
-            return emitter;
+            string quoteChar = stringLiteral.QuoteKind == StringLiteralQuoteKind.SingleQuote ? "'" : "\"";
+            emitter.Write($"{quoteChar}{stringLiteral.Value.Replace(quoteChar, "\\" + quoteChar)}{quoteChar}");
         }
 
-        public static Emitter EmitRegularExpressionLiteral(Emitter emitter, string body, string? flags)
-        {
-            return emitter.Write($"/{body}/{flags ?? string.Empty}");
-        }
-
-        public static Emitter EmitArrayLiteral(Emitter emitter, ImmutableArray<ITsArrayElement?> elements)
-        {
-            return emitter.WriteList(elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
-        }
-
-        public static Emitter EmitArrayElement(Emitter emitter, ITsExpression expression, bool isSpreadElement)
-        {
-            return emitter.WriteIf(isSpreadElement, "...").Write(expression);
-        }
-
-        public static Emitter EmitObjectLiteral(
+        public static void EmitRegularExpressionLiteral(
             Emitter emitter,
-            ImmutableArray<ITsPropertyDefinition> propertyDefinitions)
+            ITsRegularExpressionLiteral regularExpressionLiteral)
         {
-            return emitter.WriteCommaNewlineSeparatedBlock(propertyDefinitions);
+            emitter.Write($"/{regularExpressionLiteral.Body}/{regularExpressionLiteral.Flags ?? string.Empty}");
         }
 
-        public static Emitter EmitCoverInitializedName(
-            Emitter emitter,
-            ITsIdentifier identifier,
-            ITsExpression initializer)
+        public static void EmitArrayLiteral(Emitter emitter, ITsArrayLiteral arrayLiteral)
         {
-            identifier.Emit(emitter);
-            initializer.EmitOptionalAssignment(emitter);
-            return emitter;
+            emitter.WriteList(arrayLiteral.Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
         }
 
-        public static Emitter EmitPropertyAssignment(
-            Emitter emitter,
-            ITsPropertyName propertyName,
-            ITsExpression initializer)
+        public static void EmitArrayElement(Emitter emitter, ITsArrayElement arrayElement)
         {
-            return emitter.Write(propertyName).Write(": ").Write(initializer);
+            emitter.WriteIf(arrayElement.IsSpreadElement, "...").Write(arrayElement.Expression);
         }
 
-        public static Emitter EmitComputedPropertyName(Emitter emitter, ITsExpression expression)
+        public static void EmitObjectLiteral(Emitter emitter, ITsObjectLiteral objectLiteral)
         {
-            return emitter.Write("[").Write(expression).Write("]");
+            emitter.WriteCommaNewlineSeparatedBlock(objectLiteral.PropertyDefinitions);
         }
 
-        public static Emitter EmitTemplatePart(Emitter emitter, string template, ITsExpression? expression)
+        public static void EmitCoverInitializedName(Emitter emitter, ITsCoverInitializedName coverInitializedName)
         {
-            emitter.Write(template);
+            coverInitializedName.Initializer.Emit(emitter);
+            coverInitializedName.Initializer.EmitOptionalAssignment(emitter);
+        }
 
-            if (expression != null)
+        public static void EmitPropertyAssignment(Emitter emitter, ITsPropertyAssignment propertyAssignment)
+        {
+            emitter.Write(propertyAssignment.PropertyName).Write(": ").Write(propertyAssignment.Initializer);
+        }
+
+        public static void EmitComputedPropertyName(Emitter emitter, ITsComputedPropertyName computedPropertyName)
+        {
+            emitter.Write("[").Write(computedPropertyName.Expression).Write("]");
+        }
+
+        public static void EmitTemplatePart(Emitter emitter, ITsTemplatePart templatePart)
+        {
+            emitter.Write(templatePart.Template);
+
+            if (templatePart.Expression != null)
             {
-                emitter.Write("${").Write(expression).Write("}");
+                emitter.Write("${").Write(templatePart.Expression).Write("}");
+            }
+        }
+
+        public static void EmitTemplateLiteral(Emitter emitter, ITsTemplateLiteral templateLiteral)
+        {
+            emitter.Write("`").WriteList(templateLiteral.Parts, indent: false).Write("`");
+        }
+
+        public static void EmitMemberBracketExpression(
+            Emitter emitter,
+            ITsMemberBracketExpression memberBracketExpression)
+        {
+            emitter.Write(memberBracketExpression.LeftSide)
+                .Write("[")
+                .Write(memberBracketExpression.BracketContents)
+                .Write("]");
+        }
+
+        public static void EmitMemberDotExpression(Emitter emitter, ITsMemberDotExpression memberDotExpression)
+        {
+            emitter.Write(memberDotExpression.LeftSide).Write($".{memberDotExpression.DotName}");
+        }
+
+        public static void EmitSuperBracketExpression(Emitter emitter, ITsSuperBracketExpression superBracketExpression)
+        {
+            emitter.Write("super[").Write(superBracketExpression.BracketContents).Write("]");
+        }
+
+        public static void EmitSuperDotExpression(Emitter emitter, ITsSuperDotExpression superDotExpression)
+        {
+            emitter.Write($"super.{superDotExpression.DotName}");
+        }
+
+        public static void EmitNewTargetExpression(Emitter emitter, ITsNewTargetExpression newTargetExpression)
+        {
+            emitter.Write("new.target");
+        }
+
+        public static void EmitCallExpression(Emitter emitter, ITsCallExpression callExpression)
+        {
+            emitter.Write(callExpression.LeftSide).Write(callExpression.ArgumentList);
+        }
+
+        public static void EmitNewCallExpression(Emitter emitter, ITsNewCallExpression newCallExpression)
+        {
+            emitter.Write("new ").Write(newCallExpression.LeftSide).Write(newCallExpression.ArgumentList);
+        }
+
+        public static void EmitSuperCallExpression(Emitter emitter, TsSuperCallExpression superCallExpression)
+        {
+            emitter.Write("super").Write(superCallExpression.ArgumentList);
+        }
+
+        public static void EmitArgumentList(Emitter emitter, ITsArgumentList argumentList)
+        {
+            if (!argumentList.TypeArguments.IsEmpty)
+            {
+                emitter.WriteList(
+                    argumentList.TypeArguments,
+                    indent: false,
+                    prefix: "<",
+                    suffix: ">",
+                    itemDelimiter: ", ");
             }
 
-            return emitter;
+            emitter.WriteParameterList(argumentList.Arguments);
         }
 
-        public static Emitter EmitTemplateLiteral(Emitter emitter, ImmutableArray<ITsTemplatePart> parts)
+        public static void EmitArgument(Emitter emitter, ITsArgument argument)
         {
-            return emitter.Write("`").WriteList(parts, indent: false).Write("`");
+            emitter.WriteIf(argument.IsSpreadArgument, "... ").Write(argument.Expression);
         }
 
-        public static Emitter EmitMemberBracketExpression(
-            Emitter emitter,
-            ITsExpression leftSide,
-            ITsExpression bracketContents)
+        public static void EmitUnaryExpression(Emitter emitter, ITsUnaryExpression unaryExpression)
         {
-            return emitter.Write(leftSide).Write("[").Write(bracketContents).Write("]");
-        }
-
-        public static Emitter EmitMemberDotExpression(Emitter emitter, ITsExpression leftSide, string dotName)
-        {
-            return emitter.Write(leftSide).Write($".{dotName}");
-        }
-
-        public static Emitter EmitSuperBracketExpression(Emitter emitter, ITsExpression bracketContents)
-        {
-            return emitter.Write("super[").Write(bracketContents).Write("]");
-        }
-
-        public static Emitter EmitSuperDotExpression(Emitter emitter, string dotName)
-        {
-            return emitter.Write($"super.{dotName}");
-        }
-
-        public static Emitter EmitNewTargetExpression(Emitter emitter)
-        {
-            return emitter.Write("new.target");
-        }
-
-        public static Emitter EmitCallExpression(Emitter emitter, ITsExpression leftSide, ITsArgumentList argumentList)
-        {
-            return emitter.Write(leftSide).Write(argumentList);
-        }
-
-        public static Emitter EmitNewCallExpression(
-            Emitter emitter,
-            ITsExpression leftSide,
-            ITsArgumentList argumentList)
-        {
-            return emitter.Write("new ").Write(leftSide).Write(argumentList);
-        }
-
-        public static Emitter EmitSuperCallExpression(Emitter emitter, ITsArgumentList argumentList)
-        {
-            return emitter.Write("super").Write(argumentList);
-        }
-
-        public static Emitter EmitArgumentList(
-            Emitter emitter,
-            ImmutableArray<ITsType> typeArguments,
-            ImmutableArray<ITsArgument> arguments)
-        {
-            if (!typeArguments.IsEmpty)
-            {
-                emitter.WriteList(typeArguments, indent: false, prefix: "<", suffix: ">", itemDelimiter: ", ");
-            }
-
-            return emitter.WriteParameterList(arguments);
-        }
-
-        public static Emitter EmitArgument(Emitter emitter, ITsExpression expression, bool isSpreadArgument)
-        {
-            return emitter.WriteIf(isSpreadArgument, "... ").Write(expression);
-        }
-
-        public static Emitter EmitUnaryExpression(Emitter emitter, ITsExpression operand, TsUnaryOperator @operator)
-        {
-            switch (@operator)
+            switch (unaryExpression.Operator)
             {
                 case TsUnaryOperator.Delete:
                 case TsUnaryOperator.Void:
                 case TsUnaryOperator.Typeof:
-                    emitter.Write($"{@operator.ToCodeDisplay()} ");
-                    operand.Emit(emitter);
+                    emitter.Write($"{unaryExpression.Operator.ToCodeDisplay()} ");
+                    unaryExpression.Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PrefixIncrement:
@@ -209,86 +205,77 @@ namespace Desalt.TypeScriptAst.Ast
                 case TsUnaryOperator.Minus:
                 case TsUnaryOperator.BitwiseNot:
                 case TsUnaryOperator.LogicalNot:
-                    emitter.Write(@operator.ToCodeDisplay());
-                    operand.Emit(emitter);
+                    emitter.Write(unaryExpression.Operator.ToCodeDisplay());
+                    unaryExpression.Operand.Emit(emitter);
                     break;
 
                 case TsUnaryOperator.PostfixIncrement:
                 case TsUnaryOperator.PostfixDecrement:
-                    operand.Emit(emitter);
-                    emitter.Write(@operator.ToCodeDisplay());
+                    unaryExpression.Operand.Emit(emitter);
+                    emitter.Write(unaryExpression.Operator.ToCodeDisplay());
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(@operator));
+                    throw new ArgumentOutOfRangeException(nameof(unaryExpression.Operator));
             }
-
-            return emitter;
         }
 
-        public static Emitter EmitCastExpression(Emitter emitter, ITsType castType, ITsExpression expression)
+        public static void EmitCastExpression(Emitter emitter, ITsCastExpression castExpression)
         {
-            return emitter.Write("<").Write(castType).Write(">").Write(expression);
+            emitter.Write("<").Write(castExpression.CastType).Write(">").Write(castExpression.Expression);
         }
 
-        public static Emitter EmitBinaryExpression(
-            Emitter emitter,
-            ITsExpression leftSide,
-            TsBinaryOperator @operator,
-            ITsExpression rightSide)
+        public static void EmitBinaryExpression(Emitter emitter, ITsBinaryExpression binaryExpression)
         {
-            return emitter.Write(leftSide).Write($" {@operator.ToCodeDisplay()} ").Write(rightSide);
+            emitter.Write(binaryExpression.LeftSide)
+                .Write($" {binaryExpression.Operator.ToCodeDisplay()} ")
+                .Write(binaryExpression.RightSide);
         }
 
-        public static Emitter EmitConditionalExpression(
-            Emitter emitter,
-            ITsExpression condition,
-            ITsExpression whenTrue,
-            ITsExpression whenFalse)
+        public static void EmitConditionalExpression(Emitter emitter, ITsConditionalExpression conditionalExpression)
         {
-            return emitter.Write(condition).Write(" ? ").Write(whenTrue).Write(" : ").Write(whenFalse);
+            emitter.Write(conditionalExpression.Condition)
+                .Write(" ? ")
+                .Write(conditionalExpression.WhenTrue)
+                .Write(" : ")
+                .Write(conditionalExpression.WhenFalse);
         }
 
-        public static Emitter EmitAssignmentExpression(
-            Emitter emitter,
-            ITsExpression leftSide,
-            TsAssignmentOperator @operator,
-            ITsExpression rightSide)
+        public static void EmitAssignmentExpression(Emitter emitter, ITsAssignmentExpression assignmentExpression)
         {
-            return emitter.Write(leftSide).Write($" {@operator.ToCodeDisplay()} ").Write(rightSide);
+            emitter.Write(assignmentExpression.LeftSide)
+                .Write($" {assignmentExpression.Operator.ToCodeDisplay()} ")
+                .Write(assignmentExpression.RightSide);
         }
 
-        public static Emitter EmitCommaExpression(Emitter emitter, ImmutableArray<ITsExpression> expressions)
+        public static void EmitCommaExpression(Emitter emitter, ITsCommaExpression commaExpression)
         {
-            return emitter.WriteList(expressions, indent: false, itemDelimiter: ", ");
+            emitter.WriteList(commaExpression.Expressions, indent: false, itemDelimiter: ", ");
         }
 
-        public static Emitter EmitBlockStatement(Emitter emitter, ImmutableArray<ITsStatementListItem> statements)
+        public static void EmitBlockStatement(Emitter emitter, ITsBlockStatement blockStatement)
         {
-            return emitter.WriteBlock(statements, skipNewlines: true);
+            emitter.WriteBlock(blockStatement.Statements, skipNewlines: true);
         }
 
-        public static Emitter EmitLexicalDeclaration(
-            Emitter emitter,
-            bool isConst,
-            ImmutableArray<ITsLexicalBinding> declarations)
+        public static void EmitLexicalDeclaration(Emitter emitter, ITsLexicalDeclaration lexicalDeclaration)
         {
-            return emitter.Write(isConst ? "const " : "let ")
-                .WriteList(declarations, indent: false, itemDelimiter: ", ")
+            emitter.Write(lexicalDeclaration.IsConst ? "const " : "let ")
+                .WriteList(lexicalDeclaration.Declarations, indent: false, itemDelimiter: ", ")
                 .WriteLine(";");
         }
 
-        public static Emitter EmitVariableStatement(
-            Emitter emitter,
-            ImmutableArray<ITsVariableDeclaration> declarations)
+        public static void EmitVariableStatement(Emitter emitter, ITsVariableStatement variableStatement)
         {
-            return emitter.Write("var ").WriteList(declarations, indent: false, itemDelimiter: ", ").WriteLine(";");
+            emitter.Write("var ")
+                .WriteList(variableStatement.Declarations, indent: false, itemDelimiter: ", ")
+                .WriteLine(";");
         }
 
-        public static Emitter EmitObjectBindingPattern(Emitter emitter, ImmutableArray<ITsBindingProperty> properties)
+        public static void EmitObjectBindingPattern(Emitter emitter, ITsObjectBindingPattern objectBindingPattern)
         {
-            return emitter.WriteList(
-                properties,
+            emitter.WriteList(
+                objectBindingPattern.Properties,
                 indent: false,
                 prefix: "{",
                 suffix: "}",
@@ -296,22 +283,23 @@ namespace Desalt.TypeScriptAst.Ast
                 emptyContents: "{}");
         }
 
-        public static Emitter EmitArrayBindingPattern(
-            Emitter emitter,
-            ImmutableArray<ITsBindingElement?> elements,
-            ITsIdentifier? restElement)
+        public static void EmitArrayBindingPattern(Emitter emitter, ITsArrayBindingPattern arrayBindingPattern)
         {
-            if (restElement != null)
+            if (arrayBindingPattern.RestElement != null)
             {
-                return emitter.Write("[")
-                    .WriteList(elements, indent: false, itemDelimiter: ", ", delimiterAfterLastItem: true)
+                emitter.Write("[")
+                    .WriteList(
+                        arrayBindingPattern.Elements,
+                        indent: false,
+                        itemDelimiter: ", ",
+                        delimiterAfterLastItem: true)
                     .Write("... ")
-                    .Write(restElement)
+                    .Write(arrayBindingPattern.RestElement)
                     .Write("]");
             }
 
-            return emitter.WriteList(
-                elements,
+            emitter.WriteList(
+                arrayBindingPattern.Elements,
                 indent: false,
                 prefix: "[",
                 suffix: "]",
@@ -319,29 +307,406 @@ namespace Desalt.TypeScriptAst.Ast
                 emptyContents: "[]");
         }
 
-        public static Emitter EmitSingleNameBinding(Emitter emitter, ITsIdentifier name, ITsExpression? defaultValue)
+        public static void EmitSingleNameBinding(Emitter emitter, ITsSingleNameBinding singleNameBinding)
         {
-            name.Emit(emitter);
-            defaultValue?.EmitOptionalAssignment(emitter);
-            return emitter;
+            singleNameBinding.Name.Emit(emitter);
+            singleNameBinding.DefaultValue?.EmitOptionalAssignment(emitter);
         }
 
-        public static Emitter EmitPropertyNameBinding(
-            Emitter emitter,
-            ITsPropertyName propertyName,
-            ITsBindingElement bindingElement)
+        public static void EmitPropertyNameBinding(Emitter emitter, ITsPropertyNameBinding propertyNameBinding)
         {
-            return emitter.Write(propertyName).Write(": ").Write(bindingElement);
+            emitter.Write(propertyNameBinding.PropertyName).Write(": ").Write(propertyNameBinding.BindingElement);
         }
 
-        public static Emitter EmitPatternBinding(
-            Emitter emitter,
-            ITsBindingPattern bindingPattern,
-            ITsExpression? initializer)
+        public static void EmitPatternBinding(Emitter emitter, ITsPatternBinding patternBinding)
         {
-            bindingPattern.Emit(emitter);
-            initializer?.EmitOptionalAssignment(emitter);
-            return emitter;
+            patternBinding.BindingPattern.Emit(emitter);
+            patternBinding.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitEmptyStatement(Emitter emitter, ITsEmptyStatement emptyStatement)
+        {
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitExpressionStatement(Emitter emitter, ITsExpressionStatement expressionStatement)
+        {
+            emitter.Write(expressionStatement.Expression).WriteLine(";");
+        }
+
+        public static void EmitIfStatement(Emitter emitter, ITsIfStatement ifStatement)
+        {
+            emitter.Write("if (");
+            ifStatement.IfCondition.Emit(emitter);
+            ifStatement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: ifStatement.ElseStatement == null);
+
+            if (ifStatement.ElseStatement == null)
+            {
+                return;
+            }
+
+            if (ifStatement.IfStatement is ITsBlockStatement)
+            {
+                emitter.Write(" ");
+            }
+
+            emitter.Write("else");
+            ifStatement.ElseStatement.EmitIndentedOrInBlock(
+                emitter,
+                prefixForIndentedStatement: "",
+                prefixForBlock: " ",
+                newlineAfterBlock: true);
+        }
+
+        public static void EmitDoWhileStatement(Emitter emitter, ITsDoWhileStatement doWhileStatement)
+        {
+            emitter.Write("do");
+            doWhileStatement.DoStatement.EmitIndentedOrInBlock(
+                emitter,
+                prefixForIndentedStatement: "",
+                prefixForBlock: " ");
+
+            emitter.Write(doWhileStatement.DoStatement is ITsBlockStatement ? " while (" : "while (");
+            doWhileStatement.WhileCondition.Emit(emitter);
+            emitter.WriteLine(");");
+        }
+
+        public static void EmitWhileStatement(Emitter emitter, ITsWhileStatement whileStatement)
+        {
+            emitter.Write("while (").Write(whileStatement.WhileCondition);
+            whileStatement.WhileStatement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
+        }
+
+        public static void EmitForStatement(Emitter emitter, ITsForStatement forStatement)
+        {
+            emitter.Write("for (");
+
+            if (forStatement.Initializer != null)
+            {
+                forStatement.Initializer.Emit(emitter);
+                emitter.Write("; ");
+            }
+            else if (forStatement.InitializerWithVariableDeclarations?.Length > 0)
+            {
+                emitter.Write("var ");
+                emitter.WriteList(forStatement.InitializerWithVariableDeclarations, indent: false, itemDelimiter: ", ");
+                emitter.Write("; ");
+            }
+            else
+            {
+                // Normally a lexical declaration ends in a newline, but we don't want that in our
+                // for loop. This is kind of clunky, but we'll create a temporary emitter for it
+                // to use with spaces instead of newlines.
+                using var memoryStream = new MemoryStream();
+                using var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options.WithNewline(" "));
+                forStatement.InitializerWithLexicalDeclaration?.Emit(tempEmitter);
+                emitter.Write(memoryStream.ReadAllText(emitter.Encoding));
+            }
+
+            forStatement.Condition?.Emit(emitter);
+            emitter.Write("; ");
+
+            forStatement.Incrementor?.Emit(emitter);
+
+            forStatement.Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
+        }
+
+        public static void EmitForInStatement(Emitter emitter, ITsForInStatement forInStatement)
+        {
+            EmitForInOfStatement(
+                emitter,
+                ofLoop: false,
+                forInStatement.Initializer,
+                forInStatement.DeclarationKind,
+                forInStatement.Declaration,
+                forInStatement.RightSide,
+                forInStatement.Statement);
+        }
+
+        public static void EmitForOfStatement(Emitter emitter, ITsForOfStatement forOfStatement)
+        {
+            EmitForInOfStatement(
+                emitter,
+                ofLoop: true,
+                forOfStatement.Initializer,
+                forOfStatement.DeclarationKind,
+                forOfStatement.Declaration,
+                forOfStatement.RightSide,
+                forOfStatement.Statement);
+        }
+
+        private static void EmitForInOfStatement(
+            Emitter emitter,
+            bool ofLoop,
+            ITsExpression? initializer,
+            VariableDeclarationKind? declarationKind,
+            ITsBindingIdentifierOrPattern? declaration,
+            ITsExpression rightSide,
+            ITsStatement statement)
+        {
+            emitter.Write("for (");
+
+            if (initializer != null)
+            {
+                initializer.Emit(emitter);
+            }
+            else
+            {
+                declarationKind?.Emit(emitter);
+                declaration?.Emit(emitter);
+            }
+
+            emitter.Write(ofLoop ? " of " : " in ");
+            rightSide.Emit(emitter);
+
+            statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
+        }
+
+        public static void EmitContinueStatement(Emitter emitter, ITsContinueStatement continueStatement)
+        {
+            emitter.Write("continue");
+
+            if (continueStatement.Label != null)
+            {
+                emitter.Write(" ");
+                continueStatement.Label.Emit(emitter);
+            }
+
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitBreakStatement(Emitter emitter, ITsBreakStatement breakStatement)
+        {
+            emitter.Write("break");
+
+            if (breakStatement.Label != null)
+            {
+                emitter.Write(" ");
+                breakStatement.Label.Emit(emitter);
+            }
+
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitReturnStatement(Emitter emitter, ITsReturnStatement returnStatement)
+        {
+            emitter.Write("return");
+
+            if (returnStatement.Expression != null)
+            {
+                emitter.Write(" ");
+                returnStatement.Expression.Emit(emitter);
+            }
+
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitWithStatement(Emitter emitter, ITsWithStatement withStatement)
+        {
+            emitter.Write("with (");
+            withStatement.Expression.Emit(emitter);
+            withStatement.Statement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: true);
+        }
+
+        public static void EmitSwitchStatement(Emitter emitter, ITsSwitchStatement switchStatement)
+        {
+            emitter.Write("switch (");
+            switchStatement.Condition.Emit(emitter);
+            emitter.WriteLine(") {");
+
+            emitter.IndentLevel++;
+            for (int i = 0; i < switchStatement.Clauses.Length; i++)
+            {
+                ITsCaseOrDefaultClause clause = switchStatement.Clauses[i];
+                clause.Emit(emitter);
+
+                // Don't write newlines between empty clauses or after the last item
+                if (clause.Statements?.IsEmpty != true && i < switchStatement.Clauses.Length - 1)
+                {
+                    emitter.WriteLineWithoutIndentation();
+                }
+            }
+
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
+        }
+
+        public static void EmitCaseClause(Emitter emitter, ITsCaseClause caseClause)
+        {
+            emitter.Write("case ").Write(caseClause.Expression).WriteLine(":");
+
+            emitter.IndentLevel++;
+            foreach (ITsStatementListItem statement in caseClause.Statements ??
+                ImmutableArray<ITsStatementListItem>.Empty)
+            {
+                statement.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
+        }
+
+        public static void EmitDefaultClause(Emitter emitter, ITsDefaultClause defaultClause)
+        {
+            emitter.WriteLine("default:");
+
+            emitter.IndentLevel++;
+            foreach (ITsStatementListItem statement in defaultClause.Statements ??
+                ImmutableArray<ITsStatementListItem>.Empty)
+            {
+                statement.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
+        }
+
+        public static void EmitLabeledStatement(Emitter emitter, ITsLabeledStatement labeledStatement)
+        {
+            int currentIndentLevel = emitter.IndentLevel;
+
+            // write the label one indentation level out from the rest of the body
+            emitter.IndentLevel = Math.Max(emitter.IndentLevel - 1, 0);
+            labeledStatement.Label.Emit(emitter);
+            emitter.WriteLine(":");
+            emitter.IndentLevel = currentIndentLevel;
+
+            labeledStatement.Statement?.Emit(emitter);
+            labeledStatement.FunctionDeclaration?.Emit(emitter);
+        }
+
+        public static void EmitThrowStatement(Emitter emitter, ITsThrowStatement throwStatement)
+        {
+            emitter.Write("throw ");
+            throwStatement.Expression.Emit(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitTryStatement(Emitter emitter, ITsTryStatement tryStatement)
+        {
+            emitter.Write("try ");
+            tryStatement.TryBlock.Emit(emitter);
+
+            if (tryStatement.CatchBlock != null)
+            {
+                if (tryStatement.CatchParameter != null)
+                {
+                    emitter.Write(" catch (");
+                    tryStatement.CatchParameter.Emit(emitter);
+                    emitter.Write(") ");
+                }
+                else
+                {
+                    emitter.Write(" catch ");
+                }
+
+                tryStatement.CatchBlock.Emit(emitter);
+            }
+
+            if (tryStatement.FinallyBlock != null)
+            {
+                emitter.Write(" finally ");
+                tryStatement.FinallyBlock.Emit(emitter);
+            }
+
+            emitter.WriteLine();
+        }
+
+        public static void EmitDebuggerStatement(Emitter emitter, ITsDebuggerStatement debuggerStatement)
+        {
+            emitter.WriteLine("debugger;");
+        }
+
+        public static void EmitArrowFunction(Emitter emitter, ITsArrowFunction arrowFunction)
+        {
+            if (arrowFunction.SingleParameterName != null)
+            {
+                arrowFunction.SingleParameterName.Emit(emitter);
+            }
+            else
+            {
+                arrowFunction.CallSignature?.Emit(emitter);
+            }
+
+            emitter.Write(" => ");
+
+            if (arrowFunction.BodyExpression != null)
+            {
+                arrowFunction.BodyExpression.Emit(emitter);
+            }
+            else
+            {
+                emitter.WriteBlock(arrowFunction.Body!, skipNewlines: true);
+            }
+        }
+
+        public static void EmitClassExpression(Emitter emitter, ITsClassExpression classExpression)
+        {
+            emitter.Write("class ");
+            classExpression.ClassName?.Emit(emitter);
+            classExpression.Heritage?.Emit(emitter);
+
+            emitter.WriteBlock(classExpression.ClassBody);
+        }
+
+        public static void EmitImportDeclaration(Emitter emitter, ITsImportDeclaration importDeclaration)
+        {
+            emitter.Write("import ");
+
+            if (importDeclaration.Module != null)
+            {
+                importDeclaration.Module.Emit(emitter);
+            }
+            else
+            {
+                importDeclaration.ImportClause?.Emit(emitter);
+                emitter.Write(" ");
+                importDeclaration.FromClause?.Emit(emitter);
+            }
+
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitImportClause(Emitter emitter, ITsImportClause importClause)
+        {
+            if (importClause.DefaultBinding != null)
+            {
+                importClause.DefaultBinding.Emit(emitter);
+                if (importClause.NamespaceBinding != null || importClause.NamedImports != null)
+                {
+                    emitter.Write(", ");
+                }
+            }
+
+            if (importClause.NamespaceBinding != null)
+            {
+                emitter.Write("* as ");
+                importClause.NamespaceBinding.Emit(emitter);
+            }
+
+            if (importClause.NamedImports != null)
+            {
+                emitter.WriteList(
+                    importClause.NamedImports,
+                    indent: false,
+                    prefix: "{ ",
+                    suffix: " }",
+                    itemDelimiter: ", ");
+            }
+        }
+
+        public static void EmitFromClause(Emitter emitter, ITsFromClause fromClause)
+        {
+            emitter.Write("from ");
+            fromClause.Module.Emit(emitter);
+        }
+
+        public static void EmitImportSpecifier(Emitter emitter, ITsImportSpecifier importSpecifier)
+        {
+            importSpecifier.Name.Emit(emitter);
+            if (importSpecifier.AsName != null)
+            {
+                emitter.Write(" as ");
+                importSpecifier.AsName.Emit(emitter);
+            }
         }
     }
 }

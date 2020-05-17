@@ -59,7 +59,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string text);
         public override void Accept(TsVisitor visitor) => visitor.VisitIdentifier(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIdentifier(emitter, Text);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIdentifier(emitter, this);
     }
 
     public static class IdentifierExtensions
@@ -94,7 +94,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitThis(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThis(emitter);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThis(emitter, this);
     }
 
     //// ===============================================================================================================
@@ -128,7 +128,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParenthesizedExpression(emitter, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParenthesizedExpression(emitter, this);
     }
 
     public static class ParenthesizedExpressionExtensions
@@ -163,7 +163,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNullLiteral(emitter);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNullLiteral(emitter, this);
     }
 
     //// ===============================================================================================================
@@ -197,7 +197,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(bool value);
         public override void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBooleanLiteral(emitter, Value);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBooleanLiteral(emitter, this);
     }
 
     public static class BooleanLiteralExtensions
@@ -249,7 +249,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(double value, TsNumericLiteralKind kind);
         public override void Accept(TsVisitor visitor) => visitor.VisitNumericLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNumericLiteral(emitter, Value, Kind);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNumericLiteral(emitter, this);
     }
 
     public static class NumericLiteralExtensions
@@ -302,7 +302,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string value, StringLiteralQuoteKind quoteKind);
         public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringLiteral(emitter, Value, QuoteKind);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringLiteral(emitter, this);
     }
 
     public static class StringLiteralExtensions
@@ -349,7 +349,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string body, string? flags);
         public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRegularExpressionLiteral(emitter, Body, Flags);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRegularExpressionLiteral(emitter, this);
     }
 
     public static class RegularExpressionLiteralExtensions
@@ -392,7 +392,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsArrayElement?> elements);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayLiteral(emitter, Elements);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayLiteral(emitter, this);
     }
 
     public static class ArrayLiteralExtensions
@@ -442,7 +442,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression, bool isSpreadElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayElement(emitter, Expression, IsSpreadElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayElement(emitter, this);
     }
 
     public static class ArrayElementExtensions
@@ -485,7 +485,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsPropertyDefinition> propertyDefinitions);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectLiteral(emitter, PropertyDefinitions);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectLiteral(emitter, this);
     }
 
     public static class ObjectLiteralExtensions
@@ -540,7 +540,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsIdentifier identifier, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCoverInitializedName(emitter, Identifier, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCoverInitializedName(emitter, this);
     }
 
     public static class CoverInitializedNameExtensions
@@ -587,7 +587,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsPropertyName propertyName, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyAssignment(emitter, PropertyName, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyAssignment(emitter, this);
     }
 
     public static class PropertyAssignmentExtensions
@@ -652,7 +652,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitComputedPropertyName(emitter, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitComputedPropertyName(emitter, this);
     }
 
     public static class ComputedPropertyNameExtensions
@@ -696,7 +696,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string template, ITsExpression? expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplatePart(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplatePart(emitter, Template, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplatePart(emitter, this);
     }
 
     public static class TemplatePartExtensions
@@ -739,7 +739,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsTemplatePart> parts);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplateLiteral(emitter, Parts);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplateLiteral(emitter, this);
     }
 
     public static class TemplateLiteralExtensions
@@ -783,7 +783,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberBracketExpression(emitter, LeftSide, BracketContents);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberBracketExpression(emitter, this);
     }
 
     public static class MemberBracketExpressionExtensions
@@ -830,7 +830,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberDotExpression(emitter, LeftSide, DotName);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberDotExpression(emitter, this);
     }
 
     public static class MemberDotExpressionExtensions
@@ -873,7 +873,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperBracketExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperBracketExpression(emitter, BracketContents);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperBracketExpression(emitter, this);
     }
 
     public static class SuperBracketExpressionExtensions
@@ -913,7 +913,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperDotExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperDotExpression(emitter, DotName);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperDotExpression(emitter, this);
     }
 
     public static class SuperDotExpressionExtensions
@@ -948,7 +948,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNewTargetExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewTargetExpression(emitter);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewTargetExpression(emitter, this);
     }
 
     //// ===============================================================================================================
@@ -986,7 +986,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCallExpression(emitter, LeftSide, ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCallExpression(emitter, this);
     }
 
     public static class CallExpressionExtensions
@@ -1033,7 +1033,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitNewCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewCallExpression(emitter, LeftSide, ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewCallExpression(emitter, this);
     }
 
     public static class NewCallExpressionExtensions
@@ -1076,7 +1076,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperCallExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperCallExpression(emitter, ArgumentList);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperCallExpression(emitter, this);
     }
 
     public static class SuperCallExpressionExtensions
@@ -1120,7 +1120,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsType> typeArguments, ImmutableArray<ITsArgument> arguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgumentList(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgumentList(emitter, TypeArguments, Arguments);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgumentList(emitter, this);
     }
 
     public static class ArgumentListExtensions
@@ -1173,7 +1173,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression expression, bool isSpreadArgument);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgument(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgument(emitter, Expression, IsSpreadArgument);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgument(emitter, this);
     }
 
     public static class ArgumentExtensions
@@ -1220,7 +1220,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression operand, TsUnaryOperator @operator);
         public override void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitUnaryExpression(emitter, Operand, Operator);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitUnaryExpression(emitter, this);
     }
 
     public static class UnaryExpressionExtensions
@@ -1267,7 +1267,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsType castType, ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitCastExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCastExpression(emitter, CastType, Expression);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCastExpression(emitter, this);
     }
 
     public static class CastExpressionExtensions
@@ -1318,7 +1318,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, TsBinaryOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBinaryExpression(emitter, LeftSide, Operator, RightSide);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBinaryExpression(emitter, this);
     }
 
     public static class BinaryExpressionExtensions
@@ -1372,7 +1372,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression condition, ITsExpression whenTrue, ITsExpression whenFalse);
         public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConditionalExpression(emitter, Condition, WhenTrue, WhenFalse);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConditionalExpression(emitter, this);
     }
 
     public static class ConditionalExpressionExtensions
@@ -1426,7 +1426,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsExpression leftSide, TsAssignmentOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAssignmentExpression(emitter, LeftSide, Operator, RightSide);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAssignmentExpression(emitter, this);
     }
 
     public static class AssignmentExpressionExtensions
@@ -1483,7 +1483,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsExpression> expressions);
         public override void Accept(TsVisitor visitor) => visitor.VisitCommaExpression(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCommaExpression(emitter, Expressions);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCommaExpression(emitter, this);
     }
 
     public static class CommaExpressionExtensions
@@ -1545,7 +1545,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitBlockStatement(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBlockStatement(emitter, Statements);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBlockStatement(emitter, this);
     }
 
     public static class BlockStatementExtensions
@@ -1600,7 +1600,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(bool isConst, ImmutableArray<ITsLexicalBinding> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitLexicalDeclaration(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLexicalDeclaration(emitter, IsConst, Declarations);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLexicalDeclaration(emitter, this);
     }
 
     public static class LexicalDeclarationExtensions
@@ -1643,7 +1643,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsVariableDeclaration> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitVariableStatement(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitVariableStatement(emitter, Declarations);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitVariableStatement(emitter, this);
     }
 
     public static class VariableStatementExtensions
@@ -1694,7 +1694,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsBindingProperty> properties);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectBindingPattern(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectBindingPattern(emitter, Properties);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectBindingPattern(emitter, this);
     }
 
     public static class ObjectBindingPatternExtensions
@@ -1738,7 +1738,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ImmutableArray<ITsBindingElement?> elements, ITsIdentifier? restElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayBindingPattern(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayBindingPattern(emitter, Elements, RestElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayBindingPattern(emitter, this);
     }
 
     public static class ArrayBindingPatternExtensions
@@ -1796,7 +1796,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsIdentifier name, ITsExpression? defaultValue);
         public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSingleNameBinding(emitter, Name, DefaultValue);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSingleNameBinding(emitter, this);
     }
 
     public static class SingleNameBindingExtensions
@@ -1843,7 +1843,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsPropertyName propertyName, ITsBindingElement bindingElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyNameBinding(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyNameBinding(emitter, PropertyName, BindingElement);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyNameBinding(emitter, this);
     }
 
     public static class PropertyNameBindingExtensions
@@ -1901,7 +1901,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsExpression? initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
-        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPatternBinding(emitter, BindingPattern, Initializer);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPatternBinding(emitter, this);
     }
 
     public static class PatternBindingExtensions
@@ -1911,5 +1911,1245 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsPatternBinding WithInitializer(this ITsPatternBinding node, ITsExpression? value) =>
             node.Initializer == value ? node : new TsPatternBinding(node.BindingPattern, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// EmptyStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an empty statement.
+    /// </summary>
+    public interface ITsEmptyStatement : ITsStatement
+    {
+    }
+
+    /// <summary>
+    /// Represents an empty statement.
+    /// </summary>
+    internal partial class TsEmptyStatement : TsAstNode, ITsEmptyStatement
+    {
+        public TsEmptyStatement(
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs();
+        }
+
+        partial void VerifyInputs();
+        public override void Accept(TsVisitor visitor) => visitor.VisitEmptyStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitEmptyStatement(emitter, this);
+    }
+
+    //// ===============================================================================================================
+    //// ExpressionStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an expression in statement form.
+    /// </summary>
+    public interface ITsExpressionStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /// <summary>
+    /// Represents an expression in statement form.
+    /// </summary>
+    internal partial class TsExpressionStatement : TsAstNode, ITsExpressionStatement
+    {
+        public TsExpressionStatement(
+            ITsExpression expression,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(expression);
+            Expression = expression;
+        }
+
+        public ITsExpression Expression { get; }
+
+        partial void VerifyInputs(ITsExpression expression);
+        public override void Accept(TsVisitor visitor) => visitor.VisitExpressionStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitExpressionStatement(emitter, this);
+    }
+
+    public static class ExpressionStatementExtensions
+    {
+        public static ITsExpressionStatement WithExpression(this ITsExpressionStatement node, ITsExpression value) =>
+            node.Expression == value ? node : new TsExpressionStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// IfStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
+    /// </summary>
+    public interface ITsIfStatement : ITsStatement
+    {
+        ITsExpression IfCondition { get; }
+        ITsStatement IfStatement { get; }
+        ITsStatement? ElseStatement { get; }
+    }
+
+    /// <summary>
+    /// Represents an 'if' statement of the form 'if (expression) statement else statement'.
+    /// </summary>
+    internal partial class TsIfStatement : TsAstNode, ITsIfStatement
+    {
+        public TsIfStatement(
+            ITsExpression ifCondition,
+            ITsStatement ifStatement,
+            ITsStatement? elseStatement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(ifCondition, ifStatement, elseStatement);
+            IfCondition = ifCondition;
+            IfStatement = ifStatement;
+            ElseStatement = elseStatement;
+        }
+
+        public ITsExpression IfCondition { get; }
+        public ITsStatement IfStatement { get; }
+        public ITsStatement? ElseStatement { get; }
+
+        partial void VerifyInputs(ITsExpression ifCondition, ITsStatement ifStatement, ITsStatement? elseStatement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIfStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIfStatement(emitter, this);
+    }
+
+    public static class IfStatementExtensions
+    {
+        public static ITsIfStatement WithIfCondition(this ITsIfStatement node, ITsExpression value) =>
+            node.IfCondition == value ? node : new TsIfStatement(value, node.IfStatement, node.ElseStatement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsIfStatement WithIfStatement(this ITsIfStatement node, ITsStatement value) =>
+            node.IfStatement == value ? node : new TsIfStatement(node.IfCondition, value, node.ElseStatement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsIfStatement WithElseStatement(this ITsIfStatement node, ITsStatement? value) =>
+            node.ElseStatement == value ? node : new TsIfStatement(node.IfCondition, node.IfStatement, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// DoWhileStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a do/while statement.
+    /// </summary>
+    public interface ITsDoWhileStatement : ITsStatement
+    {
+        ITsStatement DoStatement { get; }
+        ITsExpression WhileCondition { get; }
+    }
+
+    /// <summary>
+    /// Represents a do/while statement.
+    /// </summary>
+    internal partial class TsDoWhileStatement : TsAstNode, ITsDoWhileStatement
+    {
+        public TsDoWhileStatement(
+            ITsStatement doStatement,
+            ITsExpression whileCondition,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(doStatement, whileCondition);
+            DoStatement = doStatement;
+            WhileCondition = whileCondition;
+        }
+
+        public ITsStatement DoStatement { get; }
+        public ITsExpression WhileCondition { get; }
+
+        partial void VerifyInputs(ITsStatement doStatement, ITsExpression whileCondition);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDoWhileStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDoWhileStatement(emitter, this);
+    }
+
+    public static class DoWhileStatementExtensions
+    {
+        public static ITsDoWhileStatement WithDoStatement(this ITsDoWhileStatement node, ITsStatement value) =>
+            node.DoStatement == value ? node : new TsDoWhileStatement(value, node.WhileCondition, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsDoWhileStatement WithWhileCondition(this ITsDoWhileStatement node, ITsExpression value) =>
+            node.WhileCondition == value ? node : new TsDoWhileStatement(node.DoStatement, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// WhileStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a while loop.
+    /// </summary>
+    public interface ITsWhileStatement : ITsStatement
+    {
+        ITsExpression WhileCondition { get; }
+        ITsStatement WhileStatement { get; }
+    }
+
+    /// <summary>
+    /// Represents a while loop.
+    /// </summary>
+    internal partial class TsWhileStatement : TsAstNode, ITsWhileStatement
+    {
+        public TsWhileStatement(
+            ITsExpression whileCondition,
+            ITsStatement whileStatement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(whileCondition, whileStatement);
+            WhileCondition = whileCondition;
+            WhileStatement = whileStatement;
+        }
+
+        public ITsExpression WhileCondition { get; }
+        public ITsStatement WhileStatement { get; }
+
+        partial void VerifyInputs(ITsExpression whileCondition, ITsStatement whileStatement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitWhileStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitWhileStatement(emitter, this);
+    }
+
+    public static class WhileStatementExtensions
+    {
+        public static ITsWhileStatement WithWhileCondition(this ITsWhileStatement node, ITsExpression value) =>
+            node.WhileCondition == value ? node : new TsWhileStatement(value, node.WhileStatement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsWhileStatement WithWhileStatement(this ITsWhileStatement node, ITsStatement value) =>
+            node.WhileStatement == value ? node : new TsWhileStatement(node.WhileCondition, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ForStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'for' loop.
+    /// </summary>
+    public interface ITsForStatement : ITsStatement
+    {
+        ITsExpression? Initializer { get; }
+        ImmutableArray<ITsVariableDeclaration>? InitializerWithVariableDeclarations { get; }
+        ITsLexicalDeclaration? InitializerWithLexicalDeclaration { get; }
+        ITsExpression? Condition { get; }
+        ITsExpression? Incrementor { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'for' loop.
+    /// </summary>
+    internal partial class TsForStatement : TsAstNode, ITsForStatement
+    {
+        public TsForStatement(
+            ITsExpression? initializer,
+            ImmutableArray<ITsVariableDeclaration>? initializerWithVariableDeclarations,
+            ITsLexicalDeclaration? initializerWithLexicalDeclaration,
+            ITsExpression? condition,
+            ITsExpression? incrementor,
+            ITsStatement statement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(initializer, initializerWithVariableDeclarations, initializerWithLexicalDeclaration, condition, incrementor, statement);
+            Initializer = initializer;
+            InitializerWithVariableDeclarations = initializerWithVariableDeclarations;
+            InitializerWithLexicalDeclaration = initializerWithLexicalDeclaration;
+            Condition = condition;
+            Incrementor = incrementor;
+            Statement = statement;
+        }
+
+        public ITsExpression? Initializer { get; }
+        public ImmutableArray<ITsVariableDeclaration>? InitializerWithVariableDeclarations { get; }
+        public ITsLexicalDeclaration? InitializerWithLexicalDeclaration { get; }
+        public ITsExpression? Condition { get; }
+        public ITsExpression? Incrementor { get; }
+        public ITsStatement Statement { get; }
+
+        partial void VerifyInputs(ITsExpression? initializer, ImmutableArray<ITsVariableDeclaration>? initializerWithVariableDeclarations, ITsLexicalDeclaration? initializerWithLexicalDeclaration, ITsExpression? condition, ITsExpression? incrementor, ITsStatement statement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitForStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForStatement(emitter, this);
+    }
+
+    public static class ForStatementExtensions
+    {
+        public static ITsForStatement WithInitializer(this ITsForStatement node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsForStatement(value, node.InitializerWithVariableDeclarations, node.InitializerWithLexicalDeclaration, node.Condition, node.Incrementor, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForStatement WithInitializerWithVariableDeclarations(this ITsForStatement node, ImmutableArray<ITsVariableDeclaration>? value) =>
+            node.InitializerWithVariableDeclarations == value ? node : new TsForStatement(node.Initializer, value, node.InitializerWithLexicalDeclaration, node.Condition, node.Incrementor, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForStatement WithInitializerWithLexicalDeclaration(this ITsForStatement node, ITsLexicalDeclaration? value) =>
+            node.InitializerWithLexicalDeclaration == value ? node : new TsForStatement(node.Initializer, node.InitializerWithVariableDeclarations, value, node.Condition, node.Incrementor, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForStatement WithCondition(this ITsForStatement node, ITsExpression? value) =>
+            node.Condition == value ? node : new TsForStatement(node.Initializer, node.InitializerWithVariableDeclarations, node.InitializerWithLexicalDeclaration, value, node.Incrementor, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForStatement WithIncrementor(this ITsForStatement node, ITsExpression? value) =>
+            node.Incrementor == value ? node : new TsForStatement(node.Initializer, node.InitializerWithVariableDeclarations, node.InitializerWithLexicalDeclaration, node.Condition, value, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForStatement WithStatement(this ITsForStatement node, ITsStatement value) =>
+            node.Statement == value ? node : new TsForStatement(node.Initializer, node.InitializerWithVariableDeclarations, node.InitializerWithLexicalDeclaration, node.Condition, node.Incrementor, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ForInStatement
+    //// ===============================================================================================================
+
+    public enum VariableDeclarationKind
+    {
+        Var,
+        Let,
+        Const,
+    }
+
+    /// <summary>
+    /// Represents a for-in loop of the form 'for (const x: type in expression) statement'.
+    /// </summary>
+    public interface ITsForInStatement : ITsStatement
+    {
+        ITsExpression? Initializer { get; }
+        VariableDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern? Declaration { get; }
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /// <summary>
+    /// Represents a for-in loop of the form 'for (const x: type in expression) statement'.
+    /// </summary>
+    internal partial class TsForInStatement : TsAstNode, ITsForInStatement
+    {
+        public TsForInStatement(
+            ITsExpression? initializer,
+            VariableDeclarationKind? declarationKind,
+            ITsBindingIdentifierOrPattern? declaration,
+            ITsExpression rightSide,
+            ITsStatement statement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(initializer, declarationKind, declaration, rightSide, statement);
+            Initializer = initializer;
+            DeclarationKind = declarationKind;
+            Declaration = declaration;
+            RightSide = rightSide;
+            Statement = statement;
+        }
+
+        public ITsExpression? Initializer { get; }
+        public VariableDeclarationKind? DeclarationKind { get; }
+        public ITsBindingIdentifierOrPattern? Declaration { get; }
+        public ITsExpression RightSide { get; }
+        public ITsStatement Statement { get; }
+
+        partial void VerifyInputs(ITsExpression? initializer, VariableDeclarationKind? declarationKind, ITsBindingIdentifierOrPattern? declaration, ITsExpression rightSide, ITsStatement statement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitForInStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForInStatement(emitter, this);
+    }
+
+    public static class ForInStatementExtensions
+    {
+        public static ITsForInStatement WithInitializer(this ITsForInStatement node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsForInStatement(value, node.DeclarationKind, node.Declaration, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForInStatement WithDeclarationKind(this ITsForInStatement node, VariableDeclarationKind? value) =>
+            node.DeclarationKind == value ? node : new TsForInStatement(node.Initializer, value, node.Declaration, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForInStatement WithDeclaration(this ITsForInStatement node, ITsBindingIdentifierOrPattern? value) =>
+            node.Declaration == value ? node : new TsForInStatement(node.Initializer, node.DeclarationKind, value, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForInStatement WithRightSide(this ITsForInStatement node, ITsExpression value) =>
+            node.RightSide == value ? node : new TsForInStatement(node.Initializer, node.DeclarationKind, node.Declaration, value, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForInStatement WithStatement(this ITsForInStatement node, ITsStatement value) =>
+            node.Statement == value ? node : new TsForInStatement(node.Initializer, node.DeclarationKind, node.Declaration, node.RightSide, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ForOfStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a for-of loop of the form 'for (const x: type of expression) statement'.
+    /// </summary>
+    public interface ITsForOfStatement : ITsStatement
+    {
+        ITsExpression? Initializer { get; }
+        VariableDeclarationKind? DeclarationKind { get; }
+        ITsBindingIdentifierOrPattern? Declaration { get; }
+        ITsExpression RightSide { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /// <summary>
+    /// Represents a for-of loop of the form 'for (const x: type of expression) statement'.
+    /// </summary>
+    internal partial class TsForOfStatement : TsAstNode, ITsForOfStatement
+    {
+        public TsForOfStatement(
+            ITsExpression? initializer,
+            VariableDeclarationKind? declarationKind,
+            ITsBindingIdentifierOrPattern? declaration,
+            ITsExpression rightSide,
+            ITsStatement statement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(initializer, declarationKind, declaration, rightSide, statement);
+            Initializer = initializer;
+            DeclarationKind = declarationKind;
+            Declaration = declaration;
+            RightSide = rightSide;
+            Statement = statement;
+        }
+
+        public ITsExpression? Initializer { get; }
+        public VariableDeclarationKind? DeclarationKind { get; }
+        public ITsBindingIdentifierOrPattern? Declaration { get; }
+        public ITsExpression RightSide { get; }
+        public ITsStatement Statement { get; }
+
+        partial void VerifyInputs(ITsExpression? initializer, VariableDeclarationKind? declarationKind, ITsBindingIdentifierOrPattern? declaration, ITsExpression rightSide, ITsStatement statement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitForOfStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForOfStatement(emitter, this);
+    }
+
+    public static class ForOfStatementExtensions
+    {
+        public static ITsForOfStatement WithInitializer(this ITsForOfStatement node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsForOfStatement(value, node.DeclarationKind, node.Declaration, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForOfStatement WithDeclarationKind(this ITsForOfStatement node, VariableDeclarationKind? value) =>
+            node.DeclarationKind == value ? node : new TsForOfStatement(node.Initializer, value, node.Declaration, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForOfStatement WithDeclaration(this ITsForOfStatement node, ITsBindingIdentifierOrPattern? value) =>
+            node.Declaration == value ? node : new TsForOfStatement(node.Initializer, node.DeclarationKind, value, node.RightSide, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForOfStatement WithRightSide(this ITsForOfStatement node, ITsExpression value) =>
+            node.RightSide == value ? node : new TsForOfStatement(node.Initializer, node.DeclarationKind, node.Declaration, value, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsForOfStatement WithStatement(this ITsForOfStatement node, ITsStatement value) =>
+            node.Statement == value ? node : new TsForOfStatement(node.Initializer, node.DeclarationKind, node.Declaration, node.RightSide, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ContinueStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a continue statement of the form, 'continue [label]'.
+    /// </summary>
+    public interface ITsContinueStatement : ITsStatement
+    {
+        ITsIdentifier? Label { get; }
+    }
+
+    /// <summary>
+    /// Represents a continue statement of the form, 'continue [label]'.
+    /// </summary>
+    internal partial class TsContinueStatement : TsAstNode, ITsContinueStatement
+    {
+        public TsContinueStatement(
+            ITsIdentifier? label,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(label);
+            Label = label;
+        }
+
+        public ITsIdentifier? Label { get; }
+
+        partial void VerifyInputs(ITsIdentifier? label);
+        public override void Accept(TsVisitor visitor) => visitor.VisitContinueStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitContinueStatement(emitter, this);
+    }
+
+    public static class ContinueStatementExtensions
+    {
+        public static ITsContinueStatement WithLabel(this ITsContinueStatement node, ITsIdentifier? value) =>
+            node.Label == value ? node : new TsContinueStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// BreakStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a break statement of the form, 'break [label]'.
+    /// </summary>
+    public interface ITsBreakStatement : ITsStatement
+    {
+        ITsIdentifier? Label { get; }
+    }
+
+    /// <summary>
+    /// Represents a break statement of the form, 'break [label]'.
+    /// </summary>
+    internal partial class TsBreakStatement : TsAstNode, ITsBreakStatement
+    {
+        public TsBreakStatement(
+            ITsIdentifier? label,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(label);
+            Label = label;
+        }
+
+        public ITsIdentifier? Label { get; }
+
+        partial void VerifyInputs(ITsIdentifier? label);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBreakStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBreakStatement(emitter, this);
+    }
+
+    public static class BreakStatementExtensions
+    {
+        public static ITsBreakStatement WithLabel(this ITsBreakStatement node, ITsIdentifier? value) =>
+            node.Label == value ? node : new TsBreakStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ReturnStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'return' statement.
+    /// </summary>
+    public interface ITsReturnStatement : ITsStatement
+    {
+        ITsExpression? Expression { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'return' statement.
+    /// </summary>
+    internal partial class TsReturnStatement : TsAstNode, ITsReturnStatement
+    {
+        public TsReturnStatement(
+            ITsExpression? expression,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(expression);
+            Expression = expression;
+        }
+
+        public ITsExpression? Expression { get; }
+
+        partial void VerifyInputs(ITsExpression? expression);
+        public override void Accept(TsVisitor visitor) => visitor.VisitReturnStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitReturnStatement(emitter, this);
+    }
+
+    public static class ReturnStatementExtensions
+    {
+        public static ITsReturnStatement WithExpression(this ITsReturnStatement node, ITsExpression? value) =>
+            node.Expression == value ? node : new TsReturnStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// WithStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'with' statement of the form, 'with (expression) statement'.
+    /// </summary>
+    public interface ITsWithStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+        ITsStatement Statement { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'with' statement of the form, 'with (expression) statement'.
+    /// </summary>
+    internal partial class TsWithStatement : TsAstNode, ITsWithStatement
+    {
+        public TsWithStatement(
+            ITsExpression expression,
+            ITsStatement statement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(expression, statement);
+            Expression = expression;
+            Statement = statement;
+        }
+
+        public ITsExpression Expression { get; }
+        public ITsStatement Statement { get; }
+
+        partial void VerifyInputs(ITsExpression expression, ITsStatement statement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitWithStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitWithStatement(emitter, this);
+    }
+
+    public static class WithStatementExtensions
+    {
+        public static ITsWithStatement WithExpression(this ITsWithStatement node, ITsExpression value) =>
+            node.Expression == value ? node : new TsWithStatement(value, node.Statement, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsWithStatement WithStatement(this ITsWithStatement node, ITsStatement value) =>
+            node.Statement == value ? node : new TsWithStatement(node.Expression, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// SwitchStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
+    /// </summary>
+    public interface ITsSwitchStatement : ITsStatement
+    {
+        ITsExpression Condition { get; }
+        ImmutableArray<ITsCaseOrDefaultClause> Clauses { get; }
+    }
+
+    /// <summary>
+    /// Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.
+    /// </summary>
+    internal partial class TsSwitchStatement : TsAstNode, ITsSwitchStatement
+    {
+        public TsSwitchStatement(
+            ITsExpression condition,
+            ImmutableArray<ITsCaseOrDefaultClause> clauses,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(condition, clauses);
+            Condition = condition;
+            Clauses = clauses;
+        }
+
+        public ITsExpression Condition { get; }
+        public ImmutableArray<ITsCaseOrDefaultClause> Clauses { get; }
+
+        partial void VerifyInputs(ITsExpression condition, ImmutableArray<ITsCaseOrDefaultClause> clauses);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSwitchStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSwitchStatement(emitter, this);
+    }
+
+    public static class SwitchStatementExtensions
+    {
+        public static ITsSwitchStatement WithCondition(this ITsSwitchStatement node, ITsExpression value) =>
+            node.Condition == value ? node : new TsSwitchStatement(value, node.Clauses, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSwitchStatement WithClauses(this ITsSwitchStatement node, ImmutableArray<ITsCaseOrDefaultClause> value) =>
+            node.Clauses == value ? node : new TsSwitchStatement(node.Condition, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// CaseOrDefaultClause
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents either a 'case' or 'default' clause within a 'switch' statement.
+    /// </summary>
+    public interface ITsCaseOrDefaultClause : ITsAstNode
+    {
+        ImmutableArray<ITsStatementListItem>? Statements { get; }
+    }
+
+    //// ===============================================================================================================
+    //// CaseClause
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'case' clause within a 'switch' statement of the form 'case expression: statements'.
+    /// </summary>
+    public interface ITsCaseClause : ITsCaseOrDefaultClause
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'case' clause within a 'switch' statement of the form 'case expression: statements'.
+    /// </summary>
+    internal partial class TsCaseClause : TsAstNode, ITsCaseClause
+    {
+        public TsCaseClause(
+            ITsExpression expression,
+            ImmutableArray<ITsStatementListItem>? statements,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(expression, statements);
+            Expression = expression;
+            Statements = statements;
+        }
+
+        public ITsExpression Expression { get; }
+        public ImmutableArray<ITsStatementListItem>? Statements { get; }
+
+        partial void VerifyInputs(ITsExpression expression, ImmutableArray<ITsStatementListItem>? statements);
+        public override void Accept(TsVisitor visitor) => visitor.VisitCaseClause(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCaseClause(emitter, this);
+    }
+
+    public static class CaseClauseExtensions
+    {
+        public static ITsCaseClause WithExpression(this ITsCaseClause node, ITsExpression value) =>
+            node.Expression == value ? node : new TsCaseClause(value, node.Statements, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsCaseClause WithStatements(this ITsCaseClause node, ImmutableArray<ITsStatementListItem>? value) =>
+            node.Statements == value ? node : new TsCaseClause(node.Expression, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// DefaultClause
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'default' clause within a 'switch' statement of the form 'default: statements'.
+    /// </summary>
+    public interface ITsDefaultClause : ITsCaseOrDefaultClause
+    {
+    }
+
+    /// <summary>
+    /// Represents a 'default' clause within a 'switch' statement of the form 'default: statements'.
+    /// </summary>
+    internal partial class TsDefaultClause : TsAstNode, ITsDefaultClause
+    {
+        public TsDefaultClause(
+            ImmutableArray<ITsStatementListItem>? statements,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(statements);
+            Statements = statements;
+        }
+
+        public ImmutableArray<ITsStatementListItem>? Statements { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsStatementListItem>? statements);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDefaultClause(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDefaultClause(emitter, this);
+    }
+
+    public static class DefaultClauseExtensions
+    {
+        public static ITsDefaultClause WithStatements(this ITsDefaultClause node, ImmutableArray<ITsStatementListItem>? value) =>
+            node.Statements == value ? node : new TsDefaultClause(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// LabeledStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a labeled statement.
+    /// </summary>
+    public interface ITsLabeledStatement : ITsStatement
+    {
+        ITsIdentifier Label { get; }
+        ITsStatement? Statement { get; }
+        ITsFunctionDeclaration? FunctionDeclaration { get; }
+    }
+
+    /// <summary>
+    /// Represents a labeled statement.
+    /// </summary>
+    internal partial class TsLabeledStatement : TsAstNode, ITsLabeledStatement
+    {
+        public TsLabeledStatement(
+            ITsIdentifier label,
+            ITsStatement? statement,
+            ITsFunctionDeclaration? functionDeclaration,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(label, statement, functionDeclaration);
+            Label = label;
+            Statement = statement;
+            FunctionDeclaration = functionDeclaration;
+        }
+
+        public ITsIdentifier Label { get; }
+        public ITsStatement? Statement { get; }
+        public ITsFunctionDeclaration? FunctionDeclaration { get; }
+
+        partial void VerifyInputs(ITsIdentifier label, ITsStatement? statement, ITsFunctionDeclaration? functionDeclaration);
+        public override void Accept(TsVisitor visitor) => visitor.VisitLabeledStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLabeledStatement(emitter, this);
+    }
+
+    public static class LabeledStatementExtensions
+    {
+        public static ITsLabeledStatement WithLabel(this ITsLabeledStatement node, ITsIdentifier value) =>
+            node.Label == value ? node : new TsLabeledStatement(value, node.Statement, node.FunctionDeclaration, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsLabeledStatement WithStatement(this ITsLabeledStatement node, ITsStatement? value) =>
+            node.Statement == value ? node : new TsLabeledStatement(node.Label, value, node.FunctionDeclaration, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsLabeledStatement WithFunctionDeclaration(this ITsLabeledStatement node, ITsFunctionDeclaration? value) =>
+            node.FunctionDeclaration == value ? node : new TsLabeledStatement(node.Label, node.Statement, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ThrowStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'throw' statement.
+    /// </summary>
+    public interface ITsThrowStatement : ITsStatement
+    {
+        ITsExpression Expression { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'throw' statement.
+    /// </summary>
+    internal partial class TsThrowStatement : TsAstNode, ITsThrowStatement
+    {
+        public TsThrowStatement(
+            ITsExpression expression,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(expression);
+            Expression = expression;
+        }
+
+        public ITsExpression Expression { get; }
+
+        partial void VerifyInputs(ITsExpression expression);
+        public override void Accept(TsVisitor visitor) => visitor.VisitThrowStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThrowStatement(emitter, this);
+    }
+
+    public static class ThrowStatementExtensions
+    {
+        public static ITsThrowStatement WithExpression(this ITsThrowStatement node, ITsExpression value) =>
+            node.Expression == value ? node : new TsThrowStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// TryStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a try/catch/finally statement.
+    /// </summary>
+    public interface ITsTryStatement : ITsStatement
+    {
+        ITsBlockStatement TryBlock { get; }
+        ITsBindingIdentifierOrPattern? CatchParameter { get; }
+        ITsBlockStatement? CatchBlock { get; }
+        ITsBlockStatement? FinallyBlock { get; }
+    }
+
+    /// <summary>
+    /// Represents a try/catch/finally statement.
+    /// </summary>
+    internal partial class TsTryStatement : TsAstNode, ITsTryStatement
+    {
+        public TsTryStatement(
+            ITsBlockStatement tryBlock,
+            ITsBindingIdentifierOrPattern? catchParameter,
+            ITsBlockStatement? catchBlock,
+            ITsBlockStatement? finallyBlock,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(tryBlock, catchParameter, catchBlock, finallyBlock);
+            TryBlock = tryBlock;
+            CatchParameter = catchParameter;
+            CatchBlock = catchBlock;
+            FinallyBlock = finallyBlock;
+        }
+
+        public ITsBlockStatement TryBlock { get; }
+        public ITsBindingIdentifierOrPattern? CatchParameter { get; }
+        public ITsBlockStatement? CatchBlock { get; }
+        public ITsBlockStatement? FinallyBlock { get; }
+
+        partial void VerifyInputs(ITsBlockStatement tryBlock, ITsBindingIdentifierOrPattern? catchParameter, ITsBlockStatement? catchBlock, ITsBlockStatement? finallyBlock);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTryStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTryStatement(emitter, this);
+    }
+
+    public static class TryStatementExtensions
+    {
+        public static ITsTryStatement WithTryBlock(this ITsTryStatement node, ITsBlockStatement value) =>
+            node.TryBlock == value ? node : new TsTryStatement(value, node.CatchParameter, node.CatchBlock, node.FinallyBlock, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTryStatement WithCatchParameter(this ITsTryStatement node, ITsBindingIdentifierOrPattern? value) =>
+            node.CatchParameter == value ? node : new TsTryStatement(node.TryBlock, value, node.CatchBlock, node.FinallyBlock, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTryStatement WithCatchBlock(this ITsTryStatement node, ITsBlockStatement? value) =>
+            node.CatchBlock == value ? node : new TsTryStatement(node.TryBlock, node.CatchParameter, value, node.FinallyBlock, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTryStatement WithFinallyBlock(this ITsTryStatement node, ITsBlockStatement? value) =>
+            node.FinallyBlock == value ? node : new TsTryStatement(node.TryBlock, node.CatchParameter, node.CatchBlock, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// DebuggerStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'debugger' statement.
+    /// </summary>
+    public interface ITsDebuggerStatement : ITsStatement
+    {
+    }
+
+    /// <summary>
+    /// Represents a 'debugger' statement.
+    /// </summary>
+    internal partial class TsDebuggerStatement : TsAstNode, ITsDebuggerStatement
+    {
+        public TsDebuggerStatement(
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs();
+        }
+
+        partial void VerifyInputs();
+        public override void Accept(TsVisitor visitor) => visitor.VisitDebuggerStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDebuggerStatement(emitter, this);
+    }
+
+    //// ===============================================================================================================
+    //// ArrowFunction
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an arrow function expression of the form '() => body'.
+    /// </summary>
+    public interface ITsArrowFunction : ITsExpression
+    {
+        ITsIdentifier? SingleParameterName { get; }
+        ITsCallSignature? CallSignature { get; }
+        ITsExpression? BodyExpression { get; }
+        ImmutableArray<ITsStatementListItem>? Body { get; }
+    }
+
+    /// <summary>
+    /// Represents an arrow function expression of the form '() => body'.
+    /// </summary>
+    internal partial class TsArrowFunction : TsAstNode, ITsArrowFunction
+    {
+        public TsArrowFunction(
+            ITsIdentifier? singleParameterName,
+            ITsCallSignature? callSignature,
+            ITsExpression? bodyExpression,
+            ImmutableArray<ITsStatementListItem>? body,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(singleParameterName, callSignature, bodyExpression, body);
+            SingleParameterName = singleParameterName;
+            CallSignature = callSignature;
+            BodyExpression = bodyExpression;
+            Body = body;
+        }
+
+        public ITsIdentifier? SingleParameterName { get; }
+        public ITsCallSignature? CallSignature { get; }
+        public ITsExpression? BodyExpression { get; }
+        public ImmutableArray<ITsStatementListItem>? Body { get; }
+
+        partial void VerifyInputs(ITsIdentifier? singleParameterName, ITsCallSignature? callSignature, ITsExpression? bodyExpression, ImmutableArray<ITsStatementListItem>? body);
+        public override void Accept(TsVisitor visitor) => visitor.VisitArrowFunction(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrowFunction(emitter, this);
+    }
+
+    public static class ArrowFunctionExtensions
+    {
+        public static ITsArrowFunction WithSingleParameterName(this ITsArrowFunction node, ITsIdentifier? value) =>
+            node.SingleParameterName == value ? node : new TsArrowFunction(value, node.CallSignature, node.BodyExpression, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrowFunction WithCallSignature(this ITsArrowFunction node, ITsCallSignature? value) =>
+            node.CallSignature == value ? node : new TsArrowFunction(node.SingleParameterName, value, node.BodyExpression, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrowFunction WithBodyExpression(this ITsArrowFunction node, ITsExpression? value) =>
+            node.BodyExpression == value ? node : new TsArrowFunction(node.SingleParameterName, node.CallSignature, value, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrowFunction WithBody(this ITsArrowFunction node, ImmutableArray<ITsStatementListItem>? value) =>
+            node.Body == value ? node : new TsArrowFunction(node.SingleParameterName, node.CallSignature, node.BodyExpression, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ClassExpression
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a class declaration acting as an expression.
+    /// </summary>
+    public interface ITsClassExpression : ITsExpression
+    {
+        ITsIdentifier? ClassName { get; }
+        ITsClassHeritage? Heritage { get; }
+        ImmutableArray<ITsClassElement> ClassBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a class declaration acting as an expression.
+    /// </summary>
+    internal partial class TsClassExpression : TsAstNode, ITsClassExpression
+    {
+        public TsClassExpression(
+            ITsIdentifier? className,
+            ITsClassHeritage? heritage,
+            ImmutableArray<ITsClassElement> classBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(className, heritage, classBody);
+            ClassName = className;
+            Heritage = heritage;
+            ClassBody = classBody;
+        }
+
+        public ITsIdentifier? ClassName { get; }
+        public ITsClassHeritage? Heritage { get; }
+        public ImmutableArray<ITsClassElement> ClassBody { get; }
+
+        partial void VerifyInputs(ITsIdentifier? className, ITsClassHeritage? heritage, ImmutableArray<ITsClassElement> classBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitClassExpression(emitter, this);
+    }
+
+    public static class ClassExpressionExtensions
+    {
+        public static ITsClassExpression WithClassName(this ITsClassExpression node, ITsIdentifier? value) =>
+            node.ClassName == value ? node : new TsClassExpression(value, node.Heritage, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassExpression WithHeritage(this ITsClassExpression node, ITsClassHeritage? value) =>
+            node.Heritage == value ? node : new TsClassExpression(node.ClassName, value, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassExpression WithClassBody(this ITsClassExpression node, ImmutableArray<ITsClassElement> value) =>
+            node.ClassBody == value ? node : new TsClassExpression(node.ClassName, node.Heritage, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImportDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
+    /// </summary>
+    public interface ITsImportDeclaration : ITsImplementationModuleElement
+    {
+        ITsImportClause? ImportClause { get; }
+        ITsFromClause? FromClause { get; }
+        ITsStringLiteral? Module { get; }
+    }
+
+    /// <summary>
+    /// Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.
+    /// </summary>
+    internal partial class TsImportDeclaration : TsAstNode, ITsImportDeclaration
+    {
+        public TsImportDeclaration(
+            ITsImportClause? importClause,
+            ITsFromClause? fromClause,
+            ITsStringLiteral? module,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(importClause, fromClause, module);
+            ImportClause = importClause;
+            FromClause = fromClause;
+            Module = module;
+        }
+
+        public ITsImportClause? ImportClause { get; }
+        public ITsFromClause? FromClause { get; }
+        public ITsStringLiteral? Module { get; }
+
+        partial void VerifyInputs(ITsImportClause? importClause, ITsFromClause? fromClause, ITsStringLiteral? module);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportDeclaration(emitter, this);
+    }
+
+    public static class ImportDeclarationExtensions
+    {
+        public static ITsImportDeclaration WithImportClause(this ITsImportDeclaration node, ITsImportClause? value) =>
+            node.ImportClause == value ? node : new TsImportDeclaration(value, node.FromClause, node.Module, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportDeclaration WithFromClause(this ITsImportDeclaration node, ITsFromClause? value) =>
+            node.FromClause == value ? node : new TsImportDeclaration(node.ImportClause, value, node.Module, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportDeclaration WithModule(this ITsImportDeclaration node, ITsStringLiteral? value) =>
+            node.Module == value ? node : new TsImportDeclaration(node.ImportClause, node.FromClause, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImportClause
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }', 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
+    /// </summary>
+    public interface ITsImportClause : ITsAstNode
+    {
+        ITsIdentifier? DefaultBinding { get; }
+        ITsIdentifier? NamespaceBinding { get; }
+        ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+    }
+
+    /// <summary>
+    /// Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }', 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.
+    /// </summary>
+    internal partial class TsImportClause : TsAstNode, ITsImportClause
+    {
+        public TsImportClause(
+            ITsIdentifier? defaultBinding,
+            ITsIdentifier? namespaceBinding,
+            ImmutableArray<ITsImportSpecifier>? namedImports,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(defaultBinding, namespaceBinding, namedImports);
+            DefaultBinding = defaultBinding;
+            NamespaceBinding = namespaceBinding;
+            NamedImports = namedImports;
+        }
+
+        public ITsIdentifier? DefaultBinding { get; }
+        public ITsIdentifier? NamespaceBinding { get; }
+        public ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+
+        partial void VerifyInputs(ITsIdentifier? defaultBinding, ITsIdentifier? namespaceBinding, ImmutableArray<ITsImportSpecifier>? namedImports);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportClause(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportClause(emitter, this);
+    }
+
+    public static class ImportClauseExtensions
+    {
+        public static ITsImportClause WithDefaultBinding(this ITsImportClause node, ITsIdentifier? value) =>
+            node.DefaultBinding == value ? node : new TsImportClause(value, node.NamespaceBinding, node.NamedImports, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportClause WithNamespaceBinding(this ITsImportClause node, ITsIdentifier? value) =>
+            node.NamespaceBinding == value ? node : new TsImportClause(node.DefaultBinding, value, node.NamedImports, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportClause WithNamedImports(this ITsImportClause node, ImmutableArray<ITsImportSpecifier>? value) =>
+            node.NamedImports == value ? node : new TsImportClause(node.DefaultBinding, node.NamespaceBinding, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// FromClause
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a from clause in an import or export statement, of the form 'from moduleName'.
+    /// </summary>
+    public interface ITsFromClause : ITsAstNode
+    {
+        ITsStringLiteral Module { get; }
+    }
+
+    /// <summary>
+    /// Represents a from clause in an import or export statement, of the form 'from moduleName'.
+    /// </summary>
+    internal partial class TsFromClause : TsAstNode, ITsFromClause
+    {
+        public TsFromClause(
+            ITsStringLiteral module,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(module);
+            Module = module;
+        }
+
+        public ITsStringLiteral Module { get; }
+
+        partial void VerifyInputs(ITsStringLiteral module);
+        public override void Accept(TsVisitor visitor) => visitor.VisitFromClause(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitFromClause(emitter, this);
+    }
+
+    public static class FromClauseExtensions
+    {
+        public static ITsFromClause WithModule(this ITsFromClause node, ITsStringLiteral value) =>
+            node.Module == value ? node : new TsFromClause(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImportSpecifier
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.
+    /// </summary>
+    public interface ITsImportSpecifier : ITsAstNode
+    {
+        ITsIdentifier Name { get; }
+        ITsIdentifier? AsName { get; }
+    }
+
+    /// <summary>
+    /// Represents an import specifier, which is either an identifier or 'identifier as identifier'.
+    /// </summary>
+    internal partial class TsImportSpecifier : TsAstNode, ITsImportSpecifier
+    {
+        public TsImportSpecifier(
+            ITsIdentifier name,
+            ITsIdentifier? asName,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(name, asName);
+            Name = name;
+            AsName = asName;
+        }
+
+        public ITsIdentifier Name { get; }
+        public ITsIdentifier? AsName { get; }
+
+        partial void VerifyInputs(ITsIdentifier name, ITsIdentifier? asName);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportSpecifier(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportSpecifier(emitter, this);
+    }
+
+    public static class ImportSpecifierExtensions
+    {
+        public static ITsImportSpecifier WithName(this ITsImportSpecifier node, ITsIdentifier value) =>
+            node.Name == value ? node : new TsImportSpecifier(value, node.AsName, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportSpecifier WithAsName(this ITsImportSpecifier node, ITsIdentifier? value) =>
+            node.AsName == value ? node : new TsImportSpecifier(node.Name, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 }

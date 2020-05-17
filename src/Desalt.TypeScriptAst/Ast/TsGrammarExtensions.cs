@@ -11,7 +11,6 @@ namespace Desalt.TypeScriptAst.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Ast.Declarations;
-    using Desalt.TypeScriptAst.Ast.Statements;
     using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 

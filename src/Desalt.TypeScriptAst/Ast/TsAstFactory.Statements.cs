@@ -13,14 +13,14 @@ namespace Desalt.TypeScriptAst.Ast
 
     public static partial class TsAstFactory
     {
-        public static ITsDebuggerStatement Debugger => TsDebuggerStatement.Instance;
+        public static readonly ITsDebuggerStatement Debugger = new TsDebuggerStatement();
 
         public static ITsBlockStatement Block(params ITsStatementListItem[] statements)
         {
             return new TsBlockStatement(statements.ToImmutableArray());
         }
 
-        public static ITsEmptyStatement EmptyStatement => TsEmptyStatement.Instance;
+        public static readonly ITsEmptyStatement EmptyStatement = new TsEmptyStatement();
 
         /// <summary>
         /// Creates a variable declaration statement of the form 'var x = y;'.
@@ -144,7 +144,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsTryStatement Try(ITsBlockStatement tryBlock)
         {
-            return TsTryStatement.CreateTry(tryBlock);
+            return new TsTryStatement(tryBlock, catchParameter: null, catchBlock: null, finallyBlock: null);
         }
 
         public static ITsTryStatement TryCatch(
@@ -152,21 +152,21 @@ namespace Desalt.TypeScriptAst.Ast
             ITsBindingIdentifierOrPattern? catchParameter,
             ITsBlockStatement catchBlock)
         {
-            return TsTryStatement.CreateTryCatch(tryBlock, catchParameter, catchBlock);
+            return new TsTryStatement(tryBlock, catchParameter, catchBlock, finallyBlock: null);
         }
 
         public static ITsTryStatement TryCatch(
             ITsBlockStatement tryBlock,
             ITsBlockStatement catchBlock)
         {
-            return TsTryStatement.CreateTryCatch(tryBlock, catchBlock);
+            return new TsTryStatement(tryBlock, catchParameter: null, catchBlock, finallyBlock: null);
         }
 
         public static ITsTryStatement TryFinally(
             ITsBlockStatement tryBlock,
             ITsBlockStatement finallyBlock)
         {
-            return TsTryStatement.CreateTryFinally(tryBlock, finallyBlock);
+            return new TsTryStatement(tryBlock, catchParameter: null, catchBlock: null, finallyBlock);
         }
 
         public static ITsTryStatement TryCatchFinally(
@@ -175,7 +175,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsBlockStatement catchBlock,
             ITsBlockStatement finallyBlock)
         {
-            return TsTryStatement.CreateTryCatchFinally(tryBlock, catchParameter, catchBlock, finallyBlock);
+            return new TsTryStatement(tryBlock, catchParameter, catchBlock, finallyBlock);
         }
 
         public static ITsTryStatement TryCatchFinally(
@@ -183,7 +183,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsBlockStatement catchBlock,
             ITsBlockStatement finallyBlock)
         {
-            return TsTryStatement.CreateTryCatchFinally(tryBlock, catchBlock, finallyBlock);
+            return new TsTryStatement(tryBlock, catchParameter: null, catchBlock, finallyBlock);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression? incrementor,
             ITsStatement statement)
         {
-            return new TsForStatement(initializer, condition, incrementor, statement);
+            return new TsForStatement(initializer, null, null, condition, incrementor, statement);
         }
 
         /// <summary>
@@ -223,7 +223,13 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression? incrementor,
             ITsStatement statement)
         {
-            return new TsForStatement(new[] { initializer }, condition, incrementor, statement);
+            return new TsForStatement(
+                null,
+                ImmutableArray.Create(initializer),
+                null,
+                condition,
+                incrementor,
+                statement);
         }
 
         /// <summary>
@@ -235,7 +241,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression? incrementor,
             ITsStatement statement)
         {
-            return new TsForStatement(initializer, condition, incrementor, statement);
+            return new TsForStatement(null, initializer.ToImmutableArray(), null, condition, incrementor, statement);
         }
 
         /// <summary>
@@ -247,7 +253,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression? incrementor,
             ITsStatement statement)
         {
-            return new TsForStatement(initializer, condition, incrementor, statement);
+            return new TsForStatement(null, null, initializer, condition, incrementor, statement);
         }
 
         /// <summary>
@@ -258,7 +264,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression rightSide,
             ITsStatement statement)
         {
-            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: false);
+            return new TsForInStatement(initializer, declarationKind: null, declaration: null, rightSide, statement);
         }
 
         /// <summary>
@@ -267,9 +273,10 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsForInStatement ForIn(
             VariableDeclarationKind declarationKind,
             ITsBindingIdentifierOrPattern declaration,
-            ITsExpression rightSide, ITsStatement statement)
+            ITsExpression rightSide,
+            ITsStatement statement)
         {
-            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: false);
+            return new TsForInStatement(initializer: null, declarationKind, declaration, rightSide, statement);
         }
 
         /// <summary>
@@ -280,7 +287,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsExpression rightSide,
             ITsStatement statement)
         {
-            return new TsForInOrOfStatement(initializer, rightSide, statement, ofLoop: true);
+            return new TsForOfStatement(initializer, declarationKind: null, declaration: null, rightSide, statement);
         }
 
         /// <summary>
@@ -289,9 +296,10 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsForOfStatement ForOf(
             VariableDeclarationKind declarationKind,
             ITsBindingIdentifierOrPattern declaration,
-            ITsExpression rightSide, ITsStatement statement)
+            ITsExpression rightSide,
+            ITsStatement statement)
         {
-            return new TsForInOrOfStatement(declarationKind, declaration, rightSide, statement, ofLoop: true);
+            return new TsForOfStatement(initializer: null, declarationKind, declaration, rightSide, statement);
         }
 
         /// <summary>
@@ -299,7 +307,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsCaseClause CaseClause(ITsExpression expression, params ITsStatementListItem[] statements)
         {
-            return TsSwitchClause.Case(expression, statements);
+            return new TsCaseClause(expression, statements.ToImmutableArray());
         }
 
         /// <summary>
@@ -307,7 +315,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsDefaultClause DefaultClause(params ITsStatementListItem[] statements)
         {
-            return TsSwitchClause.Default(statements);
+            return new TsDefaultClause(statements.ToImmutableArray());
         }
 
         /// <summary>
@@ -315,7 +323,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsSwitchStatement Switch(ITsExpression condition, params ITsCaseOrDefaultClause[] clauses)
         {
-            return new TsSwitchStatement(condition, clauses);
+            return new TsSwitchStatement(condition, clauses.ToImmutableArray());
         }
 
         /// <summary>
@@ -323,7 +331,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsContinueStatement Continue(ITsIdentifier? label = null)
         {
-            return new TsContinueOrBreakStatement(isContinue: true, label: label);
+            return new TsContinueStatement(label: label);
         }
 
         /// <summary>
@@ -331,7 +339,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsBreakStatement Break(ITsIdentifier? label = null)
         {
-            return new TsContinueOrBreakStatement(isContinue: false, label: label);
+            return new TsBreakStatement(label: label);
         }
 
         /// <summary>
@@ -355,7 +363,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsLabeledStatement LabeledStatement(ITsIdentifier label, ITsStatement statement)
         {
-            return new TsLabeledStatement(label, statement);
+            return new TsLabeledStatement(label, statement, functionDeclaration: null);
         }
 
         /// <summary>
@@ -365,7 +373,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier label,
             ITsFunctionDeclaration functionDeclaration)
         {
-            return new TsLabeledStatement(label, functionDeclaration);
+            return new TsLabeledStatement(label, statement: null, functionDeclaration);
         }
 
         /// <summary>

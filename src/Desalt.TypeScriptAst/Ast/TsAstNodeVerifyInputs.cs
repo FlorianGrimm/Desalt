@@ -34,7 +34,9 @@ namespace Desalt.TypeScriptAst.Ast
             }
 
             if (kind.IsOneOf(
-                TsNumericLiteralKind.BinaryInteger, TsNumericLiteralKind.OctalInteger, TsNumericLiteralKind.HexInteger) &&
+                    TsNumericLiteralKind.BinaryInteger,
+                    TsNumericLiteralKind.OctalInteger,
+                    TsNumericLiteralKind.HexInteger) &&
                 value > s_maxSafeInteger)
             {
                 throw new ArgumentException($"Integers must be less than {s_maxSafeInteger}", nameof(value));
@@ -60,6 +62,22 @@ namespace Desalt.TypeScriptAst.Ast
             if (declarations.IsEmpty)
             {
                 throw new ArgumentException("There must be at least one declaration", nameof(declarations));
+            }
+        }
+    }
+
+    internal partial class TsImportClause
+    {
+        partial void VerifyInputs(
+            ITsIdentifier? defaultBinding,
+            ITsIdentifier? namespaceBinding,
+            ImmutableArray<ITsImportSpecifier>? namedImports)
+        {
+            if (defaultBinding == null && namespaceBinding == null && namedImports == null)
+            {
+                throw new ArgumentException(
+                    $"At least one of {nameof(defaultBinding)}, {nameof(namespaceBinding)}, or " +
+                    $"{nameof(namedImports)} must be defined.");
             }
         }
     }

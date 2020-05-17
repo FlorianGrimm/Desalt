@@ -80,7 +80,7 @@
 
         PushIndent(DoubleIndent);
 
-        foreach (var property in node.Properties)
+        foreach (var property in isInterface ? node.InterfaceProperties : node.Properties)
         {
             if (property.Comment != null)
             {
@@ -193,14 +193,11 @@
 
     private static AstNodeDefinition ParseNode(XElement node)
     {
-        string defaultBaseClassName = "TsAstNode";
-        string defaultBaseInterface = "TsAstNode";
-
         string name = (string)node.Attribute("name");
         string comment = (string)node.Element(Xmlns + "Comment") ?? string.Empty;
 
-        string baseClassName = (string)node.Attribute("baseClass") ?? defaultBaseClassName;
-        string rawBaseInterfaces = (string)node.Attribute("baseInterfaces") ?? defaultBaseInterface;
+        string baseClassName = "TsAstNode";
+        string rawBaseInterfaces = (string)node.Attribute("baseInterfaces");
         string baseInterfaces = string.Join(", ", rawBaseInterfaces.Split(',').Select(s => s.Trim()));
 
         bool interfaceOnly = ((bool?)node.Attribute("interfaceOnly")) ?? false;
@@ -211,8 +208,11 @@
             string propertyName = (string)propertyNode.Attribute("name");
             string propertyType = (string)propertyNode.Attribute("type");
             string propertyComment = (string)propertyNode.Element(Xmlns + "Comment");
+            bool declaredInBaseInterface = ((bool?)propertyNode.Attribute("declaredInBaseInterface")).GetValueOrDefault();
 
-            properties.Add(new PropertyDefinition(propertyName, propertyType, propertyComment));
+            var propertyDefinition =
+                new PropertyDefinition(propertyName, propertyType, propertyComment, declaredInBaseInterface);
+            properties.Add(propertyDefinition);
         }
 
         var enums = new List<EnumDefinition>();
@@ -260,9 +260,9 @@
         public string ClassName => "Ts" + Name;
         public bool HasProperties => Properties.Any();
         public string InterfaceName => "ITs" + Name;
-        public string EmitImplementation =>
-            $"TsAstEmitter.Emit{Name}(emitter" +
-            $"{ToPropertyList(noTypes: true, useNameInsteadOfArgumentName: true, prefixComma: true)})";
+        public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
+        public IEnumerable<PropertyDefinition> InterfaceProperties =>
+            Properties.Where(prop => !prop.DeclaredInBaseInterface);
 
         public string ToPropertyList(
             bool includeTriviaParams = false,
@@ -333,11 +333,12 @@
 
     public sealed class PropertyDefinition
     {
-        public PropertyDefinition(string name, string type, string comment)
+        public PropertyDefinition(string name, string type, string comment, bool declaredInBaseInterface)
         {
             Name = name;
             Type = type;
             Comment = comment;
+            DeclaredInBaseInterface = declaredInBaseInterface;
         }
 
         public string Name { get; }
@@ -345,6 +346,7 @@
 
         public string Type { get; }
         public string Comment { get; }
+        public bool DeclaredInBaseInterface { get; }
     }
 
     public sealed class EnumDefinition

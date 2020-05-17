@@ -40,21 +40,21 @@
     SingleLineCommentChar:
       SourceCharacter but not LineTerminator
     -->
-    <TriviaNode name="WhitespaceTrivia">
+    <TriviaNode name="WhitespaceTrivia" baseInterfaces="ITsAstTriviaNode">
       <Comment>
         <![CDATA[Represents whitespace that can appear before or after another <see cref="ITsAstNode" />.]]>
       </Comment>
       <Property name="Text" type="string" />
       <Property name="IsNewline" type="bool" />
     </TriviaNode>
-    <TriviaNode name="MultiLineComment">
+    <TriviaNode name="MultiLineComment" baseInterfaces="ITsAstTriviaNode">
       <Comment><![CDATA[Represents a TypeScript multi-line comment of the form '/* lines */'.]]></Comment>
       <Property name="IsJsDoc" type="bool">
         <Comment><![CDATA[Indicates whether the comment should start with '/**' (JsDoc) or '/*'.]]></Comment>
       </Property>
       <Property name="Lines" type="ImmutableArray&lt;string&gt;" />
     </TriviaNode>
-    <TriviaNode name="SingleLineComment">
+    <TriviaNode name="SingleLineComment" baseInterfaces="ITsAstTriviaNode">
       <Comment><![CDATA[Represents a TypeScript single-line comment of the form '// comment'.]]></Comment>
       <Property name="Text" type="string" />
     </TriviaNode>
@@ -823,5 +823,525 @@
       <Property name="BindingPattern" type="ITsBindingPattern" />
       <Property name="Initializer" type="ITsExpression?" />
     </AstNode>
+
+    <!--
+    /* 13.4 Empty Statement
+     * ====================
+     * EmptyStatement:
+     *   ;
+     */
+    -->
+    <AstNode name="EmptyStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents an empty statement.</Comment>
+    </AstNode>
+
+    <!--
+    /* 13.5 Expression Statement
+     * =========================
+     * ExpressionStatement:
+     *   [lookahead not { {, function, class, let [ }] Expression ;
+     */
+    -->
+    <AstNode name="ExpressionStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents an expression in statement form.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 13.6 The if Statement
+     * =====================
+     * IfStatement:
+     *   if ( Expression ) Statement else Statement
+     *   if ( Expression ) Statement
+     */
+    -->
+    <AstNode name="IfStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents an 'if' statement of the form 'if (expression) statement else statement'.</Comment>
+      <Property name="IfCondition" type="ITsExpression" />
+      <Property name="IfStatement" type="ITsStatement" />
+      <Property name="ElseStatement" type="ITsStatement?" />
+    </AstNode>
+
+    <!--
+    /* 13.7 Iteration Statements
+     * =========================
+     * IterationStatement:
+     *   do Statement while ( Expression ) ;
+     *   while ( Expression ) Statement
+     */
+    -->
+    <AstNode name="DoWhileStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a do/while statement.</Comment>
+      <Property name="DoStatement" type="ITsStatement" />
+      <Property name="WhileCondition" type="ITsExpression" />
+    </AstNode>
+    <AstNode name="WhileStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a while loop.</Comment>
+      <Property name="WhileCondition" type="ITsExpression" />
+      <Property name="WhileStatement" type="ITsStatement" />
+    </AstNode>
+
+    <!--
+    /*   for ( [lookahead not 'let ['] ExpressionOpt ; ExpressionOpt ; ExpressionOpt ) Statement
+     *   for ( var VariableDeclarationList ; ExpressionOpt ; ExpressionOpt ) Statement
+     *   for ( LexicalDeclaration ExpressionOpt ; ExpressionOpt ) Statement
+     *
+     *   for ( [lookahead not 'let ['] LeftHandSideExpression in Expression ) Statement
+     *   for ( var ForBinding in Expression ) Statement
+     *   for ( ForDeclaration in Expression ) Statement
+     *
+     *   for ( [lookahead not 'let'] LeftHandSideExpression of AssignmentExpression ) Statement
+     *   for ( var ForBinding of AssignmentExpression ) Statement
+     *   for ( ForDeclaration of AssignmentExpression ) Statement
+     *
+     * ForDeclaration:
+     *   LetOrConst ForBinding
+     *
+     * ForBinding:
+     *   BindingIdentifier
+     *   BindingPattern
+     */
+    -->
+    <AstNode name="ForStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a 'for' loop.</Comment>
+      <Property name="Initializer" type="ITsExpression?" />
+      <Property name="InitializerWithVariableDeclarations" type="ImmutableArray&lt;ITsVariableDeclaration&gt;?" />
+      <Property name="InitializerWithLexicalDeclaration" type="ITsLexicalDeclaration?" />
+      <Property name="Condition" type="ITsExpression?" />
+      <Property name="Incrementor" type="ITsExpression?" />
+      <Property name="Statement" type="ITsStatement" />
+    </AstNode>
+    <AstNode name="ForInStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a for-in loop of the form 'for (const x: type in expression) statement'.</Comment>
+      <Enum name="VariableDeclarationKind">
+        <EnumValue name="Var" />
+        <EnumValue name="Let" />
+        <EnumValue name="Const" />
+      </Enum>
+      <Property name="Initializer" type="ITsExpression?" />
+      <Property name="DeclarationKind" type="VariableDeclarationKind?" />
+      <Property name="Declaration" type="ITsBindingIdentifierOrPattern?" />
+      <Property name="RightSide" type="ITsExpression" />
+      <Property name="Statement" type="ITsStatement" />
+    </AstNode>
+    <AstNode name="ForOfStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a for-of loop of the form 'for (const x: type of expression) statement'.</Comment>
+      <Property name="Initializer" type="ITsExpression?" />
+      <Property name="DeclarationKind" type="VariableDeclarationKind?" />
+      <Property name="Declaration" type="ITsBindingIdentifierOrPattern?" />
+      <Property name="RightSide" type="ITsExpression" />
+      <Property name="Statement" type="ITsStatement" />
+    </AstNode>
+
+    <!--
+    /* 13.8 The continue Statement
+     * ===========================
+     * ContinueStatement:
+     *   continue ;
+     *   continue [no LineTerminator here] LabelIdentifier ;
+     *
+     * 13.9 The break Statement
+     * ========================
+     * BreakStatement:
+     *   break ;
+     *   break [no LineTerminator here] LabelIdentifier ;
+     */
+    -->
+    <AstNode name="ContinueStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a continue statement of the form, 'continue [label]'.</Comment>
+      <Property name="Label" type="ITsIdentifier?" />
+    </AstNode>
+    <AstNode name="BreakStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a break statement of the form, 'break [label]'.</Comment>
+      <Property name="Label" type="ITsIdentifier?" />
+    </AstNode>
+
+    <!--
+    /* 13.10 The return Statement
+     * ==========================
+     * ReturnStatement:
+     *   return ;
+     *   return [no LineTerminator here] Expression ;
+     *
+     * 13.11 The with Statement
+     * ========================
+     * WithStatement:
+     *   with ( Expression ) Statement
+     */
+    -->
+    <AstNode name="ReturnStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a 'return' statement.</Comment>
+      <Property name="Expression" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="WithStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a 'with' statement of the form, 'with (expression) statement'.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+      <Property name="Statement" type="ITsStatement" />
+    </AstNode>
+
+    <!--
+    /* 13.12 The switch Statement
+     * ==========================
+     * SwitchStatement:
+     *   switch ( Expression ) CaseBlock
+     *
+     * CaseBlock:
+     *   { CaseClausesOpt }
+     *   { CaseClausesOpt DefaultClause CaseClausesOpt }
+     *
+     * CaseClauses:
+     *   CaseClause
+     *   CaseClauses CaseClause
+     *
+     * CaseClause:
+     *   case Expression : StatementListOpt
+     *
+     * DefaultClause:
+     *   default : StatementListOpt
+     */
+    -->
+    <AstNode name="SwitchStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a switch statement of the form 'switch (condition) { case x: statement; default: statement; }'.</Comment>
+      <Property name="Condition" type="ITsExpression" />
+      <Property name="Clauses" type="ImmutableArray&lt;ITsCaseOrDefaultClause&gt;" />
+    </AstNode>
+    <AstNode name="CaseOrDefaultClause" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Represents either a 'case' or 'default' clause within a 'switch' statement.</Comment>
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+    </AstNode>
+    <AstNode name="CaseClause" baseInterfaces="ITsCaseOrDefaultClause">
+      <Comment>Represents a 'case' clause within a 'switch' statement of the form 'case expression: statements'.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" declaredInBaseInterface="true" />
+    </AstNode>
+    <AstNode name="DefaultClause" baseInterfaces="ITsCaseOrDefaultClause">
+      <Comment>Represents a 'default' clause within a 'switch' statement of the form 'default: statements'.</Comment>
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" declaredInBaseInterface="true" />
+    </AstNode>
+
+    <!--
+    /* 13.13 Labeled Statements
+     * ========================
+     * LabeledStatement:
+     *   LabelIdentifier : LabeledItem
+     *
+     * LabeledItem:
+     *   Statement
+     *   FunctionDeclaration
+     */
+    -->
+    <AstNode name="LabeledStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a labeled statement.</Comment>
+      <Property name="Label" type="ITsIdentifier" />
+      <Property name="Statement" type="ITsStatement?" />
+      <Property name="FunctionDeclaration" type="ITsFunctionDeclaration?" />
+    </AstNode>
+
+    <!--
+    /* 13.14 The throw Statement
+     * =========================
+     * ThrowStatement:
+     *   throw [no LineTerminator here] Expression ;
+     */
+    -->
+    <AstNode name="ThrowStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a 'throw' statement.</Comment>
+      <Property name="Expression" type="ITsExpression" />
+    </AstNode>
+
+    <!--
+    /* 12.14 The try Statement
+     * =======================
+     * TryStatement:
+     *   try Block Catch
+     *   try Block Finally
+     *   try Block Catch Finally
+     *
+     * Catch:
+     *   catch Block
+     *   catch ( CatchParameter ) Block
+     *
+     * Finally:
+     *   finally Block
+     *
+     * CatchParameter:
+     *   BindingIdentifier
+     *   BindingPattern
+     */
+    -->
+    <AstNode name="TryStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a try/catch/finally statement.</Comment>
+      <Property name="TryBlock" type="ITsBlockStatement" />
+      <Property name="CatchParameter" type="ITsBindingIdentifierOrPattern?" />
+      <Property name="CatchBlock" type="ITsBlockStatement?" />
+      <Property name="FinallyBlock" type="ITsBlockStatement?" />
+    </AstNode>
+
+    <!--
+    /* 13.16 The debugger Statement
+     * ============================
+     * DebuggerStatement:
+     *   debugger ;
+     */
+    -->
+    <AstNode name="DebuggerStatement" baseInterfaces="ITsStatement">
+      <Comment>Represents a 'debugger' statement.</Comment>
+    </AstNode>
+
+    <!--
+    /* A.4 Functions and Classes
+     *
+     * 14.1 Function Definitions
+     * =========================
+     * FunctionDeclaration: (see TypeScript Grammar)
+     *   function BindingIdentifier ( FormalParameters ) { FunctionBody }
+     *   function ( FormalParameters ) { FunctionBody }
+     *
+     * FunctionExpression: (see TypeScript Grammar)
+     *   function BindingIdentifierOpt ( FormalParameters ) { FunctionBody }
+     *
+     * StrictFormalParameters:
+     *   FormalParameters
+     *
+     * FormalParameters:
+     *   [empty]
+     *   FormalParameterList
+     *
+     * FormalParameterList:
+     *   FunctionRestParameter
+     *   FormalsList
+     *   FormalsList , FunctionRestParameter
+     *
+     * FormalsList:
+     *   FormalParameter
+     *   FormalsList , FormalParameter
+     *
+     * FunctionRestParameter:
+     *   BindingRestElement
+     *
+     * FormalParameter:
+     *   BindingElement
+     *
+     * FunctionBody:
+     *   FunctionStatementList
+     *
+     * FunctionStatementList:
+     *   StatementListOpt
+     *
+     * 14.2 Arrow Function Definitions
+     * ===============================
+     * ArrowFunction:
+     *   ArrowParameters [no LineTerminator here] => ConciseBody
+     *
+     * ArrowParameters:
+     *   BindingIdentifier
+     *   CoverParenthesizedExpressionAndArrowParameterList
+     *
+     * ConciseBody:
+     *   [lookahead != { ] AssignmentExpression
+     *   { FunctionBody }
+     *
+     * When the production `ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList`
+     * is recognized the following grammar is used to refine the interpretation of
+     * CoverParenthesizedExpressionAndArrowParameterList:
+     *
+     * ArrowFormalParameters: (see TypeScript grammar copied below)
+     *   ( StrictFormalParameters )
+     *
+     * ArrowFormalParameters: ( Modified )
+     *   CallSignature
+     */
+    -->
+    <AstNode name="ArrowFunction" baseInterfaces="ITsExpression">
+      <Comment>Represents an arrow function expression of the form '() => body'.</Comment>
+      <Property name="SingleParameterName" type="ITsIdentifier?" />
+      <Property name="CallSignature" type="ITsCallSignature?" />
+      <Property name="BodyExpression" type="ITsExpression?" />
+      <Property name="Body" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+    </AstNode>
+
+    <!--
+    /* 14.3 Method Definitions
+     * =======================
+     * MethodDefinition: (not present in TypeScript grammar)
+     *   PropertyName ( StrictFormalParameters ) { FunctionBody }
+     *   GeneratorMethod
+     *   get PropertyName ( ) { FunctionBody }
+     *   set PropertyName ( PropertySetParameterList ) { FunctionBody }
+     *
+     * PropertySetParameterList:
+     *   FormalParameter
+     */
+
+    /* 14.4 Generator Function Definitions
+     * ===================================
+     * GeneratorMethod: (not in TypeScript grammar)
+     *   * PropertyName ( StrictFormalParameters ) { GeneratorBody }
+     *
+     * GeneratorDeclaration:
+     *   function * BindingIdentifier ( FormalParameters ) { GeneratorBody }
+     *   function * ( FormalParameters ) { GeneratorBody }
+     *
+     * GeneratorExpression:
+     *   function * BindingIdentifierOpt ( FormalParameters ) { GeneratorBody }
+     *
+     * GeneratorBody:
+     *   FunctionBody
+     *
+     * YieldExpression:
+     *   yield
+     *   yield [no LineTerminator here] AssignmentExpression
+     *   yield [no LineTerminator here] * AssignmentExpression
+     */
+
+    /* 14.5 Class Definitions
+     * ======================
+     * ClassDeclaration: (see TypeScript override)
+     *   class BindingIdentifier ClassTail
+     *   class ClassTail
+     *
+     * ClassExpression:
+     *   class BindingIdentifierOpt ClassTail
+     *
+     * ClassTail:
+     *   ClassHeritageOpt { ClassBodyOpt }
+     *
+     * ClassHeritage: (see TypeScript override)
+     *   extends LeftHandSideExpression
+     *
+     * ClassBody:
+     *   ClassElementList
+     *
+     * ClassElementList:
+     *   ClassElement
+     *   ClassElementList ClassElement
+     *
+     * ClassElement: (see TypeScript override)
+     *   MethodDefinition
+     *   static MethodDefinition
+     *   ;
+     */
+    -->
+    <AstNode name="ClassExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a class declaration acting as an expression.</Comment>
+      <Property name="ClassName" type="ITsIdentifier?" />
+      <Property name="Heritage" type="ITsClassHeritage?" />
+      <Property name="ClassBody" type="ImmutableArray&lt;ITsClassElement&gt;" />
+    </AstNode>
+
+    <!--
+    /* A.5 Scripts and Modules
+     *
+     * 15.1 Scripts
+     * ============
+     * Script:
+     *   ScriptBodyOpt
+     *
+     * ScriptBody:
+     *   StatementList
+     *
+     * 15.2 Modules
+     * ============
+     * Module:
+     *   ModuleBodyOpt
+     *
+     * ModuleBody:
+     *   ModuleItemList
+     *
+     * ModuleItemList:
+     *   ModuleItem
+     *   ModuleItemList ModuleItem
+     *
+     * ModuleItem:
+     *   ImportDeclaration
+     *   ExportDeclaration
+     *   StatementListItem
+     */
+
+    /* 15.2.2 Imports
+     * ==============
+     * ImportDeclaration:
+     *   import ImportClause FromClause ;
+     *   import ModuleSpecifier ;
+     *
+     * ImportClause:
+     *   ImportedDefaultBinding
+     *   NameSpaceImport
+     *   NamedImports
+     *   ImportedDefaultBinding , NameSpaceImport
+     *   ImportedDefaultBinding , NamedImports
+     *
+     * ImportedDefaultBinding:
+     *   ImportedBinding
+     *
+     * NameSpaceImport:
+     *   * as ImportedBinding
+     *
+     * NamedImports:
+     *   { }
+     *   { ImportsList }
+     *   { ImportsList , }
+     *
+     * FromClause:
+     *   from ModuleSpecifier
+     */
+    -->
+    <AstNode name="ImportDeclaration" baseInterfaces="ITsImplementationModuleElement">
+      <Comment>Represents an import declaration of the form 'import ImportClause FromClause;' or 'import Module;'.</Comment>
+      <Property name="ImportClause" type="ITsImportClause?" />
+      <Property name="FromClause" type="ITsFromClause?" />
+      <Property name="Module" type="ITsStringLiteral?" />
+    </AstNode>
+    <AstNode name="ImportClause" baseInterfaces="ITsAstNode">
+      <Comment>Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }', 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.</Comment>
+      <Property name="DefaultBinding" type="ITsIdentifier?" />
+      <Property name="NamespaceBinding" type="ITsIdentifier?" />
+      <Property name="NamedImports" type="ImmutableArray&lt;ITsImportSpecifier&gt;?" />
+    </AstNode>
+    <AstNode name="FromClause" baseInterfaces="ITsAstNode">
+      <Comment>Represents a from clause in an import or export statement, of the form 'from moduleName'.</Comment>
+      <Property name="Module" type="ITsStringLiteral" />
+    </AstNode>
+    <AstNode name="ImportSpecifier" baseInterfaces="ITsAstNode">
+      <Comment>Represents an import specifier, which is either an identifier or 'identifier as identifier'.</Comment>
+      <Property name="Name" type="ITsIdentifier" />
+      <Property name="AsName" type="ITsIdentifier?" />
+    </AstNode>
+
+    <!--
+    /* ModuleSpecifier:
+     *   StringLiteral
+     *
+     * ImportedBinding:
+     *   BindingIdentifier
+     */
+
+    /* 15.2.3 Exports
+     * ==============
+     * ExportDeclaration:
+     *   export * FromClause ;
+     *   export ExportClause FromClause ;
+     *   export ExportClause ;
+     *   export VariableStatement
+     *   export Declaration
+     *   export default HoistableDeclaration
+     *   export default ClassDeclaration
+     *   export default [lookahead not in 'function', 'class'] AssignmentExpression ;
+     */
+
+    /* ExportClause:
+     *   { }
+     *   { ExportsList }
+     *   { ExportsList , }
+     *
+     * ExportsList:
+     *   ExportSpecifier
+     *   ExportsList , ExportSpecifier
+     *
+     * ExportSpecifier:
+     *   IdentifierName
+     *   IdentifierName as IdentifierName
+     */
+    -->
   </AstNodes>
 </Grammar>

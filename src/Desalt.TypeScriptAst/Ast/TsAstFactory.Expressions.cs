@@ -318,26 +318,34 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrowFunction ArrowFunction(ITsIdentifier singleParameterName, ITsExpression bodyExpression)
         {
-            return new TsArrowFunction(singleParameterName, bodyExpression);
+            return new TsArrowFunction(singleParameterName, callSignature: null, bodyExpression, body: null);
         }
 
         public static ITsArrowFunction ArrowFunction(
             ITsIdentifier singleParameterName,
             params ITsStatementListItem[] body)
         {
-            return new TsArrowFunction(singleParameterName, body);
+            return new TsArrowFunction(
+                singleParameterName,
+                callSignature: null,
+                bodyExpression: null,
+                body.ToImmutableArray());
         }
 
         public static ITsArrowFunction ArrowFunction(ITsCallSignature callSignature, ITsExpression bodyExpression)
         {
-            return new TsArrowFunction(callSignature, bodyExpression);
+            return new TsArrowFunction(singleParameterName: null, callSignature, bodyExpression, body: null);
         }
 
         public static ITsArrowFunction ArrowFunction(
             ITsCallSignature callSignature,
             params ITsStatementListItem[] body)
         {
-            return new TsArrowFunction(callSignature, body);
+            return new TsArrowFunction(
+                singleParameterName: null,
+                callSignature,
+                bodyExpression: null,
+                body.ToImmutableArray());
         }
 
         /// <summary>
@@ -356,7 +364,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsClassHeritage? heritage = null,
             params ITsClassElement[] classBody)
         {
-            return new TsClassExpression(className, heritage, classBody);
+            return new TsClassExpression(className, heritage, classBody.ToImmutableArray());
         }
     }
 }
