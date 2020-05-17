@@ -26,14 +26,24 @@
         File.WriteAllText(filePath, generatedText);
     }
 
-    public IReadOnlyList<AstNodeDefinition> GatherDefinitions()
+    public IReadOnlyList<AstNodeDefinition> GatherAstDefinitions()
+    {
+        return GatherDefinitions<AstNodeDefinition>("AstNode");
+    }
+
+    public IReadOnlyList<TriviaNodeDefinition> GatherTriviaDefinitions()
+    {
+        return GatherDefinitions<TriviaNodeDefinition>("TriviaNode");
+    }
+
+    private IReadOnlyList<T> GatherDefinitions<T>(string nodeNameToGather) where T : NodeDefinition
     {
         string grammarPath = Host.ResolvePath(@"TypeScriptGrammar.xml");
         XDocument doc = XDocument.Load(grammarPath);
 
-        var definitions = new List<AstNodeDefinition>();
+        var definitions = new List<T>();
 
-        var triviaDefinitions = doc.Root.Descendants(Xmlns + "AstNode").Select(ParseNode);
+        var triviaDefinitions = doc.Root.Descendants(Xmlns + nodeNameToGather).Select(ParseNode).Cast<T>();
         definitions.AddRange(triviaDefinitions);
 
         return definitions;
@@ -66,7 +76,7 @@
         }
     }
 
-    public void WriteProperties(AstNodeDefinition node, bool isInterface)
+    public void WriteProperties(NodeDefinition node, bool isInterface)
     {
         if (!node.HasProperties)
         {
@@ -100,11 +110,14 @@
         PopIndent();
     }
 
-    public void WriteCtorAssignments(AstNodeDefinition node)
+    public void WriteCtorAssignments(NodeDefinition node, bool skipVerifyInputs = false)
     {
         PushIndent(TripleIndent);
 
-        WriteLine($"VerifyInputs({node.ToPropertyList(noTypes: true)});");
+        if (!skipVerifyInputs)
+        {
+            WriteLine($"VerifyInputs({node.ToPropertyList(noTypes: true)});");
+        }
 
         foreach (var property in node.Properties)
         {
@@ -114,7 +127,7 @@
         PopIndent();
     }
 
-    public void WriteWithExtensionMethods(AstNodeDefinition node)
+    public void WriteWithExtensionMethods(NodeDefinition node)
     {
         if (!node.HasProperties)
         {
@@ -163,7 +176,16 @@
             }
 
             // Write the trivia node arguments.
-            WriteLine(", node.LeadingTrivia, node.TrailingTrivia);");
+            if (node is AstNodeDefinition)
+            {
+                Write(", node.LeadingTrivia, node.TrailingTrivia");
+            }
+            else
+            {
+                Write(", node.PreserveSpacing");
+            }
+
+            WriteLine(");");
 
             PopIndent();
         }
@@ -191,12 +213,11 @@
         return argumentName;
     }
 
-    private static AstNodeDefinition ParseNode(XElement node)
+    private static NodeDefinition ParseNode(XElement node)
     {
         string name = (string)node.Attribute("name");
         string comment = (string)node.Element(Xmlns + "Comment") ?? string.Empty;
 
-        string baseClassName = "TsAstNode";
         string rawBaseInterfaces = (string)node.Attribute("baseInterfaces");
         string baseInterfaces = string.Join(", ", rawBaseInterfaces.Split(',').Select(s => s.Trim()));
 
@@ -224,10 +245,23 @@
             enums.Add(enumDefinition);
         }
 
+        if (node.Name.LocalName == "TriviaNode")
+        {
+            return new TriviaNodeDefinition(name)
+            {
+                Comment = comment,
+                BaseClassName = "TsAstTriviaNode",
+                BaseInterfaces = baseInterfaces,
+                Enums = enums,
+                InterfaceOnly = interfaceOnly,
+                Properties = properties,
+            };
+        }
+
         return new AstNodeDefinition(name)
         {
             Comment = comment,
-            BaseClassName = baseClassName,
+            BaseClassName = "TsAstNode",
             BaseInterfaces = baseInterfaces,
             Enums = enums,
             InterfaceOnly = interfaceOnly,
@@ -235,32 +269,32 @@
         };
     }
 
-    public sealed class AstNodeDefinition
+    public abstract class NodeDefinition
     {
-        public AstNodeDefinition(string name)
+        protected NodeDefinition(string name)
         {
             Name = name;
         }
 
         // Read-only Properties
         public string Name { get; }
-        public string BaseCtorArgumentList { get; } = "leadingTrivia, trailingTrivia";
+        public abstract string BaseCtorArgumentList { get; }
 
         // Writable Properties
-        public string Comment { get; set; }
         public string BaseClassName { get; set; }
+        public string Comment { get; set; }
         public string BaseInterfaces { get; set; }
-        public bool InterfaceOnly { get; set; }
-
         public IList<EnumDefinition> Enums { get; set; } = new List<EnumDefinition>();
+        public bool InterfaceOnly { get; set; }
         public IList<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
 
         // Computed Properties
         public string ArgumentName => SafeArgumentName(Name);
         public string ClassName => "Ts" + Name;
+        public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
         public bool HasProperties => Properties.Any();
         public string InterfaceName => "ITs" + Name;
-        public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
+
         public IEnumerable<PropertyDefinition> InterfaceProperties =>
             Properties.Where(prop => !prop.DeclaredInBaseInterface);
 
@@ -329,6 +363,28 @@
 
             return builder.ToString();
         }
+    }
+
+    public sealed class TriviaNodeDefinition : NodeDefinition
+    {
+        public TriviaNodeDefinition(string name)
+            : base(name)
+        {
+        }
+
+        // Read-only Properties
+        public override string BaseCtorArgumentList => "preserveSpacing";
+    }
+
+    public sealed class AstNodeDefinition : NodeDefinition
+    {
+        public AstNodeDefinition(string name)
+            : base(name)
+        {
+        }
+
+        // Read-only Properties
+        public override string BaseCtorArgumentList => "leadingTrivia, trailingTrivia";
     }
 
     public sealed class PropertyDefinition

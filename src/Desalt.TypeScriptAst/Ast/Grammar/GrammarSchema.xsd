@@ -26,13 +26,19 @@
 
   <xs:complexType name="TriviaNodesType">
     <xs:sequence maxOccurs="unbounded">
-      <xs:element name="TriviaNode" type="NodeType" />
+      <xs:element name="TriviaNode" type="NodeType">
+        <xs:unique name="UniqueTriviaNodeName">
+          <!-- ReSharper disable once MarkupAttributeTypo -->
+          <xs:selector xpath="mstns:TriviaNode" />
+          <xs:field xpath="@name" />
+        </xs:unique>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="AstNodesType">
     <xs:sequence maxOccurs="unbounded">
-      <xs:element name="AstNode" type="AstNodeType">
+      <xs:element name="AstNode" type="NodeType">
         <xs:unique name="UniqueAstNodeName">
           <!-- ReSharper disable once MarkupAttributeTypo -->
           <xs:selector xpath="mstns:AstNode" />
@@ -50,15 +56,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="baseInterfaces" type="ListOfStrings" use="required" />
-  </xs:complexType>
-
-  <xs:complexType name="AstNodeType">
-    <xs:complexContent>
-      <xs:extension base="NodeType">
-        <xs:attribute name="generateEmit" type="xs:boolean" use="optional" />
-        <xs:attribute name="interfaceOnly" type="xs:boolean" use="optional" />
-      </xs:extension>
-    </xs:complexContent>
+    <xs:attribute name="interfaceOnly" type="xs:boolean" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="PropertyType">

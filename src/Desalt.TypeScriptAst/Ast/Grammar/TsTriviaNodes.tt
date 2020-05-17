@@ -1,7 +1,7 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ include file="TsAstNodeGenerator.ttinclude" #>
 <#
-var nodes = GatherAstDefinitions();
+var nodes = GatherTriviaDefinitions();
 string outputFileName = Path.ChangeExtension(TemplateFileName, ".cs");
 #>
 // ---------------------------------------------------------------------------------------------------------------------
@@ -22,11 +22,6 @@ string outputFileName = Path.ChangeExtension(TemplateFileName, ".cs");
 
 #nullable enable
 
-// ---------------------------------------------------------------------------------------------------------------------
-// References:
-// * Ecma-262 6.0 (ES 2015) Grammar (http://www.ecma-international.org/ecma-262/6.0/)
-// ---------------------------------------------------------------------------------------------------------------------
-
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
@@ -40,7 +35,6 @@ foreach (var node in nodes) {
     //// <#= node.Name #>
     //// ===============================================================================================================
 
-<# WriteEnumDeclarations(node); #>
     /// <summary>
     /// <#= node.Comment #>
     /// </summary>
@@ -48,26 +42,22 @@ foreach (var node in nodes) {
     {
 <# WriteProperties(node, isInterface: true); #>
     }
-<# if (!node.InterfaceOnly) { #>
 
     /// <summary>
     /// <#= node.Comment #>
     /// </summary>
     internal partial class <#= node.ClassName #> : <#= node.BaseClassName #>, <#= node.InterfaceName #>
     {
-        public <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: true, multipleLines: true) #>)
+        public <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, multipleLines: false) #>, bool preserveSpacing)
             : base(<#= node.BaseCtorArgumentList #>)
         {
-<# WriteCtorAssignments(node); #>
+<# WriteCtorAssignments(node, skipVerifyInputs: true); #>
         }
 <# WriteProperties(node, isInterface: false); #>
 
-        partial void VerifyInputs(<#= node.ToPropertyList() #>);
-        public override void Accept(TsVisitor visitor) => visitor.Visit<#= node.Name #>(this);
-        protected override void EmitContent(Emitter emitter) => <#= node.EmitImplementation #>;
+        public override void Emit(Emitter emitter) => <#= node.EmitImplementation #>;
     }
 <# WriteWithExtensionMethods(node); #>
-<# } // if (!node.InterfaceOnly) #>
 <#
 } // end foreach node
 #>

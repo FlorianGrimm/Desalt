@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Ast\Grammar\TsTriviaNodes.tt">
+      <LastGenOutput>TsTriviaNodes.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="Ast\Grammar\TsAstNodes.tt">
       <LastGenOutput>TsAstNodes.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -33,6 +37,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>TsAstNodes.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Ast\Grammar\TsTriviaNodes.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TsTriviaNodes.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

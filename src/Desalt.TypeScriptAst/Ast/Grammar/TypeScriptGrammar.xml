@@ -57,8 +57,10 @@
     <TriviaNode name="SingleLineComment" baseInterfaces="ITsAstTriviaNode">
       <Comment><![CDATA[Represents a TypeScript single-line comment of the form '// comment'.]]></Comment>
       <Property name="Text" type="string" />
+      <Property name="OmitNewLineAtEnd" type="bool" />
     </TriviaNode>
   </TriviaNodes>
+
   <AstNodes>
     <!--
     /* 12.1 Identifiers

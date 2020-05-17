@@ -13,6 +13,7 @@ namespace Desalt.TypeScriptAst.Ast
     using System.Collections.Immutable;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Emit;
 
@@ -22,6 +23,68 @@ namespace Desalt.TypeScriptAst.Ast
         {
             node.Emit(emitter);
             return emitter;
+        }
+
+        public static void EmitWhitespaceTrivia(Emitter emitter, ITsWhitespaceTrivia whitespaceTrivia)
+        {
+            if (whitespaceTrivia.IsNewline)
+            {
+                emitter.WriteLine();
+            }
+            else
+            {
+                emitter.Write(whitespaceTrivia.Text);
+            }
+        }
+
+        public static void EmitMultiLineComment(Emitter emitter, ITsMultiLineComment multiLineComment)
+        {
+            string prefix = multiLineComment.IsJsDoc ? "/**" : "/*";
+            string space = multiLineComment.PreserveSpacing ? string.Empty : " ";
+
+            int count = multiLineComment.Lines.Length;
+            if (count == 0)
+            {
+                emitter.Write($"{prefix}*/");
+            }
+            else if (count == 1 && !multiLineComment.IsJsDoc)
+            {
+                emitter.Write($"{prefix}{space}{multiLineComment.Lines.First()}{space}*/");
+            }
+            else
+            {
+                if (multiLineComment.IsJsDoc)
+                {
+                    emitter.WriteLine(prefix);
+                    emitter.WriteLine($" * {multiLineComment.Lines.First()}");
+                }
+                else
+                {
+                    emitter.WriteLine($"{prefix}{space}{multiLineComment.Lines.First()}");
+                }
+
+                foreach (string line in multiLineComment.Lines.Skip(1))
+                {
+                    emitter.Write(" * ");
+                    emitter.WriteLine(line);
+                }
+
+                emitter.WriteLine(" */");
+            }
+        }
+
+        public static void EmitSingleLineComment(Emitter emitter, ITsSingleLineComment singleLineComment)
+        {
+            string space = singleLineComment.PreserveSpacing ? string.Empty : " ";
+
+            if (singleLineComment.OmitNewLineAtEnd)
+            {
+                emitter.Write($"//{space}{singleLineComment.Text}");
+            }
+            else
+            {
+                emitter.WriteLine($"//{space}{singleLineComment.Text}");
+            }
         }
 
         public static void EmitIdentifier(Emitter emitter, ITsIdentifier identifier)

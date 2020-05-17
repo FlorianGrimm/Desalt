@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.TypeScriptAst.Ast.Lexical;
 
@@ -16,14 +17,17 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Represents a newline whitespace trivia node.
         /// </summary>
-        public static readonly ITsWhitespaceTrivia Newline = TsWhitespaceTrivia.Newline;
+        public static readonly ITsWhitespaceTrivia Newline = new TsWhitespaceTrivia(
+            "\n",
+            isNewline: true,
+            preserveSpacing: true);
 
         /// <summary>
         /// Creates whitespace that can appear before or after another <see cref="ITsAstNode"/>.
         /// </summary>
         public static ITsWhitespaceTrivia Whitespace(string text)
         {
-            return TsWhitespaceTrivia.Create(text);
+            return new TsWhitespaceTrivia(text, isNewline: false, preserveSpacing: true);
         }
 
         /// <summary>
@@ -42,7 +46,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsMultiLineComment MultiLineComment(params string[] lines)
         {
-            return new TsMultiLineComment(lines);
+            return new TsMultiLineComment(isJsDoc: false, lines.ToImmutableArray(), preserveSpacing: false);
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool preserveSpacing = false,
             params string[] lines)
         {
-            return new TsMultiLineComment(lines, isJsDoc, preserveSpacing);
+            return new TsMultiLineComment(isJsDoc, lines.ToImmutableArray(), preserveSpacing);
         }
 
         /// <summary>
