@@ -70,6 +70,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitBlockStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBlockStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsBlockStatement(Statements, leadingTrivia, trailingTrivia);
     }
 
     public static class BlockStatementExtensions
@@ -110,6 +114,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? label);
         public override void Accept(TsVisitor visitor) => visitor.VisitBreakStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBreakStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsBreakStatement(Label, leadingTrivia, trailingTrivia);
     }
 
     public static class BreakStatementExtensions
@@ -150,6 +158,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? label);
         public override void Accept(TsVisitor visitor) => visitor.VisitContinueStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitContinueStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsContinueStatement(Label, leadingTrivia, trailingTrivia);
     }
 
     public static class ContinueStatementExtensions
@@ -185,6 +197,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitDebuggerStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDebuggerStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsDebuggerStatement(leadingTrivia, trailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -223,6 +239,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsStatement doStatement, ITsExpression whileCondition);
         public override void Accept(TsVisitor visitor) => visitor.VisitDoWhileStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDoWhileStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsDoWhileStatement(DoStatement, WhileCondition, leadingTrivia, trailingTrivia);
     }
 
     public static class DoWhileStatementExtensions
@@ -261,6 +281,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitEmptyStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitEmptyStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsEmptyStatement(leadingTrivia, trailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -295,6 +319,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitExpressionStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitExpressionStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsExpressionStatement(Expression, leadingTrivia, trailingTrivia);
     }
 
     public static class ExpressionStatementExtensions
@@ -358,6 +386,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression? initializer, VariableDeclarationKind? declarationKind, ITsBindingIdentifierOrPattern? declaration, ITsExpression rightSide, ITsStatement statement);
         public override void Accept(TsVisitor visitor) => visitor.VisitForInStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForInStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsForInStatement(Initializer, DeclarationKind, Declaration, RightSide, Statement, leadingTrivia, trailingTrivia);
     }
 
     public static class ForInStatementExtensions
@@ -426,6 +458,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression? initializer, VariableDeclarationKind? declarationKind, ITsBindingIdentifierOrPattern? declaration, ITsExpression rightSide, ITsStatement statement);
         public override void Accept(TsVisitor visitor) => visitor.VisitForOfStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForOfStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsForOfStatement(Initializer, DeclarationKind, Declaration, RightSide, Statement, leadingTrivia, trailingTrivia);
     }
 
     public static class ForOfStatementExtensions
@@ -498,6 +534,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression? initializer, ImmutableArray<ITsVariableDeclaration>? initializerWithVariableDeclarations, ITsLexicalDeclaration? initializerWithLexicalDeclaration, ITsExpression? condition, ITsExpression? incrementor, ITsStatement statement);
         public override void Accept(TsVisitor visitor) => visitor.VisitForStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitForStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsForStatement(Initializer, InitializerWithVariableDeclarations, InitializerWithLexicalDeclaration, Condition, Incrementor, Statement, leadingTrivia, trailingTrivia);
     }
 
     public static class ForStatementExtensions
@@ -561,6 +601,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression ifCondition, ITsStatement ifStatement, ITsStatement? elseStatement);
         public override void Accept(TsVisitor visitor) => visitor.VisitIfStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIfStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsIfStatement(IfCondition, IfStatement, ElseStatement, leadingTrivia, trailingTrivia);
     }
 
     public static class IfStatementExtensions
@@ -615,6 +659,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier label, ITsStatement? statement, ITsFunctionDeclaration? functionDeclaration);
         public override void Accept(TsVisitor visitor) => visitor.VisitLabeledStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLabeledStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsLabeledStatement(Label, Statement, FunctionDeclaration, leadingTrivia, trailingTrivia);
     }
 
     public static class LabeledStatementExtensions
@@ -661,6 +709,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression? expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitReturnStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitReturnStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsReturnStatement(Expression, leadingTrivia, trailingTrivia);
     }
 
     public static class ReturnStatementExtensions
@@ -705,6 +757,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression condition, ImmutableArray<ITsCaseOrDefaultClause> clauses);
         public override void Accept(TsVisitor visitor) => visitor.VisitSwitchStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSwitchStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsSwitchStatement(Condition, Clauses, leadingTrivia, trailingTrivia);
     }
 
     public static class SwitchStatementExtensions
@@ -748,6 +804,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitThrowStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThrowStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsThrowStatement(Expression, leadingTrivia, trailingTrivia);
     }
 
     public static class ThrowStatementExtensions
@@ -800,6 +860,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsBlockStatement tryBlock, ITsBindingIdentifierOrPattern? catchParameter, ITsBlockStatement? catchBlock, ITsBlockStatement? finallyBlock);
         public override void Accept(TsVisitor visitor) => visitor.VisitTryStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTryStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsTryStatement(TryBlock, CatchParameter, CatchBlock, FinallyBlock, leadingTrivia, trailingTrivia);
     }
 
     public static class TryStatementExtensions
@@ -849,6 +913,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsVariableDeclaration> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitVariableStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitVariableStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsVariableStatement(Declarations, leadingTrivia, trailingTrivia);
     }
 
     public static class VariableStatementExtensions
@@ -893,6 +961,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression whileCondition, ITsStatement whileStatement);
         public override void Accept(TsVisitor visitor) => visitor.VisitWhileStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitWhileStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsWhileStatement(WhileCondition, WhileStatement, leadingTrivia, trailingTrivia);
     }
 
     public static class WhileStatementExtensions
@@ -940,6 +1012,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression, ITsStatement statement);
         public override void Accept(TsVisitor visitor) => visitor.VisitWithStatement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitWithStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsWithStatement(Expression, Statement, leadingTrivia, trailingTrivia);
     }
 
     public static class WithStatementExtensions

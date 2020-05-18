@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast
     using System;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.TypeScriptAst.Ast.Types;
 
     /// <summary>
     /// Provides factory methods for creating TypeScript AST nodes.
@@ -23,13 +22,14 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static readonly ITsThisType ThisType = new TsThisType();
 
-        public static readonly ITsType AnyType = TsPredefinedType.Any;
-        public static readonly ITsType BooleanType = TsPredefinedType.Boolean;
-        public static readonly ITsType NullType = TsPredefinedType.Null;
-        public static readonly ITsType NumberType = TsPredefinedType.Number;
-        public static readonly ITsType StringType = TsPredefinedType.String;
-        public static readonly ITsType SymbolType = TsPredefinedType.Symbol;
-        public static readonly ITsType VoidType = TsPredefinedType.Void;
+        public static readonly ITsType AnyType = new TsPredefinedType(TsPredefinedKind.Any);
+        public static readonly ITsType BooleanType = new TsPredefinedType(TsPredefinedKind.Boolean);
+        public static readonly ITsType NumberType = new TsPredefinedType(TsPredefinedKind.Number);
+        public static readonly ITsType StringType = new TsPredefinedType(TsPredefinedKind.String);
+        public static readonly ITsType SymbolType = new TsPredefinedType(TsPredefinedKind.Symbol);
+        public static readonly ITsType VoidType = new TsPredefinedType(TsPredefinedKind.Void);
+        public static readonly ITsType NullType = new TsPredefinedType(TsPredefinedKind.Null);
+        public static readonly ITsType UndefinedType = new TsPredefinedType(TsPredefinedKind.Undefined);
 
         //// ===========================================================================================================
         //// Identifiers

@@ -39,6 +39,1088 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// AmbientClassBodyElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all elements that can appear within an ambient class declaration.
+    /// </summary>
+    public interface ITsAmbientClassBodyElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// AmbientDeclarationElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all declarations that can be declared as an ambient ('declare').
+    /// </summary>
+    public interface ITsAmbientDeclarationElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// ClassElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all elements that can appear within a class declaration.
+    /// </summary>
+    public interface ITsClassElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// NamespaceElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all namespace elements.
+    /// </summary>
+    public interface ITsNamespaceElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// VariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all variable declarations.
+    /// </summary>
+    public interface ITsVariableDeclaration : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// AmbientClassDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient class declaration.
+    /// </summary>
+    public interface ITsAmbientClassDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsIdentifier ClassName { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsClassHeritage? Heritage { get; }
+        ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient class declaration.
+    /// </summary>
+    internal partial class TsAmbientClassDeclaration : TsAstNode, ITsAmbientClassDeclaration
+    {
+        public TsAmbientClassDeclaration(
+            ITsIdentifier className,
+            ITsTypeParameters? typeParameters,
+            ITsClassHeritage? heritage,
+            ImmutableArray<ITsAmbientClassBodyElement> classBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(className, typeParameters, heritage, classBody);
+            ClassName = className;
+            TypeParameters = typeParameters;
+            Heritage = heritage;
+            ClassBody = classBody;
+        }
+
+        public ITsIdentifier ClassName { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ITsClassHeritage? Heritage { get; }
+        public ImmutableArray<ITsAmbientClassBodyElement> ClassBody { get; }
+
+        partial void VerifyInputs(ITsIdentifier className, ITsTypeParameters? typeParameters, ITsClassHeritage? heritage, ImmutableArray<ITsAmbientClassBodyElement> classBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientClassDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientClassDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientClassDeclaration(ClassName, TypeParameters, Heritage, ClassBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientClassDeclarationExtensions
+    {
+        public static ITsAmbientClassDeclaration WithClassName(this ITsAmbientClassDeclaration node, ITsIdentifier value) =>
+            node.ClassName == value ? node : new TsAmbientClassDeclaration(value, node.TypeParameters, node.Heritage, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientClassDeclaration WithTypeParameters(this ITsAmbientClassDeclaration node, ITsTypeParameters? value) =>
+            node.TypeParameters == value ? node : new TsAmbientClassDeclaration(node.ClassName, value, node.Heritage, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientClassDeclaration WithHeritage(this ITsAmbientClassDeclaration node, ITsClassHeritage? value) =>
+            node.Heritage == value ? node : new TsAmbientClassDeclaration(node.ClassName, node.TypeParameters, value, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientClassDeclaration WithClassBody(this ITsAmbientClassDeclaration node, ImmutableArray<ITsAmbientClassBodyElement> value) =>
+            node.ClassBody == value ? node : new TsAmbientClassDeclaration(node.ClassName, node.TypeParameters, node.Heritage, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientConstructorDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a constructor declaration within an ambient class declaration.
+    /// </summary>
+    public interface ITsAmbientConstructorDeclaration : ITsAmbientClassBodyElement
+    {
+        ITsParameterList? ParameterList { get; }
+    }
+
+    /// <summary>
+    /// Represents a constructor declaration within an ambient class declaration.
+    /// </summary>
+    internal partial class TsAmbientConstructorDeclaration : TsAstNode, ITsAmbientConstructorDeclaration
+    {
+        public TsAmbientConstructorDeclaration(
+            ITsParameterList? parameterList,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(parameterList);
+            ParameterList = parameterList;
+        }
+
+        public ITsParameterList? ParameterList { get; }
+
+        partial void VerifyInputs(ITsParameterList? parameterList);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientConstructorDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientConstructorDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientConstructorDeclaration(ParameterList, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientConstructorDeclarationExtensions
+    {
+        public static ITsAmbientConstructorDeclaration WithParameterList(this ITsAmbientConstructorDeclaration node, ITsParameterList? value) =>
+            node.ParameterList == value ? node : new TsAmbientConstructorDeclaration(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientEnumDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient enum declaration.
+    /// </summary>
+    public interface ITsAmbientEnumDeclaration : ITsAmbientDeclarationElement
+    {
+    }
+
+    //// ===============================================================================================================
+    //// AmbientFunctionDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient function declaration of the form 'function name signature;'.
+    /// </summary>
+    public interface ITsAmbientFunctionDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsIdentifier FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient function declaration of the form 'function name signature;'.
+    /// </summary>
+    internal partial class TsAmbientFunctionDeclaration : TsAstNode, ITsAmbientFunctionDeclaration
+    {
+        public TsAmbientFunctionDeclaration(
+            ITsIdentifier functionName,
+            ITsCallSignature callSignature,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(functionName, callSignature);
+            FunctionName = functionName;
+            CallSignature = callSignature;
+        }
+
+        public ITsIdentifier FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
+
+        partial void VerifyInputs(ITsIdentifier functionName, ITsCallSignature callSignature);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientFunctionDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientFunctionDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientFunctionDeclaration(FunctionName, CallSignature, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientFunctionDeclarationExtensions
+    {
+        public static ITsAmbientFunctionDeclaration WithFunctionName(this ITsAmbientFunctionDeclaration node, ITsIdentifier value) =>
+            node.FunctionName == value ? node : new TsAmbientFunctionDeclaration(value, node.CallSignature, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientFunctionDeclaration WithCallSignature(this ITsAmbientFunctionDeclaration node, ITsCallSignature value) =>
+            node.CallSignature == value ? node : new TsAmbientFunctionDeclaration(node.FunctionName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientMemberFunctionDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a function declaration within an ambient class declaration.
+    /// </summary>
+    public interface ITsAmbientMemberFunctionDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsAbstract { get; }
+        ITsPropertyName FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+    }
+
+    /// <summary>
+    /// Represents a function declaration within an ambient class declaration.
+    /// </summary>
+    internal partial class TsAmbientMemberFunctionDeclaration : TsAstNode, ITsAmbientMemberFunctionDeclaration
+    {
+        public TsAmbientMemberFunctionDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isAbstract,
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isAbstract, functionName, callSignature);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsAbstract = isAbstract;
+            FunctionName = functionName;
+            CallSignature = callSignature;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsAbstract { get; }
+        public ITsPropertyName FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isAbstract, ITsPropertyName functionName, ITsCallSignature callSignature);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientMemberFunctionDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientMemberFunctionDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientMemberFunctionDeclaration(AccessibilityModifier, IsStatic, IsAbstract, FunctionName, CallSignature, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientMemberFunctionDeclarationExtensions
+    {
+        public static ITsAmbientMemberFunctionDeclaration WithAccessibilityModifier(this ITsAmbientMemberFunctionDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsAmbientMemberFunctionDeclaration(value, node.IsStatic, node.IsAbstract, node.FunctionName, node.CallSignature, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberFunctionDeclaration WithIsStatic(this ITsAmbientMemberFunctionDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsAmbientMemberFunctionDeclaration(node.AccessibilityModifier, value, node.IsAbstract, node.FunctionName, node.CallSignature, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberFunctionDeclaration WithIsAbstract(this ITsAmbientMemberFunctionDeclaration node, bool value) =>
+            node.IsAbstract == value ? node : new TsAmbientMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.FunctionName, node.CallSignature, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberFunctionDeclaration WithFunctionName(this ITsAmbientMemberFunctionDeclaration node, ITsPropertyName value) =>
+            node.FunctionName == value ? node : new TsAmbientMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, value, node.CallSignature, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberFunctionDeclaration WithCallSignature(this ITsAmbientMemberFunctionDeclaration node, ITsCallSignature value) =>
+            node.CallSignature == value ? node : new TsAmbientMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, node.FunctionName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientMemberVariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a variable declaration within an ambient class declaration.
+    /// </summary>
+    public interface ITsAmbientMemberVariableDeclaration : ITsAmbientClassBodyElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsReadOnly { get; }
+        ITsPropertyName VariableName { get; }
+        ITsType? TypeAnnotation { get; }
+    }
+
+    /// <summary>
+    /// Represents a variable declaration within an ambient class declaration.
+    /// </summary>
+    internal partial class TsAmbientMemberVariableDeclaration : TsAstNode, ITsAmbientMemberVariableDeclaration
+    {
+        public TsAmbientMemberVariableDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isReadOnly,
+            ITsPropertyName variableName,
+            ITsType? typeAnnotation,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isReadOnly, variableName, typeAnnotation);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsReadOnly = isReadOnly;
+            VariableName = variableName;
+            TypeAnnotation = typeAnnotation;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsReadOnly { get; }
+        public ITsPropertyName VariableName { get; }
+        public ITsType? TypeAnnotation { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isReadOnly, ITsPropertyName variableName, ITsType? typeAnnotation);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientMemberVariableDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientMemberVariableDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientMemberVariableDeclaration(AccessibilityModifier, IsStatic, IsReadOnly, VariableName, TypeAnnotation, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientMemberVariableDeclarationExtensions
+    {
+        public static ITsAmbientMemberVariableDeclaration WithAccessibilityModifier(this ITsAmbientMemberVariableDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsAmbientMemberVariableDeclaration(value, node.IsStatic, node.IsReadOnly, node.VariableName, node.TypeAnnotation, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberVariableDeclaration WithIsStatic(this ITsAmbientMemberVariableDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsAmbientMemberVariableDeclaration(node.AccessibilityModifier, value, node.IsReadOnly, node.VariableName, node.TypeAnnotation, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberVariableDeclaration WithIsReadOnly(this ITsAmbientMemberVariableDeclaration node, bool value) =>
+            node.IsReadOnly == value ? node : new TsAmbientMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.VariableName, node.TypeAnnotation, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberVariableDeclaration WithVariableName(this ITsAmbientMemberVariableDeclaration node, ITsPropertyName value) =>
+            node.VariableName == value ? node : new TsAmbientMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsReadOnly, value, node.TypeAnnotation, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientMemberVariableDeclaration WithTypeAnnotation(this ITsAmbientMemberVariableDeclaration node, ITsType? value) =>
+            node.TypeAnnotation == value ? node : new TsAmbientMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsReadOnly, node.VariableName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientNamespaceDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient namespace declaration.
+    /// </summary>
+    public interface ITsAmbientNamespaceDeclaration : ITsAmbientDeclarationElement
+    {
+        ITsQualifiedName NamespaceName { get; }
+        ImmutableArray<ITsAmbientNamespaceElement> Body { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient namespace declaration.
+    /// </summary>
+    internal partial class TsAmbientNamespaceDeclaration : TsAstNode, ITsAmbientNamespaceDeclaration
+    {
+        public TsAmbientNamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            ImmutableArray<ITsAmbientNamespaceElement> body,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(namespaceName, body);
+            NamespaceName = namespaceName;
+            Body = body;
+        }
+
+        public ITsQualifiedName NamespaceName { get; }
+        public ImmutableArray<ITsAmbientNamespaceElement> Body { get; }
+
+        partial void VerifyInputs(ITsQualifiedName namespaceName, ImmutableArray<ITsAmbientNamespaceElement> body);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientNamespaceDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientNamespaceDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientNamespaceDeclaration(NamespaceName, Body, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientNamespaceDeclarationExtensions
+    {
+        public static ITsAmbientNamespaceDeclaration WithNamespaceName(this ITsAmbientNamespaceDeclaration node, ITsQualifiedName value) =>
+            node.NamespaceName == value ? node : new TsAmbientNamespaceDeclaration(value, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientNamespaceDeclaration WithBody(this ITsAmbientNamespaceDeclaration node, ImmutableArray<ITsAmbientNamespaceElement> value) =>
+            node.Body == value ? node : new TsAmbientNamespaceDeclaration(node.NamespaceName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientVariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+    /// </summary>
+    public interface ITsAmbientVariableDeclaration : ITsAmbientDeclarationElement
+    {
+        VariableDeclarationKind DeclarationKind { get; }
+        ImmutableArray<ITsAmbientBinding> Declarations { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.
+    /// </summary>
+    internal partial class TsAmbientVariableDeclaration : TsAstNode, ITsAmbientVariableDeclaration
+    {
+        public TsAmbientVariableDeclaration(
+            VariableDeclarationKind declarationKind,
+            ImmutableArray<ITsAmbientBinding> declarations,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(declarationKind, declarations);
+            DeclarationKind = declarationKind;
+            Declarations = declarations;
+        }
+
+        public VariableDeclarationKind DeclarationKind { get; }
+        public ImmutableArray<ITsAmbientBinding> Declarations { get; }
+
+        partial void VerifyInputs(VariableDeclarationKind declarationKind, ImmutableArray<ITsAmbientBinding> declarations);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientVariableDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientVariableDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientVariableDeclaration(DeclarationKind, Declarations, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientVariableDeclarationExtensions
+    {
+        public static ITsAmbientVariableDeclaration WithDeclarationKind(this ITsAmbientVariableDeclaration node, VariableDeclarationKind value) =>
+            node.DeclarationKind == value ? node : new TsAmbientVariableDeclaration(value, node.Declarations, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientVariableDeclaration WithDeclarations(this ITsAmbientVariableDeclaration node, ImmutableArray<ITsAmbientBinding> value) =>
+            node.Declarations == value ? node : new TsAmbientVariableDeclaration(node.DeclarationKind, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ClassDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a class declaration.
+    /// </summary>
+    public interface ITsClassDeclaration : ITsDeclaration
+    {
+        ITsIdentifier? ClassName { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsClassHeritage? Heritage { get; }
+        bool IsAbstract { get; }
+        ImmutableArray<ITsClassElement> ClassBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a class declaration.
+    /// </summary>
+    internal partial class TsClassDeclaration : TsAstNode, ITsClassDeclaration
+    {
+        public TsClassDeclaration(
+            ITsIdentifier? className,
+            ITsTypeParameters? typeParameters,
+            ITsClassHeritage? heritage,
+            bool isAbstract,
+            ImmutableArray<ITsClassElement> classBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(className, typeParameters, heritage, isAbstract, classBody);
+            ClassName = className;
+            TypeParameters = typeParameters;
+            Heritage = heritage;
+            IsAbstract = isAbstract;
+            ClassBody = classBody;
+        }
+
+        public ITsIdentifier? ClassName { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ITsClassHeritage? Heritage { get; }
+        public bool IsAbstract { get; }
+        public ImmutableArray<ITsClassElement> ClassBody { get; }
+
+        partial void VerifyInputs(ITsIdentifier? className, ITsTypeParameters? typeParameters, ITsClassHeritage? heritage, bool isAbstract, ImmutableArray<ITsClassElement> classBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitClassDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsClassDeclaration(ClassName, TypeParameters, Heritage, IsAbstract, ClassBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ClassDeclarationExtensions
+    {
+        public static ITsClassDeclaration WithClassName(this ITsClassDeclaration node, ITsIdentifier? value) =>
+            node.ClassName == value ? node : new TsClassDeclaration(value, node.TypeParameters, node.Heritage, node.IsAbstract, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassDeclaration WithTypeParameters(this ITsClassDeclaration node, ITsTypeParameters? value) =>
+            node.TypeParameters == value ? node : new TsClassDeclaration(node.ClassName, value, node.Heritage, node.IsAbstract, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassDeclaration WithHeritage(this ITsClassDeclaration node, ITsClassHeritage? value) =>
+            node.Heritage == value ? node : new TsClassDeclaration(node.ClassName, node.TypeParameters, value, node.IsAbstract, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassDeclaration WithIsAbstract(this ITsClassDeclaration node, bool value) =>
+            node.IsAbstract == value ? node : new TsClassDeclaration(node.ClassName, node.TypeParameters, node.Heritage, value, node.ClassBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassDeclaration WithClassBody(this ITsClassDeclaration node, ImmutableArray<ITsClassElement> value) =>
+            node.ClassBody == value ? node : new TsClassDeclaration(node.ClassName, node.TypeParameters, node.Heritage, node.IsAbstract, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ConstructorDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a constructor declaration in a class.
+    /// </summary>
+    public interface ITsConstructorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        ITsParameterList? ParameterList { get; }
+        ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a constructor declaration in a class.
+    /// </summary>
+    internal partial class TsConstructorDeclaration : TsAstNode, ITsConstructorDeclaration
+    {
+        public TsConstructorDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            ITsParameterList? parameterList,
+            ImmutableArray<ITsStatementListItem>? functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, parameterList, functionBody);
+            AccessibilityModifier = accessibilityModifier;
+            ParameterList = parameterList;
+            FunctionBody = functionBody;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public ITsParameterList? ParameterList { get; }
+        public ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, ITsParameterList? parameterList, ImmutableArray<ITsStatementListItem>? functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitConstructorDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConstructorDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsConstructorDeclaration(AccessibilityModifier, ParameterList, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ConstructorDeclarationExtensions
+    {
+        public static ITsConstructorDeclaration WithAccessibilityModifier(this ITsConstructorDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsConstructorDeclaration(value, node.ParameterList, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsConstructorDeclaration WithParameterList(this ITsConstructorDeclaration node, ITsParameterList? value) =>
+            node.ParameterList == value ? node : new TsConstructorDeclaration(node.AccessibilityModifier, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsConstructorDeclaration WithFunctionBody(this ITsConstructorDeclaration node, ImmutableArray<ITsStatementListItem>? value) =>
+            node.FunctionBody == value ? node : new TsConstructorDeclaration(node.AccessibilityModifier, node.ParameterList, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// DestructuringVariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
+    /// </summary>
+    public interface ITsDestructuringVariableDeclaration : ITsVariableDeclaration
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
+    /// </summary>
+    internal partial class TsDestructuringVariableDeclaration : TsAstNode, ITsDestructuringVariableDeclaration
+    {
+        public TsDestructuringVariableDeclaration(
+            ITsBindingPattern bindingPattern,
+            ITsType? variableType,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(bindingPattern, variableType, initializer);
+            BindingPattern = bindingPattern;
+            VariableType = variableType;
+            Initializer = initializer;
+        }
+
+        public ITsBindingPattern BindingPattern { get; }
+        public ITsType? VariableType { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsType? variableType, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringVariableDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDestructuringVariableDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsDestructuringVariableDeclaration(BindingPattern, VariableType, Initializer, leadingTrivia, trailingTrivia);
+    }
+
+    public static class DestructuringVariableDeclarationExtensions
+    {
+        public static ITsDestructuringVariableDeclaration WithBindingPattern(this ITsDestructuringVariableDeclaration node, ITsBindingPattern value) =>
+            node.BindingPattern == value ? node : new TsDestructuringVariableDeclaration(value, node.VariableType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsDestructuringVariableDeclaration WithVariableType(this ITsDestructuringVariableDeclaration node, ITsType? value) =>
+            node.VariableType == value ? node : new TsDestructuringVariableDeclaration(node.BindingPattern, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsDestructuringVariableDeclaration WithInitializer(this ITsDestructuringVariableDeclaration node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsDestructuringVariableDeclaration(node.BindingPattern, node.VariableType, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// EnumDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an enum declaration.
+    /// </summary>
+    public interface ITsEnumDeclaration : ITsDeclaration, ITsAmbientEnumDeclaration
+    {
+        bool IsConst { get; }
+        ITsIdentifier EnumName { get; }
+        ImmutableArray<ITsEnumMember> EnumBody { get; }
+    }
+
+    /// <summary>
+    /// Represents an enum declaration.
+    /// </summary>
+    internal partial class TsEnumDeclaration : TsAstNode, ITsEnumDeclaration
+    {
+        public TsEnumDeclaration(
+            bool isConst,
+            ITsIdentifier enumName,
+            ImmutableArray<ITsEnumMember> enumBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(isConst, enumName, enumBody);
+            IsConst = isConst;
+            EnumName = enumName;
+            EnumBody = enumBody;
+        }
+
+        public bool IsConst { get; }
+        public ITsIdentifier EnumName { get; }
+        public ImmutableArray<ITsEnumMember> EnumBody { get; }
+
+        partial void VerifyInputs(bool isConst, ITsIdentifier enumName, ImmutableArray<ITsEnumMember> enumBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitEnumDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitEnumDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsEnumDeclaration(IsConst, EnumName, EnumBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class EnumDeclarationExtensions
+    {
+        public static ITsEnumDeclaration WithIsConst(this ITsEnumDeclaration node, bool value) =>
+            node.IsConst == value ? node : new TsEnumDeclaration(value, node.EnumName, node.EnumBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsEnumDeclaration WithEnumName(this ITsEnumDeclaration node, ITsIdentifier value) =>
+            node.EnumName == value ? node : new TsEnumDeclaration(node.IsConst, value, node.EnumBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsEnumDeclaration WithEnumBody(this ITsEnumDeclaration node, ImmutableArray<ITsEnumMember> value) =>
+            node.EnumBody == value ? node : new TsEnumDeclaration(node.IsConst, node.EnumName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ExportedDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an exported declaration.
+    /// </summary>
+    public interface ITsExportedDeclaration : ITsNamespaceElement
+    {
+        ITsDeclaration ExportedDeclaration { get; }
+    }
+
+    /// <summary>
+    /// Represents an exported declaration.
+    /// </summary>
+    internal partial class TsExportedDeclaration : TsAstNode, ITsExportedDeclaration
+    {
+        public TsExportedDeclaration(
+            ITsDeclaration exportedDeclaration,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(exportedDeclaration);
+            ExportedDeclaration = exportedDeclaration;
+        }
+
+        public ITsDeclaration ExportedDeclaration { get; }
+
+        partial void VerifyInputs(ITsDeclaration exportedDeclaration);
+        public override void Accept(TsVisitor visitor) => visitor.VisitExportedDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitExportedDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsExportedDeclaration(ExportedDeclaration, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ExportedDeclarationExtensions
+    {
+        public static ITsExportedDeclaration WithExportedDeclaration(this ITsExportedDeclaration node, ITsDeclaration value) =>
+            node.ExportedDeclaration == value ? node : new TsExportedDeclaration(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ExportedVariableStatement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an exported variable statement.
+    /// </summary>
+    public interface ITsExportedVariableStatement : ITsNamespaceElement
+    {
+        ITsVariableStatement ExportedStatement { get; }
+    }
+
+    /// <summary>
+    /// Represents an exported variable statement.
+    /// </summary>
+    internal partial class TsExportedVariableStatement : TsAstNode, ITsExportedVariableStatement
+    {
+        public TsExportedVariableStatement(
+            ITsVariableStatement exportedStatement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(exportedStatement);
+            ExportedStatement = exportedStatement;
+        }
+
+        public ITsVariableStatement ExportedStatement { get; }
+
+        partial void VerifyInputs(ITsVariableStatement exportedStatement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitExportedVariableStatement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitExportedVariableStatement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsExportedVariableStatement(ExportedStatement, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ExportedVariableStatementExtensions
+    {
+        public static ITsExportedVariableStatement WithExportedStatement(this ITsExportedVariableStatement node, ITsVariableStatement value) =>
+            node.ExportedStatement == value ? node : new TsExportedVariableStatement(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// FunctionDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a function declaration of the form 'function [name] signature { body }'.
+    /// </summary>
+    public interface ITsFunctionDeclaration : ITsDeclaration
+    {
+        ITsIdentifier? FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a function declaration of the form 'function [name] signature { body }'.
+    /// </summary>
+    internal partial class TsFunctionDeclaration : TsAstNode, ITsFunctionDeclaration
+    {
+        public TsFunctionDeclaration(
+            ITsIdentifier? functionName,
+            ITsCallSignature callSignature,
+            ImmutableArray<ITsStatementListItem> functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(functionName, callSignature, functionBody);
+            FunctionName = functionName;
+            CallSignature = callSignature;
+            FunctionBody = functionBody;
+        }
+
+        public ITsIdentifier? FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+
+        partial void VerifyInputs(ITsIdentifier? functionName, ITsCallSignature callSignature, ImmutableArray<ITsStatementListItem> functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitFunctionDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitFunctionDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsFunctionDeclaration(FunctionName, CallSignature, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class FunctionDeclarationExtensions
+    {
+        public static ITsFunctionDeclaration WithFunctionName(this ITsFunctionDeclaration node, ITsIdentifier? value) =>
+            node.FunctionName == value ? node : new TsFunctionDeclaration(value, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsFunctionDeclaration WithCallSignature(this ITsFunctionDeclaration node, ITsCallSignature value) =>
+            node.CallSignature == value ? node : new TsFunctionDeclaration(node.FunctionName, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsFunctionDeclaration WithFunctionBody(this ITsFunctionDeclaration node, ImmutableArray<ITsStatementListItem> value) =>
+            node.FunctionBody == value ? node : new TsFunctionDeclaration(node.FunctionName, node.CallSignature, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImportAliasDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
+    /// </summary>
+    public interface ITsImportAliasDeclaration : ITsNamespaceElement, ITsImplementationElement
+    {
+        ITsIdentifier Alias { get; }
+        ITsQualifiedName ImportedName { get; }
+    }
+
+    /// <summary>
+    /// Represents an import alias declaration of the form, 'import alias = dotted.name'.
+    /// </summary>
+    internal partial class TsImportAliasDeclaration : TsAstNode, ITsImportAliasDeclaration
+    {
+        public TsImportAliasDeclaration(
+            ITsIdentifier alias,
+            ITsQualifiedName importedName,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(alias, importedName);
+            Alias = alias;
+            ImportedName = importedName;
+        }
+
+        public ITsIdentifier Alias { get; }
+        public ITsQualifiedName ImportedName { get; }
+
+        partial void VerifyInputs(ITsIdentifier alias, ITsQualifiedName importedName);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportAliasDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportAliasDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImportAliasDeclaration(Alias, ImportedName, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ImportAliasDeclarationExtensions
+    {
+        public static ITsImportAliasDeclaration WithAlias(this ITsImportAliasDeclaration node, ITsIdentifier value) =>
+            node.Alias == value ? node : new TsImportAliasDeclaration(value, node.ImportedName, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportAliasDeclaration WithImportedName(this ITsImportAliasDeclaration node, ITsQualifiedName value) =>
+            node.ImportedName == value ? node : new TsImportAliasDeclaration(node.Alias, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// IndexMemberDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an index member declaration in a class.
+    /// </summary>
+    public interface ITsIndexMemberDeclaration : ITsClassElement, ITsAmbientClassBodyElement
+    {
+        ITsIndexSignature IndexSignature { get; }
+    }
+
+    /// <summary>
+    /// Represents an index member declaration in a class.
+    /// </summary>
+    internal partial class TsIndexMemberDeclaration : TsAstNode, ITsIndexMemberDeclaration
+    {
+        public TsIndexMemberDeclaration(
+            ITsIndexSignature indexSignature,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(indexSignature);
+            IndexSignature = indexSignature;
+        }
+
+        public ITsIndexSignature IndexSignature { get; }
+
+        partial void VerifyInputs(ITsIndexSignature indexSignature);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIndexMemberDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIndexMemberDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsIndexMemberDeclaration(IndexSignature, leadingTrivia, trailingTrivia);
+    }
+
+    public static class IndexMemberDeclarationExtensions
+    {
+        public static ITsIndexMemberDeclaration WithIndexSignature(this ITsIndexMemberDeclaration node, ITsIndexSignature value) =>
+            node.IndexSignature == value ? node : new TsIndexMemberDeclaration(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// IndexSignature
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an index signature of the form '[parameterName: string|number]: type'.
+    /// </summary>
+    public interface ITsIndexSignature : ITsTypeMember, ITsAmbientClassBodyElement
+    {
+        ITsIdentifier ParameterName { get; }
+        bool IsParameterNumberType { get; }
+        ITsType ReturnType { get; }
+    }
+
+    /// <summary>
+    /// Represents an index signature of the form '[parameterName: string|number]: type'.
+    /// </summary>
+    internal partial class TsIndexSignature : TsAstNode, ITsIndexSignature
+    {
+        public TsIndexSignature(
+            ITsIdentifier parameterName,
+            bool isParameterNumberType,
+            ITsType returnType,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(parameterName, isParameterNumberType, returnType);
+            ParameterName = parameterName;
+            IsParameterNumberType = isParameterNumberType;
+            ReturnType = returnType;
+        }
+
+        public ITsIdentifier ParameterName { get; }
+        public bool IsParameterNumberType { get; }
+        public ITsType ReturnType { get; }
+
+        partial void VerifyInputs(ITsIdentifier parameterName, bool isParameterNumberType, ITsType returnType);
+        public override void Accept(TsVisitor visitor) => visitor.VisitIndexSignature(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIndexSignature(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsIndexSignature(ParameterName, IsParameterNumberType, ReturnType, leadingTrivia, trailingTrivia);
+    }
+
+    public static class IndexSignatureExtensions
+    {
+        public static ITsIndexSignature WithParameterName(this ITsIndexSignature node, ITsIdentifier value) =>
+            node.ParameterName == value ? node : new TsIndexSignature(value, node.IsParameterNumberType, node.ReturnType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsIndexSignature WithIsParameterNumberType(this ITsIndexSignature node, bool value) =>
+            node.IsParameterNumberType == value ? node : new TsIndexSignature(node.ParameterName, value, node.ReturnType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsIndexSignature WithReturnType(this ITsIndexSignature node, ITsType value) =>
+            node.ReturnType == value ? node : new TsIndexSignature(node.ParameterName, node.IsParameterNumberType, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// InterfaceDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an interface declaration.
+    /// </summary>
+    public interface ITsInterfaceDeclaration : ITsDeclaration
+    {
+        ITsIdentifier InterfaceName { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ImmutableArray<ITsTypeReference> ExtendsClause { get; }
+        ITsObjectType Body { get; }
+    }
+
+    /// <summary>
+    /// Represents an interface declaration.
+    /// </summary>
+    internal partial class TsInterfaceDeclaration : TsAstNode, ITsInterfaceDeclaration
+    {
+        public TsInterfaceDeclaration(
+            ITsIdentifier interfaceName,
+            ITsTypeParameters? typeParameters,
+            ImmutableArray<ITsTypeReference> extendsClause,
+            ITsObjectType body,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(interfaceName, typeParameters, extendsClause, body);
+            InterfaceName = interfaceName;
+            TypeParameters = typeParameters;
+            ExtendsClause = extendsClause;
+            Body = body;
+        }
+
+        public ITsIdentifier InterfaceName { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ImmutableArray<ITsTypeReference> ExtendsClause { get; }
+        public ITsObjectType Body { get; }
+
+        partial void VerifyInputs(ITsIdentifier interfaceName, ITsTypeParameters? typeParameters, ImmutableArray<ITsTypeReference> extendsClause, ITsObjectType body);
+        public override void Accept(TsVisitor visitor) => visitor.VisitInterfaceDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitInterfaceDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsInterfaceDeclaration(InterfaceName, TypeParameters, ExtendsClause, Body, leadingTrivia, trailingTrivia);
+    }
+
+    public static class InterfaceDeclarationExtensions
+    {
+        public static ITsInterfaceDeclaration WithInterfaceName(this ITsInterfaceDeclaration node, ITsIdentifier value) =>
+            node.InterfaceName == value ? node : new TsInterfaceDeclaration(value, node.TypeParameters, node.ExtendsClause, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsInterfaceDeclaration WithTypeParameters(this ITsInterfaceDeclaration node, ITsTypeParameters? value) =>
+            node.TypeParameters == value ? node : new TsInterfaceDeclaration(node.InterfaceName, value, node.ExtendsClause, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsInterfaceDeclaration WithExtendsClause(this ITsInterfaceDeclaration node, ImmutableArray<ITsTypeReference> value) =>
+            node.ExtendsClause == value ? node : new TsInterfaceDeclaration(node.InterfaceName, node.TypeParameters, value, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsInterfaceDeclaration WithBody(this ITsInterfaceDeclaration node, ITsObjectType value) =>
+            node.Body == value ? node : new TsInterfaceDeclaration(node.InterfaceName, node.TypeParameters, node.ExtendsClause, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// LexicalDeclaration
     //// ===============================================================================================================
 
@@ -74,6 +1156,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(bool isConst, ImmutableArray<ITsLexicalBinding> declarations);
         public override void Accept(TsVisitor visitor) => visitor.VisitLexicalDeclaration(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitLexicalDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsLexicalDeclaration(IsConst, Declarations, leadingTrivia, trailingTrivia);
     }
 
     public static class LexicalDeclarationExtensions
@@ -83,6 +1169,403 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsLexicalDeclaration WithDeclarations(this ITsLexicalDeclaration node, ImmutableArray<ITsLexicalBinding> value) =>
             node.Declarations == value ? node : new TsLexicalDeclaration(node.IsConst, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// MemberFunctionDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a member function declaration in a class.
+    /// </summary>
+    public interface ITsMemberFunctionDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsAbstract { get; }
+        ITsPropertyName FunctionName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a member function declaration in a class.
+    /// </summary>
+    internal partial class TsMemberFunctionDeclaration : TsAstNode, ITsMemberFunctionDeclaration
+    {
+        public TsMemberFunctionDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isAbstract,
+            ITsPropertyName functionName,
+            ITsCallSignature callSignature,
+            ImmutableArray<ITsStatementListItem>? functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isAbstract, functionName, callSignature, functionBody);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsAbstract = isAbstract;
+            FunctionName = functionName;
+            CallSignature = callSignature;
+            FunctionBody = functionBody;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsAbstract { get; }
+        public ITsPropertyName FunctionName { get; }
+        public ITsCallSignature CallSignature { get; }
+        public ImmutableArray<ITsStatementListItem>? FunctionBody { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isAbstract, ITsPropertyName functionName, ITsCallSignature callSignature, ImmutableArray<ITsStatementListItem>? functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberFunctionDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberFunctionDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsMemberFunctionDeclaration(AccessibilityModifier, IsStatic, IsAbstract, FunctionName, CallSignature, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class MemberFunctionDeclarationExtensions
+    {
+        public static ITsMemberFunctionDeclaration WithAccessibilityModifier(this ITsMemberFunctionDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsMemberFunctionDeclaration(value, node.IsStatic, node.IsAbstract, node.FunctionName, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberFunctionDeclaration WithIsStatic(this ITsMemberFunctionDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsMemberFunctionDeclaration(node.AccessibilityModifier, value, node.IsAbstract, node.FunctionName, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberFunctionDeclaration WithIsAbstract(this ITsMemberFunctionDeclaration node, bool value) =>
+            node.IsAbstract == value ? node : new TsMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.FunctionName, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberFunctionDeclaration WithFunctionName(this ITsMemberFunctionDeclaration node, ITsPropertyName value) =>
+            node.FunctionName == value ? node : new TsMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, value, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberFunctionDeclaration WithCallSignature(this ITsMemberFunctionDeclaration node, ITsCallSignature value) =>
+            node.CallSignature == value ? node : new TsMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, node.FunctionName, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberFunctionDeclaration WithFunctionBody(this ITsMemberFunctionDeclaration node, ImmutableArray<ITsStatementListItem>? value) =>
+            node.FunctionBody == value ? node : new TsMemberFunctionDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, node.FunctionName, node.CallSignature, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// MemberGetAccessorDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'get' member accessor declaration in a class.
+    /// </summary>
+    public interface ITsMemberGetAccessorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsAbstract { get; }
+        ITsGetAccessor GetAccessor { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'get' member accessor declaration in a class.
+    /// </summary>
+    internal partial class TsMemberGetAccessorDeclaration : TsAstNode, ITsMemberGetAccessorDeclaration
+    {
+        public TsMemberGetAccessorDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isAbstract,
+            ITsGetAccessor getAccessor,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isAbstract, getAccessor);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsAbstract = isAbstract;
+            GetAccessor = getAccessor;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsAbstract { get; }
+        public ITsGetAccessor GetAccessor { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isAbstract, ITsGetAccessor getAccessor);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberGetAccessorDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberGetAccessorDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsMemberGetAccessorDeclaration(AccessibilityModifier, IsStatic, IsAbstract, GetAccessor, leadingTrivia, trailingTrivia);
+    }
+
+    public static class MemberGetAccessorDeclarationExtensions
+    {
+        public static ITsMemberGetAccessorDeclaration WithAccessibilityModifier(this ITsMemberGetAccessorDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsMemberGetAccessorDeclaration(value, node.IsStatic, node.IsAbstract, node.GetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberGetAccessorDeclaration WithIsStatic(this ITsMemberGetAccessorDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsMemberGetAccessorDeclaration(node.AccessibilityModifier, value, node.IsAbstract, node.GetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberGetAccessorDeclaration WithIsAbstract(this ITsMemberGetAccessorDeclaration node, bool value) =>
+            node.IsAbstract == value ? node : new TsMemberGetAccessorDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.GetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberGetAccessorDeclaration WithGetAccessor(this ITsMemberGetAccessorDeclaration node, ITsGetAccessor value) =>
+            node.GetAccessor == value ? node : new TsMemberGetAccessorDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// MemberSetAccessorDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a 'set' member accessor declaration in a class.
+    /// </summary>
+    public interface ITsMemberSetAccessorDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsAbstract { get; }
+        ITsSetAccessor SetAccessor { get; }
+    }
+
+    /// <summary>
+    /// Represents a 'set' member accessor declaration in a class.
+    /// </summary>
+    internal partial class TsMemberSetAccessorDeclaration : TsAstNode, ITsMemberSetAccessorDeclaration
+    {
+        public TsMemberSetAccessorDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isAbstract,
+            ITsSetAccessor setAccessor,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isAbstract, setAccessor);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsAbstract = isAbstract;
+            SetAccessor = setAccessor;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsAbstract { get; }
+        public ITsSetAccessor SetAccessor { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isAbstract, ITsSetAccessor setAccessor);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberSetAccessorDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberSetAccessorDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsMemberSetAccessorDeclaration(AccessibilityModifier, IsStatic, IsAbstract, SetAccessor, leadingTrivia, trailingTrivia);
+    }
+
+    public static class MemberSetAccessorDeclarationExtensions
+    {
+        public static ITsMemberSetAccessorDeclaration WithAccessibilityModifier(this ITsMemberSetAccessorDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsMemberSetAccessorDeclaration(value, node.IsStatic, node.IsAbstract, node.SetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberSetAccessorDeclaration WithIsStatic(this ITsMemberSetAccessorDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsMemberSetAccessorDeclaration(node.AccessibilityModifier, value, node.IsAbstract, node.SetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberSetAccessorDeclaration WithIsAbstract(this ITsMemberSetAccessorDeclaration node, bool value) =>
+            node.IsAbstract == value ? node : new TsMemberSetAccessorDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.SetAccessor, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberSetAccessorDeclaration WithSetAccessor(this ITsMemberSetAccessorDeclaration node, ITsSetAccessor value) =>
+            node.SetAccessor == value ? node : new TsMemberSetAccessorDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsAbstract, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// MemberVariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a member variable declaration in a class.
+    /// </summary>
+    public interface ITsMemberVariableDeclaration : ITsClassElement
+    {
+        TsAccessibilityModifier? AccessibilityModifier { get; }
+        bool IsStatic { get; }
+        bool IsReadOnly { get; }
+        ITsPropertyName VariableName { get; }
+        ITsType? TypeAnnotation { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a member variable declaration in a class.
+    /// </summary>
+    internal partial class TsMemberVariableDeclaration : TsAstNode, ITsMemberVariableDeclaration
+    {
+        public TsMemberVariableDeclaration(
+            TsAccessibilityModifier? accessibilityModifier,
+            bool isStatic,
+            bool isReadOnly,
+            ITsPropertyName variableName,
+            ITsType? typeAnnotation,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(accessibilityModifier, isStatic, isReadOnly, variableName, typeAnnotation, initializer);
+            AccessibilityModifier = accessibilityModifier;
+            IsStatic = isStatic;
+            IsReadOnly = isReadOnly;
+            VariableName = variableName;
+            TypeAnnotation = typeAnnotation;
+            Initializer = initializer;
+        }
+
+        public TsAccessibilityModifier? AccessibilityModifier { get; }
+        public bool IsStatic { get; }
+        public bool IsReadOnly { get; }
+        public ITsPropertyName VariableName { get; }
+        public ITsType? TypeAnnotation { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? accessibilityModifier, bool isStatic, bool isReadOnly, ITsPropertyName variableName, ITsType? typeAnnotation, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitMemberVariableDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberVariableDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsMemberVariableDeclaration(AccessibilityModifier, IsStatic, IsReadOnly, VariableName, TypeAnnotation, Initializer, leadingTrivia, trailingTrivia);
+    }
+
+    public static class MemberVariableDeclarationExtensions
+    {
+        public static ITsMemberVariableDeclaration WithAccessibilityModifier(this ITsMemberVariableDeclaration node, TsAccessibilityModifier? value) =>
+            node.AccessibilityModifier == value ? node : new TsMemberVariableDeclaration(value, node.IsStatic, node.IsReadOnly, node.VariableName, node.TypeAnnotation, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberVariableDeclaration WithIsStatic(this ITsMemberVariableDeclaration node, bool value) =>
+            node.IsStatic == value ? node : new TsMemberVariableDeclaration(node.AccessibilityModifier, value, node.IsReadOnly, node.VariableName, node.TypeAnnotation, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberVariableDeclaration WithIsReadOnly(this ITsMemberVariableDeclaration node, bool value) =>
+            node.IsReadOnly == value ? node : new TsMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, value, node.VariableName, node.TypeAnnotation, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberVariableDeclaration WithVariableName(this ITsMemberVariableDeclaration node, ITsPropertyName value) =>
+            node.VariableName == value ? node : new TsMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsReadOnly, value, node.TypeAnnotation, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberVariableDeclaration WithTypeAnnotation(this ITsMemberVariableDeclaration node, ITsType? value) =>
+            node.TypeAnnotation == value ? node : new TsMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsReadOnly, node.VariableName, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsMemberVariableDeclaration WithInitializer(this ITsMemberVariableDeclaration node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsMemberVariableDeclaration(node.AccessibilityModifier, node.IsStatic, node.IsReadOnly, node.VariableName, node.TypeAnnotation, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// NamespaceDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a namespace declaration.
+    /// </summary>
+    public interface ITsNamespaceDeclaration : ITsDeclaration
+    {
+        ITsQualifiedName NamespaceName { get; }
+        ImmutableArray<ITsNamespaceElement> Body { get; }
+    }
+
+    /// <summary>
+    /// Represents a namespace declaration.
+    /// </summary>
+    internal partial class TsNamespaceDeclaration : TsAstNode, ITsNamespaceDeclaration
+    {
+        public TsNamespaceDeclaration(
+            ITsQualifiedName namespaceName,
+            ImmutableArray<ITsNamespaceElement> body,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(namespaceName, body);
+            NamespaceName = namespaceName;
+            Body = body;
+        }
+
+        public ITsQualifiedName NamespaceName { get; }
+        public ImmutableArray<ITsNamespaceElement> Body { get; }
+
+        partial void VerifyInputs(ITsQualifiedName namespaceName, ImmutableArray<ITsNamespaceElement> body);
+        public override void Accept(TsVisitor visitor) => visitor.VisitNamespaceDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNamespaceDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsNamespaceDeclaration(NamespaceName, Body, leadingTrivia, trailingTrivia);
+    }
+
+    public static class NamespaceDeclarationExtensions
+    {
+        public static ITsNamespaceDeclaration WithNamespaceName(this ITsNamespaceDeclaration node, ITsQualifiedName value) =>
+            node.NamespaceName == value ? node : new TsNamespaceDeclaration(value, node.Body, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsNamespaceDeclaration WithBody(this ITsNamespaceDeclaration node, ImmutableArray<ITsNamespaceElement> value) =>
+            node.Body == value ? node : new TsNamespaceDeclaration(node.NamespaceName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// SimpleVariableDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a simple variable declaration of the form 'x: type = y'.
+    /// </summary>
+    public interface ITsSimpleVariableDeclaration : ITsVariableDeclaration
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a simple variable declaration of the form 'x: type = y'.
+    /// </summary>
+    internal partial class TsSimpleVariableDeclaration : TsAstNode, ITsSimpleVariableDeclaration
+    {
+        public TsSimpleVariableDeclaration(
+            ITsIdentifier variableName,
+            ITsType? variableType,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(variableName, variableType, initializer);
+            VariableName = variableName;
+            VariableType = variableType;
+            Initializer = initializer;
+        }
+
+        public ITsIdentifier VariableName { get; }
+        public ITsType? VariableType { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(ITsIdentifier variableName, ITsType? variableType, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleVariableDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSimpleVariableDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsSimpleVariableDeclaration(VariableName, VariableType, Initializer, leadingTrivia, trailingTrivia);
+    }
+
+    public static class SimpleVariableDeclarationExtensions
+    {
+        public static ITsSimpleVariableDeclaration WithVariableName(this ITsSimpleVariableDeclaration node, ITsIdentifier value) =>
+            node.VariableName == value ? node : new TsSimpleVariableDeclaration(value, node.VariableType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSimpleVariableDeclaration WithVariableType(this ITsSimpleVariableDeclaration node, ITsType? value) =>
+            node.VariableType == value ? node : new TsSimpleVariableDeclaration(node.VariableName, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSimpleVariableDeclaration WithInitializer(this ITsSimpleVariableDeclaration node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsSimpleVariableDeclaration(node.VariableName, node.VariableType, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -125,6 +1608,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier aliasName, ITsTypeParameters? typeParameters, ITsType type);
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeAliasDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsTypeAliasDeclaration(AliasName, TypeParameters, Type, leadingTrivia, trailingTrivia);
     }
 
     public static class TypeAliasDeclarationExtensions

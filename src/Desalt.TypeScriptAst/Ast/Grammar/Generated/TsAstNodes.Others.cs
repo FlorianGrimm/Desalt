@@ -29,6 +29,166 @@ namespace Desalt.TypeScriptAst.Ast
     using Desalt.TypeScriptAst.Emit;
 
     //// ===============================================================================================================
+    //// AmbientBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient variable binding of the form 'name: type'.
+    /// </summary>
+    public interface ITsAmbientBinding : ITsAstNode
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType? VariableType { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient variable binding of the form 'name: type'.
+    /// </summary>
+    internal partial class TsAmbientBinding : TsAstNode, ITsAmbientBinding
+    {
+        public TsAmbientBinding(
+            ITsIdentifier variableName,
+            ITsType? variableType,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(variableName, variableType);
+            VariableName = variableName;
+            VariableType = variableType;
+        }
+
+        public ITsIdentifier VariableName { get; }
+        public ITsType? VariableType { get; }
+
+        partial void VerifyInputs(ITsIdentifier variableName, ITsType? variableType);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientBinding(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientBinding(VariableName, VariableType, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientBindingExtensions
+    {
+        public static ITsAmbientBinding WithVariableName(this ITsAmbientBinding node, ITsIdentifier value) =>
+            node.VariableName == value ? node : new TsAmbientBinding(value, node.VariableType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientBinding WithVariableType(this ITsAmbientBinding node, ITsType? value) =>
+            node.VariableType == value ? node : new TsAmbientBinding(node.VariableName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an ambient declaration of the form 'declare element'.
+    /// </summary>
+    public interface ITsAmbientDeclaration : ITsImplementationElement
+    {
+        ITsAmbientDeclarationElement Declaration { get; }
+    }
+
+    /// <summary>
+    /// Represents an ambient declaration of the form 'declare element'.
+    /// </summary>
+    internal partial class TsAmbientDeclaration : TsAstNode, ITsAmbientDeclaration
+    {
+        public TsAmbientDeclaration(
+            ITsAmbientDeclarationElement declaration,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(declaration);
+            Declaration = declaration;
+        }
+
+        public ITsAmbientDeclarationElement Declaration { get; }
+
+        partial void VerifyInputs(ITsAmbientDeclarationElement declaration);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientDeclaration(Declaration, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientDeclarationExtensions
+    {
+        public static ITsAmbientDeclaration WithDeclaration(this ITsAmbientDeclaration node, ITsAmbientDeclarationElement value) =>
+            node.Declaration == value ? node : new TsAmbientDeclaration(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// AmbientNamespaceElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an element in an ambient namespace declaration.
+    /// </summary>
+    public interface ITsAmbientNamespaceElement : ITsAstNode
+    {
+        bool HasExportKeyword { get; }
+        ITsAmbientDeclarationElement? Declaration { get; }
+        ITsInterfaceDeclaration? InterfaceDeclaration { get; }
+        ITsImportAliasDeclaration? ImportAliasDeclaration { get; }
+    }
+
+    /// <summary>
+    /// Represents an element in an ambient namespace declaration.
+    /// </summary>
+    internal partial class TsAmbientNamespaceElement : TsAstNode, ITsAmbientNamespaceElement
+    {
+        public TsAmbientNamespaceElement(
+            bool hasExportKeyword,
+            ITsAmbientDeclarationElement? declaration,
+            ITsInterfaceDeclaration? interfaceDeclaration,
+            ITsImportAliasDeclaration? importAliasDeclaration,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(hasExportKeyword, declaration, interfaceDeclaration, importAliasDeclaration);
+            HasExportKeyword = hasExportKeyword;
+            Declaration = declaration;
+            InterfaceDeclaration = interfaceDeclaration;
+            ImportAliasDeclaration = importAliasDeclaration;
+        }
+
+        public bool HasExportKeyword { get; }
+        public ITsAmbientDeclarationElement? Declaration { get; }
+        public ITsInterfaceDeclaration? InterfaceDeclaration { get; }
+        public ITsImportAliasDeclaration? ImportAliasDeclaration { get; }
+
+        partial void VerifyInputs(bool hasExportKeyword, ITsAmbientDeclarationElement? declaration, ITsInterfaceDeclaration? interfaceDeclaration, ITsImportAliasDeclaration? importAliasDeclaration);
+        public override void Accept(TsVisitor visitor) => visitor.VisitAmbientNamespaceElement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAmbientNamespaceElement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsAmbientNamespaceElement(HasExportKeyword, Declaration, InterfaceDeclaration, ImportAliasDeclaration, leadingTrivia, trailingTrivia);
+    }
+
+    public static class AmbientNamespaceElementExtensions
+    {
+        public static ITsAmbientNamespaceElement WithHasExportKeyword(this ITsAmbientNamespaceElement node, bool value) =>
+            node.HasExportKeyword == value ? node : new TsAmbientNamespaceElement(value, node.Declaration, node.InterfaceDeclaration, node.ImportAliasDeclaration, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientNamespaceElement WithDeclaration(this ITsAmbientNamespaceElement node, ITsAmbientDeclarationElement? value) =>
+            node.Declaration == value ? node : new TsAmbientNamespaceElement(node.HasExportKeyword, value, node.InterfaceDeclaration, node.ImportAliasDeclaration, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientNamespaceElement WithInterfaceDeclaration(this ITsAmbientNamespaceElement node, ITsInterfaceDeclaration? value) =>
+            node.InterfaceDeclaration == value ? node : new TsAmbientNamespaceElement(node.HasExportKeyword, node.Declaration, value, node.ImportAliasDeclaration, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsAmbientNamespaceElement WithImportAliasDeclaration(this ITsAmbientNamespaceElement node, ITsImportAliasDeclaration? value) =>
+            node.ImportAliasDeclaration == value ? node : new TsAmbientNamespaceElement(node.HasExportKeyword, node.Declaration, node.InterfaceDeclaration, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// Argument
     //// ===============================================================================================================
 
@@ -70,6 +230,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression, bool isSpreadArgument);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgument(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgument(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsArgument(Expression, IsSpreadArgument, leadingTrivia, trailingTrivia);
     }
 
     public static class ArgumentExtensions
@@ -117,6 +281,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsType> typeArguments, ImmutableArray<ITsArgument> arguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgumentList(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgumentList(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsArgumentList(TypeArguments, Arguments, leadingTrivia, trailingTrivia);
     }
 
     public static class ArgumentListExtensions
@@ -164,6 +332,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsBindingElement?> elements, ITsIdentifier? restElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayBindingPattern(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayBindingPattern(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsArrayBindingPattern(Elements, RestElement, leadingTrivia, trailingTrivia);
     }
 
     public static class ArrayBindingPatternExtensions
@@ -217,6 +389,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression, bool isSpreadElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayElement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsArrayElement(Expression, IsSpreadElement, leadingTrivia, trailingTrivia);
     }
 
     public static class ArrayElementExtensions
@@ -316,6 +492,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(TsAccessibilityModifier? modifier, ITsBindingIdentifierOrPattern parameterName, ITsType? parameterType, ITsExpression? initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBoundOptionalParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsBoundOptionalParameter(Modifier, ParameterName, ParameterType, Initializer, leadingTrivia, trailingTrivia);
     }
 
     public static class BoundOptionalParameterExtensions
@@ -380,6 +560,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(TsAccessibilityModifier? modifier, ITsBindingIdentifierOrPattern parameterName, ITsType? parameterType);
         public override void Accept(TsVisitor visitor) => visitor.VisitBoundRequiredParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBoundRequiredParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsBoundRequiredParameter(Modifier, ParameterName, ParameterType, leadingTrivia, trailingTrivia);
     }
 
     public static class BoundRequiredParameterExtensions
@@ -429,6 +613,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression, ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitCaseClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCaseClause(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsCaseClause(Expression, Statements, leadingTrivia, trailingTrivia);
     }
 
     public static class CaseClauseExtensions
@@ -450,6 +638,57 @@ namespace Desalt.TypeScriptAst.Ast
     public interface ITsCaseOrDefaultClause : ITsAstNode
     {
         ImmutableArray<ITsStatementListItem> Statements { get; }
+    }
+
+    //// ===============================================================================================================
+    //// ClassHeritage
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a class heritage of the form ' extends type implements type, type'.
+    /// </summary>
+    public interface ITsClassHeritage : ITsAstNode
+    {
+        ITsTypeReference? ExtendsClause { get; }
+        ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+    }
+
+    /// <summary>
+    /// Represents a class heritage of the form ' extends type implements type, type'.
+    /// </summary>
+    internal partial class TsClassHeritage : TsAstNode, ITsClassHeritage
+    {
+        public TsClassHeritage(
+            ITsTypeReference? extendsClause,
+            ImmutableArray<ITsTypeReference> implementsClause,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(extendsClause, implementsClause);
+            ExtendsClause = extendsClause;
+            ImplementsClause = implementsClause;
+        }
+
+        public ITsTypeReference? ExtendsClause { get; }
+        public ImmutableArray<ITsTypeReference> ImplementsClause { get; }
+
+        partial void VerifyInputs(ITsTypeReference? extendsClause, ImmutableArray<ITsTypeReference> implementsClause);
+        public override void Accept(TsVisitor visitor) => visitor.VisitClassHeritage(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitClassHeritage(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsClassHeritage(ExtendsClause, ImplementsClause, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ClassHeritageExtensions
+    {
+        public static ITsClassHeritage WithExtendsClause(this ITsClassHeritage node, ITsTypeReference? value) =>
+            node.ExtendsClause == value ? node : new TsClassHeritage(value, node.ImplementsClause, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsClassHeritage WithImplementsClause(this ITsClassHeritage node, ImmutableArray<ITsTypeReference> value) =>
+            node.ImplementsClause == value ? node : new TsClassHeritage(node.ExtendsClause, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -484,6 +723,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitComputedPropertyName(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitComputedPropertyName(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsComputedPropertyName(Expression, leadingTrivia, trailingTrivia);
     }
 
     public static class ComputedPropertyNameExtensions
@@ -528,6 +771,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier identifier, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitCoverInitializedName(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCoverInitializedName(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsCoverInitializedName(Identifier, Initializer, leadingTrivia, trailingTrivia);
     }
 
     public static class CoverInitializedNameExtensions
@@ -570,12 +817,169 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitDefaultClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDefaultClause(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsDefaultClause(Statements, leadingTrivia, trailingTrivia);
     }
 
     public static class DefaultClauseExtensions
     {
         public static ITsDefaultClause WithStatements(this ITsDefaultClause node, ImmutableArray<ITsStatementListItem> value) =>
             node.Statements == value ? node : new TsDefaultClause(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// DestructuringLexicalBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
+    /// </summary>
+    public interface ITsDestructuringLexicalBinding : ITsLexicalBinding
+    {
+        ITsBindingPattern BindingPattern { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.
+    /// </summary>
+    internal partial class TsDestructuringLexicalBinding : TsAstNode, ITsDestructuringLexicalBinding
+    {
+        public TsDestructuringLexicalBinding(
+            ITsBindingPattern bindingPattern,
+            ITsType? variableType,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(bindingPattern, variableType, initializer);
+            BindingPattern = bindingPattern;
+            VariableType = variableType;
+            Initializer = initializer;
+        }
+
+        public ITsBindingPattern BindingPattern { get; }
+        public ITsType? VariableType { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsType? variableType, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitDestructuringLexicalBinding(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDestructuringLexicalBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsDestructuringLexicalBinding(BindingPattern, VariableType, Initializer, leadingTrivia, trailingTrivia);
+    }
+
+    public static class DestructuringLexicalBindingExtensions
+    {
+        public static ITsDestructuringLexicalBinding WithBindingPattern(this ITsDestructuringLexicalBinding node, ITsBindingPattern value) =>
+            node.BindingPattern == value ? node : new TsDestructuringLexicalBinding(value, node.VariableType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsDestructuringLexicalBinding WithVariableType(this ITsDestructuringLexicalBinding node, ITsType? value) =>
+            node.VariableType == value ? node : new TsDestructuringLexicalBinding(node.BindingPattern, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsDestructuringLexicalBinding WithInitializer(this ITsDestructuringLexicalBinding node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsDestructuringLexicalBinding(node.BindingPattern, node.VariableType, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// EnumMember
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an enum member of the form, 'name = value'.
+    /// </summary>
+    public interface ITsEnumMember : ITsAstNode
+    {
+        ITsPropertyName Name { get; }
+        ITsExpression? Value { get; }
+    }
+
+    /// <summary>
+    /// Represents an enum member of the form, 'name = value'.
+    /// </summary>
+    internal partial class TsEnumMember : TsAstNode, ITsEnumMember
+    {
+        public TsEnumMember(
+            ITsPropertyName name,
+            ITsExpression? value,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(name, value);
+            Name = name;
+            Value = value;
+        }
+
+        public ITsPropertyName Name { get; }
+        public ITsExpression? Value { get; }
+
+        partial void VerifyInputs(ITsPropertyName name, ITsExpression? value);
+        public override void Accept(TsVisitor visitor) => visitor.VisitEnumMember(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitEnumMember(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsEnumMember(Name, Value, leadingTrivia, trailingTrivia);
+    }
+
+    public static class EnumMemberExtensions
+    {
+        public static ITsEnumMember WithName(this ITsEnumMember node, ITsPropertyName value) =>
+            node.Name == value ? node : new TsEnumMember(value, node.Value, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsEnumMember WithValue(this ITsEnumMember node, ITsExpression? value) =>
+            node.Value == value ? node : new TsEnumMember(node.Name, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ExportImplementationElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an exported element in a module file.
+    /// </summary>
+    public interface ITsExportImplementationElement : ITsImplementationModuleElement
+    {
+        ITsImplementationElement ExportedElement { get; }
+    }
+
+    /// <summary>
+    /// Represents an exported element in a module file.
+    /// </summary>
+    internal partial class TsExportImplementationElement : TsAstNode, ITsExportImplementationElement
+    {
+        public TsExportImplementationElement(
+            ITsImplementationElement exportedElement,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(exportedElement);
+            ExportedElement = exportedElement;
+        }
+
+        public ITsImplementationElement ExportedElement { get; }
+
+        partial void VerifyInputs(ITsImplementationElement exportedElement);
+        public override void Accept(TsVisitor visitor) => visitor.VisitExportImplementationElement(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitExportImplementationElement(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsExportImplementationElement(ExportedElement, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ExportImplementationElementExtensions
+    {
+        public static ITsExportImplementationElement WithExportedElement(this ITsExportImplementationElement node, ITsImplementationElement value) =>
+            node.ExportedElement == value ? node : new TsExportImplementationElement(value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -610,6 +1014,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsStringLiteral module);
         public override void Accept(TsVisitor visitor) => visitor.VisitFromClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitFromClause(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsFromClause(Module, leadingTrivia, trailingTrivia);
     }
 
     public static class FromClauseExtensions
@@ -656,6 +1064,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsIdentifier> left, ITsIdentifier right, ImmutableArray<ITsType> typeArguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitGenericTypeName(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitGenericTypeName(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsGenericTypeName(Left, Right, TypeArguments, leadingTrivia, trailingTrivia);
     }
 
     public static class GenericTypeNameExtensions
@@ -668,6 +1080,64 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsGenericTypeName WithTypeArguments(this ITsGenericTypeName node, ImmutableArray<ITsType> value) =>
             node.TypeArguments == value ? node : new TsGenericTypeName(node.Left, node.Right, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// GetAccessor
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// </summary>
+    public interface ITsGetAccessor : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsType? PropertyType { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a property get accessor of the form 'get name (): type { body }'.
+    /// </summary>
+    internal partial class TsGetAccessor : TsAstNode, ITsGetAccessor
+    {
+        public TsGetAccessor(
+            ITsPropertyName propertyName,
+            ITsType? propertyType,
+            ImmutableArray<ITsStatementListItem> functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(propertyName, propertyType, functionBody);
+            PropertyName = propertyName;
+            PropertyType = propertyType;
+            FunctionBody = functionBody;
+        }
+
+        public ITsPropertyName PropertyName { get; }
+        public ITsType? PropertyType { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+
+        partial void VerifyInputs(ITsPropertyName propertyName, ITsType? propertyType, ImmutableArray<ITsStatementListItem> functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitGetAccessor(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitGetAccessor(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsGetAccessor(PropertyName, PropertyType, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class GetAccessorExtensions
+    {
+        public static ITsGetAccessor WithPropertyName(this ITsGetAccessor node, ITsPropertyName value) =>
+            node.PropertyName == value ? node : new TsGetAccessor(value, node.PropertyType, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsGetAccessor WithPropertyType(this ITsGetAccessor node, ITsType? value) =>
+            node.PropertyType == value ? node : new TsGetAccessor(node.PropertyName, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsGetAccessor WithFunctionBody(this ITsGetAccessor node, ImmutableArray<ITsStatementListItem> value) =>
+            node.FunctionBody == value ? node : new TsGetAccessor(node.PropertyName, node.PropertyType, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -702,12 +1172,148 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(string text);
         public override void Accept(TsVisitor visitor) => visitor.VisitIdentifier(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIdentifier(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsIdentifier(Text, leadingTrivia, trailingTrivia);
     }
 
     public static class IdentifierExtensions
     {
         public static ITsIdentifier WithText(this ITsIdentifier node, string value) =>
             node.Text == value ? node : new TsIdentifier(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationScript" /> or <see cref="ITsImplementationModule" />.
+    /// </summary>
+    public interface ITsImplementationElement : ITsImplementationScriptElement, ITsImplementationModuleElement
+    {
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationModule
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a TypeScript implementation source file (extension '.ts'), containing exported statements and declarations.
+    /// </summary>
+    public interface ITsImplementationModule : ITsImplementationSourceFile
+    {
+        ImmutableArray<ITsImplementationModuleElement> Elements { get; }
+    }
+
+    /// <summary>
+    /// Represents a TypeScript implementation source file (extension '.ts'), containing exported statements and declarations.
+    /// </summary>
+    internal partial class TsImplementationModule : TsAstNode, ITsImplementationModule
+    {
+        public TsImplementationModule(
+            ImmutableArray<ITsImplementationModuleElement> elements,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(elements);
+            Elements = elements;
+        }
+
+        public ImmutableArray<ITsImplementationModuleElement> Elements { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsImplementationModuleElement> elements);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationModule(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImplementationModule(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImplementationModule(Elements, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ImplementationModuleExtensions
+    {
+        public static ITsImplementationModule WithElements(this ITsImplementationModule node, ImmutableArray<ITsImplementationModuleElement> value) =>
+            node.Elements == value ? node : new TsImplementationModule(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationModuleElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationModule" />.
+    /// </summary>
+    public interface ITsImplementationModuleElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationScript
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// </summary>
+    public interface ITsImplementationScript : ITsImplementationSourceFile
+    {
+        ImmutableArray<ITsImplementationScriptElement> Elements { get; }
+    }
+
+    /// <summary>
+    /// Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.
+    /// </summary>
+    internal partial class TsImplementationScript : TsAstNode, ITsImplementationScript
+    {
+        public TsImplementationScript(
+            ImmutableArray<ITsImplementationScriptElement> elements,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(elements);
+            Elements = elements;
+        }
+
+        public ImmutableArray<ITsImplementationScriptElement> Elements { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsImplementationScriptElement> elements);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImplementationScript(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImplementationScript(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImplementationScript(Elements, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ImplementationScriptExtensions
+    {
+        public static ITsImplementationScript WithElements(this ITsImplementationScript node, ImmutableArray<ITsImplementationScriptElement> value) =>
+            node.Elements == value ? node : new TsImplementationScript(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationScriptElement
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationScript" />.
+    /// </summary>
+    public interface ITsImplementationScriptElement : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// ImplementationSourceFile
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a TypeScript source file that contains implementation code (vs. just declarations).
+    /// </summary>
+    public interface ITsImplementationSourceFile : ITsAstNode
+    {
     }
 
     //// ===============================================================================================================
@@ -750,6 +1356,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? defaultBinding, ITsIdentifier? namespaceBinding, ImmutableArray<ITsImportSpecifier> namedImports);
         public override void Accept(TsVisitor visitor) => visitor.VisitImportClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportClause(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImportClause(DefaultBinding, NamespaceBinding, NamedImports, leadingTrivia, trailingTrivia);
     }
 
     public static class ImportClauseExtensions
@@ -804,6 +1414,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsImportClause? importClause, ITsFromClause? fromClause, ITsStringLiteral? module);
         public override void Accept(TsVisitor visitor) => visitor.VisitImportDeclaration(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImportDeclaration(ImportClause, FromClause, Module, leadingTrivia, trailingTrivia);
     }
 
     public static class ImportDeclarationExtensions
@@ -816,6 +1430,57 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsImportDeclaration WithModule(this ITsImportDeclaration node, ITsStringLiteral? value) =>
             node.Module == value ? node : new TsImportDeclaration(node.ImportClause, node.FromClause, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// ImportRequireDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
+    /// </summary>
+    public interface ITsImportRequireDeclaration : ITsImplementationModuleElement
+    {
+        ITsIdentifier Name { get; }
+        ITsStringLiteral Require { get; }
+    }
+
+    /// <summary>
+    /// Represents an import declaration using 'require', of the form 'import name = require(string);'.
+    /// </summary>
+    internal partial class TsImportRequireDeclaration : TsAstNode, ITsImportRequireDeclaration
+    {
+        public TsImportRequireDeclaration(
+            ITsIdentifier name,
+            ITsStringLiteral require,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(name, require);
+            Name = name;
+            Require = require;
+        }
+
+        public ITsIdentifier Name { get; }
+        public ITsStringLiteral Require { get; }
+
+        partial void VerifyInputs(ITsIdentifier name, ITsStringLiteral require);
+        public override void Accept(TsVisitor visitor) => visitor.VisitImportRequireDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportRequireDeclaration(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImportRequireDeclaration(Name, Require, leadingTrivia, trailingTrivia);
+    }
+
+    public static class ImportRequireDeclarationExtensions
+    {
+        public static ITsImportRequireDeclaration WithName(this ITsImportRequireDeclaration node, ITsIdentifier value) =>
+            node.Name == value ? node : new TsImportRequireDeclaration(value, node.Require, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsImportRequireDeclaration WithRequire(this ITsImportRequireDeclaration node, ITsStringLiteral value) =>
+            node.Require == value ? node : new TsImportRequireDeclaration(node.Name, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -854,6 +1519,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier name, ITsIdentifier? asName);
         public override void Accept(TsVisitor visitor) => visitor.VisitImportSpecifier(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportSpecifier(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsImportSpecifier(Name, AsName, leadingTrivia, trailingTrivia);
     }
 
     public static class ImportSpecifierExtensions
@@ -863,6 +1532,17 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsImportSpecifier WithAsName(this ITsImportSpecifier node, ITsIdentifier? value) =>
             node.AsName == value ? node : new TsImportSpecifier(node.Name, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// LexicalBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for all lexical bindings.
+    /// </summary>
+    public interface ITsLexicalBinding : ITsAstNode
+    {
     }
 
     //// ===============================================================================================================
@@ -908,6 +1588,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsBindingProperty> properties);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectBindingPattern(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectBindingPattern(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsObjectBindingPattern(Properties, leadingTrivia, trailingTrivia);
     }
 
     public static class ObjectBindingPatternExtensions
@@ -967,6 +1651,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsRequiredParameter> requiredParameters, ImmutableArray<ITsOptionalParameter> optionalParameters, ITsRestParameter? restParameter);
         public override void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParameterList(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsParameterList(RequiredParameters, OptionalParameters, RestParameter, leadingTrivia, trailingTrivia);
     }
 
     public static class ParameterListExtensions
@@ -1017,6 +1705,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsBindingPattern bindingPattern, ITsExpression? initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPatternBinding(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPatternBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsPatternBinding(BindingPattern, Initializer, leadingTrivia, trailingTrivia);
     }
 
     public static class PatternBindingExtensions
@@ -1064,6 +1756,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsPropertyName propertyName, ITsExpression initializer);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyAssignment(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyAssignment(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsPropertyAssignment(PropertyName, Initializer, leadingTrivia, trailingTrivia);
     }
 
     public static class PropertyAssignmentExtensions
@@ -1073,6 +1769,64 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsPropertyAssignment WithInitializer(this ITsPropertyAssignment node, ITsExpression value) =>
             node.Initializer == value ? node : new TsPropertyAssignment(node.PropertyName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// PropertyFunction
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an object literal property function.
+    /// </summary>
+    public interface ITsPropertyFunction : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsCallSignature CallSignature { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents an object literal property function.
+    /// </summary>
+    internal partial class TsPropertyFunction : TsAstNode, ITsPropertyFunction
+    {
+        public TsPropertyFunction(
+            ITsPropertyName propertyName,
+            ITsCallSignature callSignature,
+            ImmutableArray<ITsStatementListItem> functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(propertyName, callSignature, functionBody);
+            PropertyName = propertyName;
+            CallSignature = callSignature;
+            FunctionBody = functionBody;
+        }
+
+        public ITsPropertyName PropertyName { get; }
+        public ITsCallSignature CallSignature { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+
+        partial void VerifyInputs(ITsPropertyName propertyName, ITsCallSignature callSignature, ImmutableArray<ITsStatementListItem> functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitPropertyFunction(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyFunction(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsPropertyFunction(PropertyName, CallSignature, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class PropertyFunctionExtensions
+    {
+        public static ITsPropertyFunction WithPropertyName(this ITsPropertyFunction node, ITsPropertyName value) =>
+            node.PropertyName == value ? node : new TsPropertyFunction(value, node.CallSignature, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsPropertyFunction WithCallSignature(this ITsPropertyFunction node, ITsCallSignature value) =>
+            node.CallSignature == value ? node : new TsPropertyFunction(node.PropertyName, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsPropertyFunction WithFunctionBody(this ITsPropertyFunction node, ImmutableArray<ITsStatementListItem> value) =>
+            node.FunctionBody == value ? node : new TsPropertyFunction(node.PropertyName, node.CallSignature, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -1122,6 +1876,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsPropertyName propertyName, ITsBindingElement bindingElement);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertyNameBinding(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertyNameBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsPropertyNameBinding(PropertyName, BindingElement, leadingTrivia, trailingTrivia);
     }
 
     public static class PropertyNameBindingExtensions
@@ -1169,6 +1927,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsIdentifier> left, ITsIdentifier right);
         public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitQualifiedName(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsQualifiedName(Left, Right, leadingTrivia, trailingTrivia);
     }
 
     public static class QualifiedNameExtensions
@@ -1227,6 +1989,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier parameterName, ITsType? parameterType);
         public override void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRestParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsRestParameter(ParameterName, ParameterType, leadingTrivia, trailingTrivia);
     }
 
     public static class RestParameterExtensions
@@ -1236,6 +2002,129 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsRestParameter WithParameterType(this ITsRestParameter node, ITsType? value) =>
             node.ParameterType == value ? node : new TsRestParameter(node.ParameterName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// SetAccessor
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a property set accessor of the form 'set name(value: type) { body }'.
+    /// </summary>
+    public interface ITsSetAccessor : ITsPropertyDefinition
+    {
+        ITsPropertyName PropertyName { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType? ParameterType { get; }
+        ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+    }
+
+    /// <summary>
+    /// Represents a property set accessor of the form 'set name(value: type) { body }'.
+    /// </summary>
+    internal partial class TsSetAccessor : TsAstNode, ITsSetAccessor
+    {
+        public TsSetAccessor(
+            ITsPropertyName propertyName,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType? parameterType,
+            ImmutableArray<ITsStatementListItem> functionBody,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(propertyName, parameterName, parameterType, functionBody);
+            PropertyName = propertyName;
+            ParameterName = parameterName;
+            ParameterType = parameterType;
+            FunctionBody = functionBody;
+        }
+
+        public ITsPropertyName PropertyName { get; }
+        public ITsBindingIdentifierOrPattern ParameterName { get; }
+        public ITsType? ParameterType { get; }
+        public ImmutableArray<ITsStatementListItem> FunctionBody { get; }
+
+        partial void VerifyInputs(ITsPropertyName propertyName, ITsBindingIdentifierOrPattern parameterName, ITsType? parameterType, ImmutableArray<ITsStatementListItem> functionBody);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSetAccessor(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSetAccessor(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsSetAccessor(PropertyName, ParameterName, ParameterType, FunctionBody, leadingTrivia, trailingTrivia);
+    }
+
+    public static class SetAccessorExtensions
+    {
+        public static ITsSetAccessor WithPropertyName(this ITsSetAccessor node, ITsPropertyName value) =>
+            node.PropertyName == value ? node : new TsSetAccessor(value, node.ParameterName, node.ParameterType, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSetAccessor WithParameterName(this ITsSetAccessor node, ITsBindingIdentifierOrPattern value) =>
+            node.ParameterName == value ? node : new TsSetAccessor(node.PropertyName, value, node.ParameterType, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSetAccessor WithParameterType(this ITsSetAccessor node, ITsType? value) =>
+            node.ParameterType == value ? node : new TsSetAccessor(node.PropertyName, node.ParameterName, value, node.FunctionBody, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSetAccessor WithFunctionBody(this ITsSetAccessor node, ImmutableArray<ITsStatementListItem> value) =>
+            node.FunctionBody == value ? node : new TsSetAccessor(node.PropertyName, node.ParameterName, node.ParameterType, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// SimpleLexicalBinding
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a simple lexical binding of the form 'x: type = y'.
+    /// </summary>
+    public interface ITsSimpleLexicalBinding : ITsLexicalBinding
+    {
+        ITsIdentifier VariableName { get; }
+        ITsType? VariableType { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a simple lexical binding of the form 'x: type = y'.
+    /// </summary>
+    internal partial class TsSimpleLexicalBinding : TsAstNode, ITsSimpleLexicalBinding
+    {
+        public TsSimpleLexicalBinding(
+            ITsIdentifier variableName,
+            ITsType? variableType,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(variableName, variableType, initializer);
+            VariableName = variableName;
+            VariableType = variableType;
+            Initializer = initializer;
+        }
+
+        public ITsIdentifier VariableName { get; }
+        public ITsType? VariableType { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(ITsIdentifier variableName, ITsType? variableType, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitSimpleLexicalBinding(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSimpleLexicalBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsSimpleLexicalBinding(VariableName, VariableType, Initializer, leadingTrivia, trailingTrivia);
+    }
+
+    public static class SimpleLexicalBindingExtensions
+    {
+        public static ITsSimpleLexicalBinding WithVariableName(this ITsSimpleLexicalBinding node, ITsIdentifier value) =>
+            node.VariableName == value ? node : new TsSimpleLexicalBinding(value, node.VariableType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSimpleLexicalBinding WithVariableType(this ITsSimpleLexicalBinding node, ITsType? value) =>
+            node.VariableType == value ? node : new TsSimpleLexicalBinding(node.VariableName, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsSimpleLexicalBinding WithInitializer(this ITsSimpleLexicalBinding node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsSimpleLexicalBinding(node.VariableName, node.VariableType, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -1274,6 +2163,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier name, ITsExpression? defaultValue);
         public override void Accept(TsVisitor visitor) => visitor.VisitSingleNameBinding(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSingleNameBinding(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsSingleNameBinding(Name, DefaultValue, leadingTrivia, trailingTrivia);
     }
 
     public static class SingleNameBindingExtensions
@@ -1332,6 +2225,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier parameterName, ITsStringLiteral stringLiteral);
         public override void Accept(TsVisitor visitor) => visitor.VisitStringOptionalParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringOptionalParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsStringOptionalParameter(ParameterName, StringLiteral, leadingTrivia, trailingTrivia);
     }
 
     public static class StringOptionalParameterExtensions
@@ -1379,6 +2276,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier parameterName, ITsStringLiteral stringLiteral);
         public override void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringRequiredParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsStringRequiredParameter(ParameterName, StringLiteral, leadingTrivia, trailingTrivia);
     }
 
     public static class StringRequiredParameterExtensions
@@ -1426,6 +2327,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(string template, ITsExpression? expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplatePart(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplatePart(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsTemplatePart(Template, Expression, leadingTrivia, trailingTrivia);
     }
 
     public static class TemplatePartExtensions
@@ -1473,6 +2378,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier typeName, ITsType? constraint);
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeParameter(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsTypeParameter(TypeName, Constraint, leadingTrivia, trailingTrivia);
     }
 
     public static class TypeParameterExtensions
@@ -1516,6 +2425,10 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsTypeParameter> typeParameters);
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameters(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeParameters(emitter, this);
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new TsTypeParameters(TypeParameters, leadingTrivia, trailingTrivia);
     }
 
     public static class TypeParametersExtensions

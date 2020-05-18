@@ -11,7 +11,6 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Declarations;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

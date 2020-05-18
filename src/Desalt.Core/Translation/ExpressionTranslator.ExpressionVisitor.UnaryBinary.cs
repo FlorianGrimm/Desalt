@@ -13,7 +13,6 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Options;
     using Desalt.Core.SymbolTables;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Expressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

@@ -1464,6 +1464,20 @@
       <Comment>Represents a parenthesized type, of the form '(Type)'.</Comment>
       <Property name="Type" type="ITsType" />
     </AstNode>
+    <AstNode name="PredefinedType" baseInterfaces="ITsType">
+      <Comment>Represents one of the predefined types: any, number, boolean, string, symbol, void.</Comment>
+      <Enum name="TsPredefinedKind">
+        <EnumValue name="Any" />
+        <EnumValue name="Number" />
+        <EnumValue name="Boolean" />
+        <EnumValue name="String" />
+        <EnumValue name="Symbol" />
+        <EnumValue name="Void" />
+        <EnumValue name="Null" />
+        <EnumValue name="Undefined" />
+      </Enum>
+      <Property name="Kind" type="TsPredefinedKind" />
+    </AstNode>
 
     <!--
     /* TypeReference:
@@ -1798,5 +1812,747 @@
       <Property name="TypeParameters" type="ITsTypeParameters?" />
       <Property name="Type" type="ITsType" />
     </AstNode>
+
+    <!--
+    /* A.2 Expressions
+     * ===============
+     * PropertyDefinition: ( Modified )
+     *   IdentifierReference
+     *   CoverInitializedName
+     *   PropertyName : AssignmentExpression
+     *   PropertyName CallSignature { FunctionBody }
+     *   GetAccessor
+     *   SetAccessor
+     *
+     * GetAccessor:
+     *   get PropertyName ( ) TypeAnnotationOpt { FunctionBody }
+     *
+     * SetAccessor:
+     *   set PropertyName ( BindingIdentifierOrPattern TypeAnnotationOpt ) { FunctionBody }
+     */
+    -->
+    <AstNode name="PropertyFunction" baseInterfaces="ITsPropertyDefinition">
+      <Comment>Represents an object literal property function.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+      <Property name="FunctionBody" type ="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+    <AstNode name="GetAccessor" baseInterfaces="ITsPropertyDefinition">
+      <Comment>Represents a property get accessor of the form 'get name (): type { body }'.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="PropertyType" type="ITsType?" />
+      <Property name="FunctionBody" type ="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+    <AstNode name="SetAccessor" baseInterfaces="ITsPropertyDefinition">
+      <Comment>Represents a property set accessor of the form 'set name(value: type) { body }'.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="ParameterName" type="ITsBindingIdentifierOrPattern" />
+      <Property name="ParameterType" type="ITsType?" />
+      <Property name="FunctionBody" type ="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+
+    <!--
+    /* FunctionExpression: ( Modified )
+     *   function BindingIdentifierOpt CallSignature { FunctionBody }
+     */
+    -->
+    <AstNode name="FunctionExpression" baseInterfaces="ITsExpression">
+      <Comment>Represents a function declaration acting as an expression.</Comment>
+      <Property name="FunctionName" type="ITsIdentifier?" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+      <Property name="FunctionBody" type ="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+
+    <!--
+    /* ArrowFormalParameters: ( Modified )
+     *   CallSignature
+     *
+     * Arguments: ( Modified )
+     *   TypeArgumentsOpt ( ArgumentListOpt )
+     *
+     * UnaryExpression: ( Modified )
+     *   ...
+     *   < Type > UnaryExpression
+     */
+
+    /* A.3 Statements
+     * ==============
+     * Declaration: ( Modified )
+     *   ...
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
+     */
+
+    /* VariableDeclaration: ( Modified )
+     *   SimpleVariableDeclaration
+     *   DestructuringVariableDeclaration
+     *
+     * SimpleVariableDeclaration:
+     *   BindingIdentifier TypeAnnotationOpt InitializerOpt
+     *
+     * DestructuringVariableDeclaration:
+     *   BindingPattern TypeAnnotationOpt Initializer
+     */
+    -->
+    <AstNode name="VariableDeclaration" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all variable declarations.</Comment>
+    </AstNode>
+    <AstNode name="SimpleVariableDeclaration" baseInterfaces="ITsVariableDeclaration">
+      <Comment>Represents a simple variable declaration of the form 'x: type = y'.</Comment>
+      <Property name="VariableName" type="ITsIdentifier" />
+      <Property name="VariableType" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="DestructuringVariableDeclaration" baseInterfaces="ITsVariableDeclaration">
+      <Comment>Represents a destructuring variable declaration of the form '{x, y}: type = foo' or '[x, y]:type = foo'.</Comment>
+      <Property name="BindingPattern" type="ITsBindingPattern" />
+      <Property name="VariableType" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+
+    <!--
+    /* LexicalBinding: ( Modified )
+     *   SimpleLexicalBinding
+     *   DestructuringLexicalBinding
+     *
+     * SimpleLexicalBinding:
+     *   BindingIdentifier TypeAnnotationOpt InitializerOpt
+     *
+     * DestructuringLexicalBinding:
+     *   BindingPattern TypeAnnotationOpt InitializerOpt
+     */
+    -->
+    <AstNode name="LexicalBinding" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all lexical bindings.</Comment>
+    </AstNode>
+    <AstNode name="SimpleLexicalBinding" baseInterfaces="ITsLexicalBinding">
+      <Comment>Represents a simple lexical binding of the form 'x: type = y'.</Comment>
+      <Property name="VariableName" type="ITsIdentifier" />
+      <Property name="VariableType" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="DestructuringLexicalBinding" baseInterfaces="ITsLexicalBinding">
+      <Comment>Represents a destructuring lexical binding of the form '{x, y}: type = foo' or '[x, y]:type = foo'.</Comment>
+      <Property name="BindingPattern" type="ITsBindingPattern" />
+      <Property name="VariableType" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+
+    <!--
+    /* A.4 Functions
+     * =============
+     * FunctionDeclaration: ( Modified )
+     *   function BindingIdentifierOpt CallSignature { FunctionBody }
+     *   function BindingIdentifierOpt CallSignature ;
+     */
+    -->
+    <AstNode name="FunctionDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment>Represents a function declaration of the form 'function [name] signature { body }'.</Comment>
+      <Property name="FunctionName" type="ITsIdentifier?" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+      <Property name="FunctionBody" type ="ImmutableArray&lt;ITsStatementListItem&gt;" />
+    </AstNode>
+
+    <!--
+    /* A.5 Interfaces
+     * ==============
+     * InterfaceDeclaration:
+     *   interface BindingIdentifier TypeParametersOpt InterfaceExtendsClauseOpt ObjectType
+     *
+     * InterfaceExtendsClause:
+     *   extends ClassOrInterfaceTypeList
+     *
+     * ClassOrInterfaceTypeList:
+     *   ClassOrInterfaceType
+     *   ClassOrInterfaceTypeList , ClassOrInterfaceType
+     *
+     * ClassOrInterfaceType:
+     *   TypeReference
+     */
+    -->
+    <AstNode name="InterfaceDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment>Represents an interface declaration.</Comment>
+      <Property name="InterfaceName" type="ITsIdentifier" />
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="ExtendsClause" type="ImmutableArray&lt;ITsTypeReference&gt;" />
+      <Property name="Body" type="ITsObjectType" />
+    </AstNode>
+
+    <!--
+    /* A.6 Classes
+     * ===========
+     * ClassDeclaration: ( Modified )
+     *   class BindingIdentifierOpt TypeParametersOpt ClassHeritage { ClassBody }
+     *
+     * ClassHeritage: ( Modified )
+     *   ClassExtendsClauseOpt ImplementsClauseOpt
+     *
+     * ClassExtendsClause:
+     *   extends ClassType
+     *
+     * ClassType:
+     *   TypeReference
+     *
+     * ImplementsClause:
+     *   implements ClassOrInterfaceTypeList
+     *
+     * ClassBody:
+     *   ClassElementList
+     *
+     * ClassElementList:
+     *   ClassElement
+     *   ClassElementList ClassElement
+     *
+     * ClassElement: ( Modified )
+     *   ConstructorDeclaration
+     *   PropertyMemberDeclaration
+     *   IndexMemberDeclaration
+     */
+    -->
+    <AstNode name="ClassDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment>Represents a class declaration.</Comment>
+      <Property name="ClassName" type="ITsIdentifier?" />
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Heritage" type="ITsClassHeritage?" />
+      <Property name="IsAbstract" type="bool" />
+      <Property name="ClassBody" type="ImmutableArray&lt;ITsClassElement&gt;" />
+    </AstNode>
+    <AstNode name="ClassHeritage" baseInterfaces="ITsAstNode">
+      <Comment>Represents a class heritage of the form ' extends type implements type, type'.</Comment>
+      <Property name="ExtendsClause" type="ITsTypeReference?" />
+      <Property name="ImplementsClause" type="ImmutableArray&lt;ITsTypeReference&gt;" />
+    </AstNode>
+    <AstNode name="ClassElement" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all elements that can appear within a class declaration.</Comment>
+    </AstNode>
+
+    <!--
+    /* ConstructorDeclaration:
+     *   AccessibilityModifierOpt constructor ( ParameterListOpt ) { FunctionBody }
+     *   AccessibilityModifierOpt constructor ( ParameterListOpt ) ;
+     */
+    -->
+    <AstNode name="ConstructorDeclaration" baseInterfaces="ITsClassElement">
+      <Comment>Represents a constructor declaration in a class.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="ParameterList" type="ITsParameterList?" />
+      <Property name="FunctionBody" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+    </AstNode>
+
+    <!--
+    /* PropertyMemberDeclaration:
+     *   MemberVariableDeclaration
+     *   MemberFunctionDeclaration
+     *   MemberAccessorDeclaration
+     *
+     * MemberVariableDeclaration:
+     *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt InitializerOpt ;
+     *
+     * MemberFunctionDeclaration:
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature { FunctionBody }
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
+     *
+     * MemberAccessorDeclaration:
+     *   AccessibilityModifierOpt staticOpt GetAccessor
+     *   AccessibilityModifierOpt staticOpt SetAccessor
+     */
+    -->
+    <AstNode name="MemberVariableDeclaration" baseInterfaces="ITsClassElement">
+      <Comment>Represents a member variable declaration in a class.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsReadOnly" type="bool" />
+      <Property name="VariableName" type="ITsPropertyName" />
+      <Property name="TypeAnnotation" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="MemberFunctionDeclaration" baseInterfaces="ITsClassElement">
+      <Comment>Represents a member function declaration in a class.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsAbstract" type="bool" />
+      <Property name="FunctionName" type="ITsPropertyName" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+      <Property name="FunctionBody" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+    </AstNode>
+    <AstNode name="MemberGetAccessorDeclaration" baseInterfaces="ITsClassElement">
+      <Comment>Represents a 'get' member accessor declaration in a class.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsAbstract" type="bool" />
+      <Property name="GetAccessor" type="ITsGetAccessor" />
+    </AstNode>
+    <AstNode name="MemberSetAccessorDeclaration" baseInterfaces="ITsClassElement">
+      <Comment>Represents a 'set' member accessor declaration in a class.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsAbstract" type="bool" />
+      <Property name="SetAccessor" type="ITsSetAccessor" />
+    </AstNode>
+
+    <!--
+    /* IndexMemberDeclaration:
+     *   IndexSignature ;
+     */
+    -->
+    <AstNode name="IndexMemberDeclaration" baseInterfaces="ITsClassElement, ITsAmbientClassBodyElement">
+      <Comment>Represents an index member declaration in a class.</Comment>
+      <Property name="IndexSignature" type="ITsIndexSignature" />
+    </AstNode>
+
+    <!--
+    /* A.7 Enums
+     * =========
+     * EnumDeclaration:
+     *   constOpt enum BindingIdentifier { EnumBodyOpt }
+     *
+     * EnumBody:
+     *   EnumMemberList ,Opt
+     *
+     * EnumMemberList:
+     *   EnumMember
+     *   EnumMemberList , EnumMember
+     *
+     * EnumMember:
+     *   PropertyName
+     *   PropertyName = EnumValue
+     *
+     * EnumValue:
+     *   AssignmentExpression
+     */
+    -->
+    <AstNode name="EnumDeclaration" baseInterfaces="ITsDeclaration, ITsAmbientEnumDeclaration">
+      <Comment>Represents an enum declaration.</Comment>
+      <Property name="IsConst" type="bool" />
+      <Property name="EnumName" type="ITsIdentifier" />
+      <Property name="EnumBody" type="ImmutableArray&lt;ITsEnumMember&gt;" />
+    </AstNode>
+    <AstNode name="EnumMember" baseInterfaces="ITsAstNode">
+      <Comment>Represents an enum member of the form, 'name = value'.</Comment>
+      <Property name="Name" type="ITsPropertyName" />
+      <Property name="Value" type="ITsExpression?" />
+    </AstNode>
+
+    <!--
+    /* A.8 Namespaces
+     * ==============
+     * NamespaceDeclaration:
+     *   namespace IdentifierPath { NamespaceBody }
+     *
+     * IdentifierPath:
+     *   BindingIdentifier
+     *   IdentifierPath . BindingIdentifier
+     *
+     * NamespaceBody:
+     *   NamespaceElementsOpt
+     *
+     * NamespaceElements:
+     *   NamespaceElement
+     *   NamespaceElements NamespaceElement
+     *
+     * NamespaceElement:
+     *   Statement
+     *   LexicalDeclaration
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *   ClassDeclaration
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
+     *   ExportNamespaceElement
+     */
+    -->
+    <AstNode name="NamespaceDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment>Represents a namespace declaration.</Comment>
+      <Property name="NamespaceName" type="ITsQualifiedName" />
+      <Property name="Body" type="ImmutableArray&lt;ITsNamespaceElement&gt;" />
+    </AstNode>
+    <AstNode name="NamespaceElement" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all namespace elements.</Comment>
+    </AstNode>
+
+    <!--
+    /* ExportNamespaceElement:
+     *   export VariableStatement
+     *   export LexicalDeclaration
+     *   export FunctionDeclaration
+     *   export GeneratorDeclaration
+     *   export ClassDeclaration
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export EnumDeclaration
+     *   export NamespaceDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
+     */
+    -->
+    <AstNode name="ExportedVariableStatement" baseInterfaces="ITsNamespaceElement">
+      <Comment>Represents an exported variable statement.</Comment>
+      <Property name="ExportedStatement" type="ITsVariableStatement" />
+    </AstNode>
+    <AstNode name="ExportedDeclaration" baseInterfaces="ITsNamespaceElement">
+      <Comment>Represents an exported declaration.</Comment>
+      <Property name="ExportedDeclaration" type="ITsDeclaration" />
+    </AstNode>
+
+    <!--
+    /* ImportAliasDeclaration:
+     *   import BindingIdentifier = EntityName ;
+     *
+     * EntityName:
+     *   NamespaceName
+     *   NamespaceName . IdentifierReference
+     */
+    -->
+    <AstNode name="ImportAliasDeclaration" baseInterfaces="ITsNamespaceElement, ITsImplementationElement">
+      <Comment>Represents an import alias declaration of the form, 'import alias = dotted.name'.</Comment>
+      <Property name="Alias" type="ITsIdentifier" />
+      <Property name="ImportedName" type="ITsQualifiedName" />
+    </AstNode>
+
+    <!--
+    /* A.9 Scripts and Modules
+     * =======================
+     * SourceFile:
+     *   ImplementationSourceFile
+     *   DeclarationSourceFile
+     *
+     * ImplementationSourceFile:
+     *   ImplementationScript
+     *   ImplementationModule
+     *
+     * DeclarationSourceFile:
+     *   DeclarationScript
+     *   DeclarationModule
+     */
+    -->
+    <AstNode name="ImplementationSourceFile" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Represents a TypeScript source file that contains implementation code (vs. just declarations).</Comment>
+    </AstNode>
+
+    <!--
+    /* ImplementationScript:
+     *   ImplementationScriptElementsOpt
+     *
+     * ImplementationScriptElements:
+     *   ImplementationScriptElement
+     *   ImplementationScriptElements ImplementationScriptElement
+     *
+     * ImplementationScriptElement:
+     *   ImplementationElement
+     *   AmbientModuleDeclaration
+     */
+    -->
+    <AstNode name="ImplementationScript" baseInterfaces="ITsImplementationSourceFile">
+      <Comment>Represents a TypeScript implementation source file (extension '.ts'), containing statements and declarations.</Comment>
+      <Property name="Elements" type="ImmutableArray&lt;ITsImplementationScriptElement&gt;" />
+    </AstNode>
+    <AstNode name="ImplementationScriptElement" baseInterfaces ="ITsAstNode" interfaceOnly="true">
+      <Comment><![CDATA[Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationScript" />.]]></Comment>
+    </AstNode>
+
+    <!--
+    /* ImplementationElement:
+     *   Statement
+     *   LexicalDeclaration
+     *   FunctionDeclaration
+     *   GeneratorDeclaration
+     *   ClassDeclaration
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   EnumDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
+     */
+    -->
+    <AstNode name="ImplementationElement" baseInterfaces="ITsImplementationScriptElement, ITsImplementationModuleElement" interfaceOnly="true">
+      <Comment><![CDATA[Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationScript" /> or <see cref="ITsImplementationModule" />.]]></Comment>
+    </AstNode>
+
+    <!--
+    /* DeclarationScript:
+     *   DeclarationScriptElementsOpt
+     *
+     * DeclarationScriptElements:
+     *   DeclarationScriptElement
+     *   DeclarationScriptElements DeclarationScriptElement
+     *
+     * DeclarationScriptElement:
+     *   DeclarationElement
+     *   AmbientModuleDeclaration
+     */
+
+    /* DeclarationElement:
+     *   InterfaceDeclaration
+     *   TypeAliasDeclaration
+     *   NamespaceDeclaration
+     *   AmbientDeclaration
+     *   ImportAliasDeclaration
+     */
+
+    /* ImplementationModule:
+     *   ImplementationModuleElementsOpt
+     *
+     * ImplementationModuleElements:
+     *   ImplementationModuleElement
+     *   ImplementationModuleElements ImplementationModuleElement
+     *
+     * ImplementationModuleElement:
+     *   ImplementationElement
+     *   ImportDeclaration
+     *   ImportAliasDeclaration
+     *   ImportRequireDeclaration
+     *   ExportImplementationElement
+     *   ExportDefaultImplementationElement
+     *   ExportListDeclaration
+     *   ExportAssignment
+     */
+    -->
+    <AstNode name="ImplementationModule" baseInterfaces="ITsImplementationSourceFile">
+      <Comment>Represents a TypeScript implementation source file (extension '.ts'), containing exported statements and declarations.</Comment>
+      <Property name="Elements" type="ImmutableArray&lt;ITsImplementationModuleElement&gt;" />
+    </AstNode>
+    <AstNode name="ImplementationModuleElement" baseInterfaces ="ITsAstNode" interfaceOnly="true">
+      <Comment><![CDATA[Base interface for all elements that can be a top-level entity within a <see cref="ITsImplementationModule" />.]]></Comment>
+    </AstNode>
+
+    <!--
+    /* DeclarationModule:
+     *   DeclarationModuleElementsOpt
+     *
+     * DeclarationModuleElements:
+     *   DeclarationModuleElement
+     *   DeclarationModuleElements DeclarationModuleElement
+     *
+     * DeclarationModuleElement:
+     *   DeclarationElement
+     *   ImportDeclaration
+     *   ImportAliasDeclaration
+     *   ExportDeclarationElement
+     *   ExportDefaultDeclarationElement
+     *   ExportListDeclaration
+     *   ExportAssignment
+     */
+
+    /* ImportRequireDeclaration:
+     *   import BindingIdentifier = require ( StringLiteral ) ;
+     */
+    -->
+    <AstNode name="ImportRequireDeclaration" baseInterfaces="ITsImplementationModuleElement">
+      <Comment>Represents an import declaration using 'require', of the form 'import name = require(string);'.</Comment>
+      <Property name="Name" type="ITsIdentifier" />
+      <Property name="Require" type="ITsStringLiteral" />
+    </AstNode>
+
+    <!--
+    /* ExportImplementationElement:
+     *   export VariableStatement
+     *   export LexicalDeclaration
+     *   export FunctionDeclaration
+     *   export GeneratorDeclaration
+     *   export ClassDeclaration
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export EnumDeclaration
+     *   export NamespaceDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
+     */
+    -->
+    <AstNode name="ExportImplementationElement" baseInterfaces="ITsImplementationModuleElement">
+      <Comment>Represents an exported element in a module file.</Comment>
+      <Property name="ExportedElement" type="ITsImplementationElement" />
+    </AstNode>
+
+    <!--
+    /* ExportDeclarationElement:
+     *   export InterfaceDeclaration
+     *   export TypeAliasDeclaration
+     *   export AmbientDeclaration
+     *   export ImportAliasDeclaration
+     *
+     * ExportDefaultImplementationElement:
+     *   export default FunctionDeclaration
+     *   export default GeneratorDeclaration
+     *   export default ClassDeclaration
+     *   export default AssignmentExpression ;
+     *
+     * ExportDefaultDeclarationElement:
+     *   export default AmbientFunctionDeclaration
+     *   export default AmbientClassDeclaration
+     *   export default IdentifierReference ;
+     *
+     * ExportListDeclaration:
+     *   export * FromClause ;
+     *   export ExportClause FromClause ;
+     *   export ExportClause ;
+     *
+     * ExportAssignment:
+     *   export = IdentifierReference ;
+     */
+
+    /* A.10 Ambients
+     * =============
+     * AmbientDeclaration:
+     *   declare AmbientVariableDeclaration
+     *   declare AmbientFunctionDeclaration
+     *   declare AmbientClassDeclaration
+     *   declare AmbientEnumDeclaration
+     *   declare AmbientNamespaceDeclaration
+     */
+    -->
+    <AstNode name="AmbientDeclaration" baseInterfaces="ITsImplementationElement">
+      <Comment>Represents an ambient declaration of the form 'declare element'.</Comment>
+      <Property name="Declaration" type="ITsAmbientDeclarationElement" />
+    </AstNode>
+    <AstNode name="AmbientDeclarationElement" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all declarations that can be declared as an ambient ('declare').</Comment>
+    </AstNode>
+
+    <!--
+    /* AmbientVariableDeclaration:
+     *   var AmbientBindingList ;
+     *   let AmbientBindingList ;
+     *   const AmbientBindingList ;
+     *
+     * AmbientBindingList:
+     *   AmbientBinding
+     *   AmbientBindingList , AmbientBinding
+     *
+     * AmbientBinding:
+     *   BindingIdentifier TypeAnnotationOpt
+     */
+    -->
+    <AstNode name="AmbientVariableDeclaration" baseInterfaces="ITsAmbientDeclarationElement">
+      <Comment>Represents an ambient variable declaration of the form, 'var|let|const x, y: type;'.</Comment>
+      <Property name="DeclarationKind" type="VariableDeclarationKind" />
+      <Property name="Declarations" type="ImmutableArray&lt;ITsAmbientBinding&gt;" />
+    </AstNode>
+    <AstNode name="AmbientBinding" baseInterfaces="ITsAstNode">
+      <Comment>Represents an ambient variable binding of the form 'name: type'.</Comment>
+      <Property name="VariableName" type="ITsIdentifier" />
+      <Property name="VariableType" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* AmbientFunctionDeclaration:
+     *   function BindingIdentifier CallSignature ;
+     */
+    -->
+    <AstNode name="AmbientFunctionDeclaration" baseInterfaces="ITsAmbientDeclarationElement">
+      <Comment>Represents an ambient function declaration of the form 'function name signature;'.</Comment>
+      <Property name="FunctionName" type="ITsIdentifier" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+    </AstNode>
+
+    <!--
+    /* AmbientClassDeclaration:
+     *   class BindingIdentifier TypeParametersOpt ClassHeritage { AmbientClassBody }
+     *
+     * AmbientClassBody:
+     *   AmbientClassBodyElementsOpt
+     *
+     * AmbientClassBodyElements:
+     *   AmbientClassBodyElement
+     *   AmbientClassBodyElements AmbientClassBodyElement
+     *
+     * AmbientClassBodyElement:
+     *   AmbientConstructorDeclaration
+     *   AmbientPropertyMemberDeclaration
+     *   IndexSignature (I think this is supposed to be IndexDeclaration)
+     *
+     * AmbientConstructorDeclaration:
+     *   constructor ( ParameterListOpt ) ;
+     *
+     * AmbientPropertyMemberDeclaration:
+     *   AccessibilityModifierOpt staticOpt PropertyName TypeAnnotationOpt ;
+     *   AccessibilityModifierOpt staticOpt PropertyName CallSignature ;
+     */
+    -->
+    <AstNode name="AmbientClassDeclaration" baseInterfaces="ITsAmbientDeclarationElement">
+      <Comment>Represents an ambient class declaration.</Comment>
+      <Property name="ClassName" type="ITsIdentifier" />
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Heritage" type="ITsClassHeritage?" />
+      <Property name="ClassBody" type="ImmutableArray&lt;ITsAmbientClassBodyElement&gt;" />
+    </AstNode>
+    <AstNode name="AmbientClassBodyElement" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all elements that can appear within an ambient class declaration.</Comment>
+    </AstNode>
+    <AstNode name="AmbientConstructorDeclaration" baseInterfaces="ITsAmbientClassBodyElement">
+      <Comment>Represents a constructor declaration within an ambient class declaration.</Comment>
+      <Property name="ParameterList" type="ITsParameterList?" />
+    </AstNode>
+    <AstNode name="AmbientMemberVariableDeclaration" baseInterfaces="ITsAmbientClassBodyElement">
+      <Comment>Represents a variable declaration within an ambient class declaration.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsReadOnly" type="bool" />
+      <Property name="VariableName" type="ITsPropertyName" />
+      <Property name="TypeAnnotation" type="ITsType?" />
+    </AstNode>
+    <AstNode name="AmbientMemberFunctionDeclaration" baseInterfaces="ITsAmbientClassBodyElement">
+      <Comment>Represents a function declaration within an ambient class declaration.</Comment>
+      <Property name="AccessibilityModifier" type="TsAccessibilityModifier?" />
+      <Property name="IsStatic" type="bool" />
+      <Property name="IsAbstract" type="bool" />
+      <Property name="FunctionName" type="ITsPropertyName" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+    </AstNode>
+
+    <!--
+    /* AmbientEnumDeclaration:
+     *   EnumDeclaration
+     */
+    -->
+    <AstNode name="AmbientEnumDeclaration" baseInterfaces="ITsAmbientDeclarationElement" interfaceOnly="true">
+      <Comment>Represents an ambient enum declaration.</Comment>
+    </AstNode>
+
+    <!--
+    /* AmbientNamespaceDeclaration:
+     *   namespace IdentifierPath { AmbientNamespaceBody }
+     *
+     * AmbientNamespaceBody:
+     *   AmbientNamespaceElementsOpt
+     *
+     * AmbientNamespaceElements:
+     *   AmbientNamespaceElement
+     *   AmbientNamespaceElements AmbientNamespaceElement
+     *
+     * AmbientNamespaceElement:
+     *   exportOpt AmbientVariableDeclaration
+     *   exportOpt AmbientLexicalDeclaration (I think this is a mistake - it's just an AmbientVariableDeclaration)
+     *   exportOpt AmbientFunctionDeclaration
+     *   exportOpt AmbientClassDeclaration
+     *   exportOpt InterfaceDeclaration
+     *   exportOpt AmbientEnumDeclaration
+     *   exportOpt AmbientNamespaceDeclaration
+     *   exportOpt ImportAliasDeclaration
+     */
+    -->
+    <AstNode name="AmbientNamespaceDeclaration" baseInterfaces="ITsAmbientDeclarationElement">
+      <Comment>Represents an ambient namespace declaration.</Comment>
+      <Property name="NamespaceName" type="ITsQualifiedName" />
+      <Property name="Body" type="ImmutableArray&lt;ITsAmbientNamespaceElement&gt;" />
+    </AstNode>
+    <AstNode name="AmbientNamespaceElement" baseInterfaces="ITsAstNode">
+      <Comment>Represents an element in an ambient namespace declaration.</Comment>
+      <Property name="HasExportKeyword" type="bool" />
+      <Property name="Declaration" type="ITsAmbientDeclarationElement?" />
+      <Property name="InterfaceDeclaration" type="ITsInterfaceDeclaration?" />
+      <Property name="ImportAliasDeclaration" type="ITsImportAliasDeclaration?" />
+    </AstNode>
+
+    <!--
+    /* AmbientModuleDeclaration:
+     *   declare module StringLiteral { DeclarationModule }
+     */
+    -->
   </AstNodes>
 </Grammar>

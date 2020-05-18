@@ -60,7 +60,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a member variable declaration in a class.
         /// </summary>
-        public virtual void VisitVariableMemberDeclaration(ITsVariableMemberDeclaration node)
+        public virtual void VisitMemberVariableDeclaration(ITsMemberVariableDeclaration node)
         {
             Visit(node);
         }
@@ -68,7 +68,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a member function declaration in a class.
         /// </summary>
-        public virtual void VisitFunctionMemberDeclaration(ITsFunctionMemberDeclaration node)
+        public virtual void VisitMemberFunctionDeclaration(ITsMemberFunctionDeclaration node)
         {
             Visit(node);
         }
@@ -76,7 +76,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a 'get' member accessor declaration in a class.
         /// </summary>
-        public virtual void VisitGetAccessorMemberDeclaration(ITsGetAccessorMemberDeclaration node)
+        public virtual void VisitMemberGetAccessorDeclaration(ITsMemberGetAccessorDeclaration node)
         {
             Visit(node);
         }
@@ -84,7 +84,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a 'set' member accessor declaration in a class.
         /// </summary>
-        public virtual void VisitSetAccessorMemberDeclaration(ITsSetAccessorMemberDeclaration node)
+        public virtual void VisitMemberSetAccessorDeclaration(ITsMemberSetAccessorDeclaration node)
         {
             Visit(node);
         }
@@ -204,7 +204,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a member variable declaration in an ambient class declaration.
         /// </summary>
-        public virtual void VisitAmbientVariableMemberDeclaration(ITsAmbientVariableMemberDeclaration node)
+        public virtual void VisitAmbientMemberVariableDeclaration(ITsAmbientMemberVariableDeclaration node)
         {
             Visit(node);
         }
@@ -212,7 +212,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a member function declaration in an ambient class.
         /// </summary>
-        public virtual void VisitAmbientFunctionMemberDeclaration(ITsAmbientFunctionMemberDeclaration node)
+        public virtual void VisitAmbientMemberFunctionDeclaration(ITsAmbientMemberFunctionDeclaration node)
         {
             Visit(node);
         }
@@ -286,6 +286,19 @@ namespace Desalt.TypeScriptAst.Ast
         /// Visits an exported element in a module file.
         /// </summary>
         public virtual void VisitExportImplementationElement(ITsExportImplementationElement node)
+        {
+            Visit(node);
+        }
+
+        /// <summary>
+        /// Visits an ambient declaration of the form 'declare element'.
+        /// </summary>
+        public virtual void VisitAmbientDeclaration(ITsAmbientDeclaration node)
+        {
+            Visit(node);
+        }
+
+        public virtual void VisitAmbientEnumDeclaration(ITsAmbientEnumDeclaration node)
         {
             Visit(node);
         }

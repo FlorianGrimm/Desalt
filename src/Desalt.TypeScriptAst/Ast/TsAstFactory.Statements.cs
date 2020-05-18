@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.TypeScriptAst.Ast.Statements;
 
     public static partial class TsAstFactory
     {
@@ -48,7 +47,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsBindingPattern bindingPattern,
             ITsExpression initializer)
         {
-            return new TsDestructuringVariableDeclaration(bindingPattern, initializer);
+            return new TsDestructuringVariableDeclaration(bindingPattern, variableType: null, initializer);
         }
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? variableType,
             ITsExpression initializer)
         {
-            return new TsDestructuringVariableDeclaration(bindingPattern, initializer, variableType);
+            return new TsDestructuringVariableDeclaration(bindingPattern, variableType, initializer);
         }
 
         /// <summary>

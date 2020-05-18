@@ -168,8 +168,13 @@ namespace Desalt.Core.Translation
                     return translatedDeclaration;
                 }
 
-                ITsExportImplementationElement exportedInterfaceDeclaration =
-                    Factory.ExportImplementationElement(translatedDeclaration);
+                // Make sure to move the leading trivia from the translated declaration to the exported declaration
+                // otherwise the comments might be messed up.
+                var leadingTrivia = translatedDeclaration.LeadingTrivia;
+                ITsExportImplementationElement exportedInterfaceDeclaration = Factory.ExportImplementationElement(
+                    translatedDeclaration.WithLeadingTrivia());
+                exportedInterfaceDeclaration = exportedInterfaceDeclaration.WithLeadingTrivia(leadingTrivia);
+
                 return exportedInterfaceDeclaration;
             }
         }

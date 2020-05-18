@@ -100,7 +100,7 @@ namespace Desalt.Core.Translation
 
             // If there's a static constructor, then we need to add a call to it right after the class declaration.
             ITsExpressionStatement? staticCtorInvocationStatement = null;
-            if (classDeclaration.ClassBody.OfType<ITsFunctionMemberDeclaration>()
+            if (classDeclaration.ClassBody.OfType<ITsMemberFunctionDeclaration>()
                 .Any(method => method.FunctionName == Visitor.StaticCtorName))
             {
                 ITsCallExpression staticCtorCall = Factory.Call(Factory.MemberDot(className, Visitor.StaticCtorName.Text))

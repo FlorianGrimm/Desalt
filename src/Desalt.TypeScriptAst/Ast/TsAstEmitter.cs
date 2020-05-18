@@ -800,6 +800,11 @@ namespace Desalt.TypeScriptAst.Ast
             emitter.Write("(").Write(parenthesizedType.Type).Write(")");
         }
 
+        public static void EmitPredefinedType(Emitter emitter, ITsPredefinedType predefinedType)
+        {
+            emitter.Write(predefinedType.Kind.ToString().ToLowerInvariant());
+        }
+
         public static void EmitTypeReference(Emitter emitter, ITsTypeReference typeReference)
         {
             typeReference.TypeName.Emit(emitter);
@@ -1079,6 +1084,464 @@ namespace Desalt.TypeScriptAst.Ast
             emitter.Write(" = ");
             typeAliasDeclaration.Type.Emit(emitter);
             emitter.WriteLine(";");
+        }
+
+        public static void EmitPropertyFunction(Emitter emitter, ITsPropertyFunction propertyFunction)
+        {
+            propertyFunction.PropertyName.Emit(emitter);
+            propertyFunction.CallSignature.Emit(emitter);
+            emitter.Write(" ");
+            emitter.WriteBlock(propertyFunction.FunctionBody, skipNewlines: true);
+        }
+
+        public static void EmitGetAccessor(Emitter emitter, ITsGetAccessor getAccessor)
+        {
+            emitter.Write("get ");
+            getAccessor.PropertyName.Emit(emitter);
+            emitter.Write("()");
+            getAccessor.PropertyType?.EmitOptionalTypeAnnotation(emitter);
+            emitter.Write(" ");
+            emitter.WriteBlock(getAccessor.FunctionBody, skipNewlines: true);
+        }
+
+        public static void EmitSetAccessor(Emitter emitter, ITsSetAccessor setAccessor)
+        {
+            emitter.Write("set ");
+            setAccessor.PropertyName.Emit(emitter);
+            emitter.Write("(");
+            setAccessor.ParameterName.Emit(emitter);
+            setAccessor.ParameterType?.EmitOptionalTypeAnnotation(emitter);
+            emitter.Write(") ");
+            emitter.WriteBlock(setAccessor.FunctionBody, skipNewlines: true);
+        }
+
+        public static void EmitFunctionExpression(Emitter emitter, ITsFunctionExpression functionExpression)
+        {
+            emitter.Write("function");
+
+            if (functionExpression.FunctionName != null)
+            {
+                emitter.Write(" ");
+                functionExpression.FunctionName.Emit(emitter);
+            }
+
+            emitter.Write(" ");
+            functionExpression.CallSignature.Emit(emitter);
+            emitter.WriteBlock(functionExpression.FunctionBody);
+        }
+
+        public static void EmitSimpleVariableDeclaration(
+            Emitter emitter,
+            ITsSimpleVariableDeclaration simpleVariableDeclaration)
+        {
+            simpleVariableDeclaration.VariableName.Emit(emitter);
+            simpleVariableDeclaration.VariableType?.EmitOptionalTypeAnnotation(emitter);
+            simpleVariableDeclaration.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitDestructuringVariableDeclaration(
+            Emitter emitter,
+            ITsDestructuringVariableDeclaration destructuringVariableDeclaration)
+        {
+            destructuringVariableDeclaration.BindingPattern.Emit(emitter);
+            destructuringVariableDeclaration.VariableType?.EmitOptionalTypeAnnotation(emitter);
+            destructuringVariableDeclaration.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitSimpleLexicalBinding(
+            Emitter emitter,
+            ITsSimpleLexicalBinding simpleLexicalBinding)
+        {
+            simpleLexicalBinding.VariableName.Emit(emitter);
+            simpleLexicalBinding.VariableType?.EmitOptionalTypeAnnotation(emitter);
+            simpleLexicalBinding.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitDestructuringLexicalBinding(
+            Emitter emitter,
+            ITsDestructuringLexicalBinding destructuringLexicalBinding)
+        {
+            destructuringLexicalBinding.BindingPattern.Emit(emitter);
+            destructuringLexicalBinding.VariableType?.EmitOptionalTypeAnnotation(emitter);
+            destructuringLexicalBinding.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitFunctionDeclaration(Emitter emitter, ITsFunctionDeclaration functionDeclaration)
+        {
+            emitter.Write("function");
+
+            if (functionDeclaration.FunctionName != null)
+            {
+                emitter.Write(" ");
+                functionDeclaration.FunctionName.Emit(emitter);
+            }
+
+            functionDeclaration.CallSignature.Emit(emitter);
+
+            if (functionDeclaration.FunctionBody.IsEmpty)
+            {
+                emitter.WriteLine(";");
+            }
+            else
+            {
+                emitter.Write(" ");
+                emitter.WriteBlock(functionDeclaration.FunctionBody, skipNewlines: true);
+                emitter.WriteLine();
+            }
+        }
+
+        public static void EmitInterfaceDeclaration(Emitter emitter, ITsInterfaceDeclaration interfaceDeclaration)
+        {
+            emitter.Write("interface ");
+            interfaceDeclaration.InterfaceName.Emit(emitter);
+            interfaceDeclaration.TypeParameters?.Emit(emitter);
+
+            if (!interfaceDeclaration.ExtendsClause.IsEmpty)
+            {
+                emitter.Write(" extends ");
+                emitter.WriteList(interfaceDeclaration.ExtendsClause, indent: false, itemDelimiter: ", ");
+            }
+
+            emitter.Write(" ");
+
+            if (interfaceDeclaration.Body.TypeMembers.IsEmpty)
+            {
+                emitter.WriteLine("{");
+                emitter.WriteLine("}");
+            }
+            else
+            {
+                interfaceDeclaration.Body.Emit(emitter);
+                emitter.WriteLine();
+            }
+        }
+
+        public static void EmitClassDeclaration(Emitter emitter, ITsClassDeclaration classDeclaration)
+        {
+            if (classDeclaration.IsAbstract)
+            {
+                emitter.Write("abstract ");
+            }
+
+            emitter.Write("class ");
+            classDeclaration.ClassName?.Emit(emitter);
+            classDeclaration.TypeParameters?.Emit(emitter);
+            classDeclaration.Heritage?.Emit(emitter);
+
+            if ((classDeclaration.ClassName != null && classDeclaration.Heritage == null) ||
+                classDeclaration.Heritage != null)
+            {
+                emitter.Write(" ");
+            }
+
+            emitter.WriteLine("{");
+            emitter.IndentLevel++;
+
+            for (int i = 0; i < classDeclaration.ClassBody.Length; i++)
+            {
+                ITsClassElement element = classDeclaration.ClassBody[i];
+                element.Emit(emitter);
+
+                if (i < classDeclaration.ClassBody.Length - 1)
+                {
+                    emitter.WriteLineWithoutIndentation();
+                }
+            }
+
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
+        }
+
+        public static void EmitClassHeritage(Emitter emitter, ITsClassHeritage classHeritage)
+        {
+            if (classHeritage.ExtendsClause != null)
+            {
+                emitter.Write(" extends ");
+                classHeritage.ExtendsClause.Emit(emitter);
+            }
+
+            if (!classHeritage.ImplementsClause.IsEmpty)
+            {
+                emitter.Write(" implements ");
+                emitter.WriteList(classHeritage.ImplementsClause, indent: false, itemDelimiter: ", ");
+            }
+        }
+
+        public static void EmitConstructorDeclaration(Emitter emitter, ITsConstructorDeclaration constructorDeclaration)
+        {
+            constructorDeclaration.AccessibilityModifier.EmitOptional(emitter);
+
+            emitter.Write("constructor(");
+            constructorDeclaration.ParameterList?.Emit(emitter);
+            emitter.Write(")");
+
+            if (constructorDeclaration.FunctionBody == null)
+            {
+                emitter.WriteLine(";");
+            }
+            else
+            {
+                emitter.Write(" ");
+                emitter.WriteBlock(constructorDeclaration.FunctionBody, skipNewlines: true);
+                emitter.WriteLine();
+            }
+        }
+
+        public static void EmitMemberVariableDeclaration(
+            Emitter emitter,
+            ITsMemberVariableDeclaration memberVariableDeclaration)
+        {
+            memberVariableDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.WriteIf(memberVariableDeclaration.IsStatic, "static ");
+            emitter.WriteIf(memberVariableDeclaration.IsReadOnly, "readonly ");
+            memberVariableDeclaration.VariableName.Emit(emitter);
+            memberVariableDeclaration.TypeAnnotation?.EmitOptionalTypeAnnotation(emitter);
+            memberVariableDeclaration.Initializer?.EmitOptionalAssignment(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitMemberFunctionDeclaration(
+            Emitter emitter,
+            ITsMemberFunctionDeclaration memberFunctionDeclaration)
+        {
+            memberFunctionDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.WriteIf(memberFunctionDeclaration.IsStatic, "static ");
+            emitter.WriteIf(memberFunctionDeclaration.IsAbstract, "abstract ");
+            memberFunctionDeclaration.FunctionName.Emit(emitter);
+            memberFunctionDeclaration.CallSignature.Emit(emitter);
+
+            if (memberFunctionDeclaration.FunctionBody == null)
+            {
+                emitter.WriteLine(";");
+            }
+            else
+            {
+                emitter.Write(" ");
+                emitter.WriteBlock(memberFunctionDeclaration.FunctionBody, skipNewlines: true);
+                emitter.WriteLine();
+            }
+        }
+
+        public static void EmitMemberGetAccessorDeclaration(
+            Emitter emitter,
+            ITsMemberGetAccessorDeclaration memberGetAccessorDeclaration)
+        {
+            memberGetAccessorDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.WriteIf(memberGetAccessorDeclaration.IsStatic, "static ");
+            emitter.WriteIf(memberGetAccessorDeclaration.IsAbstract, "abstract ");
+            memberGetAccessorDeclaration.GetAccessor?.Emit(emitter);
+            emitter.WriteLine();
+        }
+
+        public static void EmitMemberSetAccessorDeclaration(
+            Emitter emitter,
+            ITsMemberSetAccessorDeclaration memberSetAccessorDeclaration)
+        {
+            memberSetAccessorDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.WriteIf(memberSetAccessorDeclaration.IsStatic, "static ");
+            emitter.WriteIf(memberSetAccessorDeclaration.IsAbstract, "abstract ");
+            memberSetAccessorDeclaration.SetAccessor?.Emit(emitter);
+            emitter.WriteLine();
+        }
+
+        public static void EmitIndexMemberDeclaration(Emitter emitter, ITsIndexMemberDeclaration indexMemberDeclaration)
+        {
+            indexMemberDeclaration.IndexSignature.Emit(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitEnumDeclaration(Emitter emitter, ITsEnumDeclaration enumDeclaration)
+        {
+            if (enumDeclaration.IsConst)
+            {
+                emitter.Write("const ");
+            }
+
+            emitter.Write("enum ");
+            enumDeclaration.EnumName.Emit(emitter);
+            emitter.Write(" ");
+
+            emitter.WriteList(
+                enumDeclaration.EnumBody, indent: true, prefix: "{", suffix: "}",
+                itemDelimiter: "," + emitter.Options.Newline,
+                newLineBeforeFirstItem: true, newLineAfterLastItem: true,
+                delimiterAfterLastItem: true,
+                emptyContents: $"{{{emitter.Options.Newline}}}");
+            emitter.WriteLine();
+        }
+
+        public static void EmitEnumMember(Emitter emitter, ITsEnumMember enumMember)
+        {
+            enumMember.Name.Emit(emitter);
+            enumMember.Value?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitNamespaceDeclaration(Emitter emitter, ITsNamespaceDeclaration namespaceDeclaration)
+        {
+            emitter.Write("namespace ");
+            namespaceDeclaration.NamespaceName.Emit(emitter);
+            emitter.Write(" ");
+
+            emitter.WriteBlock(namespaceDeclaration.Body, skipNewlines: true);
+            emitter.WriteLine();
+        }
+
+        public static void EmitExportedVariableStatement(
+            Emitter emitter,
+            ITsExportedVariableStatement exportedVariableStatement)
+        {
+            emitter.Write("export ");
+            exportedVariableStatement.ExportedStatement.Emit(emitter);
+        }
+
+        public static void EmitExportedDeclaration(Emitter emitter, ITsExportedDeclaration exportedDeclaration)
+        {
+            emitter.Write("export ");
+            exportedDeclaration.ExportedDeclaration.Emit(emitter);
+        }
+
+        public static void EmitImportAliasDeclaration(Emitter emitter, ITsImportAliasDeclaration importAliasDeclaration)
+        {
+            emitter.Write("import ");
+            importAliasDeclaration.Alias.Emit(emitter);
+            emitter.Write(" = ");
+            importAliasDeclaration.ImportedName.Emit(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitImplementationScript(Emitter emitter, ITsImplementationScript implementationScript)
+        {
+            emitter.WriteList(implementationScript.Elements, indent: false, itemDelimiter: emitter.Options.Newline);
+        }
+
+        public static void EmitImplementationModule(Emitter emitter, ITsImplementationModule implementationModule)
+        {
+            emitter.WriteList(implementationModule.Elements, indent: false, itemDelimiter: emitter.Options.Newline);
+        }
+
+        public static void EmitImportRequireDeclaration(
+            Emitter emitter,
+            ITsImportRequireDeclaration importRequireDeclaration)
+        {
+            emitter.Write("import ");
+            importRequireDeclaration.Name.Emit(emitter);
+            emitter.Write(" = require(");
+            importRequireDeclaration.Require.Emit(emitter);
+            emitter.WriteLine(");");
+        }
+
+        public static void EmitExportImplementationElement(
+            Emitter emitter,
+            ITsExportImplementationElement exportImplementationElement)
+        {
+            emitter.Write("export ");
+            exportImplementationElement.ExportedElement.Emit(emitter);
+        }
+
+        public static void EmitAmbientDeclaration(Emitter emitter, ITsAmbientDeclaration ambientDeclaration)
+        {
+            // TODO
+        }
+
+        public static void EmitAmbientVariableDeclaration(
+            Emitter emitter,
+            ITsAmbientVariableDeclaration ambientVariableDeclaration)
+        {
+            ambientVariableDeclaration.DeclarationKind.Emit(emitter);
+            ambientVariableDeclaration.Declarations.EmitCommaList(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitAmbientBinding(Emitter emitter, ITsAmbientBinding ambientBinding)
+        {
+            ambientBinding.VariableName.Emit(emitter);
+            ambientBinding.VariableType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitAmbientFunctionDeclaration(
+            Emitter emitter,
+            ITsAmbientFunctionDeclaration ambientFunctionDeclaration)
+        {
+            emitter.Write("function ");
+            ambientFunctionDeclaration.FunctionName.Emit(emitter);
+            ambientFunctionDeclaration.CallSignature.Emit(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitAmbientClassDeclaration(
+            Emitter emitter,
+            ITsAmbientClassDeclaration ambientClassDeclaration)
+        {
+            emitter.Write("class ");
+            ambientClassDeclaration.ClassName.Emit(emitter);
+            ambientClassDeclaration.TypeParameters?.Emit(emitter);
+            ambientClassDeclaration.Heritage?.Emit(emitter);
+
+            emitter.WriteLine(" {");
+            emitter.IndentLevel++;
+
+            foreach (ITsAmbientClassBodyElement element in ambientClassDeclaration.ClassBody)
+            {
+                element.Emit(emitter);
+            }
+
+            emitter.IndentLevel--;
+            emitter.WriteLine("}");
+        }
+
+        public static void EmitAmbientConstructorDeclaration(
+            Emitter emitter,
+            ITsAmbientConstructorDeclaration ambientConstructorDeclaration)
+        {
+            emitter.Write("constructor(");
+            ambientConstructorDeclaration.ParameterList?.Emit(emitter);
+            emitter.WriteLine(");");
+        }
+
+        public static void EmitAmbientMemberVariableDeclaration(
+            Emitter emitter,
+            ITsAmbientMemberVariableDeclaration ambientMemberVariableDeclaration)
+        {
+            ambientMemberVariableDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.WriteIf(ambientMemberVariableDeclaration.IsStatic, "static ");
+            emitter.WriteIf(ambientMemberVariableDeclaration.IsReadOnly, "readonly ");
+            ambientMemberVariableDeclaration.VariableName.Emit(emitter);
+            ambientMemberVariableDeclaration.TypeAnnotation?.EmitOptionalTypeAnnotation(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitAmbientMemberFunctionDeclaration(
+            Emitter emitter,
+            ITsAmbientMemberFunctionDeclaration ambientMemberFunctionDeclaration)
+        {
+            ambientMemberFunctionDeclaration.AccessibilityModifier.EmitOptional(emitter);
+            emitter.Write(ambientMemberFunctionDeclaration.IsStatic ? "static " : "");
+            emitter.Write(ambientMemberFunctionDeclaration.IsAbstract ? "abstract " : "");
+            ambientMemberFunctionDeclaration.FunctionName.Emit(emitter);
+            ambientMemberFunctionDeclaration.CallSignature.Emit(emitter);
+            emitter.WriteLine(";");
+        }
+
+        public static void EmitAmbientNamespaceDeclaration(
+            Emitter emitter,
+            ITsAmbientNamespaceDeclaration ambientNamespaceDeclaration)
+        {
+            emitter.Write("namespace ");
+            ambientNamespaceDeclaration.NamespaceName.Emit(emitter);
+            emitter.Write(" ");
+
+            emitter.WriteBlock(ambientNamespaceDeclaration.Body, skipNewlines: true);
+            emitter.WriteLine();
+        }
+
+        public static void EmitAmbientNamespaceElement(
+            Emitter emitter,
+            ITsAmbientNamespaceElement ambientNamespaceElement)
+        {
+            emitter.WriteIf(ambientNamespaceElement.HasExportKeyword, "export ");
+            ambientNamespaceElement.Declaration?.Emit(emitter);
+            ambientNamespaceElement.InterfaceDeclaration?.Emit(emitter);
+            ambientNamespaceElement.ImportAliasDeclaration?.Emit(emitter);
         }
     }
 }

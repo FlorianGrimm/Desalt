@@ -10,7 +10,6 @@ namespace Desalt.TypeScriptAst.Ast
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Desalt.TypeScriptAst.Ast.Expressions;
 
     public static partial class TsAstFactory
     {
@@ -148,7 +147,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsCallSignature callSignature,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsPropertyFunction(propertyName, callSignature, functionBody);
+            return new TsPropertyFunction(propertyName, callSignature, functionBody.ToImmutableArray());
         }
 
         public static ITsGetAccessor GetAccessor(
@@ -156,7 +155,10 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? propertyType = null,
             IEnumerable<ITsStatementListItem>? functionBody = null)
         {
-            return new TsGetAccessor(propertyName, propertyType, functionBody);
+            return new TsGetAccessor(
+                propertyName,
+                propertyType,
+                functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         public static ITsGetAccessor GetAccessor(
@@ -164,7 +166,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? propertyType,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsGetAccessor(propertyName, propertyType, functionBody);
+            return new TsGetAccessor(propertyName, propertyType, functionBody.ToImmutableArray());
         }
 
         public static ITsSetAccessor SetAccessor(
@@ -173,7 +175,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? parameterType = null,
             IEnumerable<ITsStatementListItem>? functionBody = null)
         {
-            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
+            return new TsSetAccessor(
+                propertyName,
+                parameterName,
+                parameterType,
+                functionBody?.ToImmutableArray() ?? ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         public static ITsSetAccessor SetAccessor(
@@ -182,7 +188,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? parameterType,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody);
+            return new TsSetAccessor(propertyName, parameterName, parameterType, functionBody.ToImmutableArray());
         }
 
         //// ===========================================================================================================
@@ -364,7 +370,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier? functionName = null,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsFunctionExpression(callSignature, functionName, functionBody);
+            return new TsFunctionExpression(functionName, callSignature, functionBody.ToImmutableArray());
         }
 
         public static ITsClassExpression ClassExpression(

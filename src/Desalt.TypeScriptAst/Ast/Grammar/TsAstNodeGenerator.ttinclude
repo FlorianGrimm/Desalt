@@ -147,56 +147,95 @@
         for (int i = 0; i < node.Properties.Count; i++)
         {
             var property = node.Properties[i];
-
-            if (i > 0)
-            {
-                WriteLine("");
-            }
-
-            Write($"public static {node.InterfaceName} With{property.Name}(");
-            WriteLine($"this {node.InterfaceName} node, {property.Type} value) =>");
-            PushIndent(SingleIndent);
-            Write($"node.{property.Name} == value ? node : new {node.ClassName}(");
-
-            for (int j = 0; j < node.Properties.Count; j++)
-            {
-                var argProp = node.Properties[j];
-
-                if (j > 0)
-                {
-                    Write(", ");
-                }
-
-                if (argProp.Name == property.Name)
-                {
-                    Write("value");
-                }
-                else
-                {
-                    Write($"node.{argProp.Name}");
-                }
-            }
-
-            // Write the trivia node arguments.
-            if (node is AstNodeDefinition)
-            {
-                Write(", node.LeadingTrivia, node.TrailingTrivia");
-            }
-            else
-            {
-                Write(", node.PreserveSpacing");
-            }
-
-            WriteLine(");");
-
-            PopIndent();
+            WriteWithExtensionMethod(node, property.Name, property.Type, skipLeadingNewline: i == 0);
         }
+
+//        // Add the trivia node With* methods.
+//        WriteWithExtensionMethod(node, "LeadingTrivia", "ImmutableArray<ITsAstTriviaNode>");
+//        WriteWithExtensionMethod(node, "TrailingTrivia", "ImmutableArray<ITsAstTriviaNode>");
+//
+//        WriteTriviaExtensionMethod(node, isLeadingTrivia: true);
+//        WriteTriviaExtensionMethod(node, isLeadingTrivia: false);
 
         PopIndent();
         WriteLine("}");
 
         PopIndent();
     }
+
+    private void WriteWithExtensionMethod(
+        NodeDefinition node,
+        string propertyName,
+        string propertyType,
+        bool skipLeadingNewline = false)
+    {
+        if (!skipLeadingNewline)
+        {
+            WriteLine("");
+        }
+
+        Write($"public static {node.InterfaceName} With{propertyName}(");
+        WriteLine($"this {node.InterfaceName} node, {propertyType} value) =>");
+        PushIndent(SingleIndent);
+        Write($"node.{propertyName} == value ? node : new {node.ClassName}(");
+
+        for (int j = 0; j < node.Properties.Count; j++)
+        {
+            var argProp = node.Properties[j];
+
+            if (j > 0)
+            {
+                Write(", ");
+            }
+
+            if (argProp.Name == propertyName)
+            {
+                Write("value");
+            }
+            else
+            {
+                Write($"node.{argProp.Name}");
+            }
+        }
+
+        // Write the trivia node arguments.
+        if (node is AstNodeDefinition)
+        {
+            Write(", ");
+            Write(propertyName == "LeadingTrivia" ? "value, " : "node.LeadingTrivia, ");
+            Write(propertyName == "TrailingTrivia" ? "value" : "node.TrailingTrivia");
+        }
+        else
+        {
+            Write(", node.PreserveSpacing");
+        }
+
+        WriteLine(");");
+
+        PopIndent();
+    }
+
+//    private void WriteTriviaExtensionMethod(NodeDefinition node, bool isLeadingTrivia)
+//    {
+//        WriteLine("");
+//
+//        string triviaName = isLeadingTrivia ? "LeadingTrivia" : "TrailingTrivia";
+//
+//        Write($"public static {node.InterfaceName} With{triviaName}(");
+//        WriteLine($"this {node.InterfaceName} node, params ITsAstTriviaNode[] value) =>");
+//
+//        PushIndent(SingleIndent);
+//
+//        Write($"new {node.ClassName}(");
+//        Write(string.Join("", node.Properties.Select(x => $"node.{x.Name}, ")));
+//
+//        Write(isLeadingTrivia ? "value.ToImmutableArray()" : "node.LeadingTrivia");
+//        Write(", ");
+//        Write(isLeadingTrivia ? "node.TrailingTrivia" : "value.ToImmutableArray()");
+//        WriteLine(");");
+//
+//        PopIndent();
+//    }
 
     private static readonly ISet<string> s_csharpKeywords = new HashSet<string>
     {

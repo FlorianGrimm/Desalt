@@ -169,37 +169,37 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Creates a copy of this node with the specified leading trivia.
-        /// </summary>
-        public T WithLeadingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
-        {
-            var copy = (TsAstNode)MemberwiseClone();
-            copy.LeadingTrivia = triviaNodes.ToImmutableArray();
-            return (T)copy;
-        }
-
-        /// <summary>
-        /// Creates a copy of this node with the specified trailing trivia.
-        /// </summary>
-        public T WithTrailingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
-        {
-            // when there are no trivia nodes to append, return the original object
-            if (triviaNodes == null || triviaNodes.Length == 0)
-            {
-                return (T)this;
-            }
-
-            var copy = (TsAstNode)MemberwiseClone();
-            copy.TrailingTrivia = triviaNodes.ToImmutableArray();
-            return (T)copy;
-        }
-
-        /// <summary>
         /// Emits this AST node into code using the specified <see cref="Emitter"/>. This will be called after the
         /// leading trivia has been emitted and before the trailing trivia.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
         protected abstract void EmitContent(Emitter emitter);
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified leading trivia.
+        ///// </summary>
+        //public ITsAstNode WithLeadingTrivia(ImmutableArray<ITsAstTriviaNode> value)
+        //{
+        //    return LeadingTrivia == value ? this : ShallowCopy(value, TrailingTrivia);
+        //}
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified trailing trivia.
+        ///// </summary>
+        //public ITsAstNode WithTrailingTrivia(ImmutableArray<ITsAstTriviaNode> value)
+        //{
+        //    return TrailingTrivia == value ? this : ShallowCopy(LeadingTrivia, value);
+        //}
+
+        /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        public abstract ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

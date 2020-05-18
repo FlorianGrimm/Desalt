@@ -40,4 +40,8 @@
       <DependentUpon>TsTriviaNodes.tt</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Ast\Grammar\Generated\" />
+  </ItemGroup>
 </Project>

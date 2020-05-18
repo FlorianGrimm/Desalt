@@ -12,18 +12,39 @@ var expressions = allNodes
 var statements = allNodes
     // Put ITsStatement first.
     .Where(x => x.InterfaceName == "ITsStatement")
-    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsStatement")));
+    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsStatement")))
+    .Except(expressions);
+
+var rootDeclarationInterfaces = allNodes.Where(
+    x => x.InterfaceName == "ITsAmbientClassBodyElement" ||
+    x.InterfaceName == "ITsAmbientDeclarationElement" ||
+    x.InterfaceName == "ITsClassElement" ||
+    x.InterfaceName == "ITsNamespaceElement" ||
+    x.InterfaceName == "ITsVariableDeclaration");
 
 var declarations = allNodes
-    // Put ITsDeclaration first.
+    // Put these first.
     .Where(x => x.InterfaceName == "ITsDeclaration")
-    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsDeclaration")));
+    .Concat(rootDeclarationInterfaces)
+    // And include anything that has these items in their base interface list (but not the ones we already included).
+    .Concat(
+        allNodes.Where(x => x.BaseInterfaceList.Contains("ITsDeclaration") ||
+            x.BaseInterfaceList.Contains("ITsVariableDeclaration") ||
+            x.BaseInterfaceList.Contains("ITsClassElement") ||
+            x.BaseInterfaceList.Contains("ITsEnumMember") ||
+            x.BaseInterfaceList.Contains("ITsNamespaceElement") ||
+            x.BaseInterfaceList.Contains("ITsAmbientDeclarationElement") ||
+            x.BaseInterfaceList.Contains("ITsAmbientClassBodyElement"))
+        .Except(rootDeclarationInterfaces)
+        .Except(allNodes.Where(x => x.InterfaceName == "ITsDeclaration")))
+    .Except(expressions.Concat(statements));
 
 var types = allNodes
     // Put ITsType and ITsTypeMember first.
     .Where(x => x.InterfaceName == "ITsType")
     .Concat(allNodes.Where(x => x.InterfaceName == "ITsTypeMember"))
-    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsType") || x.BaseInterfaceList.Contains("ITsTypeMember")));
+    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsType") || x.BaseInterfaceList.Contains("ITsTypeMember")))
+    .Except(declarations);
 
 var others = allNodes.Except(expressions.Concat(statements).Concat(declarations).Concat(types));
 
@@ -110,6 +131,10 @@ foreach (var node in nodes) {
         partial void VerifyInputs(<#= node.ToPropertyList() #>);
         public override void Accept(TsVisitor visitor) => visitor.Visit<#= node.Name #>(this);
         protected override void EmitContent(Emitter emitter) => <#= node.EmitImplementation #>;
+        public override ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
+            new <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, noTypes: true, useNameInsteadOfArgumentName: true) #><#= node.Properties.Any() ? ", " : "" #>leadingTrivia, trailingTrivia);
     }
 <# WriteWithExtensionMethods(node); #>
 <# } // if (!node.InterfaceOnly) #>
