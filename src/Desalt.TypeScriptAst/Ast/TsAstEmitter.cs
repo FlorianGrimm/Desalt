@@ -157,7 +157,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static void EmitCoverInitializedName(Emitter emitter, ITsCoverInitializedName coverInitializedName)
         {
-            coverInitializedName.Initializer.Emit(emitter);
+            coverInitializedName.Identifier.Emit(emitter);
             coverInitializedName.Initializer.EmitOptionalAssignment(emitter);
         }
 
@@ -356,18 +356,20 @@ namespace Desalt.TypeScriptAst.Ast
                         indent: false,
                         itemDelimiter: ", ",
                         delimiterAfterLastItem: true)
-                    .Write("... ")
+                    .Write("...")
                     .Write(arrayBindingPattern.RestElement)
                     .Write("]");
             }
-
-            emitter.WriteList(
-                arrayBindingPattern.Elements,
-                indent: false,
-                prefix: "[",
-                suffix: "]",
-                itemDelimiter: ", ",
-                emptyContents: "[]");
+            else
+            {
+                emitter.WriteList(
+                    arrayBindingPattern.Elements,
+                    indent: false,
+                    prefix: "[",
+                    suffix: "]",
+                    itemDelimiter: ", ",
+                    emptyContents: "[]");
+            }
         }
 
         public static void EmitSingleNameBinding(Emitter emitter, ITsSingleNameBinding singleNameBinding)
@@ -401,7 +403,9 @@ namespace Desalt.TypeScriptAst.Ast
         {
             emitter.Write("if (");
             ifStatement.IfCondition.Emit(emitter);
-            ifStatement.EmitIndentedOrInBlock(emitter, newlineAfterBlock: ifStatement.ElseStatement == null);
+            ifStatement.IfStatement.EmitIndentedOrInBlock(
+                emitter,
+                newlineAfterBlock: ifStatement.ElseStatement == null);
 
             if (ifStatement.ElseStatement == null)
             {

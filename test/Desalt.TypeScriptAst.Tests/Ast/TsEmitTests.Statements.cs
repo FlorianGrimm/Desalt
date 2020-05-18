@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Expressions;
     using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -112,7 +111,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         {
             VerifyOutput(
                 Factory.ArrayBindingPattern(Factory.SingleNameBinding(s_x).ToSafeArray(), s_y),
-                "[x, ... y]");
+                "[x, ...y]");
         }
 
         [Test]

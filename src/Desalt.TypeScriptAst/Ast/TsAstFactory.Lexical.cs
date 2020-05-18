@@ -38,7 +38,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool preserveSpacing = false,
             bool omitNewLineAtEnd = false)
         {
-            return new TsSingleLineComment(text, preserveSpacing, omitNewLineAtEnd);
+            return new TsSingleLineComment(text, omitNewLineAtEnd, preserveSpacing);
         }
 
         /// <summary>
