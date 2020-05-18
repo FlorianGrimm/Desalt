@@ -10,7 +10,6 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
-    using System.Collections.Immutable;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -588,7 +587,7 @@ namespace Desalt.TypeScriptAst.Ast
                 clause.Emit(emitter);
 
                 // Don't write newlines between empty clauses or after the last item
-                if (clause.Statements?.IsEmpty != true && i < switchStatement.Clauses.Length - 1)
+                if (!clause.Statements.IsEmpty && i < switchStatement.Clauses.Length - 1)
                 {
                     emitter.WriteLineWithoutIndentation();
                 }
@@ -603,8 +602,7 @@ namespace Desalt.TypeScriptAst.Ast
             emitter.Write("case ").Write(caseClause.Expression).WriteLine(":");
 
             emitter.IndentLevel++;
-            foreach (ITsStatementListItem statement in caseClause.Statements ??
-                ImmutableArray<ITsStatementListItem>.Empty)
+            foreach (ITsStatementListItem statement in caseClause.Statements)
             {
                 statement.Emit(emitter);
             }
@@ -617,8 +615,7 @@ namespace Desalt.TypeScriptAst.Ast
             emitter.WriteLine("default:");
 
             emitter.IndentLevel++;
-            foreach (ITsStatementListItem statement in defaultClause.Statements ??
-                ImmutableArray<ITsStatementListItem>.Empty)
+            foreach (ITsStatementListItem statement in defaultClause.Statements)
             {
                 statement.Emit(emitter);
             }
@@ -737,7 +734,7 @@ namespace Desalt.TypeScriptAst.Ast
             if (importClause.DefaultBinding != null)
             {
                 importClause.DefaultBinding.Emit(emitter);
-                if (importClause.NamespaceBinding != null || importClause.NamedImports != null)
+                if (importClause.NamespaceBinding != null || !importClause.NamedImports.IsEmpty)
                 {
                     emitter.Write(", ");
                 }
@@ -749,7 +746,7 @@ namespace Desalt.TypeScriptAst.Ast
                 importClause.NamespaceBinding.Emit(emitter);
             }
 
-            if (importClause.NamedImports != null)
+            if (!importClause.NamedImports.IsEmpty)
             {
                 emitter.WriteList(
                     importClause.NamedImports,
@@ -774,6 +771,314 @@ namespace Desalt.TypeScriptAst.Ast
                 emitter.Write(" as ");
                 importSpecifier.AsName.Emit(emitter);
             }
+        }
+
+        public static void EmitTypeParameters(Emitter emitter, ITsTypeParameters typeParameters)
+        {
+            emitter.WriteList(
+                typeParameters.TypeParameters,
+                indent: false,
+                prefix: "<",
+                suffix: ">",
+                itemDelimiter: ", ",
+                emptyContents: "");
+        }
+
+        public static void EmitTypeParameter(Emitter emitter, ITsTypeParameter typeParameter)
+        {
+            typeParameter.TypeName.Emit(emitter);
+
+            if (typeParameter.Constraint != null)
+            {
+                emitter.Write(" extends ");
+                typeParameter.Constraint.Emit(emitter);
+            }
+        }
+
+        public static void EmitParenthesizedType(Emitter emitter, ITsParenthesizedType parenthesizedType)
+        {
+            emitter.Write("(").Write(parenthesizedType.Type).Write(")");
+        }
+
+        public static void EmitTypeReference(Emitter emitter, ITsTypeReference typeReference)
+        {
+            typeReference.TypeName.Emit(emitter);
+
+            if (typeReference.TypeArguments.Length > 0)
+            {
+                emitter.WriteList(
+                    typeReference.TypeArguments,
+                    indent: false,
+                    prefix: "<",
+                    suffix: ">",
+                    itemDelimiter: ", ");
+            }
+        }
+
+        public static void EmitQualifiedName(Emitter emitter, ITsQualifiedName qualifiedName)
+        {
+            foreach (ITsIdentifier left in qualifiedName.Left)
+            {
+                left.Emit(emitter);
+                emitter.Write(".");
+            }
+
+            qualifiedName.Right.Emit(emitter);
+        }
+
+        public static void EmitGenericTypeName(Emitter emitter, ITsGenericTypeName genericTypeName)
+        {
+            EmitQualifiedName(emitter, genericTypeName);
+
+            if (genericTypeName.TypeArguments.Length > 0)
+            {
+                emitter.Write("<");
+                emitter.WriteCommaList(genericTypeName.TypeArguments);
+                emitter.Write(">");
+            }
+        }
+
+        public static void EmitObjectType(Emitter emitter, ITsObjectType objectType)
+        {
+            bool multiLine = !objectType.ForceSingleLine;
+            emitter.WriteList(
+                objectType.TypeMembers,
+                indent: true,
+                prefix: objectType.ForceSingleLine ? "{ " : "{",
+                suffix: objectType.ForceSingleLine ? " }" : "}",
+                itemDelimiter: ";" + emitter.Options.Newline,
+                delimiterAfterLastItem: multiLine,
+                newLineAfterPrefix: multiLine,
+                newLineAfterLastItem: multiLine,
+                emptyContents: "{}");
+        }
+
+        public static void EmitArrayType(Emitter emitter, ITsArrayType arrayType)
+        {
+            // We need to use the long-hand Array<> style if there are any spaces or other expression breaks. For
+            // example, an array of function without the Array<> would be '(x: string) => boolean[]', which is a
+            // function that returns a boolean array instead of an array of functions. Or a union type 'x | y[]', which
+            // is a union type of 'x' and 'y[]' instead of an array of union types.
+            //
+            // To determine which syntax to use, we can emit the type to a temporary string and check for any spaces or
+            // other problematic characters.
+            using var memoryStream = new MemoryStream();
+            using var tempEmitter = new Emitter(memoryStream, emitter.Encoding, emitter.Options);
+            arrayType.Type.Emit(tempEmitter);
+            string typeEmit = memoryStream.ReadAllText(emitter.Encoding);
+
+            if (typeEmit.Any(char.IsWhiteSpace) || typeEmit.Any(c => c.IsOneOf('&', '|', ':', '=', '-', '+', ';')))
+            {
+                emitter.Write("Array<").Write(typeEmit).Write(">");
+            }
+            else
+            {
+                emitter.Write(typeEmit).Write("[]");
+            }
+        }
+
+        public static void EmitTupleType(Emitter emitter, ITsTupleType tupleType)
+        {
+            emitter.WriteList(tupleType.ElementTypes, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+        }
+
+        public static void EmitUnionType(Emitter emitter, ITsUnionType unionType)
+        {
+            emitter.WriteList(unionType.Types, indent: false, itemDelimiter: " | ");
+        }
+
+        public static void EmitIntersectionType(Emitter emitter, ITsIntersectionType intersectionType)
+        {
+            emitter.WriteList(intersectionType.Types, indent: false, itemDelimiter: " & ");
+        }
+
+        public static void EmitFunctionType(Emitter emitter, ITsFunctionType functionType)
+        {
+            EmitFunctionOrConstructorType(
+                emitter,
+                functionType.TypeParameters,
+                functionType.Parameters,
+                functionType.ReturnType,
+                isConstructorType: false);
+        }
+
+        public static void EmitConstructorType(Emitter emitter, ITsConstructorType constructorType)
+        {
+            EmitFunctionOrConstructorType(
+                emitter,
+                constructorType.TypeParameters,
+                constructorType.Parameters,
+                constructorType.ReturnType,
+                isConstructorType: true);
+        }
+
+        private static void EmitFunctionOrConstructorType(
+            Emitter emitter,
+            ITsTypeParameters? typeParameters,
+            ITsParameterList? parameterList,
+            ITsType returnType,
+            bool isConstructorType)
+        {
+            if (isConstructorType)
+            {
+                emitter.Write("new ");
+            }
+
+            typeParameters?.Emit(emitter);
+            emitter.Write("(");
+            parameterList?.Emit(emitter);
+            emitter.Write(")");
+
+            emitter.Write(" => ");
+            returnType.Emit(emitter);
+        }
+
+        public static void EmitTypeQuery(Emitter emitter, ITsTypeQuery typeQuery)
+        {
+            emitter.Write("typeof ").Write(typeQuery.Query);
+        }
+
+        public static void EmitThisType(Emitter emitter, ITsThisType thisType)
+        {
+            emitter.Write("this");
+        }
+
+        public static void EmitPropertySignature(Emitter emitter, ITsPropertySignature propertySignature)
+        {
+            if (propertySignature.IsReadOnly)
+            {
+                emitter.Write("readonly ");
+            }
+
+            propertySignature.PropertyName.Emit(emitter);
+            if (propertySignature.IsOptional)
+            {
+                emitter.Write("?");
+            }
+
+            propertySignature.PropertyType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitCallSignature(Emitter emitter, ITsCallSignature callSignature)
+        {
+            callSignature.TypeParameters?.Emit(emitter);
+            emitter.Write("(");
+            callSignature.Parameters?.Emit(emitter);
+            emitter.Write(")");
+
+            callSignature.ReturnType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitParameterList(Emitter emitter, ITsParameterList parameterList)
+        {
+            if (parameterList.RequiredParameters.Length > 0)
+            {
+                emitter.WriteList(parameterList.RequiredParameters, indent: false, itemDelimiter: ", ");
+            }
+
+            if (parameterList.RequiredParameters.Length > 0 &&
+                (parameterList.OptionalParameters.Length > 0 || parameterList.RestParameter != null))
+            {
+                emitter.Write(", ");
+            }
+
+            if (parameterList.OptionalParameters.Length > 0)
+            {
+                emitter.WriteList(parameterList.OptionalParameters, indent: false, itemDelimiter: ", ");
+            }
+
+            if (parameterList.OptionalParameters.Length > 0 && parameterList.RestParameter != null)
+            {
+                emitter.Write(", ");
+            }
+
+            parameterList.RestParameter?.Emit(emitter);
+        }
+
+        public static void EmitBoundRequiredParameter(Emitter emitter, ITsBoundRequiredParameter boundRequiredParameter)
+        {
+            boundRequiredParameter.Modifier.EmitOptional(emitter);
+
+            boundRequiredParameter.ParameterName.Emit(emitter);
+            boundRequiredParameter.ParameterType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitBoundOptionalParameter(Emitter emitter, ITsBoundOptionalParameter optionalParameter)
+        {
+            optionalParameter.Modifier.EmitOptional(emitter);
+
+            optionalParameter.ParameterName.Emit(emitter);
+            if (optionalParameter.Initializer == null)
+            {
+                emitter.Write("?");
+            }
+
+            optionalParameter.ParameterType?.EmitOptionalTypeAnnotation(emitter);
+
+            optionalParameter.Initializer?.EmitOptionalAssignment(emitter);
+        }
+
+        public static void EmitStringRequiredParameter(
+            Emitter emitter,
+            ITsStringRequiredParameter stringRequiredParameter)
+        {
+            emitter.Write(stringRequiredParameter.ParameterName)
+                .Write(": ")
+                .Write(stringRequiredParameter.StringLiteral);
+        }
+
+        public static void EmitStringOptionalParameter(
+            Emitter emitter,
+            ITsStringOptionalParameter stringOptionalParameter)
+        {
+            emitter.Write(stringOptionalParameter.ParameterName)
+                .Write("?: ")
+                .Write(stringOptionalParameter.StringLiteral);
+        }
+
+        public static void EmitRestParameter(Emitter emitter, ITsRestParameter restParameter)
+        {
+            emitter.Write("...");
+            restParameter.ParameterName.Emit(emitter);
+            restParameter.ParameterType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitConstructSignature(Emitter emitter, ITsConstructSignature constructSignature)
+        {
+            emitter.Write("new ");
+            constructSignature.TypeParameters?.Emit(emitter);
+            emitter.Write("(");
+            constructSignature.Parameters?.Emit(emitter);
+            emitter.Write(")");
+
+            constructSignature.ReturnType?.EmitOptionalTypeAnnotation(emitter);
+        }
+
+        public static void EmitIndexSignature(Emitter emitter, ITsIndexSignature indexSignature)
+        {
+            emitter.Write("[");
+            indexSignature.ParameterName.Emit(emitter);
+            emitter.Write(": ");
+            emitter.Write(indexSignature.IsParameterNumberType ? "number" : "string");
+            emitter.Write("]: ");
+            indexSignature.ReturnType.Emit(emitter);
+        }
+
+        public static void EmitMethodSignature(Emitter emitter, ITsMethodSignature methodSignature)
+        {
+            emitter.Write(methodSignature.PropertyName)
+                .WriteIf(methodSignature.IsOptional, "?")
+                .Write(methodSignature.CallSignature);
+        }
+
+        public static void EmitTypeAliasDeclaration(Emitter emitter, ITsTypeAliasDeclaration typeAliasDeclaration)
+        {
+            emitter.Write("type ");
+            typeAliasDeclaration.AliasName.Emit(emitter);
+            typeAliasDeclaration.TypeParameters?.Emit(emitter);
+            emitter.Write(" = ");
+            typeAliasDeclaration.Type.Emit(emitter);
+            emitter.WriteLine(";");
         }
     }
 }

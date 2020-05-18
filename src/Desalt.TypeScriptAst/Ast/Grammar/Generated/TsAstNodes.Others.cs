@@ -240,6 +240,17 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// BindingIdentifierOrPattern
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for a binding identifier or pattern.
+    /// </summary>
+    public interface ITsBindingIdentifierOrPattern : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
     //// BindingPattern
     //// ===============================================================================================================
 
@@ -262,6 +273,128 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// BoundOptionalParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a bound optional parameter in a parameter list for a function.
+    /// </summary>
+    public interface ITsBoundOptionalParameter : ITsOptionalParameter
+    {
+        TsAccessibilityModifier? Modifier { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType? ParameterType { get; }
+        ITsExpression? Initializer { get; }
+    }
+
+    /// <summary>
+    /// Represents a bound optional parameter in a parameter list for a function.
+    /// </summary>
+    internal partial class TsBoundOptionalParameter : TsAstNode, ITsBoundOptionalParameter
+    {
+        public TsBoundOptionalParameter(
+            TsAccessibilityModifier? modifier,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType? parameterType,
+            ITsExpression? initializer,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(modifier, parameterName, parameterType, initializer);
+            Modifier = modifier;
+            ParameterName = parameterName;
+            ParameterType = parameterType;
+            Initializer = initializer;
+        }
+
+        public TsAccessibilityModifier? Modifier { get; }
+        public ITsBindingIdentifierOrPattern ParameterName { get; }
+        public ITsType? ParameterType { get; }
+        public ITsExpression? Initializer { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? modifier, ITsBindingIdentifierOrPattern parameterName, ITsType? parameterType, ITsExpression? initializer);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBoundOptionalParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBoundOptionalParameter(emitter, this);
+    }
+
+    public static class BoundOptionalParameterExtensions
+    {
+        public static ITsBoundOptionalParameter WithModifier(this ITsBoundOptionalParameter node, TsAccessibilityModifier? value) =>
+            node.Modifier == value ? node : new TsBoundOptionalParameter(value, node.ParameterName, node.ParameterType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsBoundOptionalParameter WithParameterName(this ITsBoundOptionalParameter node, ITsBindingIdentifierOrPattern value) =>
+            node.ParameterName == value ? node : new TsBoundOptionalParameter(node.Modifier, value, node.ParameterType, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsBoundOptionalParameter WithParameterType(this ITsBoundOptionalParameter node, ITsType? value) =>
+            node.ParameterType == value ? node : new TsBoundOptionalParameter(node.Modifier, node.ParameterName, value, node.Initializer, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsBoundOptionalParameter WithInitializer(this ITsBoundOptionalParameter node, ITsExpression? value) =>
+            node.Initializer == value ? node : new TsBoundOptionalParameter(node.Modifier, node.ParameterName, node.ParameterType, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// BoundRequiredParameter
+    //// ===============================================================================================================
+
+    public enum TsAccessibilityModifier
+    {
+        Public,
+        Private,
+        Protected,
+    }
+
+    /// <summary>
+    /// Represents a bound required parameter in a parameter list for a function.
+    /// </summary>
+    public interface ITsBoundRequiredParameter : ITsRequiredParameter
+    {
+        TsAccessibilityModifier? Modifier { get; }
+        ITsBindingIdentifierOrPattern ParameterName { get; }
+        ITsType? ParameterType { get; }
+    }
+
+    /// <summary>
+    /// Represents a bound required parameter in a parameter list for a function.
+    /// </summary>
+    internal partial class TsBoundRequiredParameter : TsAstNode, ITsBoundRequiredParameter
+    {
+        public TsBoundRequiredParameter(
+            TsAccessibilityModifier? modifier,
+            ITsBindingIdentifierOrPattern parameterName,
+            ITsType? parameterType,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(modifier, parameterName, parameterType);
+            Modifier = modifier;
+            ParameterName = parameterName;
+            ParameterType = parameterType;
+        }
+
+        public TsAccessibilityModifier? Modifier { get; }
+        public ITsBindingIdentifierOrPattern ParameterName { get; }
+        public ITsType? ParameterType { get; }
+
+        partial void VerifyInputs(TsAccessibilityModifier? modifier, ITsBindingIdentifierOrPattern parameterName, ITsType? parameterType);
+        public override void Accept(TsVisitor visitor) => visitor.VisitBoundRequiredParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBoundRequiredParameter(emitter, this);
+    }
+
+    public static class BoundRequiredParameterExtensions
+    {
+        public static ITsBoundRequiredParameter WithModifier(this ITsBoundRequiredParameter node, TsAccessibilityModifier? value) =>
+            node.Modifier == value ? node : new TsBoundRequiredParameter(value, node.ParameterName, node.ParameterType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsBoundRequiredParameter WithParameterName(this ITsBoundRequiredParameter node, ITsBindingIdentifierOrPattern value) =>
+            node.ParameterName == value ? node : new TsBoundRequiredParameter(node.Modifier, value, node.ParameterType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsBoundRequiredParameter WithParameterType(this ITsBoundRequiredParameter node, ITsType? value) =>
+            node.ParameterType == value ? node : new TsBoundRequiredParameter(node.Modifier, node.ParameterName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// CaseClause
     //// ===============================================================================================================
 
@@ -280,7 +413,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         public TsCaseClause(
             ITsExpression expression,
-            ImmutableArray<ITsStatementListItem>? statements,
+            ImmutableArray<ITsStatementListItem> statements,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
@@ -291,9 +424,9 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         public ITsExpression Expression { get; }
-        public ImmutableArray<ITsStatementListItem>? Statements { get; }
+        public ImmutableArray<ITsStatementListItem> Statements { get; }
 
-        partial void VerifyInputs(ITsExpression expression, ImmutableArray<ITsStatementListItem>? statements);
+        partial void VerifyInputs(ITsExpression expression, ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitCaseClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCaseClause(emitter, this);
     }
@@ -303,7 +436,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsCaseClause WithExpression(this ITsCaseClause node, ITsExpression value) =>
             node.Expression == value ? node : new TsCaseClause(value, node.Statements, node.LeadingTrivia, node.TrailingTrivia);
 
-        public static ITsCaseClause WithStatements(this ITsCaseClause node, ImmutableArray<ITsStatementListItem>? value) =>
+        public static ITsCaseClause WithStatements(this ITsCaseClause node, ImmutableArray<ITsStatementListItem> value) =>
             node.Statements == value ? node : new TsCaseClause(node.Expression, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
@@ -316,7 +449,7 @@ namespace Desalt.TypeScriptAst.Ast
     /// </summary>
     public interface ITsCaseOrDefaultClause : ITsAstNode
     {
-        ImmutableArray<ITsStatementListItem>? Statements { get; }
+        ImmutableArray<ITsStatementListItem> Statements { get; }
     }
 
     //// ===============================================================================================================
@@ -423,7 +556,7 @@ namespace Desalt.TypeScriptAst.Ast
     internal partial class TsDefaultClause : TsAstNode, ITsDefaultClause
     {
         public TsDefaultClause(
-            ImmutableArray<ITsStatementListItem>? statements,
+            ImmutableArray<ITsStatementListItem> statements,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
@@ -432,16 +565,16 @@ namespace Desalt.TypeScriptAst.Ast
             Statements = statements;
         }
 
-        public ImmutableArray<ITsStatementListItem>? Statements { get; }
+        public ImmutableArray<ITsStatementListItem> Statements { get; }
 
-        partial void VerifyInputs(ImmutableArray<ITsStatementListItem>? statements);
+        partial void VerifyInputs(ImmutableArray<ITsStatementListItem> statements);
         public override void Accept(TsVisitor visitor) => visitor.VisitDefaultClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitDefaultClause(emitter, this);
     }
 
     public static class DefaultClauseExtensions
     {
-        public static ITsDefaultClause WithStatements(this ITsDefaultClause node, ImmutableArray<ITsStatementListItem>? value) =>
+        public static ITsDefaultClause WithStatements(this ITsDefaultClause node, ImmutableArray<ITsStatementListItem> value) =>
             node.Statements == value ? node : new TsDefaultClause(value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
@@ -483,6 +616,58 @@ namespace Desalt.TypeScriptAst.Ast
     {
         public static ITsFromClause WithModule(this ITsFromClause node, ITsStringLiteral value) =>
             node.Module == value ? node : new TsFromClause(value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// GenericTypeName
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.
+    /// </summary>
+    public interface ITsGenericTypeName : ITsQualifiedName
+    {
+        ImmutableArray<ITsType> TypeArguments { get; }
+    }
+
+    /// <summary>
+    /// Represents a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.
+    /// </summary>
+    internal partial class TsGenericTypeName : TsAstNode, ITsGenericTypeName
+    {
+        public TsGenericTypeName(
+            ImmutableArray<ITsIdentifier> left,
+            ITsIdentifier right,
+            ImmutableArray<ITsType> typeArguments,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(left, right, typeArguments);
+            Left = left;
+            Right = right;
+            TypeArguments = typeArguments;
+        }
+
+        public ImmutableArray<ITsIdentifier> Left { get; }
+        public ITsIdentifier Right { get; }
+        public ImmutableArray<ITsType> TypeArguments { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsIdentifier> left, ITsIdentifier right, ImmutableArray<ITsType> typeArguments);
+        public override void Accept(TsVisitor visitor) => visitor.VisitGenericTypeName(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitGenericTypeName(emitter, this);
+    }
+
+    public static class GenericTypeNameExtensions
+    {
+        public static ITsGenericTypeName WithLeft(this ITsGenericTypeName node, ImmutableArray<ITsIdentifier> value) =>
+            node.Left == value ? node : new TsGenericTypeName(value, node.Right, node.TypeArguments, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsGenericTypeName WithRight(this ITsGenericTypeName node, ITsIdentifier value) =>
+            node.Right == value ? node : new TsGenericTypeName(node.Left, value, node.TypeArguments, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsGenericTypeName WithTypeArguments(this ITsGenericTypeName node, ImmutableArray<ITsType> value) =>
+            node.TypeArguments == value ? node : new TsGenericTypeName(node.Left, node.Right, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================
@@ -536,7 +721,7 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsIdentifier? DefaultBinding { get; }
         ITsIdentifier? NamespaceBinding { get; }
-        ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+        ImmutableArray<ITsImportSpecifier> NamedImports { get; }
     }
 
     /// <summary>
@@ -547,7 +732,7 @@ namespace Desalt.TypeScriptAst.Ast
         public TsImportClause(
             ITsIdentifier? defaultBinding,
             ITsIdentifier? namespaceBinding,
-            ImmutableArray<ITsImportSpecifier>? namedImports,
+            ImmutableArray<ITsImportSpecifier> namedImports,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
@@ -560,9 +745,9 @@ namespace Desalt.TypeScriptAst.Ast
 
         public ITsIdentifier? DefaultBinding { get; }
         public ITsIdentifier? NamespaceBinding { get; }
-        public ImmutableArray<ITsImportSpecifier>? NamedImports { get; }
+        public ImmutableArray<ITsImportSpecifier> NamedImports { get; }
 
-        partial void VerifyInputs(ITsIdentifier? defaultBinding, ITsIdentifier? namespaceBinding, ImmutableArray<ITsImportSpecifier>? namedImports);
+        partial void VerifyInputs(ITsIdentifier? defaultBinding, ITsIdentifier? namespaceBinding, ImmutableArray<ITsImportSpecifier> namedImports);
         public override void Accept(TsVisitor visitor) => visitor.VisitImportClause(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitImportClause(emitter, this);
     }
@@ -575,7 +760,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsImportClause WithNamespaceBinding(this ITsImportClause node, ITsIdentifier? value) =>
             node.NamespaceBinding == value ? node : new TsImportClause(node.DefaultBinding, value, node.NamedImports, node.LeadingTrivia, node.TrailingTrivia);
 
-        public static ITsImportClause WithNamedImports(this ITsImportClause node, ImmutableArray<ITsImportSpecifier>? value) =>
+        public static ITsImportClause WithNamedImports(this ITsImportClause node, ImmutableArray<ITsImportSpecifier> value) =>
             node.NamedImports == value ? node : new TsImportClause(node.DefaultBinding, node.NamespaceBinding, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
@@ -732,6 +917,71 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// OptionalParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for an optional parameter in a <see cref="ITsParameterList" />.
+    /// </summary>
+    public interface ITsOptionalParameter : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// ParameterList
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a parameter list of the form '(parameter: type)'.
+    /// </summary>
+    public interface ITsParameterList : ITsAstNode
+    {
+        ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
+        ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
+        ITsRestParameter? RestParameter { get; }
+    }
+
+    /// <summary>
+    /// Represents a parameter list of the form '(parameter: type)'.
+    /// </summary>
+    internal partial class TsParameterList : TsAstNode, ITsParameterList
+    {
+        public TsParameterList(
+            ImmutableArray<ITsRequiredParameter> requiredParameters,
+            ImmutableArray<ITsOptionalParameter> optionalParameters,
+            ITsRestParameter? restParameter,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(requiredParameters, optionalParameters, restParameter);
+            RequiredParameters = requiredParameters;
+            OptionalParameters = optionalParameters;
+            RestParameter = restParameter;
+        }
+
+        public ImmutableArray<ITsRequiredParameter> RequiredParameters { get; }
+        public ImmutableArray<ITsOptionalParameter> OptionalParameters { get; }
+        public ITsRestParameter? RestParameter { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsRequiredParameter> requiredParameters, ImmutableArray<ITsOptionalParameter> optionalParameters, ITsRestParameter? restParameter);
+        public override void Accept(TsVisitor visitor) => visitor.VisitParameterList(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParameterList(emitter, this);
+    }
+
+    public static class ParameterListExtensions
+    {
+        public static ITsParameterList WithRequiredParameters(this ITsParameterList node, ImmutableArray<ITsRequiredParameter> value) =>
+            node.RequiredParameters == value ? node : new TsParameterList(value, node.OptionalParameters, node.RestParameter, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsParameterList WithOptionalParameters(this ITsParameterList node, ImmutableArray<ITsOptionalParameter> value) =>
+            node.OptionalParameters == value ? node : new TsParameterList(node.RequiredParameters, value, node.RestParameter, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsParameterList WithRestParameter(this ITsParameterList node, ITsRestParameter? value) =>
+            node.RestParameter == value ? node : new TsParameterList(node.RequiredParameters, node.OptionalParameters, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// PatternBinding
     //// ===============================================================================================================
 
@@ -884,6 +1134,111 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// QualifiedName
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
+    /// </summary>
+    public interface ITsQualifiedName : ITsTypeName
+    {
+        ImmutableArray<ITsIdentifier> Left { get; }
+        ITsIdentifier Right { get; }
+    }
+
+    /// <summary>
+    /// Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.
+    /// </summary>
+    internal partial class TsQualifiedName : TsAstNode, ITsQualifiedName
+    {
+        public TsQualifiedName(
+            ImmutableArray<ITsIdentifier> left,
+            ITsIdentifier right,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(left, right);
+            Left = left;
+            Right = right;
+        }
+
+        public ImmutableArray<ITsIdentifier> Left { get; }
+        public ITsIdentifier Right { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsIdentifier> left, ITsIdentifier right);
+        public override void Accept(TsVisitor visitor) => visitor.VisitQualifiedName(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitQualifiedName(emitter, this);
+    }
+
+    public static class QualifiedNameExtensions
+    {
+        public static ITsQualifiedName WithLeft(this ITsQualifiedName node, ImmutableArray<ITsIdentifier> value) =>
+            node.Left == value ? node : new TsQualifiedName(value, node.Right, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsQualifiedName WithRight(this ITsQualifiedName node, ITsIdentifier value) =>
+            node.Right == value ? node : new TsQualifiedName(node.Left, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// RequiredParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Base interface for a required parameter in a <see cref="ITsParameterList" />.
+    /// </summary>
+    public interface ITsRequiredParameter : ITsAstNode
+    {
+    }
+
+    //// ===============================================================================================================
+    //// RestParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a function parameter of the form '... parameterName: type'.
+    /// </summary>
+    public interface ITsRestParameter : ITsAstNode
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsType? ParameterType { get; }
+    }
+
+    /// <summary>
+    /// Represents a function parameter of the form '... parameterName: type'.
+    /// </summary>
+    internal partial class TsRestParameter : TsAstNode, ITsRestParameter
+    {
+        public TsRestParameter(
+            ITsIdentifier parameterName,
+            ITsType? parameterType,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(parameterName, parameterType);
+            ParameterName = parameterName;
+            ParameterType = parameterType;
+        }
+
+        public ITsIdentifier ParameterName { get; }
+        public ITsType? ParameterType { get; }
+
+        partial void VerifyInputs(ITsIdentifier parameterName, ITsType? parameterType);
+        public override void Accept(TsVisitor visitor) => visitor.VisitRestParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRestParameter(emitter, this);
+    }
+
+    public static class RestParameterExtensions
+    {
+        public static ITsRestParameter WithParameterName(this ITsRestParameter node, ITsIdentifier value) =>
+            node.ParameterName == value ? node : new TsRestParameter(value, node.ParameterType, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsRestParameter WithParameterType(this ITsRestParameter node, ITsType? value) =>
+            node.ParameterType == value ? node : new TsRestParameter(node.ParameterName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// SingleNameBinding
     //// ===============================================================================================================
 
@@ -942,6 +1297,100 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     //// ===============================================================================================================
+    //// StringOptionalParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents an optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+    /// </summary>
+    public interface ITsStringOptionalParameter : ITsOptionalParameter
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsStringLiteral StringLiteral { get; }
+    }
+
+    /// <summary>
+    /// Represents an optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+    /// </summary>
+    internal partial class TsStringOptionalParameter : TsAstNode, ITsStringOptionalParameter
+    {
+        public TsStringOptionalParameter(
+            ITsIdentifier parameterName,
+            ITsStringLiteral stringLiteral,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(parameterName, stringLiteral);
+            ParameterName = parameterName;
+            StringLiteral = stringLiteral;
+        }
+
+        public ITsIdentifier ParameterName { get; }
+        public ITsStringLiteral StringLiteral { get; }
+
+        partial void VerifyInputs(ITsIdentifier parameterName, ITsStringLiteral stringLiteral);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringOptionalParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringOptionalParameter(emitter, this);
+    }
+
+    public static class StringOptionalParameterExtensions
+    {
+        public static ITsStringOptionalParameter WithParameterName(this ITsStringOptionalParameter node, ITsIdentifier value) =>
+            node.ParameterName == value ? node : new TsStringOptionalParameter(value, node.StringLiteral, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsStringOptionalParameter WithStringLiteral(this ITsStringOptionalParameter node, ITsStringLiteral value) =>
+            node.StringLiteral == value ? node : new TsStringOptionalParameter(node.ParameterName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// StringRequiredParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+    /// </summary>
+    public interface ITsStringRequiredParameter : ITsRequiredParameter
+    {
+        ITsIdentifier ParameterName { get; }
+        ITsStringLiteral StringLiteral { get; }
+    }
+
+    /// <summary>
+    /// Represents a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.
+    /// </summary>
+    internal partial class TsStringRequiredParameter : TsAstNode, ITsStringRequiredParameter
+    {
+        public TsStringRequiredParameter(
+            ITsIdentifier parameterName,
+            ITsStringLiteral stringLiteral,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(parameterName, stringLiteral);
+            ParameterName = parameterName;
+            StringLiteral = stringLiteral;
+        }
+
+        public ITsIdentifier ParameterName { get; }
+        public ITsStringLiteral StringLiteral { get; }
+
+        partial void VerifyInputs(ITsIdentifier parameterName, ITsStringLiteral stringLiteral);
+        public override void Accept(TsVisitor visitor) => visitor.VisitStringRequiredParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringRequiredParameter(emitter, this);
+    }
+
+    public static class StringRequiredParameterExtensions
+    {
+        public static ITsStringRequiredParameter WithParameterName(this ITsStringRequiredParameter node, ITsIdentifier value) =>
+            node.ParameterName == value ? node : new TsStringRequiredParameter(value, node.StringLiteral, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsStringRequiredParameter WithStringLiteral(this ITsStringRequiredParameter node, ITsStringLiteral value) =>
+            node.StringLiteral == value ? node : new TsStringRequiredParameter(node.ParameterName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
     //// TemplatePart
     //// ===============================================================================================================
 
@@ -986,5 +1435,92 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsTemplatePart WithExpression(this ITsTemplatePart node, ITsExpression? value) =>
             node.Expression == value ? node : new TsTemplatePart(node.Template, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// TypeParameter
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
+    /// </summary>
+    public interface ITsTypeParameter : ITsAstNode
+    {
+        ITsIdentifier TypeName { get; }
+        ITsType? Constraint { get; }
+    }
+
+    /// <summary>
+    /// Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.
+    /// </summary>
+    internal partial class TsTypeParameter : TsAstNode, ITsTypeParameter
+    {
+        public TsTypeParameter(
+            ITsIdentifier typeName,
+            ITsType? constraint,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(typeName, constraint);
+            TypeName = typeName;
+            Constraint = constraint;
+        }
+
+        public ITsIdentifier TypeName { get; }
+        public ITsType? Constraint { get; }
+
+        partial void VerifyInputs(ITsIdentifier typeName, ITsType? constraint);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameter(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeParameter(emitter, this);
+    }
+
+    public static class TypeParameterExtensions
+    {
+        public static ITsTypeParameter WithTypeName(this ITsTypeParameter node, ITsIdentifier value) =>
+            node.TypeName == value ? node : new TsTypeParameter(value, node.Constraint, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTypeParameter WithConstraint(this ITsTypeParameter node, ITsType? value) =>
+            node.Constraint == value ? node : new TsTypeParameter(node.TypeName, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
+
+    //// ===============================================================================================================
+    //// TypeParameters
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
+    /// </summary>
+    public interface ITsTypeParameters : ITsAstNode
+    {
+        ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+    }
+
+    /// <summary>
+    /// Represents a list of type parameters of the form '&lt;type, type&gt;'.
+    /// </summary>
+    internal partial class TsTypeParameters : TsAstNode, ITsTypeParameters
+    {
+        public TsTypeParameters(
+            ImmutableArray<ITsTypeParameter> typeParameters,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(typeParameters);
+            TypeParameters = typeParameters;
+        }
+
+        public ImmutableArray<ITsTypeParameter> TypeParameters { get; }
+
+        partial void VerifyInputs(ImmutableArray<ITsTypeParameter> typeParameters);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeParameters(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeParameters(emitter, this);
+    }
+
+    public static class TypeParametersExtensions
+    {
+        public static ITsTypeParameters WithTypeParameters(this ITsTypeParameters node, ImmutableArray<ITsTypeParameter> value) =>
+            node.TypeParameters == value ? node : new TsTypeParameters(value, node.LeadingTrivia, node.TrailingTrivia);
     }
 }

@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -29,7 +28,7 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
             IEnumerable<ITsClassElement>? classBody = null)
         {
             ClassName = className;
-            TypeParameters = typeParameters ?? new TsTypeParameters();
+            TypeParameters = typeParameters ?? TsAstFactory.TypeParameters();
             Heritage = heritage;
             IsAbstract = isAbstract;
             ClassBody = classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty;

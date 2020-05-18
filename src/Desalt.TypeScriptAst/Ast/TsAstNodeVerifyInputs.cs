@@ -71,9 +71,9 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(
             ITsIdentifier? defaultBinding,
             ITsIdentifier? namespaceBinding,
-            ImmutableArray<ITsImportSpecifier>? namedImports)
+            ImmutableArray<ITsImportSpecifier> namedImports)
         {
-            if (defaultBinding == null && namespaceBinding == null && namedImports == null)
+            if (defaultBinding == null && namespaceBinding == null && namedImports.IsEmpty)
             {
                 throw new ArgumentException(
                     $"At least one of {nameof(defaultBinding)}, {nameof(namespaceBinding)}, or " +

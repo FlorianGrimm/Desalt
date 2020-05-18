@@ -4,8 +4,34 @@
 * Ecma-262 6.0 (ES 2015) Grammar
 * See http://www.ecma-international.org/ecma-262/6.0/
 ****************************************************************************************************
+
+****************************************************************************************************
+* TypeScript Grammar, version 1.8 (Jan 2016)
+* ==========================================
+* See https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md
+*
+* The TypeScript grammar is a superset of the grammar defined in the ECMAScript 2015 Language
+* Specification (specifically, the ECMA-262 Standard, 6th Edition) and this appendix lists only
+* productions that are new or modified from the ECMAScript grammar.
+*
+* See http://www.ecma-international.org/ecma-262/6.0/ for the ES2015 grammar.
+*
+* Many of these interface names and shapes are taken from the TypeScript source code at:
+* https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts.
+*
+* There is also an Antlr grammar defined here:
+* https://raw.githubusercontent.com/antlr/grammars-v4/master/typescript/TypeScriptParser.g4
+****************************************************************************************************
 -->
+
 <Grammar xmlns="https://github.com/jrockwood/Desalt/GrammarSchema.xsd" language="TypeScript">
+
+  <!--
+  ==================================================================================================
+  = Trivia Nodes (whitespace and comments)
+  ==================================================================================================
+  -->
+
   <TriviaNodes>
     <!--
     11.4 Comments
@@ -60,6 +86,12 @@
       <Property name="OmitNewLineAtEnd" type="bool" />
     </TriviaNode>
   </TriviaNodes>
+
+  <!--
+  ==================================================================================================
+  = AST (abstract syntax tree) Nodes
+  ==================================================================================================
+  -->
 
   <AstNodes>
     <!--
@@ -1009,16 +1041,16 @@
     </AstNode>
     <AstNode name="CaseOrDefaultClause" baseInterfaces="ITsAstNode" interfaceOnly="true">
       <Comment>Represents either a 'case' or 'default' clause within a 'switch' statement.</Comment>
-      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;" />
     </AstNode>
     <AstNode name="CaseClause" baseInterfaces="ITsCaseOrDefaultClause">
       <Comment>Represents a 'case' clause within a 'switch' statement of the form 'case expression: statements'.</Comment>
       <Property name="Expression" type="ITsExpression" />
-      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" declaredInBaseInterface="true" />
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;" declaredInBaseInterface="true" />
     </AstNode>
     <AstNode name="DefaultClause" baseInterfaces="ITsCaseOrDefaultClause">
       <Comment>Represents a 'default' clause within a 'switch' statement of the form 'default: statements'.</Comment>
-      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;?" declaredInBaseInterface="true" />
+      <Property name="Statements" type="ImmutableArray&lt;ITsStatementListItem&gt;" declaredInBaseInterface="true" />
     </AstNode>
 
     <!--
@@ -1159,7 +1191,7 @@
       <Property name="SingleParameterName" type="ITsIdentifier?" />
       <Property name="CallSignature" type="ITsCallSignature?" />
       <Property name="BodyExpression" type="ITsExpression?" />
-      <Property name="Body" type="ImmutableArray&lt;ITsStatementListItem&gt;?" />
+      <Property name="Body" type="ImmutableArray&lt;ITsStatementListItem&gt;" />
     </AstNode>
 
     <!--
@@ -1298,7 +1330,7 @@
       <Comment>Represents an import clause of the form 'identifier', '* as identifier', '{ importSpecifier, ... }', 'identifier, * as identifier', or 'identifier, { importSpecifier, ... }'.</Comment>
       <Property name="DefaultBinding" type="ITsIdentifier?" />
       <Property name="NamespaceBinding" type="ITsIdentifier?" />
-      <Property name="NamedImports" type="ImmutableArray&lt;ITsImportSpecifier&gt;?" />
+      <Property name="NamedImports" type="ImmutableArray&lt;ITsImportSpecifier&gt;" />
     </AstNode>
     <AstNode name="FromClause" baseInterfaces="ITsAstNode">
       <Comment>Represents a from clause in an import or export statement, of the form 'from moduleName'.</Comment>
@@ -1345,5 +1377,426 @@
      *   IdentifierName as IdentifierName
      */
     -->
+
+    <!--
+    ================================================================================================
+    = TypeScript-specific Nodes (type system)
+    ================================================================================================
+    -->
+
+    <!--
+    /* A.1 Types
+     * =========
+     * TypeParameters:
+     *   < TypeParameterList>
+     *
+     * TypeParameterList:
+     *   TypeParameter
+     *   TypeParameterList , TypeParameter
+     *
+     * TypeParameter:
+     *   BindingIdentifier ConstraintOpt
+     *
+     * Constraint:
+     *   extends Type
+     */
+    -->
+    <AstNode name="TypeParameters" baseInterfaces="ITsAstNode">
+      <Comment><![CDATA[Represents a list of type parameters of the form '&lt;type, type&gt;'.]]></Comment>
+      <Property name="TypeParameters" type="ImmutableArray&lt;ITsTypeParameter&gt;" />
+    </AstNode>
+    <AstNode name="TypeParameter" baseInterfaces="ITsAstNode">
+      <Comment><![CDATA[Represents a TypeScript type parameter, for example &lt;MyType extends MyBase&gt;.]]></Comment>
+      <Property name="TypeName" type="ITsIdentifier" />
+      <Property name="Constraint" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* TypeArguments:
+     *   < TypeArgumentList>
+     *
+     * TypeArgumentList:
+     *   TypeArgument
+     *   TypeArgumentList , TypeArgument
+     *
+     * TypeArgument:
+     *   Type
+     *
+     * Type:
+     *   UnionOrIntersectionOrPrimaryType
+     *   FunctionType
+     *   ConstructorType
+     *
+     * UnionOrIntersectionOrPrimaryType:
+     *   UnionType
+     *   IntersectionOrPrimaryType
+     *
+     * IntersectionOrPrimaryType:
+     *   IntersectionType
+     *   PrimaryType
+     *
+     * PrimaryType:
+     *   PredefinedType
+     *   TypeReference
+     *   ParenthesizedType
+     *   ObjectType
+     *   ArrayType
+     *   TupleType
+     *   TypeQuery
+     *   ThisType
+     *
+     * ParenthesizedType:
+     *   ( Type )
+     *
+     * PredefinedType:
+     *   any
+     *   number
+     *   boolean
+     *   string
+     *   symbol
+     *   void
+     */
+    -->
+    <AstNode name="Type" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all types.</Comment>
+    </AstNode>
+    <AstNode name="ParenthesizedType" baseInterfaces="ITsType">
+      <Comment>Represents a parenthesized type, of the form '(Type)'.</Comment>
+      <Property name="Type" type="ITsType" />
+    </AstNode>
+
+    <!--
+    /* TypeReference:
+     *   TypeName [no LineTerminator here] TypeArgumentsOpt
+     *
+     * TypeName:
+     *   IdentifierReference
+     *   NamespaceName . IdentifierReference
+     *
+     * NamespaceName:
+     *   IdentifierReference
+     *   NamespaceName . IdentifierReference
+     */
+    -->
+    <AstNode name="TypeReference" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript type reference.</Comment>
+      <Property name="TypeName" type="ITsTypeName" />
+      <Property name="TypeArguments" type="ImmutableArray&lt;ITsType&gt;" />
+    </AstNode>
+    <AstNode name="TypeName" baseInterfaces="ITsExpression" interfaceOnly="true">
+      <Comment>Marker interface for valid TypeScript type names.</Comment>
+    </AstNode>
+    <AstNode name="QualifiedName" baseInterfaces="ITsTypeName">
+      <Comment>Represents a qualified name, which has dots between identifiers. For example, 'ns.type.method'.</Comment>
+      <Property name="Left" type="ImmutableArray&lt;ITsIdentifier&gt;" />
+      <Property name="Right" type="ITsIdentifier" />
+    </AstNode>
+    <AstNode name="GenericTypeName" baseInterfaces="ITsQualifiedName">
+      <Comment><![CDATA[Represents a qualified name with type arguments. For example, 'ns.type.method&lt;T1, T2&gt;'.]]></Comment>
+      <Property name="Left" type="ImmutableArray&lt;ITsIdentifier&gt;" declaredInBaseInterface="true" />
+      <Property name="Right" type="ITsIdentifier"  declaredInBaseInterface="true" />
+      <Property name="TypeArguments" type="ImmutableArray&lt;ITsType&gt;" />
+    </AstNode>
+
+    <!--
+    /* ObjectType:
+     *   { TypeBodyOpt }
+     *
+     * TypeBody:
+     *   TypeMemberList ;Opt
+     *   TypeMemberList ,Opt
+     *
+     * TypeMemberList:
+     *   TypeMember
+     *   TypeMemberList ; TypeMember
+     *   TypeMemberList , TypeMember
+     *
+     * TypeMember:
+     *   PropertySignature
+     *   CallSignature
+     *   ConstructSignature
+     *   IndexSignature
+     *   MethodSignature
+     */
+    -->
+    <AstNode name="ObjectType" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript object type.</Comment>
+      <Property name="TypeMembers" type="ImmutableArray&lt;ITsTypeMember&gt;" />
+      <Property name="ForceSingleLine" type="bool">
+        <Comment>Determines whether the object should be emitted on a single line. This technically should not be part of the interface, but it's easier with the current infrastructure</Comment>
+      </Property>
+    </AstNode>
+    <AstNode name="TypeMember" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for all type members.</Comment>
+    </AstNode>
+
+    <!--
+    /* ArrayType:
+     *   PrimaryType [no LineTerminator here] [ ]
+     */
+    -->
+    <AstNode name="ArrayType" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript array type.</Comment>
+      <Property name="Type" type="ITsType" />
+    </AstNode>
+
+    <!--
+    /* TupleType:
+     *   [ TupleElementTypes ]
+     *
+     * TupleElementTypes:
+     *   TupleElementType
+     *   TupleElementTypes , TupleElementType
+     *
+     * TupleElementType:
+     *   Type
+     *
+     * UnionType:
+     *   UnionOrIntersectionOrPrimaryType | IntersectionOrPrimaryType
+     *
+     * IntersectionType:
+     *   IntersectionOrPrimaryType & PrimaryType
+     */
+    -->
+    <AstNode name="TupleType" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript tuple type.</Comment>
+      <Property name="ElementTypes" type="ImmutableArray&lt;ITsType&gt;" />
+    </AstNode>
+    <AstNode name="UnionType" baseInterfaces="ITsType">
+      <Comment>Represents a union type of the form 'type1 | type2'.</Comment>
+      <Property name="Types" type="ImmutableArray&lt;ITsType&gt;" />
+    </AstNode>
+    <AstNode name="IntersectionType" baseInterfaces="ITsType">
+      <Comment><![CDATA[Represents an intersection type of the form 'type1 &amp; type2'.]]></Comment>
+      <Property name="Types" type="ImmutableArray&lt;ITsType&gt;" />
+    </AstNode>
+
+    <!--
+    /* FunctionType:
+     *   TypeParametersOpt ( ParameterListOpt ) => Type
+     *
+     * ConstructorType:
+     *   new TypeParametersOpt ( ParameterListOpt ) => Type
+     */
+    -->
+    <AstNode name="FunctionType" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript function type.</Comment>
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Parameters" type="ITsParameterList?" />
+      <Property name="ReturnType" type="ITsType" />
+    </AstNode>
+    <AstNode name="ConstructorType" baseInterfaces="ITsType">
+      <Comment>Represents a TypeScript constructor type.</Comment>
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Parameters" type="ITsParameterList?" />
+      <Property name="ReturnType" type="ITsType" />
+    </AstNode>
+
+    <!--
+    /* TypeQuery:
+     *   typeof TypeQueryExpression
+     *
+     * TypeQueryExpression:
+     *   IdentifierReference
+     *   TypeQueryExpression . IdentifierName
+     */
+    -->
+    <AstNode name="TypeQuery" baseInterfaces="ITsType">
+      <Comment>Represents a 'typeof' query.</Comment>
+      <Property name="Query" type="ITsTypeName" />
+    </AstNode>
+
+    <!--
+    /* ThisType:
+     *   this
+     */
+    -->
+    <AstNode name="ThisType" baseInterfaces="ITsType">
+      <Comment>Represents the 'this' type.</Comment>
+    </AstNode>
+
+    <!--
+    /* PropertySignature:
+     *   readonlyOpt PropertyName ?Opt TypeAnnotationOpt
+     *
+     * PropertyName:
+     *   LiteralPropertyName
+     *   ComputedPropertyName
+     *
+     * LiteralPropertyName:
+     *   IdentifierName
+     *   StringLiteral
+     *   NumericLiteral
+     *
+     * ComputedPropertyName:
+     *   [ AssignmentExpression ]
+     *
+     * TypeAnnotation:
+     *   : Type
+     */
+    -->
+    <AstNode name="PropertySignature" baseInterfaces="ITsTypeMember">
+      <Comment>Represents a property signature.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="IsReadOnly" type="bool" />
+      <Property name="IsOptional" type="bool" />
+      <Property name="PropertyType" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* CallSignature:
+     *   TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
+     */
+    -->
+    <AstNode name="CallSignature" baseInterfaces="ITsTypeMember">
+      <Comment><![CDATA[Represents a call signature of the form '&gt;T&lt;(parameter: type): type'.]]></Comment>
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Parameters" type="ITsParameterList?" />
+      <Property name="ReturnType" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* ParameterList:
+     *   RequiredParameterList
+     *   OptionalParameterList
+     *   RestParameter
+     *   RequiredParameterList , OptionalParameterList
+     *   RequiredParameterList , RestParameter
+     *   OptionalParameterList , RestParameter
+     *   RequiredParameterList , OptionalParameterList , RestParameter
+     *
+     * RequiredParameterList:
+     *   RequiredParameter
+     *   RequiredParameterList , RequiredParameter
+     *
+     * RequiredParameter:
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt
+     *   BindingIdentifier : StringLiteral
+     *
+     * OptionalParameterList:
+     *   OptionalParameter
+     *   OptionalParameterList , OptionalParameter
+     *
+     * OptionalParameter:
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern ? TypeAnnotationOpt
+     *   AccessibilityModifierOpt BindingIdentifierOrPattern TypeAnnotationOpt Initializer
+     *   BindingIdentifier ? : StringLiteral
+     *
+     * AccessibilityModifier:
+     *   public
+     *   private
+     *   protected
+     */
+    -->
+    <AstNode name="ParameterList" baseInterfaces="ITsAstNode">
+      <Comment>Represents a parameter list of the form '(parameter: type)'.</Comment>
+      <Property name="RequiredParameters" type="ImmutableArray&lt;ITsRequiredParameter&gt;" />
+      <Property name="OptionalParameters" type="ImmutableArray&lt;ITsOptionalParameter&gt;" />
+      <Property name="RestParameter" type="ITsRestParameter?" />
+    </AstNode>
+    <AstNode name="RequiredParameter" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment><![CDATA[Base interface for a required parameter in a <see cref="ITsParameterList" />.]]></Comment>
+    </AstNode>
+    <AstNode name="BoundRequiredParameter" baseInterfaces="ITsRequiredParameter">
+      <Comment>Represents a bound required parameter in a parameter list for a function.</Comment>
+      <Enum name="TsAccessibilityModifier">
+        <EnumValue name="Public" />
+        <EnumValue name="Private" />
+        <EnumValue name="Protected" />
+      </Enum>
+      <Property name="Modifier" type="TsAccessibilityModifier?" />
+      <Property name="ParameterName" type="ITsBindingIdentifierOrPattern" />
+      <Property name="ParameterType" type="ITsType?" />
+    </AstNode>
+    <AstNode name="StringRequiredParameter" baseInterfaces="ITsRequiredParameter">
+      <Comment><![CDATA[Represents a required function parameter in the form <c>parameterName: 'stringLiteral'</c>.]]></Comment>
+      <Property name="ParameterName" type="ITsIdentifier" />
+      <Property name="StringLiteral" type="ITsStringLiteral" />
+    </AstNode>
+    <AstNode name="OptionalParameter" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment><![CDATA[Base interface for an optional parameter in a <see cref="ITsParameterList" />.]]></Comment>
+    </AstNode>
+    <AstNode name="BoundOptionalParameter" baseInterfaces="ITsOptionalParameter">
+      <Comment>Represents a bound optional parameter in a parameter list for a function.</Comment>
+      <Property name="Modifier" type="TsAccessibilityModifier?" />
+      <Property name="ParameterName" type="ITsBindingIdentifierOrPattern" />
+      <Property name="ParameterType" type="ITsType?" />
+      <Property name="Initializer" type="ITsExpression?" />
+    </AstNode>
+    <AstNode name="StringOptionalParameter" baseInterfaces="ITsOptionalParameter">
+      <Comment><![CDATA[Represents an optional function parameter in the form <c>parameterName: 'stringLiteral'</c>.]]></Comment>
+      <Property name="ParameterName" type="ITsIdentifier" />
+      <Property name="StringLiteral" type="ITsStringLiteral" />
+    </AstNode>
+
+    <!--
+    /* BindingIdentifierOrPattern:
+     *   BindingIdentifier
+     *   BindingPattern
+     */
+    -->
+    <AstNode name="BindingIdentifierOrPattern" baseInterfaces="ITsAstNode" interfaceOnly="true">
+      <Comment>Base interface for a binding identifier or pattern.</Comment>
+    </AstNode>
+
+    <!--
+    /* RestParameter:
+     *   ... BindingIdentifier TypeAnnotationOpt
+     */
+    -->
+    <AstNode name="RestParameter" baseInterfaces="ITsAstNode">
+      <Comment>Represents a function parameter of the form '... parameterName: type'.</Comment>
+      <Property name="ParameterName" type="ITsIdentifier" />
+      <Property name="ParameterType" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* ConstructSignature:
+     *   new TypeParametersOpt ( ParameterListOpt ) TypeAnnotationOpt
+     */
+    -->
+    <AstNode name="ConstructSignature" baseInterfaces="ITsTypeMember">
+      <Comment><![CDATA[Represents a constructor method signature of the form 'new &lt;T&gt;(parameter: type): type'.]]></Comment>
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Parameters" type="ITsParameterList?" />
+      <Property name="ReturnType" type="ITsType?" />
+    </AstNode>
+
+    <!--
+    /* IndexSignature:
+     *   [ BindingIdentifier : string ] TypeAnnotation
+     *   [ BindingIdentifier : number ] TypeAnnotation
+     */
+    -->
+    <AstNode name="IndexSignature" baseInterfaces="ITsTypeMember, ITsAmbientClassBodyElement">
+      <Comment>Represents an index signature of the form '[parameterName: string|number]: type'.</Comment>
+      <Property name="ParameterName" type="ITsIdentifier" />
+      <Property name="IsParameterNumberType" type="bool" />
+      <Property name="ReturnType" type="ITsType" />
+    </AstNode>
+
+    <!--
+    /* MethodSignature:
+     *   PropertyName ?Opt CallSignature
+     */
+    -->
+    <AstNode name="MethodSignature" baseInterfaces="ITsTypeMember">
+      <Comment>Represents a method signature, which is a shorthand for declaring a property of a function type.</Comment>
+      <Property name="PropertyName" type="ITsPropertyName" />
+      <Property name="IsOptional" type="bool" />
+      <Property name="CallSignature" type="ITsCallSignature" />
+    </AstNode>
+
+    <!--
+    /* TypeAliasDeclaration:
+     *   type BindingIdentifier TypeParametersOpt = Type ;
+     */
+    -->
+    <AstNode name="TypeAliasDeclaration" baseInterfaces="ITsDeclaration">
+      <Comment><![CDATA[Represents a type alias of the form 'type alias&lt;T&gt; = type'.]]></Comment>
+      <Property name="AliasName" type="ITsIdentifier" />
+      <Property name="TypeParameters" type="ITsTypeParameters?" />
+      <Property name="Type" type="ITsType" />
+    </AstNode>
   </AstNodes>
 </Grammar>

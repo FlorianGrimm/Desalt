@@ -90,7 +90,7 @@ namespace Desalt.TypeScriptAst.Ast
         ITsIdentifier? SingleParameterName { get; }
         ITsCallSignature? CallSignature { get; }
         ITsExpression? BodyExpression { get; }
-        ImmutableArray<ITsStatementListItem>? Body { get; }
+        ImmutableArray<ITsStatementListItem> Body { get; }
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier? singleParameterName,
             ITsCallSignature? callSignature,
             ITsExpression? bodyExpression,
-            ImmutableArray<ITsStatementListItem>? body,
+            ImmutableArray<ITsStatementListItem> body,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
@@ -117,9 +117,9 @@ namespace Desalt.TypeScriptAst.Ast
         public ITsIdentifier? SingleParameterName { get; }
         public ITsCallSignature? CallSignature { get; }
         public ITsExpression? BodyExpression { get; }
-        public ImmutableArray<ITsStatementListItem>? Body { get; }
+        public ImmutableArray<ITsStatementListItem> Body { get; }
 
-        partial void VerifyInputs(ITsIdentifier? singleParameterName, ITsCallSignature? callSignature, ITsExpression? bodyExpression, ImmutableArray<ITsStatementListItem>? body);
+        partial void VerifyInputs(ITsIdentifier? singleParameterName, ITsCallSignature? callSignature, ITsExpression? bodyExpression, ImmutableArray<ITsStatementListItem> body);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrowFunction(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrowFunction(emitter, this);
     }
@@ -135,7 +135,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsArrowFunction WithBodyExpression(this ITsArrowFunction node, ITsExpression? value) =>
             node.BodyExpression == value ? node : new TsArrowFunction(node.SingleParameterName, node.CallSignature, value, node.Body, node.LeadingTrivia, node.TrailingTrivia);
 
-        public static ITsArrowFunction WithBody(this ITsArrowFunction node, ImmutableArray<ITsStatementListItem>? value) =>
+        public static ITsArrowFunction WithBody(this ITsArrowFunction node, ImmutableArray<ITsStatementListItem> value) =>
             node.Body == value ? node : new TsArrowFunction(node.SingleParameterName, node.CallSignature, node.BodyExpression, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
@@ -1161,6 +1161,17 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitThis(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThis(emitter, this);
+    }
+
+    //// ===============================================================================================================
+    //// TypeName
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Marker interface for valid TypeScript type names.
+    /// </summary>
+    public interface ITsTypeName : ITsExpression
+    {
     }
 
     //// ===============================================================================================================

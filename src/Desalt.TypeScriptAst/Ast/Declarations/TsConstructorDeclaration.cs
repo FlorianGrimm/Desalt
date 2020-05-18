@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Desalt.TypeScriptAst.Ast.Types;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -30,7 +29,11 @@ namespace Desalt.TypeScriptAst.Ast.Declarations
         {
             IsAmbient = isAmbient;
             AccessibilityModifier = accessibilityModifier;
-            ParameterList = parameterList ?? TsParameterList.Empty;
+            ParameterList = parameterList ??
+                new TsParameterList(
+                    ImmutableArray<ITsRequiredParameter>.Empty,
+                    ImmutableArray<ITsOptionalParameter>.Empty,
+                    null);
             if (functionBody != null)
             {
                 FunctionBody = functionBody.ToImmutableArray();

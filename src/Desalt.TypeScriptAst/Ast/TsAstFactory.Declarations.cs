@@ -79,7 +79,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsTypeAliasDeclaration TypeAliasDeclaration(ITsIdentifier aliasName, ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type);
+            return new TsTypeAliasDeclaration(aliasName, typeParameters: null, type);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeParameter typeParameter,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, TypeParameters(typeParameter));
+            return new TsTypeAliasDeclaration(aliasName, TypeParameters(typeParameter), type);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeParameters typeParameters,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
+            return new TsTypeAliasDeclaration(aliasName, typeParameters, type);
         }
 
         /// <summary>
@@ -471,7 +471,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClause(ITsIdentifier defaultBinding)
         {
-            return new TsImportClause(defaultBinding, namespaceBinding: null, namedImports: null);
+            return new TsImportClause(
+                defaultBinding,
+                namespaceBinding: null,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>
@@ -479,7 +482,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding)
         {
-            return new TsImportClause(defaultBinding, namespaceBinding, namedImports: null);
+            return new TsImportClause(
+                defaultBinding,
+                namespaceBinding,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>
@@ -497,7 +503,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding)
         {
-            return new TsImportClause(defaultBinding: null, namespaceBinding, namedImports: null);
+            return new TsImportClause(
+                defaultBinding: null,
+                namespaceBinding,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>

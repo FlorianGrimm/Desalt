@@ -68,7 +68,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Visits a TypeScript constructor type.
         /// </summary>
-        public virtual void VisitConstructorType(ITsFunctionType node)
+        public virtual void VisitConstructorType(ITsConstructorType node)
         {
             Visit(node);
         }

@@ -8,7 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Desalt.TypeScriptAst.Ast.Types;
 
@@ -21,7 +21,7 @@ namespace Desalt.TypeScriptAst.Ast
         //// Singleton Properties
         //// ===========================================================================================================
 
-        public static ITsThisType ThisType => TsThisType.Instance;
+        public static readonly ITsThisType ThisType = new TsThisType();
 
         public static readonly ITsType AnyType = TsPredefinedType.Any;
         public static readonly ITsType BooleanType = TsPredefinedType.Boolean;
@@ -53,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast
                 return QualifiedName(parts.ToArray());
             }
 
-            return new TsQualifiedName(new TsIdentifier(parts[0]));
+            return new TsQualifiedName(ImmutableArray<ITsIdentifier>.Empty, new TsIdentifier(parts[0]));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>An <see cref="ITsQualifiedName"/>.</returns>
         public static ITsQualifiedName QualifiedName(params ITsIdentifier[] identifiers)
         {
-            return new TsQualifiedName(identifiers.Last(), identifiers.Take(identifiers.Length - 1));
+            return new TsQualifiedName(identifiers.Take(identifiers.Length - 1).ToImmutableArray(), identifiers.Last());
         }
 
         /// <summary>
@@ -79,8 +79,12 @@ namespace Desalt.TypeScriptAst.Ast
             }
 
             var right = new TsIdentifier(names.Last());
-            IEnumerable<TsIdentifier> left = names.Take(names.Length - 1).Select(name => new TsIdentifier(name));
-            return new TsQualifiedName(right, left);
+            var left = names.Take(names.Length - 1)
+                .Select(name => new TsIdentifier(name))
+                .Cast<ITsIdentifier>()
+                .ToImmutableArray();
+
+            return new TsQualifiedName(left, right);
         }
 
         /// <summary>
@@ -92,7 +96,7 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsGenericTypeName GenericTypeName(string dottedName, params ITsType[] typeArguments)
         {
             ITsQualifiedName qualifiedName = QualifiedName(dottedName);
-            return new TsGenericTypeName(qualifiedName.Right, qualifiedName.Left, typeArguments);
+            return new TsGenericTypeName(qualifiedName.Left, qualifiedName.Right, typeArguments.ToImmutableArray());
         }
     }
 }

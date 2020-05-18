@@ -11,7 +11,6 @@ namespace Desalt.TypeScriptAst.Parsing
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Expressions;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     public partial class TsParser
@@ -655,7 +654,7 @@ namespace Desalt.TypeScriptAst.Parsing
         /// ]]></code></remarks>
         private ITsArgumentList ParseArguments()
         {
-            ITsType[]? typeArguments = ParseOptionalTypeArguments();
+            ITsType[] typeArguments = ParseOptionalTypeArguments();
 
             Read(TsTokenCode.LeftParen);
 

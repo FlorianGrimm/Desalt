@@ -209,7 +209,7 @@ namespace Desalt.Core.Translation
             context.TypesToImport.Add(symbol);
 
             // check for generic type arguments
-            ITsType[]? translatedTypeMembers = null;
+            ITsType[] translatedTypeMembers = Array.Empty<ITsType>();
             if (namedTypeSymbol != null)
             {
                 ImmutableArray<ITypeSymbol> typeMembers = namedTypeSymbol.TypeArguments;

@@ -121,8 +121,8 @@ class C
                     Factory.BoundRequiredParameter(s_z, Factory.NumberType)),
                 expectedResult: true,
                 expectedParameterList: Factory.ParameterList(
-                    Factory.BoundRequiredParameter(s_x, Factory.NumberType).ToSafeArray(),
-                    new[]
+                    requiredParameters: Factory.BoundRequiredParameter(s_x, Factory.NumberType).ToSafeArray(),
+                    optionalParameters: new[]
                     {
                         Factory.BoundOptionalParameter(s_y, Factory.StringType),
                         Factory.BoundOptionalParameter(s_z, Factory.NumberType)
@@ -178,8 +178,8 @@ class C
                 translatedParameterList: Factory.ParameterList(Factory.BoundRequiredParameter(s_x, Factory.NumberType)),
                 expectedResult: true,
                 expectedParameterList: Factory.ParameterList(
-                    Factory.BoundRequiredParameter(s_x, Factory.NumberType).ToSingleEnumerable(),
-                    new[]
+                    requiredParameters: Factory.BoundRequiredParameter(s_x, Factory.NumberType).ToSingleEnumerable(),
+                    optionalParameters: new[]
                     {
                         Factory.BoundOptionalParameter(s_y, Factory.BooleanType),
                         Factory.BoundOptionalParameter(s_z, Factory.StringType),

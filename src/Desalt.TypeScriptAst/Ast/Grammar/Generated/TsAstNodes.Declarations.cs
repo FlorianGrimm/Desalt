@@ -84,4 +84,58 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsLexicalDeclaration WithDeclarations(this ITsLexicalDeclaration node, ImmutableArray<ITsLexicalBinding> value) =>
             node.Declarations == value ? node : new TsLexicalDeclaration(node.IsConst, value, node.LeadingTrivia, node.TrailingTrivia);
     }
+
+    //// ===============================================================================================================
+    //// TypeAliasDeclaration
+    //// ===============================================================================================================
+
+    /// <summary>
+    /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
+    /// </summary>
+    public interface ITsTypeAliasDeclaration : ITsDeclaration
+    {
+        ITsIdentifier AliasName { get; }
+        ITsTypeParameters? TypeParameters { get; }
+        ITsType Type { get; }
+    }
+
+    /// <summary>
+    /// Represents a type alias of the form 'type alias&lt;T&gt; = type'.
+    /// </summary>
+    internal partial class TsTypeAliasDeclaration : TsAstNode, ITsTypeAliasDeclaration
+    {
+        public TsTypeAliasDeclaration(
+            ITsIdentifier aliasName,
+            ITsTypeParameters? typeParameters,
+            ITsType type,
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
+            : base(leadingTrivia, trailingTrivia)
+        {
+            VerifyInputs(aliasName, typeParameters, type);
+            AliasName = aliasName;
+            TypeParameters = typeParameters;
+            Type = type;
+        }
+
+        public ITsIdentifier AliasName { get; }
+        public ITsTypeParameters? TypeParameters { get; }
+        public ITsType Type { get; }
+
+        partial void VerifyInputs(ITsIdentifier aliasName, ITsTypeParameters? typeParameters, ITsType type);
+        public override void Accept(TsVisitor visitor) => visitor.VisitTypeAliasDeclaration(this);
+        protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeAliasDeclaration(emitter, this);
+    }
+
+    public static class TypeAliasDeclarationExtensions
+    {
+        public static ITsTypeAliasDeclaration WithAliasName(this ITsTypeAliasDeclaration node, ITsIdentifier value) =>
+            node.AliasName == value ? node : new TsTypeAliasDeclaration(value, node.TypeParameters, node.Type, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTypeAliasDeclaration WithTypeParameters(this ITsTypeAliasDeclaration node, ITsTypeParameters? value) =>
+            node.TypeParameters == value ? node : new TsTypeAliasDeclaration(node.AliasName, value, node.Type, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsTypeAliasDeclaration WithType(this ITsTypeAliasDeclaration node, ITsType value) =>
+            node.Type == value ? node : new TsTypeAliasDeclaration(node.AliasName, node.TypeParameters, value, node.LeadingTrivia, node.TrailingTrivia);
+    }
 }

@@ -12,7 +12,6 @@ namespace Desalt.Core.Translation
     using Desalt.Core.SymbolTables;
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -68,7 +67,7 @@ namespace Desalt.Core.Translation
                 bool adjustedParameters = AlternateSignatureTranslator.TryAdjustParameterListTypes(
                     context,
                     methodSymbol,
-                    callSignature.Parameters,
+                    callSignature.Parameters ?? Factory.ParameterList(),
                     out ITsParameterList translatedParameterList);
 
                 if (adjustedParameters)

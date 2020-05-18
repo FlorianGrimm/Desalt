@@ -458,14 +458,14 @@ class C
     {
         get
         {
-            return (List<Func<string, bool>>)new List<Func<string, bool>>();
+            return new List<Func<string, bool>>();
         }
     }
 }",
                 @"
 class C {
   private static get filters(): Array<(string: string) => boolean> {
-    return <Array<(string: string) => boolean>>[];
+    return [];
   }
 }
 ",

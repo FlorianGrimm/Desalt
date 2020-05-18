@@ -318,7 +318,11 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrowFunction ArrowFunction(ITsIdentifier singleParameterName, ITsExpression bodyExpression)
         {
-            return new TsArrowFunction(singleParameterName, callSignature: null, bodyExpression, body: null);
+            return new TsArrowFunction(
+                singleParameterName,
+                callSignature: null,
+                bodyExpression,
+                body: ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         public static ITsArrowFunction ArrowFunction(
@@ -334,7 +338,11 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrowFunction ArrowFunction(ITsCallSignature callSignature, ITsExpression bodyExpression)
         {
-            return new TsArrowFunction(singleParameterName: null, callSignature, bodyExpression, body: null);
+            return new TsArrowFunction(
+                singleParameterName: null,
+                callSignature,
+                bodyExpression,
+                body: ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         public static ITsArrowFunction ArrowFunction(
