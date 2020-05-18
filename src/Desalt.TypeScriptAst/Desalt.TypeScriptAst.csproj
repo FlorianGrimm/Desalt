@@ -29,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Ast\Generated\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Ast\Grammar\TsAstNodes.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

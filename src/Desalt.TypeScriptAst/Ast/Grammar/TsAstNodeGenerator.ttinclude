@@ -9,21 +9,23 @@
 <#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Xml.Linq" #>
 <#+
-    public string RootOutputDirectory => Path.Combine(Path.GetDirectoryName(Host.TemplateFile), "..", "Generated");
+    public const string GeneratedDirectoryName = "Generated";
+
+    public string RootOutputDirectory => Path.Combine(Path.GetDirectoryName(Host.TemplateFile), GeneratedDirectoryName);
     public string TemplateFileName => Path.GetFileName(Host.TemplateFile);
+    public string OutputFileName => Path.ChangeExtension(TemplateFileName, ".cs");
 
     private static readonly XNamespace Xmlns = "https://github.com/jrockwood/Desalt/GrammarSchema.xsd";
     private static readonly string SingleIndent = new string(' ', 4);
     private static readonly string DoubleIndent = new string(' ', 8);
     private static readonly string TripleIndent = new string(' ', 12);
 
-    public void SaveToFile(string subDirectoryName, string fileName, string generatedText)
+    public void SaveToFile(string fileName)
     {
-        string directoryPath = Path.Combine(RootOutputDirectory, subDirectoryName);
-        Directory.CreateDirectory(directoryPath);
-
-        string filePath = Path.Combine(directoryPath, fileName);
-        File.WriteAllText(filePath, generatedText);
+        Directory.CreateDirectory(RootOutputDirectory);
+        string filePath = Path.Combine(RootOutputDirectory, fileName);
+        File.WriteAllText(filePath, GenerationEnvironment.ToString());
+        GenerationEnvironment.Clear();
     }
 
     public IReadOnlyList<AstNodeDefinition> GatherAstDefinitions()
@@ -290,6 +292,7 @@
 
         // Computed Properties
         public string ArgumentName => SafeArgumentName(Name);
+        public IEnumerable<string> BaseInterfaceList => BaseInterfaces.Split(',').Select(s => s.Trim());
         public string ClassName => "Ts" + Name;
         public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
         public bool HasProperties => Properties.Any();

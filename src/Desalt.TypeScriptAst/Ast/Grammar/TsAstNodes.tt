@@ -1,11 +1,49 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ include file="TsAstNodeGenerator.ttinclude" #>
 <#
-var nodes = GatherAstDefinitions();
-string outputFileName = Path.ChangeExtension(TemplateFileName, ".cs");
+var allNodes = GatherAstDefinitions().OrderBy(x => x.InterfaceName);
+string templateFileWithoutExtension = Path.GetFileNameWithoutExtension(TemplateFileName);
+
+var expressions = allNodes
+    // Put ITsExpression first.
+    .Where(x => x.InterfaceName == "ITsExpression")
+    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsExpression")));
+
+var statements = allNodes
+    // Put ITsStatement first.
+    .Where(x => x.InterfaceName == "ITsStatement")
+    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsStatement")));
+
+var declarations = allNodes
+    // Put ITsDeclaration first.
+    .Where(x => x.InterfaceName == "ITsDeclaration")
+    // Then alphabetize the rest.
+    .Concat(allNodes.Where(x => x.BaseInterfaceList.Contains("ITsDeclaration")));
+
+var others = allNodes.Except(expressions.Concat(statements).Concat(declarations));
+
+for (int i = 0; i < 4; i++)
+{
+    var fileName = templateFileWithoutExtension + (i switch
+    {
+        0 => ".Others.cs",
+        1 => ".Expressions.cs",
+        2 => ".Statements.cs",
+        3 => ".Declarations.cs",
+        _ => throw new InvalidOperationException(),
+    });
+
+    var nodes = i switch
+    {
+        0 => others,
+        1 => expressions,
+        2 => statements,
+        3 => declarations,
+        _ => throw new InvalidOperationException(),
+    };
 #>
 // ---------------------------------------------------------------------------------------------------------------------
-// <copyright file="<#= outputFileName #>" company="Justin Rockwood">
+// <copyright file="<#= fileName #>" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
 // </copyright>
@@ -72,3 +110,10 @@ foreach (var node in nodes) {
 } // end foreach node
 #>
 }
+<#
+    SaveToFile(fileName);
+} // end for loop for files
+#>
+//
+// See the generated nodes in the '<#= GeneratedDirectoryName #>' directory.
+//
