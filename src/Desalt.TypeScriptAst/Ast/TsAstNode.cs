@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.IO;
@@ -25,22 +24,16 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         protected TsAstNode(
-            IEnumerable<ITsAstTriviaNode>? leadingTrivia = null,
-            IEnumerable<ITsAstTriviaNode>? trailingTrivia = null)
+            ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
+            ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
         {
-            LeadingTrivia = leadingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
-            TrailingTrivia = trailingTrivia?.ToImmutableArray() ?? ImmutableArray<ITsAstTriviaNode>.Empty;
+            LeadingTrivia = leadingTrivia ?? ImmutableArray<ITsAstTriviaNode>.Empty;
+            TrailingTrivia = trailingTrivia ?? ImmutableArray<ITsAstTriviaNode>.Empty;
         }
 
         //// ===========================================================================================================
         //// Properties
         //// ===========================================================================================================
-
-        /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public abstract string CodeDisplay { get; }
 
         /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
@@ -56,7 +49,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// Gets a concise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
-        protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
+        protected virtual string DebuggerDisplay => $"{GetType().Name}: {EmitAsString()}";
 
         //// ===========================================================================================================
         //// Operator Overloads
@@ -136,7 +129,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return CodeDisplay;
+            return EmitAsString();
         }
 
         /// <summary>
@@ -150,7 +143,7 @@ namespace Desalt.TypeScriptAst.Ast
                 trivia.Emit(emitter);
             }
 
-            EmitInternal(emitter);
+            EmitContent(emitter);
 
             foreach (ITsAstTriviaNode trivia in TrailingTrivia)
             {
@@ -176,36 +169,37 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Creates a copy of this node with the specified leading trivia.
-        /// </summary>
-        public T WithLeadingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
-        {
-            var copy = (TsAstNode)MemberwiseClone();
-            copy.LeadingTrivia = triviaNodes.ToImmutableArray();
-            return (T)copy;
-        }
-
-        /// <summary>
-        /// Creates a copy of this node with the specified trailing trivia.
-        /// </summary>
-        public T WithTrailingTrivia<T>(params ITsAstTriviaNode[] triviaNodes) where T : TsAstNode
-        {
-            // when there are no trivia nodes to append, return the original object
-            if (triviaNodes == null || triviaNodes.Length == 0)
-            {
-                return (T)this;
-            }
-
-            var copy = (TsAstNode)MemberwiseClone();
-            copy.TrailingTrivia = triviaNodes.ToImmutableArray();
-            return (T)copy;
-        }
-
-        /// <summary>
-        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
+        /// Emits this AST node into code using the specified <see cref="Emitter"/>. This will be called after the
+        /// leading trivia has been emitted and before the trailing trivia.
         /// </summary>
         /// <param name="emitter">The emitter to use.</param>
-        protected abstract void EmitInternal(Emitter emitter);
+        protected abstract void EmitContent(Emitter emitter);
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified leading trivia.
+        ///// </summary>
+        //public ITsAstNode WithLeadingTrivia(ImmutableArray<ITsAstTriviaNode> value)
+        //{
+        //    return LeadingTrivia == value ? this : ShallowCopy(value, TrailingTrivia);
+        //}
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified trailing trivia.
+        ///// </summary>
+        //public ITsAstNode WithTrailingTrivia(ImmutableArray<ITsAstTriviaNode> value)
+        //{
+        //    return TrailingTrivia == value ? this : ShallowCopy(LeadingTrivia, value);
+        //}
+
+        /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        public abstract ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

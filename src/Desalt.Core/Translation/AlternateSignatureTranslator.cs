@@ -12,7 +12,6 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.SymbolTables;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Types;
     using Microsoft.CodeAnalysis;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -43,7 +42,7 @@ namespace Desalt.Core.Translation
         {
             adjustedParameterList = translatedParameterList;
 
-            // we don't need to adjust anything if the method doesn't belong to an [AlternateSignature] group
+            // We don't need to adjust anything if the method doesn't belong to an [AlternateSignature] group.
             if (!context.AlternateSignatureSymbolTable.TryGetValue(
                 methodSymbol,
                 out AlternateSignatureMethodGroup? methodGroup))
@@ -51,16 +50,16 @@ namespace Desalt.Core.Translation
                 return false;
             }
 
-            // make sure the calculated implementing method is actually the same as the methodSymbol
-            // that is passed in since we only want to translate the implementing method
+            // Make sure the calculated implementing method is actually the same as the methodSymbol
+            // that is passed in since we only want to translate the implementing method.
             IMethodSymbol implementingMethod = methodGroup.ImplementingMethod;
             if (!SymbolEqualityComparer.Default.Equals(methodSymbol, implementingMethod))
             {
                 return false;
             }
 
-            // cast the translated arrays to the appropriate type since we only support bound
-            // parameters (C# doesn't support string parameter types of the form `p: 'str'`)
+            // Cast the translated arrays to the appropriate type since we only support bound
+            // parameters (C# doesn't support string parameter types of the form `p: 'str'`).
             var translatedRequiredParameters = translatedParameterList.RequiredParameters
                 .Cast<ITsBoundRequiredParameter>()
                 .ToImmutableArray();
@@ -69,7 +68,7 @@ namespace Desalt.Core.Translation
                 .Cast<ITsBoundOptionalParameter>()
                 .ToImmutableArray();
 
-            // adjust all of the required and optional parameters
+            // Adjust all of the required and optional parameters.
             ImmutableArray<ITsBoundRequiredParameter> requiredParameters = AdjustRequiredParameters(
                 context,
                 methodGroup,
@@ -83,7 +82,7 @@ namespace Desalt.Core.Translation
 
             ITsRestParameter? restParameter = translatedParameterList.RestParameter;
 
-            // create the new parameter list and compare against the old one
+            // Create the new parameter list and compare against the old one.
             adjustedParameterList = Factory.ParameterList(requiredParameters, optionalParameters, restParameter);
             bool changed = !translatedParameterList.Equals(adjustedParameterList);
             return changed;
@@ -103,8 +102,7 @@ namespace Desalt.Core.Translation
             // adjust the types for the required parameters (but only the ones that are shared with
             // everything else - the other ones will be converted to optional parameters below)
             var requiredParameters = translatedRequiredParameters.Take(requiredParamCount)
-                .Select(
-                    (param, index) => param.WithParameterType(DetermineParameterType(context, methodGroup, index)))
+                .Select((param, index) => param.WithParameterType(DetermineParameterType(context, methodGroup, index)))
                 .ToImmutableArray();
 
             return requiredParameters;
@@ -136,12 +134,12 @@ namespace Desalt.Core.Translation
                         translatedParameter.ParameterName,
                         DetermineParameterType(context, methodGroup, index + requiredParamCount)));
 
-            // translate the optional parameter types
+            // Translate the optional parameter types.
             var originalOptionalParameters = translatedOptionalParameters.Select(
                 (param, index) => param.WithParameterType(
                     DetermineParameterType(context, methodGroup, index + translatedRequiredParameters.Length)));
 
-            // add additional optional parameters if the implementing method doesn't have enough
+            // Add additional optional parameters if the implementing method doesn't have enough.
             int maxParamsCount = methodGroup.MaxParameterCount;
             int paramsCount = translatedRequiredParameters.Length + translatedOptionalParameters.Length;
 
@@ -189,7 +187,9 @@ namespace Desalt.Core.Translation
                 .Distinct()
                 .ToArray();
 
-            return translatedTypes.Length == 1 ? translatedTypes[0] : Factory.UnionType(translatedTypes);
+            return translatedTypes.Length == 1
+                ? translatedTypes[0]
+                : Factory.UnionType(translatedTypes[0], translatedTypes[1], translatedTypes.Skip(2).ToArray());
         }
     }
 }

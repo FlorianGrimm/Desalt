@@ -11,7 +11,6 @@ namespace Desalt.Core.Translation
     using System.Linq;
     using Desalt.Core.Diagnostics;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Declarations;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -176,7 +175,9 @@ namespace Desalt.Core.Translation
                 {
                     declaration = declaration.WithDeclarations(
                         declaration.Declarations.Cast<ITsSimpleLexicalBinding>()
-                            .Select(binding => binding.WithVariableType(declarationType)));
+                            .Select(binding => binding.WithVariableType(declarationType))
+                            .Cast<ITsLexicalBinding>()
+                            .ToImmutableArray());
                 }
 
                 // Add any additional statements before this statement.

@@ -8,7 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
-    using Desalt.TypeScriptAst.Ast.Declarations;
+    using System.Collections.Immutable;
 
     public static partial class TsAstFactory
     {
@@ -18,7 +18,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImplementationScript ImplementationScript(params ITsImplementationScriptElement[] elements)
         {
-            return new TsImplementationScript(elements);
+            return new TsImplementationScript(elements.ToImmutableArray());
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImplementationModule ImplementationModule(IEnumerable<ITsImplementationModuleElement> elements)
         {
-            return new TsImplementationModule(elements);
+            return new TsImplementationModule(elements.ToImmutableArray());
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImplementationModule ImplementationModule(params ITsImplementationModuleElement[] elements)
         {
-            return new TsImplementationModule(elements);
+            return new TsImplementationModule(elements.ToImmutableArray());
         }
     }
 }

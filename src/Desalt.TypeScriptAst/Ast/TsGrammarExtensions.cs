@@ -9,11 +9,7 @@ namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Generic;
-    using Desalt.CompilerUtilities.Extensions;
-    using Desalt.TypeScriptAst.Ast.Declarations;
-    using Desalt.TypeScriptAst.Ast.Expressions;
-    using Desalt.TypeScriptAst.Ast.Statements;
-    using Desalt.TypeScriptAst.Ast.Types;
+    using System.Collections.Immutable;
     using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
@@ -57,7 +53,7 @@ namespace Desalt.TypeScriptAst.Ast
         {
             return statement is ITsBlockStatement blockStatement
                 ? blockStatement
-                : new TsBlockStatement(new[] { statement });
+                : new TsBlockStatement(ImmutableArray.Create<ITsStatementListItem>(statement));
         }
 
         /// <summary>
@@ -65,7 +61,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsBlockStatement ToBlock(this ITsExpression expression)
         {
-            return new TsBlockStatement(expression.ToStatement().ToSafeArray());
+            return new TsBlockStatement(ImmutableArray.Create<ITsStatementListItem>(expression.ToStatement()));
         }
 
         /// <summary>
@@ -102,8 +98,6 @@ namespace Desalt.TypeScriptAst.Ast
                 TsUnaryOperator.Minus => "-",
                 TsUnaryOperator.BitwiseNot => "~",
                 TsUnaryOperator.LogicalNot => "!",
-                TsUnaryOperator.Cast => throw new InvalidOperationException(
-                    $"Use {nameof(TsCastExpression.Emit)} instead"),
                 _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, message: null)
             };
         }
@@ -226,15 +220,6 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Returns a ": type" type annotation if the type is not null.
-        /// </summary>
-        /// <param name="type">The type annotation to write.</param>
-        public static string OptionalTypeAnnotation(this ITsType type)
-        {
-            return type != null ? $": {type.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
         /// Writes out a ": type" type annotation if the type is not null.
         /// </summary>
         /// <param name="type">The type annotation to write.</param>
@@ -249,15 +234,6 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
-        /// Returns a " = expression" assignment if the expression is not null.
-        /// </summary>
-        /// <param name="expression">The expression to assign.</param>
-        public static string OptionalAssignment(this ITsExpression expression)
-        {
-            return expression != null ? $" = {expression.CodeDisplay}" : string.Empty;
-        }
-
-        /// <summary>
         /// Writes out a " = expression" assignment if the expression is not null.
         /// </summary>
         /// <param name="expression">The expression to assign.</param>
@@ -269,11 +245,6 @@ namespace Desalt.TypeScriptAst.Ast
                 emitter.Write(" = ");
                 expression.Emit(emitter);
             }
-        }
-
-        public static string OptionalCodeDisplay(this TsAccessibilityModifier? accessibilityModifier)
-        {
-            return accessibilityModifier == null ? "" : accessibilityModifier.ToString().ToLowerInvariant() + " ";
         }
 
         public static void EmitOptional(this TsAccessibilityModifier? accessibilityModifier, Emitter emitter)

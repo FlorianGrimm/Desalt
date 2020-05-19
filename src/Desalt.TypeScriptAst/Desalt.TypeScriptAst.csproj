@@ -12,4 +12,45 @@
   <ItemGroup>
     <ProjectReference Include="..\Desalt.CompilerUtilities\Desalt.CompilerUtilities.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Ast\Grammar\TsTriviaNodes.tt">
+      <LastGenOutput>TsTriviaNodes.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Ast\Grammar\TsAstNodes.tt">
+      <LastGenOutput>TsAstNodes.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Ast\Grammar\TsVisitor.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TsVisitor.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Ast\Grammar\TsAstNodes.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TsAstNodes.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Ast\Grammar\TsTriviaNodes.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TsTriviaNodes.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Ast\Grammar\TsVisitor.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TsVisitor.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Ast\Grammar\Generated\" />
+  </ItemGroup>
 </Project>

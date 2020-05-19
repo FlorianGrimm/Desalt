@@ -21,12 +21,6 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        string CodeDisplay { get; }
-
-        /// <summary>
         /// Gets an array of trivia that appear before this node in the source code.
         /// </summary>
         ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; }
@@ -58,5 +52,25 @@ namespace Desalt.TypeScriptAst.Ast
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
         string EmitAsString(EmitOptions? emitOptions = null);
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified leading trivia.
+        ///// </summary>
+        //ITsAstNode WithLeadingTrivia(ImmutableArray<ITsAstTriviaNode> value);
+
+        ///// <summary>
+        ///// Creates a copy of this node with the specified trailing trivia.
+        ///// </summary>
+        //ITsAstNode WithTrailingTrivia(ImmutableArray<ITsAstTriviaNode> value);
+
+        /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        ITsAstNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia);
     }
 }

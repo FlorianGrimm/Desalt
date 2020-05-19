@@ -10,7 +10,6 @@ namespace Desalt.Core.Translation
     using System.Collections.Immutable;
     using System.Linq;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Declarations;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 

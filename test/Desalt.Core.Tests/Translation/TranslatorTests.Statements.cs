@@ -258,14 +258,12 @@ class C implements ss.IDisposable {
               $using2.dispose();
             }
           }
-        }
-         finally {
+        } finally {
           if (c2) {
             c2.dispose();
           }
         }
-      }
-       finally {
+      } finally {
         if ($using1) {
           $using1.dispose();
         }

@@ -14,7 +14,6 @@ namespace Desalt.Core.Tests.Translation
     using Desalt.Core.Tests.TestUtility;
     using Desalt.Core.Translation;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Expressions;
     using Desalt.TypeScriptAst.Emit;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;

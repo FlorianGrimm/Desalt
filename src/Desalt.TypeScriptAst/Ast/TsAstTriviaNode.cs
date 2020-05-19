@@ -39,16 +39,10 @@ namespace Desalt.TypeScriptAst.Ast
         public bool PreserveSpacing { get; }
 
         /// <summary>
-        /// Returns an abbreviated string representation of the AST node, which is useful for debugging.
-        /// </summary>
-        /// <value>A string representation of this AST node.</value>
-        public abstract string CodeDisplay { get; }
-
-        /// <summary>
         /// Gets a concise string representing the current AST node to show in the debugger
         /// variable window.
         /// </summary>
-        protected virtual string DebuggerDisplay => $"{GetType().Name}: {CodeDisplay}";
+        protected virtual string DebuggerDisplay => $"{GetType().Name}: {EmitAsString()}";
 
         /// <summary>
         /// Returns either a space or an empty string depending on the value of <see cref="PreserveSpacing"/>.

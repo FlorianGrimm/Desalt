@@ -8,9 +8,7 @@
 namespace Desalt.TypeScriptAst.Ast
 {
     using System.Collections.Generic;
-    using System.Linq;
-    using Desalt.CompilerUtilities.Extensions;
-    using Desalt.TypeScriptAst.Ast.Declarations;
+    using System.Collections.Immutable;
 
     public static partial class TsAstFactory
     {
@@ -43,7 +41,7 @@ namespace Desalt.TypeScriptAst.Ast
             bool isConst,
             params ITsLexicalBinding[] declarations)
         {
-            return new TsLexicalDeclaration(isConst, declarations);
+            return new TsLexicalDeclaration(isConst, declarations.ToImmutableArray());
         }
 
         /// <summary>
@@ -51,7 +49,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsFunctionDeclaration FunctionDeclaration(ITsCallSignature callSignature)
         {
-            return new TsFunctionDeclaration(callSignature);
+            return new TsFunctionDeclaration(
+                functionName: null,
+                callSignature,
+                ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier functionName,
             ITsCallSignature callSignature)
         {
-            return new TsFunctionDeclaration(callSignature, functionName);
+            return new TsFunctionDeclaration(functionName, callSignature, ImmutableArray<ITsStatementListItem>.Empty);
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsCallSignature callSignature,
             params ITsStatementListItem[] functionBody)
         {
-            return new TsFunctionDeclaration(callSignature, functionName, functionBody);
+            return new TsFunctionDeclaration(functionName, callSignature, functionBody.ToImmutableArray());
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsTypeAliasDeclaration TypeAliasDeclaration(ITsIdentifier aliasName, ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type);
+            return new TsTypeAliasDeclaration(aliasName, typeParameters: null, type);
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeParameter typeParameter,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, TypeParameters(typeParameter));
+            return new TsTypeAliasDeclaration(aliasName, TypeParameters(typeParameter), type);
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeParameters typeParameters,
             ITsType type)
         {
-            return new TsTypeAliasDeclaration(aliasName, type, typeParameters);
+            return new TsTypeAliasDeclaration(aliasName, typeParameters, type);
         }
 
         /// <summary>
@@ -113,13 +114,13 @@ namespace Desalt.TypeScriptAst.Ast
             ITsParameterList? parameterList = null,
             IEnumerable<ITsStatementListItem>? functionBody = null)
         {
-            return TsConstructorDeclaration.Create(accessibilityModifier, parameterList, functionBody);
+            return new TsConstructorDeclaration(accessibilityModifier, parameterList, functionBody?.ToImmutableArray());
         }
 
         /// <summary>
         /// Creates a member variable declaration in a class.
         /// </summary>
-        public static ITsVariableMemberDeclaration VariableMemberDeclaration(
+        public static ITsMemberVariableDeclaration MemberVariableDeclaration(
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
@@ -127,14 +128,19 @@ namespace Desalt.TypeScriptAst.Ast
             ITsType? typeAnnotation = null,
             ITsExpression? initializer = null)
         {
-            return TsVariableMemberDeclaration.Create(
-                variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation, initializer);
+            return new TsMemberVariableDeclaration(
+                accessibilityModifier,
+                isStatic,
+                isReadOnly,
+                variableName,
+                typeAnnotation,
+                initializer);
         }
 
         /// <summary>
         /// Creates a member function declaration in a class.
         /// </summary>
-        public static ITsFunctionMemberDeclaration FunctionMemberDeclaration(
+        public static ITsMemberFunctionDeclaration MemberFunctionDeclaration(
             ITsPropertyName functionName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
@@ -142,32 +148,37 @@ namespace Desalt.TypeScriptAst.Ast
             bool isAbstract = false,
             IEnumerable<ITsStatementListItem>? functionBody = null)
         {
-            return TsFunctionMemberDeclaration.Create(
-                functionName, callSignature, accessibilityModifier, isStatic, isAbstract, functionBody);
+            return new TsMemberFunctionDeclaration(
+                accessibilityModifier,
+                isStatic,
+                isAbstract,
+                functionName,
+                callSignature,
+                functionBody?.ToImmutableArray());
         }
 
         /// <summary>
         /// Creates a 'get' member accessor declaration in a class.
         /// </summary>
-        public static ITsGetAccessorMemberDeclaration GetAccessorMemberDeclaration(
+        public static ITsMemberGetAccessorDeclaration MemberGetAccessorDeclaration(
             ITsGetAccessor getAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false)
         {
-            return new TsGetAccessorMemberDeclaration(getAccessor, accessibilityModifier, isStatic, isAbstract);
+            return new TsMemberGetAccessorDeclaration(accessibilityModifier, isStatic, isAbstract, getAccessor);
         }
 
         /// <summary>
         /// Creates a 'set' member accessor declaration in a class.
         /// </summary>
-        public static ITsSetAccessorMemberDeclaration SetAccessorMemberDeclaration(
+        public static ITsMemberSetAccessorDeclaration MemberSetAccessorDeclaration(
             ITsSetAccessor setAccessor,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isAbstract = false)
         {
-            return new TsSetAccessorMemberDeclaration(setAccessor, accessibilityModifier, isStatic, isAbstract);
+            return new TsMemberSetAccessorDeclaration(accessibilityModifier, isStatic, isAbstract, setAccessor);
         }
 
         /// <summary>
@@ -185,7 +196,9 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeReference? extendsClause,
             IEnumerable<ITsTypeReference>? implementsClause = null)
         {
-            return new TsClassHeritage(extendsClause, implementsClause);
+            return new TsClassHeritage(
+                extendsClause,
+                implementsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty);
         }
 
         /// <summary>
@@ -193,7 +206,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsClassHeritage ClassHeritage(IEnumerable<ITsTypeReference> implementsTypes)
         {
-            return new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes);
+            return new TsClassHeritage(extendsClause: null, implementsClause: implementsTypes.ToImmutableArray());
         }
 
         /// <summary>
@@ -206,7 +219,12 @@ namespace Desalt.TypeScriptAst.Ast
             bool isAbstract = false,
             IEnumerable<ITsClassElement>? classBody = null)
         {
-            return new TsClassDeclaration(className, typeParameters, heritage, isAbstract, classBody);
+            return new TsClassDeclaration(
+                className,
+                typeParameters,
+                heritage,
+                isAbstract,
+                classBody?.ToImmutableArray() ?? ImmutableArray<ITsClassElement>.Empty);
         }
 
         /// <summary>
@@ -218,7 +236,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsTypeParameters? typeParameters = null,
             IEnumerable<ITsTypeReference>? extendsClause = null)
         {
-            return new TsInterfaceDeclaration(interfaceName, body, typeParameters, extendsClause);
+            return new TsInterfaceDeclaration(
+                interfaceName,
+                typeParameters,
+                extendsClause?.ToImmutableArray() ?? ImmutableArray<ITsTypeReference>.Empty,
+                body);
         }
 
         /// <summary>
@@ -237,7 +259,10 @@ namespace Desalt.TypeScriptAst.Ast
             IEnumerable<ITsEnumMember>? enumBody = null,
             bool isConst = false)
         {
-            return new TsEnumDeclaration(enumName, enumBody, isConst);
+            return new TsEnumDeclaration(
+                isConst,
+                enumName,
+                enumBody?.ToImmutableArray() ?? ImmutableArray<ITsEnumMember>.Empty);
         }
 
         /// <summary>
@@ -248,7 +273,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier enumName,
             params ITsEnumMember[] enumBody)
         {
-            return new TsEnumDeclaration(enumName, enumBody, isConst);
+            return new TsEnumDeclaration(isConst, enumName, enumBody.ToImmutableArray());
         }
 
         /// <summary>
@@ -256,7 +281,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsEnumDeclaration EnumDeclaration(ITsIdentifier enumName, params ITsEnumMember[] enumBody)
         {
-            return new TsEnumDeclaration(enumName, enumBody);
+            return new TsEnumDeclaration(isConst: false, enumName, enumBody.ToImmutableArray());
         }
 
         /// <summary>
@@ -266,7 +291,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsQualifiedName namespaceName,
             params ITsNamespaceElement[] body)
         {
-            return new TsNamespaceDeclaration(namespaceName, body);
+            return new TsNamespaceDeclaration(namespaceName, body.ToImmutableArray());
         }
 
         /// <summary>
@@ -310,7 +335,7 @@ namespace Desalt.TypeScriptAst.Ast
             VariableDeclarationKind declarationKind,
             params ITsAmbientBinding[] declarations)
         {
-            return new TsAmbientVariableDeclaration(declarationKind, declarations);
+            return new TsAmbientVariableDeclaration(declarationKind, declarations.ToImmutableArray());
         }
 
         /// <summary>
@@ -329,34 +354,43 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsAmbientConstructorDeclaration AmbientConstructorDeclaration(
             ITsParameterList? parameterList = null)
         {
-            return TsConstructorDeclaration.CreateAmbient(parameterList);
+            return new TsAmbientConstructorDeclaration(parameterList);
         }
 
         /// <summary>
         /// Creates a member variable declaration in an ambient class declaration.
         /// </summary>
-        public static ITsAmbientVariableMemberDeclaration AmbientVariableMemberDeclaration(
+        public static ITsAmbientMemberVariableDeclaration AmbientMemberVariableDeclaration(
             ITsPropertyName variableName,
             TsAccessibilityModifier? accessibilityModifier = null,
             bool isStatic = false,
             bool isReadOnly = false,
             ITsType? typeAnnotation = null)
         {
-            return TsVariableMemberDeclaration.CreateAmbient(
-                variableName, accessibilityModifier, isStatic, isReadOnly, typeAnnotation);
+            return new TsAmbientMemberVariableDeclaration(
+                accessibilityModifier,
+                isStatic,
+                isReadOnly,
+                variableName,
+                typeAnnotation);
         }
 
         /// <summary>
         /// Creates a member function declaration in an ambient class.
         /// </summary>
-        public static ITsAmbientFunctionMemberDeclaration AmbientFunctionMemberDeclaration(
+        public static ITsAmbientMemberFunctionDeclaration AmbientMemberFunctionDeclaration(
             ITsPropertyName functionName,
             ITsCallSignature callSignature,
             TsAccessibilityModifier? accessibilityModifier = null,
-            bool isStatic = false)
+            bool isStatic = false,
+            bool isAbstract = false)
         {
-            return TsFunctionMemberDeclaration.CreateAmbient(
-                functionName, callSignature, accessibilityModifier, isStatic);
+            return new TsAmbientMemberFunctionDeclaration(
+                accessibilityModifier,
+                isStatic,
+                isAbstract,
+                functionName,
+                callSignature);
         }
 
         /// <summary>
@@ -376,7 +410,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsClassHeritage? heritage = null,
             IEnumerable<ITsAmbientClassBodyElement>? classBody = null)
         {
-            return new TsAmbientClassDeclaration(className, typeParameters, heritage, classBody);
+            return new TsAmbientClassDeclaration(
+                className,
+                typeParameters,
+                heritage,
+                classBody?.ToImmutableArray() ?? ImmutableArray<ITsAmbientClassBodyElement>.Empty);
         }
 
         /// <summary>
@@ -387,7 +425,10 @@ namespace Desalt.TypeScriptAst.Ast
             IEnumerable<ITsEnumMember>? enumBody = null,
             bool isConst = false)
         {
-            return new TsEnumDeclaration(enumName, enumBody, isConst);
+            return new TsEnumDeclaration(
+                isConst,
+                enumName,
+                enumBody?.ToImmutableArray() ?? ImmutableArray<ITsEnumMember>.Empty);
         }
 
         /// <summary>
@@ -398,7 +439,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier enumName,
             params ITsEnumMember[] enumBody)
         {
-            return new TsEnumDeclaration(enumName, enumBody, isConst);
+            return new TsEnumDeclaration(isConst, enumName, enumBody.ToImmutableArray());
         }
 
         /// <summary>
@@ -408,7 +449,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier enumName,
             params ITsEnumMember[] enumBody)
         {
-            return new TsEnumDeclaration(enumName, enumBody);
+            return new TsEnumDeclaration(isConst: false, enumName, enumBody.ToImmutableArray());
         }
 
         /// <summary>
@@ -418,7 +459,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsQualifiedName namespaceName,
             params ITsAmbientNamespaceElement[] body)
         {
-            return new TsAmbientNamespaceDeclaration(namespaceName, body);
+            return new TsAmbientNamespaceDeclaration(namespaceName, body.ToImmutableArray());
         }
 
         /// <summary>
@@ -428,7 +469,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsAmbientDeclarationElement declaration,
             bool hasExportKeyword = false)
         {
-            return new TsAmbientNamespaceElement(declaration, hasExportKeyword);
+            return new TsAmbientNamespaceElement(
+                hasExportKeyword,
+                declaration,
+                interfaceDeclaration: null,
+                importAliasDeclaration: null);
         }
 
         /// <summary>
@@ -438,7 +483,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsInterfaceDeclaration interfaceDeclaration,
             bool hasExportKeyword = false)
         {
-            return new TsAmbientNamespaceElement(interfaceDeclaration, hasExportKeyword);
+            return new TsAmbientNamespaceElement(
+                hasExportKeyword,
+                declaration: null,
+                interfaceDeclaration,
+                importAliasDeclaration: null);
         }
 
         /// <summary>
@@ -448,7 +497,11 @@ namespace Desalt.TypeScriptAst.Ast
             ITsImportAliasDeclaration importAliasDeclaration,
             bool hasExportKeyword = false)
         {
-            return new TsAmbientNamespaceElement(importAliasDeclaration, hasExportKeyword);
+            return new TsAmbientNamespaceElement(
+                hasExportKeyword,
+                declaration: null,
+                interfaceDeclaration: null,
+                importAliasDeclaration);
         }
 
         /// <summary>
@@ -472,7 +525,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClause(ITsIdentifier defaultBinding)
         {
-            return TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding: null);
+            return new TsImportClause(
+                defaultBinding,
+                namespaceBinding: null,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>
@@ -480,7 +536,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClause(ITsIdentifier defaultBinding, ITsIdentifier namespaceBinding)
         {
-            return TsImportClause.CreateDefaultBinding(defaultBinding, namespaceBinding);
+            return new TsImportClause(
+                defaultBinding,
+                namespaceBinding,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>
@@ -490,7 +549,7 @@ namespace Desalt.TypeScriptAst.Ast
             ITsIdentifier defaultBinding,
             params ITsImportSpecifier[] namedImports)
         {
-            return TsImportClause.CreateDefaultBinding(defaultBinding, namedImports);
+            return new TsImportClause(defaultBinding, namespaceBinding: null, namedImports.ToImmutableArray());
         }
 
         /// <summary>
@@ -498,7 +557,10 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportClause ImportClauseNamespaceBinding(ITsIdentifier namespaceBinding)
         {
-            return TsImportClause.CreateNamespaceBinding(namespaceBinding);
+            return new TsImportClause(
+                defaultBinding: null,
+                namespaceBinding,
+                namedImports: ImmutableArray<ITsImportSpecifier>.Empty);
         }
 
         /// <summary>
@@ -508,7 +570,10 @@ namespace Desalt.TypeScriptAst.Ast
             ITsImportSpecifier namedImport,
             params ITsImportSpecifier[] namedImports)
         {
-            return TsImportClause.CreateNamedImports(namedImport.ToSafeArray().Concat(namedImports));
+            return new TsImportClause(
+                defaultBinding: null,
+                namespaceBinding: null,
+                ImmutableArray.Create(namedImport).AddRange(namedImports));
         }
 
         /// <summary>
@@ -516,7 +581,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportDeclaration ImportDeclaration(ITsImportClause importClause, ITsFromClause fromClause)
         {
-            return new TsImportDeclaration(importClause, fromClause);
+            return new TsImportDeclaration(importClause, fromClause, module: null);
         }
 
         /// <summary>
@@ -524,7 +589,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsImportDeclaration ImportDeclaration(ITsStringLiteral module)
         {
-            return new TsImportDeclaration(module);
+            return new TsImportDeclaration(importClause: null, fromClause: null, module);
         }
 
         /// <summary>

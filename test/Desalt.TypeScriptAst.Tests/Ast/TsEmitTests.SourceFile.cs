@@ -9,7 +9,6 @@ namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using Desalt.CompilerUtilities.Extensions;
     using Desalt.TypeScriptAst.Ast;
-    using Desalt.TypeScriptAst.Ast.Expressions;
     using NUnit.Framework;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
@@ -80,15 +79,15 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                             heritage: Factory.ClassHeritage(implementsTypes: AnimalRef.ToSafeArray()),
                             classBody: new ITsClassElement[]
                             {
-                                Factory.VariableMemberDeclaration(
+                                Factory.MemberVariableDeclaration(
                                     Factory.Identifier("_isFull"),
                                     TsAccessibilityModifier.Private,
                                     typeAnnotation: Factory.BooleanType),
-                                Factory.VariableMemberDeclaration(
+                                Factory.MemberVariableDeclaration(
                                     name,
                                     TsAccessibilityModifier.Public,
                                     typeAnnotation: Factory.StringType),
-                                Factory.FunctionMemberDeclaration(
+                                Factory.MemberFunctionDeclaration(
                                     isFull,
                                     Factory.CallSignature(Factory.ParameterList(), Factory.BooleanType),
                                     TsAccessibilityModifier.Public,
@@ -96,7 +95,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                                     {
                                         Factory.Return(Factory.MemberDot(Factory.This, "_isFull"))
                                     }),
-                                Factory.FunctionMemberDeclaration(
+                                Factory.MemberFunctionDeclaration(
                                     feed,
                                     Factory.CallSignature(
                                         Factory.ParameterList(Factory.BoundRequiredParameter(food, FoodRef)),
@@ -256,7 +255,7 @@ class Monkey implements Animal {
                             heritage: Factory.ClassHeritage(implementsTypes: FileSystemRef.ToSafeArray()),
                             classBody: new ITsClassElement[]
                             {
-                                Factory.VariableMemberDeclaration(
+                                Factory.MemberVariableDeclaration(
                                     fileMapping,
                                     TsAccessibilityModifier.Private,
                                     typeAnnotation: MockFileSystemTreeRef,
@@ -291,7 +290,7 @@ class Monkey implements Animal {
                                                         }))))
                                         .ToStatement()
                                     }),
-                                Factory.GetAccessorMemberDeclaration(
+                                Factory.MemberGetAccessorDeclaration(
                                     Factory.GetAccessor(
                                         Factory.Identifier("mappingKeys"),
                                         Factory.ArrayType(Factory.StringType),
@@ -300,7 +299,7 @@ class Monkey implements Animal {
                                                 ObjectKeys,
                                                 Factory.ArgumentList(Factory.Argument(this_fileMapping))))),
                                     TsAccessibilityModifier.Public),
-                                Factory.FunctionMemberDeclaration(
+                                Factory.MemberFunctionDeclaration(
                                     existsSync,
                                     Factory.CallSignature(
                                         Factory.ParameterList(

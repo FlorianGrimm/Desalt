@@ -7,6 +7,7 @@
 
 namespace Desalt.TypeScriptAst.Parsing
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Desalt.CompilerUtilities.Extensions;
@@ -321,7 +322,7 @@ namespace Desalt.TypeScriptAst.Parsing
         private ITsTypeReference ParseTypeReference()
         {
             ITsQualifiedName typeName = ParseQualifiedName();
-            ITsType[]? typeArguments = ParseOptionalTypeArguments();
+            ITsType[] typeArguments = ParseOptionalTypeArguments();
             return Factory.TypeReference(typeName, typeArguments);
         }
 
@@ -609,11 +610,11 @@ namespace Desalt.TypeScriptAst.Parsing
         /// TypeArgument:
         ///     Type
         /// ]]></code></remarks>
-        private ITsType[]? ParseOptionalTypeArguments()
+        private ITsType[] ParseOptionalTypeArguments()
         {
             if (!_reader.ReadIf(TsTokenCode.LessThan))
             {
-                return null;
+                return Array.Empty<ITsType>();
             }
 
             var typeArguments = new List<ITsType>();
