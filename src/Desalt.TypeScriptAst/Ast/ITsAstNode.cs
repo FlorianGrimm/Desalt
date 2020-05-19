@@ -9,27 +9,12 @@ namespace Desalt.TypeScriptAst.Ast
 {
     using System;
     using System.Collections.Immutable;
-    using Desalt.TypeScriptAst.Emit;
 
     /// <summary>
     /// Root interface for all abstract syntax tree (AST) node types.
     /// </summary>
-    public interface ITsAstNode : IEquatable<ITsAstNode>
+    public interface ITsAstNode : ITsNode, IEquatable<ITsAstNode>
     {
-        //// ===========================================================================================================
-        //// Properties
-        //// ===========================================================================================================
-
-        /// <summary>
-        /// Gets an array of trivia that appear before this node in the source code.
-        /// </summary>
-        ImmutableArray<ITsAstTriviaNode> LeadingTrivia { get; }
-
-        /// <summary>
-        /// Gets an array of trivia that appear after this node in the source code.
-        /// </summary>
-        ImmutableArray<ITsAstTriviaNode> TrailingTrivia { get; }
-
         //// ===========================================================================================================
         //// Methods
         //// ===========================================================================================================
@@ -39,29 +24,6 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         /// <param name="visitor">The visitor to visit.</param>
         void Accept(TsVisitor visitor);
-
-        /// <summary>
-        /// Emits this AST node into code using the specified <see cref="Emitter"/>.
-        /// </summary>
-        /// <param name="emitter">The emitter to use.</param>
-        void Emit(Emitter emitter);
-
-        /// <summary>
-        /// Emits a node using a string stream. Useful for unit tests and debugging.
-        /// </summary>
-        /// <param name="emitOptions">The optional emit options.</param>
-        /// <returns>The node emitted to a string stream.</returns>
-        string EmitAsString(EmitOptions? emitOptions = null);
-
-        ///// <summary>
-        ///// Creates a copy of this node with the specified leading trivia.
-        ///// </summary>
-        //ITsAstNode WithLeadingTrivia(ImmutableArray<ITsAstTriviaNode> value);
-
-        ///// <summary>
-        ///// Creates a copy of this node with the specified trailing trivia.
-        ///// </summary>
-        //ITsAstNode WithTrailingTrivia(ImmutableArray<ITsAstTriviaNode> value);
 
         /// <summary>
         /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
