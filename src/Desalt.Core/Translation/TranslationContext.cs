@@ -324,7 +324,8 @@ namespace Desalt.Core.Translation
         public ITsIdentifier TranslateDeclarationIdentifier(MemberDeclarationSyntax node)
         {
             var scriptSymbol = GetExpectedDeclaredScriptSymbol<IScriptSymbol>(node);
-            return Factory.Identifier(scriptSymbol.ComputedScriptName);
+            ITsIdentifier translatedIdentifier = Factory.Identifier(scriptSymbol.ComputedScriptName);
+            return translatedIdentifier;
         }
 
         /// <summary>

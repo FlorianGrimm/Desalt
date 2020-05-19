@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsAstFactory.Lexical.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -33,6 +33,12 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a TypeScript single-line comment of the form '// comment'.
         /// </summary>
+        /// <param name="text">The comment's text without the leading '//'.</param>
+        /// <param name="preserveSpacing">
+        /// Indicates whether to preserve the leading and trailing spacing and not add spaces around the beginning and
+        /// ending markers.
+        /// </param>
+        /// <param name="omitNewLineAtEnd"></param>
         public static ITsSingleLineComment SingleLineComment(
             string text,
             bool preserveSpacing = false,
@@ -52,6 +58,12 @@ namespace Desalt.TypeScriptAst.Ast
         /// <summary>
         /// Creates a TypeScript multi-line comment of the form '/* lines */'.
         /// </summary>
+        /// <param name="isJsDoc">Indicates whether the comment should start with /** (JsDoc) or /*.</param>
+        /// <param name="preserveSpacing">
+        /// Indicates whether to preserve the leading and trailing spacing and not add spaces around the beginning and
+        /// ending markers.
+        /// </param>
+        /// <param name="lines">The lines of the comment. Each line will be preceded by a ' * '.</param>
         public static ITsMultiLineComment MultiLineComment(
             bool isJsDoc,
             bool preserveSpacing = false,

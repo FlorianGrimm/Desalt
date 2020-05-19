@@ -118,7 +118,6 @@ namespace Desalt.TypeScriptAst.Emit
         /// <summary>
         /// Writes the keyword, ensuring that it is surrounded by spaces.
         /// </summary>
-        /// <param name="keyword"></param>
         public Emitter WriteKeyword(string keyword)
         {
             _nextWriteRequiresSpace = true;
@@ -238,7 +237,7 @@ namespace Desalt.TypeScriptAst.Emit
             suffix ??= string.Empty;
             itemDelimiter ??= string.Empty;
 
-            // Special case - if the list is empty
+            // Special case - if the list is empty.
             if (items.Count == 0)
             {
                 return Write(emptyContents ?? $"{prefix}{suffix}");
@@ -257,7 +256,7 @@ namespace Desalt.TypeScriptAst.Emit
                 itemDelimiter = itemDelimiter.Substring(0, itemDelimiter.Length - 1);
             }
 
-            // write a new line before the first item if necessary
+            // Write a new line before the first item if necessary.
             if (newLineAfterPrefix || (newlineAfterItems && newLineBeforeFirstItem))
             {
                 WriteLine(prefix);
@@ -277,13 +276,13 @@ namespace Desalt.TypeScriptAst.Emit
                 ITsAstNode item = items[i];
                 item?.Emit(this);
 
-                // write the delimiter
+                // Write the delimiter.
                 if (i < items.Count - 1 || (delimiterAfterLastItem && itemDelimiter.Length > 0))
                 {
                     Write(itemDelimiter);
                 }
 
-                // write a new line after the last item if necessary
+                // Write a new line after the last item if necessary.
                 if ((i < items.Count - 1 && newlineAfterItems) || (i == items.Count - 1 && newLineAfterLastItem))
                 {
                     WriteLine();
@@ -360,19 +359,19 @@ namespace Desalt.TypeScriptAst.Emit
 
         private void WriteLeadingSpaceIfNeeded(string text)
         {
-            // don't do anything if we don't need to write a space
+            // Don't do anything if we don't need to write a space.
             if (!_nextWriteRequiresSpace)
             {
                 return;
             }
 
-            // if we already wrote a whitespace, don't do anything
+            // If we already wrote a whitespace, don't do anything.
             if (_lastWriteWasWhitespace)
             {
                 return;
             }
 
-            // if the first character that we're going to write is whitespace, then we don't need to write another space
+            // If the first character that we're going to write is whitespace, then we don't need to write another space.
             if (!string.IsNullOrEmpty(text) && char.IsWhiteSpace(text, 0))
             {
                 return;
@@ -385,7 +384,7 @@ namespace Desalt.TypeScriptAst.Emit
 
         private void SetLastWriteWasWhitespace(string text)
         {
-            // don't set the flag if we didn't write anything
+            // Don't set the flag if we didn't write anything.
             if (string.IsNullOrEmpty(text))
             {
                 return;
