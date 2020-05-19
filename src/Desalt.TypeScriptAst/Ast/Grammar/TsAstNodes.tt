@@ -93,6 +93,24 @@ for (int i = 0; i < 5; i++)
 // * Ecma-262 6.0 (ES 2015) Grammar (http://www.ecma-international.org/ecma-262/6.0/)
 // ---------------------------------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------------------------------
+// TypeScript Grammar, version 1.8 (Jan 2016)
+// ==========================================
+// See https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md
+// 
+// The TypeScript grammar is a superset of the grammar defined in the ECMAScript 2015 Language
+// Specification (specifically, the ECMA-262 Standard, 6th Edition) and this appendix lists only
+// productions that are new or modified from the ECMAScript grammar.
+// 
+// See http://www.ecma-international.org/ecma-262/6.0/ for the ES2015 grammar.
+// 
+// Many of these interface names and shapes are taken from the TypeScript source code at:
+// https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts.
+// 
+// There is also an Antlr grammar defined here:
+// https://raw.githubusercontent.com/antlr/grammars-v4/master/typescript/TypeScriptParser.g4
+// ---------------------------------------------------------------------------------------------------------------------
+
 namespace Desalt.TypeScriptAst.Ast
 {
     using System;
