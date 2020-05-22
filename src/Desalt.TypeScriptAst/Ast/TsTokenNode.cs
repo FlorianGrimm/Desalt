@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsTokenNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -21,8 +21,13 @@ namespace Desalt.TypeScriptAst.Ast
         //// Member Variables
         //// ===========================================================================================================
 
+        public static readonly TsTokenNode CloseBracket = new TsTokenNode("]");
         public static readonly TsTokenNode CloseParen = new TsTokenNode(")");
+        public static readonly TsTokenNode Comma = new TsTokenNode(",");
+        public static readonly TsTokenNode Ellipsis = new TsTokenNode("...");
+        public static readonly TsTokenNode OpenBracket = new TsTokenNode("[");
         public static readonly TsTokenNode OpenParen = new TsTokenNode("(");
+        public static readonly TsTokenNode Semicolon = new TsTokenNode(";");
 
         //// ===========================================================================================================
         //// Constructors

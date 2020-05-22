@@ -14,6 +14,34 @@ namespace Desalt.TypeScriptAst.Ast
 
     public static partial class TsAstFactory
     {
+        //// ===========================================================================================================
+        //// Tokens
+        //// ===========================================================================================================
+
+        /// <summary>
+        /// Represents a comma token (',').
+        /// </summary>
+        public static readonly ITsTokenNode CommaSpaceToken = new TsTokenNode(", ");
+
+        /// <summary>
+        /// Represents a semicolon token (';').
+        /// </summary>
+        public static readonly ITsTokenNode SemicolonToken = TsTokenNode.Semicolon;
+
+        public static ITsTokenNode Token(string token)
+        {
+            return token switch
+            {
+                ", " => CommaSpaceToken,
+                ";" => SemicolonToken,
+                _ => new TsTokenNode(token)
+            };
+        }
+
+        //// ===========================================================================================================
+        //// Whitespace and Comments
+        //// ===========================================================================================================
+
         /// <summary>
         /// Represents a newline whitespace trivia node.
         /// </summary>

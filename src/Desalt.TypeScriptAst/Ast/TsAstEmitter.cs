@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsAstEmitter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -18,9 +18,16 @@ namespace Desalt.TypeScriptAst.Ast
 
     internal static class TsAstEmitter
     {
-        public static Emitter Write(this Emitter emitter, ITsAstNode node)
+        public static Emitter Write(this Emitter emitter, ITsNode node)
         {
             node.Emit(emitter);
+            return emitter;
+        }
+
+        public static Emitter Write<T>(this Emitter emitter, ITsAstNodeList<T> list)
+            where T : ITsAstNode
+        {
+            list.Emit(emitter);
             return emitter;
         }
 
