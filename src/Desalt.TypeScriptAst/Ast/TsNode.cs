@@ -161,6 +161,16 @@ namespace Desalt.TypeScriptAst.Ast
         protected abstract void EmitContent(Emitter emitter);
 
         /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        public abstract ITsNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia);
+
+        /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <returns>

@@ -46,5 +46,15 @@ namespace Desalt.TypeScriptAst.Ast
         /// <param name="emitOptions">The optional emit options.</param>
         /// <returns>The node emitted to a string stream.</returns>
         string EmitAsString(EmitOptions? emitOptions = null);
+
+        /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        ITsNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia);
     }
 }

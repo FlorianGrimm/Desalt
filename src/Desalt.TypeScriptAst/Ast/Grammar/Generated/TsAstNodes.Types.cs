@@ -99,7 +99,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsType type);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsArrayType(Type, leadingTrivia, trailingTrivia);
@@ -151,7 +151,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeParameters? typeParameters, ITsParameterList? parameters, ITsType? returnType);
         public override void Accept(TsVisitor visitor) => visitor.VisitCallSignature(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCallSignature(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsCallSignature(TypeParameters, Parameters, ReturnType, leadingTrivia, trailingTrivia);
@@ -209,7 +209,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeParameters? typeParameters, ITsParameterList? parameters, ITsType returnType);
         public override void Accept(TsVisitor visitor) => visitor.VisitConstructorType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConstructorType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsConstructorType(TypeParameters, Parameters, ReturnType, leadingTrivia, trailingTrivia);
@@ -267,7 +267,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeParameters? typeParameters, ITsParameterList? parameters, ITsType? returnType);
         public override void Accept(TsVisitor visitor) => visitor.VisitConstructSignature(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConstructSignature(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsConstructSignature(TypeParameters, Parameters, ReturnType, leadingTrivia, trailingTrivia);
@@ -325,7 +325,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeParameters? typeParameters, ITsParameterList? parameters, ITsType returnType);
         public override void Accept(TsVisitor visitor) => visitor.VisitFunctionType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitFunctionType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsFunctionType(TypeParameters, Parameters, ReturnType, leadingTrivia, trailingTrivia);
@@ -375,7 +375,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsType> types);
         public override void Accept(TsVisitor visitor) => visitor.VisitIntersectionType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitIntersectionType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsIntersectionType(Types, leadingTrivia, trailingTrivia);
@@ -427,7 +427,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsPropertyName propertyName, bool isOptional, ITsCallSignature callSignature);
         public override void Accept(TsVisitor visitor) => visitor.VisitMethodSignature(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMethodSignature(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsMethodSignature(PropertyName, IsOptional, CallSignature, leadingTrivia, trailingTrivia);
@@ -487,7 +487,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsTypeMember> typeMembers, bool forceSingleLine);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsObjectType(TypeMembers, ForceSingleLine, leadingTrivia, trailingTrivia);
@@ -534,7 +534,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsType type);
         public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParenthesizedType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsParenthesizedType(Type, leadingTrivia, trailingTrivia);
@@ -590,7 +590,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(TsPredefinedKind kind);
         public override void Accept(TsVisitor visitor) => visitor.VisitPredefinedType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPredefinedType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsPredefinedType(Kind, leadingTrivia, trailingTrivia);
@@ -646,7 +646,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsPropertyName propertyName, bool isReadOnly, bool isOptional, ITsType? propertyType);
         public override void Accept(TsVisitor visitor) => visitor.VisitPropertySignature(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitPropertySignature(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsPropertySignature(PropertyName, IsReadOnly, IsOptional, PropertyType, leadingTrivia, trailingTrivia);
@@ -694,7 +694,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitThisType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThisType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsThisType(leadingTrivia, trailingTrivia);
@@ -732,7 +732,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsType> elementTypes);
         public override void Accept(TsVisitor visitor) => visitor.VisitTupleType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTupleType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsTupleType(ElementTypes, leadingTrivia, trailingTrivia);
@@ -776,7 +776,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeName query);
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeQuery(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeQuery(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsTypeQuery(Query, leadingTrivia, trailingTrivia);
@@ -824,7 +824,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsTypeName typeName, ImmutableArray<ITsType> typeArguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitTypeReference(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTypeReference(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsTypeReference(TypeName, TypeArguments, leadingTrivia, trailingTrivia);
@@ -871,7 +871,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsType> types);
         public override void Accept(TsVisitor visitor) => visitor.VisitUnionType(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitUnionType(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsUnionType(Types, leadingTrivia, trailingTrivia);

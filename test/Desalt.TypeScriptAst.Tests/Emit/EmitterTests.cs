@@ -58,7 +58,7 @@ namespace Desalt.TypeScriptAst.Tests.Emit
                 return Name;
             }
 
-            public ITsAstNode ShallowCopy(
+            public ITsNode ShallowCopy(
                 ImmutableArray<ITsAstTriviaNode> leadingTrivia,
                 ImmutableArray<ITsAstTriviaNode> trailingTrivia)
             {

@@ -88,7 +88,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsArrayElement?> elements);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsArrayLiteral(Elements, leadingTrivia, trailingTrivia);
@@ -144,7 +144,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? singleParameterName, ITsCallSignature? callSignature, ITsExpression? bodyExpression, ImmutableArray<ITsStatementListItem> body);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrowFunction(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrowFunction(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsArrowFunction(SingleParameterName, CallSignature, BodyExpression, Body, leadingTrivia, trailingTrivia);
@@ -205,7 +205,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, TsAssignmentOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitAssignmentExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitAssignmentExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsAssignmentExpression(LeftSide, Operator, RightSide, leadingTrivia, trailingTrivia);
@@ -263,7 +263,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, TsBinaryOperator @operator, ITsExpression rightSide);
         public override void Accept(TsVisitor visitor) => visitor.VisitBinaryExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBinaryExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsBinaryExpression(LeftSide, Operator, RightSide, leadingTrivia, trailingTrivia);
@@ -313,7 +313,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(bool value);
         public override void Accept(TsVisitor visitor) => visitor.VisitBooleanLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitBooleanLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsBooleanLiteral(Value, leadingTrivia, trailingTrivia);
@@ -361,7 +361,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitCallExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCallExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsCallExpression(LeftSide, ArgumentList, leadingTrivia, trailingTrivia);
@@ -412,7 +412,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsType castType, ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitCastExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCastExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsCastExpression(CastType, Expression, leadingTrivia, trailingTrivia);
@@ -467,7 +467,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? className, ITsClassHeritage? heritage, ImmutableArray<ITsClassElement> classBody);
         public override void Accept(TsVisitor visitor) => visitor.VisitClassExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitClassExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsClassExpression(ClassName, Heritage, ClassBody, leadingTrivia, trailingTrivia);
@@ -517,7 +517,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsExpression> expressions);
         public override void Accept(TsVisitor visitor) => visitor.VisitCommaExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitCommaExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsCommaExpression(Expressions, leadingTrivia, trailingTrivia);
@@ -569,7 +569,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression condition, ITsExpression whenTrue, ITsExpression whenFalse);
         public override void Accept(TsVisitor visitor) => visitor.VisitConditionalExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitConditionalExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsConditionalExpression(Condition, WhenTrue, WhenFalse, leadingTrivia, trailingTrivia);
@@ -627,7 +627,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsIdentifier? functionName, ITsCallSignature callSignature, ImmutableArray<ITsStatementListItem> functionBody);
         public override void Accept(TsVisitor visitor) => visitor.VisitFunctionExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitFunctionExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsFunctionExpression(FunctionName, CallSignature, FunctionBody, leadingTrivia, trailingTrivia);
@@ -681,7 +681,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberBracketExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberBracketExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsMemberBracketExpression(LeftSide, BracketContents, leadingTrivia, trailingTrivia);
@@ -732,7 +732,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitMemberDotExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitMemberDotExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsMemberDotExpression(LeftSide, DotName, leadingTrivia, trailingTrivia);
@@ -783,7 +783,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression leftSide, ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitNewCallExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewCallExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsNewCallExpression(LeftSide, ArgumentList, leadingTrivia, trailingTrivia);
@@ -825,7 +825,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNewTargetExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNewTargetExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsNewTargetExpression(leadingTrivia, trailingTrivia);
@@ -858,7 +858,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitNullLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNullLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsNullLiteral(leadingTrivia, trailingTrivia);
@@ -908,7 +908,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(double value, TsNumericLiteralKind kind);
         public override void Accept(TsVisitor visitor) => visitor.VisitNumericLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitNumericLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsNumericLiteral(Value, Kind, leadingTrivia, trailingTrivia);
@@ -955,7 +955,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsPropertyDefinition> propertyDefinitions);
         public override void Accept(TsVisitor visitor) => visitor.VisitObjectLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitObjectLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsObjectLiteral(PropertyDefinitions, leadingTrivia, trailingTrivia);
@@ -999,7 +999,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression expression);
         public override void Accept(TsVisitor visitor) => visitor.VisitParenthesizedExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitParenthesizedExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsParenthesizedExpression(Expression, leadingTrivia, trailingTrivia);
@@ -1058,7 +1058,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(string body, string? flags);
         public override void Accept(TsVisitor visitor) => visitor.VisitRegularExpressionLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitRegularExpressionLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsRegularExpressionLiteral(Body, Flags, leadingTrivia, trailingTrivia);
@@ -1115,7 +1115,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(string value, StringLiteralQuoteKind quoteKind);
         public override void Accept(TsVisitor visitor) => visitor.VisitStringLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitStringLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsStringLiteral(Value, QuoteKind, leadingTrivia, trailingTrivia);
@@ -1162,7 +1162,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression bracketContents);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperBracketExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperBracketExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsSuperBracketExpression(BracketContents, leadingTrivia, trailingTrivia);
@@ -1206,7 +1206,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsArgumentList argumentList);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperCallExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperCallExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsSuperCallExpression(ArgumentList, leadingTrivia, trailingTrivia);
@@ -1250,7 +1250,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(string dotName);
         public override void Accept(TsVisitor visitor) => visitor.VisitSuperDotExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitSuperDotExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsSuperDotExpression(DotName, leadingTrivia, trailingTrivia);
@@ -1294,7 +1294,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ImmutableArray<ITsTemplatePart> parts);
         public override void Accept(TsVisitor visitor) => visitor.VisitTemplateLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitTemplateLiteral(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsTemplateLiteral(Parts, leadingTrivia, trailingTrivia);
@@ -1333,7 +1333,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs();
         public override void Accept(TsVisitor visitor) => visitor.VisitThis(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitThis(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsThis(leadingTrivia, trailingTrivia);
@@ -1386,7 +1386,7 @@ namespace Desalt.TypeScriptAst.Ast
         partial void VerifyInputs(ITsExpression operand, TsUnaryOperator @operator);
         public override void Accept(TsVisitor visitor) => visitor.VisitUnaryExpression(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitUnaryExpression(emitter, this);
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new TsUnaryExpression(Operand, Operator, leadingTrivia, trailingTrivia);

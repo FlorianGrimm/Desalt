@@ -1,4 +1,4 @@
-﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ include file="TsAstNodeGenerator.ttinclude" #>
 <#
 var allNodes = GatherAstDefinitions().OrderBy(x => x.InterfaceName);
@@ -149,7 +149,7 @@ foreach (var node in nodes) {
         partial void VerifyInputs(<#= node.ToPropertyList() #>);
         public override void Accept(TsVisitor visitor) => visitor.Visit<#= node.Name #>(this);
         protected override void EmitContent(Emitter emitter) => <#= node.EmitImplementation #>;
-        public override ITsAstNode ShallowCopy(
+        public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
             new <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, noTypes: true, useNameInsteadOfArgumentName: true) #><#= node.Properties.Any() ? ", " : "" #>leadingTrivia, trailingTrivia);

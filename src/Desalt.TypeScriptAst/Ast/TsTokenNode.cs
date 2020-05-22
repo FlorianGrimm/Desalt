@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsTokenNode.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -58,6 +58,21 @@ namespace Desalt.TypeScriptAst.Ast
         protected override void EmitContent(Emitter emitter)
         {
             emitter.Write(Token);
+        }
+
+        /// <summary>
+        /// Creates a shallow copy of this node with the leading and trailing trivia replaced with the specified values.
+        /// </summary>
+        /// <param name="leadingTrivia">The new leading trivia for the node.</param>
+        /// <param name="trailingTrivia">The new trailing trivia for the node.</param>
+        /// <returns>A copy of this node with the trivia replaced.</returns>
+        public override ITsNode ShallowCopy(
+            ImmutableArray<ITsAstTriviaNode> leadingTrivia,
+            ImmutableArray<ITsAstTriviaNode> trailingTrivia)
+        {
+            return LeadingTrivia == leadingTrivia && TrailingTrivia == trailingTrivia
+                ? this
+                : new TsTokenNode(Token, leadingTrivia, trailingTrivia);
         }
 
         /// <summary>
