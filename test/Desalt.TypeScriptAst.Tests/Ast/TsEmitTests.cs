@@ -48,6 +48,26 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             actualOutput.Should().Be(expected);
         }
 
+        /// <summary>
+        /// Creates a multi-line comment of the form '/*a*/' and sets it as the leading and trailing trivia
+        /// for the node. This is great for unit testing that whitespace gets emitted correctly.
+        /// </summary>
+        private static T AddCommentAroundNode<T>(T node) where T : ITsNode
+        {
+            return AddCommentAroundNode("a", node);
+        }
+
+        /// <summary>
+        /// Creates a multi-line comment of the form '/*commentText*/' and sets it as the leading and trailing trivia
+        /// for the node. This is great for unit testing that whitespace gets emitted correctly.
+        /// </summary>
+        private static T AddCommentAroundNode<T>(string commentText, T node) where T : ITsNode
+        {
+            ITsMultiLineComment comment = Factory.MultiLineComment(isJsDoc: false, preserveSpacing: true, commentText);
+            T copy = node.WithLeadingTrivia(comment).WithTrailingTrivia(comment);
+            return copy;
+        }
+
         [Test]
         public void Emit_generic_type_name()
         {

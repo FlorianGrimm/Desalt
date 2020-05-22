@@ -66,7 +66,7 @@ namespace Desalt.TypeScriptAst.Ast
         public virtual void VisitRegularExpressionLiteral(ITsRegularExpressionLiteral node) => Visit(node);
 
         /// <summary>
-        /// Visits an array literal of the form '[element...]'.
+        /// Visits an array literal of the form '[element, element, ...]'.
         /// </summary>
         public virtual void VisitArrayLiteral(ITsArrayLiteral node) => Visit(node);
 

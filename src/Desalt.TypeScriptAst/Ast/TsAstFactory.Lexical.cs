@@ -51,6 +51,14 @@ namespace Desalt.TypeScriptAst.Ast
             preserveSpacing: true);
 
         /// <summary>
+        /// Represents a single space whitespace trivia node.
+        /// </summary>
+        public static readonly ITsWhitespaceTrivia SingleSpace = new TsWhitespaceTrivia(
+            " ",
+            isNewline: false,
+            preserveSpacing: true);
+
+        /// <summary>
         /// Creates whitespace that can appear before or after another <see cref="ITsAstNode"/>.
         /// </summary>
         public static ITsWhitespaceTrivia Whitespace(string text)

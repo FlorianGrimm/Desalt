@@ -680,7 +680,7 @@ namespace Desalt.Core.Translation
                     ITsArrayLiteral array = Factory.Array(
                         translatedArguments.Skip(indexOfParams).Select(arg => Factory.ArrayElement(arg.Expression)).ToArray());
 
-                    convertedArgs.RemoveRange(indexOfParams, array.Elements.Length);
+                    convertedArgs.RemoveRange(indexOfParams, array.Elements.Count);
                     convertedArgs.Add(Factory.Argument(array));
                 }
 

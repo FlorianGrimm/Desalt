@@ -71,22 +71,30 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrayLiteral Array()
         {
-            return new TsArrayLiteral(ImmutableArray<ITsArrayElement?>.Empty);
+            return new TsArrayLiteral(TsAstNodeList<ITsArrayElement>.Empty);
         }
 
-        public static ITsArrayLiteral Array(params ITsArrayElement?[] elements)
+        public static ITsArrayLiteral Array(params ITsArrayElement[] elements)
         {
-            return new TsArrayLiteral(elements.ToImmutableArray());
+            return new TsArrayLiteral(elements.ToNodeList());
         }
 
         public static ITsArrayLiteral Array(params ITsExpression?[] elements)
         {
-            return new TsArrayLiteral(elements.Select(e => e == null ? null : ArrayElement(e)).ToImmutableArray());
+            return new TsArrayLiteral(
+                elements.Select(e => e == null ? EmptyArrayElement : ArrayElement(e)).ToNodeList());
+        }
+
+        public static readonly ITsArrayElement EmptyArrayElement = new TsArrayElement(Null, isEmpty: true);
+
+        public static ITsArrayElement ArrayElement()
+        {
+            return EmptyArrayElement;
         }
 
         public static ITsArrayElement ArrayElement(ITsExpression expression, bool isSpreadElement = false)
         {
-            return new TsArrayElement(expression, isSpreadElement);
+            return new TsArrayElement(expression, isEmpty: false, isSpreadElement ? Token("...") : null);
         }
 
         public static ITsTemplateLiteral TemplateString(params ITsTemplatePart[] parts)

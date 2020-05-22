@@ -376,9 +376,13 @@ namespace Desalt.TypeScriptAst.Ast
     {
         ITsExpression Expression { get; }
         /// <summary>
-        /// Indicates whether the <see cref="Expression" /> is preceded by a spread operator '...'.
+        /// Indicates whether this element represents an empty element. A JavaScript array literal can have empty entries, '[,x,,]' for example.
         /// </summary>
-        bool IsSpreadElement { get; }
+        bool IsEmpty { get; }
+        /// <summary>
+        /// The spread operator token '...' that optionally precedes the <see cref="Expression" />.
+        /// </summary>
+        public ITsTokenNode? Ellipsis { get; }
     }
 
     /// <summary>
@@ -388,38 +392,53 @@ namespace Desalt.TypeScriptAst.Ast
     {
         public TsArrayElement(
             ITsExpression expression,
-            bool isSpreadElement,
+            bool isEmpty,
+            ITsTokenNode? ellipsis = null,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
         {
-            VerifyInputs(expression, isSpreadElement);
+            VerifyInputs(expression, isEmpty);
+
+            if (ellipsis != null && ellipsis.Token != TsTokenNode.Ellipsis.Token)
+            {
+                throw new ArgumentException($"Token must be '{TsTokenNode.Ellipsis.Token}'.", nameof(ellipsis));
+            }
+
             Expression = expression;
-            IsSpreadElement = isSpreadElement;
+            IsEmpty = isEmpty;
+            Ellipsis = ellipsis;
         }
 
         public ITsExpression Expression { get; }
         /// <summary>
-        /// Indicates whether the <see cref="Expression" /> is preceded by a spread operator '...'.
+        /// Indicates whether this element represents an empty element. A JavaScript array literal can have empty entries, '[,x,,]' for example.
         /// </summary>
-        public bool IsSpreadElement { get; }
+        public bool IsEmpty { get; }
+        /// <summary>
+        /// The spread operator token '...' that optionally precedes the <see cref="Expression" />.
+        /// </summary>
+        public ITsTokenNode? Ellipsis { get; }
 
-        partial void VerifyInputs(ITsExpression expression, bool isSpreadElement);
+        partial void VerifyInputs(ITsExpression expression, bool isEmpty);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayElement(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayElement(emitter, this);
         public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
-            new TsArrayElement(Expression, IsSpreadElement, leadingTrivia, trailingTrivia);
+            new TsArrayElement(Expression, IsEmpty, Ellipsis, leadingTrivia, trailingTrivia);
     }
 
     public static class ArrayElementExtensions
     {
         public static ITsArrayElement WithExpression(this ITsArrayElement node, ITsExpression value) =>
-            node.Expression == value ? node : new TsArrayElement(value, node.IsSpreadElement, node.LeadingTrivia, node.TrailingTrivia);
+            node.Expression == value ? node : new TsArrayElement(value, node.IsEmpty, node.Ellipsis, node.LeadingTrivia, node.TrailingTrivia);
 
-        public static ITsArrayElement WithIsSpreadElement(this ITsArrayElement node, bool value) =>
-            node.IsSpreadElement == value ? node : new TsArrayElement(node.Expression, value, node.LeadingTrivia, node.TrailingTrivia);
+        public static ITsArrayElement WithIsEmpty(this ITsArrayElement node, bool value) =>
+            node.IsEmpty == value ? node : new TsArrayElement(node.Expression, value, node.Ellipsis, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrayElement WithEllipsis(this ITsArrayElement node, ITsTokenNode? value) =>
+            node.Ellipsis == value ? node : new TsArrayElement(node.Expression, node.IsEmpty, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================

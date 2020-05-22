@@ -61,43 +61,70 @@ namespace Desalt.TypeScriptAst.Ast
     //// ===============================================================================================================
 
     /// <summary>
-    /// Represents an array literal of the form '[element...]'.
+    /// Represents an array literal of the form '[element, element, ...]'.
     /// </summary>
     public interface ITsArrayLiteral : ITsExpression
     {
-        ImmutableArray<ITsArrayElement?> Elements { get; }
+        ITsAstNodeList<ITsArrayElement> Elements { get; }
+        public ITsTokenNode OpenBracket { get; }
+        public ITsTokenNode CloseBracket { get; }
     }
 
     /// <summary>
-    /// Represents an array literal of the form '[element...]'.
+    /// Represents an array literal of the form '[element, element, ...]'.
     /// </summary>
     internal partial class TsArrayLiteral : TsAstNode, ITsArrayLiteral
     {
         public TsArrayLiteral(
-            ImmutableArray<ITsArrayElement?> elements,
+            ITsAstNodeList<ITsArrayElement> elements,
+            ITsTokenNode? openBracket = null,
+            ITsTokenNode? closeBracket = null,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
         {
             VerifyInputs(elements);
+
+            openBracket ??= TsTokenNode.OpenBracket;
+            if (openBracket.Token != TsTokenNode.OpenBracket.Token)
+            {
+                throw new ArgumentException($"Token must be '{TsTokenNode.OpenBracket.Token}'.", nameof(openBracket));
+            }
+
+            closeBracket ??= TsTokenNode.CloseBracket;
+            if (closeBracket.Token != TsTokenNode.CloseBracket.Token)
+            {
+                throw new ArgumentException($"Token must be '{TsTokenNode.CloseBracket.Token}'.", nameof(closeBracket));
+            }
+
             Elements = elements;
+            OpenBracket = openBracket;
+            CloseBracket = closeBracket;
         }
 
-        public ImmutableArray<ITsArrayElement?> Elements { get; }
+        public ITsAstNodeList<ITsArrayElement> Elements { get; }
+        public ITsTokenNode OpenBracket { get; }
+        public ITsTokenNode CloseBracket { get; }
 
-        partial void VerifyInputs(ImmutableArray<ITsArrayElement?> elements);
+        partial void VerifyInputs(ITsAstNodeList<ITsArrayElement> elements);
         public override void Accept(TsVisitor visitor) => visitor.VisitArrayLiteral(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArrayLiteral(emitter, this);
         public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
-            new TsArrayLiteral(Elements, leadingTrivia, trailingTrivia);
+            new TsArrayLiteral(Elements, OpenBracket, CloseBracket, leadingTrivia, trailingTrivia);
     }
 
     public static class ArrayLiteralExtensions
     {
-        public static ITsArrayLiteral WithElements(this ITsArrayLiteral node, ImmutableArray<ITsArrayElement?> value) =>
-            node.Elements == value ? node : new TsArrayLiteral(value, node.LeadingTrivia, node.TrailingTrivia);
+        public static ITsArrayLiteral WithElements(this ITsArrayLiteral node, ITsAstNodeList<ITsArrayElement> value) =>
+            node.Elements == value ? node : new TsArrayLiteral(value, node.OpenBracket, node.CloseBracket, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrayLiteral WithOpenBracket(this ITsArrayLiteral node, ITsTokenNode value) =>
+            node.OpenBracket == value ? node : new TsArrayLiteral(node.Elements, value, node.CloseBracket, node.LeadingTrivia, node.TrailingTrivia);
+
+        public static ITsArrayLiteral WithCloseBracket(this ITsArrayLiteral node, ITsTokenNode value) =>
+            node.CloseBracket == value ? node : new TsArrayLiteral(node.Elements, node.OpenBracket, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 
     //// ===============================================================================================================

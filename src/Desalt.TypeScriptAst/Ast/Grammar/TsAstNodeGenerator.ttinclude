@@ -80,7 +80,7 @@
 
     public void WriteProperties(NodeDefinition node, bool isInterface)
     {
-        if (!node.HasProperties)
+        if (!node.HasProperties && !node.HasTokens)
         {
             return;
         }
@@ -109,16 +109,60 @@
             WriteLine($"{property.Type} {property.Name} {{ get; }}");
         }
 
+        // Write out the tokens if we're an AstNodeDefinition.
+        if (node is AstNodeDefinition astNode && node.HasTokens)
+        {
+            foreach (var property in astNode.Tokens)
+            {
+                if (property.Comment != null)
+                {
+                    WriteLine("/// <summary>");
+                    WriteLine("/// " + property.Comment);
+                    WriteLine("/// </summary>");
+                }
+
+                WriteLine($"public {property.Type} {property.Name} {{ get; }}");
+            }
+        }
+
         PopIndent();
     }
 
     public void WriteCtorAssignments(NodeDefinition node, bool skipVerifyInputs = false)
     {
+        var astNode = node as AstNodeDefinition;
+
         PushIndent(TripleIndent);
 
         if (!skipVerifyInputs)
         {
             WriteLine($"VerifyInputs({node.ToPropertyList(noTypes: true)});");
+
+            // Verify the token nodes if we're an AstNodeDefinition.
+            if (astNode != null && astNode.HasTokens)
+            {
+                WriteLine("");
+
+                foreach (var tokenNode in astNode.Tokens)
+                {
+                    var token = $"{tokenNode.TsTokenName}.Token";
+
+                    if (tokenNode.IsOptional)
+                    {
+                        WriteLine($"if ({tokenNode.ArgumentName} != null && {tokenNode.ArgumentName}.Token != {token})");
+                    }
+                    else
+                    {
+                        WriteLine($"{tokenNode.ArgumentName} ??= {tokenNode.TsTokenName};");
+                        WriteLine($"if ({tokenNode.ArgumentName}.Token != {token})");
+                    }
+
+                    WriteLine("{");
+                    WriteLine($"{SingleIndent}throw new ArgumentException($\"Token must be '{{{token}}}'.\", nameof({tokenNode.ArgumentName}));");
+                    WriteLine("}");
+                    WriteLine("");
+                }
+            }
         }
 
         foreach (var property in node.Properties)
@@ -126,12 +170,22 @@
             WriteLine($"{property.Name} = {property.ArgumentName};");
         }
 
+        if (astNode != null)
+        {
+            foreach (var token in astNode.Tokens)
+            {
+                WriteLine($"{token.Name} = {token.ArgumentName};");
+            }
+        }
+
         PopIndent();
     }
 
     public void WriteWithExtensionMethods(NodeDefinition node)
     {
-        if (!node.HasProperties)
+        var propsAndTokens = node.PropertiesAndTokens.ToArray();
+
+        if (!propsAndTokens.Any())
         {
             return;
         }
@@ -144,9 +198,9 @@
         WriteLine("{");
         PushIndent(SingleIndent);
 
-        for (int i = 0; i < node.Properties.Count; i++)
+        for (int i = 0; i < propsAndTokens.Length; i++)
         {
-            var property = node.Properties[i];
+            var property = propsAndTokens[i];
             WriteWithExtensionMethod(node, property.Name, property.Type, skipLeadingNewline: i == 0);
         }
 
@@ -167,40 +221,31 @@
             WriteLine("");
         }
 
-        Write($"public static {node.InterfaceName} With{propertyName}(");
-        WriteLine($"this {node.InterfaceName} node, {propertyType} value) =>");
+        WriteLine($"public static {node.InterfaceName} With{propertyName}(this {node.InterfaceName} node, {propertyType} value) =>");
         PushIndent(SingleIndent);
         Write($"node.{propertyName} == value ? node : new {node.ClassName}(");
 
-        for (int j = 0; j < node.Properties.Count; j++)
+        foreach (var prop in node.PropertiesAndTokens)
         {
-            var argProp = node.Properties[j];
-
-            if (j > 0)
+            if (prop.Name == propertyName)
             {
-                Write(", ");
-            }
-
-            if (argProp.Name == propertyName)
-            {
-                Write("value");
+                Write("value, ");
             }
             else
             {
-                Write($"node.{argProp.Name}");
+                Write($"node.{prop.Name}, ");
             }
         }
 
         // Write the trivia node arguments.
         if (node is AstNodeDefinition)
         {
-            Write(", ");
             Write(propertyName == "LeadingTrivia" ? "value, " : "node.LeadingTrivia, ");
             Write(propertyName == "TrailingTrivia" ? "value" : "node.TrailingTrivia");
         }
         else
         {
-            Write(", node.PreserveSpacing");
+            Write("node.PreserveSpacing");
         }
 
         WriteLine(");");
@@ -257,6 +302,17 @@
             enums.Add(enumDefinition);
         }
 
+        var tokens = new List<TokenDefinition>();
+        foreach (var tokenNode in node.Descendants(Xmlns + "Token"))
+        {
+            string tokenName = (string)tokenNode.Attribute("name");
+            string tokenComment = (string)tokenNode.Element(Xmlns + "Comment");
+            bool isOptional = ((bool?)tokenNode.Attribute("isOptional")).GetValueOrDefault();
+
+            var tokenDefinition = new TokenDefinition(tokenName, tokenComment, isOptional);
+            tokens.Add(tokenDefinition);
+        }
+
         if (node.Name.LocalName == "TriviaNode")
         {
             return new TriviaNodeDefinition(name)
@@ -278,6 +334,7 @@
             Enums = enums,
             IsInterfaceOnly = isInterfaceOnly,
             Properties = properties,
+            Tokens = tokens,
         };
     }
 
@@ -290,7 +347,6 @@
 
         // Read-only Properties
         public string Name { get; }
-        public abstract string BaseCtorArgumentList { get; }
 
         // Writable Properties
         public string BaseClassName { get; set; }
@@ -299,6 +355,7 @@
         public IList<EnumDefinition> Enums { get; set; } = new List<EnumDefinition>();
         public bool IsInterfaceOnly { get; set; }
         public IList<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
+        public IList<TokenDefinition> Tokens { get; set; } = new List<TokenDefinition>();
 
         // Computed Properties
         public string ArgumentName => SafeArgumentName(Name);
@@ -306,10 +363,13 @@
         public string ClassName => "Ts" + Name;
         public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
         public bool HasProperties => Properties.Any();
+        public bool HasTokens => Tokens.Any();
         public string InterfaceName => "ITs" + Name;
 
         public IEnumerable<PropertyDefinition> InterfaceProperties =>
             Properties.Where(prop => !prop.DeclaredInBaseInterface);
+
+        public IEnumerable<IProperty> PropertiesAndTokens => Properties.Cast<IProperty>().Concat(Tokens);
 
         public string ToPropertyList(
             bool includeTriviaParams = false,
@@ -385,8 +445,8 @@
         {
         }
 
-        // Read-only Properties
-        public override string BaseCtorArgumentList => "preserveSpacing";
+        public string ConstructorParameters =>
+            string.Join("", Properties.Select(prop => $"{prop.Type} {prop.ArgumentName}, ")) + "bool preserveSpacing";
     }
 
     public sealed class AstNodeDefinition : NodeDefinition
@@ -396,11 +456,50 @@
         {
         }
 
-        // Read-only Properties
-        public override string BaseCtorArgumentList => "leadingTrivia, trailingTrivia";
+        public string ConstructorParameters
+        {
+            get
+            {
+                string prefix = Environment.NewLine + TripleIndent;
+                var builder = new StringBuilder();
+
+                // Add the "normal" parameters.
+                builder.Append(string.Join("", Properties.Select(prop => $"{prefix}{prop.Type} {prop.ArgumentName},")));
+
+                // Add the token parameters as optional parameters.
+                builder.Append(string.Join("", Tokens.Select(token => $"{prefix}{token.OptionalType} {token.ArgumentName} = null,")));
+
+                // Add the trivia nodes.
+                builder.Append($"{prefix}ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,");
+                builder.Append($"{prefix}ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null");
+
+                return builder.ToString();
+            }
+        }
+
+        public string ShallowCopyImplementation
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                builder.Append($"new {ClassName}(");
+                builder.Append(string.Join("", PropertiesAndTokens.Select(prop => $"{prop.Name}, ")));
+                builder.Append("leadingTrivia, trailingTrivia)");
+
+                return builder.ToString();
+            }
+        }
     }
 
-    public sealed class PropertyDefinition
+    public interface IProperty
+    {
+        public string Name { get; }
+        public string ArgumentName { get; }
+        public string Type { get; }
+        public string Comment { get; }
+    }
+
+    public sealed class PropertyDefinition : IProperty
     {
         public PropertyDefinition(string name, string type, string comment, bool declaredInBaseInterface)
         {
@@ -416,6 +515,26 @@
         public string Type { get; }
         public string Comment { get; }
         public bool DeclaredInBaseInterface { get; }
+    }
+
+    public sealed class TokenDefinition : IProperty
+    {
+        public TokenDefinition(string name, string comment, bool isOptional)
+        {
+            Name = name;
+            Comment = comment;
+            IsOptional = isOptional;
+        }
+
+        public string Name { get; }
+        public bool IsOptional { get;
+        }
+        public string ArgumentName => SafeArgumentName(Name);
+        public string Type => IsOptional ? "ITsTokenNode?" : "ITsTokenNode";
+        public string OptionalType => "ITsTokenNode?";
+        public string Comment { get; }
+
+        public string TsTokenName => $"TsTokenNode.{Name}";
     }
 
     public sealed class EnumDefinition

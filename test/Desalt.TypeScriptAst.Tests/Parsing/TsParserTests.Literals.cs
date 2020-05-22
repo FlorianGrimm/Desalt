@@ -34,8 +34,15 @@ namespace Desalt.TypeScriptAst.Tests.Parsing
             AssertParseExpression(
                 "[123, 'a', true]",
                 Factory.Array(Factory.Number(123), Factory.String("a"), Factory.True));
-            AssertParseExpression("[,]", Factory.Array());
-            AssertParseExpression("[,,,]", Factory.Array());
+            AssertParseExpression("[,]", Factory.Array(Factory.EmptyArrayElement));
+            AssertParseExpression(
+                "[,,,]",
+                Factory.Array(
+                    Factory.EmptyArrayElement,
+                    Factory.EmptyArrayElement,
+                    Factory.EmptyArrayElement,
+                    Factory.EmptyArrayElement));
+
             AssertParseExpression(
                 "[1, ...x]",
                 Factory.Array(

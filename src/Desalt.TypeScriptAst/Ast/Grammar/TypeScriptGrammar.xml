@@ -253,15 +253,20 @@
      */
     -->
     <AstNode name="ArrayLiteral" baseInterfaces="ITsExpression">
-      <Comment>Represents an array literal of the form '[element...]'.</Comment>
-      <Property name="Elements" type="ImmutableArray&lt;ITsArrayElement?&gt;" />
+      <Comment>Represents an array literal of the form '[element, element, ...]'.</Comment>
+      <Property name="Elements" type="ITsAstNodeList&lt;ITsArrayElement&gt;" />
+      <Token name="OpenBracket" />
+      <Token name="CloseBracket" />
     </AstNode>
     <AstNode name="ArrayElement" baseInterfaces="ITsAstNode">
       <Comment>Represents an element in an array.</Comment>
       <Property name="Expression" type="ITsExpression" />
-      <Property name="IsSpreadElement" type="bool">
-        <Comment><![CDATA[Indicates whether the <see cref="Expression" /> is preceded by a spread operator '...'.]]></Comment>
+      <Property name="IsEmpty" type="bool">
+        <Comment><![CDATA[Indicates whether this element represents an empty element. A JavaScript array literal can have empty entries, '[,x,,]' for example.]]></Comment>
       </Property>
+      <Token name="Ellipsis" isOptional="true">
+        <Comment><![CDATA[The spread operator token '...' that optionally precedes the <see cref="Expression" />.]]></Comment>
+      </Token>
     </AstNode>
 
     <!--

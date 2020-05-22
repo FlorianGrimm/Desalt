@@ -1,4 +1,4 @@
-<#@ template debug="false" hostspecific="true" language="C#" #>
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ include file="TsAstNodeGenerator.ttinclude" #>
 <#
 var allNodes = GatherAstDefinitions().OrderBy(x => x.InterfaceName);
@@ -139,8 +139,8 @@ foreach (var node in nodes) {
     /// </summary>
     internal partial class <#= node.ClassName #> : <#= node.BaseClassName #>, <#= node.InterfaceName #>
     {
-        public <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: true, multipleLines: true) #>)
-            : base(<#= node.BaseCtorArgumentList #>)
+        public <#= node.ClassName #>(<#= node.ConstructorParameters #>)
+            : base(leadingTrivia, trailingTrivia)
         {
 <# WriteCtorAssignments(node); #>
         }
@@ -152,7 +152,7 @@ foreach (var node in nodes) {
         public override ITsNode ShallowCopy(
             ImmutableArray<ITsAstTriviaNode> leadingTrivia,
             ImmutableArray<ITsAstTriviaNode> trailingTrivia) =>
-            new <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, noTypes: true, useNameInsteadOfArgumentName: true) #><#= node.Properties.Any() ? ", " : "" #>leadingTrivia, trailingTrivia);
+            <#= node.ShallowCopyImplementation #>;
     }
 <# WriteWithExtensionMethods(node); #>
 <# } // if (!node.IsInterfaceOnly) #>

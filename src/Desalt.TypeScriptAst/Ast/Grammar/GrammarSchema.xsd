@@ -53,6 +53,7 @@
       <xs:element name="Comment" minOccurs="1" maxOccurs="1" />
       <xs:element name="Enum" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="Property" type="PropertyType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="Token" type="TokenType" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="baseInterfaces" type="ListOfStrings" use="required" />
@@ -77,5 +78,13 @@
 
   <xs:complexType name="EnumValueType">
     <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="TokenType">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="Comment" maxOccurs="1" nillable="true" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="isOptional" type="xs:boolean" use="optional" />
   </xs:complexType>
 </xs:schema>

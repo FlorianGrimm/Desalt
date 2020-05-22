@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // <copyright file="TsAstEmitter.cs" company="Justin Rockwood">
 //   Copyright (c) Justin Rockwood. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
 //   LICENSE.txt in the project root for license information.
@@ -148,12 +148,18 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static void EmitArrayLiteral(Emitter emitter, ITsArrayLiteral arrayLiteral)
         {
-            emitter.WriteList(arrayLiteral.Elements, indent: false, prefix: "[", suffix: "]", itemDelimiter: ", ");
+            emitter.Write(arrayLiteral.OpenBracket).Write(arrayLiteral.Elements).Write(arrayLiteral.CloseBracket);
         }
 
         public static void EmitArrayElement(Emitter emitter, ITsArrayElement arrayElement)
         {
-            emitter.WriteIf(arrayElement.IsSpreadElement, "...").Write(arrayElement.Expression);
+            if (arrayElement.IsEmpty)
+            {
+                return;
+            }
+
+            arrayElement.Ellipsis?.Emit(emitter);
+            arrayElement.Expression.Emit(emitter);
         }
 
         public static void EmitObjectLiteral(Emitter emitter, ITsObjectLiteral objectLiteral)

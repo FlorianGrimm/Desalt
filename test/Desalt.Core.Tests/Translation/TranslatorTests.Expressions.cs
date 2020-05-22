@@ -323,6 +323,14 @@ arr = new Array(1 + 10);
 ");
         }
 
+        [Test, Ignore("TODO")]
+        public async Task ArrayCreationExpression_should_preserve_comments()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                "var arr = /*a*/ new /*b*/ int/*c*/[/*d*/] /*e*/{/*f*/ 1 /*g*/, /*h*/ 2, 3 /*i*/};",
+                "let arr: number[] = /*a*/ /*b*/ /*c*/ /*d*/ /*e*/ [/*f*/ 1 /*g*/, /*h*/ 2, 3 /*i*/];");
+        }
+
         //// ===========================================================================================================
         //// Object Creation Expression Tests
         //// ===========================================================================================================

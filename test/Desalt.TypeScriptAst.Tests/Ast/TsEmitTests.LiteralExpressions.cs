@@ -8,6 +8,7 @@
 namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using System;
+    using System.Linq;
     using Desalt.TypeScriptAst.Ast;
     using FluentAssertions;
     using NUnit.Framework;
@@ -23,6 +24,7 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         public void Emit_null_literal()
         {
             VerifyOutput(Factory.Null, "null");
+            VerifyOutput(AddCommentAroundNode(Factory.Null), "/*a*/null/*a*/");
         }
 
         [Test]
@@ -30,6 +32,8 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         {
             VerifyOutput(Factory.True, "true");
             VerifyOutput(Factory.False, "false");
+            VerifyOutput(AddCommentAroundNode(Factory.True), "/*a*/true/*a*/");
+            VerifyOutput(AddCommentAroundNode(Factory.False), "/*a*/false/*a*/");
         }
 
         [Test]
@@ -37,6 +41,10 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         {
             VerifyOutput(Factory.String("single"), "'single'");
             VerifyOutput(Factory.String("double", StringLiteralQuoteKind.DoubleQuote), "\"double\"");
+            VerifyOutput(AddCommentAroundNode(Factory.String("single")), "/*a*/'single'/*a*/");
+            VerifyOutput(
+                AddCommentAroundNode(Factory.String("double", StringLiteralQuoteKind.DoubleQuote)),
+                "/*a*/\"double\"/*a*/");
         }
 
         [Test]
@@ -62,18 +70,22 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             VerifyOutput(Factory.Number(1.23e4), "12300");
             VerifyOutput(Factory.Number(83e45), "8.3E+46");
             VerifyOutput(Factory.Number(53e-53), "5.3E-52");
+
+            VerifyOutput(AddCommentAroundNode(Factory.Number(53e-53)), "/*a*/5.3E-52/*a*/");
         }
 
         [Test]
         public void Emit_binary_integer_literals()
         {
             VerifyOutput(Factory.BinaryInteger(17), "0b10001");
+            VerifyOutput(AddCommentAroundNode(Factory.BinaryInteger(17)), "/*a*/0b10001/*a*/");
         }
 
         [Test]
         public void Emit_octal_integer_literals()
         {
             VerifyOutput(Factory.OctalInteger(20), "0o24");
+            VerifyOutput(AddCommentAroundNode(Factory.OctalInteger(20)), "/*a*/0o24/*a*/");
         }
 
         [Test]
@@ -82,6 +94,8 @@ namespace Desalt.TypeScriptAst.Tests.Ast
             VerifyOutput(Factory.HexInteger(415), "0x19f");
             // ReSharper disable once StringLiteralTypo
             VerifyOutput(Factory.HexInteger(48879), "0xbeef");
+
+            VerifyOutput(AddCommentAroundNode(Factory.HexInteger(415)), "/*a*/0x19f/*a*/");
         }
 
         [Test]
@@ -89,6 +103,8 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         {
             VerifyOutput(Factory.RegularExpression("a-z", "g"), "/a-z/g");
             VerifyOutput(Factory.RegularExpression("hello", null), "/hello/");
+
+            VerifyOutput(AddCommentAroundNode(Factory.RegularExpression("a-z", "g")), "/*a*//a-z/g/*a*/");
         }
 
         [Test]
@@ -109,10 +125,35 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         }
 
         [Test]
+        public void Emit_array_literals_with_comments()
+        {
+            var node = AddCommentAroundNode(
+                "node",
+                Factory.Array(
+                    AddCommentAroundNode("a", Factory.ArrayElement(s_x)),
+                    AddCommentAroundNode("b", Factory.ArrayElement(Factory.Number(10)))));
+
+            node = node.WithOpenBracket(AddCommentAroundNode("open", node.OpenBracket))
+                .WithCloseBracket(AddCommentAroundNode("close", node.CloseBracket))
+                .WithElements(
+                    node.Elements.WithSeparators(
+                        node.Elements.Separators.Select(sep => AddCommentAroundNode("comma", sep))));
+
+            VerifyOutput(
+                node,
+                "/*node*//*open*/[/*open*//*a*/x/*a*//*comma*/, /*comma*//*b*/10/*b*//*close*/]/*close*//*node*/");
+        }
+
+        [Test]
         public void Emit_array_literals_with_elisions_ie_empty_elements()
         {
             VerifyOutput(
-                Factory.Array(null, Factory.ArrayElement(s_x), null, null, Factory.ArrayElement(s_y)),
+                Factory.Array(
+                    Factory.EmptyArrayElement,
+                    Factory.ArrayElement(s_x),
+                    Factory.EmptyArrayElement,
+                    Factory.EmptyArrayElement,
+                    Factory.ArrayElement(s_y)),
                 "[, x, , , y]");
         }
 
@@ -120,6 +161,17 @@ namespace Desalt.TypeScriptAst.Tests.Ast
         public void Emit_array_literals_with_spread_operator()
         {
             VerifyOutput(Factory.Array(Factory.ArrayElement(s_y, isSpreadElement: true)), "[...y]");
+        }
+
+        [Test]
+        public void Emit_array_elements_with_spread_operator_and_comments()
+        {
+            var array = Factory.Array(AddCommentAroundNode(Factory.ArrayElement(s_y, isSpreadElement: true)));
+            array = array.WithElements(
+                new[] { array.Elements[0].WithEllipsis(AddCommentAroundNode("b", array.Elements[0].Ellipsis!)) }
+                    .ToNodeList());
+
+            VerifyOutput(array, "[/*a*//*b*/.../*b*/y/*a*/]");
         }
 
         [Test]

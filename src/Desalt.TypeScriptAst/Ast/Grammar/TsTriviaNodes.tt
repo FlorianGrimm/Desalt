@@ -48,8 +48,8 @@ foreach (var node in nodes) {
     /// </summary>
     internal partial class <#= node.ClassName #> : <#= node.BaseClassName #>, <#= node.InterfaceName #>
     {
-        public <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, multipleLines: false) #>, bool preserveSpacing)
-            : base(<#= node.BaseCtorArgumentList #>)
+        public <#= node.ClassName #>(<#= node.ConstructorParameters #>)
+            : base(preserveSpacing)
         {
 <# WriteCtorAssignments(node, skipVerifyInputs: true); #>
         }
