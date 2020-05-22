@@ -1,4 +1,4 @@
-﻿<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
 <#@ import namespace="System" #>
@@ -59,7 +59,7 @@
         {
             WriteLine($"public enum {enumDefinition.Name}");
             WriteLine("{");
-            PushIndent("    ");
+            PushIndent(SingleIndent);
 
             foreach (var value in enumDefinition.Values)
             {
@@ -150,13 +150,6 @@
             WriteWithExtensionMethod(node, property.Name, property.Type, skipLeadingNewline: i == 0);
         }
 
-//        // Add the trivia node With* methods.
-//        WriteWithExtensionMethod(node, "LeadingTrivia", "ImmutableArray<ITsAstTriviaNode>");
-//        WriteWithExtensionMethod(node, "TrailingTrivia", "ImmutableArray<ITsAstTriviaNode>");
-//
-//        WriteTriviaExtensionMethod(node, isLeadingTrivia: true);
-//        WriteTriviaExtensionMethod(node, isLeadingTrivia: false);
-
         PopIndent();
         WriteLine("}");
 
@@ -214,28 +207,6 @@
 
         PopIndent();
     }
-
-//    private void WriteTriviaExtensionMethod(NodeDefinition node, bool isLeadingTrivia)
-//    {
-//        WriteLine("");
-//
-//        string triviaName = isLeadingTrivia ? "LeadingTrivia" : "TrailingTrivia";
-//
-//        Write($"public static {node.InterfaceName} With{triviaName}(");
-//        WriteLine($"this {node.InterfaceName} node, params ITsAstTriviaNode[] value) =>");
-//
-//        PushIndent(SingleIndent);
-//
-//        Write($"new {node.ClassName}(");
-//        Write(string.Join("", node.Properties.Select(x => $"node.{x.Name}, ")));
-//
-//        Write(isLeadingTrivia ? "value.ToImmutableArray()" : "node.LeadingTrivia");
-//        Write(", ");
-//        Write(isLeadingTrivia ? "node.TrailingTrivia" : "value.ToImmutableArray()");
-//        WriteLine(");");
-//
-//        PopIndent();
-//    }
 
     private static readonly ISet<string> s_csharpKeywords = new HashSet<string>
     {
