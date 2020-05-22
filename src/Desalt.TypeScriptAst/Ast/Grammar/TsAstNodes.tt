@@ -132,7 +132,7 @@ foreach (var node in nodes) {
     {
 <# WriteProperties(node, isInterface: true); #>
     }
-<# if (!node.InterfaceOnly) { #>
+<# if (!node.IsInterfaceOnly) { #>
 
     /// <summary>
     /// <#= node.Comment #>
@@ -155,7 +155,7 @@ foreach (var node in nodes) {
             new <#= node.ClassName #>(<#= node.ToPropertyList(includeTriviaParams: false, noTypes: true, useNameInsteadOfArgumentName: true) #><#= node.Properties.Any() ? ", " : "" #>leadingTrivia, trailingTrivia);
     }
 <# WriteWithExtensionMethods(node); #>
-<# } // if (!node.InterfaceOnly) #>
+<# } // if (!node.IsInterfaceOnly) #>
 <#
 } // end foreach node
 #>

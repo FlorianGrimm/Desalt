@@ -233,7 +233,7 @@
         string rawBaseInterfaces = (string)node.Attribute("baseInterfaces");
         string baseInterfaces = string.Join(", ", rawBaseInterfaces.Split(',').Select(s => s.Trim()));
 
-        bool interfaceOnly = ((bool?)node.Attribute("interfaceOnly")) ?? false;
+        bool isInterfaceOnly = ((bool?)node.Attribute("interfaceOnly")) ?? false;
 
         var properties = new List<PropertyDefinition>();
         foreach (var propertyNode in node.Descendants(Xmlns + "Property"))
@@ -265,7 +265,7 @@
                 BaseClassName = "TsAstTriviaNode",
                 BaseInterfaces = baseInterfaces,
                 Enums = enums,
-                InterfaceOnly = interfaceOnly,
+                IsInterfaceOnly = isInterfaceOnly,
                 Properties = properties,
             };
         }
@@ -276,7 +276,7 @@
             BaseClassName = "TsAstNode",
             BaseInterfaces = baseInterfaces,
             Enums = enums,
-            InterfaceOnly = interfaceOnly,
+            IsInterfaceOnly = isInterfaceOnly,
             Properties = properties,
         };
     }
@@ -297,7 +297,7 @@
         public string Comment { get; set; }
         public string BaseInterfaces { get; set; }
         public IList<EnumDefinition> Enums { get; set; } = new List<EnumDefinition>();
-        public bool InterfaceOnly { get; set; }
+        public bool IsInterfaceOnly { get; set; }
         public IList<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
 
         // Computed Properties
