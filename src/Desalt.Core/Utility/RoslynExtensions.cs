@@ -77,6 +77,41 @@ namespace Desalt.Core.Utility
         }
 
         /// <summary>
+        /// Returns a value indicating whether the specified trivia node is either a single- or multi-line comment.
+        /// </summary>
+        /// <param name="trivia">The trivia node to test.</param>
+        public static bool IsComment(this SyntaxTrivia trivia)
+        {
+            return trivia.Kind().IsOneOf(SyntaxKind.MultiLineCommentTrivia, SyntaxKind.SingleLineCommentTrivia);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified node contains a leading comment.
+        /// </summary>
+        public static bool HasLeadingComment(this SyntaxNodeOrToken syntaxNodeOrToken)
+        {
+            return syntaxNodeOrToken.HasLeadingTrivia && syntaxNodeOrToken.GetLeadingTrivia().Any(IsComment);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified node contains a trailing comment.
+        /// </summary>
+        public static bool HasTrailingComment(this SyntaxNodeOrToken syntaxNodeOrToken)
+        {
+            return syntaxNodeOrToken.HasTrailingTrivia && syntaxNodeOrToken.GetTrailingTrivia().Any(IsComment);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether the specified trivia list has at least one single- or multi-line comment.
+        /// </summary>
+        public static bool HasComment(this SyntaxTriviaList triviaList, bool includingDocumentationComment = false)
+        {
+            bool hasComment = triviaList.Any(IsComment);
+            hasComment |= includingDocumentationComment && triviaList.Any(trivia => trivia.HasStructure);
+            return hasComment;
+        }
+
+        /// <summary>
         /// Parses an XML documentation comment belonging to the specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol containing a potential XML documentation comment.</param>

@@ -272,8 +272,8 @@ namespace Desalt.TypeScriptAst.Ast
     /// </summary>
     public interface ITsArgumentList : ITsAstNode
     {
-        ImmutableArray<ITsType> TypeArguments { get; }
-        ImmutableArray<ITsArgument> Arguments { get; }
+        ITsTypeNodeList? TypeArguments { get; }
+        ITsArgumentNodeList Arguments { get; }
     }
 
     /// <summary>
@@ -282,8 +282,8 @@ namespace Desalt.TypeScriptAst.Ast
     internal partial class TsArgumentList : TsAstNode, ITsArgumentList
     {
         public TsArgumentList(
-            ImmutableArray<ITsType> typeArguments,
-            ImmutableArray<ITsArgument> arguments,
+            ITsTypeNodeList? typeArguments,
+            ITsArgumentNodeList arguments,
             ImmutableArray<ITsAstTriviaNode>? leadingTrivia = null,
             ImmutableArray<ITsAstTriviaNode>? trailingTrivia = null)
             : base(leadingTrivia, trailingTrivia)
@@ -293,10 +293,10 @@ namespace Desalt.TypeScriptAst.Ast
             Arguments = arguments;
         }
 
-        public ImmutableArray<ITsType> TypeArguments { get; }
-        public ImmutableArray<ITsArgument> Arguments { get; }
+        public ITsTypeNodeList? TypeArguments { get; }
+        public ITsArgumentNodeList Arguments { get; }
 
-        partial void VerifyInputs(ImmutableArray<ITsType> typeArguments, ImmutableArray<ITsArgument> arguments);
+        partial void VerifyInputs(ITsTypeNodeList? typeArguments, ITsArgumentNodeList arguments);
         public override void Accept(TsVisitor visitor) => visitor.VisitArgumentList(this);
         protected override void EmitContent(Emitter emitter) => TsAstEmitter.EmitArgumentList(emitter, this);
         public override ITsNode ShallowCopy(
@@ -307,10 +307,10 @@ namespace Desalt.TypeScriptAst.Ast
 
     public static class ArgumentListExtensions
     {
-        public static ITsArgumentList WithTypeArguments(this ITsArgumentList node, ImmutableArray<ITsType> value) =>
+        public static ITsArgumentList WithTypeArguments(this ITsArgumentList node, ITsTypeNodeList? value) =>
             node.TypeArguments == value ? node : new TsArgumentList(value, node.Arguments, node.LeadingTrivia, node.TrailingTrivia);
 
-        public static ITsArgumentList WithArguments(this ITsArgumentList node, ImmutableArray<ITsArgument> value) =>
+        public static ITsArgumentList WithArguments(this ITsArgumentList node, ITsArgumentNodeList value) =>
             node.Arguments == value ? node : new TsArgumentList(node.TypeArguments, value, node.LeadingTrivia, node.TrailingTrivia);
     }
 

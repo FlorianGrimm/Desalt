@@ -25,6 +25,8 @@ namespace Desalt.TypeScriptAst.Ast
         public static readonly TsTokenNode CloseParen = new TsTokenNode(")");
         public static readonly TsTokenNode Comma = new TsTokenNode(",");
         public static readonly TsTokenNode Ellipsis = new TsTokenNode("...");
+        public static readonly TsTokenNode GreaterThan = new TsTokenNode(">");
+        public static readonly TsTokenNode LessThan = new TsTokenNode("<");
         public static readonly TsTokenNode OpenBracket = new TsTokenNode("[");
         public static readonly TsTokenNode OpenParen = new TsTokenNode("(");
         public static readonly TsTokenNode Semicolon = new TsTokenNode(";");

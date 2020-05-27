@@ -71,7 +71,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArrayLiteral Array()
         {
-            return new TsArrayLiteral(TsAstNodeList<ITsArrayElement>.Empty);
+            return new TsArrayLiteral(TsArrayElementNodeList.Empty);
         }
 
         public static ITsArrayLiteral Array(params ITsArrayElement[] elements)
@@ -291,7 +291,17 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static ITsArgumentList ArgumentList()
         {
-            return new TsArgumentList(ImmutableArray<ITsType>.Empty, ImmutableArray<ITsArgument>.Empty);
+            return new TsArgumentList(typeArguments: null, arguments: TsArgumentNodeList.Empty);
+        }
+
+        /// <summary>
+        /// Represents an argument list of the form '&lt;T&gt;(x: type, y: type).
+        /// </summary>
+        public static ITsArgumentList ArgumentList(
+            ITsTypeNodeList? typeArguments,
+            ITsArgumentNodeList arguments)
+        {
+            return new TsArgumentList(typeArguments, arguments);
         }
 
         /// <summary>
@@ -299,9 +309,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArgumentList ArgumentList(IEnumerable<ITsType>? typeArguments, params ITsArgument[] arguments)
         {
-            return new TsArgumentList(
-                typeArguments?.ToImmutableArray() ?? ImmutableArray<ITsType>.Empty,
-                arguments.ToImmutableArray());
+            return new TsArgumentList(typeArguments?.ToNodeList(), arguments.ToNodeList());
         }
 
         /// <summary>
@@ -309,9 +317,7 @@ namespace Desalt.TypeScriptAst.Ast
         /// </summary>
         public static ITsArgumentList ArgumentList(params ITsArgument[] arguments)
         {
-            return new TsArgumentList(
-                typeArguments: ImmutableArray<ITsType>.Empty,
-                arguments: arguments.ToImmutableArray());
+            return new TsArgumentList(typeArguments: null, arguments: arguments.ToNodeList());
         }
 
         /// <summary>
@@ -320,8 +326,8 @@ namespace Desalt.TypeScriptAst.Ast
         public static ITsArgumentList ArgumentList(params ITsIdentifier[] arguments)
         {
             return new TsArgumentList(
-                typeArguments: ImmutableArray<ITsType>.Empty,
-                arguments: arguments.Select(id => Argument(id)).ToImmutableArray());
+                typeArguments: null,
+                arguments: arguments.Select(id => Argument(id)).ToNodeList());
         }
 
         public static readonly ITsNewTargetExpression NewTarget = new TsNewTargetExpression();

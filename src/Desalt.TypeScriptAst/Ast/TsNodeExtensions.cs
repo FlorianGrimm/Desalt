@@ -42,6 +42,24 @@ namespace Desalt.TypeScriptAst.Ast
         }
 
         /// <summary>
+        /// Creates a copy of this node with the specified trivia prepended to the existing leading trivia.
+        /// </summary>
+        public static T PrependLeadingTrivia<T>(this T node, params ITsAstTriviaNode[] trivia)
+            where T : ITsNode
+        {
+            return (T)node.ShallowCopy(node.LeadingTrivia.InsertRange(0, trivia), node.TrailingTrivia);
+        }
+
+        /// <summary>
+        /// Creates a copy of this node with the specified trivia appended to the existing leading trivia.
+        /// </summary>
+        public static T AppendLeadingTrivia<T>(this T node, params ITsAstTriviaNode[] trivia)
+            where T : ITsNode
+        {
+            return (T)node.ShallowCopy(node.LeadingTrivia.AddRange(trivia), node.TrailingTrivia);
+        }
+
+        /// <summary>
         /// Creates a copy of this node with the specified trailing trivia.
         /// </summary>
         public static T WithTrailingTrivia<T>(this T node, ImmutableArray<ITsAstTriviaNode> value)
@@ -57,6 +75,24 @@ namespace Desalt.TypeScriptAst.Ast
             where T : ITsNode
         {
             return (T)node.ShallowCopy(node.LeadingTrivia, trivia.ToImmutableArray());
+        }
+
+        /// <summary>
+        /// Creates a copy of this node with the specified trivia prepend to the existing trailing trivia.
+        /// </summary>
+        public static T PrependTrailingTrivia<T>(this T node, params ITsAstTriviaNode[] trivia)
+            where T : ITsNode
+        {
+            return (T)node.ShallowCopy(node.LeadingTrivia, node.TrailingTrivia.InsertRange(0, trivia));
+        }
+
+        /// <summary>
+        /// Creates a copy of this node with the specified trivia appended to the existing trailing trivia.
+        /// </summary>
+        public static T AppendTrailingTrivia<T>(this T node, params ITsAstTriviaNode[] trivia)
+            where T : ITsNode
+        {
+            return (T)node.ShallowCopy(node.LeadingTrivia, node.TrailingTrivia.AddRange(trivia));
         }
     }
 }

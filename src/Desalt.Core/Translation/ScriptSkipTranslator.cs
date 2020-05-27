@@ -62,7 +62,7 @@ namespace Desalt.Core.Translation
             // [ScriptSkip] on a static method with a single argument: `Foo.M(x)` becomes `x`.
             if (methodSymbol.IsStatic)
             {
-                if (translatedArgumentList.Arguments.Length != 1)
+                if (translatedArgumentList.Arguments.Count != 1)
                 {
                     translatedExpression = null;
                     context.Diagnostics.Add(
@@ -75,7 +75,7 @@ namespace Desalt.Core.Translation
             }
 
             // [ScriptSkip] on an instance method with no arguments
-            if (translatedArgumentList.Arguments.Length != 0)
+            if (translatedArgumentList.Arguments.Count != 0)
             {
                 translatedExpression = null;
                 context.Diagnostics.Add(

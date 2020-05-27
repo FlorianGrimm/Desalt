@@ -32,7 +32,9 @@ namespace Desalt.Core.Translation
         public static IExpressionTranslation Translate(TranslationContext context, EqualsValueClauseSyntax node)
         {
             var visitor = new ExpressionVisitor(context);
-            var translatedExpression = visitor.VisitSubExpression(node.Value);
+            var translatedExpression = visitor.VisitSubExpression(node.Value)
+                .PrependTrailingCommentsFrom(node.EqualsToken, toLeadingTrivia: true);
+
             return new Result(translatedExpression, visitor);
         }
 

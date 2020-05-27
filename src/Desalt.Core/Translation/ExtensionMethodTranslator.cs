@@ -7,7 +7,6 @@
 
 namespace Desalt.Core.Translation
 {
-    using System.Linq;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -79,7 +78,7 @@ namespace Desalt.Core.Translation
             // method invocation: `x.Extension()` -> `ExtensionClass.Extension(x)`.
             translatedArgumentList = Factory.ArgumentList(
                 translatedArgumentList.TypeArguments,
-                translatedArgumentList.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)).ToArray());
+                translatedArgumentList.Arguments.Insert(0, Factory.Argument(memberDotExpression.LeftSide)));
 
             return true;
         }

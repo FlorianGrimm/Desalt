@@ -9,6 +9,8 @@
 <#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Xml.Linq" #>
 <#+
+    #nullable enable
+
     public const string GeneratedDirectoryName = "Generated";
 
     public string RootOutputDirectory => Path.Combine(Path.GetDirectoryName(Host.TemplateFile), GeneratedDirectoryName);
@@ -163,6 +165,46 @@
                     WriteLine("");
                 }
             }
+
+            // Verify that the node lists have the right token for the open/close.
+            if (astNode != null && astNode.HasNodeLists)
+            {
+                WriteLine("");
+
+                foreach (var nodeListProperty in astNode.NodeListProperties)
+                {
+                    string openToken = nodeListProperty.ListOpenToken ?? "(";
+                    string closeToken = nodeListProperty.ListCloseToken ?? ")";
+                    bool isOptional = nodeListProperty.Type.EndsWith("?");
+
+                    if (isOptional)
+                    {
+                        WriteLine($"if ({nodeListProperty.ArgumentName} != null && {nodeListProperty.ArgumentName}.OpenToken.Token != \"{openToken}\")");
+                    }
+                    else
+                    {
+                        WriteLine($"if ({nodeListProperty.ArgumentName}.OpenToken.Token != \"{openToken}\")");
+                    }
+
+                    WriteLine("{");
+                    WriteLine($"{SingleIndent}throw new ArgumentException(\"Open token must be '{openToken}'.\", nameof({nodeListProperty.ArgumentName}));");
+                    WriteLine("}");
+
+                    if (isOptional)
+                    {
+                        WriteLine($"if ({nodeListProperty.ArgumentName} != null && {nodeListProperty.ArgumentName}.CloseToken.Token != \"{closeToken}\")");
+                    }
+                    else
+                    {
+                        WriteLine($"if ({nodeListProperty.ArgumentName}.CloseToken.Token != \"{closeToken}\")");
+                    }
+
+                    WriteLine("{");
+                    WriteLine($"{SingleIndent}throw new ArgumentException(\"Close token must be '{closeToken}'.\", nameof({nodeListProperty.ArgumentName}));");
+                    WriteLine("}");
+                    WriteLine("");
+                }
+            }
         }
 
         foreach (var property in node.Properties)
@@ -288,8 +330,16 @@
             string propertyComment = (string)propertyNode.Element(Xmlns + "Comment");
             bool declaredInBaseInterface = ((bool?)propertyNode.Attribute("declaredInBaseInterface")).GetValueOrDefault();
 
+            string? listOpenToken = (string?)propertyNode.Attribute("listOpenToken");
+            string? listCloseToken = (string?)propertyNode.Attribute("listCloseToken");
+
             var propertyDefinition =
-                new PropertyDefinition(propertyName, propertyType, propertyComment, declaredInBaseInterface);
+                new PropertyDefinition(propertyName, propertyType, propertyComment, declaredInBaseInterface)
+            {
+                ListOpenToken = listOpenToken,
+                ListCloseToken = listCloseToken,
+            };
+
             properties.Add(propertyDefinition);
         }
 
@@ -315,22 +365,18 @@
 
         if (node.Name.LocalName == "TriviaNode")
         {
-            return new TriviaNodeDefinition(name)
+            return new TriviaNodeDefinition(name, baseInterfaces)
             {
                 Comment = comment,
-                BaseClassName = "TsAstTriviaNode",
-                BaseInterfaces = baseInterfaces,
                 Enums = enums,
                 IsInterfaceOnly = isInterfaceOnly,
                 Properties = properties,
             };
         }
 
-        return new AstNodeDefinition(name)
+        return new AstNodeDefinition(name, baseInterfaces)
         {
             Comment = comment,
-            BaseClassName = "TsAstNode",
-            BaseInterfaces = baseInterfaces,
             Enums = enums,
             IsInterfaceOnly = isInterfaceOnly,
             Properties = properties,
@@ -340,18 +386,19 @@
 
     public abstract class NodeDefinition
     {
-        protected NodeDefinition(string name)
+        protected NodeDefinition(string name, string baseInterfaces)
         {
             Name = name;
+            BaseInterfaces = baseInterfaces;
         }
 
         // Read-only Properties
         public string Name { get; }
+        public string BaseInterfaces { get; }
+        public abstract string BaseClassName { get; }
 
         // Writable Properties
-        public string BaseClassName { get; set; }
-        public string Comment { get; set; }
-        public string BaseInterfaces { get; set; }
+        public string? Comment { get; set; }
         public IList<EnumDefinition> Enums { get; set; } = new List<EnumDefinition>();
         public bool IsInterfaceOnly { get; set; }
         public IList<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
@@ -364,12 +411,14 @@
         public string EmitImplementation => $"TsAstEmitter.Emit{Name}(emitter, this)";
         public bool HasProperties => Properties.Any();
         public bool HasTokens => Tokens.Any();
+        public bool HasNodeLists => NodeListProperties.Any();
         public string InterfaceName => "ITs" + Name;
 
         public IEnumerable<PropertyDefinition> InterfaceProperties =>
             Properties.Where(prop => !prop.DeclaredInBaseInterface);
 
         public IEnumerable<IProperty> PropertiesAndTokens => Properties.Cast<IProperty>().Concat(Tokens);
+        public IEnumerable<PropertyDefinition> NodeListProperties => Properties.Where(prop => prop.Type.StartsWith("ITsAstNodeList"));
 
         public string ToPropertyList(
             bool includeTriviaParams = false,
@@ -440,10 +489,12 @@
 
     public sealed class TriviaNodeDefinition : NodeDefinition
     {
-        public TriviaNodeDefinition(string name)
-            : base(name)
+        public TriviaNodeDefinition(string name, string baseInterfaces)
+            : base(name, baseInterfaces)
         {
         }
+
+        public override string BaseClassName => "TsAstTriviaNode";
 
         public string ConstructorParameters =>
             string.Join("", Properties.Select(prop => $"{prop.Type} {prop.ArgumentName}, ")) + "bool preserveSpacing";
@@ -451,10 +502,12 @@
 
     public sealed class AstNodeDefinition : NodeDefinition
     {
-        public AstNodeDefinition(string name)
-            : base(name)
+        public AstNodeDefinition(string name, string baseInterfaces)
+            : base(name, baseInterfaces)
         {
         }
+
+        public override string BaseClassName => "TsAstNode";
 
         public string ConstructorParameters
         {
@@ -515,6 +568,9 @@
         public string Type { get; }
         public string Comment { get; }
         public bool DeclaredInBaseInterface { get; }
+
+        public string? ListOpenToken { get; set; }
+        public string? ListCloseToken { get; set; }
     }
 
     public sealed class TokenDefinition : IProperty
@@ -539,7 +595,7 @@
 
     public sealed class EnumDefinition
     {
-        public EnumDefinition(string name, IEnumerable<string> values = null)
+        public EnumDefinition(string name, IEnumerable<string>? values = null)
         {
             Name = name;
             Values = values?.ToList() ?? new List<string>();

@@ -18,6 +18,8 @@ namespace Desalt.Core.Translation
     using Desalt.Core.Utility;
     using Desalt.TypeScriptAst.Ast;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Factory = TypeScriptAst.Ast.TsAstFactory;
 
     /// <summary>
@@ -125,6 +127,12 @@ namespace Desalt.Core.Translation
         {
             var namedTypeSymbol = symbol as INamedTypeSymbol;
             return namedTypeSymbol?.OriginalDefinition?.ToHashDisplay() == "System.Nullable<T>";
+        }
+
+        public static ITsType TranslateTypeSymbol(TranslationContext context, TypeSyntax node)
+        {
+            var visitor = new TypeVisitor(context);
+            return visitor.Visit(node);
         }
 
         /// <summary>
@@ -327,6 +335,72 @@ namespace Desalt.Core.Translation
                 : Factory.VoidType;
 
             return Factory.FunctionType(parameterList, returnType);
+        }
+
+        //// ===========================================================================================================
+        //// Classes
+        //// ===========================================================================================================
+
+        private sealed class TypeVisitor : BaseTranslationVisitor<TypeSyntax, ITsType>
+        {
+            public TypeVisitor(TranslationContext context)
+                : base(context)
+            {
+            }
+
+            public override ITsType VisitPredefinedType(PredefinedTypeSyntax node)
+            {
+                ITsType translatedType;
+
+                switch (node.Keyword.Kind())
+                {
+                    // Number Types
+                    case SyntaxKind.CharKeyword:
+                    case SyntaxKind.ByteKeyword:
+                    case SyntaxKind.SByteKeyword:
+                    case SyntaxKind.UShortKeyword:
+                    case SyntaxKind.ShortKeyword:
+                    case SyntaxKind.UIntKeyword:
+                    case SyntaxKind.IntKeyword:
+                    case SyntaxKind.ULongKeyword:
+                    case SyntaxKind.LongKeyword:
+                    case SyntaxKind.DecimalKeyword:
+                    case SyntaxKind.FloatKeyword:
+                    case SyntaxKind.DoubleKeyword:
+                        translatedType = Factory.NumberType;
+                        break;
+
+                    // Object Types
+                    case SyntaxKind.ObjectKeyword:
+                        translatedType = Factory.AnyType;
+                        break;
+
+                    // Other Types
+                    case SyntaxKind.BoolKeyword:
+                        translatedType = Factory.BooleanType;
+                        break;
+
+                    case SyntaxKind.StringKeyword:
+                        translatedType = Factory.StringType;
+                        break;
+
+                    default:
+                        Context.ReportInternalError($"Unsupported predefined type '{node.Keyword.Kind()}'.", node);
+                        return Factory.NullType;
+                }
+
+                return translatedType.AddCommentsFrom(node);
+            }
+
+            public override ITsType VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+            {
+                return base.VisitSimpleBaseType(node);
+            }
+
+            public override ITsType VisitArrayType(ArrayTypeSyntax node)
+            {
+                return base.VisitArrayType(node);
+            }
         }
     }
 }

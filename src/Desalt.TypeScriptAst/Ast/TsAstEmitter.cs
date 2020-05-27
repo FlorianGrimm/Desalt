@@ -148,7 +148,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static void EmitArrayLiteral(Emitter emitter, ITsArrayLiteral arrayLiteral)
         {
-            emitter.Write(arrayLiteral.OpenBracket).Write(arrayLiteral.Elements).Write(arrayLiteral.CloseBracket);
+            emitter.Write(arrayLiteral.Elements);
         }
 
         public static void EmitArrayElement(Emitter emitter, ITsArrayElement arrayElement)
@@ -245,17 +245,8 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static void EmitArgumentList(Emitter emitter, ITsArgumentList argumentList)
         {
-            if (!argumentList.TypeArguments.IsEmpty)
-            {
-                emitter.WriteList(
-                    argumentList.TypeArguments,
-                    indent: false,
-                    prefix: "<",
-                    suffix: ">",
-                    itemDelimiter: ", ");
-            }
-
-            emitter.WriteParameterList(argumentList.Arguments);
+            argumentList.TypeArguments?.Emit(emitter);
+            argumentList.Arguments.Emit(emitter);
         }
 
         public static void EmitArgument(Emitter emitter, ITsArgument argument)

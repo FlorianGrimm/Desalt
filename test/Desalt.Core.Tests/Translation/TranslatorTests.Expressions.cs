@@ -117,6 +117,62 @@ class Logger {
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
+        [Test]
+        public async Task Default_expression_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = default(int);",
+                @"let x: number = ss.getDefaultValue(number);");
+        }
+
+        [Test]
+        public async Task Default_expression_with_Identifier_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = default(Int32);",
+                @"let x: number = ss.getDefaultValue(number);");
+        }
+
+        [Test]
+        public async Task Default_expression_with_QualifiedName_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = default(System.Int32);",
+                @"let x: number = ss.getDefaultValue(number);");
+        }
+
+        [Test]
+        public async Task Default_literal_expression_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = default;",
+                @"let x: number = ss.getDefaultValue(number);");
+        }
+
+        [Test]
+        public async Task Default_literal_expression_with_comments_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = /*a*/default/*b*/;",
+                @"let x: number = /*a*/ss.getDefaultValue(number)/*b*/;");
+        }
+
+        [Test]
+        public async Task Default_expressions_with_comments_should_translate_correctly()
+        {
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = /*a*/default/*b*/(/*c*/int/*d*/)/*e*/;",
+                @"let x: number = /*a*/ss.getDefaultValue/*b*/(/*c*/number/*d*/)/*e*/;");
+
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = /*a*/default/*b*/(/*c*/Int32/*d*/)/*e*/;",
+                @"let x: number = /*a*/ss.getDefaultValue/*b*/(/*c*/number/*d*/)/*e*/;");
+
+            await AssertTranslationWithClassCAndMethod(
+                @"int x = /*a*/default/*b*/(/*c*/System.Int32/*d*/)/*e*/;",
+                @"let x: number = /*a*/ss.getDefaultValue/*b*/(/*c*/number/*d*/)/*e*/;");
+        }
+
         //// ===========================================================================================================
         //// Unary and Binary Expressions
         //// ===========================================================================================================
@@ -323,12 +379,12 @@ arr = new Array(1 + 10);
 ");
         }
 
-        [Test, Ignore("TODO")]
+        [Test]
         public async Task ArrayCreationExpression_should_preserve_comments()
         {
             await AssertTranslationWithClassCAndMethod(
-                "var arr = /*a*/ new /*b*/ int/*c*/[/*d*/] /*e*/{/*f*/ 1 /*g*/, /*h*/ 2, 3 /*i*/};",
-                "let arr: number[] = /*a*/ /*b*/ /*c*/ /*d*/ /*e*/ [/*f*/ 1 /*g*/, /*h*/ 2, 3 /*i*/];");
+                "var arr = /*partOfEqualsClause*/ new /*b*/ int/*c*/[/*d*/] /*e*/{/*f*/ 1 /*g*/, /*h*/ 2, 3 /*i*/};",
+                "let arr: number[] = /*b*//*c*//*d*//*e*/[/*f*/1/*g*/, /*h*/2, 3/*i*/];");
         }
 
         //// ===========================================================================================================

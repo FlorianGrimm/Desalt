@@ -254,9 +254,7 @@
     -->
     <AstNode name="ArrayLiteral" baseInterfaces="ITsExpression">
       <Comment>Represents an array literal of the form '[element, element, ...]'.</Comment>
-      <Property name="Elements" type="ITsAstNodeList&lt;ITsArrayElement&gt;" />
-      <Token name="OpenBracket" />
-      <Token name="CloseBracket" />
+      <Property name="Elements" type="ITsArrayElementNodeList" />
     </AstNode>
     <AstNode name="ArrayElement" baseInterfaces="ITsAstNode">
       <Comment>Represents an element in an array.</Comment>
@@ -484,8 +482,8 @@
     </AstNode>
     <AstNode name="ArgumentList" baseInterfaces="ITsAstNode">
       <Comment><![CDATA[Represents an argument list of the form '&lt;T&gt;(x: type, y: type).]]></Comment>
-      <Property name="TypeArguments" type="ImmutableArray&lt;ITsType&gt;" />
-      <Property name="Arguments" type="ImmutableArray&lt;ITsArgument&gt;" />
+      <Property name="TypeArguments" type="ITsTypeNodeList?" />
+      <Property name="Arguments" type="ITsArgumentNodeList" />
     </AstNode>
     <AstNode name="Argument" baseInterfaces="ITsAstNode">
       <Comment><![CDATA[Represents an argument within an <see cref="ITsArgumentList" />.]]></Comment>

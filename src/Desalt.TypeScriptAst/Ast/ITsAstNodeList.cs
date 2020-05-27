@@ -23,9 +23,24 @@ namespace Desalt.TypeScriptAst.Ast
         //// ===========================================================================================================
 
         /// <summary>
+        /// Returns a value indicating whether the list is empty.
+        /// </summary>
+        bool IsEmpty { get; }
+
+        /// <summary>
         /// Returns the sequence of just the separator tokens.
         /// </summary>
         IEnumerable<ITsTokenNode> Separators { get; }
+
+        /// <summary>
+        /// Returns the open token for the list, for example '(', '&lt;'.
+        /// </summary>
+        ITsTokenNode OpenToken { get; }
+
+        /// <summary>
+        /// Returns the close token for the list, for example ')', '&gt;'.
+        /// </summary>
+        ITsTokenNode CloseToken { get; }
 
         //// ===========================================================================================================
         //// Methods
@@ -52,11 +67,36 @@ namespace Desalt.TypeScriptAst.Ast
         /// <returns>The node emitted to a string stream.</returns>
         string EmitAsString(EmitOptions? emitOptions = null);
 
-        /// <summary>
-        /// Creates a copy of this list with the separators replaced with the specified separators.
-        /// </summary>
-        /// <param name="separators">The separators to use in the list.</param>
-        /// <returns>A copy of this list with the separators replaced with the specified separators.</returns>
-        ITsAstNodeList<T> WithSeparators(IEnumerable<ITsTokenNode> separators);
+        ///// <summary>
+        ///// Creates a copy of this list with the open token leading trivia replaced with the specified value.
+        ///// </summary>
+        //ITsAstNodeList<T> WithOpenTokenLeadingTrivia(IEnumerable<ITsAstTriviaNode> trivia);
+
+        ///// <summary>
+        ///// Creates a copy of this list with the open token trailing trivia replaced with the specified value.
+        ///// </summary>
+        //ITsAstNodeList<T> WithOpenTokenTrailingTrivia(IEnumerable<ITsAstTriviaNode> trivia);
+
+        ///// <summary>
+        ///// Creates a copy of this list with the close token's leading trivia replaced with the specified value.
+        ///// </summary>
+        //ITsAstNodeList<T> WithCloseTokenLeadingTrivia(IEnumerable<ITsAstTriviaNode> trivia);
+
+        ///// <summary>
+        ///// Creates a copy of this list with the close token's trailing trivia replaced with the specified value.
+        ///// </summary>
+        //ITsAstNodeList<T> WithCloseTokenTrailingTrivia(IEnumerable<ITsAstTriviaNode> trivia);
+
+        ///// <summary>
+        ///// Creates a copy of this list with the leading trivia of each separator replaced with the specified trivia.
+        ///// </summary>
+        //ITsAstNodeList<T> WithSeparatorsLeadingTrivia(
+        //    IEnumerable<IEnumerable<ITsAstTriviaNode>> triviaNodesForEachSeparator);
+
+        ///// <summary>
+        ///// Creates a copy of this list with the trailing trivia of each separator replaced with the specified trivia.
+        ///// </summary>
+        //ITsAstNodeList<T> WithSeparatorsTrailingTrivia(
+        //    IEnumerable<IEnumerable<ITsAstTriviaNode>> triviaNodesForEachSeparator);
     }
 }

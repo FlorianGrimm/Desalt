@@ -304,7 +304,7 @@ namespace Desalt.Core.Translation
         /// <summary>
         /// Extracts the semantic type symbol from the specified type syntax node.
         /// </summary>
-        public ITypeSymbol GetExpectedTypeSymbol(TypeSyntax typeSyntax)
+        public ITypeSymbol GetExpectedTypeSymbol(SyntaxNode typeSyntax)
         {
             ITypeSymbol? typeSymbol = SemanticModel.GetTypeInfo(typeSyntax).Type;
             if (typeSymbol == null)

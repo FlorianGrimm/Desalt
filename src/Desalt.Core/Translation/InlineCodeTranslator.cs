@@ -280,7 +280,7 @@ namespace Desalt.Core.Translation
             int index = inlineCodeContext.MethodSymbol.Parameters.IndexOf(foundParameter);
 
             // Find the translated parameter and use it for substitution.
-            if (index >= inlineCodeContext.TranslatedArgumentList.Arguments.Length)
+            if (index >= inlineCodeContext.TranslatedArgumentList.Arguments.Count)
             {
                 diagnostic = inlineCodeContext.CreateParseError(
                     $"Cannot find parameter '{parameterName}' in the translated argument list '{inlineCodeContext.TranslatedArgumentList.EmitAsString()}'");

@@ -8,7 +8,6 @@
 namespace Desalt.TypeScriptAst.Tests.Ast
 {
     using System;
-    using System.Linq;
     using Desalt.TypeScriptAst.Ast;
     using FluentAssertions;
     using NUnit.Framework;
@@ -132,12 +131,6 @@ namespace Desalt.TypeScriptAst.Tests.Ast
                 Factory.Array(
                     AddCommentAroundNode("a", Factory.ArrayElement(s_x)),
                     AddCommentAroundNode("b", Factory.ArrayElement(Factory.Number(10)))));
-
-            node = node.WithOpenBracket(AddCommentAroundNode("open", node.OpenBracket))
-                .WithCloseBracket(AddCommentAroundNode("close", node.CloseBracket))
-                .WithElements(
-                    node.Elements.WithSeparators(
-                        node.Elements.Separators.Select(sep => AddCommentAroundNode("comma", sep))));
 
             VerifyOutput(
                 node,

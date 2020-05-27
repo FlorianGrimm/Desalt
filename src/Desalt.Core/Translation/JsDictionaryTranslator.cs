@@ -92,7 +92,7 @@ namespace Desalt.Core.Translation
             // The translated argument list may be an array. In which case, let's expand it so the rest of the code
             // below simply works on a list of arguments.
             ITsExpression[] translatedArguments =
-                translatedArgumentList.Arguments.Length == 1 &&
+                translatedArgumentList.Arguments.Count == 1 &&
                 translatedArgumentList.Arguments[0].Expression is ITsArrayLiteral array
                     ? array.Elements.Select(x => x?.Expression).WhereNotNull().ToArray()
                     : translatedArgumentList.Arguments.Select(x => x.Expression).ToArray();

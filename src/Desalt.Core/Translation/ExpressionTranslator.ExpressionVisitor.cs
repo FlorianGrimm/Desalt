@@ -66,7 +66,7 @@ namespace Desalt.Core.Translation
             /// <returns>An <see cref="ITsThis"/>.</returns>
             public override ITsExpression VisitThisExpression(ThisExpressionSyntax node)
             {
-                return Factory.This;
+                return Factory.This.AddCommentsFrom(node);
             }
 
             /// <summary>
@@ -75,6 +75,8 @@ namespace Desalt.Core.Translation
             /// <returns>An <see cref="ITsExpression"/>.</returns>
             public override ITsExpression VisitLiteralExpression(LiteralExpressionSyntax node)
             {
+                ITsExpression translated;
+
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (node.Kind())
                 {
@@ -94,29 +96,49 @@ namespace Desalt.Core.Translation
                             str = str.Replace(@"\", @"\\").Replace("\"\"", @"\""");
                         }
 
-                        return Factory.String(str);
+                        translated = Factory.String(str);
+                        break;
 
                     case SyntaxKind.CharacterLiteralExpression:
-                        return Factory.String(node.Token.ValueText);
+                        translated = Factory.String(node.Token.ValueText);
+                        break;
 
                     case SyntaxKind.NumericLiteralExpression:
-                        return node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                        translated = node.Token.Text.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                             ? Factory.HexInteger(Convert.ToInt64(node.Token.Value))
                             : Factory.Number(Convert.ToDouble(node.Token.Value));
+                        break;
 
                     case SyntaxKind.TrueLiteralExpression:
-                        return Factory.True;
+                        translated = Factory.True;
+                        break;
 
                     case SyntaxKind.FalseLiteralExpression:
-                        return Factory.False;
+                        translated = Factory.False;
+                        break;
 
                     case SyntaxKind.NullLiteralExpression:
-                        return Factory.Null;
+                        translated = Factory.Null;
+                        break;
+
+                    case SyntaxKind.DefaultLiteralExpression:
+                        ITsType translatedType = TypeTranslator.TranslateTypeSymbol(
+                            Context,
+                            Context.GetExpectedTypeSymbol(node),
+                            node.GetLocation);
+
+                        translated = Factory.Call(
+                            Factory.MemberDot(Factory.Identifier("ss"), "getDefaultValue"),
+                            Factory.ArgumentList(Factory.Argument(Factory.Identifier(translatedType.EmitAsString()))));
+                        break;
 
                     default:
                         Diagnostics.Add(DiagnosticFactory.LiteralExpressionTranslationNotSupported(node));
-                        return Factory.Null;
+                        translated = Factory.Null;
+                        break;
                 }
+
+                return translated.AddCommentsFrom(node);
             }
 
             //// =======================================================================================================
@@ -283,7 +305,8 @@ namespace Desalt.Core.Translation
             /// <returns>An <see cref="ITsExpression"/>.</returns>
             public override ITsExpression VisitEqualsValueClause(EqualsValueClauseSyntax node)
             {
-                return VisitSubExpression(node.Value);
+                return VisitSubExpression(node.Value)
+                    .PrependTrailingCommentsFrom(node.EqualsToken, toLeadingTrivia: true);
             }
 
             //// =======================================================================================================
@@ -323,7 +346,13 @@ namespace Desalt.Core.Translation
 
                 // Translate `new int[] { 1, 2, 3 }` to `[1, 2, 3]`
                 ITsExpression[] arrayElements = node.Initializer.Expressions.Select(VisitSubExpression).ToArray();
-                var translated = Factory.Array(arrayElements);
+                var translated = Factory.Array(arrayElements)
+                    .AddCommentsFrom(node)
+                    .AppendLeadingCommentsFrom(node.NewKeyword, toLeadingTrivia: true)
+                    .AppendTrailingCommentsFrom(node.NewKeyword, toLeadingTrivia: true)
+                    .AppendLeadingCommentsFrom(node.Type, toLeadingTrivia: true)
+                    .AppendTrailingCommentsFrom(node.Type, toLeadingTrivia: true);
+
                 return translated;
             }
 
@@ -396,10 +425,7 @@ namespace Desalt.Core.Translation
             /// </returns>
             public override ITsExpression VisitDefaultExpression(DefaultExpressionSyntax node)
             {
-                ITsType translatedType = TypeTranslator.TranslateTypeSymbol(
-                    Context,
-                    Context.GetExpectedTypeSymbol(node.Type),
-                    node.Type.GetLocation);
+                ITsType translatedType = TypeTranslator.TranslateTypeSymbol(Context, node.Type);
 
                 ITsCallExpression translated = Factory.Call(
                     Factory.MemberDot(Factory.Identifier("ss"), "getDefaultValue"),
