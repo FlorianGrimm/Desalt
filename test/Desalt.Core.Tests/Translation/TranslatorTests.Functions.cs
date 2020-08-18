@@ -455,27 +455,31 @@ class NavigationMetricsCollector {
         }
 
         [Test]
-        [Ignore("Not yet implemented")]
         public async Task Translate_should_omit_classes_marked_with_GlobalMethods_in_method_calls()
         {
             await AssertTranslation(
                 @"
-[GlobalMethods]
-static class A
-{
-    public static int Method(int x) { return x; }
+
+namespace N {
+
+    [GlobalMethods]
+    static class A
+    {
+        public static int Method(int x) { return x; }
+    }
 }
 
 class B
 {
     public void Invoker()
     {
-        var i = A.Method(42);
+        var i = N.A.Method(42);
     }
 }
 ",
+// TODO: add cases with `export`
 @"
-global.method = function(x: number): number {
+function method(x: number): number {
   return x;
 };
 

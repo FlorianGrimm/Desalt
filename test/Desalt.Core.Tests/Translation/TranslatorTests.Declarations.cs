@@ -335,38 +335,42 @@ class A {
 
         [Test]
         [Ignore("Not yet implemented")]
-        public async Task Translate_should_put_methods_of_GlobalMethods_classes_in_global_namespace_in_declarations()
+        public async Task Translate_should_declare_global_functions_for_GlobalMethods_classes_in_declarations()
         {
             await AssertTranslation(
                 @"
-[GlobalMethods]
-static class A
-{
-    public static void Method1() { }
+namespace N {
 
-    [PreserveName]
-    static void Method2() {}
+    [GlobalMethods]
+    static class A
+    {
+        public static void Method1() { }
 
-    [PreserveCase]
-    static void Method3() {}
+        [PreserveName]
+        static void Method2() {}
 
-    [ScriptName(""Renamed"")]
-    static void Method4() { }
+        [PreserveCase]
+        static void Method3() {}
 
-    [InlineCode(""FooModule.foo({a})"")]
-    static void Method5(int a) { }
+        [ScriptName(""Renamed"")]
+        static void Method4() { }
 
-    [ScriptSkip]
-    static void Method6(int a) { }
+        [InlineCode(""FooModule.foo({a})"")]
+        static void Method5(int a) { }
+
+        [ScriptSkip]
+        static void Method6(int a) { }
+    }
 }",
+// TODO: add cases with `export`
 @"
-global.method1 = function(): void { };
+function method1(): void { };
 
-global.method2 = function(): void { };
+function method2(): void { };
 
-global.Method3 = function(): void { };
+function Method3(): void { };
 
-global.Renamed = function(): void { };
+function Renamed(): void { };
 ");
         }
 

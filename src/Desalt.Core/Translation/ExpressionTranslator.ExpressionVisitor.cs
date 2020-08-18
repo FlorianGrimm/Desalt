@@ -209,6 +209,14 @@ namespace Desalt.Core.Translation
                     return Factory.Identifier(node.Identifier.Text);
                 }
 
+                if (ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+                {
+                    if (scriptSymbol is IScriptTypeSymbol typeSymbol && typeSymbol.TreatMethodsAsGlobal)
+                    {
+                        return Factory.OmittedIdentifier();
+                    }
+                }
+
                 ITsExpression translated = Context.TranslateIdentifierName(symbol, node);
                 return translated;
             }
@@ -234,7 +242,7 @@ namespace Desalt.Core.Translation
             /// <summary>
             /// Called when the visitor visits a MemberAccessExpressionSyntax node.
             /// </summary>
-            /// <returns>An <see cref="ITsMemberDotExpression"/>.</returns>
+            /// <returns>An <see cref="ITsExpression"/> which is usually, but not always, a <see cref="ITsMemberDotExpression"/>.</returns>
             public override ITsExpression VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
             {
                 var leftSide = VisitSubExpression(node.Expression);
@@ -246,6 +254,12 @@ namespace Desalt.Core.Translation
                 string scriptName = symbol == null
                     ? node.Name.Identifier.Text
                     : ScriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
+
+                // Should the type or namespace be omitted? Certain attributes can cause this behavior.
+                if (leftSide is IMemberAccessOmittedIdentifier)
+                {
+                    return Factory.Identifier(scriptName);
+                }
 
                 ITsMemberDotExpression translated = Factory.MemberDot(leftSide, scriptName);
                 return translated;
@@ -534,7 +548,7 @@ namespace Desalt.Core.Translation
                 bool hasLeftSideAlreadyBeenTranslatedWithInlineCode = node.Expression.Kind()
                     .IsOneOf(SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
 
-                // Wee if there's an [InlineCode] entry for the method invocation.
+                // See if there's an [InlineCode] entry for the method invocation.
                 if (!hasLeftSideAlreadyBeenTranslatedWithInlineCode &&
                     InlineCodeTranslator.TryTranslateMethodCall(
                         Context,
