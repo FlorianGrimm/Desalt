@@ -333,6 +333,43 @@ class A {
 ");
         }
 
+        [Test]
+        [Ignore("Not yet implemented")]
+        public async Task Translate_should_put_methods_of_GlobalMethods_classes_in_global_namespace_in_declarations()
+        {
+            await AssertTranslation(
+                @"
+[GlobalMethods]
+static class A
+{
+    public static void Method1() { }
+
+    [PreserveName]
+    static void Method2() {}
+
+    [PreserveCase]
+    static void Method3() {}
+
+    [ScriptName(""Renamed"")]
+    static void Method4() { }
+
+    [InlineCode(""FooModule.foo({a})"")]
+    static void Method5(int a) { }
+
+    [ScriptSkip]
+    static void Method6(int a) { }
+}",
+@"
+global.method1 = function(): void { };
+
+global.method2 = function(): void { };
+
+global.Method3 = function(): void { };
+
+global.Renamed = function(): void { };
+");
+        }
+
         //// ===========================================================================================================
         //// Method Declarations with params and [ExpandParams]
         //// ===========================================================================================================

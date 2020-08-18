@@ -454,6 +454,39 @@ class NavigationMetricsCollector {
                 SymbolDiscoveryKind.DocumentAndReferencedTypes);
         }
 
+        [Test]
+        [Ignore("Not yet implemented")]
+        public async Task Translate_should_omit_classes_marked_with_GlobalMethods_in_method_calls()
+        {
+            await AssertTranslation(
+                @"
+[GlobalMethods]
+static class A
+{
+    public static int Method(int x) { return x; }
+}
+
+class B
+{
+    public void Invoker()
+    {
+        var i = A.Method(42);
+    }
+}
+",
+@"
+global.method = function(x: number): number {
+  return x;
+};
+
+class B {
+  public invoker(): void {
+    let i: number = method(42);
+  }
+}
+");
+        }
+
         //// ===========================================================================================================
         //// Method Invocations with `params` Arrays Tests
         //// ===========================================================================================================
