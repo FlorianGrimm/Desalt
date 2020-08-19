@@ -1207,7 +1207,7 @@ namespace Desalt.TypeScriptAst.Ast
     }
 
     /// <summary>
-    /// Represents a context where a TypeScript identifier is to be omitted from member access (dot) expressions.
+    /// Represents a context where a C# identifier is to be omitted from TypeScript member access (dot) expressions.
     /// </summary>
     internal partial class MemberAccessOmittedIdentifier : TsAstNode, IMemberAccessOmittedIdentifier
     {

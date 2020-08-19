@@ -1546,7 +1546,7 @@ namespace Desalt.TypeScriptAst.Ast
 
         public static void EmitMemberAccessOmittedIdentifier(Emitter emitter, IMemberAccessOmittedIdentifier memberAccessOmittedIdentifier)
         {
-            // do nothing; the identifier was omitted
+            throw new InvalidOperationException("MemberAccessOmittedIdentifier should never be emitted");
         }
     }
 }

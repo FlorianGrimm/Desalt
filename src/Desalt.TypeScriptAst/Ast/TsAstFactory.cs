@@ -99,7 +99,7 @@ namespace Desalt.TypeScriptAst.Ast
             return new TsGenericTypeName(qualifiedName.Left, qualifiedName.Right, typeArguments.ToImmutableArray());
         }
 
-        public static ITsExpression OmittedIdentifier()
+        public static ITsExpression MemberAccessOmittedIdentifier()
         {
             // what about trivia?
             return new MemberAccessOmittedIdentifier();

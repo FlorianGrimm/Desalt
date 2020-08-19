@@ -197,7 +197,7 @@ namespace Desalt.Core.Translation
             /// <summary>
             /// Called when the visitor visits a IdentifierNameSyntax node.
             /// </summary>
-            /// <returns>An <see cref="ITsIdentifier"/> or <see cref="ITsMemberDotExpression"/>.</returns>
+            /// <returns>An <see cref="ITsIdentifier"/>, <see cref="ITsMemberDotExpression"/>, or <see cref="IMemberAccessOmittedIdentifier"/>.</returns>
             public override ITsExpression VisitIdentifierName(IdentifierNameSyntax node)
             {
                 // Try to get the script name of the expression.
@@ -209,12 +209,10 @@ namespace Desalt.Core.Translation
                     return Factory.Identifier(node.Identifier.Text);
                 }
 
-                if (ScriptSymbolTable.TryGetValue(symbol, out IScriptTypeSymbol? typeSymbol) && typeSymbol.TreatMethodsAsGlobal)
+                if (ScriptSymbolTable.TryGetValue(symbol, out IScriptTypeSymbol? typeSymbol)
+                    && typeSymbol.TreatMethodsAsGlobal)
                 {
-                    if (scriptSymbol is IScriptTypeSymbol typeSymbol && typeSymbol.TreatMethodsAsGlobal)
-                    {
-                        return Factory.OmittedIdentifier();
-                    }
+                    return Factory.MemberAccessOmittedIdentifier();  
                 }
 
                 ITsExpression translated = Context.TranslateIdentifierName(symbol, node);
@@ -249,14 +247,30 @@ namespace Desalt.Core.Translation
 
                 ISymbol? symbol = SemanticModel.GetSymbolInfo(node).Symbol;
 
+                IScriptTypeSymbol? typeSymbol = null;
+                if (symbol != null)
+                {
+                    ScriptSymbolTable.TryGetValue(symbol, out typeSymbol);
+                }
+
+                if (typeSymbol != null && typeSymbol.TreatMethodsAsGlobal)
+                {
+                    // The right-hand side is a static class with a [GlobalMethods] attribute,
+                    // which hoists class references up to the global namespace
+                    // (omitting *all* other enclosing classes or namespaces),
+                    // so we discard the whole expression.
+                    return Factory.MemberAccessOmittedIdentifier();
+                }
+
                 // Get the script name - the symbol can be null if we're inside a dynamic scope since all
                 // bets are off with the type checking.
-                string scriptName = symbol == null
+                 string scriptName = symbol == null
                     ? node.Name.Identifier.Text
                     : ScriptSymbolTable.GetComputedScriptNameOrDefault(symbol, node.Name.Identifier.Text);
 
-                // Should the type or namespace be omitted? Certain attributes can cause this behavior.
-                if (leftSide is IMemberAccessOmittedIdentifier)
+                // Is the left side a type or namespace that should be omitted here?
+                if (leftSide is IMemberAccessOmittedIdentifier ||
+                    (typeSymbol != null && typeSymbol.IgnoreNamespace))
                 {
                     return Factory.Identifier(scriptName);
                 }
