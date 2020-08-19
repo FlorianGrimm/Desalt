@@ -455,37 +455,39 @@ class NavigationMetricsCollector {
         }
 
         [Test]
-        public async Task Translate_should_omit_classes_marked_with_GlobalMethods_in_method_calls()
+        public async Task Translate_should_omit_classes_marked_with_GlobalMethods_in_member_access()
         {
             await AssertTranslation(
                 @"
+[GlobalMethods]
+static class A
+{
+    public static int Methd(int x) { return x; }
 
-namespace N {
-
-    [GlobalMethods]
-    static class A
-    {
-        public static int Method(int x) { return x; }
-    }
+    public static int Numbr;
 }
 
 class B
 {
     public void Invoker()
     {
-        var i = N.A.Method(42);
+        var i = A.Methd(42);
+        var j = A.Numbr;
     }
 }
 ",
 // TODO: add cases with `export`
 @"
-function method(x: number): number {
+function methd(x: number): number {
   return x;
 };
 
+numbr: integer = 0;
+
 class B {
   public invoker(): void {
-    let i: number = method(42);
+    let i: number = methd(42);
+    let j: number = numbr;
   }
 }
 ");
