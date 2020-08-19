@@ -209,7 +209,7 @@ namespace Desalt.Core.Translation
                     return Factory.Identifier(node.Identifier.Text);
                 }
 
-                if (ScriptSymbolTable.TryGetValue(symbol, out IScriptSymbol? scriptSymbol))
+                if (ScriptSymbolTable.TryGetValue(symbol, out IScriptTypeSymbol? typeSymbol) && typeSymbol.TreatMethodsAsGlobal)
                 {
                     if (scriptSymbol is IScriptTypeSymbol typeSymbol && typeSymbol.TreatMethodsAsGlobal)
                     {
